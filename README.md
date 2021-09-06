@@ -3,41 +3,47 @@
 An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
 an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
-be used to debug an Aiven hosted kafka topic. **Debuk** extracts the `aivenApplication` fresh generated credentials and
-put them in `current` folder. The applied `aivenApplication` default `timeToLive` is set to 1 day.
+be used to debug an Aiven hosted kafka topic. **Debuk** extracts the fresh `aivenApplication` credentials and
+puts them in `current` folder. The applied `aivenApplication` has a default for `timeToLive` and is set to 1 day.
 
 ## Prerequisite
 
 * Authentication & Authorization
-    * Connect your [naisdevice]("https://doc.nais.io/device/")
+    * Connect to [naisdevice](https://doc.nais.io/device/)
     * Tool is used in GCP? please be sure to log in:
 
 ```
 gcloud auth login --update-adc
 ```
 
-* Update your Topic resource & ACLs
+* Update your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs
     * Add `username` to your `Topic`.yaml ACLs and apply to your namespace.
+
+
+* Install [kafkacat](https://github.com/edenhill/kcat) in preferred way.
 
 ## Use
 
 First;
 
-Find where your $GOPATH directory is located, run the following command:
-
 ```
-go env GOPATH
+brew tap nais/tap
 ```
 
-run;
+then;
 
 ```
-make debuk
+brew install debuk  
 ```
 
-Since go install will place generated executables into a sub-directory of $GOPATH named bin.
 
-then you should be able to use command;
+check;
+
+```
+make debuk version
+```
+
+You should be able to use command;
 
 ```
 debuk [commands] [flags]
