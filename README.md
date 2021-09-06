@@ -114,11 +114,11 @@ spec:
     timeToLive: 1
 ```
 
-#### kafkacat.config
+#### kcat.config
 
 ```Properties
 # Debuked 2021-09-01 15:26:00
-# kafkacat -F kafkacat.config
+# kcat -F kcat.config
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
 ssl.key.password=changeme
@@ -127,19 +127,19 @@ ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.cert
 security.protocol=ssl
 ```
 
-`kafkacat.config` can be used with [aiven-kafkacat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to
+`kcat.config` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to
 authenticate against the Aiven hosted topics in GCP.
 
 You can refer to this config with -F flag:
 
 ```
-kafkacat -F kafkacat.config
+kcat -F kcat.config
 ```
 
 Alternatively, you can specify the same settings directly on the command line:
 
 ```
-kafkacat \
+kcat \
     -b https://boostrap-server.aivencloud.com:26484 \
     -X security.protocol=ssl \
     -X ssl.key.location=service.key \
@@ -147,7 +147,7 @@ kafkacat \
     -X ssl.ca.location=ca.pem
 ```
 
-For more details [aiven-kafkacat-help](https://help.aiven.io/en/articles/2607674-using-kafkacat)
+For more details [aiven-kcat-help](https://help.aiven.io/en/articles/2607674-using-kafkacat)
 
 #### kafka-schema-registry.env
 
