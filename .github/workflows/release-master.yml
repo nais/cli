@@ -31,6 +31,10 @@ jobs:
           echo "GORELEASER_CURRENT_TAG=${{ github.event.client_payload.current }}" >> $GITHUB_ENV
           echo "GORELEASER_PREVIOUS_TAG=${{ github.event.client_payload.previous }}" >> $GITHUB_ENV
 
+      - name: Checkout tag
+        run: |
+          git checkout tags/${GORELEASER_CURRENT_TAG} -b refs/heads/master
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
