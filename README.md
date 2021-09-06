@@ -114,11 +114,11 @@ spec:
     timeToLive: 1
 ```
 
-#### kcat.config
+#### kcat.conf
 
 ```Properties
 # Debuked 2021-09-01 15:26:00
-# kcat -F kcat.config
+# kcat -F kcat.conf
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
 ssl.key.password=changeme
@@ -127,13 +127,13 @@ ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.cert
 security.protocol=ssl
 ```
 
-`kcat.config` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to
+`kcat.conf` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to
 authenticate against the Aiven hosted topics in GCP.
 
 You can refer to this config with -F flag:
 
 ```
-kcat -F kcat.config
+kcat -F kcat.conf
 ```
 
 Alternatively, you can specify the same settings directly on the command line:
