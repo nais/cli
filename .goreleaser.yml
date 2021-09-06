@@ -1,0 +1,38 @@
+project_name: debuk
+builds:
+- env: [CGO_ENABLED=0, VERSION=v1.4]
+  goos:
+    - linux
+    - windows
+    - darwin
+  goarch:
+    - amd64
+    - arm64
+  id: "debuk"
+  dir: .
+  main: ./main/debuk
+  binary: debuk
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+release:
+  github:
+    owner: nais
+    name: debuk
+brews:
+- tap:
+    owner: nais
+    name: homebrew-tap
+  name: debuk
+  homepage: "https://github.com/nais/debuk"
+  description: "Simple Aiven Kafka Debug Cli"
+  folder: Formula
+  install: |
+    bin.install "debuk"
+  test: |
+    assert_match version, shell_output("#{bin}/debuk version")
