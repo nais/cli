@@ -20,6 +20,6 @@ go.sum
 # Generated documentation
 /doc/output
 
-test/
+.config/
 
 tool/

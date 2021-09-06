@@ -14,7 +14,7 @@ const (
 	KafkaCateKeyPassword           = "ssl.key.password"
 	KafkaCatBootstrapServers       = "bootstrap.servers"
 
-	KafkaCatConfigName = "kafkacat.config"
+	KafkaCatConfigName = "kcat.conf"
 )
 
 type KafkaCat struct {
@@ -22,7 +22,7 @@ type KafkaCat struct {
 }
 
 func (k *KafkaCat) Init() {
-	k.Config += fmt.Sprintf("# Debuked %s\n# kafkacat -F kafkacat.config\n", time.Now().Truncate(time.Minute))
+	k.Config += fmt.Sprintf("# Debuked %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
 }
 
 func (k *KafkaCat) Finit(destination string) error {

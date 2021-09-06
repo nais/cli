@@ -20,7 +20,7 @@ gcloud auth login --update-adc
     * Add `username` to your `Topic`.yaml ACLs and apply to your namespace.
 
 
-* Install [kafkacat](https://github.com/edenhill/kcat) in preferred way.
+* Install [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly known as kafkacat) in preferred way.
 
 ## Use
 
@@ -77,7 +77,7 @@ Flags provide modifiers to control how the action command operates.
 
 * `--dest`
     * short `-d` default `current`: Path to directory where secrets will be dropped of. For current with a new folder,
-      e.g: `/creds`
+      e.g: `/.config`
 
 * `--secret-name`
     * short `-s` default `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
@@ -93,7 +93,7 @@ After successful `debuk` command a set of files will be available in `current` f
 - kafka-certificate.crt
 - kafka-private-key.pem
 - kafka-schema-registry.env
-- kafkacat.config
+- kcat.conf
 
 ### Examples files
 
