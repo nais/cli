@@ -18,7 +18,7 @@ group Time limit exceeded
 aivenator -> kubernetes : Delete Secret
 kubernetes -> aivenator : AivenApplication Secret resource deleted
 aivenator -> aiven : Delete serviceuser and credentials
-aivenator -> aivenator : Annotate aivenApplication for deletion
+aivenator -> aivenator : Annotate aivenApplication scheduled for deletion
 aivenator -> kubernetes : Delete aivenApplication
     end
 end

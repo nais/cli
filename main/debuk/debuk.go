@@ -3,10 +3,13 @@ package main
 import "github.com/nais/debuk/cmd"
 
 var (
-	// VERSION is set during build
-	VERSION = "v0.1"
+	// Is set during build
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+	builtBy = "unknown"
 )
 
 func main() {
-	cmd.Execute(VERSION)
+	cmd.Execute(version, commit, date, builtBy)
 }

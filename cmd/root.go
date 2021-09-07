@@ -10,6 +10,9 @@ import (
 
 var (
 	VERSION string
+	COMMIT string
+	DATE string
+	BUILT_BY string
 
 	rootCmd = &cobra.Command{
 		Use:   "debuk [COMMANDS] [FLAGS]",
@@ -19,8 +22,11 @@ This application is a tool to generate the needed files to quickly start debuggi
 	}
 )
 
-func Execute(version string) {
+func Execute(version, commit, date, builtBy string) {
 	VERSION = version
+	COMMIT = commit
+	DATE = date
+	BUILT_BY = builtBy
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -35,6 +41,8 @@ const (
 	ExpireFlag     = "expire"
 	PoolFlag       = "pool"
 	SecretNameFlag = "secret-name"
+
+	CommitInformation       = "commit"
 )
 
 func init() {
@@ -57,6 +65,9 @@ func init() {
 
 	applyCommand.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
 	viper.BindPFlag(SecretNameFlag, applyCommand.Flags().Lookup(SecretNameFlag))
+
+	versionCmd.Flags().BoolP(CommitInformation, "i", false, "Detailed commit information for this debuk version (optional)")
+	viper.BindPFlag(CommitInformation, versionCmd.Flags().Lookup(DestFlag))
 
 	rootCmd.AddCommand(applyCommand)
 	rootCmd.AddCommand(versionCmd)

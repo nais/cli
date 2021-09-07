@@ -164,14 +164,17 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD:password
 ## Local Development
 
 * Be sure to run your local cluster, use: [minkube](https://minikube.sigs.k8s.io/docs/start/)
-* Create local test cluster
+* Create a `test` cluster
 
 ```
 kubectl create n test
 ```
 
 * Create fake a secret
+```
+kubectl apply -f path/to/secret
+```
 
 ```
-make test
+make debuk
 ```
