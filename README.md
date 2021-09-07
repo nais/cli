@@ -3,8 +3,8 @@
 An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
 an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
-be used to debug an Aiven hosted kafka topic. **Debuk** extracts the fresh `aivenApplication` credentials and
-puts them in `current` folder. The applied `aivenApplication` has a default for `timeToLive` and is set to 1 day.
+be used to debug an Aiven hosted kafka topic. **Debuk** extracts the fresh `aivenApplication` credentials and puts them
+in `current` folder. The applied `aivenApplication` has a default for `timeToLive` and is set to 1 day.
 
 ## Prerequisite
 
@@ -36,11 +36,10 @@ then;
 brew install debuk  
 ```
 
-
 check;
 
 ```
-make debuk version
+debuk version
 ```
 
 You should be able to use command;
@@ -52,6 +51,7 @@ debuk [commands] [flags]
 Available commands:
 
 - apply
+- version
 
 For help on individual commands, add `--help` following the command name.
 
@@ -127,8 +127,8 @@ ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.cert
 security.protocol=ssl
 ```
 
-`kcat.conf` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to
-authenticate against the Aiven hosted topics in GCP.
+`kcat.conf` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to authenticate
+against the Aiven hosted topics in GCP.
 
 You can refer to this config with -F flag:
 
@@ -160,3 +160,18 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD:password
 ## Flow
 
 ![Debuk under the hood](doc/debuk.png)
+
+## Local Development
+
+* Be sure to run your local cluster, use: [minkube](https://minikube.sigs.k8s.io/docs/start/)
+* Create local test cluster
+
+```
+kubectl create n test
+```
+
+* Create fake a secret
+
+```
+make test
+```

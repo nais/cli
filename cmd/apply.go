@@ -9,7 +9,8 @@ import (
 
 const (
 	KafkaNavDev  = "nav-dev"
-	KafkaNAvProd = "nav-prod"
+	KafkaNavProd = "nav-prod"
+	KafkaNavIntegrationTest = "nav-integration-test"
 )
 
 var applyCommand = &cobra.Command{
@@ -29,8 +30,8 @@ var applyCommand = &cobra.Command{
 		}
 
 		pool, _ := getString(cmd, PoolFlag, false)
-		if pool != KafkaNavDev && pool != KafkaNAvProd {
-			return fmt.Errorf("valid values for '--%s': %s | %s", PoolFlag, KafkaNavDev, KafkaNAvProd)
+		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest  {
+			return fmt.Errorf("valid values for '--%s': %s | %s | %s", PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
 		}
 
 		dest, err := getString(cmd, DestFlag, false)
@@ -43,14 +44,14 @@ var applyCommand = &cobra.Command{
 			return fmt.Errorf("setting destination: %s", err)
 		}
 
-		expire, err := cmd.Flags().GetInt(ExpireFlag)
+		expiry, err := cmd.Flags().GetInt(ExpireFlag)
 		secretName, err := getString(cmd, SecretNameFlag, false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		if err := generate.AivenApplication(username, team, pool, dest, expire, secretName); err != nil {
-			return fmt.Errorf("generating aiven debuk: %s", err)
+		if err := generate.AivenApplication(username, team, pool, dest, expiry, secretName); err != nil {
+			return fmt.Errorf("generating aivenApllication: %s", err)
 		}
 		return nil
 	},

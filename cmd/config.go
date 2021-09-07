@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 const (
@@ -13,6 +14,10 @@ func DefaultDestination(dest string) (string, error) {
 	path, err := os.Getwd()
 	if dest == "" {
 		return path, nil
+	}
+
+	if !strings.HasPrefix(dest, "/") {
+		dest = fmt.Sprintf("/%s", dest)
 	}
 
 	newPath := fmt.Sprintf("%s%s", path, dest)

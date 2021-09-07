@@ -17,7 +17,7 @@ func Apply(aivenYamlPath string) ([]byte, error) {
 	cmd := exec.Command(Kubectl, apply, command, aivenYamlPath)
 	stdout, err := hasError(cmd)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("apply faild: %s : %s", err, stdout)
 	}
 	fmt.Printf("applied --> %s", stdout)
 	return stdout, nil
@@ -33,7 +33,7 @@ func GetSecret(secretName string) ([]byte, error) {
 	cmd := exec.Command(Kubectl, get, secret, secretName, command)
 	stdout, err := hasError(cmd)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get secret faild: %s : %s", err, stdout)
 	}
 	fmt.Sprintln("fetched secret from namespace successfully.")
 	return stdout, nil

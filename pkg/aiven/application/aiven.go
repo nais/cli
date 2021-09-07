@@ -34,18 +34,14 @@ type AivenSpec struct {
 	SecretName string `yaml:"secretName"`
 	Protected  bool
 	Kafka      KafkaSpec
-	UserSpec   UserSpec `yaml:"userSpec"`
+	ExpiresAt  string `yaml:"expiresAt"`
 }
 
 type KafkaSpec struct {
 	Pool string
 }
 
-type UserSpec struct {
-	TimeToLive int `yaml:"timeToLive"`
-}
-
-func CreateAiven(username, team, pool string, expire int) Aiven {
+func CreateAiven(username, team, pool string, expiryDate string) Aiven {
 	app := Aiven{
 		Kind:       AivenKind,
 		ApiVersion: AivenApiVersion,
@@ -59,9 +55,7 @@ func CreateAiven(username, team, pool string, expire int) Aiven {
 			},
 			SecretName: "",
 			Protected:  DefaultProtected,
-			UserSpec: UserSpec{
-				TimeToLive: expire,
-			},
+			ExpiresAt:  expiryDate,
 		},
 	}
 	return app
