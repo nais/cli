@@ -61,26 +61,32 @@ Flags provide modifiers to control how the action command operates.
 
 #### Required
 
-* `--username`
-    * short `-u`: Prefix before `@nav.no`.
+* apply
+    * `--username`
+        * short `-u`: Prefix before `@nav.no`.
 
-* `--team`
-    * short `-t`: teamnamespace (default not supported).
+    * `--team`
+        * short `-t`: teamnamespace (default not supported).
 
 ### Optional
 
-* `--pool`
-    * short `-p` default `nav-dev`: Preferred kafka pool.
+* apply
+    * `--pool`
+        * short `-p` default `nav-dev`: Preferred kafka pool.
 
-* `--expire`
-    * short `-e` default `1`: Time in days the created secret should be valid.
+    * `--expire`
+        * short `-e` default `1`: Time in days the created secret should be valid.
 
-* `--dest`
-    * short `-d` default `current`: Path to directory where secrets will be dropped of. For current with a new folder,
-      e.g: `/.config`
+    * `--dest`
+        * short `-d` default `current`: Path to directory where secrets will be dropped of. For `current` with an
+          additional folder, e.g: `/.config`
 
-* `--secret-name`
-    * short `-s` default `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
+    * `--secret-name`
+        * short `-s` default `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
+
+* version
+    * `--commit`
+        * short `-i` default `false` : Get detailed information about this debuk version
 
 ## Available files
 
@@ -171,6 +177,7 @@ kubectl create n test
 ```
 
 * Create fake a secret
+
 ```
 kubectl apply -f path/to/secret
 ```
