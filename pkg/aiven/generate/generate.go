@@ -46,16 +46,3 @@ func AivenApplication(username, team, pool, dest string, expire int, secretName 
 	fmt.Printf("Debuked! Files found here --> %s/*", dest)
 	return nil
 }
-
-func setExpiry(expire string) (string, error) {
-	if expire == "" {
-		expire = time.Now().AddDate(0, 0, 1).Format(time.RFC3339)
-	} else {
-		parsedTimeStamp, err := time.Parse(time.RFC3339, expire)
-		if err != nil {
-			return "", fmt.Errorf("could not parse expire: %s", err)
-		}
-		return parsedTimeStamp.String(), nil
-	}
-	return expire, nil
-}
