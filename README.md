@@ -4,7 +4,7 @@ An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentia
 an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
 be used to debug an Aiven hosted kafka topic. **Debuk** extracts the fresh `aivenApplication` credentials and puts them
-in `current` folder. The applied `aivenApplication` has a default for `timeToLive` and is set to 1 day.
+in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
 
 ## Prerequisite
 
