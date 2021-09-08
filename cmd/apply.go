@@ -51,7 +51,7 @@ var applyCommand = &cobra.Command{
 		}
 
 		if err := generate.AivenApplication(username, team, pool, dest, expiry, secretName); err != nil {
-			return fmt.Errorf("generating aivenApllication: %s", err)
+			return fmt.Errorf("an error occurred generating aivenApplication: %s", err)
 		}
 		return nil
 	},
