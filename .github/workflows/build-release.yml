@@ -18,7 +18,7 @@ jobs:
       - name: Test Go
         run: |
           go mod tidy -v
-          go test
+          go test ./... -count=1 -coverprofile cover.out -short
 
   release-notes:
     runs-on: ubuntu-latest
