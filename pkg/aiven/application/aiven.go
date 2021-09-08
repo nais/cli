@@ -12,9 +12,7 @@ const (
 	AivenKind       = "AivenApplication"
 
 	DefaultProtected = true
-
 	MaxServiceUserNameLength = 64
-
 	FilePermission = 0775
 )
 

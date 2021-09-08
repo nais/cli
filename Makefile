@@ -3,4 +3,4 @@ local:
 debuk:
 	go install main/debuk/debuk.go
 test:
-	go test ./... -count=1
+	go test ./... -count=1 -coverprofile cover.out -short
