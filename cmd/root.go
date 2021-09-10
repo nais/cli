@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	VERSION string
-	COMMIT string
-	DATE string
+	VERSION  string
+	COMMIT   string
+	DATE     string
 	BUILT_BY string
 
 	rootCmd = &cobra.Command{
@@ -38,16 +38,28 @@ const (
 	TeamFlag       = "team"
 	UsernameFlag   = "username"
 	DestFlag       = "dest"
+	ConfigFlag     = "config"
 	ExpireFlag     = "expire"
 	PoolFlag       = "pool"
 	SecretNameFlag = "secret-name"
 
-	CommitInformation       = "commit"
+	CommitInformation = "commit"
 )
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	initApplyCmd()
+	initVersionCmd()
+	initGetCmd()
+}
 
+func initConfig() {
+	viper.SetEnvPrefix("DEBUK")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+}
+
+func initApplyCmd() {
 	applyCommand.Flags().StringP(UsernameFlag, "u", "", "Username for the aivenApplication configuration (required)")
 	viper.BindPFlag(UsernameFlag, applyCommand.Flags().Lookup(UsernameFlag))
 
@@ -65,16 +77,23 @@ func init() {
 
 	applyCommand.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
 	viper.BindPFlag(SecretNameFlag, applyCommand.Flags().Lookup(SecretNameFlag))
+	rootCmd.AddCommand(applyCommand)
+}
 
+func initVersionCmd() {
 	versionCmd.Flags().BoolP(CommitInformation, "i", false, "Detailed commit information for this debuk version (optional)")
 	viper.BindPFlag(CommitInformation, versionCmd.Flags().Lookup(DestFlag))
-
-	rootCmd.AddCommand(applyCommand)
 	rootCmd.AddCommand(versionCmd)
 }
 
-func initConfig() {
-	viper.SetEnvPrefix("DEBUK")
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
+func initGetCmd() {
+	getCmd.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
+	viper.BindPFlag(DestFlag, getCmd.Flags().Lookup(DestFlag))
+
+	getCmd.Flags().StringP(ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
+	viper.BindPFlag(ConfigFlag, getCmd.Flags().Lookup(ConfigFlag))
+
+	getCmd.Flags().StringP(SecretNameFlag, "s", "", "Secretname specified for aiven application (required)")
+	viper.BindPFlag(SecretNameFlag, getCmd.Flags().Lookup(SecretNameFlag))
+	rootCmd.AddCommand(getCmd)
 }
