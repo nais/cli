@@ -18,9 +18,9 @@ const (
 
 type Aiven struct {
 	ApiVersion string `yaml:"apiVersion"`
-	Kind       string
-	Metadata   Metadata
-	Spec       AivenSpec
+	Kind     string
+	Metadata Metadata
+	Spec     AivenSpec
 }
 
 type Metadata struct {
@@ -30,9 +30,9 @@ type Metadata struct {
 
 type AivenSpec struct {
 	SecretName string `yaml:"secretName"`
-	Protected  bool
-	Kafka      KafkaSpec
-	ExpiresAt  string `yaml:"expiresAt"`
+	Protected bool
+	Kafka     KafkaSpec
+	ExpiresAt string `yaml:"expiresAt"`
 }
 
 type KafkaSpec struct {

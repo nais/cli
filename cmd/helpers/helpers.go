@@ -1,7 +1,9 @@
-package cmd
+package helpers
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"os"
 	"strings"
 )
@@ -31,5 +33,30 @@ func DefaultDestination(dest string) (string, error) {
 		}
 	}
 	return newPath, nil
+}
 
+func GetString(cmd *cobra.Command, flag string, required bool) (string, error) {
+	env := viper.GetString(flag)
+	if env != "" {
+		return env, nil
+	}
+	arg, err := cmd.Flags().GetString(flag)
+	if err != nil {
+		return "", fmt.Errorf("getting %s: %s", flag, err)
+	}
+	if arg == "" {
+		if required {
+			return "", fmt.Errorf("%s is reqired", flag)
+		}
+	}
+	return arg, nil
+}
+
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
