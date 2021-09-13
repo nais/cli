@@ -35,10 +35,12 @@ func DefaultDestination(dest string) (string, error) {
 	return newPath, nil
 }
 
-func GetString(cmd *cobra.Command, flag string, required bool) (string, error) {
-	env := viper.GetString(flag)
-	if env != "" {
-		return env, nil
+func GetString(cmd *cobra.Command, flag, args string, required bool) (string, error) {
+	if viper.GetString(flag) != "" {
+		return viper.GetString(flag), nil
+	}
+	if args != "" {
+		return args, nil
 	}
 	arg, err := cmd.Flags().GetString(flag)
 	if err != nil {

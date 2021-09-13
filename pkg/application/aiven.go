@@ -9,18 +9,18 @@ import (
 
 const (
 	AivenApiVersion = "aiven.nais.io/v1"
-	AivenKind       = "AivenApplication"
+	AivenKind       = "aivenApplication"
 
-	DefaultProtected = true
+	DefaultProtected         = true
 	MaxServiceUserNameLength = 64
-	FilePermission = 0775
+	FilePermission           = 0775
 )
 
 type Aiven struct {
 	ApiVersion string `yaml:"apiVersion"`
-	Kind     string
-	Metadata Metadata
-	Spec     AivenSpec
+	Kind       string
+	Metadata   Metadata
+	Spec       AivenSpec
 }
 
 type Metadata struct {
@@ -30,9 +30,9 @@ type Metadata struct {
 
 type AivenSpec struct {
 	SecretName string `yaml:"secretName"`
-	Protected bool
-	Kafka     KafkaSpec
-	ExpiresAt string `yaml:"expiresAt"`
+	Protected  bool
+	Kafka      KafkaSpec
+	ExpiresAt  string `yaml:"expiresAt"`
 }
 
 type KafkaSpec struct {
