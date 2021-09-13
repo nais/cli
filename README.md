@@ -1,11 +1,5 @@
 # nais-d
 
-An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
-an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
-in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
-be used to debug an Aiven hosted kafka topic. **nais-d** extracts the fresh `aivenApplication` credentials and puts them
-in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
-
 ## Prerequisite
 
 * Authentication & Authorization
@@ -16,13 +10,15 @@ in `current` folder. The applied `aivenApplication` has a default `expireAt` and
 gcloud auth login --update-adc
 ```
 
-* Update your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs
-    * Add `username` to your `Topic`.yaml ACLs and apply to your namespace.
+Be sure to set;
 
+```
+export KUBECONFIG="<path-to>/kubeconfigs/config"
+```
 
-* Install [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly known as kafkacat) in preferred way.
+More info in [kubeconfigs](https://github.com/navikt/kubeconfigs)
 
-## Use
+## Install
 
 First;
 
@@ -45,22 +41,36 @@ nais-d version
 You should be able to use command;
 
 ```
-nais-d [commands] [flags]
+nais-d [commands] [args] [flags]
 ```
+
+### aiven
+
+An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
+an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
+in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
+be used to debug an Aiven hosted kafka topic. **nais-d** extracts the fresh `aivenApplication` credentials and puts them
+in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
+
+* Update your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs
+    * Add `username` to your `Topic`.yaml ACLs and apply to your namespace.
+
+
+* Install [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly known as kafkacat) in preferred way.
 
 Available commands:
 
-- apply
+- aiven
 - version
 - get
 
 For help on individual commands, add `--help` short: `-h`.
 
-### Flags
+#### Flags
 
 Flags provide modifiers to control how the action command operates.
 
-#### Required
+##### Required
 
 * aiven
     * `username` can be passed as argument, flags or environment variables.
@@ -79,7 +89,7 @@ Flags provide modifiers to control how the action command operates.
         * `--team`
             * short `-t`: team-namespace (default namespace not supported).
 
-### Optional
+##### Optional
 
 * aiven
     * `--pool`
@@ -103,11 +113,11 @@ Flags provide modifiers to control how the action command operates.
         * short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
           files.
 
-## Available configuration files
+#### Available configuration files
 
 After Successful `nais-d` command a set of files will be available in `current` folder.
 
-### All
+##### All
 
 - client-keystore.p12
 - client-truststore.jks
@@ -117,7 +127,7 @@ After Successful `nais-d` command a set of files will be available in `current` 
 - kafka-secret.env
 - kcat.conf
 
-### .env
+##### .env
 
 - client-keystore.p12
 - client-truststore.jks
@@ -126,7 +136,7 @@ After Successful `nais-d` command a set of files will be available in `current` 
 - kafka-private-key.pem
 - kafka-secret.env
 
-#### kafka-secret.env
+##### kafka-secret.env
 
 ```Properties
 KAFKA_BROKERS:brokerurl.aivencloud.com:26484
@@ -141,7 +151,7 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD:password
 KAFKA_SCHEMA_REGISTRY_USER:my-user
 ```
 
-### kcat
+##### kcat
 
 - kafka-ca.cert
 - kafka-certificate.crt
