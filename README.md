@@ -10,7 +10,7 @@
 gcloud auth login --update-adc
 ```
 
-Be sure to set;
+Be sure to set
 
 ```
 export KUBECONFIG="<path-to>/kubeconfigs/config"
@@ -20,25 +20,25 @@ More info in [kubeconfigs](https://github.com/navikt/kubeconfigs)
 
 ## Install
 
-First;
+First
 
 ```
 brew tap nais/tap
 ```
 
-then;
+then
 
 ```
 brew install nais-d  
 ```
 
-check;
+check
 
 ```
 nais-d version
 ```
 
-You should be able to use command;
+You should be able to use
 
 ```
 nais-d [commands] [args] [flags]
@@ -75,19 +75,19 @@ Flags provide modifiers to control how the action command operates.
 * aiven
     * `username` can be passed as argument, flags or environment variables.
         * `--username`
-            * short `-u`: Prefix before `@nav.no`.
+        * short `-u`: Prefix before `@nav.no`.
 
     * `team` can be passed as argument, flags or as environment variables.
         * `--team`
-            * short `-t`: team-namespace (default namespace not supported).
+        * short `-t`: team-namespace (default namespace not supported).
 * get
     * `secret-name` can be passed as argument, flags or as environment variables.
         * `--secret-name`
-            * short `-s`: Secret-name for your aiven application.
+        * short `-s`: Secret-name for your aiven application.
 
     * `team` can be passed as argument, flags or as environment variables.
         * `--team`
-            * short `-t`: team-namespace (default namespace not supported).
+        * short `-t`: team-namespace (default namespace not supported).
 
 ##### Optional
 
