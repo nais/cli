@@ -1,6 +1,6 @@
 package main
 
-import "github.com/nais/debuk/cmd"
+import "github.com/nais/nais-d/cmd"
 
 var (
 	// Is set during build

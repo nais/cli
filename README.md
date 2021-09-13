@@ -1,9 +1,9 @@
-# debuk
+# nais-d
 
 An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
 an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace=`team`. This will give access to personal but time limited credential. This credential can
-be used to debug an Aiven hosted kafka topic. **Debuk** extracts the fresh `aivenApplication` credentials and puts them
+be used to debug an Aiven hosted kafka topic. **nais-d** extracts the fresh `aivenApplication` credentials and puts them
 in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
 
 ## Prerequisite
@@ -33,19 +33,19 @@ brew tap nais/tap
 then;
 
 ```
-brew install debuk  
+brew install nais-d  
 ```
 
 check;
 
 ```
-debuk version
+nais-d version
 ```
 
 You should be able to use command;
 
 ```
-debuk [commands] [flags]
+nais-d [commands] [flags]
 ```
 
 Available commands:
@@ -62,35 +62,38 @@ Flags provide modifiers to control how the action command operates.
 
 #### Required
 
-* apply
-    * `--username`
-        * short `-u`: Prefix before `@nav.no`.
+* aiven
+    * `username` can be passed as argument, flags or environment variables.
+        * `--username`
+            * short `-u`: Prefix before `@nav.no`.
 
-    * `--team`
-        * short `-t`: teamnamespace (default not supported).
+    * `team` can be passed as argument, flags or as environment variables.
+        * `--team`
+            * short `-t`: team-namespace (default namespace not supported).
 * get
-    * `--secret-name`
-        * short `-s`: Secretname for your aiven application.
+    * `secret-name` can be passed as argument, flags or as environment variables.
+        * `--secret-name`
+            * short `-s`: Secret-name for your aiven application.
+
+    * `team` can be passed as argument, flags or as environment variables.
+        * `--team`
+            * short `-t`: team-namespace (default namespace not supported).
 
 ### Optional
 
-* apply
+* aiven
     * `--pool`
         * short `-p` default: `nav-dev`: Preferred kafka pool.
 
     * `--expire`
         * short `-e` default: `1`: Time in days the created secret should be valid.
 
-    * `--dest`
-        * short `-d` default: `current`: Path to directory where secrets will be dropped of. For `current` with
-          subfolder folder, e.g: `/.config`
-
     * `--secret-name`
         * short `-s` default: `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
 
 * version
     * `--commit`
-        * short `-i` default: `false` : Get detailed information about this debuk version
+        * short `-i` default: `false` : Get detailed information about this `nais-d` version
 
 * get
     * `--dest`
@@ -102,37 +105,17 @@ Flags provide modifiers to control how the action command operates.
 
 ## Available configuration files
 
-After Successful `debuk` command a set of files will be available in `current` folder.
+After Successful `nais-d` command a set of files will be available in `current` folder.
 
 ### All
 
 - client-keystore.p12
 - client-truststore.jks
-- `username`.yaml (the yaml applied to specified namespace)
 - kafka-ca.cert
 - kafka-certificate.crt
 - kafka-private-key.pem
 - kafka-secret.env
 - kcat.conf
-
-#### Example
-
-##### `username`.yaml
-
-```yaml
-apiVersion: aiven.nais.io/v1
-kind: AivenApplication
-metadata:
-  name: my-user
-  namespace: my-namespace
-spec:
-  secretName: default-my-user-d1037d
-  protected: true
-  kafka:
-    pool: nav-dev
-  userSpec:
-    timeToLive: 1
-```
 
 ### .env
 
@@ -158,8 +141,6 @@ KAFKA_SCHEMA_REGISTRY_PASSWORD:password
 KAFKA_SCHEMA_REGISTRY_USER:my-user
 ```
 
-#### Example
-
 ### kcat
 
 - kafka-ca.cert
@@ -167,12 +148,10 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 - kafka-private-key.pem
 - kcat.conf
 
-#### Example
-
 ##### kcat.conf
 
 ```Properties
-# Debuked 2021-09-01 15:26:00
+# Nais-d 2021-09-01 15:26:00
 # kcat -F kcat.conf
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
@@ -206,7 +185,7 @@ For more details [aiven-kcat-help](https://help.aiven.io/en/articles/2607674-usi
 
 ## Flow
 
-![Debuk under the hood](doc/debuk.png)
+![Nais-d under the hood](doc/nais-d.png)
 
 ## Local Development
 
@@ -270,5 +249,5 @@ kubectl apply -f path/to/secret
 * Generate executable program and test your changes.
 
 ```
-make debuk
+make nais-d
 ```

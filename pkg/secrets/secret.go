@@ -1,23 +1,19 @@
-package secret
+package secrets
 
 import (
 	"fmt"
-	"github.com/nais/debuk/pkg/common"
-	"github.com/nais/debuk/pkg/config"
-	"github.com/nais/debuk/pkg/consts"
+	"github.com/nais/nais-d/pkg/common"
+	"github.com/nais/nais-d/pkg/config"
+	"github.com/nais/nais-d/pkg/consts"
+	v1 "k8s.io/api/core/v1"
 	"strings"
 )
 
-type Secret struct {
-	ApiVersion string            `yaml:"apiVersion"`
-	Data       map[string]string `yaml:"data,omitempty"`
-}
-
-func (s Secret) ConfigAll(dest string) error {
+func ConfigAll(secret *v1.Secret, dest string) error {
 	kCatConfig := config.KCat{}
 	kCatConfig.Init()
 	kafkaEnv := config.KafkaGeneralEnvironment{}
-	for k, v := range s.Data {
+	for k, v := range secret.Data {
 
 		switch k {
 		case consts.KafkaCertificate, consts.KafkaPrivateKey, consts.KafkaCa, consts.KafkaBrokers, consts.KafkaCredStorePassword:
@@ -52,12 +48,12 @@ func (s Secret) ConfigAll(dest string) error {
 	return nil
 }
 
-func (s Secret) Config(dest, typeConfig string) error {
+func Config(secret *v1.Secret, dest, typeConfig string) error {
 	switch typeConfig {
 
 	case consts.ENV:
 		kafkaEnv := config.KafkaGeneralEnvironment{}
-		for k, v := range s.Data {
+		for k, v := range secret.Data {
 			err := kafkaEnv.Generate(k, v, dest)
 			if err != nil {
 				return err
@@ -69,7 +65,7 @@ func (s Secret) Config(dest, typeConfig string) error {
 	case consts.KCAT:
 		kCatConfig := config.KCat{}
 		kCatConfig.Init()
-		for k, v := range s.Data {
+		for k, v := range secret.Data {
 			err := kCatConfig.KcatGenerate(k, v, dest)
 			if err != nil {
 				return err
@@ -79,12 +75,12 @@ func (s Secret) Config(dest, typeConfig string) error {
 			return err
 		}
 	}
-	fmt.Printf("Debuked! Files found here --> %s/*", dest)
+	fmt.Printf("nais-d! Files found here --> %s/*", dest)
 	return nil
 }
 
-func (s Secret) generateAll(dest string) error {
-	err := s.ConfigAll(dest)
+func GenerateAll(secret *v1.Secret, dest string) error {
+	err := ConfigAll(secret, dest)
 	if err != nil {
 		return fmt.Errorf("generate all configs: %s", err)
 	}

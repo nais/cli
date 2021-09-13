@@ -1,22 +1,22 @@
 package common
 
 import (
-	b64 "encoding/base64"
 	"fmt"
-	"github.com/nais/debuk/pkg/application"
 	"io/ioutil"
+)
+
+const (
+	FilePermission = 0775
 )
 
 func Destination(dest, filename string) string {
 	return fmt.Sprintf("%s/%s", dest, filename)
 }
 
-func WriteToFile(dest, filename, value string) error {
-	if res, err := b64.StdEncoding.DecodeString(value); err == nil {
-		err = ioutil.WriteFile(Destination(dest, filename), res, application.FilePermission)
-		if err != nil {
-			return err
-		}
+func WriteToFile(dest, filename string, value []byte) error {
+	err := ioutil.WriteFile(Destination(dest, filename), value, FilePermission)
+	if err != nil {
+		return err
 	}
 	return nil
 }

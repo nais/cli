@@ -1,10 +1,9 @@
 package config
 
 import (
-	b64 "encoding/base64"
 	"fmt"
-	"github.com/nais/debuk/pkg/common"
-	"github.com/nais/debuk/pkg/consts"
+	"github.com/nais/nais-d/pkg/common"
+	"github.com/nais/nais-d/pkg/consts"
 	"io/ioutil"
 	"time"
 )
@@ -24,7 +23,7 @@ type KCat struct {
 }
 
 func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# Debuked %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
+	k.Config += fmt.Sprintf("# nais-d %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
 }
 
 func (k *KCat) Finit(destination string) error {
@@ -42,17 +41,15 @@ func (k *KCat) WriteConfig(dest string) error {
 	return nil
 }
 
-func (k *KCat) Update(key, value, destination string) {
-	if res, err := b64.StdEncoding.DecodeString(value); err == nil {
-		if destination == "" {
-			k.Config += fmt.Sprintf("%s=%s\n", key, string(res))
-		} else {
-			k.Config += fmt.Sprintf("%s=%s\n", key, destination)
-		}
+func (k *KCat) Update(key string, value []byte, destination string) {
+	if destination == "" {
+		k.Config += fmt.Sprintf("%s=%s\n", key, string(value))
+	} else {
+		k.Config += fmt.Sprintf("%s=%s\n", key, destination)
 	}
 }
 
-func (k *KCat) KcatGenerate(key, value, dest string) error {
+func (k *KCat) KcatGenerate(key string, value []byte, dest string) error {
 	switch key {
 	case consts.KafkaCertificate:
 		if err := common.WriteToFile(dest, consts.KafkaCertificateCrtFile, value); err != nil {

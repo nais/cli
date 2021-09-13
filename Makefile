@@ -1,12 +1,12 @@
 directory = $(wildcard ../liberator)
 
-.PHONY: debuk liberator
+.PHONY: nais-d liberator
 
 local:
-	go build -o tool/debuk main/debuk/*.go
+	go build -o tool/nais-d main/nais-d/*.go
 
-debuk: liberator
-	go install main/debuk/debuk.go
+nais-d: liberator
+	go install main/nais-d/nais-d.go
 
 test:
 	go test ./... -count=1 -coverprofile cover.out -short

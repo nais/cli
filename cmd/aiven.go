@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/nais/debuk/client"
-	"github.com/nais/debuk/cmd/helpers"
-	"github.com/nais/debuk/config"
+	"github.com/nais/nais-d/client"
+	"github.com/nais/nais-d/cmd/helpers"
+	"github.com/nais/nais-d/pkg/aiven"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -20,10 +20,6 @@ var aivenCommand = &cobra.Command{
 	Short: "Create a aivenApplication to your cluster",
 	Long:  `This command will apply a aivenApplication based on information given and avienator will create a set of credentials`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		if len(args) != 2 {
-			return fmt.Errorf("username and team is reqired")
-		}
 
 		client := client.StandardClient()
 
@@ -47,24 +43,18 @@ var aivenCommand = &cobra.Command{
 			return fmt.Errorf("valid values for '--%s': %s | %s | %s", PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
 		}
 
-		dest, err := helpers.GetString(cmd, DestFlag, "", false)
-		if err != nil {
-			return fmt.Errorf("getting %s: %s", DestFlag, err)
-		}
-
 		expiry, err := cmd.Flags().GetInt(ExpireFlag)
 		secretName, err := helpers.GetString(cmd, SecretNameFlag, "", false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		aivenConfig := config.SetupAivenConfiguration(
+		aivenConfig := aiven.SetupAivenConfiguration(
 			client,
-			config.AivenProperties{
+			aiven.AivenProperties{
 				Username:   username,
 				Namespace:  namespace.Name,
 				Pool:       pool,
-				Dest:       dest,
 				SecretName: secretName,
 				Expiry:     expiry,
 			},

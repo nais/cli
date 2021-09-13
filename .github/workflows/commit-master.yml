@@ -30,7 +30,7 @@ jobs:
         run: |
           git add .
           git fetch
-          git commit -a -m "Update debuk cli version: ${version}"
+          git commit -a -m "Update nais-d cli version: ${version}"
 
       - name: Push changes to master
         uses: ad-m/github-push-action@master
@@ -42,5 +42,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.GH_PAT }}
-          event-type: release-debuk
+          event-type: release-nais-d
           client-payload: '{"current": "${{ env.version }}", "previous": "${{ env.previous }}"}'

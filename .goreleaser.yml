@@ -1,4 +1,4 @@
-project_name: debuk
+project_name: nais-d
 builds:
 - env: [CGO_ENABLED=0, VERSION=v0.0.2]
   goos:
@@ -8,10 +8,10 @@ builds:
   goarch:
     - amd64
     - arm64
-  id: "debuk"
+  id: "nais-d"
   dir: .
-  main: ./main/debuk
-  binary: debuk
+  main: ./main/nais-d
+  binary: nais-d
   ldflags:
     - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
 checksum:
@@ -25,16 +25,16 @@ changelog:
 release:
   github:
     owner: nais
-    name: debuk
+    name: nais-d
 brews:
 - tap:
     owner: nais
     name: homebrew-tap
-  name: debuk
-  homepage: "https://github.com/nais/debuk"
+  name: nais-d
+  homepage: "https://github.com/nais/nais-d"
   description: "Simple Aiven Kafka Debug Cli"
   folder: Formula
   install: |
-    bin.install "debuk"
+    bin.install "nais-d"
   test: |
-    assert_match version, shell_output("#{bin}/debuk version")
+    assert_match version, shell_output("#{bin}/nais-d version")

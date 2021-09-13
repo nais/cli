@@ -1,10 +1,9 @@
 package config
 
 import (
-	b64 "encoding/base64"
 	"fmt"
-	"github.com/nais/debuk/pkg/common"
-	"github.com/nais/debuk/pkg/consts"
+	"github.com/nais/nais-d/pkg/common"
+	"github.com/nais/nais-d/pkg/consts"
 	"io/ioutil"
 	"strings"
 )
@@ -32,17 +31,15 @@ func (k *KafkaGeneralEnvironment) WriteConfig(dest string) error {
 	return nil
 }
 
-func (k *KafkaGeneralEnvironment) Set(key, value, destination string) {
-	if res, err := b64.StdEncoding.DecodeString(value); err == nil {
-		if destination == "" {
-			k.Envs += fmt.Sprintf("%s: %s\n", key, string(res))
-		} else {
-			k.Envs += fmt.Sprintf("%s=%s\n", key, destination)
-		}
+func (k *KafkaGeneralEnvironment) Set(key string, value []byte, destination string) {
+	if destination == "" {
+		k.Envs += fmt.Sprintf("%s: %s\n", key, string(value))
+	} else {
+		k.Envs += fmt.Sprintf("%s=%s\n", key, destination)
 	}
 }
 
-func (k *KafkaGeneralEnvironment) Generate(key, value, dest string) error {
+func (k *KafkaGeneralEnvironment) Generate(key string, value []byte, dest string) error {
 	switch key {
 	case consts.KafkaCertificate:
 		if err := common.WriteToFile(dest, consts.KafkaCertificateCrtFile, value); err != nil {

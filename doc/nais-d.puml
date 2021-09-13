@@ -1,5 +1,5 @@
 @startuml
-title Debuk
+title nais-d
 
 actor developer as "Developer"
 control kubernetes as "Kubernetes"
@@ -7,7 +7,7 @@ control aivenator as "Aivenator"
 control kafkarator as "Kafkarator"
 boundary aiven as "Aiven"
 
-developer -> kubernetes : debuk apply -u my-user -t my-team
+developer -> kubernetes : nais-d aiven my-user my-team
 
 loop aivenator until success
 kubernetes -> aivenator : Protected AivenApplication resource created/updated
