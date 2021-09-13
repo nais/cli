@@ -60,24 +60,24 @@ func initConfig() {
 }
 
 func initApplyCmd() {
-	applyCommand.Flags().StringP(UsernameFlag, "u", "", "Username for the aivenApplication configuration (required)")
-	viper.BindPFlag(UsernameFlag, applyCommand.Flags().Lookup(UsernameFlag))
+	aivenCommand.Flags().StringP(UsernameFlag, "u", "", "Username for the aivenApplication configuration (required)")
+	viper.BindPFlag(UsernameFlag, aivenCommand.Flags().Lookup(UsernameFlag))
 
-	applyCommand.Flags().StringP(TeamFlag, "t", "", "Teamnamespace that the user have access to (required)")
-	viper.BindPFlag(TeamFlag, applyCommand.Flags().Lookup(TeamFlag))
+	aivenCommand.Flags().StringP(TeamFlag, "t", "", "Teamnamespace that the user have access to (required)")
+	viper.BindPFlag(TeamFlag, aivenCommand.Flags().Lookup(TeamFlag))
 
-	applyCommand.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
-	viper.BindPFlag(PoolFlag, applyCommand.Flags().Lookup(PoolFlag))
+	aivenCommand.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
+	viper.BindPFlag(PoolFlag, aivenCommand.Flags().Lookup(PoolFlag))
 
-	applyCommand.Flags().IntP(ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
-	viper.BindPFlag(ExpireFlag, applyCommand.Flags().Lookup(ExpireFlag))
+	aivenCommand.Flags().IntP(ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
+	viper.BindPFlag(ExpireFlag, aivenCommand.Flags().Lookup(ExpireFlag))
 
-	applyCommand.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
-	viper.BindPFlag(DestFlag, applyCommand.Flags().Lookup(DestFlag))
+	aivenCommand.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
+	viper.BindPFlag(DestFlag, aivenCommand.Flags().Lookup(DestFlag))
 
-	applyCommand.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
-	viper.BindPFlag(SecretNameFlag, applyCommand.Flags().Lookup(SecretNameFlag))
-	rootCmd.AddCommand(applyCommand)
+	aivenCommand.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
+	viper.BindPFlag(SecretNameFlag, aivenCommand.Flags().Lookup(SecretNameFlag))
+	rootCmd.AddCommand(aivenCommand)
 }
 
 func initVersionCmd() {
