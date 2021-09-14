@@ -63,7 +63,7 @@ func initAivenCmd() {
 	aivenCommand.Flags().StringP(UsernameFlag, "u", "", "Username for the aivenApplication configuration (required)")
 	viper.BindPFlag(UsernameFlag, aivenCommand.Flags().Lookup(UsernameFlag))
 
-	aivenCommand.Flags().StringP(TeamFlag, "t", "", "Team-namespace that the user have access to (required)")
+	aivenCommand.Flags().StringP(TeamFlag, "t", "", "Namespace-namespace that the user have access to (required)")
 	viper.BindPFlag(TeamFlag, aivenCommand.Flags().Lookup(TeamFlag))
 
 	aivenCommand.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
@@ -87,7 +87,7 @@ func initGetCmd() {
 	getCmd.Flags().StringP(SecretNameFlag, "s", "", "Secret-name specified for aiven application (required)")
 	viper.BindPFlag(SecretNameFlag, getCmd.Flags().Lookup(SecretNameFlag))
 
-	getCmd.Flags().StringP(TeamFlag, "t", "", "Team-namespace that the user have access to (required)")
+	getCmd.Flags().StringP(TeamFlag, "t", "", "Namespace-namespace that the user have access to (required)")
 	viper.BindPFlag(TeamFlag, getCmd.Flags().Lookup(TeamFlag))
 
 	getCmd.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")

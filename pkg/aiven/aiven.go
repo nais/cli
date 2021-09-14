@@ -4,12 +4,11 @@ import (
 	"fmt"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
-	aivenclient "github.com/nais/nais-d/client"
+	aivenclient "github.com/nais/nais-d/pkg/client"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/kubernetes"
 	"time"
 )
 
@@ -21,7 +20,6 @@ const (
 )
 
 type AivenConfiguration struct {
-	client *kubernetes.Clientset
 	AivenProperties
 }
 
@@ -34,18 +32,22 @@ type AivenProperties struct {
 	Expiry     int
 }
 
-func SetupAivenConfiguration(client *kubernetes.Clientset, properties AivenProperties) *AivenConfiguration {
-	return &AivenConfiguration{
-		client,
-		properties,
-	}
+func SetupAivenConfiguration(properties AivenProperties) *AivenConfiguration {
+	return &AivenConfiguration{properties}
 }
 
 func (a *AivenConfiguration) GenerateApplication() error {
 	client, err := aivenclient.NewForConfig()
+	stdClient := aivenclient.StandardClient()
 	if err != nil {
 		return fmt.Errorf("could not setup kubernetes client %s", err)
 	}
+
+	namespace, err := stdClient.CoreV1().Namespaces().Get(a.Namespace, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	a.Namespace = namespace.Name
 
 	timeStamp := time.Now().AddDate(0, 0, a.Expiry).Format(time.RFC3339)
 	createApp := *a.CreateAivenApplication(timeStamp, a.SecretName)

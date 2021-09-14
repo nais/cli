@@ -2,7 +2,7 @@ package secrets
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/client"
+	"github.com/nais/nais-d/pkg/client"
 	"github.com/nais/nais-d/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
