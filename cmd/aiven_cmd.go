@@ -16,7 +16,7 @@ const (
 )
 
 var aivenCommand = &cobra.Command{
-	Use:   "aiven [ARGS] [FLAGS]",
+	Use:   "aiven [commands] [args] [flags]",
 	Short: "Create a aivenApplication to your cluster",
 	Long:  `This command will apply a aivenApplication based on information given and avienator will create a set of credentials`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,6 +44,10 @@ var aivenCommand = &cobra.Command{
 		}
 
 		expiry, err := cmd.Flags().GetInt(ExpireFlag)
+		if err != nil {
+			return fmt.Errorf("getting flag %s", err)
+		}
+
 		secretName, err := helpers.GetString(cmd, SecretNameFlag, "", false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)

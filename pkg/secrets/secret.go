@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+const (
+	AivenatorProtectedAnnotation         = "aivenator.aiven.nais.io/protected"
+	AivenatorProtectedExpireAtAnnotation = "aivenator.aiven.nais.io/with-time-limit"
+)
+
 func ConfigAll(secret *v1.Secret, dest string) error {
 	kCatConfig := config.KCat{}
 	kCatConfig.Init()

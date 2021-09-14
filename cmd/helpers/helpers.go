@@ -53,12 +53,3 @@ func GetString(cmd *cobra.Command, flag, args string, required bool) (string, er
 	}
 	return arg, nil
 }
-
-func Contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}

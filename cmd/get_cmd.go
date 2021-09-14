@@ -3,14 +3,14 @@ package cmd
 import (
 	"fmt"
 	"github.com/nais/nais-d/cmd/helpers"
-	"github.com/nais/nais-d/pkg/aiven"
 	"github.com/nais/nais-d/pkg/consts"
+	"github.com/nais/nais-d/pkg/secrets"
 	"github.com/spf13/cobra"
 	"os"
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [args] [flags]",
 	Short: "The specified config format will get the secret and generated to 'current' location",
 	Run: func(cmd *cobra.Command, args []string) {
 		secretName, err := helpers.GetString(cmd, SecretNameFlag, args[0], true)
@@ -47,6 +47,6 @@ var getCmd = &cobra.Command{
 			fmt.Printf("an error %s", err)
 			os.Exit(1)
 		}
-		aiven.TypeConfig(configType, dest, secretName, team)
+		secrets.ExtractAndGenerateConfig(configType, dest, secretName, team)
 	},
 }

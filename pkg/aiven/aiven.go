@@ -44,7 +44,7 @@ func SetupAivenConfiguration(client *kubernetes.Clientset, properties AivenPrope
 func (a *AivenConfiguration) GenerateApplication() error {
 	client, err := aivenclient.NewForConfig()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not setup kubernetes client %s", err)
 	}
 
 	timeStamp := time.Now().AddDate(0, 0, a.Expiry).Format(time.RFC3339)
