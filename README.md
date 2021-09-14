@@ -44,6 +44,14 @@ You should be able to use
 nais-d [commands] [args] [flags]
 ```
 
+## Commands
+
+Available commands:
+
+- aiven
+- version
+- get
+
 ### aiven
 
 An Aiven Kafka Debug Cli to apply a `aivenApplication` and extract its credentials. The tool will apply
@@ -58,60 +66,50 @@ in `current` folder. The applied `aivenApplication` has a default `expireAt` and
 
 * Install [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly known as kafkacat) in preferred way.
 
-Available commands:
-
-- aiven
-- version
-- get
-
 For help on individual commands, add `--help` short: `-h`.
 
-#### Flags
+#### Commands & Flags
 
 Flags provide modifiers to control how the action command operates.
 
 ##### Required
 
-* aiven
-    * `username` can be passed as argument, flags or environment variables.
-        * `--username`
-        * short `-u`: Prefix before `@nav.no`.
+###### aiven
 
-    * `team` can be passed as argument, flags or as environment variables.
-        * `--team`
-        * short `-t`: team-namespace (default namespace not supported).
-* get
-    * `secret-name` can be passed as argument, flags or as environment variables.
-        * `--secret-name`
-        * short `-s`: Secret-name for your aiven application.
+* `username` can be passed as argument, flags or environment variables.
+    * `--username` short `-u`: Prefix before `@nav.no`.
 
-    * `team` can be passed as argument, flags or as environment variables.
-        * `--team`
-        * short `-t`: team-namespace (default namespace not supported).
+* `team` can be passed as argument, flags or as environment variables.
+    * `--team` short `-t`: team-namespace (default namespace not supported).
+
+###### get
+
+* `secret-name` can be passed as argument, flags or as environment variables.
+    * `--secret-name` short `-s`: Secret-name for your aiven application.
+
+* `team` can be passed as argument, flags or as environment variables.
+    * `--team` short `-t`: team-namespace (default namespace not supported).
 
 ##### Optional
 
-* aiven
-    * `--pool`
-        * short `-p` default: `nav-dev`: Preferred kafka pool.
+###### aiven
 
-    * `--expire`
-        * short `-e` default: `1`: Time in days the created secret should be valid.
+* `--pool` short `-p` default: `nav-dev`: Preferred kafka pool.
 
-    * `--secret-name`
-        * short `-s` default: `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
+* `--expire` short `-e` default: `1`: Time in days the created secret should be valid.
 
-* version
-    * `--commit`
-        * short `-i` default: `false` : Get detailed information about this `nais-d` version
+* `--secret-name` short `-s` default: `namespace-username-(random-id)`: Preferred secret-name instead of the generated.
 
-* get
-    * `--dest`
-        * short `-d` default: `current`: Path to directory where secrets will be dropped of. For `current` with
-          subfolder folder, e.g: `/.config`
-    * `--config`
-        * short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
-          files.
+###### get
+
+* `--dest` short `-d` default: `current`: Path to directory where secrets will be dropped of. For `current` with
+  subfolder folder, e.g: `/.config`
+* `--config` short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
+  files.
+
+###### version
+
+* `--commit` short `-i` default: `false` : Get detailed information about this `nais-d` version
 
 #### Available configuration files
 
