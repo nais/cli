@@ -42,8 +42,8 @@ var aivenCommand = &cobra.Command{
 		}
 
 		aivenConfig := aiven.SetupAiven(aivenclient.SetupClient(), username, team, pool, secretName, expiry)
-		if err := aivenConfig.GenerateApplication(); err != nil {
-			return fmt.Errorf("an error occurred generating aivenApplication: %s", err)
+		if _, err := aivenConfig.GenerateApplication(); err != nil {
+			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
 		}
 		return nil
 	},
