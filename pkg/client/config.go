@@ -17,6 +17,10 @@ const (
 	KUBECONFIG = "KUBECONFIG"
 )
 
+type AivenClient struct {
+	ctrl.Client
+}
+
 func getConfig() *rest.Config {
 	// setup config file
 	var kubeconfig string
@@ -33,7 +37,7 @@ func getConfig() *rest.Config {
 	return configs
 }
 
-func SetupClient() ctrl.Client {
+func InitScheme(scheme *runtime.Scheme) {
 	err := clientgoscheme.AddToScheme(scheme)
 	if err != nil {
 		panic(err)
@@ -43,7 +47,10 @@ func SetupClient() ctrl.Client {
 	if err != nil {
 		panic(err)
 	}
+}
 
+func SetupClient() ctrl.Client {
+	InitScheme(scheme)
 	config := getConfig()
 	client, err := ctrl.New(config, ctrl.Options{
 		Scheme: scheme,
@@ -51,5 +58,5 @@ func SetupClient() ctrl.Client {
 	if err != nil {
 		panic(err)
 	}
-	return client
+	return &AivenClient{client}
 }

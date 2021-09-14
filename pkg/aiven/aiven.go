@@ -20,8 +20,10 @@ const (
 	MaxServiceUserNameLength = 64
 )
 
-type AivenConfiguration struct {
-	AivenProperties
+type Aiven struct {
+	Ctx    context.Context
+	Client kubeclient.Client
+	Props  AivenProperties
 }
 
 type AivenProperties struct {
@@ -33,66 +35,74 @@ type AivenProperties struct {
 	Expiry     int
 }
 
-func SetupAivenConfiguration(properties AivenProperties) *AivenConfiguration {
-	return &AivenConfiguration{properties}
+func SetupAiven(client kubeclient.Client, username, team, pool, secretName string, expiry int) *Aiven {
+	return &Aiven{
+		context.Background(),
+		client,
+		AivenProperties{
+			Username:   username,
+			Namespace:  team,
+			Pool:       pool,
+			SecretName: secretName,
+			Expiry:     expiry,
+		},
+	}
 }
 
-func (a *AivenConfiguration) GenerateApplication() error {
-	ctx := context.Background()
+func (a *Aiven) GenerateApplication() error {
 	client := aivenclient.SetupClient()
 
 	namespace := v1.Namespace{}
-	err := client.Get(ctx, kubeclient.ObjectKey{
-		Namespace: a.Namespace,
-		Name:      a.Namespace,
+	err := client.Get(a.Ctx, kubeclient.ObjectKey{
+		Name:      a.Props.Namespace,
 	}, &namespace)
 	if err != nil {
 		return err
 	}
-	a.Namespace = namespace.Name
+	a.Props.Namespace = namespace.Name
 
-	timeStamp := time.Now().AddDate(0, 0, a.Expiry).Format(time.RFC3339)
-	aivenApp := *a.CreateAivenApplication(timeStamp, a.SecretName)
+	timeStamp := time.Now().AddDate(0, 0, a.Props.Expiry).Format(time.RFC3339)
+	aivenApp := *a.CreateAivenApplication(timeStamp, a.Props.SecretName)
 
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
-	err = client.Get(ctx, kubeclient.ObjectKey{
-		Namespace: a.Namespace,
-		Name:      a.Username,
+	err = client.Get(a.Ctx, kubeclient.ObjectKey{
+		Namespace: a.Props.Namespace,
+		Name:      a.Props.Username,
 	}, &existingAivenApp)
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			fmt.Printf("Creating aivenApp %s\n", aivenApp.Name)
-			err = client.Create(ctx, &aivenApp)
+			err = client.Create(a.Ctx, &aivenApp)
 		}
 	} else {
 		fmt.Printf("Updating aivenApp %s\n", existingAivenApp.Name)
 		aivenApp.ResourceVersion = existingAivenApp.ResourceVersion
-		err = client.Update(ctx, &aivenApp)
+		err = client.Update(a.Ctx, &aivenApp)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("To get secret and config run cmd --> 'nais-d aiven get %s %s -c kcat'", aivenApp.Spec.SecretName, a.Namespace)
+	fmt.Printf("To get secret and config run cmd --> 'nais-d aiven get %s %s -c kcat'", aivenApp.Spec.SecretName, a.Props.Namespace)
 	return nil
 }
 
-func (c AivenConfiguration) CreateAivenApplication(timeStamp, secretName string) *aiven_nais_io_v1.AivenApplication {
+func (a Aiven) CreateAivenApplication(timeStamp, secretName string) *aiven_nais_io_v1.AivenApplication {
 	app := &aiven_nais_io_v1.AivenApplication{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       AivenKind,
 			APIVersion: AivenApiVersion,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      c.Username,
-			Namespace: c.Namespace,
+			Name:      a.Props.Username,
+			Namespace: a.Props.Namespace,
 		},
 		Spec: aiven_nais_io_v1.AivenApplicationSpec{
 			SecretName: "",
 			Protected:  DefaultProtected,
 			ExpiresAt:  timeStamp,
-			Kafka:      &aiven_nais_io_v1.KafkaSpec{Pool: c.Pool},
+			Kafka:      &aiven_nais_io_v1.KafkaSpec{Pool: a.Props.Pool},
 		},
 	}
 	err := SetSecretName(app, secretName)

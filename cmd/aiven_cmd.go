@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nais/nais-d/cmd/helpers"
 	"github.com/nais/nais-d/pkg/aiven"
+	aivenclient "github.com/nais/nais-d/pkg/client"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,6 @@ var aivenCommand = &cobra.Command{
 	Short: "Create a aivenApplication to your cluster",
 	Long:  `This command will apply a aivenApplication based on information given and avienator will create a set of credentials`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 
 		if len(args) != 2 {
 			return fmt.Errorf("%s %s %s : reqired arguments", cmd.CommandPath(), UsernameFlag, TeamFlag)
@@ -41,15 +41,7 @@ var aivenCommand = &cobra.Command{
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		aivenConfig := aiven.SetupAivenConfiguration(
-			aiven.AivenProperties{
-				Username:   username,
-				Namespace:  team,
-				Pool:       pool,
-				SecretName: secretName,
-				Expiry:     expiry,
-			},
-		)
+		aivenConfig := aiven.SetupAiven(aivenclient.SetupClient(), username, team, pool, secretName, expiry)
 		if err := aivenConfig.GenerateApplication(); err != nil {
 			return fmt.Errorf("an error occurred generating aivenApplication: %s", err)
 		}

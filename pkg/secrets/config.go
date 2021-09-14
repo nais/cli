@@ -7,31 +7,27 @@ import (
 	"github.com/nais/nais-d/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"os"
-	client2 "sigs.k8s.io/controller-runtime/pkg/client"
+	kubernetes "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
 	stdClient := client.SetupClient()
 	ctx := context.Background()
-	key := client2.ObjectKey{
-		Namespace: team,
-		Name:      team,
-	}
 
 	namespace := v1.Namespace{}
-	err := stdClient.Get(ctx, key, &namespace)
+	err := stdClient.Get(ctx, kubernetes.ObjectKey{
+		Name: team,
+	}, &namespace)
 	if err != nil {
 		fmt.Printf("an error %s", err)
 		os.Exit(1)
 	}
 
-	key2 := client2.ObjectKey{
+	secret := v1.Secret{}
+	err = stdClient.Get(ctx, kubernetes.ObjectKey{
 		Namespace: namespace.Name,
 		Name:      secretName,
-	}
-
-	secret := v1.Secret{}
-	err = stdClient.Get(ctx, key2, &secret)
+	}, &secret)
 	if err != nil {
 		fmt.Printf("an error %s", err)
 		os.Exit(1)
