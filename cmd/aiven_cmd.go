@@ -14,21 +14,19 @@ const (
 )
 
 var aivenCommand = &cobra.Command{
-	Use:   "aiven [commands] [args] [flags]",
+	Use:   "aiven [command] [args] [flags]",
 	Short: "Create a aivenApplication to your cluster",
 	Long:  `This command will apply a aivenApplication based on information given and avienator will create a set of credentials`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		username, err := helpers.GetString(cmd, UsernameFlag, args[0], true)
-		if err != nil {
-			return err
-		}
 
-		team, err := helpers.GetString(cmd, TeamFlag, args[1], true)
-		if err != nil {
-			return err
-		}
 
-		pool, _ := helpers.GetString(cmd, PoolFlag, "", false)
+		if len(args) != 2 {
+			return fmt.Errorf("%s %s %s : reqired arguments", cmd.CommandPath(), UsernameFlag, TeamFlag)
+		}
+		username := args[0]
+		team := args[1]
+
+		pool, _ := helpers.GetString(cmd, PoolFlag, false)
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
 			return fmt.Errorf("valid values for '--%s': %s | %s | %s", PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
 		}
@@ -38,7 +36,7 @@ var aivenCommand = &cobra.Command{
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		secretName, err := helpers.GetString(cmd, SecretNameFlag, "", false)
+		secretName, err := helpers.GetString(cmd, SecretNameFlag, false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}

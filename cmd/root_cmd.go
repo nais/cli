@@ -15,7 +15,7 @@ var (
 	BUILT_BY string
 
 	rootCmd = &cobra.Command{
-		Use:   "nais-d [commands] [args] [flags]",
+		Use:   "nais-d [command] [args] [flags]",
 		Short: "A simple nais client to generate resources for debug",
 		Long: `nais-d is a CLI. 
 This application is a tool to generate the needed files to quickly start debugging your nais resources.`,
@@ -60,12 +60,6 @@ func initConfig() {
 }
 
 func initAivenCmd() {
-	aivenCommand.Flags().StringP(UsernameFlag, "u", "", "Username for the aivenApplication configuration (required)")
-	viper.BindPFlag(UsernameFlag, aivenCommand.Flags().Lookup(UsernameFlag))
-
-	aivenCommand.Flags().StringP(TeamFlag, "t", "", "Namespace-namespace that the user have access to (required)")
-	viper.BindPFlag(TeamFlag, aivenCommand.Flags().Lookup(TeamFlag))
-
 	aivenCommand.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
 	viper.BindPFlag(PoolFlag, aivenCommand.Flags().Lookup(PoolFlag))
 
@@ -84,12 +78,6 @@ func initVersionCmd() {
 }
 
 func initGetCmd() {
-	getCmd.Flags().StringP(SecretNameFlag, "s", "", "Secret-name specified for aiven application (required)")
-	viper.BindPFlag(SecretNameFlag, getCmd.Flags().Lookup(SecretNameFlag))
-
-	getCmd.Flags().StringP(TeamFlag, "t", "", "Namespace-namespace that the user have access to (required)")
-	viper.BindPFlag(TeamFlag, getCmd.Flags().Lookup(TeamFlag))
-
 	getCmd.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
 	viper.BindPFlag(DestFlag, getCmd.Flags().Lookup(DestFlag))
 

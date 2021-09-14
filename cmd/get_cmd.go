@@ -11,21 +11,18 @@ import (
 
 var getCmd = &cobra.Command{
 	Use:   "get [args] [flags]",
-	Short: "The specified config format will get the secret and generated to 'current' location",
+	Short: "Returns the specified config format from a protected secret and generates credentials to 'current' location",
 	Run: func(cmd *cobra.Command, args []string) {
-		secretName, err := helpers.GetString(cmd, SecretNameFlag, args[0], true)
-		if err != nil {
-			fmt.Printf("getting %s: %s", SecretNameFlag, err)
+
+		if len(args) != 2 {
+			fmt.Printf("%s and %s is reqired arguments", SecretNameFlag, TeamFlag)
 			os.Exit(1)
 		}
 
-		team, err := helpers.GetString(cmd, TeamFlag, args[1], true)
-		if err != nil {
-			fmt.Printf("getting %s: %s", SecretNameFlag, err)
-			os.Exit(1)
-		}
+		secretName := args[0]
+		team := args[1]
 
-		configType, err := helpers.GetString(cmd, ConfigFlag, "", false)
+		configType, err := helpers.GetString(cmd, ConfigFlag, false)
 		if err != nil {
 			fmt.Printf("getting %s: %s", ConfigFlag, err)
 			os.Exit(1)
@@ -36,7 +33,7 @@ var getCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		dest, err := helpers.GetString(cmd, DestFlag, "", false)
+		dest, err := helpers.GetString(cmd, DestFlag, false)
 		if err != nil {
 			fmt.Printf("getting %s: %s", DestFlag, err)
 			os.Exit(1)

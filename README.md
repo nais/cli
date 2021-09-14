@@ -77,19 +77,15 @@ For help on individual commands, add `--help` short: `-h`.
 
 ###### aiven
 
-* `username` can be passed as argument, flags or environment variables.
-    * `--username` short `-u`: Prefix before `@nav.no`.
+* `username` must be passed as **fist** argument after command: Prefix before `@nav.no`.
 
-* `team` can be passed as argument, flags or as environment variables.
-    * `--team` short `-t`: team-namespace (default namespace not supported).
+* `team` must be passed as **second** argument after command: team-namespace (default namespace not supported).
 
 ###### get
 
-* `secret-name` can be passed as argument, flags or as environment variables.
-    * `--secret-name` short `-s`: Secret-name for your aiven application.
+* `secret-name` must be passed as **fist** argument after command, Secret-name for your aiven application.
 
-* `team` can be passed as argument, flags or as environment variables.
-    * `--team` short `-t`: team-namespace (default namespace not supported).
+* `team` must be passed as **second** argument after command, team-namespace (default namespace not supported).
 
 ##### Optional
 
@@ -105,6 +101,7 @@ For help on individual commands, add `--help` short: `-h`.
 
 * `--dest` short `-d` default: `current`: Path to directory where secrets will be dropped of. For `current` with
   subfolder folder, e.g: `/.config`
+
 * `--config` short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
   files.
 

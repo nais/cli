@@ -1,14 +1,15 @@
 package aiven
 
 import (
+	"context"
 	"fmt"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
 	aivenclient "github.com/nais/nais-d/pkg/client"
+	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
+	kubeclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
 
@@ -37,50 +38,43 @@ func SetupAivenConfiguration(properties AivenProperties) *AivenConfiguration {
 }
 
 func (a *AivenConfiguration) GenerateApplication() error {
-	client, err := aivenclient.NewForConfig()
-	stdClient := aivenclient.StandardClient()
-	if err != nil {
-		return fmt.Errorf("could not setup kubernetes client %s", err)
-	}
+	ctx := context.Background()
+	client := aivenclient.SetupClient()
 
-	namespace, err := stdClient.CoreV1().Namespaces().Get(a.Namespace, metav1.GetOptions{})
+	namespace := v1.Namespace{}
+	err := client.Get(ctx, kubeclient.ObjectKey{
+		Namespace: a.Namespace,
+		Name:      a.Namespace,
+	}, &namespace)
 	if err != nil {
 		return err
 	}
 	a.Namespace = namespace.Name
 
 	timeStamp := time.Now().AddDate(0, 0, a.Expiry).Format(time.RFC3339)
-	createApp := *a.CreateAivenApplication(timeStamp, a.SecretName)
+	aivenApp := *a.CreateAivenApplication(timeStamp, a.SecretName)
 
-	update := true
-	existingAivenApp, err := client.Aiven(a.Namespace).Get(a.Username, metav1.GetOptions{})
+	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
+	err = client.Get(ctx, kubeclient.ObjectKey{
+		Namespace: a.Namespace,
+		Name:      a.Username,
+	}, &existingAivenApp)
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
-			createdApp, err := client.Aiven(a.Namespace).Create(&createApp)
-			if err != nil {
-				return err
-			}
-			update = false
-			fmt.Printf("app: %s created\n", createdApp.Name)
-		} else {
-			return err
+			fmt.Printf("Creating aivenApp %s\n", aivenApp.Name)
+			err = client.Create(ctx, &aivenApp)
 		}
+	} else {
+		fmt.Printf("Updating aivenApp %s\n", existingAivenApp.Name)
+		aivenApp.ResourceVersion = existingAivenApp.ResourceVersion
+		err = client.Update(ctx, &aivenApp)
 	}
 
-	if update {
-		err := CopyMeta(existingAivenApp, &createApp)
-		if err != nil {
-			return err
-		}
-		createApp.Spec.ExpiresAt = existingAivenApp.Spec.ExpiresAt
-		updatedApp, err := client.Aiven(a.Namespace).Update(&createApp)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("aivenApp %s configured\n", updatedApp.Name)
+	if err != nil {
+		return err
 	}
 
-	fmt.Printf("To get secret and config run cmd --> 'nais-d aiven get %s %s -c kcat'", createApp.Spec.SecretName, a.Namespace)
+	fmt.Printf("To get secret and config run cmd --> 'nais-d aiven get %s %s -c kcat'", aivenApp.Spec.SecretName, a.Namespace)
 	return nil
 }
 
@@ -127,24 +121,4 @@ func setSecretName(aivenApp *aiven_nais_io_v1.AivenApplication) (string, error) 
 
 func SecretNamePrefix(username, team string) string {
 	return fmt.Sprintf("%s-%s", team, username)
-}
-
-// CopyMeta copies resource metadata from one resource to another.
-// used when updating existing resources in the cluster.
-func CopyMeta(src, dst runtime.Object) error {
-	srcacc, err := meta.Accessor(src)
-	if err != nil {
-		return err
-	}
-
-	dstacc, err := meta.Accessor(dst)
-	if err != nil {
-		return err
-	}
-
-	dstacc.SetResourceVersion(srcacc.GetResourceVersion())
-	dstacc.SetUID(srcacc.GetUID())
-	dstacc.SetSelfLink(srcacc.GetSelfLink())
-
-	return err
 }
