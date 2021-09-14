@@ -38,3 +38,15 @@ brews:
     bin.install "nais-d"
   test: |
     assert_match version, shell_output("#{bin}/nais-d version")
+nfpms:
+  -
+    package_name: nais-d
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}"
+    vendor: NAV / nais team
+    homepage: "https://github.com/nais/nais-d"
+    maintainer: NAV / nais team
+    description: "Simple Aiven Kafka Debug Cli"
+    license: MIT
+    formats:
+      - deb
+    version_metadata: git
