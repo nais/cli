@@ -2,12 +2,14 @@
 title nais-d
 
 actor developer as "Developer"
+control cli as "Cli"
 control kubernetes as "Kubernetes"
 control aivenator as "Aivenator"
 control kafkarator as "Kafkarator"
 boundary aiven as "Aiven"
 
-developer -> kubernetes : nais-d aiven my-user my-team
+developer -> cli : nais-d aiven my-user my-team
+cli -> kubernetes : add or update
 
 loop aivenator until success
 kubernetes -> aivenator : Protected AivenApplication resource created/updated
@@ -30,5 +32,10 @@ kafkarator -> aiven : Create and/or delete ACLs
 kafkarator -> kubernetes : Write back status and sync hash
 note right: RolloutComplete
 end
+
+developer -> cli : nais-d aiven get my-secret-name my-team
+cli -> kubernetes : extract credentials
+cli <- kubernetes : credentials
+developer <- cli : save to current
 
 @enduml

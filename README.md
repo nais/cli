@@ -61,8 +61,8 @@ be used to debug an Aiven hosted kafka topic. `aiven get` command extracts the f
 puts them in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
 
 To gain access be sure to update
-your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs and
-add `username` to your `Topic`.yaml ACLs and apply to your namespace.
+your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs add `username`
+to your `Topic`.yaml ACLs and apply to your namespace.
 
 When secrets is extracted you can install and use [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly
 known as kafkacat) in preferred way.
