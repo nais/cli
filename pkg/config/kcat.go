@@ -5,6 +5,7 @@ import (
 	"github.com/nais/nais-d/pkg/common"
 	"github.com/nais/nais-d/pkg/consts"
 	"io/ioutil"
+	v1 "k8s.io/api/core/v1"
 	"time"
 )
 
@@ -18,30 +19,40 @@ const (
 	KafkaCatConfigName = "kcat.conf"
 )
 
+func NewKCatConfig(secret *v1.Secret, dest string) Config {
+	return &KCat{
+		Config:     "",
+		Secret:     secret,
+		PrefixPath: dest,
+	}
+}
+
 type KCat struct {
-	Config string
+	Config     string
+	Secret     *v1.Secret
+	PrefixPath string
 }
 
 func (k *KCat) Init() {
 	k.Config += fmt.Sprintf("# nais-d %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
 }
 
-func (k *KCat) Finit(destination string) error {
+func (k *KCat) Finit() error {
 	k.Config += "security.protocol=ssl\n"
-	if err := k.WriteConfig(common.Destination(destination, KafkaCatConfigName)); err != nil {
+	if err := k.Write(); err != nil {
 		return fmt.Errorf("could not write %s to file: %s", KafkaCatConfigName, err)
 	}
 	return nil
 }
 
-func (k *KCat) WriteConfig(dest string) error {
-	if err := ioutil.WriteFile(dest, []byte(k.Config), FilePermission); err != nil {
+func (k *KCat) Write() error {
+	if err := ioutil.WriteFile(common.Destination(k.PrefixPath, KafkaCatConfigName), []byte(k.Config), FilePermission); err != nil {
 		return fmt.Errorf("could not write kafka.config to file: %s", err)
 	}
 	return nil
 }
 
-func (k *KCat) Update(key string, value []byte, destination string) {
+func (k *KCat) Set(key string, value []byte, destination string) {
 	if destination == "" {
 		k.Config += fmt.Sprintf("%s=%s\n", key, string(value))
 	} else {
@@ -49,31 +60,45 @@ func (k *KCat) Update(key string, value []byte, destination string) {
 	}
 }
 
-func (k *KCat) KcatGenerate(key string, value []byte, dest string) error {
-	switch key {
-	case consts.KafkaCertificate:
-		if err := common.WriteToFile(dest, consts.KafkaCertificateCrtFile, value); err != nil {
+func (k *KCat) Generate() error {
+	for key, value := range k.Secret.Data {
+		if err := k.toFile(key, value); err != nil {
 			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
 		}
-		k.Update(KafkaCatSslCertificateLocation, value, common.Destination(dest, consts.KafkaCertificateCrtFile))
-
-	case consts.KafkaPrivateKey:
-		if err := common.WriteToFile(dest, consts.KafkaPrivateKeyPemFile, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
-		}
-		k.Update(KafkaCatSslKeyLocation, value, common.Destination(dest, consts.KafkaPrivateKeyPemFile))
-
-	case consts.KafkaCa:
-		if err := common.WriteToFile(dest, consts.KafkaCACrtFile, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
-		}
-		k.Update(KafkaCatSslCaLocation, value, common.Destination(dest, consts.KafkaCACrtFile))
-
-	case consts.KafkaBrokers:
-		k.Update(KafkaCatBootstrapServers, value, "")
-
-	case consts.KafkaCredStorePassword:
-		k.Update(KafkaCateKeyPassword, value, "")
+		k.toEnv(key, value)
 	}
 	return nil
+}
+
+func (k *KCat) toFile(key string, value []byte) error {
+	path := k.PrefixPath
+	switch key {
+	case consts.KafkaCertificate:
+		if err := common.WriteToFile(path, consts.KafkaCertificateCrtFile, value); err != nil {
+			return err
+		}
+		k.Set(KafkaCatSslCertificateLocation, value, common.Destination(path, consts.KafkaCertificateCrtFile))
+
+	case consts.KafkaPrivateKey:
+		if err := common.WriteToFile(path, consts.KafkaPrivateKeyPemFile, value); err != nil {
+			return err
+		}
+		k.Set(KafkaCatSslKeyLocation, value, common.Destination(path, consts.KafkaPrivateKeyPemFile))
+
+	case consts.KafkaCa:
+		if err := common.WriteToFile(path, consts.KafkaCACrtFile, value); err != nil {
+			return err
+		}
+		k.Set(KafkaCatSslCaLocation, value, common.Destination(path, consts.KafkaCACrtFile))
+	}
+	return nil
+}
+
+func (k *KCat) toEnv(key string, value []byte) {
+	if key == consts.KafkaBrokers {
+		k.Set(KafkaCatBootstrapServers, value, "")
+	}
+	if key == consts.KafkaCredStorePassword {
+		k.Set(KafkaCateKeyPassword, value, "")
+	}
 }

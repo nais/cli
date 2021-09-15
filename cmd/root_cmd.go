@@ -17,8 +17,8 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "nais-d [command] [args] [flags]",
 		Short: "A simple nais client to generate resources for debug",
-		Long: `nais-d is a CLI. 
-This application is a tool to generate the needed files to quickly start debugging your nais resources.`,
+		Long: `nais-d debug CLI. 
+This is a nais-debug-tool to extract secrets from cluster to quickly start debugging your nais resources.`,
 	}
 )
 

@@ -113,16 +113,6 @@ For help on individual commands, add `--help` short: `-h`.
 
 After Successful `nais-d` command a set of files will be available in `current` folder.
 
-##### All
-
-- client-keystore.p12
-- client-truststore.jks
-- kafka-ca.cert
-- kafka-certificate.crt
-- kafka-private-key.pem
-- kafka-secret.env
-- kcat.conf
-
 ##### .env
 
 - client-keystore.p12
@@ -166,6 +156,16 @@ bootstrap.servers=https://boostrap-server.aivencloud.com:26484
 ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.cert
 security.protocol=ssl
 ```
+
+##### All
+
+- client-keystore.p12
+- client-truststore.jks
+- kafka-ca.cert
+- kafka-certificate.crt
+- kafka-private-key.pem
+- kafka-secret.env
+- kcat.conf
 
 `kcat.conf` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to authenticate
 against the Aiven hosted topics in GCP.

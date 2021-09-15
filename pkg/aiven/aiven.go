@@ -8,7 +8,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	kubeclient "sigs.k8s.io/controller-runtime/pkg/client"
+	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
 
@@ -21,7 +21,7 @@ const (
 
 type Aiven struct {
 	Ctx    context.Context
-	Client kubeclient.Client
+	Client ctrl.Client
 	Props  AivenProperties
 }
 
@@ -34,7 +34,7 @@ type AivenProperties struct {
 	Expiry     int
 }
 
-func SetupAiven(client kubeclient.Client, username, team, pool, secretName string, expiry int) *Aiven {
+func SetupAiven(client ctrl.Client, username, team, pool, secretName string, expiry int) *Aiven {
 	return &Aiven{
 		context.Background(),
 		client,
@@ -50,7 +50,7 @@ func SetupAiven(client kubeclient.Client, username, team, pool, secretName strin
 
 func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
 	namespace := v1.Namespace{}
-	err := a.Client.Get(a.Ctx, kubeclient.ObjectKey{
+	err := a.Client.Get(a.Ctx, ctrl.ObjectKey{
 		Name: a.Props.Namespace,
 	}, &namespace)
 	if err != nil {
@@ -62,17 +62,15 @@ func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error
 	aivenApp := *a.CreateAivenApplication(timeStamp, a.Props.SecretName)
 
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
-	err = a.Client.Get(a.Ctx, kubeclient.ObjectKey{
+	err = a.Client.Get(a.Ctx, ctrl.ObjectKey{
 		Namespace: a.Props.Namespace,
 		Name:      a.Props.Username,
 	}, &existingAivenApp)
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
-			fmt.Printf("Creating aivenApp %s\n", aivenApp.Name)
 			err = a.Client.Create(a.Ctx, &aivenApp)
 		}
 	} else {
-		fmt.Printf("Updating aivenApp %s\n", existingAivenApp.Name)
 		aivenApp.ResourceVersion = existingAivenApp.ResourceVersion
 		err = a.Client.Update(a.Ctx, &aivenApp)
 	}
@@ -80,8 +78,6 @@ func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("To get secret and config run cmd --> 'nais-d aiven get %s %s -c kcat'", aivenApp.Spec.SecretName, a.Props.Namespace)
 	return &aivenApp, nil
 }
 

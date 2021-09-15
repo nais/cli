@@ -5,7 +5,9 @@ import (
 	"github.com/nais/nais-d/pkg/common"
 	"github.com/nais/nais-d/pkg/consts"
 	"io/ioutil"
+	v1 "k8s.io/api/core/v1"
 	"strings"
+	"time"
 )
 
 const (
@@ -13,25 +15,39 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-type KafkaGeneralEnvironment struct {
-	Envs string
+func NewEnvConfig(secret *v1.Secret, dest string) Config {
+	return &KafkaEnvironment{
+		Envs:       "",
+		Secret:     secret,
+		PrefixPath: dest,
+	}
 }
 
-func (k *KafkaGeneralEnvironment) Finit(destination string) error {
-	if err := k.WriteConfig(common.Destination(destination, KafkaSchemaRegistryEnvName)); err != nil {
+type KafkaEnvironment struct {
+	Envs       string
+	Secret     *v1.Secret
+	PrefixPath string
+}
+
+func (k *KafkaEnvironment) Init() {
+	k.Envs += fmt.Sprintf("# nais-d %s\n# .env\n", time.Now().Truncate(time.Minute))
+}
+
+func (k *KafkaEnvironment) Finit() error {
+	if err := k.Write(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (k *KafkaGeneralEnvironment) WriteConfig(dest string) error {
-	if err := ioutil.WriteFile(dest, []byte(k.Envs), FilePermission); err != nil {
+func (k *KafkaEnvironment) Write() error {
+	if err := ioutil.WriteFile(common.Destination(k.PrefixPath, KafkaSchemaRegistryEnvName), []byte(k.Envs), FilePermission); err != nil {
 		return fmt.Errorf("could not write envs to file: %s", err)
 	}
 	return nil
 }
 
-func (k *KafkaGeneralEnvironment) Set(key string, value []byte, destination string) {
+func (k *KafkaEnvironment) Set(key string, value []byte, destination string) {
 	if destination == "" {
 		k.Envs += fmt.Sprintf("%s: %s\n", key, string(value))
 	} else {
@@ -39,48 +55,60 @@ func (k *KafkaGeneralEnvironment) Set(key string, value []byte, destination stri
 	}
 }
 
-func (k *KafkaGeneralEnvironment) Generate(key string, value []byte, dest string) error {
-	switch key {
-	case consts.KafkaCertificate:
-		if err := common.WriteToFile(dest, consts.KafkaCertificateCrtFile, value); err != nil {
+func (k *KafkaEnvironment) Generate() error {
+	for key, value := range k.Secret.Data {
+		if err := k.toFile(key, value); err != nil {
 			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
 		}
-		k.Set(key, value, common.Destination(dest, consts.KafkaCertificateCrtFile))
-
-	case consts.KafkaPrivateKey:
-		if err := common.WriteToFile(dest, consts.KafkaPrivateKeyPemFile, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
-		}
-		k.Set(key, value, common.Destination(dest, consts.KafkaPrivateKeyPemFile))
-
-	case consts.KafkaCa:
-		if err := common.WriteToFile(dest, consts.KafkaCACrtFile, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
-		}
-		k.Set(key, value, common.Destination(dest, consts.KafkaCACrtFile))
-
-	case consts.KafkaBrokers:
-		k.Set(key, value, "")
-
-	case consts.KafkaCredStorePassword:
-		k.Set(key, value, "")
-
-	case consts.KafkaClientKeystoreP12:
-		if err := common.WriteToFile(dest, consts.KafkaClientKeyStoreP12File, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", k, err)
-		}
-		k.Set(key, value, common.Destination(dest, consts.KafkaClientKeyStoreP12File))
-
-	case consts.KafkaClientTruststoreJks:
-		if err := common.WriteToFile(dest, consts.KafkaClientTruststoreJksFile, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", k, err)
-		}
-		k.Set(key, value, common.Destination(dest, consts.KafkaClientTruststoreJksFile))
+		k.toEnv(key, value)
 	}
+	return nil
+}
 
+func (k *KafkaEnvironment) toEnv(key string, value []byte) {
+	if key == consts.KafkaBrokers {
+		k.Set(key, value, "")
+	}
+	if key == consts.KafkaCredStorePassword {
+		k.Set(key, value, "")
+	}
 	if strings.HasPrefix(key, consts.KafkaSchemaRegistry) {
 		k.Set(key, value, "")
 	}
+}
 
+func (k *KafkaEnvironment) toFile(key string, value []byte) error {
+	path := k.PrefixPath
+	switch key {
+	case consts.KafkaCertificate:
+		if err := common.WriteToFile(path, consts.KafkaCertificateCrtFile, value); err != nil {
+			return err
+		}
+		k.Set(key, value, common.Destination(path, consts.KafkaCertificateCrtFile))
+
+	case consts.KafkaPrivateKey:
+		if err := common.WriteToFile(path, consts.KafkaPrivateKeyPemFile, value); err != nil {
+			return err
+		}
+		k.Set(key, value, common.Destination(path, consts.KafkaPrivateKeyPemFile))
+
+	case consts.KafkaCa:
+		if err := common.WriteToFile(path, consts.KafkaCACrtFile, value); err != nil {
+			return err
+		}
+		k.Set(key, value, common.Destination(path, consts.KafkaCACrtFile))
+
+	case consts.KafkaClientKeystoreP12:
+		if err := common.WriteToFile(path, consts.KafkaClientKeyStoreP12File, value); err != nil {
+			return err
+		}
+		k.Set(key, value, common.Destination(path, consts.KafkaClientKeyStoreP12File))
+
+	case consts.KafkaClientTruststoreJks:
+		if err := common.WriteToFile(path, consts.KafkaClientTruststoreJksFile, value); err != nil {
+			return err
+		}
+		k.Set(key, value, common.Destination(path, consts.KafkaClientTruststoreJksFile))
+	}
 	return nil
 }

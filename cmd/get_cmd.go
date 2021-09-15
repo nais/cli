@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/nais/nais-d/cmd/helpers"
 	"github.com/nais/nais-d/pkg/consts"
-	"github.com/nais/nais-d/pkg/secrets"
+	"github.com/nais/nais-d/pkg/secret"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -44,6 +44,6 @@ var getCmd = &cobra.Command{
 			fmt.Printf("an error %s", err)
 			os.Exit(1)
 		}
-		secrets.ExtractAndGenerateConfig(configType, dest, secretName, team)
+		secret.ExtractAndGenerateConfig(configType, dest, secretName, team)
 	},
 }
