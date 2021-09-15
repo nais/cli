@@ -9,6 +9,7 @@ import (
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 	"time"
 )
 
@@ -119,7 +120,7 @@ func SetSecretName(aivenApp *aiven_nais_io_v1.AivenApplication, secretName strin
 }
 
 func setSecretName(aivenApp *aiven_nais_io_v1.AivenApplication) (string, error) {
-	return namegen.ShortName(secretNamePrefix(aivenApp.Namespace, aivenApp.Name), MaxServiceUserNameLength)
+	return namegen.ShortName(secretNamePrefix(aivenApp.Namespace, strings.ReplaceAll(aivenApp.Name, ".", "-")), MaxServiceUserNameLength)
 }
 
 func secretNamePrefix(username, team string) string {
