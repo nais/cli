@@ -68,7 +68,7 @@ func ConfigAll(secret *v1.Secret, dest string) error {
 	if err != nil {
 		return err
 	}
-	kCatConfig.Generate()
+	err = kCatConfig.Generate()
 	if err != nil {
 		return err
 	}
