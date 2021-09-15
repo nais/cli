@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/nais/nais-d/cmd/helpers"
-	"github.com/nais/nais-d/pkg/consts"
+	"github.com/nais/nais-d/pkg/config"
 	"github.com/nais/nais-d/pkg/secret"
 	"github.com/spf13/cobra"
 	"os"
@@ -28,8 +28,8 @@ var getCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if configType != consts.ENV && configType != consts.ALL && configType != consts.KCAT {
-			fmt.Printf("valid args: %s | %s | %s", consts.ENV, consts.KCAT, consts.ALL)
+		if configType != config.ENV && configType != config.ALL && configType != config.KCAT {
+			fmt.Printf("valid args: %s | %s | %s", config.ENV, config.KCAT, config.ALL)
 			os.Exit(1)
 		}
 

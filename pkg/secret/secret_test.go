@@ -50,7 +50,7 @@ func TestConfig(t *testing.T) {
 	tempDir, err := ioutil.TempDir(os.TempDir(), "test-")
 	assert.NoError(t, err)
 
-	err = Config(secret, tempDir, consts.ALL)
+	err = Config(secret, tempDir, config.ALL)
 	assert.NoError(t, err)
 
 	// Test kafka.env file created

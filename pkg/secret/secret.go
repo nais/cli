@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/nais/nais-d/pkg/client"
 	"github.com/nais/nais-d/pkg/config"
-	"github.com/nais/nais-d/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"os"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -41,7 +40,7 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
 
 	// check is annotations match with protected and time-limited otherwise you could use any secret!
 	if !hasAnnotation(secret, AivenatorProtectedAnnotation) || !hasAnnotation(secret, AivenatorProtectedExpireAtAnnotation) {
-		fmt.Printf("secret is missing annotations: '%s' and '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
+		fmt.Printf("secret is missing annotations: '%s' or '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 		os.Exit(1)
 	}
 
@@ -86,7 +85,7 @@ func ConfigAll(secret *v1.Secret, dest string) error {
 func Config(secret *v1.Secret, dest, typeConfig string) error {
 	switch typeConfig {
 
-	case consts.ENV:
+	case config.ENV:
 		kafkaEnv := config.NewEnvConfig(secret, dest)
 		kafkaEnv.Init()
 		err := kafkaEnv.Generate()
@@ -97,7 +96,7 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 		if err := kafkaEnv.Finit(); err != nil {
 			return err
 		}
-	case consts.KCAT:
+	case config.KCAT:
 		kCatConfig := config.NewKCatConfig(secret, dest)
 		kCatConfig.Init()
 		err := kCatConfig.Generate()
@@ -109,7 +108,7 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 			return err
 		}
 
-	case consts.ALL:
+	case config.ALL:
 		err := ConfigAll(secret, dest)
 		if err != nil {
 			return fmt.Errorf("generate all configs: %s", err)

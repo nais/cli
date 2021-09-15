@@ -16,9 +16,3 @@ const (
 	KafkaClientKeystoreP12   = "client.keystore.p12"
 	KafkaClientTruststoreJks = "client.truststore.jks"
 )
-
-const (
-	ENV  = ".env"
-	KCAT = "kcat"
-	ALL  = "all"
-)
