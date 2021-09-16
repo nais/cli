@@ -16,12 +16,10 @@ secret.yml
 # IntelliJ
 .idea/
 
-# Go modules
-go.sum
-
 # Generated documentation
 /doc/output
 
 .config/
 
 tool/
+dist/

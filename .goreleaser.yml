@@ -7,10 +7,9 @@ builds:
     - darwin
   goarch:
     - amd64
-    - arm64
   id: "nais-d"
   dir: .
-  main: ./main/nais-d
+  main: ./main/nais_d
   binary: nais-d
   ldflags:
     - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser

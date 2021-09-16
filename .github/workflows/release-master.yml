@@ -2,7 +2,7 @@ name: Release master
 
 on:
   repository_dispatch:
-    types: [ elease-nais-d ]
+    types: [ release-nais-d ]
 
 jobs:
   release:
