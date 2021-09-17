@@ -42,9 +42,6 @@ jobs:
       - set-version
       - test
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PUSH_TOKEN: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v2
@@ -66,6 +63,16 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release -f .goreleaser.yml --rm-dist --debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUSH_TOKEN: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+
+      - name: Checkout nais-yaml
+        uses: actions/checkout@v2
+        with:
+          repository: nais/nais-ppa
+          token: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+          path: pparepo
 
       - name: Add new deb to ppa
         id: update_ppa
@@ -74,15 +81,14 @@ jobs:
           EMAIL: aura@nav.no
         run: |
           echo "Version ${VERSION} was released, adding to PPA"
-          git clone https://${PUSH_TOKEN}@github.com/nais/nais-ppa.git pparepo
           cd pparepo
 
           # Fetch latest deb
           wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
 
           # Commit and push changes
-          git config user.email "${EMAIL}"
-          git config user.name "nais-cli pipeline"
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add nais_${VERSION}.deb
           git --no-pager diff --cached
           git commit --all --message "Add version ${VERSION} of nais-cli"
