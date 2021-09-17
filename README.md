@@ -16,7 +16,7 @@ Be sure to set
 export KUBECONFIG="<path-to>/kubeconfigs/config"
 ```
 
-More info in [kubeconfigs](https://github.com/navikt/kubeconfigs)
+[kubeconfigs](https://github.com/navikt/kubeconfigs) for more info.
 
 ## Install
 
@@ -46,11 +46,17 @@ nais-cli [commands] [args] [flags]
 
 ## Commands
 
+### Commands & Flags
+
+Flags provide modifiers to control how the action command operates.
+
+For help on individual commands, add `--help` short: `-h`.
+
 Available commands:
 
 - aiven
+    - get
 - version
-- get
 
 ### aiven
 
@@ -67,15 +73,9 @@ to your `Topic`.yaml ACLs and apply to your namespace.
 When secrets is extracted you can install and use [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly
 known as kafkacat) in preferred way.
 
-#### Commands & Flags
+#### Required
 
-Flags provide modifiers to control how the action command operates.
-
-For help on individual commands, add `--help` short: `-h`.
-
-##### Required
-
-###### aiven
+#### aiven
 
 * `username` must be passed as **fist** argument after command: Prefix before `@nav.no`.
 
@@ -87,9 +87,9 @@ For help on individual commands, add `--help` short: `-h`.
 
 * `team` must be passed as **second** argument after command, team-namespace (default namespace not supported).
 
-##### Optional
+#### Optional
 
-###### aiven
+##### aiven
 
 * `--pool` short `-p` default: `nav-dev`: Preferred kafka pool.
 
@@ -105,7 +105,9 @@ For help on individual commands, add `--help` short: `-h`.
 * `--config` short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
   files.
 
-###### version
+### version
+
+#### Optional
 
 * `--commit` short `-i` default: `false` : Get detailed information about this `nais-cli` version
 

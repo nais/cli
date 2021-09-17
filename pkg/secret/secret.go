@@ -97,7 +97,7 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 		if err := kafkaEnv.Finit(); err != nil {
 			return err
 		}
-		log.Default().Printf("%s and secrets generated: %s", typeConfig, dest)
+		log.Default().Printf("%s and secrets (%s) generated: %s.", typeConfig, secret.Name, dest)
 	case config.KCAT:
 		kCatConfig := config.NewKCatConfig(secret, dest)
 		kCatConfig.Init()
@@ -109,13 +109,13 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 		if err := kCatConfig.Finit(); err != nil {
 			return err
 		}
-		log.Default().Printf("%s and secrets generated: %s", typeConfig, dest)
+		log.Default().Printf("%s and secrets (%s) generated: %s.", typeConfig, secret.Name, dest)
 	case config.ALL:
 		err := ConfigAll(secret, dest)
 		if err != nil {
 			return fmt.Errorf("generate all configs: %s", err)
 		}
-		log.Default().Printf("all configs and secrets generated: %s", dest)
+		log.Default().Printf("%s configs and secrets (%s) generated: %s.", typeConfig, secret.Name, dest)
 	}
 	return nil
 }
