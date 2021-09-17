@@ -6,6 +6,7 @@ import (
 	"github.com/nais/nais-cli/pkg/aiven"
 	aivenclient "github.com/nais/nais-cli/pkg/client"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 const (
@@ -44,9 +45,11 @@ nais-cli aiven username namespace -e 10 | nais-cli aiven username namespace -s s
 		}
 
 		aivenConfig := aiven.SetupAiven(aivenclient.SetupClient(), username, team, pool, secretName, expiry)
-		if _, err := aivenConfig.GenerateApplication(); err != nil {
+		aivenApp, err := aivenConfig.GenerateApplication()
+		if err != nil {
 			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
 		}
+		log.Default().Printf("use: '%s get %s %s'", cmd.CommandPath(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }
