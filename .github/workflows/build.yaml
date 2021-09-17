@@ -1,0 +1,87 @@
+name: Build
+on: push
+
+jobs:
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: set version
+        id: set-version
+        run: |
+          echo Faking a Semantic Version
+          echo ::set-output name=version::1.$(date "+%Y%m%d.%H%M%S")
+
+  build:
+    needs:
+      - set-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Test Go
+        run: |
+          go mod tidy -v
+          go test ./... -count=1 -coverprofile cover.out -short
+
+  release-candidate:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs:
+      - set-version
+      - build
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Create tag
+        run: |
+          git tag ${{ needs.set-version.outputs.version }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release -f .goreleaser.yml --rm-dist
+
+      - name: Add new deb to ppa
+        id: update_ppa
+        env:
+          VERSION: ${{ needs.set-version.outputs.version }}
+          PUSH_KEY: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+          EMAIL: aura@nav.no
+        run: |
+          echo "Version ${VERSION} was released, adding to PPA"
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "${PUSH_KEY}"
+          git clone git@github.com:nais/nais-ppa.git pparepo
+          cd pparepo
+
+          # Fetch latest deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais-d_${VERSION}.deb
+
+          # Commit and push changes
+          git config user.email "${EMAIL}"
+          git config user.name "nais-d pipeline"
+          git add nais-d_${VERSION}.deb
+          git --no-pager diff --cached
+          git commit --all --message "Add version ${VERSION} of nais-d"
+          git push

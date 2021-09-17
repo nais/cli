@@ -1,12 +1,13 @@
 project_name: nais-d
 builds:
-- env: [CGO_ENABLED=0, VERSION=v0.0.2]
+- env: [CGO_ENABLED=0]
   goos:
     - linux
     - windows
     - darwin
   goarch:
     - amd64
+    - arm64
   id: "nais-d"
   dir: .
   main: ./main/nais_d
@@ -25,6 +26,8 @@ release:
   github:
     owner: nais
     name: nais-d
+  header: |
+    ## nais-d ({{ .Version }})
 brews:
 - tap:
     owner: nais
