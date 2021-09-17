@@ -32,7 +32,7 @@ func ValidateNamespace(ctx context.Context, client ctrl.Client, name string, nam
 		Name: name,
 	}, namespace)
 	if err != nil {
-		return fmt.Errorf("getting namespace")
+		return fmt.Errorf("getting namespace: %s", err)
 	}
 	return nil
 }

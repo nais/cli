@@ -6,6 +6,7 @@ import (
 	"github.com/nais/nais-cli/pkg/secret"
 	"github.com/spf13/cobra"
 	"log"
+	"strings"
 )
 
 var getCmd = &cobra.Command{
@@ -20,8 +21,8 @@ nais-cli aiven get secret-name namespace -c kcat | nais-cli aiven get secret-nam
 			log.Fatalf("%s and %s is reqired arguments", SecretNameFlag, TeamFlag)
 		}
 
-		secretName := args[0]
-		team := args[1]
+		secretName := strings.TrimSpace(args[0])
+		team := strings.TrimSpace(args[1])
 
 		configType, err := helpers.GetString(cmd, ConfigFlag, false)
 		if err != nil {

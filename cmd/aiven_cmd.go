@@ -7,6 +7,7 @@ import (
 	aivenclient "github.com/nais/nais-cli/pkg/client"
 	"github.com/spf13/cobra"
 	"log"
+	"strings"
 )
 
 const (
@@ -26,8 +27,9 @@ nais-cli aiven username namespace -e 10 | nais-cli aiven username namespace -s s
 		if len(args) != 2 {
 			return fmt.Errorf("%s %s %s : reqired arguments", cmd.CommandPath(), UsernameFlag, TeamFlag)
 		}
-		username := args[0]
-		team := args[1]
+
+		username := strings.TrimSpace(args[0])
+		team := strings.TrimSpace(args[1])
 
 		pool, _ := helpers.GetString(cmd, PoolFlag, false)
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
