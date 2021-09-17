@@ -29,13 +29,13 @@ brew tap nais/tap
 then
 
 ```
-brew install nais-cli  
+brew install nais  
 ```
 
 check
 
 ```
-nais-cli version
+nais version
 ```
 
 You should be able to use
