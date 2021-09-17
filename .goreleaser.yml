@@ -30,6 +30,7 @@ brews:
 - tap:
     owner: nais
     name: homebrew-tap
+    token: "{{ .Env.PUSH_TOKEN }}"
   name: nais
   homepage: "https://github.com/nais/nais-cli"
   description: "Simple Aiven Kafka Debug Cli"
