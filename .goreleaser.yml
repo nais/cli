@@ -28,6 +28,7 @@ release:
     name: nais-cli
   header: |
     ## nais-cli ({{ .Version }})
+  draft: true
 brews:
 - tap:
     owner: nais
