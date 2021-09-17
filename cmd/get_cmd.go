@@ -38,12 +38,6 @@ var getCmd = &cobra.Command{
 			fmt.Printf("getting %s: %s", DestFlag, err)
 			os.Exit(1)
 		}
-
-		dest, err = helpers.DefaultDestination(dest)
-		if err != nil {
-			fmt.Printf("an error %s", err)
-			os.Exit(1)
-		}
 		secret.ExtractAndGenerateConfig(configType, dest, secretName, team)
 	},
 }

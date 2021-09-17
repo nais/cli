@@ -26,13 +26,14 @@ func getConfig() *rest.Config {
 	var kubeconfig string
 	kubeconfig = os.Getenv(KUBECONFIG)
 	if kubeconfig == "" {
-		log.Fatalf("%s is reqired for debug client to work properly", KUBECONFIG)
+		log.Fatalf("%s environment variable is reqired for client to work properly.\n"+
+			"naisdevice: 1. Installed? 2. Running? 3. Connected?", KUBECONFIG)
 	}
 
 	// use the current context in kubeconfig
 	configs, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("authentication: update your kubectcl kubeconfig: %s", err)
 	}
 	return configs
 }
@@ -40,12 +41,12 @@ func getConfig() *rest.Config {
 func InitScheme(scheme *runtime.Scheme) {
 	err := clientgoscheme.AddToScheme(scheme)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error setting up client schema: %s.", err)
 	}
 
 	err = aiven_nais_io_v1.AddToScheme(scheme)
 	if err != nil {
-		panic(err)
+		log.Fatalf("error setting up aiven application schema: %s.", err)
 	}
 }
 
@@ -56,7 +57,7 @@ func SetupClient() ctrl.Client {
 		Scheme: scheme,
 	})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return &AivenClient{client}
 }

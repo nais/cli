@@ -3,6 +3,7 @@ package aiven
 import (
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/nais-d/pkg/client"
+	"github.com/nais/nais-d/pkg/common"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -96,18 +97,11 @@ func TestAiven_SetSecretName(t *testing.T) {
 	team := "team"
 	secretName := "secret-name"
 
-	aivenApp := &aiven_nais_io_v1.AivenApplication{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      username,
-			Namespace: team,
-		},
-	}
-
-	err := SetSecretName(aivenApp, secretName)
+	s, err := common.SetSecretName(secretName, username, team)
 	assert.NoError(t, err)
-	assert.Equal(t, secretName, aivenApp.Spec.SecretName, "SecretName has the same value as input")
+	assert.Equal(t, secretName, s, "SecretName has the same value as input")
 
-	err = SetSecretName(aivenApp, "")
+	s, err = common.SetSecretName("", username, team)
 	assert.NoError(t, err)
-	assert.Equal(t, "user-team-3d735979", aivenApp.Spec.SecretName, "SecretName is generated")
+	assert.Equal(t, "user-team-3d735979", s, "SecretName is generated")
 }

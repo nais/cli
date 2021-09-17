@@ -3,10 +3,12 @@ package secret
 import (
 	"context"
 	"fmt"
+	"github.com/nais/nais-d/cmd/helpers"
 	"github.com/nais/nais-d/pkg/client"
+	"github.com/nais/nais-d/pkg/common"
 	"github.com/nais/nais-d/pkg/config"
 	v1 "k8s.io/api/core/v1"
-	"os"
+	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -19,13 +21,15 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
-	namespace := v1.Namespace{}
-	err := aivenClient.Get(ctx, ctrl.ObjectKey{
-		Name: team,
-	}, &namespace)
+	dest, err := helpers.DefaultDestination(dest)
 	if err != nil {
-		fmt.Printf("an error %s", err)
-		os.Exit(1)
+		log.Fatalf("an error %s", err)
+	}
+
+	namespace := v1.Namespace{}
+	err = common.ValidateNamespace(ctx, aivenClient, team, &namespace)
+	if err != nil {
+		log.Fatalf("an error %s", err)
 	}
 
 	secret := &v1.Secret{}
@@ -34,20 +38,17 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
 		Name:      secretName,
 	}, secret)
 	if err != nil {
-		fmt.Printf("an error %s", err)
-		os.Exit(1)
+		log.Fatalf("an error %s", err)
 	}
 
 	// check is annotations match with protected and time-limited otherwise you could use any secret!
 	if !hasAnnotation(secret, AivenatorProtectedAnnotation) || !hasAnnotation(secret, AivenatorProtectedExpireAtAnnotation) {
-		fmt.Printf("secret is missing annotations: '%s' or '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
-		os.Exit(1)
+		log.Fatalf("secret is missing annotations: '%s' or '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
 	err = Config(secret, dest, configTyp)
 	if err != nil {
-		fmt.Printf("an error %s", err)
-		os.Exit(1)
+		log.Fatalf("an error %s", err)
 	}
 }
 
@@ -96,6 +97,7 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 		if err := kafkaEnv.Finit(); err != nil {
 			return err
 		}
+		log.Default().Printf("%s and secrets generated: %s", typeConfig, dest)
 	case config.KCAT:
 		kCatConfig := config.NewKCatConfig(secret, dest)
 		kCatConfig.Init()
@@ -107,12 +109,13 @@ func Config(secret *v1.Secret, dest, typeConfig string) error {
 		if err := kCatConfig.Finit(); err != nil {
 			return err
 		}
-
+		log.Default().Printf("%s and secrets generated: %s", typeConfig, dest)
 	case config.ALL:
 		err := ConfigAll(secret, dest)
 		if err != nil {
 			return fmt.Errorf("generate all configs: %s", err)
 		}
+		log.Default().Printf("all configs and secrets generated: %s", dest)
 	}
 	return nil
 }

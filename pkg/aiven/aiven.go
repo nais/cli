@@ -4,20 +4,19 @@ import (
 	"context"
 	"fmt"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	"github.com/nais/liberator/pkg/namegen"
+	"github.com/nais/nais-d/pkg/common"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
 	"time"
 )
 
 const (
-	AivenApiVersion          = "aiven.nais.io/v1"
-	AivenKind                = "aivenApplication"
-	DefaultProtected         = true
-	MaxServiceUserNameLength = 64
+	AivenApiVersion  = "aiven.nais.io/v1"
+	AivenKind        = "aivenApplication"
+	DefaultProtected = true
 )
 
 type Aiven struct {
@@ -51,38 +50,24 @@ func SetupAiven(client ctrl.Client, username, team, pool, secretName string, exp
 
 func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
 	namespace := v1.Namespace{}
-	err := a.Client.Get(a.Ctx, ctrl.ObjectKey{
-		Name: a.Props.Namespace,
-	}, &namespace)
+	err := common.ValidateNamespace(a.Ctx, a.Client, a.Props.Namespace, &namespace)
 	if err != nil {
 		return nil, err
 	}
 	a.Props.Namespace = namespace.Name
 
-	timeStamp := time.Now().AddDate(0, 0, a.Props.Expiry).Format(time.RFC3339)
-	aivenApp := *a.CreateAivenApplication(timeStamp, a.Props.SecretName)
+	secretName, err := common.SetSecretName(a.Props.SecretName, a.Props.Username, a.Props.Namespace)
+	aivenApp := *a.AivenApplication(secretName)
 
-	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
-	err = a.Client.Get(a.Ctx, ctrl.ObjectKey{
-		Namespace: a.Props.Namespace,
-		Name:      a.Props.Username,
-	}, &existingAivenApp)
-	if err != nil {
-		if k8serrors.IsNotFound(err) {
-			err = a.Client.Create(a.Ctx, &aivenApp)
-		}
-	} else {
-		aivenApp.ResourceVersion = existingAivenApp.ResourceVersion
-		err = a.Client.Update(a.Ctx, &aivenApp)
-	}
+	err = a.CreateOrUpdate(&aivenApp)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("create/update: %s", err)
 	}
 	return &aivenApp, nil
 }
 
-func (a Aiven) CreateAivenApplication(timeStamp, secretName string) *aiven_nais_io_v1.AivenApplication {
+func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
 	app := &aiven_nais_io_v1.AivenApplication{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       AivenKind,
@@ -93,36 +78,40 @@ func (a Aiven) CreateAivenApplication(timeStamp, secretName string) *aiven_nais_
 			Namespace: a.Props.Namespace,
 		},
 		Spec: aiven_nais_io_v1.AivenApplicationSpec{
-			SecretName: "",
+			SecretName: secretName,
 			Protected:  DefaultProtected,
-			ExpiresAt:  timeStamp,
+			ExpiresAt:  time.Now().AddDate(0, 0, a.Props.Expiry).Format(time.RFC3339),
 			Kafka:      &aiven_nais_io_v1.KafkaSpec{Pool: a.Props.Pool},
 		},
-	}
-	err := SetSecretName(app, secretName)
-	if err != nil {
-		return nil
 	}
 	return app
 }
 
-func SetSecretName(aivenApp *aiven_nais_io_v1.AivenApplication, secretName string) error {
-	if secretName != "" {
-		aivenApp.Spec.SecretName = secretName
-	} else {
-		newSecretName, err := setSecretName(aivenApp)
-		if err != nil {
-			return fmt.Errorf("could not create secretName: %s", err)
+func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) error {
+	return a.Client.Get(a.Ctx, ctrl.ObjectKey{
+		Namespace: a.Props.Namespace,
+		Name:      a.Props.Username,
+	}, existingAivenApp)
+}
+
+func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error {
+	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
+	err := a.getExisting(&existingAivenApp)
+	if err != nil {
+		if k8serrors.IsNotFound(err) {
+			err = a.Client.Create(a.Ctx, aivenApp)
+			if err != nil {
+				return err
+			}
+			log.Default().Printf("aiven application: %s created.", aivenApp.Name)
 		}
-		aivenApp.Spec.SecretName = newSecretName
+	} else {
+		aivenApp.SetResourceVersion(existingAivenApp.GetResourceVersion())
+		err = a.Client.Update(a.Ctx, aivenApp)
+		if err != nil {
+			return err
+		}
+		log.Default().Printf("aiven application: %s updated.", aivenApp.Name)
 	}
 	return nil
-}
-
-func setSecretName(aivenApp *aiven_nais_io_v1.AivenApplication) (string, error) {
-	return namegen.ShortName(secretNamePrefix(aivenApp.Namespace, strings.ReplaceAll(aivenApp.Name, ".", "-")), MaxServiceUserNameLength)
-}
-
-func secretNamePrefix(username, team string) string {
-	return fmt.Sprintf("%s-%s", team, username)
 }
