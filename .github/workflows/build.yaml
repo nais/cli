@@ -76,12 +76,12 @@ jobs:
           cd pparepo
 
           # Fetch latest deb
-          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais-d_${VERSION}.deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
 
           # Commit and push changes
           git config user.email "${EMAIL}"
-          git config user.name "nais-d pipeline"
-          git add nais-d_${VERSION}.deb
+          git config user.name "nais-cli pipeline"
+          git add nais_${VERSION}.deb
           git --no-pager diff --cached
-          git commit --all --message "Add version ${VERSION} of nais-d"
+          git commit --all --message "Add version ${VERSION} of nais-cli"
           git push

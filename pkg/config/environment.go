@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/pkg/common"
-	"github.com/nais/nais-d/pkg/consts"
+	"github.com/nais/nais-cli/pkg/common"
+	"github.com/nais/nais-cli/pkg/consts"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	"strings"
@@ -30,7 +30,7 @@ type KafkaEnvironment struct {
 }
 
 func (k *KafkaEnvironment) Init() {
-	k.Envs += fmt.Sprintf("# nais-d %s\n# .env\n", time.Now().Truncate(time.Minute))
+	k.Envs += fmt.Sprintf("# nais-cli %s\n# .env\n", time.Now().Truncate(time.Minute))
 }
 
 func (k *KafkaEnvironment) Finit() error {

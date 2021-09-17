@@ -1,12 +1,12 @@
 directory = $(wildcard ../liberator)
 
-.PHONY: nais-d liberator
+.PHONY: nais-cli liberator
 
 local:
-	go build -o tool/nais-d ./main/nais_d/
+	go build -o tool/nais ./main/nais_cli/
 
-nais-d: liberator
-	go install main/nais_d/nais-d.go
+nais-cli: liberator
+	go install main/nais_cli/nais-cli.go
 
 test:
 	go test ./... -count=1 -coverprofile cover.out -short

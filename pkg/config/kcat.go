@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/pkg/common"
-	"github.com/nais/nais-d/pkg/consts"
+	"github.com/nais/nais-cli/pkg/common"
+	"github.com/nais/nais-cli/pkg/consts"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	"time"
@@ -34,7 +34,7 @@ type KCat struct {
 }
 
 func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# nais-d %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
+	k.Config += fmt.Sprintf("# nais-cli %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
 }
 
 func (k *KCat) Finit() error {

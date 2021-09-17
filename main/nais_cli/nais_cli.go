@@ -1,6 +1,6 @@
 package main
 
-import "github.com/nais/nais-d/cmd"
+import "github.com/nais/nais-cli/cmd"
 
 var (
 	// Is set during build

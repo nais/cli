@@ -1,4 +1,4 @@
-# nais-d
+# nais-cli
 
 ## Prerequisite
 
@@ -29,19 +29,19 @@ brew tap nais/tap
 then
 
 ```
-brew install nais-d  
+brew install nais-cli  
 ```
 
 check
 
 ```
-nais-d version
+nais-cli version
 ```
 
 You should be able to use
 
 ```
-nais-d [commands] [args] [flags]
+nais-cli [commands] [args] [flags]
 ```
 
 ## Commands
@@ -107,11 +107,11 @@ For help on individual commands, add `--help` short: `-h`.
 
 ###### version
 
-* `--commit` short `-i` default: `false` : Get detailed information about this `nais-d` version
+* `--commit` short `-i` default: `false` : Get detailed information about this `nais-cli` version
 
 #### Available configuration files
 
-After Successful `nais-d` command a set of files will be available in `current` folder.
+After Successful `nais-cli` command a set of files will be available in `current` folder.
 
 ##### .env
 
@@ -147,7 +147,7 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 ##### kcat.conf
 
 ```Properties
-# Nais-d 2021-09-01 15:26:00
+# nais-cli 2021-09-01 15:26:00
 # kcat -F kcat.conf
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
@@ -191,7 +191,7 @@ For more details [aiven-kcat-help](https://help.aiven.io/en/articles/2607674-usi
 
 ## Flow
 
-![Nais-d under the hood](doc/nais-d.png)
+![nais-cli under the hood](doc/nais-cli.png)
 
 ## Local Development
 
@@ -255,5 +255,5 @@ kubectl apply -f path/to/secret
 * Generate executable program and test your changes.
 
 ```
-make nais-d
+make nais-cli
 ```

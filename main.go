@@ -1,1 +1,1 @@
-package nais_d
+package nais

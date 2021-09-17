@@ -7,7 +7,7 @@ import (
 
 var versionCmd = &cobra.Command{
 	Use:   "version [flags]",
-	Short: "Show 'nais-d' client version",
+	Short: "Show 'nais-cli' client version",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		result, err := cmd.Flags().GetBool(CommitInformation)
 		if err != nil {

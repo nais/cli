@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/cmd/helpers"
-	"github.com/nais/nais-d/pkg/aiven"
-	aivenclient "github.com/nais/nais-d/pkg/client"
+	"github.com/nais/nais-cli/cmd/helpers"
+	"github.com/nais/nais-cli/pkg/aiven"
+	aivenclient "github.com/nais/nais-cli/pkg/client"
 	"github.com/spf13/cobra"
 )
 

@@ -2,8 +2,8 @@ package secret
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/pkg/config"
-	"github.com/nais/nais-d/pkg/consts"
+	"github.com/nais/nais-cli/pkg/config"
+	"github.com/nais/nais-cli/pkg/consts"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
@@ -62,7 +62,6 @@ func TestConfig(t *testing.T) {
 	assert.True(t, strings.Contains(string(KafkaEnvData), "KAFKA_CA"))
 	assert.True(t, strings.Contains(string(KafkaEnvData), "AFKA_PRIVATE_KEY"))
 	assert.True(t, strings.Contains(string(KafkaEnvData), "client.keystore.p12"))
-
 
 	var fileKeys = []string{
 		consts.KafkaCertificateCrtFile,

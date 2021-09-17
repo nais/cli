@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/nais/nais-d/cmd/helpers"
-	"github.com/nais/nais-d/pkg/config"
-	"github.com/nais/nais-d/pkg/secret"
+	"github.com/nais/nais-cli/cmd/helpers"
+	"github.com/nais/nais-cli/pkg/config"
+	"github.com/nais/nais-cli/pkg/secret"
 	"github.com/spf13/cobra"
 	"os"
 )

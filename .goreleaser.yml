@@ -1,4 +1,4 @@
-project_name: nais-d
+project_name: nais-cli
 builds:
 - env: [CGO_ENABLED=0]
   goos:
@@ -8,10 +8,10 @@ builds:
   goarch:
     - amd64
     - arm64
-  id: "nais-d"
+  id: nais
   dir: .
-  main: ./main/nais_d
-  binary: nais-d
+  main: ./main/nais_cli
+  binary: nais
   ldflags:
     - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
 checksum:
@@ -25,27 +25,27 @@ changelog:
 release:
   github:
     owner: nais
-    name: nais-d
+    name: nais-cli
   header: |
-    ## nais-d ({{ .Version }})
+    ## nais-cli ({{ .Version }})
 brews:
 - tap:
     owner: nais
     name: homebrew-tap
-  name: nais-d
-  homepage: "https://github.com/nais/nais-d"
+  name: nais
+  homepage: "https://github.com/nais/nais-cli"
   description: "Simple Aiven Kafka Debug Cli"
   folder: Formula
   install: |
-    bin.install "nais-d"
+    bin.install "nais"
   test: |
-    assert_match version, shell_output("#{bin}/nais-d version")
+    assert_match version, shell_output("#{bin}/nais version")
 nfpms:
   -
-    package_name: nais-d
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}"
+    package_name: nais
+    file_name_template: "{{ .PackageName }}_{{ .Version }}"
     vendor: NAV / nais team
-    homepage: "https://github.com/nais/nais-d"
+    homepage: "https://github.com/nais/nais-cli"
     maintainer: NAV / nais team
     description: "Simple Aiven Kafka Debug Cli"
     license: MIT

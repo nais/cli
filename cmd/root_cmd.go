@@ -15,10 +15,10 @@ var (
 	BUILT_BY string
 
 	rootCmd = &cobra.Command{
-		Use:   "nais-d [command] [args] [flags]",
+		Use:   "nais-cli [command] [args] [flags]",
 		Short: "A simple nais client to generate resources for debug",
-		Long: `nais-d debug CLI. 
-This is a nais-debug-tool to extract secrets from cluster to quickly start debugging your nais resources.`,
+		Long: `nais-cli debug CLI. 
+This is a nais tool to extract secrets from cluster to quickly start debugging your nais resources.`,
 	}
 )
 
@@ -54,7 +54,7 @@ func init() {
 }
 
 func initConfig() {
-	viper.SetEnvPrefix("NAIS_D")
+	viper.SetEnvPrefix("NAIS_CLI")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 }
@@ -72,7 +72,7 @@ func initAivenCmd() {
 }
 
 func initVersionCmd() {
-	versionCmd.Flags().BoolP(CommitInformation, "i", false, "Detailed commit information for this 'nais-d' version (optional)")
+	versionCmd.Flags().BoolP(CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
 	viper.BindPFlag(CommitInformation, versionCmd.Flags().Lookup(DestFlag))
 	rootCmd.AddCommand(versionCmd)
 }
