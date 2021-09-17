@@ -77,7 +77,7 @@ known as kafkacat) in preferred way.
 
 #### aiven
 
-* `username` must be passed as **fist** argument after command: Prefix before `@nav.no`.
+* `username` must be passed as **fist** argument after command: Prefix before `@nav.no`, replace `.` with `-`.
 
 * `team` must be passed as **second** argument after command: team-namespace (default namespace not supported).
 
@@ -119,7 +119,7 @@ After Successful `nais` command a set of files will be available in `current` fo
 
 - client-keystore.p12
 - client-truststore.jks
-- kafka-ca.cert
+- kafka-ca.pem
 - kafka-certificate.crt
 - kafka-private-key.pem
 - kafka-secret.env
@@ -131,7 +131,7 @@ KAFKA_BROKERS:brokerurl.aivencloud.com:26484
 KAFKA_PRIVATE_KEY=/path/to/kafka-private-key.pem
 client.keystore.p12=/path/to/client-keystore.p12
 client.truststore.jks=/path/to/.envs/client-truststore.jks
-KAFKA_CA=/path/to/.envs/kafka-ca.cert
+KAFKA_CA=/path/to/.envs/kafka-ca.pem
 KAFKA_CERTIFICATE=/path/to/.envs/kafka-certificate.crt
 KAFKA_CREDSTORE_PASSWORD:password
 KAFKA_SCHEMA_REGISTRY:https://registry-url.aivencloud.com:26487
@@ -141,7 +141,7 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 
 ##### kcat
 
-- kafka-ca.cert
+- kafka-ca.pem
 - kafka-certificate.crt
 - kafka-private-key.pem
 - kcat.conf
@@ -150,12 +150,12 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 
 ```Properties
 # nais 2021-09-01 15:26:00
-# kcat -F kcat.conf
+# kcat -F kcat.conf -t namespace.your.topic
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
 ssl.key.password=changeme
 bootstrap.servers=https://boostrap-server.aivencloud.com:26484
-ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.cert
+ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.pem
 security.protocol=ssl
 ```
 
@@ -163,7 +163,7 @@ security.protocol=ssl
 
 - client-keystore.p12
 - client-truststore.jks
-- kafka-ca.cert
+- kafka-ca.pem
 - kafka-certificate.crt
 - kafka-private-key.pem
 - kafka-secret.env

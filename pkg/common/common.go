@@ -49,9 +49,9 @@ func SetSecretName(secretName, name, namespace string) (string, error) {
 }
 
 func setSecretName(name, namespace string) (string, error) {
-	return namegen.ShortName(secretNamePrefix(namespace, strings.ReplaceAll(name, ".", "-")), MaxServiceUserNameLength)
+	return namegen.ShortName(secretNamePrefix(name, strings.ReplaceAll(namespace, ".", "-")), MaxServiceUserNameLength)
 }
 
-func secretNamePrefix(username, team string) string {
-	return fmt.Sprintf("%s-%s", team, username)
+func secretNamePrefix(username, namespace string) string {
+	return fmt.Sprintf("%s-%s", namespace, username)
 }

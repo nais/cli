@@ -34,7 +34,7 @@ type KCat struct {
 }
 
 func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
+	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s -t %s-your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, k.Secret.Namespace)
 }
 
 func (k *KCat) Finit() error {
@@ -97,8 +97,5 @@ func (k *KCat) toFile(key string, value []byte) error {
 func (k *KCat) toEnv(key string, value []byte) {
 	if key == consts.KafkaBrokers {
 		k.Set(KafkaCatBootstrapServers, value, "")
-	}
-	if key == consts.KafkaCredStorePassword {
-		k.Set(KafkaCateKeyPassword, value, "")
 	}
 }

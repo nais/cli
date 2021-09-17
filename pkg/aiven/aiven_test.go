@@ -103,5 +103,5 @@ func TestAiven_SetSecretName(t *testing.T) {
 
 	s, err = common.SetSecretName("", username, team)
 	assert.NoError(t, err)
-	assert.Equal(t, "user-team-3d735979", s, "SecretName is generated")
+	assert.Equal(t, "team-user-df60919d", s, "SecretName is generated")
 }

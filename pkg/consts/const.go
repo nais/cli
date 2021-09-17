@@ -3,7 +3,7 @@ package consts
 const (
 	KafkaCertificateCrtFile      = "kafka-certificate.crt"
 	KafkaPrivateKeyPemFile       = "kafka-private-key.pem"
-	KafkaCACrtFile               = "kafka-ca.cert"
+	KafkaCACrtFile               = "kafka-ca.pem"
 	KafkaClientKeyStoreP12File   = "client-keystore.p12"
 	KafkaClientTruststoreJksFile = "client-truststore.jks"
 
