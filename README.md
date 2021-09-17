@@ -175,7 +175,7 @@ against the Aiven hosted topics in GCP.
 You can refer to this config with -F flag:
 
 ```
-kcat -F kcat.conf
+kcat -F kcat.conf -t namespace.your.topic
 ```
 
 Alternatively, you can specify the same settings directly on the command line:
