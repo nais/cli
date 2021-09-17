@@ -1,13 +1,11 @@
 project_name: nais-cli
 builds:
 - env: [CGO_ENABLED=0]
-  goos:
-    - linux
-    - windows
-    - darwin
-  goarch:
-    - amd64
-    - arm64
+  targets:
+    - linux_amd64
+    - windows_amd64
+    - darwin_amd64
+    - darwin_arm64
   id: nais
   dir: .
   main: ./main/nais_cli
