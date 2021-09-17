@@ -18,7 +18,7 @@ jobs:
           echo Faking a Semantic Version
           echo ::set-output name=version::1.$(date "+%Y%m%d.%H%M%S")
 
-  build:
+  test:
     needs:
       - set-version
     runs-on: ubuntu-latest
