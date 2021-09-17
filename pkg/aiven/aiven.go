@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 	"time"
 )
 
@@ -74,7 +75,7 @@ func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplic
 			APIVersion: AivenApiVersion,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      a.Props.Username,
+			Name:      strings.ReplaceAll(a.Props.Username, ".", "-"),
 			Namespace: a.Props.Namespace,
 		},
 		Spec: aiven_nais_io_v1.AivenApplicationSpec{
