@@ -33,7 +33,7 @@ jobs:
           go test ./... -count=1 -coverprofile cover.out -short
 
   release-candidate:
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     needs:
       - set-version
       - build
