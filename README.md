@@ -153,7 +153,6 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 # kcat -F kcat.conf -t namespace.your.topic
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt
-ssl.key.password=changeme
 bootstrap.servers=https://boostrap-server.aivencloud.com:26484
 ssl.ca.location=/path/to/current/folder/creds/my-user-kafka-ca.pem
 security.protocol=ssl
