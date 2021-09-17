@@ -41,7 +41,7 @@ nais-cli version
 You should be able to use
 
 ```
-nais-cli [commands] [args] [flags]
+nais [commands] [args] [flags]
 ```
 
 ## Commands
@@ -109,11 +109,11 @@ known as kafkacat) in preferred way.
 
 #### Optional
 
-* `--commit` short `-i` default: `false` : Get detailed information about this `nais-cli` version
+* `--commit` short `-i` default: `false` : Get detailed information about this `nais` version
 
 #### Available configuration files
 
-After Successful `nais-cli` command a set of files will be available in `current` folder.
+After Successful `nais` command a set of files will be available in `current` folder.
 
 ##### .env
 
@@ -149,7 +149,7 @@ KAFKA_SCHEMA_REGISTRY_USER:my-user
 ##### kcat.conf
 
 ```Properties
-# nais-cli 2021-09-01 15:26:00
+# nais 2021-09-01 15:26:00
 # kcat -F kcat.conf
 ssl.key.location=/path/to/current/folder/creds/my-username-kafka-private-key.pem
 ssl.certificate.location=/path/to/current/folder/creds/my-username-kafka-certificate.crt

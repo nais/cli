@@ -20,8 +20,8 @@ var aivenCommand = &cobra.Command{
 	Use:   "aiven [command] [args] [flags]",
 	Short: "Create a protected & time-limited aivenApplication",
 	Long:  `This command will apply a aivenApplication based on information given and aivenator creates a set of credentials`,
-	Example: `nais-cli aiven username namespace | nais-cli aiven username namespace -p nav-dev |
-nais-cli aiven username namespace -e 10 | nais-cli aiven username namespace -s some-secret-name`,
+	Example: `nais aiven username namespace | nais aiven username namespace -p nav-dev |
+nais aiven username namespace -e 10 | nais aiven username namespace -s some-secret-name`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if len(args) != 2 {
@@ -51,7 +51,7 @@ nais-cli aiven username namespace -e 10 | nais-cli aiven username namespace -s s
 		if err != nil {
 			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
 		}
-		log.Default().Printf("use: '%s get %s %s'", cmd.CommandPath(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+		log.Default().Printf("use: '%s get %s %s'.", cmd.CommandPath(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }

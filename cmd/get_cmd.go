@@ -12,9 +12,9 @@ import (
 var getCmd = &cobra.Command{
 	Use:   "get [args] [flags]",
 	Short: "Return the preferred config format from a protected secret and generate files to location",
-	Example: `nais-cli aiven get secret-name namespace | nais-cli aiven get secret-name namespace -d ./config | 
-nais-cli aiven get secret-name namespace -c kcat | nais-cli aiven get secret-name namespace -c .env | 
- nais-cli aiven get secret-name namespace -c all`,
+	Example: `nais aiven get secret-name namespace | nais aiven get secret-name namespace -d ./config | 
+nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namespace -c .env | 
+ nais aiven get secret-name namespace -c all`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) != 2 {

@@ -34,7 +34,7 @@ type KCat struct {
 }
 
 func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# nais-cli %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
+	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s\n", time.Now().Truncate(time.Minute), KafkaCatConfigName)
 }
 
 func (k *KCat) Finit() error {

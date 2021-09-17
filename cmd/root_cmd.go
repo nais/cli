@@ -15,7 +15,7 @@ var (
 	BUILT_BY string
 
 	rootCmd = &cobra.Command{
-		Use:   "nais-cli [command] [args] [flags]",
+		Use:   "nais [command] [args] [flags]",
 		Short: "A simple NAIS client to generate resources for debug",
 		Long: `nais-cli debug CLI. 
 This is a NAIS tool to extract secrets from cluster to quickly start debugging your NAIS resources.`,
