@@ -34,7 +34,7 @@ type KCat struct {
 }
 
 func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s -t %s-your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, k.Secret.Namespace)
+	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, k.Secret.Namespace)
 }
 
 func (k *KCat) Finit() error {

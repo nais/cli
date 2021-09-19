@@ -18,7 +18,7 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) != 2 {
-			log.Fatalf("%s and %s is reqired arguments", SecretNameFlag, TeamFlag)
+			log.Fatalf("%s and %s are reqired arguments", SecretNameFlag, TeamFlag)
 		}
 
 		secretName := strings.TrimSpace(args[0])

@@ -17,7 +17,7 @@ var versionCmd = &cobra.Command{
 		if result {
 			fmt.Printf("%s: %s commit: %s date: %s builtBy: %s", cmd.CommandPath(), VERSION, COMMIT, DATE, BUILT_BY)
 		} else {
-			fmt.Printf("%s: %s", cmd.Use, VERSION)
+			fmt.Printf("%s: %s", cmd.CommandPath(), VERSION)
 		}
 		return nil
 	},
