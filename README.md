@@ -141,10 +141,10 @@ client.keystore.p12=/path/to/client-keystore.p12
 client.truststore.jks=/path/to/.envs/client-truststore.jks
 KAFKA_CA=/path/to/.envs/kafka-ca.pem
 KAFKA_CERTIFICATE=/path/to/.envs/kafka-certificate.crt
-KAFKA_CREDSTORE_PASSWORD:password
-KAFKA_SCHEMA_REGISTRY:https://registry-url.aivencloud.com:26487
-KAFKA_SCHEMA_REGISTRY_PASSWORD:password
-KAFKA_SCHEMA_REGISTRY_USER:my-user
+KAFKA_CREDSTORE_PASSWORD=password
+KAFKA_SCHEMA_REGISTRY=https://registry-url.aivencloud.com:26487
+KAFKA_SCHEMA_REGISTRY_PASSWORD=password
+KAFKA_SCHEMA_REGISTRY_USER=my-user
 ```
 
 ##### kcat
