@@ -55,3 +55,12 @@ func setSecretName(name, namespace string) (string, error) {
 func secretNamePrefix(username, namespace string) string {
 	return fmt.Sprintf("%s-%s", namespace, username)
 }
+
+func RequiredSecretDataExists(required map[string]string, secretData map[string][]byte, filetype string) error {
+	for key, _ := range required {
+		if _, ok := secretData[key]; !ok {
+			return fmt.Errorf("can not genrate %s config, secret missing required key: %s", filetype, key)
+		}
+	}
+	return nil
+}

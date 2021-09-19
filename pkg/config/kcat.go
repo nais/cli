@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/nais/nais-cli/pkg/common"
 	"github.com/nais/nais-cli/pkg/consts"
-	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	"time"
 )
@@ -13,7 +12,6 @@ const (
 	KafkaCatSslCertificateLocation = "ssl.certificate.location"
 	KafkaCatSslKeyLocation         = "ssl.key.location"
 	KafkaCatSslCaLocation          = "ssl.ca.location"
-	KafkaCateKeyPassword           = "ssl.key.password"
 	KafkaCatBootstrapServers       = "bootstrap.servers"
 
 	KafkaCatConfigName = "kcat.conf"
@@ -24,13 +22,25 @@ func NewKCatConfig(secret *v1.Secret, dest string) Config {
 		Config:     "",
 		Secret:     secret,
 		PrefixPath: dest,
+		RequiredFiles: map[string]string{
+			consts.KafkaCertificate: consts.KafkaCertificateCrtFile,
+			consts.KafkaPrivateKey:  consts.KafkaPrivateKeyPemFile,
+			consts.KafkaCa:          consts.KafkaCACrtFile,
+		},
+		RequiredLocation: map[string]string{
+			consts.KafkaCertificateCrtFile: KafkaCatSslCertificateLocation,
+			consts.KafkaPrivateKeyPemFile:  KafkaCatSslKeyLocation,
+			consts.KafkaCACrtFile:          KafkaCatSslCaLocation,
+		},
 	}
 }
 
 type KCat struct {
-	Config     string
-	Secret     *v1.Secret
-	PrefixPath string
+	Config           string
+	Secret           *v1.Secret
+	PrefixPath       string
+	RequiredFiles    map[string]string
+	RequiredLocation map[string]string
 }
 
 func (k *KCat) Init() {
@@ -39,14 +49,14 @@ func (k *KCat) Init() {
 
 func (k *KCat) Finit() error {
 	k.Config += "security.protocol=ssl\n"
-	if err := k.Write(); err != nil {
+	if err := k.write(); err != nil {
 		return fmt.Errorf("could not write %s to file: %s", KafkaCatConfigName, err)
 	}
 	return nil
 }
 
-func (k *KCat) Write() error {
-	if err := ioutil.WriteFile(common.Destination(k.PrefixPath, KafkaCatConfigName), []byte(k.Config), FilePermission); err != nil {
+func (k *KCat) write() error {
+	if err := common.WriteToFile(k.PrefixPath, KafkaCatConfigName, []byte(k.Config)); err != nil {
 		return fmt.Errorf("could not write kafka.config to file: %s", err)
 	}
 	return nil
@@ -61,6 +71,11 @@ func (k *KCat) Set(key string, value []byte, destination string) {
 }
 
 func (k *KCat) Generate() error {
+	err := common.RequiredSecretDataExists(k.RequiredFiles, k.Secret.Data, KafkaCatConfigName)
+	if err != nil {
+		return err
+	}
+
 	for key, value := range k.Secret.Data {
 		if err := k.toFile(key, value); err != nil {
 			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
@@ -72,24 +87,14 @@ func (k *KCat) Generate() error {
 
 func (k *KCat) toFile(key string, value []byte) error {
 	path := k.PrefixPath
-	switch key {
-	case consts.KafkaCertificate:
-		if err := common.WriteToFile(path, consts.KafkaCertificateCrtFile, value); err != nil {
+	requiredFile := k.RequiredFiles[key]
+	if requiredFile != "" {
+		if err := common.WriteToFile(path, requiredFile, value); err != nil {
 			return err
 		}
-		k.Set(KafkaCatSslCertificateLocation, value, common.Destination(path, consts.KafkaCertificateCrtFile))
-
-	case consts.KafkaPrivateKey:
-		if err := common.WriteToFile(path, consts.KafkaPrivateKeyPemFile, value); err != nil {
-			return err
+		if k.RequiredLocation[requiredFile] != "" {
+			k.Set(k.RequiredLocation[requiredFile], value, common.Destination(path, requiredFile))
 		}
-		k.Set(KafkaCatSslKeyLocation, value, common.Destination(path, consts.KafkaPrivateKeyPemFile))
-
-	case consts.KafkaCa:
-		if err := common.WriteToFile(path, consts.KafkaCACrtFile, value); err != nil {
-			return err
-		}
-		k.Set(KafkaCatSslCaLocation, value, common.Destination(path, consts.KafkaCACrtFile))
 	}
 	return nil
 }
