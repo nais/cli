@@ -62,7 +62,7 @@ Available commands:
 
 Aiven Kafka Debug Command to apply a `aivenApplication` and extract its credentials. `avien` command will apply
 an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
-in your specified namespace=`team`. This will give access to personal but time limited credential. These credentials can
+in your specified namespace. This will give access to personal but time limited credential. These credentials can
 be used to debug an Aiven hosted kafka topic. `aiven get` command extracts the fresh `aivenApplication` credentials and
 puts them in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
 
@@ -79,13 +79,21 @@ known as kafkacat) in preferred way.
 
 * `username` must be passed as **fist** argument after command: Prefix before `@nav.no`, replace `.` with `-`.
 
-* `team` must be passed as **second** argument after command: team-namespace (default namespace not supported).
+* `namespace` must be passed as **second** argument after command: team-namespace (default namespace not supported).
+
+```
+nais aiven your-username your-namespace
+```
 
 ###### get
 
 * `secret-name` must be passed as **fist** argument after command, Secret-name for your aiven application.
 
-* `team` must be passed as **second** argument after command, team-namespace (default namespace not supported).
+* `namespace` must be passed as **second** argument after command, team-namespace (default namespace not supported).
+
+```
+nais aiven get your-secret-name your-namespace
+```
 
 #### Optional
 

@@ -8,7 +8,7 @@ control aivenator as "Aivenator"
 control kafkarator as "Kafkarator"
 boundary aiven as "Aiven"
 
-developer -> cli : nais aiven my-user my-team
+developer -> cli : nais aiven my-user my-namespace
 cli -> kubernetes : add or update
 
 loop aivenator until success
@@ -33,7 +33,7 @@ kafkarator -> kubernetes : Write back status and sync hash
 note right: RolloutComplete
 end
 
-developer -> cli : nais aiven get my-secret-name my-team
+developer -> cli : nais aiven get my-secret-name my-namespace
 cli -> kubernetes : extract credentials
 developer <- cli : save to folder
 

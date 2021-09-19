@@ -17,7 +17,7 @@ const (
 	AivenatorProtectedExpireAtAnnotation = "aivenator.aiven.nais.io/with-time-limit"
 )
 
-func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
+func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string) {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -27,7 +27,7 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, team string) {
 	}
 
 	namespace := v1.Namespace{}
-	err = common.ValidateNamespace(ctx, aivenClient, team, &namespace)
+	err = common.ValidateNamespace(ctx, aivenClient, namespaceName, &namespace)
 	if err != nil {
 		log.Fatalf("an error %s", err)
 	}

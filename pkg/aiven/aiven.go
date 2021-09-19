@@ -35,13 +35,13 @@ type AivenProperties struct {
 	Expiry     int
 }
 
-func SetupAiven(client ctrl.Client, username, team, pool, secretName string, expiry int) *Aiven {
+func SetupAiven(client ctrl.Client, username, namespace, pool, secretName string, expiry int) *Aiven {
 	return &Aiven{
 		context.Background(),
 		client,
 		AivenProperties{
 			Username:   username,
-			Namespace:  team,
+			Namespace:  namespace,
 			Pool:       pool,
 			SecretName: secretName,
 			Expiry:     expiry,

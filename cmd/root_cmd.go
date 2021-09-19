@@ -35,8 +35,8 @@ func Execute(version, commit, date, builtBy string) {
 }
 
 const (
-	TeamFlag       = "team"
-	UsernameFlag   = "username"
+	NamespaceFlag = "namespace"
+	UsernameFlag  = "username"
 	DestFlag       = "dest"
 	ConfigFlag     = "config"
 	ExpireFlag     = "expire"

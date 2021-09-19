@@ -18,11 +18,11 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) != 2 {
-			log.Fatalf("%s and %s are reqired arguments", SecretNameFlag, TeamFlag)
+			log.Fatalf("%s and %s are reqired arguments", SecretNameFlag, NamespaceFlag)
 		}
 
 		secretName := strings.TrimSpace(args[0])
-		team := strings.TrimSpace(args[1])
+		namespace := strings.TrimSpace(args[1])
 
 		configType, err := helpers.GetString(cmd, ConfigFlag, false)
 		if err != nil {
@@ -37,6 +37,6 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 		if err != nil {
 			log.Fatalf("getting %s: %s", DestFlag, err)
 		}
-		secret.ExtractAndGenerateConfig(configType, dest, secretName, team)
+		secret.ExtractAndGenerateConfig(configType, dest, secretName, namespace)
 	},
 }

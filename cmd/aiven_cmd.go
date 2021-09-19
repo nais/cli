@@ -25,11 +25,11 @@ nais aiven username namespace -e 10 | nais aiven username namespace -s some-secr
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if len(args) != 2 {
-			return fmt.Errorf("%s %s %s : reqired arguments", cmd.CommandPath(), UsernameFlag, TeamFlag)
+			return fmt.Errorf("%s %s %s : reqired arguments", cmd.CommandPath(), UsernameFlag, NamespaceFlag)
 		}
 
 		username := strings.TrimSpace(args[0])
-		team := strings.TrimSpace(args[1])
+		namespace := strings.TrimSpace(args[1])
 
 		pool, _ := helpers.GetString(cmd, PoolFlag, false)
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
@@ -46,7 +46,7 @@ nais aiven username namespace -e 10 | nais aiven username namespace -s some-secr
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		aivenConfig := aiven.SetupAiven(aivenclient.SetupClient(), username, team, pool, secretName, expiry)
+		aivenConfig := aiven.SetupAiven(aivenclient.SetupClient(), username, namespace, pool, secretName, expiry)
 		aivenApp, err := aivenConfig.GenerateApplication()
 		if err != nil {
 			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
