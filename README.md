@@ -60,15 +60,18 @@ Available commands:
 
 ### aiven
 
-Aiven Kafka Debug Command to apply a `aivenApplication` and extract its credentials. `avien` command will apply
-an [Protected](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
-in your specified namespace. This will give access to personal but time limited credential. These credentials can be
-used to debug an Aiven hosted kafka topic. `aiven get` command extracts the fresh `aivenApplication` credentials and
-puts them in `current` folder. The applied `aivenApplication` has a default `expireAt` and is set to 1 day.
+The aiven kafka debug command is used to create a `aivenApplication` and extract the credentials. The `avien` command
+will apply
+a [Protected & time-limited](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
+in your specified namespace.
+
+This will give access to personal but time limited credential. These credentials can be used to debug an Aiven hosted
+kafka topic. The `aiven get` command extracts the fresh credentials and puts them in `current` folder. The
+created `aivenApplication` has a default for `expireAt` (days-to-live) and will be set to 1 day.
 
 To gain access be sure to update
-your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs add `username`
-to your `Topic`.yaml ACLs and apply to your namespace.
+your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource & ACLs, add `username`
+to `topic`.yaml ACLs and apply to your namespace.
 
 When secrets is extracted you can install and use [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly
 known as kafkacat) in preferred way.
