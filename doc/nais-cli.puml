@@ -25,6 +25,7 @@ aivenator -> kubernetes : Delete aivenApplication
     end
 end
 
+developer -> kubernetes : kubectl apply -f path/to/topic/config
 loop kafkarator until success
 kubernetes -> kafkarator : Topic resource created/updated
 kafkarator -> aiven : Create or update topics
