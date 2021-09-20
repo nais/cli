@@ -13,18 +13,12 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-func NewEnvConfig(secret *v1.Secret, dest string) Config {
+func NewEnvConfig(secret *v1.Secret, envToFileMap map[string]string, dest string) Config {
 	return &KafkaEnvironment{
-		Envs:       "",
-		Secret:     secret,
-		PrefixPath: dest,
-		RequiredFiles: map[string]string{
-			consts.KafkaCertificate:         consts.KafkaCertificateCrtFile,
-			consts.KafkaPrivateKey:          consts.KafkaPrivateKeyPemFile,
-			consts.KafkaCa:                  consts.KafkaCACrtFile,
-			consts.KafkaClientKeystoreP12:   consts.KafkaClientKeyStoreP12File,
-			consts.KafkaClientTruststoreJks: consts.KafkaClientTruststoreJksFile,
-		},
+		Envs:          "",
+		Secret:        secret,
+		PrefixPath:    dest,
+		RequiredFiles: envToFileMap,
 	}
 }
 
@@ -61,19 +55,19 @@ func (k *KafkaEnvironment) Set(key string, value []byte, destination string) {
 	}
 }
 
-func (k *KafkaEnvironment) Generate() error {
-	err := common.RequiredSecretDataExists(k.RequiredFiles, k.Secret.Data, KafkaCatConfigName)
+func (k *KafkaEnvironment) Generate() (string, error) {
+	err := common.RequiredSecretDataExists(k.RequiredFiles, k.Secret.Data, KafkaSchemaRegistryEnvName)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	for key, value := range k.Secret.Data {
 		if err := k.toFile(key, value); err != nil {
-			return fmt.Errorf("could not write to file for key: %s\n %s", key, err)
+			return "", fmt.Errorf("could not write to file for key: %s\n %s", key, err)
 		}
 		k.toEnv(key, value)
 	}
-	return nil
+	return k.Envs, nil
 }
 
 func (k *KafkaEnvironment) toEnv(key string, value []byte) {

@@ -46,10 +46,11 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string)
 		log.Fatalf("secret is missing annotations: '%s' or '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
-	err = Config(secret, dest, configTyp)
+	_, err = Config(secret, dest, configTyp)
 	if err != nil {
 		log.Fatalf("an error %s", err)
 	}
+	log.Default().Printf("'%s' config from secret '%s' found her: '%s'.", configTyp, secret.Name, dest)
 }
 
 func hasAnnotation(secret *v1.Secret, key string) bool {
@@ -60,15 +61,15 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 }
 
 func ConfigAll(secret *v1.Secret, dest string) error {
-	kafkaEnv := config.NewEnvConfig(secret, dest)
+	kafkaEnv := config.NewEnvConfig(secret, config.KafkaConfigEnvToFileMap, dest)
 	kafkaEnv.Init()
-	kCatConfig := config.NewKCatConfig(secret, dest)
+	kCatConfig := config.NewKCatConfig(secret, config.KCatEnvToFileMap, dest)
 	kCatConfig.Init()
-	err := kafkaEnv.Generate()
+	_, err := kafkaEnv.Generate()
 	if err != nil {
 		return err
 	}
-	err = kCatConfig.Generate()
+	_, err = kCatConfig.Generate()
 	if err != nil {
 		return err
 	}
@@ -83,37 +84,38 @@ func ConfigAll(secret *v1.Secret, dest string) error {
 	return nil
 }
 
-func Config(secret *v1.Secret, dest, typeConfig string) error {
+func Config(secret *v1.Secret, dest, typeConfig string) (string, error) {
 	log.Default().Printf("generating '%s' from secret '%s'", typeConfig, secret.Name)
 	switch typeConfig {
 	case config.ENV:
-		kafkaEnv := config.NewEnvConfig(secret, dest)
+		kafkaEnv := config.NewEnvConfig(secret, config.KafkaConfigEnvToFileMap, dest)
 		kafkaEnv.Init()
-		err := kafkaEnv.Generate()
+		envs, err := kafkaEnv.Generate()
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		if err := kafkaEnv.Finit(); err != nil {
-			return err
+			return "", err
 		}
+		return envs, nil
 	case config.KCAT:
-		kCatConfig := config.NewKCatConfig(secret, dest)
+		kCatConfig := config.NewKCatConfig(secret, config.KCatEnvToFileMap, dest)
 		kCatConfig.Init()
-		err := kCatConfig.Generate()
+		kCat, err := kCatConfig.Generate()
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		if err := kCatConfig.Finit(); err != nil {
-			return err
+			return "", err
 		}
+		return kCat, nil
 	case config.ALL:
 		err := ConfigAll(secret, dest)
 		if err != nil {
-			return fmt.Errorf("generate all configs: %s", err)
+			return "", fmt.Errorf("generate all configs: %s", err)
 		}
 	}
-	log.Default().Printf("'%s' config from secret '%s' found her: '%s'.", typeConfig, secret.Name, dest)
-	return nil
+	return "", nil
 }
