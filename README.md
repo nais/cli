@@ -138,7 +138,7 @@ After Successful `nais` command a set of files will be available in `current` fo
 ##### kafka-secret.env
 
 ```Properties
-KAFKA_BROKERS:brokerurl.aivencloud.com:26484
+KAFKA_BROKERS=brokerurl.aivencloud.com:26484
 KAFKA_PRIVATE_KEY=/path/to/kafka-client-private-key.pem
 client.keystore.p12=/path/to/client-keystore.p12
 client.truststore.jks=/path/to/.envs/client-truststore.jks
