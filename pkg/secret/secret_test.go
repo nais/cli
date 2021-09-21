@@ -27,9 +27,11 @@ func TestGeneratedFilesAndSecretConfiguration(t *testing.T) {
 	}
 
 	tempDir := test.SetupDest(t)
-	secret := test.SetupSecret(envKeys)
+	existingSecret := test.SetupSecret(envKeys)
 
-	kafkaEnvData, err := Config(secret, tempDir, config.ENV)
+	secret := SetupSecretConfiguration(existingSecret, config.ENV, tempDir)
+
+	kafkaEnvData, err := secret.Config()
 	assert.NoError(t, err)
 
 	// Test kafka.env file created
@@ -57,7 +59,8 @@ func TestGeneratedFilesAndSecretConfiguration(t *testing.T) {
 	}
 
 	// Test kcat file created
-	kcatData, err := Config(secret, tempDir, config.KCAT)
+	secret = SetupSecretConfiguration(existingSecret, config.KCAT, tempDir)
+	kcatData, err := secret.Config()
 	assert.NoError(t, err)
 	assert.True(t, strings.Contains(kcatData, "ssl.ca.location"))
 	assert.True(t, strings.Contains(kcatData, "ssl.key.location"))

@@ -15,7 +15,7 @@ const (
 
 func NewEnvConfig(secret *v1.Secret, envToFileMap map[string]string, dest string) Config {
 	return &KafkaEnvironment{
-		Envs:          "",
+		Envs:          fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
 		Secret:        secret,
 		PrefixPath:    dest,
 		RequiredFiles: envToFileMap,
@@ -29,20 +29,16 @@ type KafkaEnvironment struct {
 	RequiredFiles map[string]string
 }
 
-func (k *KafkaEnvironment) Init() {
-	k.Envs += fmt.Sprintf("# nais-cli %s\n# .env\n", time.Now().Truncate(time.Minute))
-}
-
-func (k *KafkaEnvironment) Finit() error {
+func (k *KafkaEnvironment) WriteConfigToFile() error {
 	if err := k.write(); err != nil {
-		return err
+		return fmt.Errorf("could not write %s to file: %s", KafkaSchemaRegistryEnvName, err)
 	}
 	return nil
 }
 
 func (k *KafkaEnvironment) write() error {
 	if err := common.WriteToFile(k.PrefixPath, KafkaSchemaRegistryEnvName, []byte(k.Envs)); err != nil {
-		return fmt.Errorf("could not write envs to file: %s", err)
+		return fmt.Errorf("write envs to file: %s", err)
 	}
 	return nil
 }
@@ -63,7 +59,7 @@ func (k *KafkaEnvironment) Generate() (string, error) {
 
 	for key, value := range k.Secret.Data {
 		if err := k.toFile(key, value); err != nil {
-			return "", fmt.Errorf("could not write to file for key: %s\n %s", key, err)
+			return "", fmt.Errorf("write to file for key: %s\n %s", key, err)
 		}
 		k.toEnv(key, value)
 	}

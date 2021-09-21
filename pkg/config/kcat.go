@@ -20,7 +20,7 @@ const (
 
 func NewKCatConfig(secret *v1.Secret, envToFileMap map[string]string, dest string) Config {
 	return &KCat{
-		Config:        "",
+		Config:        fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace),
 		Secret:        secret,
 		PrefixPath:    dest,
 		RequiredFiles: envToFileMap,
@@ -40,20 +40,16 @@ type KCat struct {
 	RequiredLocation map[string]string
 }
 
-func (k *KCat) Init() {
-	k.Config += fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, k.Secret.Namespace)
-}
-
-func (k *KCat) Finit() error {
+func (k *KCat) WriteConfigToFile() error {
 	if err := k.write(); err != nil {
-		return fmt.Errorf("could not write %s to file: %s", KafkaCatConfigName, err)
+		return fmt.Errorf("write %s to file: %s", KafkaCatConfigName, err)
 	}
 	return nil
 }
 
 func (k *KCat) write() error {
 	if err := common.WriteToFile(k.PrefixPath, KafkaCatConfigName, []byte(k.Config)); err != nil {
-		return fmt.Errorf("could not write kafka.config to file: %s", err)
+		return fmt.Errorf("write to file: %s", err)
 	}
 	return nil
 }
@@ -74,7 +70,7 @@ func (k *KCat) Generate() (string, error) {
 
 	for key, value := range k.Secret.Data {
 		if err := k.toFile(key, value); err != nil {
-			return "", fmt.Errorf("could not write to file for key: %s\n %s", key, err)
+			return "", fmt.Errorf("write to file for key: %s\n %s", key, err)
 		}
 		k.toEnv(key, value)
 	}

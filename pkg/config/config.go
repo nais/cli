@@ -3,8 +3,7 @@ package config
 import "github.com/nais/nais-cli/pkg/consts"
 
 type Config interface {
-	Finit() error
-	Init()
+	WriteConfigToFile() error
 	Set(key string, value []byte, destination string)
 	Generate() (string, error)
 }
