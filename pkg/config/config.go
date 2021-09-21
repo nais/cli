@@ -15,14 +15,14 @@ const (
 )
 
 var KCatEnvToFileMap = map[string]string{
-	consts.KafkaCertificate: consts.KafkaCertificateCrtFile,
-	consts.KafkaPrivateKey:  consts.KafkaPrivateKeyPemFile,
+	consts.KafkaCertificate: consts.KafkaClientCertificateCrtFile,
+	consts.KafkaPrivateKey:  consts.KafkaClientPrivateKeyPemFile,
 	consts.KafkaCa:          consts.KafkaCACrtFile,
 }
 
 var KafkaConfigEnvToFileMap = map[string]string{
-	consts.KafkaCertificate:         consts.KafkaCertificateCrtFile,
-	consts.KafkaPrivateKey:          consts.KafkaPrivateKeyPemFile,
+	consts.KafkaCertificate:         consts.KafkaClientCertificateCrtFile,
+	consts.KafkaPrivateKey:          consts.KafkaClientPrivateKeyPemFile,
 	consts.KafkaCa:                  consts.KafkaCACrtFile,
 	consts.KafkaClientKeystoreP12:   consts.KafkaClientKeyStoreP12File,
 	consts.KafkaClientTruststoreJks: consts.KafkaClientTruststoreJksFile,

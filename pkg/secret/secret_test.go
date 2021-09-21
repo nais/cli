@@ -44,9 +44,9 @@ func TestGeneratedFilesAndSecretConfiguration(t *testing.T) {
 	assert.True(t, strings.Contains(kafkaEnvData, "client.keystore.p12"))
 
 	var fileKeys = []string{
-		consts.KafkaCertificateCrtFile,
+		consts.KafkaClientCertificateCrtFile,
 		consts.KafkaCACrtFile,
-		consts.KafkaPrivateKeyPemFile,
+		consts.KafkaClientPrivateKeyPemFile,
 		consts.KafkaClientKeyStoreP12File,
 		consts.KafkaClientTruststoreJksFile,
 	}

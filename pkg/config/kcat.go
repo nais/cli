@@ -25,9 +25,9 @@ func NewKCatConfig(secret *v1.Secret, envToFileMap map[string]string, dest strin
 		PrefixPath:    dest,
 		RequiredFiles: envToFileMap,
 		RequiredLocation: map[string]string{
-			consts.KafkaCertificateCrtFile: KafkaCatSslCertificateLocation,
-			consts.KafkaPrivateKeyPemFile:  KafkaCatSslKeyLocation,
-			consts.KafkaCACrtFile:          KafkaCatSslCaLocation,
+			consts.KafkaClientCertificateCrtFile: KafkaCatSslCertificateLocation,
+			consts.KafkaClientPrivateKeyPemFile:  KafkaCatSslKeyLocation,
+			consts.KafkaCACrtFile:                KafkaCatSslCaLocation,
 		},
 	}
 }
