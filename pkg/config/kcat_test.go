@@ -12,25 +12,24 @@ import (
 func TestKcatConfigGenerated(t *testing.T) {
 
 	var envKeys = []string{
-		consts.KafkaCertificate,
-		consts.KafkaCa,
-		consts.KafkaPrivateKey,
-		consts.KafkaClientKeystoreP12,
-		consts.KafkaClientTruststoreJks,
-		consts.KafkaCredStorePassword,
-		consts.KafkaSchemaRegistry,
+		consts.KafkaCAKey,
+		consts.KafkaCertificateKey,
+		consts.KafkaPrivateKeyKey,
+		consts.KafkaClientKeyStoreP12File,
+		consts.KafkaClientTruststoreJksFile,
+		consts.KafkaCredStorePasswordKey,
+		consts.KafkaSchemaRegistryKey,
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), KCatEnvToFileMap, tmpDest)
+	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), tmpDest)
 	result, err := kcatConfig.Generate()
 	assert.NoError(t, err)
 
-	assert.NoError(t, err)
-	assert.True(t, strings.Contains(result, "ssl.ca.location"))
-	assert.True(t, strings.Contains(result, "ssl.key.location"))
-	assert.True(t, strings.Contains(result, "ssl.certificate"))
-	assert.True(t, strings.Contains(result, "security.protocol"))
+	assert.True(t, strings.Contains(result, KafkaCatSslCaLocation))
+	assert.True(t, strings.Contains(result, KafkaCatSslKeyLocation))
+	assert.True(t, strings.Contains(result, KafkaCatSslCertificateLocation))
+	assert.True(t, strings.Contains(result, KafkaSecurityProtocolLocation))
 
 	defer os.Remove(tmpDest)
 }
@@ -38,12 +37,12 @@ func TestKcatConfigGenerated(t *testing.T) {
 func TestKcatSecretMissingRequiredData(t *testing.T) {
 
 	var envKeys = []string{
-		consts.KafkaCertificate,
-		consts.KafkaCa,
+		consts.KafkaCAKey,
+		consts.KafkaCertificateKey,
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), KCatEnvToFileMap, tmpDest)
+	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), tmpDest)
 	_, err := kcatConfig.Generate()
 	assert.EqualError(t, err, "can not generate kcat.conf config, secret missing required key: KAFKA_PRIVATE_KEY")
 

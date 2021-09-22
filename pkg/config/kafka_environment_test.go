@@ -12,27 +12,28 @@ import (
 func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 
 	var envKeys = []string{
-		consts.KafkaCertificate,
-		consts.KafkaCa,
-		consts.KafkaPrivateKey,
-		consts.KafkaClientKeystoreP12,
-		consts.KafkaClientTruststoreJks,
-		consts.KafkaCredStorePassword,
-		consts.KafkaSchemaRegistry,
+		consts.KafkaCAKey,
+		consts.KafkaCertificateKey,
+		consts.KafkaPrivateKeyKey,
+		consts.KafkaClientKeyStoreP12File,
+		consts.KafkaClientTruststoreJksFile,
+		consts.KafkaCredStorePasswordKey,
+		consts.KafkaSchemaRegistryKey,
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), KafkaConfigEnvToFileMap, tmpDest)
+	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
+
 	result, err := kcatConfig.Generate()
 	assert.NoError(t, err)
 
-	assert.True(t, strings.Contains(result, "client.truststore.jks"))
-	assert.True(t, strings.Contains(result, "KAFKA_CREDSTORE_PASSWORD"))
-	assert.True(t, strings.Contains(result, "KAFKA_SCHEMA_REGISTRY"))
-	assert.True(t, strings.Contains(result, "KAFKA_CERTIFICATE"))
-	assert.True(t, strings.Contains(result, "KAFKA_CA"))
-	assert.True(t, strings.Contains(result, "KAFKA_PRIVATE_KEY"))
-	assert.True(t, strings.Contains(result, "client.keystore.p12"))
+	assert.True(t, strings.Contains(result, consts.KafkaClientTruststoreJksFile))
+	assert.True(t, strings.Contains(result, consts.KafkaCredStorePasswordKey))
+	assert.True(t, strings.Contains(result, consts.KafkaSchemaRegistryKey))
+	assert.True(t, strings.Contains(result, consts.KafkaCertificateKey))
+	assert.True(t, strings.Contains(result, consts.KafkaCAKey))
+	assert.True(t, strings.Contains(result, consts.KafkaPrivateKeyKey))
+	assert.True(t, strings.Contains(result, consts.KafkaClientKeyStoreP12File))
 
 	defer os.Remove(tmpDest)
 }
@@ -40,16 +41,16 @@ func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 func TestKafkaEnvironmentSecrettMissingRequiredData(t *testing.T) {
 
 	var envKeys = []string{
-		consts.KafkaCertificate,
-		consts.KafkaCa,
-		consts.KafkaPrivateKey,
-		consts.KafkaClientKeystoreP12,
-		consts.KafkaCredStorePassword,
-		consts.KafkaSchemaRegistry,
+		consts.KafkaCAKey,
+		consts.KafkaCertificateKey,
+		consts.KafkaPrivateKeyKey,
+		consts.KafkaClientKeyStoreP12File,
+		consts.KafkaCredStorePasswordKey,
+		consts.KafkaSchemaRegistryKey,
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), KafkaConfigEnvToFileMap, tmpDest)
+	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
 	_, err := kcatConfig.Generate()
 	assert.EqualError(t, err, "can not generate kafka-secret.env config, secret missing required key: client.truststore.jks")
 
