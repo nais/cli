@@ -5,46 +5,24 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
-	"runtime"
-	"strings"
-)
-
-const (
-	FilePermission = 0775
+	"path/filepath"
 )
 
 func DefaultDestination(dest string) (string, error) {
-	current, err := os.Getwd()
-	if dest == "" {
-		return current, nil
+	if dest != "" {
+		newPath, err := filepath.Abs(dest)
+		if err != nil {
+			return "", fmt.Errorf("unable to make %s absolute: %w", dest, err)
+		}
+		return newPath, nil
 	}
 
+	newPath, err := os.MkdirTemp("", "aiven-secret-")
 	if err != nil {
-		return "", fmt.Errorf("could assign directory; %s", err)
+		return "", fmt.Errorf("failed to create temporary directory: %w", err)
 	}
 
-	dest = system(dest)
-	newPath := fmt.Sprintf("%s%s", current, dest)
-	if _, err := os.Stat(newPath); os.IsNotExist(err) {
-		if err = os.Mkdir(newPath, os.FileMode(FilePermission)); err != nil {
-			return "", fmt.Errorf("could not create directory; %s", err)
-		}
-	}
 	return newPath, nil
-}
-
-func system(dest string) string {
-	if runtime.GOOS == "windows" {
-		if !strings.HasPrefix(dest, "\\") {
-			return fmt.Sprintf("\\%s", dest)
-		} else {
-			return dest
-		}
-	}
-	if !strings.HasPrefix(dest, "/") {
-		return fmt.Sprintf("/%s", dest)
-	}
-	return dest
 }
 
 func GetString(cmd *cobra.Command, flag string, required bool) (string, error) {
