@@ -16,8 +16,8 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "nais [command] [args] [flags]",
-		Short: "A simple NAIS client to generate resources for debug",
-		Long: `nais-cli debug CLI. 
+		Short: "A simple NAIS client to generate resources for debug purpose",
+		Long: `NAIS debug CLI. 
 This is a NAIS tool to extract secrets from cluster to quickly start debugging your NAIS resources.`,
 	}
 )
@@ -34,23 +34,12 @@ func Execute(version, commit, date, builtBy string) {
 	}
 }
 
-const (
-	NamespaceFlag = "namespace"
-	UsernameFlag  = "username"
-	DestFlag       = "dest"
-	ConfigFlag     = "config"
-	ExpireFlag     = "expire"
-	PoolFlag       = "pool"
-	SecretNameFlag = "secret-name"
-
-	CommitInformation = "commit"
-)
-
 func init() {
 	cobra.OnInitialize(initConfig)
 	initAivenCmd()
 	initVersionCmd()
 	initGetCmd()
+	initCreateCmd()
 }
 
 func initConfig() {
@@ -60,15 +49,7 @@ func initConfig() {
 }
 
 func initAivenCmd() {
-	aivenCommand.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
-	viper.BindPFlag(PoolFlag, aivenCommand.Flags().Lookup(PoolFlag))
-
-	aivenCommand.Flags().IntP(ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
-	viper.BindPFlag(ExpireFlag, aivenCommand.Flags().Lookup(ExpireFlag))
-
-	aivenCommand.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
-	viper.BindPFlag(SecretNameFlag, aivenCommand.Flags().Lookup(SecretNameFlag))
-	rootCmd.AddCommand(aivenCommand)
+	rootCmd.AddCommand(AivenCommand)
 }
 
 func initVersionCmd() {
@@ -78,11 +59,23 @@ func initVersionCmd() {
 }
 
 func initGetCmd() {
-	getCmd.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
-	viper.BindPFlag(DestFlag, getCmd.Flags().Lookup(DestFlag))
+	GetCmd.Flags().StringP(DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
+	viper.BindPFlag(DestFlag, GetCmd.Flags().Lookup(DestFlag))
 
-	getCmd.Flags().StringP(ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
-	viper.BindPFlag(ConfigFlag, getCmd.Flags().Lookup(ConfigFlag))
+	GetCmd.Flags().StringP(ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
+	viper.BindPFlag(ConfigFlag, GetCmd.Flags().Lookup(ConfigFlag))
 
-	aivenCommand.AddCommand(getCmd)
+	AivenCommand.AddCommand(GetCmd)
+}
+
+func initCreateCmd() {
+	CreateCmd.Flags().StringP(PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
+	viper.BindPFlag(PoolFlag, CreateCmd.Flags().Lookup(PoolFlag))
+
+	CreateCmd.Flags().IntP(ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
+	viper.BindPFlag(ExpireFlag, CreateCmd.Flags().Lookup(ExpireFlag))
+
+	CreateCmd.Flags().StringP(SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
+	viper.BindPFlag(SecretNameFlag, CreateCmd.Flags().Lookup(SecretNameFlag))
+	AivenCommand.AddCommand(CreateCmd)
 }

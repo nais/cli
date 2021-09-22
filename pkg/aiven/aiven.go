@@ -7,7 +7,6 @@ import (
 	"github.com/nais/nais-cli/pkg/common"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
@@ -15,8 +14,6 @@ import (
 )
 
 const (
-	AivenApiVersion  = "aiven.nais.io/v1"
-	AivenKind        = "aivenApplication"
 	DefaultProtected = true
 )
 
@@ -69,23 +66,17 @@ func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error
 }
 
 func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
-	app := &aiven_nais_io_v1.AivenApplication{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       AivenKind,
-			APIVersion: AivenApiVersion,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      strings.ReplaceAll(a.Props.Username, ".", "-"),
-			Namespace: a.Props.Namespace,
-		},
-		Spec: aiven_nais_io_v1.AivenApplicationSpec{
-			SecretName: secretName,
-			Protected:  DefaultProtected,
-			ExpiresAt:  time.Now().AddDate(0, 0, a.Props.Expiry).Format(time.RFC3339),
-			Kafka:      &aiven_nais_io_v1.KafkaSpec{Pool: a.Props.Pool},
-		},
-	}
-	return app
+	name := strings.ReplaceAll(a.Props.Username, ".", "-")
+	app := aiven_nais_io_v1.NewAivenApplicationBuilder(name, a.Props.Namespace).
+		WithSpec(
+			aiven_nais_io_v1.AivenApplicationSpec{
+				SecretName: secretName,
+				Protected:  DefaultProtected,
+				ExpiresAt:  time.Now().AddDate(0, 0, a.Props.Expiry).Format(time.RFC3339),
+				Kafka:      &aiven_nais_io_v1.KafkaSpec{Pool: a.Props.Pool},
+			},
+		).Build()
+	return &app
 }
 
 func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) error {
