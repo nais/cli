@@ -7,35 +7,28 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
-	"os"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
+
+	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
+	// Auth providers
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
 var scheme = runtime.NewScheme()
-
-const (
-	KUBECONFIG = "KUBECONFIG"
-)
 
 type AivenClient struct {
 	ctrl.Client
 }
 
 func getConfig() *rest.Config {
-	// setup config file
-	var kubeconfig string
-	kubeconfig = os.Getenv(KUBECONFIG)
-	if kubeconfig == "" {
-		log.Fatalf("%s environment variable is reqired for client to work properly.\n"+
-			"naisdevice: 1. Installed? 2. Running? 3. Connected?", KUBECONFIG)
-	}
-
-	// use the current context in kubeconfig
-	configs, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	configOverrides := &clientcmd.ConfigOverrides{}
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+	config, err := kubeConfig.ClientConfig()
 	if err != nil {
-		log.Fatalf("authentication: update your kubectcl kubeconfig: %s", err)
+		log.Fatalf("Unable to configure Kubernetes client. Check that naisdevice is connected, and your selected context is correct")
 	}
-	return configs
+	return config
 }
 
 func InitScheme(scheme *runtime.Scheme) {
