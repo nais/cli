@@ -5,9 +5,3 @@ type Config interface {
 	Set(key string, value []byte)
 	Generate() (string, error)
 }
-
-const (
-	ENV  = ".env"
-	KCAT = "kcat"
-	ALL  = "all"
-)

@@ -20,4 +20,8 @@ const (
 	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
 	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD"
 	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD"
+
+	EnvironmentConfigurationType = ".env"
+	KCatConfigurationType        = "kcat"
+	AllConfigurationType         = "all"
 )

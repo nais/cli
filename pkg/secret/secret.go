@@ -7,6 +7,7 @@ import (
 	"github.com/nais/nais-cli/pkg/client"
 	"github.com/nais/nais-cli/pkg/common"
 	"github.com/nais/nais-cli/pkg/config"
+	"github.com/nais/nais-cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -105,7 +106,7 @@ func (s *Secret) ConfigAll() error {
 func (s *Secret) Config() (string, error) {
 	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
 	switch s.ConfigType {
-	case config.ENV:
+	case consts.EnvironmentConfigurationType:
 		kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
 		envs, err := kafkaEnv.Generate()
 		if err != nil {
@@ -116,7 +117,7 @@ func (s *Secret) Config() (string, error) {
 			return "", err
 		}
 		return envs, nil
-	case config.KCAT:
+	case consts.KCatConfigurationType:
 		kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
 		kCat, err := kCatConfig.Generate()
 		if err != nil {
@@ -127,7 +128,7 @@ func (s *Secret) Config() (string, error) {
 			return "", err
 		}
 		return kCat, nil
-	case config.ALL:
+	case consts.AllConfigurationType:
 		err := s.ConfigAll()
 		if err != nil {
 			return "", fmt.Errorf("generate %s config-type", s.ConfigType)

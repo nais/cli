@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/nais/nais-cli/cmd/helpers"
-	"github.com/nais/nais-cli/pkg/config"
+	"github.com/nais/nais-cli/pkg/consts"
 	"github.com/nais/nais-cli/pkg/secret"
 	"github.com/spf13/cobra"
 	"log"
@@ -29,8 +29,8 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 			log.Fatalf("getting %s: %s", ConfigFlag, err)
 		}
 
-		if configType != config.ENV && configType != config.ALL && configType != config.KCAT {
-			log.Fatalf("valid args: %s | %s | %s", config.ENV, config.KCAT, config.ALL)
+		if configType != consts.EnvironmentConfigurationType && configType != consts.AllConfigurationType && configType != consts.KCatConfigurationType {
+			log.Fatalf("valid args: %s | %s | %s", consts.EnvironmentConfigurationType, consts.KCatConfigurationType, consts.AllConfigurationType)
 		}
 
 		dest, err := helpers.GetString(cmd, DestFlag, false)
