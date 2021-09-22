@@ -5,6 +5,7 @@ import (
 	"github.com/nais/nais-cli/pkg/common"
 	"github.com/nais/nais-cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
+	"path/filepath"
 	"time"
 )
 
@@ -18,15 +19,19 @@ const (
 	KafkaCatConfigName = "kcat.conf"
 )
 
-func NewKCatConfig(secret *v1.Secret, envToFileMap map[string]string, dest string) Config {
+func NewKCatConfig(secret *v1.Secret, dest string) Config {
 	return &KCat{
-		Config:        fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace),
-		Secret:        secret,
-		PrefixPath:    dest,
-		RequiredFiles: envToFileMap,
+		Config:     fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace),
+		Secret:     secret,
+		PrefixPath: dest,
+		RequiredFiles: map[string]string{
+			consts.KafkaCertificateKey: consts.KafkaCertificateCrtFile,
+			consts.KafkaPrivateKeyKey:  consts.KafkaPrivateKeyPemFile,
+			consts.KafkaCAKey:          consts.KafkaCACrtFile,
+		},
 		RequiredLocation: map[string]string{
-			consts.KafkaClientCertificateCrtFile: KafkaCatSslCertificateLocation,
-			consts.KafkaClientPrivateKeyPemFile:  KafkaCatSslKeyLocation,
+			consts.KafkaCertificateCrtFile: KafkaCatSslCertificateLocation,
+			consts.KafkaPrivateKeyPemFile:  KafkaCatSslKeyLocation,
 			consts.KafkaCACrtFile:                KafkaCatSslCaLocation,
 		},
 	}
@@ -54,12 +59,12 @@ func (k *KCat) write() error {
 	return nil
 }
 
-func (k *KCat) Set(key string, value []byte, destination string) {
-	if destination == "" {
-		k.Config += fmt.Sprintf("%s=%s\n", key, string(value))
-	} else {
-		k.Config += fmt.Sprintf("%s=%s\n", key, destination)
-	}
+func (k *KCat) Set(key string, value []byte) {
+	k.Config += fmt.Sprintf("%s=%s\n", key, string(value))
+}
+
+func (k *KCat) SetPath(key, path string) {
+	k.Config += fmt.Sprintf("%s=%s\n", key, path)
 }
 
 func (k *KCat) Generate() (string, error) {
@@ -86,14 +91,14 @@ func (k *KCat) toFile(key string, value []byte) error {
 			return err
 		}
 		if k.RequiredLocation[requiredFile] != "" {
-			k.Set(k.RequiredLocation[requiredFile], value, common.Destination(path, requiredFile))
+			k.SetPath(k.RequiredLocation[requiredFile], filepath.Join(path, requiredFile))
 		}
 	}
 	return nil
 }
 
 func (k *KCat) toEnv(key string, value []byte) {
-	if key == consts.KafkaBrokers {
-		k.Set(KafkaCatBootstrapServers, value, "")
+	if key == consts.KafkaBrokersKey {
+		k.Set(KafkaCatBootstrapServers, value)
 	}
 }

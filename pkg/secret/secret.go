@@ -81,8 +81,8 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 }
 
 func (s *Secret) ConfigAll() error {
-	kafkaEnv := config.NewEnvConfig(s.Secret, config.KafkaConfigEnvToFileMap, s.DestinationPath)
-	kCatConfig := config.NewKCatConfig(s.Secret, config.KCatEnvToFileMap, s.DestinationPath)
+	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
+	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
 	_, err := kafkaEnv.Generate()
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (s *Secret) Config() (string, error) {
 	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
 	switch s.ConfigType {
 	case config.ENV:
-		kafkaEnv := config.NewEnvConfig(s.Secret, config.KafkaConfigEnvToFileMap, s.DestinationPath)
+		kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
 		envs, err := kafkaEnv.Generate()
 		if err != nil {
 			return "", fmt.Errorf("generate %s config-type", s.ConfigType)
@@ -117,7 +117,7 @@ func (s *Secret) Config() (string, error) {
 		}
 		return envs, nil
 	case config.KCAT:
-		kCatConfig := config.NewKCatConfig(s.Secret, config.KCatEnvToFileMap, s.DestinationPath)
+		kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
 		kCat, err := kCatConfig.Generate()
 		if err != nil {
 			return "", fmt.Errorf("generate %s config-type", s.ConfigType)

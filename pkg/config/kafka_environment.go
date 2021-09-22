@@ -5,6 +5,7 @@ import (
 	"github.com/nais/nais-cli/pkg/common"
 	"github.com/nais/nais-cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -13,12 +14,24 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-func NewEnvConfig(secret *v1.Secret, envToFileMap map[string]string, dest string) Config {
+type RequiredFile struct {
+	Filename     string
+	PathKey      string
+	IncludeInEnv bool
+}
+
+func NewEnvConfig(secret *v1.Secret, dest string) Config {
 	return &KafkaEnvironment{
-		Envs:          fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
-		Secret:        secret,
-		PrefixPath:    dest,
-		RequiredFiles: envToFileMap,
+		Envs:       fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
+		Secret:     secret,
+		PrefixPath: dest,
+		RequiredFiles: map[string]RequiredFile{
+			consts.KafkaCertificateKey:          {consts.KafkaCertificateCrtFile, consts.KafkaCertificatePathKey, true},
+			consts.KafkaPrivateKeyKey:           {consts.KafkaPrivateKeyPemFile, consts.KafkaPrivateKeyPathKey, true},
+			consts.KafkaCAKey:                   {consts.KafkaCACrtFile, consts.KafkaCAPathKey, true},
+			consts.KafkaClientKeyStoreP12File:   {consts.KafkaClientKeyStoreP12File, consts.KafkaKeystorePathKey, false},
+			consts.KafkaClientTruststoreJksFile: {consts.KafkaClientTruststoreJksFile, consts.KafkaTruststorePathKey, false},
+		},
 	}
 }
 
@@ -26,7 +39,7 @@ type KafkaEnvironment struct {
 	Envs          string
 	Secret        *v1.Secret
 	PrefixPath    string
-	RequiredFiles map[string]string
+	RequiredFiles map[string]RequiredFile
 }
 
 func (k *KafkaEnvironment) WriteConfigToFile() error {
@@ -43,16 +56,16 @@ func (k *KafkaEnvironment) write() error {
 	return nil
 }
 
-func (k *KafkaEnvironment) Set(key string, value []byte, destination string) {
-	if destination == "" {
-		k.Envs += fmt.Sprintf("%s=%s\n", key, string(value))
-	} else {
-		k.Envs += fmt.Sprintf("%s=%s\n", key, destination)
-	}
+func (k *KafkaEnvironment) Set(key string, value []byte) {
+	k.Envs += fmt.Sprintf("%s=\"%s\"\n", key, string(value))
+}
+
+func (k *KafkaEnvironment) SetPath(key, path string) {
+	k.Envs += fmt.Sprintf("%s=%s\n", key, path)
 }
 
 func (k *KafkaEnvironment) Generate() (string, error) {
-	err := common.RequiredSecretDataExists(k.RequiredFiles, k.Secret.Data, KafkaSchemaRegistryEnvName)
+	err := requiredSecretDataExists(k.RequiredFiles, k.Secret.Data, KafkaSchemaRegistryEnvName)
 	if err != nil {
 		return "", err
 	}
@@ -66,26 +79,37 @@ func (k *KafkaEnvironment) Generate() (string, error) {
 	return k.Envs, nil
 }
 
+func requiredSecretDataExists(required map[string]RequiredFile, secretData map[string][]byte, filetype string) error {
+	for key, _ := range required {
+		if _, ok := secretData[key]; !ok {
+			return fmt.Errorf("can not generate %s config, secret missing required key: %s", filetype, key)
+		}
+	}
+	return nil
+}
+
 func (k *KafkaEnvironment) toEnv(key string, value []byte) {
-	if key == consts.KafkaBrokers {
-		k.Set(key, value, "")
+	if key == consts.KafkaBrokersKey {
+		k.Set(key, value)
 	}
-	if key == consts.KafkaCredStorePassword {
-		k.Set(key, value, "")
+	if key == consts.KafkaCredStorePasswordKey {
+		k.Set(key, value)
 	}
-	if strings.HasPrefix(key, consts.KafkaSchemaRegistry) {
-		k.Set(key, value, "")
+	if strings.HasPrefix(key, consts.KafkaSchemaRegistryKey) {
+		k.Set(key, value)
 	}
 }
 
 func (k *KafkaEnvironment) toFile(key string, value []byte) error {
 	path := k.PrefixPath
-	requiredFile := k.RequiredFiles[key]
-	if requiredFile != "" {
-		if err := common.WriteToFile(path, requiredFile, value); err != nil {
+	if requiredFile, ok := k.RequiredFiles[key]; ok {
+		if err := common.WriteToFile(path, requiredFile.Filename, value); err != nil {
 			return err
 		}
-		k.Set(key, value, common.Destination(path, requiredFile))
+		k.SetPath(requiredFile.PathKey, filepath.Join(path, requiredFile.Filename))
+		if requiredFile.IncludeInEnv {
+			k.Set(key, value)
+		}
 	}
 	return nil
 }

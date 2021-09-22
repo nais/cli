@@ -6,6 +6,7 @@ import (
 	"github.com/nais/liberator/pkg/namegen"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
+	"path/filepath"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
 )
@@ -15,12 +16,8 @@ const (
 	MaxServiceUserNameLength = 64
 )
 
-func Destination(dest, filename string) string {
-	return fmt.Sprintf("%s/%s", dest, filename)
-}
-
 func WriteToFile(dest, filename string, value []byte) error {
-	err := ioutil.WriteFile(Destination(dest, filename), value, FilePermission)
+	err := ioutil.WriteFile(filepath.Join(dest, filename), value, FilePermission)
 	if err != nil {
 		return err
 	}
