@@ -1,4 +1,4 @@
-package cmd
+package aiven
 
 import (
 	"fmt"
@@ -18,24 +18,24 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if len(args) != 2 {
-			return fmt.Errorf("missing reqired arguments: %s, %s", SecretNameFlag, NamespaceFlag)
+			return fmt.Errorf("missing reqired arguments: %s, %s", helpers.SecretNameFlag, helpers.NamespaceFlag)
 		}
 
 		secretName := strings.TrimSpace(args[0])
 		namespace := strings.TrimSpace(args[1])
 
-		configType, err := helpers.GetString(cmd, ConfigFlag, false)
+		configType, err := helpers.GetString(cmd, helpers.ConfigFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting %s: %s", ConfigFlag, err)
+			return fmt.Errorf("getting %s: %s", helpers.ConfigFlag, err)
 		}
 
 		if configType != consts.EnvironmentConfigurationType && configType != consts.AllConfigurationType && configType != consts.KCatConfigurationType {
 			return fmt.Errorf("valid args: %s | %s | %s", consts.EnvironmentConfigurationType, consts.KCatConfigurationType, consts.AllConfigurationType)
 		}
 
-		dest, err := helpers.GetString(cmd, DestFlag, false)
+		dest, err := helpers.GetString(cmd, helpers.DestFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting %s: %s", DestFlag, err)
+			return fmt.Errorf("getting %s: %s", helpers.DestFlag, err)
 		}
 		secret.ExtractAndGenerateConfig(configType, dest, secretName, namespace)
 		return nil

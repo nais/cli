@@ -1,4 +1,4 @@
-package cmd
+package aiven
 
 import (
 	"fmt"
@@ -25,23 +25,23 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 nais aiven create username namespace -s preferred-secret-name`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 2 {
-			return fmt.Errorf("missing reqired arguments: %s, %s", UsernameFlag, NamespaceFlag)
+			return fmt.Errorf("missing reqired arguments: %s, %s", helpers.UsernameFlag, helpers.NamespaceFlag)
 		}
 
 		username := strings.TrimSpace(args[0])
 		namespace := strings.TrimSpace(args[1])
 
-		pool, _ := helpers.GetString(cmd, PoolFlag, false)
+		pool, _ := helpers.GetString(cmd, helpers.PoolFlag, false)
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
-			return fmt.Errorf("valid values for '--%s': %s | %s | %s", PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
+			return fmt.Errorf("valid values for '--%s': %s | %s | %s", helpers.PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
 		}
 
-		expiry, err := cmd.Flags().GetInt(ExpireFlag)
+		expiry, err := cmd.Flags().GetInt(helpers.ExpireFlag)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		secretName, err := helpers.GetString(cmd, SecretNameFlag, false)
+		secretName, err := helpers.GetString(cmd, helpers.SecretNameFlag, false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
@@ -51,7 +51,7 @@ nais aiven create username namespace -s preferred-secret-name`,
 		if err != nil {
 			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
 		}
-		log.Default().Printf("use: '%s get %s %s'.", cmd.CommandPath(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+		log.Default().Printf("use: '%s get %s %s' to generate configuration secrets.", "nais aiven", aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }

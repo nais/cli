@@ -1,15 +1,16 @@
-package cmd
+package root
 
 import (
 	"fmt"
+	"github.com/nais/nais-cli/cmd/helpers"
 	"github.com/spf13/cobra"
 )
 
-var versionCmd = &cobra.Command{
+var VersionCmd = &cobra.Command{
 	Use:   "version [flags]",
 	Short: "Show 'nais-cli' client version",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		result, err := cmd.Flags().GetBool(CommitInformation)
+		result, err := cmd.Flags().GetBool(helpers.CommitInformation)
 		if err != nil {
 			return err
 		}

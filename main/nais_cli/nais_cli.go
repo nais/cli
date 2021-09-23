@@ -1,6 +1,8 @@
 package main
 
-import "github.com/nais/nais-cli/cmd"
+import (
+	"github.com/nais/nais-cli/cmd/root"
+)
 
 var (
 	// Is set during build
@@ -11,5 +13,5 @@ var (
 )
 
 func main() {
-	cmd.Execute(version, commit, date, builtBy)
+	root.Execute(version, commit, date, builtBy)
 }
