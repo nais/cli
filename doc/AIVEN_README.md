@@ -89,4 +89,4 @@ For more details [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-ka
 
 # Flow
 
-![aiven command under the hood](../../doc/nais-cli.png)
+![aiven command under the hood](nais-cli.png)
