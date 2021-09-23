@@ -9,8 +9,8 @@ import (
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 
-	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	// Auth providers
+	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
