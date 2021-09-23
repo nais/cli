@@ -86,4 +86,4 @@ For more details [aiven-kcat-help](https://help.aiven.io/en/articles/2607674-usi
 
 # Flow
 
-![nais-cli under the hood](../../doc/nais-cli.png)
+![aiven command under the hood](../../doc/nais-cli.png)

@@ -134,7 +134,7 @@ nais version
 Read more about what you get with a certain `command` and flow chart about the underlying systems for the various
 commands used.
 
-![aiven](cmd/aiven/README.md)
+[aiven](cmd/aiven/README.md)
 
 ## Local Development
 
