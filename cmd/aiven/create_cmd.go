@@ -30,9 +30,18 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 		username := strings.TrimSpace(args[0])
 		namespace := strings.TrimSpace(args[1])
 
-		pool, _ := cmd.GetString(command, cmd.PoolFlag, false)
+		pool, err := cmd.GetString(command, cmd.PoolFlag, false)
+		if err != nil {
+			return fmt.Errorf("getting flag %s", err)
+		}
+
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
-			return fmt.Errorf("valid values for '--%s': %s | %s | %s", cmd.PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
+			return fmt.Errorf("valid values for '-%s': %s | %s | %s",
+				cmd.PoolFlag,
+				KafkaNavDev,
+				KafkaNavProd,
+				KafkaNavIntegrationTest,
+			)
 		}
 
 		expiry, err := command.Flags().GetInt(cmd.ExpireFlag)

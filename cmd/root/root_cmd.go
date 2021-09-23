@@ -62,7 +62,7 @@ func initVersionCmd() {
 }
 
 func initGetCmd() {
-	aiven.GetCmd.Flags().StringP(cmd.DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
+	aiven.GetCmd.Flags().StringP(cmd.DestFlag, "d", "", "If other then default 'tmp' folder (optional)")
 	viper.BindPFlag(cmd.DestFlag, aiven.GetCmd.Flags().Lookup(cmd.DestFlag))
 
 	aiven.GetCmd.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")

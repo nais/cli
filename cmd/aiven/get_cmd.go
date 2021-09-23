@@ -30,7 +30,12 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 		}
 
 		if configType != consts.EnvironmentConfigurationType && configType != consts.AllConfigurationType && configType != consts.KCatConfigurationType {
-			return fmt.Errorf("valid args: %s | %s | %s", consts.EnvironmentConfigurationType, consts.KCatConfigurationType, consts.AllConfigurationType)
+			return fmt.Errorf("valid values for '-%s': %s | %s | %s",
+				cmd.ConfigFlag,
+				consts.EnvironmentConfigurationType,
+				consts.KCatConfigurationType,
+				consts.AllConfigurationType,
+			)
 		}
 
 		dest, err := cmd.GetString(command, cmd.DestFlag, false)

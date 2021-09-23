@@ -44,9 +44,7 @@ You should be able to use
 nais [commands] [args] [flags]
 ```
 
-## Commands
-
-### Commands & Flags
+## Commands & Flags
 
 Flags provide modifiers to control how the action command operates.
 
@@ -56,6 +54,8 @@ Available commands:
 
 - aiven
     - get
+    - create
+    - tidy
 - version
 
 ### aiven
@@ -65,8 +65,8 @@ will apply
 a [Protected & time-limited](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace.
 
-This will give access to personal but time limited credential. These credentials can be used to debug an Aiven hosted
-kafka topic. The `aiven get` command extracts the fresh credentials and puts them in `current` folder. The
+This command will give access to personal but time limited credential. These credentials can be used to debug an Aiven
+hosted kafka topic. The `aiven get` command extracts the fresh credentials and puts them in `tmp` folder. The
 created `aivenApplication` has a default for `expireAt` (days-to-live) and will be set to 1 day.
 
 To gain access be sure to update
@@ -78,7 +78,7 @@ known as kafkacat) in preferred way.
 
 #### Required
 
-#### aiven
+###### create
 
 * `username` must be passed as **fist** argument after command: Prefix before `@nav.no`, replace `.` with `-`.
 
@@ -98,9 +98,17 @@ nais aiven your-username your-namespace
 nais aiven get your-secret-name your-namespace
 ```
 
+###### tidy
+
+Remove secret-folders created by tool (or reboot your computer).
+
+```
+nais aiven tidy
+```
+
 #### Optional
 
-##### aiven
+##### create
 
 * `--pool` short `-p` default: `nav-dev`: Preferred kafka pool.
 
@@ -110,21 +118,28 @@ nais aiven get your-secret-name your-namespace
 
 ###### get
 
-* `--dest` short `-d` default: `current`: Path to directory where secrets will be dropped of. For `current` with
-  subfolder folder, e.g: `/.config`
+* `--dest` short `-d` default: `tmp`: If other than default.
 
 * `--config` short `-c`: default: `all`: Config type, `all || kcat || .env`. `all` generates both .env and kcat config
   files.
 
+###### tidy
+
+* `--root` short `-r` default: `/var/`: other than default `tmp` folder on your system.
+
 ### version
+
+```
+nais version
+```
 
 #### Optional
 
 * `--commit` short `-i` default: `false` : Get detailed information about this `nais` version
 
-#### Available configuration files
+#### Available output configurations
 
-After Successful `nais` command a set of files will be available in `current` folder.
+After Successful `nais` command a set of files wil be available.
 
 ##### .env
 
@@ -135,7 +150,7 @@ After Successful `nais` command a set of files will be available in `current` fo
 - kafka-client-private-key.pem
 - kafka-secret.env
 
-##### kafka-secret.env
+##### kafka-secret.env file
 
 ```Properties
 KAFKA_BROKERS=brokerurl.aivencloud.com:26484
@@ -147,7 +162,7 @@ KAFKA_CERTIFICATE=/path/to/.envs/kafka-client-certificate.crt
 KAFKA_CREDSTORE_PASSWORD=password
 KAFKA_SCHEMA_REGISTRY=https://registry-url.aivencloud.com:26487
 KAFKA_SCHEMA_REGISTRY_PASSWORD=password
-KAFKA_SCHEMA_REGISTRY_USER=my-user
+.....
 ```
 
 ##### kcat
@@ -157,19 +172,20 @@ KAFKA_SCHEMA_REGISTRY_USER=my-user
 - kafka-client-private-key.pem
 - kcat.conf
 
-##### kcat.conf
+##### kcat.conf file
 
 ```Properties
 # nais 2021-09-01 15:26:00
 # kcat -F kcat.conf -t namespace.your.topic
-ssl.key.location=/path/to/current/folder/creds/kafka-client-private-key.pem
-ssl.certificate.location=/path/to/current/folder/creds/kafka-client-certificate.crt
+ssl.key.location=/path/to/tmp/folder/creds/kafka-client-private-key.pem
+ssl.certificate.location=/path/to/tmp/folder/creds/kafka-client-certificate.crt
 bootstrap.servers=https://boostrap-server.aivencloud.com:26484
-ssl.ca.location=/path/to/current/folder/creds/kafka-ca.pem
+ssl.ca.location=/path/to/tmp/folder/creds/kafka-ca.pem
 security.protocol=ssl
+....
 ```
 
-more about properties configuration in [kcat.conf](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md)
+more about configurable properties in [kcat.conf](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md)
 
 ##### All
 

@@ -8,7 +8,7 @@ control aivenator as "Aivenator"
 control kafkarator as "Kafkarator"
 boundary aiven as "Aiven"
 
-developer -> cli : nais aiven my-user my-namespace
+developer -> cli : nais aiven create my-user my-namespace
 cli -> kubernetes : add or update
 
 loop aivenator until success
