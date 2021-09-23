@@ -2,9 +2,21 @@
 
 ## Available output
 
-After Successful `nais aiven get` command a set of files wil be available.
+After Successful `nais aiven create` and `nais aiven get` commands, a set of files wil be available.
 
-### Configuration flag
+### Configuration
+
+You can specify a configuration `flag` to generate `all | kcat | .env`. Default is `all`
+
+#### all
+
+- client-keystore.p12
+- client-truststore.jks
+- kafka-ca.pem
+- kafka-client-certificate.crt
+- kafka-client-private-key.pem
+- kafka-secret.env
+- kcat.conf
 
 #### .env
 
@@ -50,25 +62,16 @@ security.protocol=ssl
 ....
 ```
 
-more about configurable properties in [kcat.conf](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md)
+The generated `kcat.conf` can be used with [kcat](https://github.com/edenhill/kcat) to authenticate against the Aiven
+hosted topics in GCP.
 
-#### all
+Read more about [kcat.conf](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md) configurable
+properties.
 
-- client-keystore.p12
-- client-truststore.jks
-- kafka-ca.pem
-- kafka-client-certificate.crt
-- kafka-client-private-key.pem
-- kafka-secret.env
-- kcat.conf
-
-`kcat.conf` can be used with [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat) to authenticate
-against the Aiven hosted topics in GCP.
-
-You can refer to this config with -F flag:
+You can refer to generated config with -F flag:
 
 ```
-kcat -F kcat.conf -t namespace.your.topic
+kcat -F path/to/kcat.conf -t namespace.your.topic
 ```
 
 Alternatively, you can specify the same settings directly on the command line:
@@ -82,7 +85,7 @@ kcat \
     -X ssl.ca.location=ca.pem
 ```
 
-For more details [aiven-kcat-help](https://help.aiven.io/en/articles/2607674-using-kafkacat)
+For more details [aiven-kcat](https://help.aiven.io/en/articles/2607674-using-kafkacat)
 
 # Flow
 
