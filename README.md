@@ -52,7 +52,7 @@ Available commands:
 
 ### aiven
 
-The aiven kafka debug command can be used to create a `aivenApplication` and extract credentials. The `avien` command
+The aiven command can be used to create a `aivenApplication` and extract credentials. The `avien` command
 will create
 a [Protected & time-limited](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace.
