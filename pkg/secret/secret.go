@@ -3,7 +3,7 @@ package secret
 import (
 	"context"
 	"fmt"
-	"github.com/nais/nais-cli/cmd/helpers"
+	"github.com/nais/nais-cli/cmd"
 	"github.com/nais/nais-cli/pkg/client"
 	"github.com/nais/nais-cli/pkg/common"
 	"github.com/nais/nais-cli/pkg/config"
@@ -48,7 +48,7 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string)
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
-	dest, err := helpers.DefaultDestination(dest)
+	dest, err := cmd.DefaultDestination(dest)
 	if err != nil {
 		log.Fatalf("an error %s", err)
 	}

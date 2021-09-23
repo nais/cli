@@ -1,4 +1,4 @@
-package helpers
+package cmd
 
 import (
 	"fmt"
@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
+)
+
+const (
+	AivenSecretFolderPrefix = "aiven-secret-"
 )
 
 func DefaultDestination(dest string) (string, error) {
@@ -17,7 +21,7 @@ func DefaultDestination(dest string) (string, error) {
 		return newPath, nil
 	}
 
-	newPath, err := os.MkdirTemp("", "aiven-secret-")
+	newPath, err := os.MkdirTemp("", AivenSecretFolderPrefix)
 	if err != nil {
 		return "", fmt.Errorf("failed to create temporary directory: %w", err)
 	}

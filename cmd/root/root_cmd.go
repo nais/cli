@@ -2,8 +2,8 @@ package root
 
 import (
 	"fmt"
+	"github.com/nais/nais-cli/cmd"
 	"github.com/nais/nais-cli/cmd/aiven"
-	"github.com/nais/nais-cli/cmd/helpers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -42,6 +42,7 @@ func init() {
 	initVersionCmd()
 	initGetCmd()
 	initCreateCmd()
+	initTidyCmd()
 }
 
 func initConfig() {
@@ -55,29 +56,35 @@ func initAivenCmd() {
 }
 
 func initVersionCmd() {
-	VersionCmd.Flags().BoolP(helpers.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
-	viper.BindPFlag(helpers.CommitInformation, VersionCmd.Flags().Lookup(helpers.DestFlag))
+	VersionCmd.Flags().BoolP(cmd.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
+	viper.BindPFlag(cmd.CommitInformation, VersionCmd.Flags().Lookup(cmd.DestFlag))
 	rootCmd.AddCommand(VersionCmd)
 }
 
 func initGetCmd() {
-	aiven.GetCmd.Flags().StringP(helpers.DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
-	viper.BindPFlag(helpers.DestFlag, aiven.GetCmd.Flags().Lookup(helpers.DestFlag))
+	aiven.GetCmd.Flags().StringP(cmd.DestFlag, "d", "", "Path to directory where secrets will be dropped of. For current './creds' (optional)")
+	viper.BindPFlag(cmd.DestFlag, aiven.GetCmd.Flags().Lookup(cmd.DestFlag))
 
-	aiven.GetCmd.Flags().StringP(helpers.ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
-	viper.BindPFlag(helpers.ConfigFlag, aiven.GetCmd.Flags().Lookup(helpers.ConfigFlag))
+	aiven.GetCmd.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
+	viper.BindPFlag(cmd.ConfigFlag, aiven.GetCmd.Flags().Lookup(cmd.ConfigFlag))
 
 	aiven.AivenCommand.AddCommand(aiven.GetCmd)
 }
 
 func initCreateCmd() {
-	aiven.CreateCmd.Flags().StringP(helpers.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
-	viper.BindPFlag(helpers.PoolFlag, aiven.CreateCmd.Flags().Lookup(helpers.PoolFlag))
+	aiven.CreateCmd.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
+	viper.BindPFlag(cmd.PoolFlag, aiven.CreateCmd.Flags().Lookup(cmd.PoolFlag))
 
-	aiven.CreateCmd.Flags().IntP(helpers.ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
-	viper.BindPFlag(helpers.ExpireFlag, aiven.CreateCmd.Flags().Lookup(helpers.ExpireFlag))
+	aiven.CreateCmd.Flags().IntP(cmd.ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
+	viper.BindPFlag(cmd.ExpireFlag, aiven.CreateCmd.Flags().Lookup(cmd.ExpireFlag))
 
-	aiven.CreateCmd.Flags().StringP(helpers.SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
-	viper.BindPFlag(helpers.SecretNameFlag, aiven.CreateCmd.Flags().Lookup(helpers.SecretNameFlag))
+	aiven.CreateCmd.Flags().StringP(cmd.SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
+	viper.BindPFlag(cmd.SecretNameFlag, aiven.CreateCmd.Flags().Lookup(cmd.SecretNameFlag))
 	aiven.AivenCommand.AddCommand(aiven.CreateCmd)
+}
+
+func initTidyCmd() {
+	aiven.TidyCmd.Flags().StringP(cmd.RootFlag, "r", "/var/", "temp folder other then '/var/' on Mac")
+	viper.BindPFlag(cmd.RootFlag, aiven.TidyCmd.Flags().Lookup(cmd.RootFlag))
+	aiven.AivenCommand.AddCommand(aiven.TidyCmd)
 }

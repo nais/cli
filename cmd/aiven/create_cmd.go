@@ -2,7 +2,7 @@ package aiven
 
 import (
 	"fmt"
-	"github.com/nais/nais-cli/cmd/helpers"
+	"github.com/nais/nais-cli/cmd"
 	"github.com/nais/nais-cli/pkg/aiven"
 	"github.com/nais/nais-cli/pkg/client"
 	"github.com/spf13/cobra"
@@ -21,27 +21,26 @@ var CreateCmd = &cobra.Command{
 	Short: "Creates a protected and time-limited 'AivenApplication'",
 	Long:  `This command will create an 'AivenApplication' based on input`,
 	Example: `nais aiven create username namespace | nais aiven create username namespace -p kafka-pool |
-nais aiven create username namespace -e 10 | nais aiven create username namespace | 
-nais aiven create username namespace -s preferred-secret-name`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+nais aiven create username namespace -e 10 | nais aiven create username namespace -s preferred-secret-name`,
+	RunE: func(command *cobra.Command, args []string) error {
 		if len(args) != 2 {
-			return fmt.Errorf("missing reqired arguments: %s, %s", helpers.UsernameFlag, helpers.NamespaceFlag)
+			return fmt.Errorf("missing reqired arguments: %s, %s", cmd.UsernameFlag, cmd.NamespaceFlag)
 		}
 
 		username := strings.TrimSpace(args[0])
 		namespace := strings.TrimSpace(args[1])
 
-		pool, _ := helpers.GetString(cmd, helpers.PoolFlag, false)
+		pool, _ := cmd.GetString(command, cmd.PoolFlag, false)
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
-			return fmt.Errorf("valid values for '--%s': %s | %s | %s", helpers.PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
+			return fmt.Errorf("valid values for '--%s': %s | %s | %s", cmd.PoolFlag, KafkaNavDev, KafkaNavProd, KafkaNavIntegrationTest)
 		}
 
-		expiry, err := cmd.Flags().GetInt(helpers.ExpireFlag)
+		expiry, err := command.Flags().GetInt(cmd.ExpireFlag)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
 
-		secretName, err := helpers.GetString(cmd, helpers.SecretNameFlag, false)
+		secretName, err := cmd.GetString(command, cmd.SecretNameFlag, false)
 		if err != nil {
 			return fmt.Errorf("getting flag %s", err)
 		}
