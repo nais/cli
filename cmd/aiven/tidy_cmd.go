@@ -18,7 +18,7 @@ var TidyCmd = &cobra.Command{
 	Use:     "tidy",
 	Short:   "Clean up 'tmp' folders with secret files created by the aiven command tool",
 	Long:    "Caution!! This will delete all files in 'tmp' folder starting with 'aiven-secret-'. Caution!! Not tested on Windows.",
-	Example: `nais aiven tidy | nais aiven tidy -r /tmp/`,
+	Example: `nais aiven tidy`,
 	RunE: func(command *cobra.Command, args []string) error {
 
 		root, err := cmd.GetString(command, cmd.RootFlag, false)

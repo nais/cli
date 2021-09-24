@@ -84,7 +84,5 @@ func initCreateCmd() {
 }
 
 func initTidyCmd() {
-	aiven.TidyCmd.Flags().StringP(cmd.RootFlag, "r", "/var/", "temp folder other then '/var/' on Mac")
-	viper.BindPFlag(cmd.RootFlag, aiven.TidyCmd.Flags().Lookup(cmd.RootFlag))
 	aiven.AivenCommand.AddCommand(aiven.TidyCmd)
 }
