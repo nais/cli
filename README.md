@@ -52,20 +52,20 @@ Available commands:
 
 ### aiven
 
-The aiven command can be used to create a `aivenApplication` and extract credentials. The `avien` command
+The aiven command can be used to create a `aivenApplication` and extract credentials. The `avien create` command
 will create
 a [Protected & time-limited](https://doc.nais.io/persistence/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure) `aivenApplication`
 in your specified namespace.
 
 This command will give access to personal but time limited credentials. These credentials can be used to debug an Aiven
 hosted kafka topic. The `aiven get` command extracts the credentials and puts them in `tmp` folder. The
-created `aivenApplication` has a default for `expireAt` (days-to-live) and will be set to 1 day.
+created `aivenApplication` has sane default (days-to-live) 1 day (24 hours).
 
 To gain access be sure to update
-your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource and topic ACLs. Be sure to add `username`
-to your topic.yaml and apply it to your namespace.
+your [topic](https://doc.nais.io/persistence/kafka/#creating-topics-and-defining-access) resource and topic ACLs. Add `username`
+to your topic.yaml and apply to your namespace.
 
-After a successful `aiven get` you can install [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly
+After a successful `aiven get` you use [kcat](https://github.com/edenhill/kcat) (kcat is the project formerly
 known as kafkacat) in preferred way.
 
 #### Required
