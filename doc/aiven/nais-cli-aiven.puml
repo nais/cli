@@ -25,7 +25,10 @@ aivenator -> kubernetes : Delete aivenApplication
     end
 end
 
+group regardless of order
 developer -> kubernetes : kubectl apply -f path/to/topic/config
+developer -> cli : nais aiven get my-secret-name my-namespace
+end
 loop kafkarator until success
 kubernetes -> kafkarator : Topic resource created/updated
 kafkarator -> aiven : Create or update topics
@@ -34,7 +37,6 @@ kafkarator -> kubernetes : Write back status and sync hash
 note right: RolloutComplete
 end
 
-developer -> cli : nais aiven get my-secret-name my-namespace
 cli -> kubernetes : extract credentials
 developer <- cli : save to folder
 

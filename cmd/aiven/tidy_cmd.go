@@ -17,7 +17,7 @@ type AivenSecretFolder struct {
 var TidyCmd = &cobra.Command{
 	Use:     "tidy",
 	Short:   "Clean up '/tmp' folder 'os.Getenv(\"TMPDIR\")' with secret files created by the aiven command tool",
-	Long:    "Caution!! This will delete all files in 'tmp' folder starting with 'aiven-secret-'. Caution!! Not tested on Windows.",
+	Long:    "Caution!! This will delete all files in '/tmp' folder starting with 'aiven-secret-'. Caution!! Not tested on Windows.",
 	Example: `nais aiven tidy`,
 	RunE: func(command *cobra.Command, args []string) error {
 
