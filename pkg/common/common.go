@@ -25,11 +25,13 @@ func WriteToFile(dest, filename string, value []byte) error {
 }
 
 func ValidateNamespace(ctx context.Context, client ctrl.Client, name string, namespace *v1.Namespace) error {
-	err := client.Get(ctx, ctrl.ObjectKey{
-		Name: name,
-	}, namespace)
+	err := client.Get(ctx, ctrl.ObjectKey{Name: name}, namespace)
 	if err != nil {
-		return fmt.Errorf("getting namespace: %s", err)
+		return fmt.Errorf("getting namespace: %w", err)
+	}
+
+	if namespace.GetLabels()["shared"] == "true" {
+		return fmt.Errorf("shared namespace is not allowed: %s", name)
 	}
 	return nil
 }

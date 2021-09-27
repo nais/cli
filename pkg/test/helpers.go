@@ -1,13 +1,18 @@
 package test
 
 import (
+	"github.com/nais/nais-cli/pkg/client"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"os"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 )
+
+var scheme = runtime.NewScheme()
 
 func SetupDest(t *testing.T) string {
 	tempDir, err := ioutil.TempDir(os.TempDir(), "test-")
@@ -37,4 +42,9 @@ func SetupSecret(envKeys []string) *v1.Secret {
 		Data: data,
 	}
 	return createdSecret
+}
+
+func BuildWithScheme(objects ...runtime.Object) *fake.ClientBuilder {
+	client.InitScheme(scheme)
+	return fake.NewClientBuilder().WithScheme(scheme).WithRuntimeObjects(objects...)
 }

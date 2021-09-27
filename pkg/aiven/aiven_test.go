@@ -2,23 +2,16 @@ package aiven
 
 import (
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	"github.com/nais/nais-cli/pkg/client"
 	"github.com/nais/nais-cli/pkg/common"
+	"github.com/nais/nais-cli/pkg/test"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 	"time"
 )
 
-var scheme = runtime.NewScheme()
-
 func TestAivenGenerateApplicationCreated(t *testing.T) {
-
-	client.InitScheme(scheme)
-
 	username := "user"
 	team := "team"
 	pool := "pool"
@@ -35,7 +28,7 @@ func TestAivenGenerateApplicationCreated(t *testing.T) {
 		},
 	}
 
-	fakeClient := fake.NewFakeClientWithScheme(scheme, &namespace)
+	fakeClient := test.BuildWithScheme(&namespace).Build()
 	aiven := SetupAiven(fakeClient, username, team, pool, secretName, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
@@ -51,9 +44,6 @@ func TestAivenGenerateApplicationCreated(t *testing.T) {
 }
 
 func TestAivenGenerateApplicationUpdated(t *testing.T) {
-
-	client.InitScheme(scheme)
-
 	username := "user"
 	team := "team"
 	pool := "pool"
@@ -77,7 +67,7 @@ func TestAivenGenerateApplicationUpdated(t *testing.T) {
 		},
 	}
 
-	fakeClient := fake.NewFakeClientWithScheme(scheme, &namespace, &aivenApp)
+	fakeClient := test.BuildWithScheme(&namespace, &aivenApp).Build()
 	aiven := SetupAiven(fakeClient, username, team, pool, secretName, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)

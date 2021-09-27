@@ -57,7 +57,7 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 		aivenConfig := aiven.SetupAiven(client.SetupClient(), username, namespace, pool, secretName, expiry)
 		aivenApp, err := aivenConfig.GenerateApplication()
 		if err != nil {
-			return fmt.Errorf("an error occurred generating aivenApplication %s", err)
+			return fmt.Errorf("an error occurred generating 'AivenApplication': %s", err)
 		}
 		log.Default().Printf("use: '%s get %s %s' to generate configuration secrets.", "nais aiven", aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
