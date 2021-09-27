@@ -18,8 +18,8 @@ const (
 
 var CreateCmd = &cobra.Command{
 	Use:   "create [args] [flags]",
-	Short: "Creates a protected and time-limited 'AivenApplication'",
-	Long:  `This command will create an 'AivenApplication' based on input`,
+	Short: "Creates an protected and time-limited 'AivenApplication'",
+	Long:  `Creates an 'AivenApplication' based on input`,
 	Example: `nais aiven create username namespace | nais aiven create username namespace -p kafka-pool |
 nais aiven create username namespace -e 10 | nais aiven create username namespace -s preferred-secret-name`,
 	RunE: func(command *cobra.Command, args []string) error {

@@ -11,7 +11,7 @@ import (
 
 var GetCmd = &cobra.Command{
 	Use:   "get [args] [flags]",
-	Short: "Return the preferred config format from a protected secret and generate files to tmp folder",
+	Short: "Generate preferred config format to '/tmp' folder",
 	Example: `nais aiven get secret-name namespace | nais aiven get secret-name namespace -d ./config | 
 nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namespace -c .env | 
  nais aiven get secret-name namespace -c all`,
