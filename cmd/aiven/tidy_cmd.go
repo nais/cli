@@ -16,17 +16,12 @@ type AivenSecretFolder struct {
 
 var TidyCmd = &cobra.Command{
 	Use:     "tidy",
-	Short:   "Clean up 'tmp' folders with secret files created by the aiven command tool",
+	Short:   "Clean up '/tmp' folder 'os.Getenv(\"TMPDIR\")' with secret files created by the aiven command tool",
 	Long:    "Caution!! This will delete all files in 'tmp' folder starting with 'aiven-secret-'. Caution!! Not tested on Windows.",
 	Example: `nais aiven tidy`,
 	RunE: func(command *cobra.Command, args []string) error {
 
-		root, err := cmd.GetString(command, cmd.RootFlag, false)
-		if err != nil {
-			return fmt.Errorf("getting flag")
-		}
-
-		aivenSecretFolders, err := findFoldersToTidy(root)
+		aivenSecretFolders, err := findFoldersToTidy()
 		if err != nil {
 			return fmt.Errorf("walking folders")
 		}
@@ -46,9 +41,9 @@ var TidyCmd = &cobra.Command{
 	},
 }
 
-func findFoldersToTidy(root string) ([]AivenSecretFolder, error) {
+func findFoldersToTidy() ([]AivenSecretFolder, error) {
 	var aivenSecretFolders []AivenSecretFolder
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(os.TempDir(), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			// Walking folder we ignore folders we can not operate on.
 			return nil
