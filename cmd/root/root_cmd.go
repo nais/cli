@@ -17,10 +17,9 @@ var (
 	BUILT_BY string
 
 	rootCmd = &cobra.Command{
-		Use:   "nais [command] [args] [flags]",
-		Short: "A simple NAIS client to generate resources for debug purpose",
-		Long: `NAIS debug CLI. 
-This is a NAIS tool to extract secrets from cluster to quickly start debugging your NAIS resources.`,
+		Use:   "nais [command]",
+		Short: "A simple NAIS CLI",
+		Long:  `This is a NAIS tool to ease when working with NAIS clusters.`,
 	}
 )
 
@@ -38,11 +37,14 @@ func Execute(version, commit, date, builtBy string) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	initAivenCmd()
+	aivenConfig := NewAivenConfig(
+		aiven.AivenCommand,
+		aiven.CreateCmd,
+		aiven.GetCmd,
+		aiven.TidyCmd,
+	)
+	aivenConfig.initCmds(rootCmd)
 	initVersionCmd()
-	initGetCmd()
-	initCreateCmd()
-	initTidyCmd()
 }
 
 func initConfig() {
@@ -51,38 +53,8 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_", ".", "_"))
 }
 
-func initAivenCmd() {
-	rootCmd.AddCommand(aiven.AivenCommand)
-}
-
 func initVersionCmd() {
 	VersionCmd.Flags().BoolP(cmd.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
 	viper.BindPFlag(cmd.CommitInformation, VersionCmd.Flags().Lookup(cmd.DestFlag))
 	rootCmd.AddCommand(VersionCmd)
-}
-
-func initGetCmd() {
-	aiven.GetCmd.Flags().StringP(cmd.DestFlag, "d", "", "If other then default 'tmp' folder (optional)")
-	viper.BindPFlag(cmd.DestFlag, aiven.GetCmd.Flags().Lookup(cmd.DestFlag))
-
-	aiven.GetCmd.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config do be generated, supported ( .env || kcat || all ) (optional)")
-	viper.BindPFlag(cmd.ConfigFlag, aiven.GetCmd.Flags().Lookup(cmd.ConfigFlag))
-
-	aiven.AivenCommand.AddCommand(aiven.GetCmd)
-}
-
-func initCreateCmd() {
-	aiven.CreateCmd.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
-	viper.BindPFlag(cmd.PoolFlag, aiven.CreateCmd.Flags().Lookup(cmd.PoolFlag))
-
-	aiven.CreateCmd.Flags().IntP(cmd.ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
-	viper.BindPFlag(cmd.ExpireFlag, aiven.CreateCmd.Flags().Lookup(cmd.ExpireFlag))
-
-	aiven.CreateCmd.Flags().StringP(cmd.SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
-	viper.BindPFlag(cmd.SecretNameFlag, aiven.CreateCmd.Flags().Lookup(cmd.SecretNameFlag))
-	aiven.AivenCommand.AddCommand(aiven.CreateCmd)
-}
-
-func initTidyCmd() {
-	aiven.AivenCommand.AddCommand(aiven.TidyCmd)
 }

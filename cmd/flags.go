@@ -9,5 +9,4 @@ const (
 	PoolFlag          = "pool"
 	SecretNameFlag    = "secret-name"
 	UsernameFlag      = "username"
-	RootFlag          = "root"
 )
