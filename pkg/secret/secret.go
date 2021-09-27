@@ -71,7 +71,7 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string)
 	if err != nil {
 		log.Fatalf("an error %s", err)
 	}
-	log.Default().Printf("configurations from secret '%s' found her: '%s'.", existingSecret.Name, dest)
+	log.Default().Printf("configurations from secret '%s' found here: '%s'.", existingSecret.Name, dest)
 }
 
 func hasAnnotation(secret *v1.Secret, key string) bool {
