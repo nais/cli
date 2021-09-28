@@ -24,7 +24,7 @@ var CreateCmd = &cobra.Command{
 nais aiven create username namespace -e 10 | nais aiven create username namespace -s preferred-secret-name`,
 	RunE: func(command *cobra.Command, args []string) error {
 		if len(args) != 2 {
-			return fmt.Errorf("missing reqired arguments: %s, %s", cmd.UsernameFlag, cmd.NamespaceFlag)
+			return fmt.Errorf("missing required arguments: %s, %s", cmd.UsernameFlag, cmd.NamespaceFlag)
 		}
 
 		username := strings.TrimSpace(args[0])
@@ -32,7 +32,7 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 
 		pool, err := cmd.GetString(command, cmd.PoolFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting flag %s", err)
+			return fmt.Errorf("flag: %s", err)
 		}
 
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
@@ -44,14 +44,14 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 			)
 		}
 
-		expiry, err := command.Flags().GetInt(cmd.ExpireFlag)
+		expiry, err := cmd.GetInt(command, cmd.ExpireFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting flag %s", err)
+			return fmt.Errorf("flag: %s", err)
 		}
 
 		secretName, err := cmd.GetString(command, cmd.SecretNameFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting flag %s", err)
+			return fmt.Errorf("flag: %s", err)
 		}
 
 		aivenConfig := aiven.SetupAiven(client.SetupClient(), username, namespace, pool, secretName, expiry)

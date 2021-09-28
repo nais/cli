@@ -11,12 +11,12 @@ import (
 )
 
 var (
-	VERSION  string
-	COMMIT   string
-	DATE     string
-	BUILT_BY string
+	VERSION string
+	COMMIT  string
+	DATE    string
+	BuiltBy string
 
-	rootCmd = &cobra.Command{
+	RootCmd = &cobra.Command{
 		Use:   "nais [command]",
 		Short: "A simple NAIS CLI",
 		Long:  `This is a NAIS tool to ease when working with NAIS clusters.`,
@@ -27,9 +27,9 @@ func Execute(version, commit, date, builtBy string) {
 	VERSION = version
 	COMMIT = commit
 	DATE = date
-	BUILT_BY = builtBy
+	BuiltBy = builtBy
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -43,7 +43,7 @@ func init() {
 		aiven.GetCmd,
 		aiven.TidyCmd,
 	)
-	aivenConfig.initCmds(rootCmd)
+	aivenConfig.InitCmds()
 	initVersionCmd()
 }
 
@@ -56,5 +56,5 @@ func initConfig() {
 func initVersionCmd() {
 	VersionCmd.Flags().BoolP(cmd.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
 	viper.BindPFlag(cmd.CommitInformation, VersionCmd.Flags().Lookup(cmd.DestFlag))
-	rootCmd.AddCommand(VersionCmd)
+	RootCmd.AddCommand(VersionCmd)
 }

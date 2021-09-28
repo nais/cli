@@ -26,19 +26,27 @@ var TidyCmd = &cobra.Command{
 			return fmt.Errorf("walking folders")
 		}
 
-		if len(aivenSecretFolders) > 0 {
-			for _, folder := range aivenSecretFolders {
-				log.Default().Printf("tidy: %s", folder.Abs)
-				err := os.RemoveAll(folder.Abs)
-				if err != nil {
-					return fmt.Errorf("tidying folder: %s", folder.Abs)
-				}
-			}
-		} else {
-			log.Default().Println("all tidy")
+		err = Tidy(aivenSecretFolders)
+		if err != nil {
+			return err
 		}
 		return nil
 	},
+}
+
+func Tidy(aivenSecretFolders []AivenSecretFolder) error {
+	if len(aivenSecretFolders) > 0 {
+		for _, folder := range aivenSecretFolders {
+			log.Default().Printf("tidy: %s", folder.Abs)
+			err := os.RemoveAll(folder.Abs)
+			if err != nil {
+				return fmt.Errorf("tidying folder: %s", folder.Abs)
+			}
+		}
+	} else {
+		log.Default().Println("all tidy")
+	}
+	return nil
 }
 
 func findFoldersToTidy() ([]AivenSecretFolder, error) {

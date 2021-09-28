@@ -35,11 +35,27 @@ func GetString(cmd *cobra.Command, flag string, required bool) (string, error) {
 	}
 	arg, err := cmd.Flags().GetString(flag)
 	if err != nil {
-		return "", fmt.Errorf("getting %s: %s", flag, err)
+		return "", fmt.Errorf("flag '--%s': %s", flag, err)
 	}
 	if arg == "" {
 		if required {
 			return "", fmt.Errorf("%s is reqired", flag)
+		}
+	}
+	return arg, nil
+}
+
+func GetInt(cmd *cobra.Command, flag string, required bool) (int, error) {
+	if viper.GetInt(flag) != 0 {
+		return viper.GetInt(flag), nil
+	}
+	arg, err := cmd.Flags().GetInt(flag)
+	if err != nil {
+		return 0, fmt.Errorf("getting '--%s': %s", flag, err)
+	}
+	if arg == 0 {
+		if required {
+			return 0, fmt.Errorf("%s is reqired", flag)
 		}
 	}
 	return arg, nil

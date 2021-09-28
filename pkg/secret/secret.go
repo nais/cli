@@ -32,46 +32,51 @@ func SetupSecretConfiguration(secret *v1.Secret, configType, dest string) Secret
 	}
 }
 
-func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secretName string) *v1.Secret {
+func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secretName string) (*v1.Secret, error) {
 	secret := &v1.Secret{}
 	err := client.Get(ctx, ctrl.ObjectKey{
 		Namespace: namespace,
 		Name:      secretName,
 	}, secret)
 	if err != nil {
-		log.Fatalf("an error %s", err)
+		return nil, fmt.Errorf("existing secret %w", err)
 	}
-	return secret
+	return secret, nil
 }
 
-func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string) {
+func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
-	dest, err := cmd.DefaultDestination(dest)
-	if err != nil {
-		log.Fatalf("an error %s", err)
-	}
-
 	namespace := v1.Namespace{}
-	err = common.ValidateNamespace(ctx, aivenClient, namespaceName, &namespace)
+	err := common.ValidateNamespace(ctx, aivenClient, namespaceName, &namespace)
 	if err != nil {
-		log.Fatalf("an error %s", err)
+		return fmt.Errorf("validate namespace: %w", err)
 	}
 
-	existingSecret := GetExistingSecret(ctx, aivenClient, namespace.Name, secretName)
+	dest, err = cmd.DefaultDestination(dest)
+	if err != nil {
+		return fmt.Errorf("setting default folder: %w", err)
+	}
+
+	existingSecret, err := GetExistingSecret(ctx, aivenClient, namespace.Name, secretName)
+	if err != nil {
+		return err
+	}
+
 	secret := SetupSecretConfiguration(existingSecret, configTyp, dest)
 
 	// check is annotations match with protected and time-limited otherwise you could use any existingSecret!
 	if !hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || !hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation) {
-		log.Fatalf("existingSecret is missing annotations: '%s' or '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
+		return fmt.Errorf("secret is missing annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
 	_, err = secret.Config()
 	if err != nil {
-		log.Fatalf("an error %s", err)
+		return fmt.Errorf("generating config: %w", err)
 	}
 	log.Default().Printf("configurations from secret '%s' found here: '%s'.", existingSecret.Name, dest)
+	return nil
 }
 
 func hasAnnotation(secret *v1.Secret, key string) bool {

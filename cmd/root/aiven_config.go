@@ -17,7 +17,7 @@ func NewAivenConfig(aiven, create, get, tidy *cobra.Command) *AivenConfig {
 	return &AivenConfig{aiven: aiven, create: create, get: get, tidy: tidy}
 }
 
-func (a AivenConfig) initCmds(root *cobra.Command) {
+func (a AivenConfig) InitCmds() {
 	a.create.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
 	viper.BindPFlag(cmd.PoolFlag, a.create.Flags().Lookup(cmd.PoolFlag))
 
@@ -33,7 +33,7 @@ func (a AivenConfig) initCmds(root *cobra.Command) {
 	a.get.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config to generate. Supported values: .env, kcat, all (optional)")
 	viper.BindPFlag(cmd.ConfigFlag, a.get.Flags().Lookup(cmd.ConfigFlag))
 
-	root.AddCommand(a.aiven)
+	RootCmd.AddCommand(a.aiven)
 	a.aiven.AddCommand(a.create)
 	a.aiven.AddCommand(a.get)
 	a.aiven.AddCommand(a.tidy)

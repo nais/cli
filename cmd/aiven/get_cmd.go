@@ -16,9 +16,8 @@ var GetCmd = &cobra.Command{
 nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namespace -c .env | 
  nais aiven get secret-name namespace -c all`,
 	RunE: func(command *cobra.Command, args []string) error {
-
 		if len(args) != 2 {
-			return fmt.Errorf("missing reqired arguments: %s, %s", cmd.SecretNameFlag, cmd.NamespaceFlag)
+			return fmt.Errorf("missing required arguments: %s, %s", cmd.SecretNameFlag, cmd.NamespaceFlag)
 		}
 
 		secretName := strings.TrimSpace(args[0])
@@ -26,11 +25,11 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 
 		configType, err := cmd.GetString(command, cmd.ConfigFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting %s: %s", cmd.ConfigFlag, err)
+			return fmt.Errorf("'--%s': %w", cmd.ConfigFlag, err)
 		}
 
 		if configType != consts.EnvironmentConfigurationType && configType != consts.AllConfigurationType && configType != consts.KCatConfigurationType {
-			return fmt.Errorf("valid values for '-%s': %s | %s | %s",
+			return fmt.Errorf("valid values for '--%s': %s, %s, %s",
 				cmd.ConfigFlag,
 				consts.EnvironmentConfigurationType,
 				consts.KCatConfigurationType,
@@ -40,9 +39,13 @@ nais aiven get secret-name namespace -c kcat | nais aiven get secret-name namesp
 
 		dest, err := cmd.GetString(command, cmd.DestFlag, false)
 		if err != nil {
-			return fmt.Errorf("getting %s: %s", cmd.DestFlag, err)
+			return fmt.Errorf("'--%s': %w", cmd.DestFlag, err)
 		}
-		secret.ExtractAndGenerateConfig(configType, dest, secretName, namespace)
+
+		err = secret.ExtractAndGenerateConfig(configType, dest, secretName, namespace)
+		if err != nil {
+			return fmt.Errorf("retrieve secret and generating config: %w", err)
+		}
 		return nil
 	},
 }

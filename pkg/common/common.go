@@ -27,7 +27,7 @@ func WriteToFile(dest, filename string, value []byte) error {
 func ValidateNamespace(ctx context.Context, client ctrl.Client, name string, namespace *v1.Namespace) error {
 	err := client.Get(ctx, ctrl.ObjectKey{Name: name}, namespace)
 	if err != nil {
-		return fmt.Errorf("getting namespace: %w", err)
+		return fmt.Errorf("get namespace: %w", err)
 	}
 
 	if namespace.GetLabels()["shared"] == "true" {
