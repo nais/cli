@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	client "github.com/nais/nais-cli/pkg/client"
 	"github.com/nais/nais-cli/pkg/common"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -33,10 +32,10 @@ type AivenProperties struct {
 	Expiry     int
 }
 
-func SetupAiven(inClient ctrl.Client, username, namespace, pool, secretName string, expiry int) *Aiven {
+func SetupAiven(innClient ctrl.Client, username, namespace, pool, secretName string, expiry int) *Aiven {
 	return &Aiven{
 		context.Background(),
-		setupClient(inClient),
+		innClient,
 		AivenProperties{
 			Username:   username,
 			Namespace:  namespace,
@@ -45,13 +44,6 @@ func SetupAiven(inClient ctrl.Client, username, namespace, pool, secretName stri
 			Expiry:     expiry,
 		},
 	}
-}
-
-func setupClient(inClient ctrl.Client) ctrl.Client {
-	if inClient == nil {
-		return client.SetupClient()
-	}
-	return inClient
 }
 
 func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {

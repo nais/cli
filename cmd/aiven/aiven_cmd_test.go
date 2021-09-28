@@ -21,13 +21,6 @@ func TestAivenConfigCreateNoValidKafkaPool(t *testing.T) {
 	assert.EqualError(t, err, "valid values for '-pool': nav-dev | nav-prod | nav-integration-test")
 }
 
-func TestAivenConfigCreateNamespaceNotFound(t *testing.T) {
-	setEnvironment(KafkaNavIntegrationTest, consts.AllConfigurationType, "/temp/")
-	CreateCmd.SetArgs([]string{"username", "namespace"})
-	err := CreateCmd.Execute()
-	assert.EqualError(t, err, "an error occurred generating 'AivenApplication': get namespace: namespaces \"namespace\" not found")
-}
-
 // get
 func TestAivenConfigGetMissingArguments(t *testing.T) {
 	err := GetCmd.Execute()
@@ -39,13 +32,6 @@ func TestAivenConfigGetNoValidConfigFlag(t *testing.T) {
 	GetCmd.SetArgs([]string{"secret-name", "namespace"})
 	err := GetCmd.Execute()
 	assert.EqualError(t, err, "valid values for '--config': .env, kcat, all")
-}
-
-func TestAivenConfigGetNamespaceNotFound(t *testing.T) {
-	setEnvironment(KafkaNavIntegrationTest, consts.AllConfigurationType, "/temp/")
-	GetCmd.SetArgs([]string{"secret-name", "namespace"})
-	err := GetCmd.Execute()
-	assert.EqualError(t, err, "retrieve secret and generating config: validate namespace: get namespace: namespaces \"namespace\" not found")
 }
 
 // tidy doesn't make sense to test here.

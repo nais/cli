@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nais/nais-cli/cmd"
 	"github.com/nais/nais-cli/pkg/aiven"
+	"github.com/nais/nais-cli/pkg/client"
 	"github.com/spf13/cobra"
 	"log"
 	"strings"
@@ -53,7 +54,7 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 			return fmt.Errorf("flag: %s", err)
 		}
 
-		aivenConfig := aiven.SetupAiven(nil, username, namespace, pool, secretName, expiry)
+		aivenConfig := aiven.SetupAiven(client.SetupClient(), username, namespace, pool, secretName, expiry)
 		aivenApp, err := aivenConfig.GenerateApplication()
 		if err != nil {
 			return fmt.Errorf("an error occurred generating 'AivenApplication': %s", err)
