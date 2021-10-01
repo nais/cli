@@ -5,22 +5,13 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
-	"path/filepath"
 )
 
 const (
 	AivenSecretFolderPrefix = "aiven-secret-"
 )
 
-func DefaultDestination(dest string) (string, error) {
-	if dest != "" {
-		newPath, err := filepath.Abs(dest)
-		if err != nil {
-			return "", fmt.Errorf("unable to make %s absolute: %w", dest, err)
-		}
-		return newPath, nil
-	}
-
+func DefaultDestination() (string, error) {
 	newPath, err := os.MkdirTemp("", AivenSecretFolderPrefix)
 	if err != nil {
 		return "", fmt.Errorf("failed to create temporary directory: %w", err)

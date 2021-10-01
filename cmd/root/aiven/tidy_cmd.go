@@ -14,7 +14,7 @@ type AivenSecretFolder struct {
 	Abs string
 }
 
-var TidyCmd = &cobra.Command{
+var tidyCmd = &cobra.Command{
 	Use:     "tidy",
 	Short:   "Remove '/tmp' folder '$TMPDIR' and files created by the aiven command",
 	Long:    "Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'",

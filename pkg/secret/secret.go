@@ -44,7 +44,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(configTyp, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -54,7 +54,7 @@ func ExtractAndGenerateConfig(configTyp, dest, secretName, namespaceName string)
 		return fmt.Errorf("validate namespace: %w", err)
 	}
 
-	dest, err = cmd.DefaultDestination(dest)
+	dest, err := cmd.DefaultDestination()
 	if err != nil {
 		return fmt.Errorf("setting default folder: %w", err)
 	}

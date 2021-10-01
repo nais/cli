@@ -16,7 +16,7 @@ const (
 	KafkaNavIntegrationTest = "nav-integration-test"
 )
 
-var CreateCmd = &cobra.Command{
+var createCmd = &cobra.Command{
 	Use:   "create [args] [flags]",
 	Short: "Creates an protected and time-limited 'AivenApplication'",
 	Long:  `Creates an 'AivenApplication' based on input`,

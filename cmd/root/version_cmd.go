@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var VersionCmd = &cobra.Command{
+var versionCmd = &cobra.Command{
 	Use:   "version [flags]",
 	Short: "Show 'nais-cli' client version",
 	RunE: func(command *cobra.Command, args []string) error {

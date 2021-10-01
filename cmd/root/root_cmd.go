@@ -3,7 +3,7 @@ package root
 import (
 	"fmt"
 	"github.com/nais/nais-cli/cmd"
-	"github.com/nais/nais-cli/cmd/aiven"
+	"github.com/nais/nais-cli/cmd/root/aiven"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -16,7 +16,7 @@ var (
 	DATE    string
 	BuiltBy string
 
-	RootCmd = &cobra.Command{
+	rootCmd = &cobra.Command{
 		Use:   "nais [command]",
 		Short: "A simple NAIS CLI",
 		Long:  `This is a NAIS tool to ease when working with NAIS clusters.`,
@@ -29,7 +29,7 @@ func Execute(version, commit, date, builtBy string) {
 	DATE = date
 	BuiltBy = builtBy
 
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -37,13 +37,8 @@ func Execute(version, commit, date, builtBy string) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	aivenConfig := NewAivenConfig(
-		aiven.AivenCommand,
-		aiven.CreateCmd,
-		aiven.GetCmd,
-		aiven.TidyCmd,
-	)
-	aivenConfig.InitCmds()
+	aivenConfig := aiven.NewAivenConfig()
+	aivenConfig.InitCmds(rootCmd)
 	initVersionCmd()
 }
 
@@ -54,7 +49,7 @@ func initConfig() {
 }
 
 func initVersionCmd() {
-	VersionCmd.Flags().BoolP(cmd.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
-	viper.BindPFlag(cmd.CommitInformation, VersionCmd.Flags().Lookup(cmd.DestFlag))
-	RootCmd.AddCommand(VersionCmd)
+	versionCmd.Flags().BoolP(cmd.CommitInformation, "i", false, "Detailed commit information for this 'nais-cli' version (optional)")
+	viper.BindPFlag(cmd.CommitInformation, versionCmd.Flags().Lookup(cmd.CommitInformation))
+	rootCmd.AddCommand(versionCmd)
 }

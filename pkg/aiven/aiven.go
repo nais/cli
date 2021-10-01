@@ -95,7 +95,7 @@ func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 			if err != nil {
 				return err
 			}
-			log.Default().Printf("aivenApplication: '%s' created.", aivenApp.Name)
+			log.Default().Printf("AivenApplication: '%s' created.", aivenApp.Name)
 		}
 	} else {
 		aivenApp.SetResourceVersion(existingAivenApp.GetResourceVersion())
@@ -103,7 +103,7 @@ func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 		if err != nil {
 			return err
 		}
-		log.Default().Printf("aivenApplication: '%s' updated.", aivenApp.Name)
+		log.Default().Printf("AivenApplication: '%s' updated.", aivenApp.Name)
 	}
 	return nil
 }

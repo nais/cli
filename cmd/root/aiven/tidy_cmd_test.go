@@ -7,7 +7,7 @@ import (
 )
 
 func TestAivenTidy(t *testing.T) {
-	_, err := cmd.DefaultDestination("")
+	_, err := cmd.DefaultDestination()
 	assert.NoError(t, err, "Creating folder")
 
 	// created folders are found
