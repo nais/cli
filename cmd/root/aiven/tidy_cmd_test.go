@@ -1,7 +1,7 @@
 package aiven
 
 import (
-	"github.com/nais/nais-cli/cmd"
+	"github.com/nais/cli/cmd"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

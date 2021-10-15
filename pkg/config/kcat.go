@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/nais/nais-cli/pkg/common"
-	"github.com/nais/nais-cli/pkg/consts"
+	"github.com/nais/cli/pkg/common"
+	"github.com/nais/cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"path/filepath"
 	"time"
@@ -32,7 +32,7 @@ func NewKCatConfig(secret *v1.Secret, dest string) Config {
 		RequiredLocation: map[string]string{
 			consts.KafkaCertificateCrtFile: KafkaCatSslCertificateLocation,
 			consts.KafkaPrivateKeyPemFile:  KafkaCatSslKeyLocation,
-			consts.KafkaCACrtFile:                KafkaCatSslCaLocation,
+			consts.KafkaCACrtFile:          KafkaCatSslCaLocation,
 		},
 	}
 }

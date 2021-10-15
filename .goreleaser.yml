@@ -23,7 +23,7 @@ changelog:
 release:
   github:
     owner: nais
-    name: nais-cli
+    name: cli
   header: |
     ## nais-cli ({{ .Version }})
 brews:
@@ -32,7 +32,7 @@ brews:
       name: homebrew-tap
       token: "{{ .Env.PUSH_TOKEN }}"
     name: nais
-    homepage: "https://github.com/nais/nais-cli"
+    homepage: "https://github.com/nais/cli"
     description: "Simple Aiven Kafka Debug Cli"
     folder: Formula
     install: |
@@ -43,7 +43,7 @@ nfpms:
   - package_name: nais
     file_name_template: "{{ .PackageName }}_{{ .Version }}"
     vendor: NAV / nais team
-    homepage: "https://github.com/nais/nais-cli"
+    homepage: "https://github.com/nais/cli"
     maintainer: NAV / nais team
     description: "Simple Aiven Kafka Debug Cli"
     license: MIT

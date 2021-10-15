@@ -2,7 +2,7 @@ package aiven
 
 import (
 	"fmt"
-	"github.com/nais/nais-cli/cmd"
+	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
 	"log"
 	"os"

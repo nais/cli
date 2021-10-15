@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/nais/nais-cli/cmd/root"
+	"github.com/nais/cli/cmd/root"
 )
 
 var (

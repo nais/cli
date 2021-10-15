@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/nais/nais-cli/pkg/client"
+	"github.com/nais/cli/pkg/client"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"

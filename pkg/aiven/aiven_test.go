@@ -1,9 +1,9 @@
 package aiven
 
 import (
+	"github.com/nais/cli/pkg/common"
+	"github.com/nais/cli/pkg/test"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	"github.com/nais/nais-cli/pkg/common"
-	"github.com/nais/nais-cli/pkg/test"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

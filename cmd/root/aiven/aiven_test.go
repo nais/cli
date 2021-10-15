@@ -1,8 +1,8 @@
 package aiven
 
 import (
-	"github.com/nais/nais-cli/cmd"
-	"github.com/nais/nais-cli/pkg/consts"
+	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/consts"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"

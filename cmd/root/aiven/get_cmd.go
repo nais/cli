@@ -2,9 +2,9 @@ package aiven
 
 import (
 	"fmt"
-	"github.com/nais/nais-cli/cmd"
-	"github.com/nais/nais-cli/pkg/consts"
-	"github.com/nais/nais-cli/pkg/secret"
+	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/consts"
+	"github.com/nais/cli/pkg/secret"
 	"github.com/spf13/cobra"
 	"strings"
 )

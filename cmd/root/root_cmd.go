@@ -2,8 +2,8 @@ package root
 
 import (
 	"fmt"
-	"github.com/nais/nais-cli/cmd"
-	"github.com/nais/nais-cli/cmd/root/aiven"
+	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/cmd/root/aiven"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
