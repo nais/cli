@@ -62,7 +62,12 @@ jobs:
       - name: Create tag
         run: |
           git tag ${{ needs.set-version.outputs.version }}
-
+      - uses: navikt/github-app-token-generator@v1
+        id: get-homebrew-token
+        with:
+          private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.NAIS_APP_ID }}
+          repo: nais/homebrew-tap
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
@@ -71,13 +76,20 @@ jobs:
           args: release -f .goreleaser.yml --rm-dist --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUSH_TOKEN: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+          PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
+
+      - uses: navikt/github-app-token-generator@v1
+        id: get-token
+        with:
+          private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.NAIS_APP_ID }}
+          repo: nais/nais-ppa
 
       - name: Checkout nais-yaml
         uses: actions/checkout@v2
         with:
           repository: nais/nais-ppa
-          token: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+          token: ${{ steps.get-token.outputs.token }}
           path: pparepo
 
       - name: Add new deb to ppa
