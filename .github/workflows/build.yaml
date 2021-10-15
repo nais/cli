@@ -76,7 +76,7 @@ jobs:
           args: release -f .goreleaser.yml --rm-dist --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUSH_TOKEN: ${{ secrets.SRVNAIS_REPO_PUSH_PAT }}
+          PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
 
       - uses: navikt/github-app-token-generator@v1
         id: get-token
