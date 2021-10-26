@@ -18,7 +18,7 @@ func TestAivenConfigCreateNoValidKafkaPool(t *testing.T) {
 	setEnvironment("no-pool", consts.AllConfigurationType)
 	createCmd.SetArgs([]string{"username", "namespace"})
 	err := createCmd.Execute()
-	assert.EqualError(t, err, "valid values for '-pool': nav-dev | nav-prod | nav-integration-test")
+	assert.EqualError(t, err, "valid values for '-pool': nav-dev | nav-prod | nav-integration-test | nav-infrastructure")
 }
 
 // get
