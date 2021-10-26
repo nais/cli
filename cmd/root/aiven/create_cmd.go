@@ -14,6 +14,7 @@ const (
 	KafkaNavDev             = "nav-dev"
 	KafkaNavProd            = "nav-prod"
 	KafkaNavIntegrationTest = "nav-integration-test"
+	KafkaNavInfrastructure  = "nav-infrastructure"
 )
 
 var createCmd = &cobra.Command{
@@ -35,12 +36,13 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 			return fmt.Errorf("flag: %s", err)
 		}
 
-		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest {
+		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest && pool != KafkaNavInfrastructure {
 			return fmt.Errorf("valid values for '-%s': %s | %s | %s",
 				cmd.PoolFlag,
 				KafkaNavDev,
 				KafkaNavProd,
 				KafkaNavIntegrationTest,
+				KafkaNavInfrastructure,
 			)
 		}
 
