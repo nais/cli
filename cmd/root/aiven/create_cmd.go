@@ -37,7 +37,7 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 		}
 
 		if pool != KafkaNavDev && pool != KafkaNavProd && pool != KafkaNavIntegrationTest && pool != KafkaNavInfrastructure {
-			return fmt.Errorf("valid values for '-%s': %s | %s | %s",
+			return fmt.Errorf("valid values for '-%s': %s | %s | %s | %s",
 				cmd.PoolFlag,
 				KafkaNavDev,
 				KafkaNavProd,
