@@ -1,11 +1,13 @@
 package device
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 var statusCmd = &cobra.Command{
@@ -34,6 +36,22 @@ var statusCmd = &cobra.Command{
 		status, err := stream.Recv()
 		if err != nil {
 			return fmt.Errorf("receive status: %w", err)
+		}
+
+		if viper.GetString(OutputFlag) == "yaml" {
+			out, err := yaml.Marshal(status)
+			if err != nil {
+				return fmt.Errorf("Marshaling status: %v", err)
+			}
+			fmt.Println(string(out))
+			return nil
+		} else if viper.GetString(OutputFlag) == "json" {
+			out, err := json.Marshal(status)
+			if err != nil {
+				return fmt.Errorf("Marshaling status: %v", err)
+			}
+			fmt.Println(string(out))
+			return nil
 		}
 
 		if viper.GetBool(QuietFlag) {
