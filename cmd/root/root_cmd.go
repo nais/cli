@@ -21,9 +21,10 @@ var (
 	BuiltBy string
 
 	rootCmd = &cobra.Command{
-		Use:   "nais [command]",
-		Short: "A simple NAIS CLI",
-		Long:  `This is a NAIS tool to ease when working with NAIS clusters.`,
+		Use:           "nais [command]",
+		Short:         "A simple NAIS CLI",
+		Long:          `This is a NAIS tool to ease when working with NAIS clusters.`,
+		SilenceErrors: true,
 	}
 )
 
@@ -38,7 +39,7 @@ func Execute(version, commit, date, builtBy string) {
 	defer cancel()
 
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintf(os.Stderr, "OUR ERROR: %s\n", err)
 		os.Exit(1)
 	}
 }

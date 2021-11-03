@@ -36,6 +36,9 @@ nais aiven get secret-name namespace -c .env | nais aiven get secret-name namesp
 			)
 		}
 
+		// workaround https://github.com/spf13/cobra/issues/340
+		command.SilenceUsage = true
+
 		err = secret.ExtractAndGenerateConfig(configType, secretName, namespace)
 		if err != nil {
 			return fmt.Errorf("retrieve secret and generating config: %w", err)

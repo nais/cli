@@ -13,6 +13,9 @@ var statusCmd = &cobra.Command{
 	Short:   "Shows the status of your naisdevice",
 	Example: `nais device status [-q|--quiet]`,
 	RunE: func(command *cobra.Command, args []string) error {
+		// workaround https://github.com/spf13/cobra/issues/340
+		command.SilenceUsage = true
+
 		connection, err := agentConnection()
 		if err != nil {
 			return fmt.Errorf("Agent connection: %v", err)

@@ -56,6 +56,9 @@ nais aiven create username namespace -e 10 | nais aiven create username namespac
 			return fmt.Errorf("flag: %s", err)
 		}
 
+		// workaround https://github.com/spf13/cobra/issues/340
+		command.SilenceUsage = true
+
 		aivenConfig := aiven.SetupAiven(client.SetupClient(), username, namespace, pool, secretName, expiry)
 		aivenApp, err := aivenConfig.GenerateApplication()
 		if err != nil {

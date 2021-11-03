@@ -12,6 +12,9 @@ var connectCmd = &cobra.Command{
 	Short:   "Creates a naisdevice connection",
 	Example: `nais device connect`,
 	RunE: func(command *cobra.Command, args []string) error {
+		// workaround https://github.com/spf13/cobra/issues/340
+		command.SilenceUsage = true
+
 		connection, err := agentConnection()
 		if err != nil {
 			return fmt.Errorf("Agent connection: %v", err)

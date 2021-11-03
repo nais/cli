@@ -21,6 +21,9 @@ var tidyCmd = &cobra.Command{
 	Example: `nais aiven tidy`,
 	RunE: func(command *cobra.Command, args []string) error {
 
+		// workaround https://github.com/spf13/cobra/issues/340
+		command.SilenceUsage = true
+
 		aivenSecretFolders, err := findFoldersToTidy()
 		if err != nil {
 			return fmt.Errorf("walking folders")

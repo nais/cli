@@ -13,7 +13,7 @@ var deviceCmd = &cobra.Command{
 	Use:   "device [command] [args] [flags]",
 	Short: "Command used for management of 'naisdevice'",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return fmt.Errorf("missing required commands")
+		return fmt.Errorf("missing required command")
 	},
 }
 
