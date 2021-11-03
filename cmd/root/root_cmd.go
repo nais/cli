@@ -43,6 +43,7 @@ func init() {
 	aivenConfig.InitCmds(rootCmd)
 	deviceConfig := device.NewDeviceConfig()
 	deviceConfig.InitCmds(rootCmd)
+	initVersionCmd()
 }
 
 func initConfig() {
