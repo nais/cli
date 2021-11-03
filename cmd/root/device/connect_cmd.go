@@ -2,7 +2,6 @@ package device
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
@@ -13,13 +12,6 @@ var connectCmd = &cobra.Command{
 	Short:   "Creates a naisdevice connection",
 	Example: `nais device connect`,
 	RunE: func(command *cobra.Command, args []string) error {
-		state, err := status()
-		if err != nil {
-			return fmt.Errorf("Getting status: %v", err)
-		}
-		if state != disconnectedStatus {
-			return nil
-		}
 		connection, err := agentConnection()
 		if err != nil {
 			return fmt.Errorf("Agent connection: %v", err)
@@ -33,11 +25,24 @@ var connectCmd = &cobra.Command{
 			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n: %v", err)
 		}
 
-		err = waitForStatus(connectedStatus, 5*time.Minute)
+		stream, err := client.Status(command.Context(), &pb.AgentStatusRequest{
+			KeepConnectionOnComplete: true,
+		})
 		if err != nil {
-			return fmt.Errorf("Waiting for connected state: %v", err)
+			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n%v", err)
 		}
-		fmt.Println(connectedStatus)
-		return nil
+
+		for stream.Context().Err() == nil {
+			status, err := stream.Recv()
+			if err != nil {
+				return fmt.Errorf("receive status: %w", err)
+			}
+			fmt.Printf("state: %s\n", status.ConnectionState)
+			if status.ConnectionState == pb.AgentState_Connected {
+				return nil
+			}
+		}
+
+		return stream.Context().Err()
 	},
 }

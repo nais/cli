@@ -1,9 +1,11 @@
 package root
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
@@ -31,7 +33,11 @@ func Execute(version, commit, date, builtBy string) {
 	DATE = date
 	BuiltBy = builtBy
 
-	if err := rootCmd.Execute(); err != nil {
+	const timeout = 10 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

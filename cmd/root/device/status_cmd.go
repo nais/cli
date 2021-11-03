@@ -2,37 +2,38 @@ package device
 
 import (
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 
-	"github.com/nais/device/pkg/config"
+	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
 )
-
-func status() (string, error) {
-	userConfigDir, err := config.UserConfigDir()
-	if err != nil {
-		return "", fmt.Errorf("naisdevice config directory: %v", err)
-	}
-	statusFile := filepath.Join(userConfigDir, "agent_status")
-	file, err := ioutil.ReadFile(statusFile)
-	if err != nil {
-		return "", fmt.Errorf("status file: %v", err)
-	}
-	return string(file), nil
-}
 
 var statusCmd = &cobra.Command{
 	Use:     "status",
 	Short:   "Shows the status of your naisdevice",
 	Example: `nais device status`,
 	RunE: func(command *cobra.Command, args []string) error {
-		state, err := status()
+		connection, err := agentConnection()
 		if err != nil {
-			return err
+			return fmt.Errorf("Agent connection: %v", err)
 		}
 
-		fmt.Printf("%s\n", state)
+		client := pb.NewDeviceAgentClient(connection)
+		defer connection.Close()
+
+		stream, err := client.Status(command.Context(), &pb.AgentStatusRequest{
+			KeepConnectionOnComplete: true,
+		})
+		if err != nil {
+			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n%v", err)
+		}
+
+		status, err := stream.Recv()
+		if err != nil {
+			return fmt.Errorf("receive status: %w", err)
+		}
+
+		fmt.Println(status.ConnectionState.String())
+
 		return nil
 	},
 }
