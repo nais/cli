@@ -1,6 +1,14 @@
 package device
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+const (
+	QuietFlag      = "quiet"
+	QuietFlagShort = "q"
+)
 
 type DeviceConfig struct {
 	device     *cobra.Command
@@ -23,4 +31,6 @@ func (d DeviceConfig) InitCmds(root *cobra.Command) {
 	d.device.AddCommand(d.connect)
 	d.device.AddCommand(d.disconnect)
 	d.device.AddCommand(d.status)
+	d.status.Flags().BoolP(QuietFlag, QuietFlagShort, false, "Reduce verbosity.")
+	viper.BindPFlag(QuietFlag, d.status.Flag(QuietFlag))
 }
