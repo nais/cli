@@ -2,12 +2,14 @@ package root
 
 import (
 	"fmt"
-	"github.com/nais/cli/cmd"
-	"github.com/nais/cli/cmd/root/aiven"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 	"strings"
+
+	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/cmd/root/aiven"
+	"github.com/nais/cli/cmd/root/device"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -39,7 +41,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	aivenConfig := aiven.NewAivenConfig()
 	aivenConfig.InitCmds(rootCmd)
-	initVersionCmd()
+	deviceConfig := device.NewDeviceConfig()
+	deviceConfig.InitCmds(rootCmd)
 }
 
 func initConfig() {
