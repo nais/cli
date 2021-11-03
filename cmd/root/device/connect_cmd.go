@@ -30,7 +30,7 @@ var connectCmd = &cobra.Command{
 
 		_, err = client.Login(command.Context(), &pb.LoginRequest{})
 		if err != nil {
-			return fmt.Errorf("Connecting to naisdevice: %v", err)
+			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n: %v", err)
 		}
 
 		err = waitForStatus(connectedStatus, 5*time.Minute)

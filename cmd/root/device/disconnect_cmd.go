@@ -30,7 +30,7 @@ var disconnectCmd = &cobra.Command{
 
 		_, err = client.Logout(command.Context(), &pb.LogoutRequest{})
 		if err != nil {
-			return fmt.Errorf("Disconnecting from naisdevice: %v", err)
+			return fmt.Errorf("Disconnecting from naisdevice. Ensure that naisdevice is running.\n%v", err)
 		}
 		err = waitForStatus(disconnectedStatus, 30*time.Second)
 		if err != nil {
