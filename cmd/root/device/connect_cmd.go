@@ -2,6 +2,7 @@ package device
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
@@ -31,6 +32,12 @@ var connectCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("Connecting to naisdevice: %v", err)
 		}
+
+		err = waitForStatus(connectedStatus, 5*time.Minute)
+		if err != nil {
+			return fmt.Errorf("Waiting for connected state: %v", err)
+		}
+		fmt.Println(connectedStatus)
 		return nil
 	},
 }

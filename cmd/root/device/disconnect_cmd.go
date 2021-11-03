@@ -2,6 +2,7 @@ package device
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
@@ -31,6 +32,11 @@ var disconnectCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("Disconnecting from naisdevice: %v", err)
 		}
+		err = waitForStatus(disconnectedStatus, 30*time.Second)
+		if err != nil {
+			return fmt.Errorf("Waiting for disconnected state: %v", err)
+		}
+		fmt.Println(disconnectedStatus)
 		return nil
 	},
 }
