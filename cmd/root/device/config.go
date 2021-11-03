@@ -6,8 +6,10 @@ import (
 )
 
 const (
-	QuietFlag      = "quiet"
-	QuietFlagShort = "q"
+	QuietFlag       = "quiet"
+	QuietFlagShort  = "q"
+	OutputFlag      = "output"
+	OutputFlagShort = "o"
 )
 
 type DeviceConfig struct {
@@ -15,6 +17,7 @@ type DeviceConfig struct {
 	connect    *cobra.Command
 	disconnect *cobra.Command
 	status     *cobra.Command
+	jita       *cobra.Command
 }
 
 func NewDeviceConfig() *DeviceConfig {
@@ -23,6 +26,7 @@ func NewDeviceConfig() *DeviceConfig {
 		connect:    connectCmd,
 		disconnect: disconnectCmd,
 		status:     statusCmd,
+		jita:       jitaCmd,
 	}
 }
 
@@ -31,6 +35,9 @@ func (d DeviceConfig) InitCmds(root *cobra.Command) {
 	d.device.AddCommand(d.connect)
 	d.device.AddCommand(d.disconnect)
 	d.device.AddCommand(d.status)
+	d.device.AddCommand(d.jita)
 	d.status.Flags().BoolP(QuietFlag, QuietFlagShort, false, "Reduce verbosity.")
 	viper.BindPFlag(QuietFlag, d.status.Flag(QuietFlag))
+	d.status.Flags().StringP(OutputFlag, OutputFlagShort, "", "Output format")
+	viper.BindPFlag(OutputFlag, d.status.Flag(OutputFlag))
 }
