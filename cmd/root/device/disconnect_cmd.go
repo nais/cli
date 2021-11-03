@@ -17,7 +17,7 @@ var disconnectCmd = &cobra.Command{
 
 		connection, err := agentConnection()
 		if err != nil {
-			return fmt.Errorf("Agent connection: %v", err)
+			return formatGrpcError(err)
 		}
 
 		client := pb.NewDeviceAgentClient(connection)
@@ -25,7 +25,7 @@ var disconnectCmd = &cobra.Command{
 
 		_, err = client.Logout(command.Context(), &pb.LogoutRequest{})
 		if err != nil {
-			return fmt.Errorf("Disconnecting from naisdevice. Ensure that naisdevice is running.\n%v", err)
+			return formatGrpcError(err)
 		}
 
 		stream, err := client.Status(command.Context(), &pb.AgentStatusRequest{
@@ -33,7 +33,7 @@ var disconnectCmd = &cobra.Command{
 		})
 
 		if err != nil {
-			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n%v", err)
+			return formatGrpcError(err)
 		}
 
 		for stream.Context().Err() == nil {

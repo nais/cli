@@ -7,6 +7,8 @@ import (
 	"github.com/nais/device/pkg/config"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var deviceCmd = &cobra.Command{
@@ -28,4 +30,17 @@ func agentConnection() (*grpc.ClientConn, error) {
 		"unix:"+socket,
 		grpc.WithInsecure(),
 	)
+}
+
+func formatGrpcError(err error) error {
+	gerr, ok := status.FromError(err)
+	if !ok {
+		return err
+	}
+	switch gerr.Code() {
+	case codes.Unavailable:
+		//goland:noinspection ALL
+		return fmt.Errorf("unable to connect to naisdevice; is it running?")
+	}
+	return fmt.Errorf("%s: %s", gerr.Code(), gerr.Message())
 }

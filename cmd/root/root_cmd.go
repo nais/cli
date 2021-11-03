@@ -39,7 +39,7 @@ func Execute(version, commit, date, builtBy string) {
 	defer cancel()
 
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
-		fmt.Fprintf(os.Stderr, "OUR ERROR: %s\n", err)
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }

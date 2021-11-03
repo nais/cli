@@ -17,7 +17,7 @@ var connectCmd = &cobra.Command{
 
 		connection, err := agentConnection()
 		if err != nil {
-			return fmt.Errorf("Agent connection: %v", err)
+			return formatGrpcError(err)
 		}
 
 		client := pb.NewDeviceAgentClient(connection)
@@ -25,14 +25,14 @@ var connectCmd = &cobra.Command{
 
 		_, err = client.Login(command.Context(), &pb.LoginRequest{})
 		if err != nil {
-			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n: %v", err)
+			return formatGrpcError(err)
 		}
 
 		stream, err := client.Status(command.Context(), &pb.AgentStatusRequest{
 			KeepConnectionOnComplete: true,
 		})
 		if err != nil {
-			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n%v", err)
+			return formatGrpcError(err)
 		}
 
 		for stream.Context().Err() == nil {

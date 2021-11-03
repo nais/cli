@@ -18,7 +18,7 @@ var statusCmd = &cobra.Command{
 
 		connection, err := agentConnection()
 		if err != nil {
-			return fmt.Errorf("Agent connection: %v", err)
+			return formatGrpcError(err)
 		}
 
 		client := pb.NewDeviceAgentClient(connection)
@@ -28,7 +28,7 @@ var statusCmd = &cobra.Command{
 			KeepConnectionOnComplete: true,
 		})
 		if err != nil {
-			return fmt.Errorf("Connecting to naisdevice. Ensure that naisdevice is running.\n%v", err)
+			return formatGrpcError(err)
 		}
 
 		status, err := stream.Recv()
