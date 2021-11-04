@@ -11,9 +11,9 @@ import (
 )
 
 var jitaCmd = &cobra.Command{
-	Use:     "jita",
+	Use:     "jita [gateway]",
 	Short:   "Connects to a JITA gateway",
-	Example: `nais device jita [gateway]`,
+	Example: `nais device jita postgres-prod`,
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		if len(args) != 0 {
 			return nil, cobra.ShellCompDirectiveNoFileComp

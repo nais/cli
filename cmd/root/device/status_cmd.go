@@ -11,9 +11,9 @@ import (
 )
 
 var statusCmd = &cobra.Command{
-	Use:     "status",
+	Use:     "status [flags]",
 	Short:   "Shows the status of your naisdevice",
-	Example: `nais device status [-q|--quiet]`,
+	Example: `nais device status -q | nais device status -o yaml`,
 	RunE: func(command *cobra.Command, args []string) error {
 		// workaround https://github.com/spf13/cobra/issues/340
 		command.SilenceUsage = true

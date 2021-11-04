@@ -18,6 +18,9 @@ type DeviceConfig struct {
 	disconnect *cobra.Command
 	status     *cobra.Command
 	jita       *cobra.Command
+	config     *cobra.Command
+	configGet  *cobra.Command
+	configSet  *cobra.Command
 }
 
 func NewDeviceConfig() *DeviceConfig {
@@ -27,6 +30,9 @@ func NewDeviceConfig() *DeviceConfig {
 		disconnect: disconnectCmd,
 		status:     statusCmd,
 		jita:       jitaCmd,
+		config:     configCmd,
+		configGet:  configGetCmd,
+		configSet:  configSetCmd,
 	}
 }
 
@@ -36,6 +42,9 @@ func (d DeviceConfig) InitCmds(root *cobra.Command) {
 	d.device.AddCommand(d.disconnect)
 	d.device.AddCommand(d.status)
 	d.device.AddCommand(d.jita)
+	d.device.AddCommand(d.config)
+	d.config.AddCommand(d.configGet)
+	d.config.AddCommand(d.configSet)
 	d.status.Flags().BoolP(QuietFlag, QuietFlagShort, false, "Reduce verbosity.")
 	viper.BindPFlag(QuietFlag, d.status.Flag(QuietFlag))
 	d.status.Flags().StringP(OutputFlag, OutputFlagShort, "", "Output format")
