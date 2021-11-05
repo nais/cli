@@ -3,6 +3,7 @@ package device
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/spf13/cobra"
@@ -86,6 +87,11 @@ var statusCmd = &cobra.Command{
 		if len(status.Gateways) > 0 {
 			fmt.Printf("\n%-30s\t%-15s\t%-15s\n", "GATEWAY", "STATE", "JITA")
 		}
+
+		sort.Slice(status.Gateways, func(i, j int) bool {
+			return status.Gateways[i].Name < status.Gateways[j].Name
+		})
+
 		for _, gw := range status.Gateways {
 			fmt.Printf("%-30s\t%-15s\t%-15s\n", gw.Name, healthy(gw), privileged(gw))
 		}
