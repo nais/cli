@@ -42,7 +42,7 @@ jobs:
           go mod tidy -v
           go test ./... -count=1 -coverprofile cover.out -short
 
-  release-candidate:
+  release:
     if: ${{ github.ref == 'refs/heads/master' }}
     needs:
       - set-version
@@ -85,7 +85,7 @@ jobs:
           app-id: ${{ secrets.NAIS_APP_ID }}
           repo: nais/nais-ppa
 
-      - name: Checkout nais-yaml
+      - name: Checkout nais-ppa
         uses: actions/checkout@v2
         with:
           repository: nais/nais-ppa
