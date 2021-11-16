@@ -60,11 +60,11 @@ func (k *Java) write() error {
 }
 
 func (k *Java) Set(key string, value []byte) {
-	k.Props += fmt.Sprintf("%s: %s\n", key, string(value))
+	k.Props += fmt.Sprintf("%s=%s\n", key, string(value))
 }
 
 func (k *Java) SetPath(key, path string) {
-	k.Props += fmt.Sprintf("%s: %s\n", key, path)
+	k.Props += fmt.Sprintf("%s=%s\n", key, path)
 }
 
 func (k *Java) Generate() (string, error) {
