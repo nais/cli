@@ -23,5 +23,6 @@ const (
 
 	EnvironmentConfigurationType = ".env"
 	KCatConfigurationType        = "kcat"
+	JavaConfigurationType        = "java"
 	AllConfigurationType         = "all"
 )

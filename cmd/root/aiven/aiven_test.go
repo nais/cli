@@ -31,7 +31,7 @@ func TestAivenConfigGetNoValidConfigFlag(t *testing.T) {
 	setEnvironment(KafkaNavIntegrationTest, "non-flag")
 	getCmd.SetArgs([]string{"secret-name", "namespace"})
 	err := getCmd.Execute()
-	assert.EqualError(t, err, "valid values for '--config': .env, kcat, all")
+	assert.EqualError(t, err, "valid values for '--config': java, kcat, .env, all")
 }
 
 // tidy doesn't make sense to test here.

@@ -9,6 +9,17 @@ import (
 	"strings"
 )
 
+var ConfigTypes []string
+
+func init() {
+	ConfigTypes = []string{
+		consts.JavaConfigurationType,
+		consts.KCatConfigurationType,
+		consts.EnvironmentConfigurationType,
+		consts.AllConfigurationType,
+	}
+}
+
 var getCmd = &cobra.Command{
 	Use:   "get [args] [flags]",
 	Short: "Generate preferred config format to '/tmp' folder",
@@ -27,12 +38,18 @@ nais aiven get secret-name namespace -c .env | nais aiven get secret-name namesp
 			return fmt.Errorf("'--%s': %w", cmd.ConfigFlag, err)
 		}
 
-		if configType != consts.EnvironmentConfigurationType && configType != consts.AllConfigurationType && configType != consts.KCatConfigurationType {
-			return fmt.Errorf("valid values for '--%s': %s, %s, %s",
+		validConfigType := false
+		for _, candidate := range ConfigTypes {
+			if candidate == configType {
+				validConfigType = true
+				break
+			}
+		}
+
+		if !validConfigType {
+			return fmt.Errorf("valid values for '--%s': %s",
 				cmd.ConfigFlag,
-				consts.EnvironmentConfigurationType,
-				consts.KCatConfigurationType,
-				consts.AllConfigurationType,
+				strings.Join(ConfigTypes, ", "),
 			)
 		}
 

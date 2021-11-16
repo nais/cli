@@ -44,7 +44,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(configTyp, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(configType, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -64,14 +64,14 @@ func ExtractAndGenerateConfig(configTyp, secretName, namespaceName string) error
 		return err
 	}
 
-	secret := SetupSecretConfiguration(existingSecret, configTyp, dest)
+	secret := SetupSecretConfiguration(existingSecret, configType, dest)
 
 	// check is annotations match with protected and time-limited otherwise you could use any existingSecret!
 	if !hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || !hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation) {
 		return fmt.Errorf("secret is missing annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
-	_, err = secret.Config()
+	err = secret.Config()
 	if err != nil {
 		return fmt.Errorf("generating config: %w", err)
 	}
@@ -86,58 +86,72 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 	return false
 }
 
-func (s *Secret) ConfigAll() error {
-	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
-	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
-	_, err := kafkaEnv.Generate()
-	if err != nil {
+func (s *Secret) CreateAllConfigs() error {
+	if err := s.CreateJavaConfig(); err != nil {
 		return err
 	}
-	_, err = kCatConfig.Generate()
-	if err != nil {
+	if err := s.CreateKCatConfig(); err != nil {
 		return err
+	}
+	if err := s.CreateEnvConfig(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Secret) Config() error {
+	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
+	switch s.ConfigType {
+	case consts.EnvironmentConfigurationType:
+		return s.CreateEnvConfig()
+	case consts.KCatConfigurationType:
+		return s.CreateKCatConfig()
+	case consts.JavaConfigurationType:
+		return s.CreateJavaConfig()
+	case consts.AllConfigurationType:
+		err := s.CreateAllConfigs()
+		if err != nil {
+			return fmt.Errorf("generate %s config-type", s.ConfigType)
+		}
+	}
+	return nil
+}
+
+func (s *Secret) CreateJavaConfig() error {
+	javaConfig := config.NewJavaConfig(s.Secret, s.DestinationPath)
+	_, err := javaConfig.Generate()
+	if err != nil {
+		return fmt.Errorf("generate %s config-type", s.ConfigType)
+	}
+
+	if err := javaConfig.WriteConfigToFile(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Secret) CreateKCatConfig() error {
+	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
+	_, err := kCatConfig.Generate()
+	if err != nil {
+		return fmt.Errorf("generate %s config-type", s.ConfigType)
 	}
 
 	if err := kCatConfig.WriteConfigToFile(); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (s *Secret) CreateEnvConfig() error {
+	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
+	_, err := kafkaEnv.Generate()
+	if err != nil {
+		return fmt.Errorf("generate %s config-type", s.ConfigType)
 	}
 
 	if err := kafkaEnv.WriteConfigToFile(); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (s *Secret) Config() (string, error) {
-	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
-	switch s.ConfigType {
-	case consts.EnvironmentConfigurationType:
-		kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
-		envs, err := kafkaEnv.Generate()
-		if err != nil {
-			return "", fmt.Errorf("generate %s config-type", s.ConfigType)
-		}
-
-		if err := kafkaEnv.WriteConfigToFile(); err != nil {
-			return "", err
-		}
-		return envs, nil
-	case consts.KCatConfigurationType:
-		kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
-		kCat, err := kCatConfig.Generate()
-		if err != nil {
-			return "", fmt.Errorf("generate %s config-type", s.ConfigType)
-		}
-
-		if err := kCatConfig.WriteConfigToFile(); err != nil {
-			return "", err
-		}
-		return kCat, nil
-	case consts.AllConfigurationType:
-		err := s.ConfigAll()
-		if err != nil {
-			return "", fmt.Errorf("generate %s config-type", s.ConfigType)
-		}
-	}
-	return "", nil
 }

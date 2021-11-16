@@ -14,12 +14,6 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-type RequiredFile struct {
-	Filename     string
-	PathKey      string
-	IncludeInEnv bool
-}
-
 func NewEnvConfig(secret *v1.Secret, dest string) Config {
 	return &KafkaEnvironment{
 		Envs:       fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
@@ -77,15 +71,6 @@ func (k *KafkaEnvironment) Generate() (string, error) {
 		k.toEnv(key, value)
 	}
 	return k.Envs, nil
-}
-
-func requiredSecretDataExists(required map[string]RequiredFile, secretData map[string][]byte, filetype string) error {
-	for key, _ := range required {
-		if _, ok := secretData[key]; !ok {
-			return fmt.Errorf("can not generate %s config, secret missing required key: %s", filetype, key)
-		}
-	}
-	return nil
 }
 
 func (k *KafkaEnvironment) toEnv(key string, value []byte) {
