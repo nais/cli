@@ -6,6 +6,8 @@ import (
 	"github.com/nais/cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"time"
 )
 
@@ -64,7 +66,7 @@ func (k *Java) Set(key string, value []byte) {
 }
 
 func (k *Java) SetPath(key, path string) {
-	k.Props += fmt.Sprintf("%s=%s\n", key, path)
+	k.Props += fmt.Sprintf("%s=%s\n", key, windowsify(path))
 }
 
 func (k *Java) Generate() (string, error) {
@@ -101,4 +103,11 @@ func (k *Java) toFile(key string, value []byte) error {
 		k.SetPath(requiredFile.PathKey, filepath.Join(path, requiredFile.Filename))
 	}
 	return nil
+}
+
+func windowsify(path string) string {
+	if runtime.GOOS == "windows" {
+		return strings.ReplaceAll(path, "/", "\\")
+	}
+	return path
 }
