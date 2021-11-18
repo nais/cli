@@ -33,7 +33,7 @@ brews:
       token: "{{ .Env.PUSH_TOKEN }}"
     name: nais
     homepage: "https://github.com/nais/cli"
-    description: "Simple Aiven Kafka Debug Cli"
+    description: "A NAIS command-line interface"
     folder: Formula
     install: |
       bin.install "nais"
@@ -45,7 +45,7 @@ nfpms:
     vendor: NAV / nais team
     homepage: "https://github.com/nais/cli"
     maintainer: NAV / nais team
-    description: "Simple Aiven Kafka Debug Cli"
+    description: "A NAIS command-line interface"
     license: MIT
     formats:
       - deb

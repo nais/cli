@@ -1,4 +1,4 @@
-# nais-cli
+# nais-cli - A NAIS command-line interface
 
 See NAIS doc for usage instructions: [nais-cli](https://doc.nais.io/cli/)
 
