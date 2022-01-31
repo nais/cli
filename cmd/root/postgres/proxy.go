@@ -3,11 +3,8 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net"
-	"os"
-	"os/exec"
 	"os/signal"
 	"syscall"
 	"time"
@@ -54,7 +51,7 @@ var proxyCmd = &cobra.Command{
 }
 
 func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int) error {
-	if err := grantUserAccess(ctx, projectID, 1*time.Hour); err != nil {
+	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour); err != nil {
 		return err
 	}
 
@@ -125,31 +122,4 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 	proxyClient.RunContext(ctx, connSrc)
 
 	return nil
-}
-
-func grantUserAccess(ctx context.Context, projectID string, duration time.Duration) error {
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return err
-	}
-
-	args := []string{
-		"projects",
-		"add-iam-policy-binding",
-		projectID,
-		"--member", "user:" + email,
-		"--role", "roles/cloudsql.instanceUser",
-	}
-
-	if duration > 0 {
-		timestamp := time.Now().Add(duration).UTC().Format(time.RFC3339)
-		args = append(args,
-			"--condition",
-			"expression=request.time < timestamp('"+timestamp+"'),title=temp_access",
-		)
-	}
-	cmd := exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = io.Discard
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
 }

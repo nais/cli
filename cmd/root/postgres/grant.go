@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -38,10 +39,11 @@ var grantCmd = &cobra.Command{
 			return err
 		}
 
-		if err := grantAccess(ctx, projectID, 1*time.Hour); err != nil {
+		if err := grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute); err != nil {
 			return err
 		}
 		if err := createSQLUser(ctx, projectID, connectionName); err != nil {
+			fmt.Fprintln(os.Stderr, "Error creating SQL user. One might already exist.")
 			return err
 		}
 
@@ -69,40 +71,4 @@ func createSQLUser(ctx context.Context, projectID, instance string) error {
 	cmd.Stdout = io.Discard
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
-}
-
-func grantAccess(ctx context.Context, projectID string, duration time.Duration) error {
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return err
-	}
-
-	args := []string{
-		"projects",
-		"add-iam-policy-binding",
-		projectID,
-		"--member", "user:" + email,
-		"--role", "roles/cloudsql.admin",
-	}
-
-	if duration > 0 {
-		timestamp := time.Now().Add(duration).UTC().Format(time.RFC3339)
-		args = append(args,
-			"--condition",
-			"expression=request.time < timestamp('"+timestamp+"'),title=temp_access",
-		)
-	}
-	cmd := exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = io.Discard
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
-}
-
-func currentEmail(ctx context.Context) (string, error) {
-	cmd := exec.CommandContext(ctx, "gcloud", "config", "get-value", "account")
-	out, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
 }
