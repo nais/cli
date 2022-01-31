@@ -30,6 +30,7 @@ var proxyCmd = &cobra.Command{
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
 		port := viper.GetString(cmd.PortFlag)
+		host := viper.GetString(cmd.HostFlag)
 
 		dbInfo, err := NewDBInfo(appName, namespace, context)
 		if err != nil {
@@ -46,7 +47,9 @@ var proxyCmd = &cobra.Command{
 			return err
 		}
 
-		return runProxy(ctx, projectID, connectionName, "localhost:"+port, make(chan int, 1))
+		fmt.Printf("Starting proxy on %v:%v\n", host, port)
+
+		return runProxy(ctx, projectID, connectionName, fmt.Sprintf("%v:%v", host, port), make(chan int, 1))
 	},
 }
 

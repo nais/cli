@@ -25,6 +25,11 @@ var psqlCmd = &cobra.Command{
 		k8sContext := viper.GetString(cmd.ContextFlag)
 		verbose := viper.GetBool(cmd.VerboseFlag)
 
+		psqlPath, err := exec.LookPath("psql")
+		if err != nil {
+			return err
+		}
+
 		dbInfo, err := NewDBInfo(appName, namespace, k8sContext)
 		if err != nil {
 			return err
@@ -77,7 +82,8 @@ var psqlCmd = &cobra.Command{
 			"--username", email,
 			"--dbname", connectionInfo.dbName,
 		}
-		cmd := exec.CommandContext(ctx, "psql", arguments...)
+
+		cmd := exec.CommandContext(ctx, psqlPath, arguments...)
 		cmd.Env = append(cmd.Env, fmt.Sprintf("PGPASSWORD=%s", token))
 
 		cmd.Stderr = os.Stderr

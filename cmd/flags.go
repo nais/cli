@@ -11,4 +11,5 @@ const (
 	UsernameFlag      = "username"
 	VerboseFlag       = "verbose"
 	PortFlag          = "port"
+	HostFlag          = "host"
 )

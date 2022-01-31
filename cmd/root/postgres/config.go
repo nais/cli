@@ -41,7 +41,9 @@ func (c Config) InitCmds(root *cobra.Command) {
 	viper.BindPFlag(cmd.ContextFlag, c.postgres.PersistentFlags().Lookup(cmd.ContextFlag))
 
 	c.proxy.Flags().StringP(cmd.PortFlag, "p", "5432", "Local port for the proxy to listen on")
-	viper.BindPFlag(cmd.ContextFlag, c.proxy.Flags().Lookup(cmd.ContextFlag))
+	viper.BindPFlag(cmd.PortFlag, c.proxy.Flags().Lookup(cmd.PortFlag))
+	c.proxy.Flags().StringP(cmd.HostFlag, "H", "localhost", "Host for the proxy")
+	viper.BindPFlag(cmd.HostFlag, c.proxy.Flags().Lookup(cmd.HostFlag))
 
 	c.psql.Flags().BoolP(cmd.VerboseFlag, "V", false, "Verbose will also print the proxy logs")
 	viper.BindPFlag(cmd.VerboseFlag, c.psql.Flags().Lookup(cmd.VerboseFlag))
