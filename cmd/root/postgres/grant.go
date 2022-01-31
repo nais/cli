@@ -16,8 +16,11 @@ import (
 
 var grantCmd = &cobra.Command{
 	Use:   "grant [app-name] [flags]",
-	Short: "Grant yourself access to a Postgres database",
-	Args:  cobra.ExactArgs(1),
+	Short: "Grant yourself access to a Postgres database.",
+	Long: `Grant yourself access to a Postgres database.
+
+	This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)

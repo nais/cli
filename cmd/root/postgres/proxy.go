@@ -19,7 +19,8 @@ import (
 
 var proxyCmd = &cobra.Command{
 	Use:   "proxy [app-name] [flags]",
-	Short: "Create a proxy to a Postgres database",
+	Short: "Create a proxy to a Postgres instance",
+	Long:  `Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 		ctx := context.Background()
@@ -75,7 +76,6 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 	defer stop()
 
 	connSrc := make(chan proxy.Conn, 2)
-	// TODO(thokra): Make port configurable
 	addr, err := net.ResolveTCPAddr("tcp", address)
 	if err != nil {
 		return err

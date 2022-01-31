@@ -17,6 +17,7 @@ import (
 var psqlCmd = &cobra.Command{
 	Use:   "psql [app-name] [flags]",
 	Short: "Connect to the database using psql",
+	Long:  `Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 		ctx := context.Background()

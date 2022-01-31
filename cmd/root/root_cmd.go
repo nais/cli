@@ -26,6 +26,7 @@ var (
 		Short:         "A simple NAIS CLI",
 		Long:          `This is a NAIS tool to ease when working with NAIS clusters.`,
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 )
 
