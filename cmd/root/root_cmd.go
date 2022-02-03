@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
 	"github.com/nais/cli/cmd/root/device"
+	"github.com/nais/cli/cmd/root/postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,7 @@ var (
 		Short:         "A simple NAIS CLI",
 		Long:          `This is a NAIS tool to ease when working with NAIS clusters.`,
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 )
 
@@ -50,6 +52,8 @@ func init() {
 	aivenConfig.InitCmds(rootCmd)
 	deviceConfig := device.NewDeviceConfig()
 	deviceConfig.InitCmds(rootCmd)
+	postgresConfig := postgres.NewConfig()
+	postgresConfig.InitCmds(rootCmd)
 	initVersionCmd()
 }
 
