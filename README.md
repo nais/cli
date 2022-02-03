@@ -9,6 +9,8 @@ See NAIS doc for usage instructions: [nais-cli](https://doc.nais.io/cli/)
 Start minikube with a version < 1.22,
 reason: [Feature removals](https://kubernetes.io/blog/2021/07/14/upcoming-changes-in-kubernetes-1-22/).
 
+* Create a `test` cluster.
+
 ```
 minikube start --kubernetes-version=v1.21.4
 ```
@@ -19,7 +21,7 @@ minikube start --kubernetes-version=v1.21.4
 kubectl apply -f path/to/liberator/crd/bases
 ```
 
-* Create a `test` cluster.
+* Create a `test` ns.
 
 ```
 kubectl create namespace test
