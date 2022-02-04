@@ -66,9 +66,9 @@ func ExtractAndGenerateConfig(configType, secretName, namespaceName string) erro
 
 	secret := SetupSecretConfiguration(existingSecret, configType, dest)
 
-	// check is annotations match with protected and time-limited otherwise you could use any existingSecret!
-	if !hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || !hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation) {
-		return fmt.Errorf("secret is missing annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
+	// check is annotations match with protected or time-limited otherwise you could use any existingSecret!
+	if !(hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation)) {
+		return fmt.Errorf("secret is must have at least one of these annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
 	err = secret.Config()
