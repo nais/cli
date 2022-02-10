@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,7 +16,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	cmd := exec.CommandContext(ctx, "gcloud", "config", "get-value", "account")
 	out, err := cmd.Output()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("currentEmail: unable to retrieve email: %w", err)
 	}
 	return strings.TrimSpace(string(out)), nil
 }
@@ -51,9 +52,14 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 		)
 	}
 	cmd := exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = io.Discard
+	buf := &bytes.Buffer{}
+	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		io.Copy(os.Stdout, buf)
+		return fmt.Errorf("grantUserAccess: error running gcloud command: %w", err)
+	}
+	return nil
 }
 
 func cleanupPermissions(ctx context.Context, projectID, email, role, conditionName string) (exists bool, err error) {
@@ -66,11 +72,14 @@ func cleanupPermissions(ctx context.Context, projectID, email, role, conditionNa
 	cmd := exec.CommandContext(ctx, "gcloud", args...)
 	out, err := cmd.Output()
 	if err != nil {
-		return false, err
+		if e, ok := err.(*exec.ExitError); ok {
+			fmt.Fprintln(os.Stderr, string(e.Stderr))
+		}
+		return false, fmt.Errorf("cleanupPermissions: error getting permissions: %w", err)
 	}
 	bindings := &policyBindings{}
 	if err := json.Unmarshal(out, bindings); err != nil {
-		return false, err
+		return false, fmt.Errorf("cleanupPermissions: error unmarshaling json: %w", err)
 	}
 
 	expr := ""
@@ -104,9 +113,14 @@ OUTER:
 		"--condition", expr,
 	}
 	cmd = exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = io.Discard
+	buf := &bytes.Buffer{}
+	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
-	return false, cmd.Run()
+	if err := cmd.Run(); err != nil {
+		io.Copy(os.Stdout, buf)
+		return false, fmt.Errorf("cleanupPermissions: error running gcloud command: %w", err)
+	}
+	return false, nil
 }
 
 type policyBindings struct {

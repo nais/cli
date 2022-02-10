@@ -29,13 +29,13 @@ func NewDBInfo(appName, namespace, context string) (*DBInfo, error) {
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("NewDBInfo: unable to get kubeconfig: %w", err)
 	}
 
 	if namespace == "" {
 		namespace, _, err = kubeConfig.Namespace()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("NewDBConfig: unable to get namespace: %w", err)
 		}
 	}
 
@@ -71,7 +71,7 @@ func (i *DBInfo) ConnectionName(ctx context.Context) (string, error) {
 func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
 	secret, err := i.k8sClient.CoreV1().Secrets(i.namespace).Get(ctx, "google-sql-"+i.appName, v1.GetOptions{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to get database password from %q in %q: %w", "google-sql-"+i.appName, i.namespace, err)
 	}
 
 	connectionName, err := i.ConnectionName(ctx)
@@ -94,7 +94,7 @@ func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
 		Resource: "sqlinstances",
 	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
 	if err != nil {
-		return err
+		return fmt.Errorf("fetchDBInstance: can't find sqlinstance %q in %q: %w", i.appName, i.namespace, err)
 	}
 
 	i.connectionName = app.Object["status"].(map[string]interface{})["connectionName"].(string)

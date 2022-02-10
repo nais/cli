@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -70,8 +71,13 @@ func createSQLUser(ctx context.Context, projectID, instance string) error {
 		"--project", projectID,
 	}
 
+	buf := &bytes.Buffer{}
 	cmd := exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = io.Discard
+	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		io.Copy(os.Stdout, buf)
+		return fmt.Errorf("error running gcloud command: %w", err)
+	}
+	return nil
 }
