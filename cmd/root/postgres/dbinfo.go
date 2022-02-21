@@ -88,17 +88,27 @@ func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
 }
 
 func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
-	app, err := i.dynamicClient.Resource(schema.GroupVersionResource{
+	sqlInstances, err := i.dynamicClient.Resource(schema.GroupVersionResource{
 		Group:    "sql.cnrm.cloud.google.com",
 		Version:  "v1beta1",
 		Resource: "sqlinstances",
-	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
+	}).Namespace(i.namespace).List(ctx, v1.ListOptions{
+		LabelSelector: "app=" + i.appName,
+	})
 	if err != nil {
-		return fmt.Errorf("fetchDBInstance: can't find sqlinstance %q in %q: %w", i.appName, i.namespace, err)
+		return fmt.Errorf("fetchDBInstance: error looking for sqlinstance %q in %q: %w", i.appName, i.namespace, err)
 	}
 
-	i.connectionName = app.Object["status"].(map[string]interface{})["connectionName"].(string)
-	i.projectID = app.GetAnnotations()["cnrm.cloud.google.com/project-id"]
+	if len(sqlInstances.Items) == 0 {
+		return fmt.Errorf("fetchDBInstance: no sqlinstance found for app %q in %q", i.appName, i.namespace)
+	} else if len(sqlInstances.Items) > 1 {
+		return fmt.Errorf("fetchDBInstance: multiple sqlinstances found for app %q in %q", i.appName, i.namespace)
+	}
+
+	sqlInstance := sqlInstances.Items[0]
+
+	i.connectionName = sqlInstance.Object["status"].(map[string]interface{})["connectionName"].(string)
+	i.projectID = sqlInstance.GetAnnotations()["cnrm.cloud.google.com/project-id"]
 	return nil
 }
 
