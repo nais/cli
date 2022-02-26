@@ -3,13 +3,13 @@ package cmd
 const (
 	CommitInformation = "commit"
 	ConfigFlag        = "config"
-	ExpireFlag        = "expire"
-	NamespaceFlag     = "namespace"
 	ContextFlag       = "context"
+	ExpireFlag        = "expire"
+	HostFlag          = "host"
+	NamespaceFlag     = "namespace"
 	PoolFlag          = "pool"
+	PortFlag          = "port"
 	SecretNameFlag    = "secret-name"
 	UsernameFlag      = "username"
 	VerboseFlag       = "verbose"
-	PortFlag          = "port"
-	HostFlag          = "host"
 )
