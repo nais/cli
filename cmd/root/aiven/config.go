@@ -13,7 +13,7 @@ type Config struct {
 	tidy   *cobra.Command
 }
 
-func NewAivenConfig() *Config {
+func NewConfig() *Config {
 	return &Config{
 		aiven:  aivenCommand,
 		create: createCmd,

@@ -48,7 +48,7 @@ func Execute(version, commit, date, builtBy string) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	aivenConfig := aiven.NewAivenConfig()
+	aivenConfig := aiven.NewConfig()
 	aivenConfig.InitCmds(rootCmd)
 	deviceConfig := device.NewDeviceConfig()
 	deviceConfig.InitCmds(rootCmd)
