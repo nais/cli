@@ -21,12 +21,15 @@ type Service int64
 
 const (
 	Kafka Service = iota
+	OpenSearch
 )
 
 func ServiceFromString(service string) (Service, error) {
 	switch strings.ToLower(service) {
 	case "kafka":
 		return Kafka, nil
+	case "opensearch":
+		return OpenSearch, nil
 	default:
 		return -1, fmt.Errorf("unknown service: %v", service)
 	}
@@ -42,6 +45,11 @@ type Aiven struct {
 	Properties Properties
 }
 
+type OpenSearchProperties struct {
+	Instance string
+	Access   OpenSearchAccess
+}
+
 type Properties struct {
 	Service    Service
 	Username   string
@@ -50,10 +58,11 @@ type Properties struct {
 	SecretName string
 	Expiry     int
 	Kafka      *KafkaProperties
+	OpenSearch *OpenSearchProperties
 }
 
-func SetupAiven(innClient ctrl.Client, service Service, username, namespace, secretName string, expiry int, pool KafkaPool) *Aiven {
-	aiven := &Aiven{
+func Setup(innClient ctrl.Client, service Service, username, namespace, secretName, instance string, pool KafkaPool, access OpenSearchAccess, expiry int) *Aiven {
+	aiven := Aiven{
 		context.Background(),
 		innClient,
 		Properties{
@@ -70,28 +79,33 @@ func SetupAiven(innClient ctrl.Client, service Service, username, namespace, sec
 		aiven.Properties.Kafka = &KafkaProperties{
 			Pool: pool,
 		}
-
+	case OpenSearch:
+		aiven.Properties.OpenSearch = &OpenSearchProperties{
+			Instance: instance,
+			Access:   access,
+		}
 	}
 
-	return aiven
+	return &aiven
 }
 
 func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
+	properties := a.Properties
 	namespace := v1.Namespace{}
-	err := common.ValidateNamespace(a.Ctx, a.Client, a.Properties.Namespace, &namespace)
-	if err != nil {
-		return nil, err
-	}
-	a.Properties.Namespace = namespace.Name
 
-	secretName, err := common.SetSecretName(a.Properties.SecretName, a.Properties.Username, a.Properties.Namespace)
+	err := common.ValidateNamespace(a.Ctx, a.Client, properties.Namespace, &namespace)
 	if err != nil {
 		return nil, err
 	}
+	properties.Namespace = namespace.Name
+
+	secretName, err := common.SetSecretName(properties.SecretName, properties.Username, properties.Namespace)
+	if err != nil {
+		return nil, err
+	}
+
 	aivenApp := *a.AivenApplication(secretName)
-
 	err = a.CreateOrUpdate(&aivenApp)
-
 	if err != nil {
 		return nil, fmt.Errorf("create/update: %v", err)
 	}
@@ -99,6 +113,7 @@ func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error
 }
 
 func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
+	name := strings.ReplaceAll(a.Properties.Username, ".", "-")
 	applicationSpec := aiven_nais_io_v1.AivenApplicationSpec{
 		SecretName: secretName,
 		Protected:  DefaultProtected,
@@ -110,9 +125,13 @@ func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplic
 		applicationSpec.Kafka = &aiven_nais_io_v1.KafkaSpec{
 			Pool: a.Properties.Kafka.Pool.String(),
 		}
+	case OpenSearch:
+		applicationSpec.Elastic = &aiven_nais_io_v1.ElasticSpec{
+			Instance: a.Properties.OpenSearch.Instance,
+			Access:   a.Properties.OpenSearch.Access.String(),
+		}
 	}
 
-	name := strings.ReplaceAll(a.Properties.Username, ".", "-")
 	app := aiven_nais_io_v1.NewAivenApplicationBuilder(name, a.Properties.Namespace).WithSpec(applicationSpec).Build()
 	return &app
 }

@@ -35,6 +35,12 @@ func (a Config) InitCmds(root *cobra.Command) {
 	a.get.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config to generate. Supported values: .env, kcat, java, all (optional)")
 	viper.BindPFlag(cmd.ConfigFlag, a.get.Flags().Lookup(cmd.ConfigFlag))
 
+	a.create.Flags().StringP(cmd.InstanceFlag, "i", "", "Instance to connect to (required for OpenSearch)")
+	viper.BindPFlag(cmd.InstanceFlag, a.get.Flags().Lookup(cmd.InstanceFlag))
+
+	a.create.Flags().StringP(cmd.AccessFlag, "a", "read", "Type of access needed. Supported values: read, write, readwrite, admin (optional)")
+	viper.BindPFlag(cmd.AccessFlag, a.get.Flags().Lookup(cmd.AccessFlag))
+
 	root.AddCommand(a.aiven)
 	a.aiven.AddCommand(a.create)
 	a.aiven.AddCommand(a.get)
