@@ -10,6 +10,7 @@ const (
 	PoolFlag          = "pool"
 	PortFlag          = "port"
 	SecretNameFlag    = "secret-name"
+	ServiceFlag       = "service"
 	UsernameFlag      = "username"
 	VerboseFlag       = "verbose"
 )

@@ -6,15 +6,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-type AivenConfig struct {
+type Config struct {
 	aiven  *cobra.Command
 	create *cobra.Command
 	get    *cobra.Command
 	tidy   *cobra.Command
 }
 
-func NewAivenConfig() *AivenConfig {
-	return &AivenConfig{
+func NewAivenConfig() *Config {
+	return &Config{
 		aiven:  aivenCommand,
 		create: createCmd,
 		get:    getCmd,
@@ -22,8 +22,8 @@ func NewAivenConfig() *AivenConfig {
 	}
 }
 
-func (a AivenConfig) InitCmds(root *cobra.Command) {
-	a.create.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
+func (a Config) InitCmds(root *cobra.Command) {
+	a.create.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect to (optional)")
 	viper.BindPFlag(cmd.PoolFlag, a.create.Flags().Lookup(cmd.PoolFlag))
 
 	a.create.Flags().IntP(cmd.ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
