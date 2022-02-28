@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/pkg/client"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/config"
-	"github.com/nais/cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -98,21 +97,6 @@ func (s *Secret) CreateAllConfigs() error {
 	}
 	if err := s.CreateEnvConfig(); err != nil {
 		return err
-	}
-	return nil
-}
-
-func createKafkaSecrets(s *Secret) error {
-
-	switch s.ConfigType {
-	case consts.EnvironmentConfigurationType:
-		return s.CreateEnvConfig()
-	case consts.KCatConfigurationType:
-		return s.CreateKCatConfig()
-	case consts.JavaConfigurationType:
-		return s.CreateJavaConfig()
-	case consts.AllConfigurationType:
-
 	}
 	return nil
 }
