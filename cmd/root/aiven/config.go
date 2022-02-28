@@ -33,6 +33,7 @@ func (a Config) InitCmds(root *cobra.Command) {
 	viper.BindPFlag(cmd.SecretNameFlag, a.create.Flags().Lookup(cmd.SecretNameFlag))
 
 	a.get.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config to generate. Supported values: .env, kcat, java, all (optional)")
+	a.get.Flags().MarkDeprecated(cmd.ConfigFlag, "You now get all config for each service")
 	viper.BindPFlag(cmd.ConfigFlag, a.get.Flags().Lookup(cmd.ConfigFlag))
 
 	root.AddCommand(a.aiven)
