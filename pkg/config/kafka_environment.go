@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
@@ -14,18 +15,23 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-func NewEnvConfig(secret *v1.Secret, dest string) Config {
-	return &KafkaEnvironment{
-		Envs:       fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
-		Secret:     secret,
-		PrefixPath: dest,
-		RequiredFiles: map[string]RequiredFile{
-			consts.KafkaCertificateKey:          {consts.KafkaCertificateCrtFile, consts.KafkaCertificatePathKey, true},
-			consts.KafkaPrivateKeyKey:           {consts.KafkaPrivateKeyPemFile, consts.KafkaPrivateKeyPathKey, true},
-			consts.KafkaCAKey:                   {consts.KafkaCACrtFile, consts.KafkaCAPathKey, true},
-			consts.KafkaClientKeyStoreP12File:   {consts.KafkaClientKeyStoreP12File, consts.KafkaKeystorePathKey, false},
-			consts.KafkaClientTruststoreJksFile: {consts.KafkaClientTruststoreJksFile, consts.KafkaTruststorePathKey, false},
-		},
+func NewEnvConfig(secret *v1.Secret, dest string, service aiven.Service) (Config, error) {
+	switch service {
+	case aiven.Kafka:
+		return &KafkaEnvironment{
+			Envs:       fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)),
+			Secret:     secret,
+			PrefixPath: dest,
+			RequiredFiles: map[string]RequiredFile{
+				consts.KafkaCertificateKey:          {consts.KafkaCertificateCrtFile, consts.KafkaCertificatePathKey, true},
+				consts.KafkaPrivateKeyKey:           {consts.KafkaPrivateKeyPemFile, consts.KafkaPrivateKeyPathKey, true},
+				consts.KafkaCAKey:                   {consts.KafkaCACrtFile, consts.KafkaCAPathKey, true},
+				consts.KafkaClientKeyStoreP12File:   {consts.KafkaClientKeyStoreP12File, consts.KafkaKeystorePathKey, false},
+				consts.KafkaClientTruststoreJksFile: {consts.KafkaClientTruststoreJksFile, consts.KafkaTruststorePathKey, false},
+			},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown service: %v", service)
 	}
 }
 

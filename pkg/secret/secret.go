@@ -142,7 +142,7 @@ func (s *Secret) CreateKCatConfig() error {
 }
 
 func (s *Secret) CreateEnvConfig() error {
-	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
+	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath, s.Service)
 	_, err := kafkaEnv.Generate()
 	if err != nil {
 		return fmt.Errorf("generate %s config-type", s.ConfigType)
