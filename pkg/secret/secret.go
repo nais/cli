@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/client"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/config"
@@ -22,13 +23,15 @@ type Secret struct {
 	Secret          *v1.Secret
 	ConfigType      string
 	DestinationPath string
+	Service         aiven.Service
 }
 
-func SetupSecretConfiguration(secret *v1.Secret, configType, dest string) Secret {
+func SetupSecretConfiguration(secret *v1.Secret, configType, dest string, service aiven.Service) Secret {
 	return Secret{
 		Secret:          secret,
 		ConfigType:      configType,
 		DestinationPath: dest,
+		Service:         service,
 	}
 }
 
@@ -44,7 +47,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(configType, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(service aiven.Service, configType, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -64,9 +67,9 @@ func ExtractAndGenerateConfig(configType, secretName, namespaceName string) erro
 		return err
 	}
 
-	secret := SetupSecretConfiguration(existingSecret, configType, dest)
+	secret := SetupSecretConfiguration(existingSecret, configType, dest, service)
 
-	// check is annotations match with protected or time-limited otherwise you could use any existingSecret!
+	// check if annotations match with protected or time-limited otherwise you could use any existingSecret!
 	if !(hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation)) {
 		return fmt.Errorf("secret is must have at least one of these annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
@@ -99,8 +102,8 @@ func (s *Secret) CreateAllConfigs() error {
 	return nil
 }
 
-func (s *Secret) Config() error {
-	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
+func createKafkaSecrets(s *Secret) error {
+
 	switch s.ConfigType {
 	case consts.EnvironmentConfigurationType:
 		return s.CreateEnvConfig()
@@ -109,10 +112,21 @@ func (s *Secret) Config() error {
 	case consts.JavaConfigurationType:
 		return s.CreateJavaConfig()
 	case consts.AllConfigurationType:
+
+	}
+	return nil
+}
+
+func (s *Secret) Config() error {
+	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
+	switch s.Service {
+	case aiven.Kafka:
 		err := s.CreateAllConfigs()
 		if err != nil {
 			return fmt.Errorf("generate %s config-type", s.ConfigType)
 		}
+	default:
+		return fmt.Errorf("unkown service: %v", s.Service)
 	}
 	return nil
 }

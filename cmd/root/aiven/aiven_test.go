@@ -25,12 +25,12 @@ func TestAivenConfigCreateNoValidKafkaPool(t *testing.T) {
 // get
 func TestAivenConfigGetMissingArguments(t *testing.T) {
 	err := getCmd.Execute()
-	assert.EqualError(t, err, "missing required arguments: secret-name, namespace")
+	assert.EqualError(t, err, "missing required arguments: service, secret-name, namespace")
 }
 
 func TestAivenConfigGetNoValidConfigFlag(t *testing.T) {
 	setEnvironment(aiven.NavIntegrationTest.String(), "non-flag")
-	getCmd.SetArgs([]string{"secret-name", "namespace"})
+	getCmd.SetArgs([]string{"kafka", "secret-name", "namespace"})
 	err := getCmd.Execute()
 	assert.EqualError(t, err, "valid values for '--config': java, kcat, .env, all")
 }
