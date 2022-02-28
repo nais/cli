@@ -57,7 +57,7 @@ nais aiven create kafka username namespace -e 10 | nais aiven create kafka usern
 		if err != nil {
 			return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 		}
-		log.Default().Printf("use: '%v get %v %v' to generate configuration secrets.", "nais aiven", aivenApp.Spec.SecretName, aivenApp.Namespace)
+		log.Default().Printf("use: '%v get %v %v %v' to generate configuration secrets.", "nais aiven", service, aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }
