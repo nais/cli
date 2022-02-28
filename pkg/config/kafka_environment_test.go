@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/consts"
 	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,8 @@ func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
+	kcatConfig, err := NewEnvConfig(test.SetupSecret(envKeys), tmpDest, aiven.Kafka)
+	assert.NoError(t, err)
 
 	result, err := kcatConfig.Generate()
 	assert.NoError(t, err)
@@ -50,8 +52,9 @@ func TestKafkaEnvironmentSecrettMissingRequiredData(t *testing.T) {
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
-	_, err := kcatConfig.Generate()
+	kcatConfig, err := NewEnvConfig(test.SetupSecret(envKeys), tmpDest, aiven.Kafka)
+	assert.NoError(t, err)
+	_, err = kcatConfig.Generate()
 	assert.EqualError(t, err, "can not generate kafka-secret.env config, secret missing required key: client.truststore.jks")
 
 	defer os.Remove(tmpDest)
