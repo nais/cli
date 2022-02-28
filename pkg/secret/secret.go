@@ -25,10 +25,9 @@ type Secret struct {
 	Service         aiven.Service
 }
 
-func SetupSecretConfiguration(secret *v1.Secret, configType, dest string, service aiven.Service) Secret {
+func SetupSecretConfiguration(secret *v1.Secret, dest string, service aiven.Service) Secret {
 	return Secret{
 		Secret:          secret,
-		ConfigType:      configType,
 		DestinationPath: dest,
 		Service:         service,
 	}
@@ -46,7 +45,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(service aiven.Service, configType, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(service aiven.Service, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -66,7 +65,7 @@ func ExtractAndGenerateConfig(service aiven.Service, configType, secretName, nam
 		return err
 	}
 
-	secret := SetupSecretConfiguration(existingSecret, configType, dest, service)
+	secret := SetupSecretConfiguration(existingSecret, dest, service)
 
 	// check if annotations match with protected or time-limited otherwise you could use any existingSecret!
 	if !(hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation)) {

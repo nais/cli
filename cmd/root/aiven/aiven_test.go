@@ -2,8 +2,6 @@ package aiven
 
 import (
 	"github.com/nais/cli/cmd"
-	"github.com/nais/cli/pkg/aiven"
-	"github.com/nais/cli/pkg/consts"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,7 +14,7 @@ func TestAivenConfigCreateMissingArguments(t *testing.T) {
 }
 
 func TestAivenConfigCreateNoValidKafkaPool(t *testing.T) {
-	setEnvironment("no-pool", consts.AllConfigurationType)
+	setEnvironment("no-pool")
 	createCmd.SetArgs([]string{"kafka", "username", "namespace"})
 	err := createCmd.Execute()
 	assert.EqualError(t, err, "valid values for '-pool': nav-dev | nav-prod | nav-integration-test | nav-infrastructure")
@@ -28,18 +26,10 @@ func TestAivenConfigGetMissingArguments(t *testing.T) {
 	assert.EqualError(t, err, "missing required arguments: service, secret-name, namespace")
 }
 
-func TestAivenConfigGetNoValidConfigFlag(t *testing.T) {
-	setEnvironment(aiven.NavIntegrationTest.String(), "non-flag")
-	getCmd.SetArgs([]string{"kafka", "secret-name", "namespace"})
-	err := getCmd.Execute()
-	assert.EqualError(t, err, "valid values for '--config': java, kcat, .env, all")
-}
-
 // tidy doesn't make sense to test here.
 
-func setEnvironment(kafkaPool, configFlag string) {
+func setEnvironment(kafkaPool string) {
 	viper.Set(cmd.PoolFlag, kafkaPool)
 	viper.Set(cmd.ExpireFlag, 1)
 	viper.Set(cmd.SecretNameFlag, "secret")
-	viper.Set(cmd.ConfigFlag, configFlag)
 }
