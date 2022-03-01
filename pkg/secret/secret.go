@@ -90,10 +90,11 @@ func (s *Secret) CreateKafkaConfigs() error {
 	if err := s.CreateJavaConfig(); err != nil {
 		return err
 	}
-	if err := s.CreateKCatConfig(); err != nil {
+	err := config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
-	err := config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
+	err = config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
 	if err != nil {
 		return err
 	}
@@ -122,19 +123,6 @@ func (s *Secret) CreateJavaConfig() error {
 	}
 
 	if err := javaConfig.WriteConfigToFile(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Secret) CreateKCatConfig() error {
-	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
-	_, err := kCatConfig.Generate()
-	if err != nil {
-		return err
-	}
-
-	if err := kCatConfig.WriteConfigToFile(); err != nil {
 		return err
 	}
 	return nil

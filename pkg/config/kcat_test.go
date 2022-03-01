@@ -4,7 +4,9 @@ import (
 	"github.com/nais/cli/pkg/consts"
 	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -22,29 +24,16 @@ func TestKcatConfigGenerated(t *testing.T) {
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), tmpDest)
-	result, err := kcatConfig.Generate()
+	err := WriteKCatConfigToFile(test.SetupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	assert.True(t, strings.Contains(result, KafkaCatSslCaLocation))
-	assert.True(t, strings.Contains(result, KafkaCatSslKeyLocation))
-	assert.True(t, strings.Contains(result, KafkaCatSslCertificateLocation))
-	assert.True(t, strings.Contains(result, KafkaSecurityProtocolLocation))
+	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaCatConfigName))
+	assert.NoError(t, err)
 
-	defer os.Remove(tmpDest)
-}
-
-func TestKcatSecretMissingRequiredData(t *testing.T) {
-
-	var envKeys = []string{
-		consts.KafkaCAKey,
-		consts.KafkaCertificateKey,
-	}
-
-	tmpDest := test.SetupDest(t)
-	kcatConfig := NewKCatConfig(test.SetupSecret(envKeys), tmpDest)
-	_, err := kcatConfig.Generate()
-	assert.EqualError(t, err, "can not generate kcat.conf config, secret missing required key: KAFKA_PRIVATE_KEY")
+	assert.True(t, strings.Contains(string(result), KafkaCatSslCaLocation))
+	assert.True(t, strings.Contains(string(result), KafkaCatSslKeyLocation))
+	assert.True(t, strings.Contains(string(result), KafkaCatSslCertificateLocation))
+	assert.True(t, strings.Contains(string(result), KafkaSecurityProtocolLocation))
 
 	defer os.Remove(tmpDest)
 }
