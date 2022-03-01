@@ -110,6 +110,11 @@ func (s *Secret) Config() error {
 		if err != nil {
 			return err
 		}
+	case aiven.OpenSearch:
+		err := config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("unkown service: %v", s.Service)
 	}

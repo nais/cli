@@ -11,7 +11,15 @@ import (
 
 const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
+	OpenSearchEnvName          = "opensearch-secret.env"
 )
+
+func WriteOpenSearchEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
+	envsToSaveToFile := []string{
+		consts.OpenSearchURIKey, consts.OpenSearchPasswordKey, consts.OpenSearchUsernameKey,
+	}
+	return writeConfigToFile(secret, destinationPath, OpenSearchEnvName, envsToSaveToFile, map[string]string{})
+}
 
 func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
 	kafkaSecretsToSaveToFile := map[string]string{
