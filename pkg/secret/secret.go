@@ -87,10 +87,11 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 }
 
 func (s *Secret) CreateKafkaConfigs() error {
-	if err := s.CreateJavaConfig(); err != nil {
+	err := config.NewJavaConfig(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
-	err := config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
+	err = config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
 	if err != nil {
 		return err
 	}
@@ -111,19 +112,6 @@ func (s *Secret) Config() error {
 		}
 	default:
 		return fmt.Errorf("unkown service: %v", s.Service)
-	}
-	return nil
-}
-
-func (s *Secret) CreateJavaConfig() error {
-	javaConfig := config.NewJavaConfig(s.Secret, s.DestinationPath)
-	_, err := javaConfig.Generate()
-	if err != nil {
-		return err
-	}
-
-	if err := javaConfig.WriteConfigToFile(); err != nil {
-		return err
 	}
 	return nil
 }

@@ -28,80 +28,36 @@ ssl.truststore.type=JKS
 `
 )
 
-func NewJavaConfig(secret *v1.Secret, dest string) Config {
-	return &Java{
-		Props:      fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)),
-		Secret:     secret,
-		PrefixPath: dest,
-		RequiredFiles: map[string]RequiredFile{
-			consts.KafkaClientKeyStoreP12File:   {consts.KafkaClientKeyStoreP12File, KeyStoreLocationProp, false},
-			consts.KafkaClientTruststoreJksFile: {consts.KafkaClientTruststoreJksFile, TrustStoreLocationProp, false},
-		},
+func NewJavaConfig(secret *v1.Secret, destinationPath string) error {
+	properties := fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute))
+	properties += fmt.Sprintf(FileHeader, secret.Namespace, secret.Data[consts.KafkaBrokersKey], filepath.Join(destinationPath, JavaConfigName))
+
+	envsToFile := map[string]string{
+		KeyPassProp:            string(secret.Data[consts.KafkaCredStorePasswordKey]),
+		KeyStorePassProp:       string(secret.Data[consts.KafkaCredStorePasswordKey]),
+		TrustStorePassProp:     string(secret.Data[consts.KafkaCredStorePasswordKey]),
+		KeyStoreLocationProp:   windowsify(filepath.Join(destinationPath, consts.KafkaClientKeyStoreP12File)),
+		TrustStoreLocationProp: windowsify(filepath.Join(destinationPath, consts.KafkaClientTruststoreJksFile)),
 	}
-}
 
-type Java struct {
-	Props         string
-	Secret        *v1.Secret
-	PrefixPath    string
-	RequiredFiles map[string]RequiredFile
-}
-
-func (k *Java) WriteConfigToFile() error {
-	if err := k.write(); err != nil {
-		return fmt.Errorf("could not write %s to file: %s", JavaConfigName, err)
+	for key, value := range envsToFile {
+		properties += fmt.Sprintf("%s=%s\n", key, value)
 	}
-	return nil
-}
 
-func (k *Java) write() error {
-	if err := common.WriteToFile(k.PrefixPath, JavaConfigName, []byte(k.Props)); err != nil {
+	if err := common.WriteToFile(destinationPath, JavaConfigName, []byte(properties)); err != nil {
 		return fmt.Errorf("write envs to file: %s", err)
 	}
-	return nil
-}
 
-func (k *Java) Set(key string, value []byte) {
-	k.Props += fmt.Sprintf("%s=%s\n", key, string(value))
-}
-
-func (k *Java) SetPath(key, path string) {
-	k.Props += fmt.Sprintf("%s=%s\n", key, windowsify(path))
-}
-
-func (k *Java) Generate() (string, error) {
-	err := requiredSecretDataExists(k.RequiredFiles, k.Secret.Data, JavaConfigName)
-	if err != nil {
-		return "", err
+	secretsToFile := map[string][]byte{
+		consts.KafkaClientKeyStoreP12File:   secret.Data[consts.KafkaClientKeyStoreP12File],
+		consts.KafkaClientTruststoreJksFile: secret.Data[consts.KafkaClientTruststoreJksFile],
 	}
-
-	k.Props += fmt.Sprintf(FileHeader, k.Secret.Namespace, k.Secret.Data[consts.KafkaBrokersKey], filepath.Join(k.PrefixPath, JavaConfigName))
-
-	for key, value := range k.Secret.Data {
-		if err := k.toFile(key, value); err != nil {
-			return "", fmt.Errorf("write to file for key: %s\n %s", key, err)
+	for fileName, value := range secretsToFile {
+		if err := common.WriteToFile(destinationPath, fileName, []byte(value)); err != nil {
+			return fmt.Errorf("write to file: %s", err)
 		}
-		k.toEnv(key, value)
 	}
-	return k.Props, nil
-}
 
-func (k *Java) toEnv(key string, value []byte) {
-	if key == consts.KafkaCredStorePasswordKey {
-		k.Set(KeyPassProp, value)
-		k.Set(KeyStorePassProp, value)
-		k.Set(TrustStorePassProp, value)
-	}
-}
-
-func (k *Java) toFile(key string, value []byte) error {
-	path := k.PrefixPath
-	if requiredFile, ok := k.RequiredFiles[key]; ok {
-		if err := common.WriteToFile(path, requiredFile.Filename, value); err != nil {
-			return err
-		}
-		k.SetPath(requiredFile.PathKey, filepath.Join(path, requiredFile.Filename))
-	}
 	return nil
 }
 
