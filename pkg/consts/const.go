@@ -17,12 +17,7 @@ const (
 	KafkaCAKey                     = "KAFKA_CA"
 	KafkaBrokersKey                = "KAFKA_BROKERS"
 	KafkaSchemaRegistryKey         = "KAFKA_SCHEMA_REGISTRY"
-	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
 	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD"
+	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
 	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD"
-
-	EnvironmentConfigurationType = ".env"
-	KCatConfigurationType        = "kcat"
-	JavaConfigurationType        = "java"
-	AllConfigurationType         = "all"
 )

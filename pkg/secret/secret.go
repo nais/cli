@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/client"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/config"
-	"github.com/nais/cli/pkg/consts"
 	v1 "k8s.io/api/core/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -20,15 +20,15 @@ const (
 
 type Secret struct {
 	Secret          *v1.Secret
-	ConfigType      string
 	DestinationPath string
+	Service         aiven.Service
 }
 
-func SetupSecretConfiguration(secret *v1.Secret, configType, dest string) Secret {
+func SetupSecretConfiguration(secret *v1.Secret, dest string, service aiven.Service) Secret {
 	return Secret{
 		Secret:          secret,
-		ConfigType:      configType,
 		DestinationPath: dest,
+		Service:         service,
 	}
 }
 
@@ -44,7 +44,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(configType, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(service aiven.Service, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -64,9 +64,9 @@ func ExtractAndGenerateConfig(configType, secretName, namespaceName string) erro
 		return err
 	}
 
-	secret := SetupSecretConfiguration(existingSecret, configType, dest)
+	secret := SetupSecretConfiguration(existingSecret, dest, service)
 
-	// check is annotations match with protected or time-limited otherwise you could use any existingSecret!
+	// check if annotations match with protected or time-limited otherwise you could use any existingSecret!
 	if !(hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation)) {
 		return fmt.Errorf("secret is must have at least one of these annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
@@ -86,72 +86,32 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 	return false
 }
 
-func (s *Secret) CreateAllConfigs() error {
-	if err := s.CreateJavaConfig(); err != nil {
+func (s *Secret) CreateKafkaConfigs() error {
+	err := config.NewJavaConfig(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
-	if err := s.CreateKCatConfig(); err != nil {
+	err = config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
-	if err := s.CreateEnvConfig(); err != nil {
+	err = config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
 func (s *Secret) Config() error {
-	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
-	switch s.ConfigType {
-	case consts.EnvironmentConfigurationType:
-		return s.CreateEnvConfig()
-	case consts.KCatConfigurationType:
-		return s.CreateKCatConfig()
-	case consts.JavaConfigurationType:
-		return s.CreateJavaConfig()
-	case consts.AllConfigurationType:
-		err := s.CreateAllConfigs()
+	log.Default().Printf("generating %v config from secret %v", s.Service, s.Secret.Name)
+	switch s.Service {
+	case aiven.Kafka:
+		err := s.CreateKafkaConfigs()
 		if err != nil {
-			return fmt.Errorf("generate %s config-type", s.ConfigType)
+			return err
 		}
-	}
-	return nil
-}
-
-func (s *Secret) CreateJavaConfig() error {
-	javaConfig := config.NewJavaConfig(s.Secret, s.DestinationPath)
-	_, err := javaConfig.Generate()
-	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
-	}
-
-	if err := javaConfig.WriteConfigToFile(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Secret) CreateKCatConfig() error {
-	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
-	_, err := kCatConfig.Generate()
-	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
-	}
-
-	if err := kCatConfig.WriteConfigToFile(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Secret) CreateEnvConfig() error {
-	kafkaEnv := config.NewEnvConfig(s.Secret, s.DestinationPath)
-	_, err := kafkaEnv.Generate()
-	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
-	}
-
-	if err := kafkaEnv.WriteConfigToFile(); err != nil {
-		return err
+	default:
+		return fmt.Errorf("unkown service: %v", s.Service)
 	}
 	return nil
 }

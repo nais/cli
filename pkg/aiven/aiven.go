@@ -24,6 +24,8 @@ const (
 	OpenSearch
 )
 
+var Services = []string{"kafka"}
+
 func ServiceFromString(service string) (Service, error) {
 	switch strings.ToLower(service) {
 	case "kafka":
@@ -33,6 +35,10 @@ func ServiceFromString(service string) (Service, error) {
 	default:
 		return -1, fmt.Errorf("unknown service: %v", service)
 	}
+}
+
+func (p Service) String() string {
+	return Services[p]
 }
 
 type KafkaProperties struct {

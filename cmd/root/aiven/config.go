@@ -32,7 +32,9 @@ func (a Config) InitCmds(root *cobra.Command) {
 	a.create.Flags().StringP(cmd.SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
 	viper.BindPFlag(cmd.SecretNameFlag, a.create.Flags().Lookup(cmd.SecretNameFlag))
 
+	// TODO: remove this next time someone works on this code base. Config flag is not used further down
 	a.get.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config to generate. Supported values: .env, kcat, java, all (optional)")
+	a.get.Flags().MarkDeprecated(cmd.ConfigFlag, "You now get all config for each service")
 	viper.BindPFlag(cmd.ConfigFlag, a.get.Flags().Lookup(cmd.ConfigFlag))
 
 	a.create.Flags().StringP(cmd.InstanceFlag, "i", "", "Instance to connect to (required for OpenSearch)")

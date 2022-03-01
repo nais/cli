@@ -4,7 +4,9 @@ import (
 	"github.com/nais/cli/pkg/consts"
 	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -19,36 +21,18 @@ func TestJavaConfigGenerated(t *testing.T) {
 	}
 
 	tmpDest := test.SetupDest(t)
-	javaConfig := NewJavaConfig(test.SetupSecret(envKeys), tmpDest)
-
-	result, err := javaConfig.Generate()
+	err := NewJavaConfig(test.SetupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	assert.True(t, strings.Contains(result, consts.KafkaClientTruststoreJksFile))
-	assert.True(t, strings.Contains(result, consts.KafkaClientKeyStoreP12File))
-	assert.True(t, strings.Contains(result, KeyPassProp))
-	assert.True(t, strings.Contains(result, KeyStorePassProp))
-	assert.True(t, strings.Contains(result, TrustStorePassProp))
-	assert.True(t, strings.Contains(result, KeyStoreLocationProp))
+	result, err := ioutil.ReadFile(filepath.Join(tmpDest, JavaConfigName))
+	assert.NoError(t, err)
 
-	defer os.Remove(tmpDest)
-}
-
-func TestJavaSecretMissingRequiredData(t *testing.T) {
-
-	var envKeys = []string{
-		consts.KafkaCAKey,
-		consts.KafkaCertificateKey,
-		consts.KafkaPrivateKeyKey,
-		consts.KafkaClientKeyStoreP12File,
-		consts.KafkaCredStorePasswordKey,
-		consts.KafkaSchemaRegistryKey,
-	}
-
-	tmpDest := test.SetupDest(t)
-	javaConfig := NewJavaConfig(test.SetupSecret(envKeys), tmpDest)
-	_, err := javaConfig.Generate()
-	assert.EqualError(t, err, "can not generate kafka.properties config, secret missing required key: client.truststore.jks")
+	assert.True(t, strings.Contains(string(result), consts.KafkaClientTruststoreJksFile))
+	assert.True(t, strings.Contains(string(result), consts.KafkaClientKeyStoreP12File))
+	assert.True(t, strings.Contains(string(result), KeyPassProp))
+	assert.True(t, strings.Contains(string(result), KeyStorePassProp))
+	assert.True(t, strings.Contains(string(result), TrustStorePassProp))
+	assert.True(t, strings.Contains(string(result), KeyStoreLocationProp))
 
 	defer os.Remove(tmpDest)
 }

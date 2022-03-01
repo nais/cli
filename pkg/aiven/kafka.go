@@ -18,13 +18,13 @@ var KafkaPools = []string{"nav-dev", "nav-prod", "nav-integration-test", "nav-in
 
 func KafkaPoolFromString(pool string) (KafkaPool, error) {
 	switch strings.ToLower(pool) {
-	case KafkaPools[0]:
+	case "nav-dev":
 		return NavDev, nil
-	case KafkaPools[1]:
+	case "nav-prod":
 		return NavProd, nil
-	case KafkaPools[2]:
+	case "nav-integration-test":
 		return NavIntegrationTest, nil
-	case KafkaPools[3]:
+	case "nav-infrastructure":
 		return NavInfrastructure, nil
 	default:
 		return -1, fmt.Errorf("unknown pool: %v", pool)
