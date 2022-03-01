@@ -23,13 +23,19 @@ const (
 	Kafka Service = iota
 )
 
+var Services = []string{"kafka"}
+
 func ServiceFromString(service string) (Service, error) {
 	switch strings.ToLower(service) {
-	case "kafka":
+	case Services[0]:
 		return Kafka, nil
 	default:
 		return -1, fmt.Errorf("unknown service: %v", service)
 	}
+}
+
+func (p Service) String() string {
+	return Services[p]
 }
 
 type KafkaProperties struct {

@@ -20,7 +20,6 @@ const (
 
 type Secret struct {
 	Secret          *v1.Secret
-	ConfigType      string
 	DestinationPath string
 	Service         aiven.Service
 }
@@ -87,26 +86,27 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 	return false
 }
 
-func (s *Secret) CreateAllConfigs() error {
+func (s *Secret) CreateKafkaConfigs() error {
 	if err := s.CreateJavaConfig(); err != nil {
 		return err
 	}
 	if err := s.CreateKCatConfig(); err != nil {
 		return err
 	}
-	if err := s.CreateEnvConfig(); err != nil {
+	err := config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
 func (s *Secret) Config() error {
-	log.Default().Printf("generating '%s' from secret '%s'", s.ConfigType, s.Secret.Name)
+	log.Default().Printf("generating %v config from secret %v", s.Service, s.Secret.Name)
 	switch s.Service {
 	case aiven.Kafka:
-		err := s.CreateAllConfigs()
+		err := s.CreateKafkaConfigs()
 		if err != nil {
-			return fmt.Errorf("generate %s config-type", s.ConfigType)
+			return err
 		}
 	default:
 		return fmt.Errorf("unkown service: %v", s.Service)
@@ -118,7 +118,7 @@ func (s *Secret) CreateJavaConfig() error {
 	javaConfig := config.NewJavaConfig(s.Secret, s.DestinationPath)
 	_, err := javaConfig.Generate()
 	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
+		return err
 	}
 
 	if err := javaConfig.WriteConfigToFile(); err != nil {
@@ -131,26 +131,10 @@ func (s *Secret) CreateKCatConfig() error {
 	kCatConfig := config.NewKCatConfig(s.Secret, s.DestinationPath)
 	_, err := kCatConfig.Generate()
 	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
+		return err
 	}
 
 	if err := kCatConfig.WriteConfigToFile(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *Secret) CreateEnvConfig() error {
-	kafkaEnv, err := config.NewEnvConfig(s.Secret, s.DestinationPath, s.Service)
-	if err != nil {
-		return err
-	}
-	_, err = kafkaEnv.Generate()
-	if err != nil {
-		return fmt.Errorf("generate %s config-type", s.ConfigType)
-	}
-
-	if err := kafkaEnv.WriteConfigToFile(); err != nil {
 		return err
 	}
 	return nil

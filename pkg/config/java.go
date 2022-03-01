@@ -49,7 +49,7 @@ type Java struct {
 
 func (k *Java) WriteConfigToFile() error {
 	if err := k.write(); err != nil {
-		return fmt.Errorf("could not write %s to file: %s", KafkaSchemaRegistryEnvName, err)
+		return fmt.Errorf("could not write %s to file: %s", JavaConfigName, err)
 	}
 	return nil
 }
