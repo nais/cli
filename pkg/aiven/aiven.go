@@ -27,7 +27,7 @@ var Services = []string{"kafka"}
 
 func ServiceFromString(service string) (Service, error) {
 	switch strings.ToLower(service) {
-	case Services[0]:
+	case "kafka":
 		return Kafka, nil
 	default:
 		return -1, fmt.Errorf("unknown service: %v", service)
