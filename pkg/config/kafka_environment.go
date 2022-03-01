@@ -13,42 +13,32 @@ const (
 	KafkaSchemaRegistryEnvName = "kafka-secret.env"
 )
 
-type FileTuple struct {
-	Filename string
-	PathKey  string
-}
-
-func getSecretsToSaveToFile() []FileTuple {
-	return []FileTuple{
-		{consts.KafkaCertificateCrtFile, consts.KafkaCertificatePathKey},
-		{consts.KafkaPrivateKeyPemFile, consts.KafkaPrivateKeyPathKey},
-		{consts.KafkaCACrtFile, consts.KafkaCAPathKey},
-		{consts.KafkaClientKeyStoreP12File, consts.KafkaKeystorePathKey},
-		{consts.KafkaClientTruststoreJksFile, consts.KafkaTruststorePathKey},
+func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
+	kafkaSecretsToSaveToFile := map[string]string{
+		consts.KafkaCertificateCrtFile:      consts.KafkaCertificatePathKey,
+		consts.KafkaPrivateKeyPemFile:       consts.KafkaPrivateKeyPathKey,
+		consts.KafkaCACrtFile:               consts.KafkaCAPathKey,
+		consts.KafkaClientKeyStoreP12File:   consts.KafkaKeystorePathKey,
+		consts.KafkaClientTruststoreJksFile: consts.KafkaTruststorePathKey,
 	}
-}
-
-func getEnvsToSaveToFile() []string {
-	return []string{
+	kafkaEnvsToSaveToFile := []string{
 		consts.KafkaBrokersKey, consts.KafkaCredStorePasswordKey, consts.KafkaSchemaRegistryKey,
 		consts.KafkaSchemaRegistryPasswordKey, consts.KafkaSchemaRegistryUserKey, consts.KafkaCertificatePathKey,
 		consts.KafkaPrivateKeyPathKey, consts.KafkaCAPathKey,
 	}
+
+	return writeConfigToFile(secret, destinationPath, KafkaSchemaRegistryEnvName, kafkaEnvsToSaveToFile, kafkaSecretsToSaveToFile)
 }
 
-func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
-	return writeConfigToFile(secret, destinationPath, KafkaSchemaRegistryEnvName, getEnvsToSaveToFile(), getSecretsToSaveToFile())
-}
-
-func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave []FileTuple) error {
+func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave map[string]string) error {
 	envsToFile := fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute))
-	for _, secretToFile := range secretFilesToSave {
-		err := common.WriteToFile(destinationPath, secretToFile.Filename, secret.Data[secretToFile.PathKey])
+	for fileName, pathKey := range secretFilesToSave {
+		err := common.WriteToFile(destinationPath, fileName, secret.Data[pathKey])
 		if err != nil {
 			return err
 		}
 
-		envsToFile += fmt.Sprintf("%s=\"%s\"\n", secretToFile.PathKey, filepath.Join(destinationPath, secretToFile.Filename))
+		envsToFile += fmt.Sprintf("%s=\"%s\"\n", pathKey, filepath.Join(destinationPath, fileName))
 	}
 
 	for _, key := range envsToSave {
