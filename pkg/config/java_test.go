@@ -24,7 +24,7 @@ func TestJavaConfigGenerated(t *testing.T) {
 	err := NewJavaConfig(test.SetupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	result, err := ioutil.ReadFile(filepath.Join(tmpDest, JavaConfigName))
+	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaJavaConfigName))
 	assert.NoError(t, err)
 
 	assert.True(t, strings.Contains(string(result), consts.KafkaClientTruststoreJksFile))

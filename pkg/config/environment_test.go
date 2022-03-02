@@ -26,7 +26,7 @@ func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 	err := WriteKafkaEnvConfigToFile(test.SetupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaSchemaRegistryEnvName))
+	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaEnvName))
 	assert.NoError(t, err)
 
 	assert.True(t, strings.Contains(string(result), consts.KafkaClientTruststoreJksFile))
