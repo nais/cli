@@ -1,11 +1,13 @@
 package cmd
 
 const (
+	AccessFlag        = "access"
 	CommitInformation = "commit"
 	ConfigFlag        = "config"
 	ContextFlag       = "context"
 	ExpireFlag        = "expire"
 	HostFlag          = "host"
+	InstanceFlag      = "instance"
 	NamespaceFlag     = "namespace"
 	PoolFlag          = "pool"
 	PortFlag          = "port"

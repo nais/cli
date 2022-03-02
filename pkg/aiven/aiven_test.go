@@ -28,7 +28,7 @@ func TestAivenGenerateApplicationCreated(t *testing.T) {
 	}
 
 	fakeClient := test.BuildWithScheme(&namespace).Build()
-	aiven := SetupAiven(fakeClient, Kafka, username, team, secretName, expiry, NavDev)
+	aiven := Setup(fakeClient, Kafka, username, team, secretName, "", NavDev, Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
@@ -66,7 +66,7 @@ func TestAivenGenerateApplicationUpdated(t *testing.T) {
 	}
 
 	fakeClient := test.BuildWithScheme(&namespace, &aivenApp).Build()
-	aiven := SetupAiven(fakeClient, Kafka, username, team, secretName, expiry, NavDev)
+	aiven := Setup(fakeClient, Kafka, username, team, secretName, "", NavDev, Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
