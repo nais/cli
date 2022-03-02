@@ -20,4 +20,8 @@ const (
 	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD"
 	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
 	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD"
+
+	OpenSearchURIKey      = "OPEN_SEARCH_URI"
+	OpenSearchUsernameKey = "OPEN_SEARCH_USERNAME"
+	OpenSearchPasswordKey = "OPEN_SEARCH_PASSWORD"
 )
