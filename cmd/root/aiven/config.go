@@ -6,15 +6,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-type AivenConfig struct {
+type Config struct {
 	aiven  *cobra.Command
 	create *cobra.Command
 	get    *cobra.Command
 	tidy   *cobra.Command
 }
 
-func NewAivenConfig() *AivenConfig {
-	return &AivenConfig{
+func NewAivenConfig() *Config {
+	return &Config{
 		aiven:  aivenCommand,
 		create: createCmd,
 		get:    getCmd,
@@ -22,8 +22,8 @@ func NewAivenConfig() *AivenConfig {
 	}
 }
 
-func (a AivenConfig) InitCmds(root *cobra.Command) {
-	a.create.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect (optional)")
+func (a Config) InitCmds(root *cobra.Command) {
+	a.create.Flags().StringP(cmd.PoolFlag, "p", "nav-dev", "Preferred kafka pool to connect to (optional)")
 	viper.BindPFlag(cmd.PoolFlag, a.create.Flags().Lookup(cmd.PoolFlag))
 
 	a.create.Flags().IntP(cmd.ExpireFlag, "e", 1, "Time in days the created secret should be valid (optional)")
@@ -32,7 +32,9 @@ func (a AivenConfig) InitCmds(root *cobra.Command) {
 	a.create.Flags().StringP(cmd.SecretNameFlag, "s", "", "Preferred secret-name instead of generated (optional)")
 	viper.BindPFlag(cmd.SecretNameFlag, a.create.Flags().Lookup(cmd.SecretNameFlag))
 
+	// TODO: remove this next time someone works on this code base. Config flag is not used further down
 	a.get.Flags().StringP(cmd.ConfigFlag, "c", "all", "Type of config to generate. Supported values: .env, kcat, java, all (optional)")
+	a.get.Flags().MarkDeprecated(cmd.ConfigFlag, "You now get all config for each service")
 	viper.BindPFlag(cmd.ConfigFlag, a.get.Flags().Lookup(cmd.ConfigFlag))
 
 	root.AddCommand(a.aiven)

@@ -4,13 +4,14 @@ import (
 	"github.com/nais/cli/pkg/consts"
 	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
 func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
-
 	var envKeys = []string{
 		consts.KafkaCAKey,
 		consts.KafkaCertificateKey,
@@ -22,37 +23,19 @@ func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 	}
 
 	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
-
-	result, err := kcatConfig.Generate()
+	err := WriteKafkaEnvConfigToFile(test.SetupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	assert.True(t, strings.Contains(result, consts.KafkaClientTruststoreJksFile))
-	assert.True(t, strings.Contains(result, consts.KafkaCredStorePasswordKey))
-	assert.True(t, strings.Contains(result, consts.KafkaSchemaRegistryKey))
-	assert.True(t, strings.Contains(result, consts.KafkaCertificateKey))
-	assert.True(t, strings.Contains(result, consts.KafkaCAKey))
-	assert.True(t, strings.Contains(result, consts.KafkaPrivateKeyKey))
-	assert.True(t, strings.Contains(result, consts.KafkaClientKeyStoreP12File))
+	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaEnvName))
+	assert.NoError(t, err)
 
-	defer os.Remove(tmpDest)
-}
-
-func TestKafkaEnvironmentSecrettMissingRequiredData(t *testing.T) {
-
-	var envKeys = []string{
-		consts.KafkaCAKey,
-		consts.KafkaCertificateKey,
-		consts.KafkaPrivateKeyKey,
-		consts.KafkaClientKeyStoreP12File,
-		consts.KafkaCredStorePasswordKey,
-		consts.KafkaSchemaRegistryKey,
-	}
-
-	tmpDest := test.SetupDest(t)
-	kcatConfig := NewEnvConfig(test.SetupSecret(envKeys), tmpDest)
-	_, err := kcatConfig.Generate()
-	assert.EqualError(t, err, "can not generate kafka-secret.env config, secret missing required key: client.truststore.jks")
+	assert.True(t, strings.Contains(string(result), consts.KafkaClientTruststoreJksFile))
+	assert.True(t, strings.Contains(string(result), consts.KafkaCredStorePasswordKey))
+	assert.True(t, strings.Contains(string(result), consts.KafkaSchemaRegistryKey))
+	assert.True(t, strings.Contains(string(result), consts.KafkaCertificateKey))
+	assert.True(t, strings.Contains(string(result), consts.KafkaCAKey))
+	assert.True(t, strings.Contains(string(result), consts.KafkaPrivateKeyKey))
+	assert.True(t, strings.Contains(string(result), consts.KafkaClientKeyStoreP12File))
 
 	defer os.Remove(tmpDest)
 }
