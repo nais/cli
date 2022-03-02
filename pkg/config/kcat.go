@@ -23,7 +23,7 @@ func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
 	configFile := fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace)
 	envsToFile := map[string]string{
 		KafkaCatBootstrapServers:       string(secret.Data[consts.KafkaBrokersKey]),
-		"ssl":                          KafkaSecurityProtocolLocation,
+		KafkaSecurityProtocolLocation:  "ssl",
 		KafkaCatSslCertificateLocation: filepath.Join(destinationPath, consts.KafkaCertificateCrtFile),
 		KafkaCatSslKeyLocation:         filepath.Join(destinationPath, consts.KafkaPrivateKeyPemFile),
 		KafkaCatSslCaLocation:          filepath.Join(destinationPath, consts.KafkaCACrtFile),
@@ -43,8 +43,8 @@ func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
 		consts.KafkaCAKey:          consts.KafkaCACrtFile,
 	}
 
-	for fileName, valueKey := range secretsToFile {
-		if err := common.WriteToFile(destinationPath, fileName, secret.Data[valueKey]); err != nil {
+	for key, fileName := range secretsToFile {
+		if err := common.WriteToFile(destinationPath, fileName, secret.Data[key]); err != nil {
 			return err
 		}
 	}
