@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	KafkaSchemaRegistryEnvName = "kafka-secret.env"
-	OpenSearchEnvName          = "opensearch-secret.env"
+	KafkaEnvName      = "kafka-secret.env"
+	OpenSearchEnvName = "opensearch-secret.env"
 )
 
 func WriteOpenSearchEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
@@ -35,7 +35,7 @@ func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error 
 		consts.KafkaPrivateKeyPathKey, consts.KafkaCAPathKey,
 	}
 
-	return writeConfigToFile(secret, destinationPath, KafkaSchemaRegistryEnvName, kafkaEnvsToSaveToFile, kafkaSecretsToSaveToFile)
+	return writeConfigToFile(secret, destinationPath, KafkaEnvName, kafkaEnvsToSaveToFile, kafkaSecretsToSaveToFile)
 }
 
 func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave map[string]string) error {
