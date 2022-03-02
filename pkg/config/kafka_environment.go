@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	KafkaSchemaRegistryEnvName = "kafka-secret.env"
+	KafkaEnvName = "kafka-secret.env"
 )
 
 type FileTuple struct {
@@ -37,7 +37,7 @@ func getEnvsToSaveToFile() []string {
 }
 
 func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
-	return writeConfigToFile(secret, destinationPath, KafkaSchemaRegistryEnvName, getEnvsToSaveToFile(), getSecretsToSaveToFile())
+	return writeConfigToFile(secret, destinationPath, KafkaEnvName, getEnvsToSaveToFile(), getSecretsToSaveToFile())
 }
 
 func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave []FileTuple) error {
