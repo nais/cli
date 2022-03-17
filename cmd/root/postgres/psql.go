@@ -84,13 +84,6 @@ var psqlCmd = &cobra.Command{
 			"--dbname", connectionInfo.dbName,
 		}
 
-		pgpass := []byte(fmt.Sprintf("localhost:5432:%s:%s:%s", connectionInfo.dbName, email, token))
-		if err := os.WriteFile("~/.pgpass", pgpass, 0600); err != nil {
-			log.Println("Failed to write contents to pgpass file")
-		} else {
-			log.Printf("You can authenticate using 'pgpass' method: log in using only <%s> as username\n", email)
-		}
-
 		cmd := exec.CommandContext(ctx, psqlPath, arguments...)
 		cmd.Env = append(cmd.Env, fmt.Sprintf("PGPASSWORD=%s", token))
 
