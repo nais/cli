@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -44,10 +45,34 @@ var proxyCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		connectionInfo, err := dbInfo.DBConnection(ctx)
+		if err != nil {
+			return err
+		}
+		email, err := currentEmail(ctx)
+		if err != nil {
+			return err
+		}
+
+		token, err := getGCPToken(ctx)
+		if err != nil {
+			return err
+		}
 
 		fmt.Printf("Starting proxy on %v:%v\n", host, port)
 
-		return runProxy(ctx, projectID, connectionName, fmt.Sprintf("%v:%v", host, port), make(chan int, 1))
+		address := fmt.Sprintf("%v:%v", host, port)
+
+		pgpass := []byte(fmt.Sprintf("%s:%s:%s:%s", address, connectionInfo.dbName, email, token))
+		if home, err := os.UserHomeDir(); err == nil {
+			if err := os.WriteFile(fmt.Sprintf("%s/.pgpass", home), pgpass, 0600); err != nil {
+				fmt.Printf("Failed to write contents to pgpass file: %v\n", err)
+			} else {
+				fmt.Printf("You can authenticate to %s using 'pgpass' method: log in using only <%s> as username\n", connectionInfo.dbName, email)
+			}
+		}
+
+		return runProxy(ctx, projectID, connectionName, address, make(chan int, 1))
 	},
 }
 
