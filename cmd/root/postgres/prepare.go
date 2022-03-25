@@ -58,6 +58,16 @@ var prepareCmd = &cobra.Command{
 		}
 		defer db.Close()
 
+		_, err = db.ExecContext(ctx, "alter default privileges in schema public grant all on tables to cloudsqliamuser;")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		_, err = db.ExecContext(ctx, "alter default privileges in schema public grant all on sequences to cloudsqliamuser;")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		_, err = db.ExecContext(ctx, "grant all on all tables in schema public to cloudsqliamuser;")
 		if err != nil {
 			log.Fatal(err)
