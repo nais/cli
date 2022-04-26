@@ -37,23 +37,18 @@ var listUsersCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		users, err := listUsers(ctx, db)
-		if err != nil {
+		if err := listUsers(ctx, db); err != nil {
 			return err
-		}
-
-		for _, u := range users {
-			fmt.Println(u)
 		}
 
 		return nil
 	},
 }
 
-func listUsers(ctx context.Context, db *sql.DB) ([]string, error) {
+func listUsers(ctx context.Context, db *sql.DB) error {
 	rows, err := db.QueryContext(ctx, "SELECT usename FROM pg_catalog.pg_user;")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer rows.Close()
 
@@ -63,11 +58,11 @@ func listUsers(ctx context.Context, db *sql.DB) ([]string, error) {
 			User string `field:"usename"`
 		}
 		if err := rows.Scan(&d.User); err != nil {
-			return nil, err
+			return err
 		}
 
 		fmt.Println(d.User)
 	}
 
-	return nil, err
+	return err
 }
