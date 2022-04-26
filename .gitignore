@@ -23,3 +23,6 @@ secret.yml
 
 tool/
 dist/
+
+# asdf
+.tool-versions

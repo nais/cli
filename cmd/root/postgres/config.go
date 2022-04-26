@@ -16,21 +16,33 @@ var postgresCommand = &cobra.Command{
 	},
 }
 
+var usersCommand = &cobra.Command{
+	Use:   "users [command] [args] [flags]",
+	Short: "Command used for listing and adding users to database",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return fmt.Errorf("missing required commands")
+	},
+}
+
 type Config struct {
-	postgres *cobra.Command
-	proxy    *cobra.Command
-	grant    *cobra.Command
-	prepare  *cobra.Command
-	psql     *cobra.Command
+	postgres  *cobra.Command
+	proxy     *cobra.Command
+	grant     *cobra.Command
+	prepare   *cobra.Command
+	psql      *cobra.Command
+	users     *cobra.Command
+	listUsers *cobra.Command
 }
 
 func NewConfig() *Config {
 	return &Config{
-		postgres: postgresCommand,
-		proxy:    proxyCmd,
-		grant:    grantCmd,
-		prepare:  prepareCmd,
-		psql:     psqlCmd,
+		postgres:  postgresCommand,
+		proxy:     proxyCmd,
+		grant:     grantCmd,
+		prepare:   prepareCmd,
+		psql:      psqlCmd,
+		users:     usersCommand,
+		listUsers: listUsersCmd,
 	}
 }
 
@@ -53,4 +65,6 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.postgres.AddCommand(c.grant)
 	c.postgres.AddCommand(c.prepare)
 	c.postgres.AddCommand(c.psql)
+	c.postgres.AddCommand(c.users)
+	c.users.AddCommand(c.listUsers)
 }
