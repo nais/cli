@@ -34,7 +34,7 @@ var listUsersCmd = &cobra.Command{
 
 		db, err := sql.Open("cloudsqlpostgres", connectionInfo.ConnectionString())
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		if err := listUsers(ctx, db); err != nil {

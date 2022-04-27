@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
@@ -13,8 +12,10 @@ import (
 var addUserCmd = &cobra.Command{
 	Use:   "add [username] [password] [app-name] [flags]",
 	Short: "Add user to a Postgres database.",
-	Long:  `Add user to a Postgres database.`,
-	Args:  cobra.ExactArgs(3),
+	Long: `Add user to a Postgres database.
+
+Grant user access to tables in public schema.`,
+	Args: cobra.ExactArgs(3),
 	RunE: func(command *cobra.Command, args []string) error {
 		user := args[0]
 		password := args[1]
@@ -36,7 +37,7 @@ var addUserCmd = &cobra.Command{
 
 		db, err := sql.Open("cloudsqlpostgres", connectionInfo.ConnectionString())
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER %v WITH ENCRYPTED PASSWORD '%v' NOCREATEDB;", user, password))
@@ -52,7 +53,7 @@ var addUserCmd = &cobra.Command{
 
 		_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to %q;", privilege, user))
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		return nil
