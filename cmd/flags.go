@@ -15,4 +15,5 @@ const (
 	ServiceFlag       = "service"
 	UsernameFlag      = "username"
 	VerboseFlag       = "verbose"
+	PrivilegeFlag     = "privilege"
 )
