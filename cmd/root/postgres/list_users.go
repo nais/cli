@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
