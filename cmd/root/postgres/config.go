@@ -32,6 +32,7 @@ type Config struct {
 	psql      *cobra.Command
 	users     *cobra.Command
 	listUsers *cobra.Command
+	addUser   *cobra.Command
 }
 
 func NewConfig() *Config {
@@ -43,6 +44,7 @@ func NewConfig() *Config {
 		psql:      psqlCmd,
 		users:     usersCommand,
 		listUsers: listUsersCmd,
+		addUser:   addUserCmd,
 	}
 }
 
@@ -60,6 +62,9 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.psql.Flags().BoolP(cmd.VerboseFlag, "V", false, "Verbose will also print the proxy logs")
 	viper.BindPFlag(cmd.VerboseFlag, c.psql.Flags().Lookup(cmd.VerboseFlag))
 
+	c.users.Flags().StringP(cmd.PrivilegeFlag, "l", "select", "Privilege level for user in database schema")
+	viper.BindPFlag(cmd.PrivilegeFlag, c.users.Flags().Lookup(cmd.PrivilegeFlag))
+
 	root.AddCommand(c.postgres)
 	c.postgres.AddCommand(c.proxy)
 	c.postgres.AddCommand(c.grant)
@@ -67,4 +72,5 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.postgres.AddCommand(c.psql)
 	c.postgres.AddCommand(c.users)
 	c.users.AddCommand(c.listUsers)
+	c.users.AddCommand(c.addUser)
 }
