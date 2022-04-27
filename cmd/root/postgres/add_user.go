@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 
 	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
@@ -24,6 +25,10 @@ Grant user access to tables in public schema.`,
 		context := viper.GetString(cmd.ContextFlag)
 		privilege := viper.GetString(cmd.PrivilegeFlag)
 		ctx := command.Context()
+
+		if err := validateSQLVariables(user, password, privilege); err != nil {
+			return err
+		}
 
 		dbInfo, err := NewDBInfo(appName, namespace, context)
 		if err != nil {
@@ -58,4 +63,18 @@ Grant user access to tables in public schema.`,
 
 		return nil
 	},
+}
+
+func validateSQLVariables(variables ...string) error {
+	r, err := regexp.Compile("^([A-Za-z0-9-_]+)$")
+	if err != nil {
+		return err
+	}
+	for _, v := range variables {
+		if match := r.MatchString(v); !match {
+			return fmt.Errorf("invalid sql argument: %v (only letters, numbers, - and _ are allowed)", v)
+		}
+	}
+
+	return nil
 }
