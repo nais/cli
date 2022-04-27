@@ -39,29 +39,20 @@ var addUserCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER %v WITH PASSWORD '%v';", user, password))
+		_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER %v WITH ENCRYPTED PASSWORD '%v' NOCREATEDB;", user, password))
 		if err != nil {
 			return err
 		}
 		fmt.Println("Created user", user)
 
-		_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to \"%v\";", privilege, user))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on sequences to \"%v\";", privilege, user))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to \"%v\";", privilege, user))
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all sequences in schema public to \"%v\";", privilege, user))
+		_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to %q;", privilege, user))
 		if err != nil {
 			return err
+		}
+
+		_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to %q;", privilege, user))
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		return nil

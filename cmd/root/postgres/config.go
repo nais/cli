@@ -62,7 +62,7 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.psql.Flags().BoolP(cmd.VerboseFlag, "V", false, "Verbose will also print the proxy logs")
 	viper.BindPFlag(cmd.VerboseFlag, c.psql.Flags().Lookup(cmd.VerboseFlag))
 
-	c.users.Flags().StringP(cmd.PrivilegeFlag, "l", "select", "Privilege level for user in database schema")
+	c.users.Flags().StringP(cmd.PrivilegeFlag, "", "select", "Privilege level for user in database schema")
 	viper.BindPFlag(cmd.PrivilegeFlag, c.users.Flags().Lookup(cmd.PrivilegeFlag))
 
 	root.AddCommand(c.postgres)
