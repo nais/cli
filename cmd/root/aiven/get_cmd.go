@@ -3,7 +3,7 @@ package aiven
 import (
 	"fmt"
 	"github.com/nais/cli/cmd"
-	"github.com/nais/cli/pkg/aiven"
+	"github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/secret"
 	"github.com/spf13/cobra"
 	"strings"
@@ -19,7 +19,7 @@ nais aiven get kafka secret-name namespace -c .env | nais aiven get kafka secret
 			return fmt.Errorf("missing required arguments: %v, %v, %v", cmd.ServiceFlag, cmd.SecretNameFlag, cmd.NamespaceFlag)
 		}
 
-		service, err := aiven.ServiceFromString(strings.TrimSpace(args[0]))
+		service, err := services.ServiceFromString(strings.TrimSpace(args[0]))
 		if err != nil {
 			return err
 		}

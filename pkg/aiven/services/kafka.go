@@ -1,7 +1,9 @@
-package aiven
+package services
 
 import (
 	"fmt"
+	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
+	"reflect"
 	"strings"
 )
 
@@ -33,4 +35,30 @@ func KafkaPoolFromString(pool string) (KafkaPool, error) {
 
 func (p KafkaPool) String() string {
 	return KafkaPools[p]
+}
+
+type Kafka struct {
+	pool KafkaPool
+}
+
+func (k *Kafka) Name() string {
+	return "kafka"
+}
+
+func (k *Kafka) Setup(setup *ServiceSetup) {
+	k.pool = setup.Pool
+}
+
+func (k *Kafka) Apply(aivenApplicationSpec *aiven_nais_io_v1.AivenApplicationSpec, _ string) {
+	aivenApplicationSpec.Kafka = &aiven_nais_io_v1.KafkaSpec{
+		Pool: k.pool.String(),
+	}
+}
+
+func (k *Kafka) Generate(generator SecretGenerator) error {
+	return generator.CreateKafkaConfigs()
+}
+
+func (k *Kafka) Is(other Service) bool {
+	return reflect.TypeOf(other) == reflect.TypeOf(k)
 }

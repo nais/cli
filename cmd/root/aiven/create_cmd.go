@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/pkg/aiven"
+	"github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/client"
 	"github.com/spf13/cobra"
 	"log"
@@ -22,9 +23,9 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 			return fmt.Errorf("missing required arguments: %v, %v, %v", cmd.ServiceFlag, cmd.UsernameFlag, cmd.NamespaceFlag)
 		}
 
-		service, err := aiven.ServiceFromString(strings.TrimSpace(args[0]))
+		service, err := services.ServiceFromString(strings.TrimSpace(args[0]))
 		if err != nil {
-			return fmt.Errorf("%v\nvalid values for %v: %v | %v", err, cmd.ServiceFlag, aiven.Kafka, aiven.OpenSearch)
+			return fmt.Errorf("%v\nvalid values for %v: %v", err, cmd.ServiceFlag, services.ValidServices())
 		}
 		username := strings.TrimSpace(args[1])
 		namespace := strings.TrimSpace(args[2])
@@ -33,11 +34,11 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 		if err != nil {
 			return fmt.Errorf("flag: %v", err)
 		}
-		pool, err := aiven.KafkaPoolFromString(poolFlag)
-		if err != nil && service == aiven.Kafka {
+		pool, err := services.KafkaPoolFromString(poolFlag)
+		if err != nil && service.Is(&services.Kafka{}) {
 			return fmt.Errorf("valid values for '-%v': %v",
 				cmd.PoolFlag,
-				strings.Join(aiven.KafkaPools, " | "))
+				strings.Join(services.KafkaPools, " | "))
 		}
 
 		expiry, err := cmd.GetInt(command, cmd.ExpireFlag, false)
@@ -50,7 +51,7 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 			return fmt.Errorf("flag: %v", err)
 		}
 
-		instance, err := cmd.GetString(command, cmd.InstanceFlag, service == aiven.OpenSearch)
+		instance, err := cmd.GetString(command, cmd.InstanceFlag, service.Is(&services.OpenSearch{}))
 		if err != nil {
 			return fmt.Errorf("flag: %v", err)
 		}
@@ -59,11 +60,11 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 		if err != nil {
 			return fmt.Errorf("flag: %v", err)
 		}
-		access, err := aiven.OpenSearchAccessFromString(accessFlag)
-		if err != nil && service == aiven.OpenSearch {
+		access, err := services.OpenSearchAccessFromString(accessFlag)
+		if err != nil && service.Is(&services.OpenSearch{}) {
 			return fmt.Errorf("valid values for '-%v': %v",
 				cmd.AccessFlag,
-				strings.Join(aiven.KafkaPools, " | "))
+				strings.Join(services.KafkaPools, " | "))
 		}
 
 		// workaround https://github.com/spf13/cobra/issues/340
@@ -74,7 +75,7 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 		if err != nil {
 			return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 		}
-		log.Default().Printf("use: 'nais aiven get %v %v %v' to generate configuration secrets.", service, aivenApp.Spec.SecretName, aivenApp.Namespace)
+		log.Default().Printf("use: 'nais aiven get %v %v %v' to generate configuration secrets.", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }

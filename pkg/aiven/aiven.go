@@ -3,6 +3,7 @@ package aiven
 import (
 	"context"
 	"fmt"
+	services2 "github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/common"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	v1 "k8s.io/api/core/v1"
@@ -18,80 +19,39 @@ const (
 	DefaultProtected = true
 )
 
-type Service int64
-
-const (
-	Kafka Service = iota
-	OpenSearch
-)
-
-var Services = []string{"kafka", "opensearch"}
-
-func ServiceFromString(service string) (Service, error) {
-	switch strings.ToLower(service) {
-	case "kafka":
-		return Kafka, nil
-	case "opensearch":
-		return OpenSearch, nil
-	default:
-		return -1, fmt.Errorf("unknown service: %v", service)
-	}
-}
-
-func (p Service) String() string {
-	return Services[p]
-}
-
-type KafkaProperties struct {
-	Pool KafkaPool
-}
-
 type Aiven struct {
 	Ctx        context.Context
 	Client     ctrl.Client
 	Properties Properties
 }
 
-type OpenSearchProperties struct {
-	Instance string
-	Access   OpenSearchAccess
-}
-
 type Properties struct {
-	Service    Service
 	Username   string
 	Namespace  string
 	Dest       string
 	SecretName string
 	Expiry     int
-	Kafka      *KafkaProperties
-	OpenSearch *OpenSearchProperties
+	Service    services2.Service
 }
 
-func Setup(innClient ctrl.Client, service Service, username, namespace, secretName, instance string, pool KafkaPool, access OpenSearchAccess, expiry int) *Aiven {
+func Setup(innClient ctrl.Client, service services2.Service, username, namespace, secretName, instance string, pool services2.KafkaPool, access services2.OpenSearchAccess, expiry int) *Aiven {
 	aiven := Aiven{
 		context.Background(),
 		innClient,
 		Properties{
-			Service:    service,
 			Username:   username,
 			Namespace:  namespace,
 			SecretName: secretName,
 			Expiry:     expiry,
+			Service:    service,
 		},
 	}
 
-	switch service {
-	case Kafka:
-		aiven.Properties.Kafka = &KafkaProperties{
-			Pool: pool,
-		}
-	case OpenSearch:
-		aiven.Properties.OpenSearch = &OpenSearchProperties{
-			Instance: instance,
-			Access:   access,
-		}
-	}
+	service.Setup(&services2.ServiceSetup{
+		Instance: instance,
+		Pool:     pool,
+		Access:   access,
+	})
 
 	return &aiven
 }
@@ -130,17 +90,7 @@ func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplic
 		},
 	}
 
-	switch a.Properties.Service {
-	case Kafka:
-		applicationSpec.Kafka = &aiven_nais_io_v1.KafkaSpec{
-			Pool: a.Properties.Kafka.Pool.String(),
-		}
-	case OpenSearch:
-		applicationSpec.OpenSearch = &aiven_nais_io_v1.OpenSearchSpec{
-			Instance: a.Properties.OpenSearch.Instance,
-			Access:   a.Properties.OpenSearch.Access.String(),
-		}
-	}
+	a.Properties.Service.Apply(&applicationSpec, a.Properties.Namespace)
 
 	app := aiven_nais_io_v1.NewAivenApplicationBuilder(name, a.Properties.Namespace).WithSpec(applicationSpec).Build()
 	return &app

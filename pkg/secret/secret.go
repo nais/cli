@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/nais/cli/cmd"
-	"github.com/nais/cli/pkg/aiven"
+	"github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/client"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/config"
@@ -21,10 +21,10 @@ const (
 type Secret struct {
 	Secret          *v1.Secret
 	DestinationPath string
-	Service         aiven.Service
+	Service         services.Service
 }
 
-func SetupSecretConfiguration(secret *v1.Secret, dest string, service aiven.Service) Secret {
+func SetupSecretConfiguration(secret *v1.Secret, dest string, service services.Service) Secret {
 	return Secret{
 		Secret:          secret,
 		DestinationPath: dest,
@@ -44,7 +44,7 @@ func GetExistingSecret(ctx context.Context, client ctrl.Client, namespace, secre
 	return secret, nil
 }
 
-func ExtractAndGenerateConfig(service aiven.Service, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(service services.Service, secretName, namespaceName string) error {
 	aivenClient := client.SetupClient()
 	ctx := context.Background()
 
@@ -102,21 +102,11 @@ func (s *Secret) CreateKafkaConfigs() error {
 	return nil
 }
 
+func (s *Secret) CreateOpenSearchConfigs() error {
+	return config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
+}
+
 func (s *Secret) Config() error {
-	log.Default().Printf("generating %v config from secret %v", s.Service, s.Secret.Name)
-	switch s.Service {
-	case aiven.Kafka:
-		err := s.CreateKafkaConfigs()
-		if err != nil {
-			return err
-		}
-	case aiven.OpenSearch:
-		err := config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
-		if err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("unkown service: %v", s.Service)
-	}
-	return nil
+	log.Default().Printf("generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
+	return s.Service.Generate(s)
 }

@@ -1,6 +1,7 @@
 package aiven
 
 import (
+	"github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/common"
 	"github.com/nais/cli/pkg/test"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
@@ -31,14 +32,15 @@ func TestAivenGenerateApplicationCreated(t *testing.T) {
 	}
 
 	fakeClient := test.BuildWithScheme(&namespace).Build()
-	aiven := Setup(fakeClient, Kafka, username, team, secretName, "", NavDev, Read, expiry)
+	kafka := &services.Kafka{}
+	aiven := Setup(fakeClient, kafka, username, team, secretName, "", services.NavDev, services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
 	assert.Equal(t, team, currentAivenApp.Namespace, "Namespace has the same value")
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
-	assert.Equal(t, NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
+	assert.Equal(t, services.NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
 	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
@@ -62,14 +64,15 @@ func TestAivenGenerateApplicationUpdated(t *testing.T) {
 	}
 
 	fakeClient := test.BuildWithScheme(&namespace, &aivenApp).Build()
-	aiven := Setup(fakeClient, Kafka, username, team, secretName, "", NavDev, Read, expiry)
+	kafka := &services.Kafka{}
+	aiven := Setup(fakeClient, kafka, username, team, secretName, "", services.NavDev, services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
 	assert.Equal(t, team, currentAivenApp.Namespace, "Namespace has the same value")
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
-	assert.Equal(t, NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
+	assert.Equal(t, services.NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
 	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
