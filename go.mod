@@ -8,7 +8,7 @@ require (
 	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
-	github.com/stretchr/testify v1.7.2
+	github.com/stretchr/testify v1.7.4
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
 	google.golang.org/grpc v1.47.0
 	gopkg.in/yaml.v2 v2.4.0
