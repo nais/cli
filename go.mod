@@ -6,7 +6,7 @@ require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.31.0
 	github.com/nais/device v0.0.0-20211027142003-78c6b100f8ad
 	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.4
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401
