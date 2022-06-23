@@ -725,6 +725,8 @@ github.com/nais/device v0.0.0-20211027142003-78c6b100f8ad/go.mod h1:Ngb8+sMkgMbO
 github.com/nais/kolide-event-handler v0.0.0-20210429125647-006939848d86/go.mod h1:HZKy2HA+g5ogqDCn8kTskJKdbRXwBfccMcfLxYEmI4k=
 github.com/nais/liberator v0.0.0-20210907092402-a4e20461546a h1:58JKE6wVO21rd2PRCTgP14WOrucElYuF1JGMZX0/xgY=
 github.com/nais/liberator v0.0.0-20210907092402-a4e20461546a/go.mod h1:Dw7TPRYZkyLJwwFarV86XIFR5u4ZhEgz2YBuBZkZIhs=
+github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e h1:l6gOlH1hZ8N+8JoNhIBVLBMeOfCUXVTv8IXsEYJQ9/M=
+github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e/go.mod h1:AjfPx+WVWt8qKe1IFOSAAH5Im4qD5pMnxzw+SDn3rP8=
 github.com/nats-io/jwt v0.3.0/go.mod h1:fRYCDE99xlTsqUzISS1Bi75UBJ6ljOJQOAAu5VglpSg=
 github.com/nats-io/nats.go v1.9.1/go.mod h1:ZjDU1L/7fJ09jvUSRVBR2e7+RnLiiIQyqyzEE/Zbp4w=
 github.com/nats-io/nkeys v0.1.0/go.mod h1:xpnFELMwJABBLVhffcfd1MZx6VsNRFpEugbxziKVo7w=

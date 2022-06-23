@@ -7,6 +7,7 @@ import (
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
@@ -24,7 +25,7 @@ const (
 	OpenSearch
 )
 
-var Services = []string{"kafka"}
+var Services = []string{"kafka", "opensearch"}
 
 func ServiceFromString(service string) (Service, error) {
 	switch strings.ToLower(service) {
@@ -120,10 +121,13 @@ func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error
 
 func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
 	name := strings.ReplaceAll(a.Properties.Username, ".", "-")
+	expiresAt := time.Now().AddDate(0, 0, a.Properties.Expiry)
 	applicationSpec := aiven_nais_io_v1.AivenApplicationSpec{
 		SecretName: secretName,
 		Protected:  DefaultProtected,
-		ExpiresAt:  time.Now().AddDate(0, 0, a.Properties.Expiry).Format(time.RFC3339),
+		ExpiresAt: &metav1.Time{
+			Time: expiresAt,
+		},
 	}
 
 	switch a.Properties.Service {
@@ -132,7 +136,7 @@ func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplic
 			Pool: a.Properties.Kafka.Pool.String(),
 		}
 	case OpenSearch:
-		applicationSpec.Elastic = &aiven_nais_io_v1.ElasticSpec{
+		applicationSpec.OpenSearch = &aiven_nais_io_v1.OpenSearchSpec{
 			Instance: a.Properties.OpenSearch.Instance,
 			Access:   a.Properties.OpenSearch.Access.String(),
 		}

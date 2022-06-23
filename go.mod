@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.31.0
 	github.com/nais/device v0.0.0-20211027142003-78c6b100f8ad
-	github.com/nais/liberator v0.0.0-20210907092402-a4e20461546a
+	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.2

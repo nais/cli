@@ -11,11 +11,14 @@ import (
 	"time"
 )
 
+const (
+	username   = "user"
+	team       = "team"
+	secretName = "secret-name"
+	expiry     = 1
+)
+
 func TestAivenGenerateApplicationCreated(t *testing.T) {
-	username := "user"
-	team := "team"
-	secretName := "secret-name"
-	expiry := 1
 
 	namespace := v1.Namespace{
 		TypeMeta: metav1.TypeMeta{
@@ -37,17 +40,10 @@ func TestAivenGenerateApplicationCreated(t *testing.T) {
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
 	assert.Equal(t, NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
-	parsedDate, err := time.Parse(time.RFC3339, currentAivenApp.Spec.ExpiresAt)
-	assert.NoError(t, err)
-	assert.True(t, parsedDate.After(time.Now()), "Parsed date is still valid")
+	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
 
 func TestAivenGenerateApplicationUpdated(t *testing.T) {
-	username := "user"
-	team := "team"
-	secretName := "secret-name"
-	expiry := 1
-
 	aivenApp := aiven_nais_io_v1.AivenApplication{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      username,
@@ -75,16 +71,10 @@ func TestAivenGenerateApplicationUpdated(t *testing.T) {
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
 	assert.Equal(t, NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
-	parsedDate, err := time.Parse(time.RFC3339, currentAivenApp.Spec.ExpiresAt)
-	assert.NoError(t, err)
-	assert.True(t, parsedDate.After(time.Now()), "Parsed date is still valid")
+	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
 
 func TestAiven_SetSecretName(t *testing.T) {
-	username := "user"
-	team := "team"
-	secretName := "secret-name"
-
 	s, err := common.SetSecretName(secretName, username, team)
 	assert.NoError(t, err)
 	assert.Equal(t, secretName, s, "SecretName has the same value as input")

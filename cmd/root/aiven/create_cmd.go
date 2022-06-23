@@ -74,7 +74,7 @@ nais aiven opensearch create username namespace -i soknad -a read`,
 		if err != nil {
 			return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 		}
-		log.Default().Printf("use: '%v get %v %v %v' to generate configuration secrets.", "nais aiven", service, aivenApp.Spec.SecretName, aivenApp.Namespace)
+		log.Default().Printf("use: 'nais aiven get %v %v %v' to generate configuration secrets.", service, aivenApp.Spec.SecretName, aivenApp.Namespace)
 		return nil
 	},
 }
