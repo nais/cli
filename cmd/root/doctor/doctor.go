@@ -29,7 +29,13 @@ It will also try to fix any issues it finds, or suggest a fix if it can.`,
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
 		verbose := viper.GetBool(cmd.VerboseFlag)
+		skip := viper.GetStringSlice("skip")
+		only := viper.GetStringSlice("only")
 		ctx := command.Context()
+
+		if len(skip) > 0 && len(only) > 0 {
+			return fmt.Errorf("--skip and --only can not be used together")
+		}
 
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 		configOverrides := &clientcmd.ConfigOverrides{
@@ -62,7 +68,7 @@ It will also try to fix any issues it finds, or suggest a fix if it can.`,
 			return fmt.Errorf("unable to init doctor: %w", err)
 		}
 
-		if err := doc.Run(ctx, verbose); err != nil {
+		if err := doc.Run(ctx, verbose, skip, only); err != nil {
 			return fmt.Errorf("unable to run doctor: %w", err)
 		}
 
@@ -77,21 +83,10 @@ func NewConfig() *Config {
 }
 
 func (c Config) InitCmds(root *cobra.Command) {
-	// c.postgres.PersistentFlags().StringP(cmd.NamespaceFlag, "n", "", "Kubernetes namespace where the app is deployed (defaults to the one defined in kubeconfig)")
-	// viper.BindPFlag(cmd.NamespaceFlag, c.postgres.PersistentFlags().Lookup(cmd.NamespaceFlag))
-	// c.postgres.PersistentFlags().StringP(cmd.ContextFlag, "c", "", "Kubernetes context where the app is deployed (defaults to the one defined in kubeconfig)")
-	// viper.BindPFlag(cmd.ContextFlag, c.postgres.PersistentFlags().Lookup(cmd.ContextFlag))
-
-	// c.proxy.Flags().StringP(cmd.PortFlag, "p", "5432", "Local port for the proxy to listen on")
-	// viper.BindPFlag(cmd.PortFlag, c.proxy.Flags().Lookup(cmd.PortFlag))
-	// c.proxy.Flags().StringP(cmd.HostFlag, "H", "localhost", "Host for the proxy")
-	// viper.BindPFlag(cmd.HostFlag, c.proxy.Flags().Lookup(cmd.HostFlag))
-
-	// c.psql.Flags().BoolP(cmd.VerboseFlag, "V", false, "Verbose will also print the proxy logs")
-	// viper.BindPFlag(cmd.VerboseFlag, c.psql.Flags().Lookup(cmd.VerboseFlag))
-
-	// c.users.Flags().StringP(cmd.PrivilegeFlag, "", "select", "Privilege level for user in database schema")
-	// viper.BindPFlag(cmd.PrivilegeFlag, c.users.Flags().Lookup(cmd.PrivilegeFlag))
+	doctorCommand.PersistentFlags().StringSlice("only", nil, "Only run the listed checks")
+	viper.BindPFlag("only", doctorCommand.PersistentFlags().Lookup("only"))
+	doctorCommand.PersistentFlags().StringSlice("skip", nil, "skip running the listed checks")
+	viper.BindPFlag("skip", doctorCommand.PersistentFlags().Lookup("skip"))
 
 	doctorCommand.PersistentFlags().StringP(cmd.NamespaceFlag, "n", "", "Kubernetes namespace where the app is deployed (defaults to the one defined in kubeconfig)")
 	viper.BindPFlag(cmd.NamespaceFlag, doctorCommand.PersistentFlags().Lookup(cmd.NamespaceFlag))

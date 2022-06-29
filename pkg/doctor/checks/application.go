@@ -3,9 +3,11 @@ package checks
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/nais/cli/pkg/doctor"
-	appsv1 "k8s.io/api/core/v1"
+	"github.com/sirupsen/logrus"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
@@ -38,6 +40,10 @@ func (a *Application) Check(ctx context.Context, cfg *doctor.Config) error {
 		return err
 	}
 
+	if err := a.checkAnnotations(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -50,7 +56,7 @@ func (a *Application) checkConditions() error {
 		switch con.Type {
 		case "Reconciling":
 			if con.Status == "True" {
-				return doctor.ErrorMsg(fmt.Errorf("application is reconciling"), "application is reconciling, wait for it to complete.")
+				a.cfg.Log.Info("Application is reconciling, errors might be temporary if the new deploy was initiated recently.")
 			}
 		}
 	}
@@ -84,49 +90,114 @@ func (a *Application) checkDeployment(ctx context.Context) error {
 	}
 
 	for _, pod := range pods.Items {
-		a.checkPod(ctx, pod)
+		if err := a.checkPod(ctx, pod); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (a *Application) checkPod(ctx context.Context, pod appsv1.Pod) error {
+func (a *Application) checkPod(ctx context.Context, pod corev1.Pod) error {
 	log := a.cfg.Log.WithField("pod", pod.Name)
 	log.Debug("checking pod")
 	for _, s := range pod.Status.ContainerStatuses {
-		if s.Name == a.cfg.Application.Name {
-			log.Debug("found container matching app name")
+		if err := a.checkContainer(ctx, log, pod, s); err != nil {
+			return err
+		}
+	}
 
-			if !s.Ready {
-				if s.State.Terminated == nil {
-					continue
-				}
+	return nil
+}
 
-				if s.State.Terminated.Reason == "Completed" {
-					continue
-				}
+func (a *Application) checkContainer(ctx context.Context, log *logrus.Entry, pod corev1.Pod, container corev1.ContainerStatus) error {
+	log = log.WithField("container", container.Name)
+	log.Debug("checking container")
+	if container.Ready {
+		return nil
+	}
 
-				if s.State.Terminated.Reason == "Error" {
-					fmt.Fprintln(a.cfg.Out, "\nApplication has termintaed with exit code", s.State.Terminated.ExitCode, ". Changes likely required.\nLast 50 lines of logs:")
-					res := a.cfg.K8sClient.CoreV1().Pods(a.cfg.Application.Namespace).GetLogs(pod.Name, &appsv1.PodLogOptions{
-						Container: s.Name,
-						TailLines: pointer.Int64Ptr(50),
-					}).Do(ctx)
+	if container.State.Waiting != nil {
+		log := log.WithField("reason", container.State.Waiting.Reason)
+		log.Info("container is waiting")
+		switch container.State.Waiting.Reason {
+		case "ContainerCreating":
+			log.Info("container is creating")
+			return nil
+		case "ImagePullBackOff":
+			return doctor.ErrorMsg(fmt.Errorf(container.State.Waiting.Message), "container image pull backoff. Ensure that the image exists and are available for the cluster: "+container.Image)
+		case "ErrImagePull":
+			return doctor.ErrorMsg(fmt.Errorf(container.State.Waiting.Message), "container image pull error: "+container.State.Waiting.Message)
+		case "ImageInspectError", "ErrImageNeverPull", "RegistryUnavailable", "InvalidImageName":
+			return doctor.ErrorMsg(fmt.Errorf(container.State.Waiting.Message), "container image error: "+container.State.Waiting.Message)
+		case "CrashLoopBackOff":
+			return a.containerTerminationState(ctx, pod, container, container.LastTerminationState.Terminated)
+		default:
+			log.Debug("container is waiting for unknown reason")
+		}
+		log.Info("container is waiting to start: " + container.State.Waiting.Message)
+		return nil
+	}
 
-					if err := res.Error(); err != nil {
-						fmt.Fprintln(a.cfg.Out, "Error getting logs:", err)
-					} else {
-						logs, err := res.Raw()
-						if err != nil {
-							fmt.Fprintln(a.cfg.Out, "Error getting logs:", err)
-						} else {
-							fmt.Fprintln(a.cfg.Out, string(logs))
-						}
-					}
-					return doctor.ErrorMsg(fmt.Errorf("pod %s has error state", pod.Name), "pod has error state, likely exited with an error.")
-				}
+	if container.State.Terminated != nil {
+		return a.containerTerminationState(ctx, pod, container, container.State.Terminated)
+	}
+
+	return nil
+}
+
+func (a *Application) checkAnnotations(ctx context.Context) error {
+	a.cfg.Log.Debug("checking application annotations")
+
+	checks := map[string]func(string) error{
+		"nginx.ingress.kubernetes.io/proxy-body-size": func(s string) error {
+			if !regexp.MustCompile(`^\d+[mM]$`).MatchString(s) {
+				err := fmt.Errorf("invalid value for nginx.ingress.kubernetes.io/proxy-body-size: %s. Must be digits followed by a lowercase `m`", s)
+				return doctor.ErrorMsg(err, err.Error())
+			}
+			return nil
+		},
+	}
+
+	if a.cfg.Application.Annotations == nil {
+		a.cfg.Log.Info("no annotations on application")
+		return nil
+	}
+
+	for k, v := range checks {
+		if s, ok := a.cfg.Application.Annotations[k]; ok {
+			if err := v(s); err != nil {
+				return err
 			}
 		}
 	}
 	return nil
+}
+
+func (a *Application) containerTerminationState(ctx context.Context, pod corev1.Pod, container corev1.ContainerStatus, state *corev1.ContainerStateTerminated) error {
+	if state == nil {
+		return nil
+	}
+
+	if state.Reason != "Error" {
+		return nil
+	}
+
+	fmt.Fprintln(a.cfg.Out, "\nContainer", container.Name, "has termintaed with exit code", state.ExitCode, ". Changes likely required.\nLast 50 lines of logs:")
+	res := a.cfg.K8sClient.CoreV1().Pods(a.cfg.Application.Namespace).GetLogs(pod.Name, &corev1.PodLogOptions{
+		Container: container.Name,
+		TailLines: pointer.Int64Ptr(50),
+	}).Do(ctx)
+
+	if err := res.Error(); err != nil {
+		fmt.Fprintln(a.cfg.Out, "Error getting logs:", err)
+	} else {
+		logs, err := res.Raw()
+		if err != nil {
+			fmt.Fprintln(a.cfg.Out, "Error getting logs:", err)
+		} else {
+			fmt.Fprintln(a.cfg.Out, string(logs))
+		}
+	}
+	return doctor.ErrorMsg(fmt.Errorf("pod %s has error state", pod.Name), "pod has error state, likely exited with an error.")
 }

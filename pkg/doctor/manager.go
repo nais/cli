@@ -74,11 +74,18 @@ func (m *Manager) SetOutput(w io.Writer) {
 	m.out = w
 }
 
-func (m *Manager) Run(ctx context.Context, verbose bool) error {
+func (m *Manager) Run(ctx context.Context, verbose bool, skip, only []string) error {
 	hasError := false
 
 	fmt.Fprintln(m.out, "Running checks:")
 	for _, check := range checks {
+		if len(only) > 0 && !contains(only, check.Name()) {
+			continue
+		}
+		if len(skip) > 0 && contains(skip, check.Name()) {
+			continue
+		}
+
 		cfg := &Config{
 			Application:   m.app.DeepCopy(),
 			K8sClient:     m.k8sClient,
@@ -122,4 +129,13 @@ func List(w io.Writer) {
 	for _, check := range checks {
 		fmt.Fprintf(w, "  %v: %v\n", check.Name(), check.Help())
 	}
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
