@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
 	"github.com/nais/cli/cmd/root/device"
+	"github.com/nais/cli/cmd/root/doctor"
 	"github.com/nais/cli/cmd/root/postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -54,6 +55,18 @@ func init() {
 	deviceConfig.InitCmds(rootCmd)
 	postgresConfig := postgres.NewConfig()
 	postgresConfig.InitCmds(rootCmd)
+
+	betaCommand := &cobra.Command{
+		Use:   "beta [subcommand] [args] [flags]",
+		Short: "Beta commands",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return fmt.Errorf("missing required commands")
+		},
+	}
+	rootCmd.AddCommand(betaCommand)
+	doctorConfig := doctor.NewConfig()
+	doctorConfig.InitCmds(betaCommand)
+
 	initVersionCmd()
 }
 
