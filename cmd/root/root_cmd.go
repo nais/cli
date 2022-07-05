@@ -3,6 +3,7 @@ package root
 import (
 	"context"
 	"fmt"
+	"github.com/nais/cli/cmd/root/appstarter"
 	"os"
 	"strings"
 	"time"
@@ -55,6 +56,7 @@ func init() {
 	postgresConfig := postgres.NewConfig()
 	postgresConfig.InitCmds(rootCmd)
 	initVersionCmd()
+	appstarter.InitAppStarterCmd(rootCmd)
 }
 
 func initConfig() {

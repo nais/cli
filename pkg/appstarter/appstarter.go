@@ -1,4 +1,4 @@
-package appinit
+package appstarter
 
 import (
 	"bytes"
@@ -62,6 +62,7 @@ func Naisify(appName string, team string, extras []string, kafkaTopics []string)
 	if err != nil {
 		return fmt.Errorf("error while writing to disk: %v", err)
 	}
+	fmt.Printf("%d files created, please review them for any todo items\n", len(startNaisIoResponse))
 	return nil
 }
 
