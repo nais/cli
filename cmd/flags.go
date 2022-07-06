@@ -17,4 +17,6 @@ const (
 	PrivilegeFlag     = "privilege"
 	AppName           = "appname"
 	TeamName          = "teamname"
+	Extras            = "extras"
+	Topics            = "topics"
 )

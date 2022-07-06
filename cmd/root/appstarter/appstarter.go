@@ -12,6 +12,8 @@ func InitAppStarterCmd(rootCmd *cobra.Command) {
 	_ = appStarterCommand.MarkFlagRequired(flags.AppName)
 	appStarterCommand.Flags().StringP(flags.TeamName, "t", "", "your team's name (app will be deployed to this namespace)")
 	_ = appStarterCommand.MarkFlagRequired(flags.TeamName)
+	appStarterCommand.Flags().StringSliceP(flags.Extras, "e", []string{}, "comma separated list of desired extras (idporten,openSearch,aad,postgres)")
+	appStarterCommand.Flags().StringSliceP(flags.Topics, "c", []string{}, "comma separated list of desired kafka topic resources")
 	rootCmd.AddCommand(appStarterCommand)
 }
 
@@ -27,6 +29,14 @@ var appStarterCommand = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("error while collecting flag: %v", err)
 		}
-		return appstarter.Naisify(appName, teamName, []string{}, []string{})
+		extras, err := cmd.Flags().GetStringSlice(flags.Extras)
+		if err != nil {
+			return fmt.Errorf("error while collecting flag: %v", err)
+		}
+		topics, err := cmd.Flags().GetStringSlice(flags.Topics)
+		if err != nil {
+			return fmt.Errorf("error while collecting flag: %v", err)
+		}
+		return appstarter.Naisify(appName, teamName, extras, topics)
 	},
 }
