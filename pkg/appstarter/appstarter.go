@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -85,12 +86,18 @@ func determinePlatform() (string, error) {
 	return "", fmt.Errorf("no known build system files (such as pom.xml et al.) found")
 }
 
-func writeTo(dir string, startNaisIoResponse map[string]string) error {
+func writeTo(baseDir string, startNaisIoResponse map[string]string) error {
 	for filename, contents := range startNaisIoResponse {
 		if strings.Contains(filename, "..") {
 			return fmt.Errorf("%s looks funky, may be path traversal", filename)
 		}
-		err := os.WriteFile(dir+string(os.PathSeparator)+filename, []byte(contents), 0744)
+		absoluteFilePath := baseDir + string(os.PathSeparator) + filename
+		dir, _ := filepath.Split(absoluteFilePath)
+		err := os.MkdirAll(dir, 0700)
+		if err != nil {
+			return fmt.Errorf("unable to create dir %s: %v", dir, err)
+		}
+		err = os.WriteFile(absoluteFilePath, []byte(contents), 0744)
 		if err != nil {
 			return fmt.Errorf("error while writing file: %v", err)
 		}
