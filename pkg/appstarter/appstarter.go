@@ -41,10 +41,12 @@ var projectTypes = func() map[string]string {
 	}
 }
 
+var currentDir, _ = os.Getwd()
+
 func Naisify(appName string, team string, extras []string, kafkaTopics []string) error {
 	appType, err := determinePlatform()
 	if err != nil || len(appType) == 0 {
-		return fmt.Errorf("unable to determine app type: %v", err)
+		return fmt.Errorf("unable to determine app type in %s: %v", currentDir, err)
 	}
 	request := StartNaisIoRequest{
 		AppName:     appName,
@@ -67,10 +69,6 @@ func Naisify(appName string, team string, extras []string, kafkaTopics []string)
 }
 
 func determinePlatform() (string, error) {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("error getting current directory: %v", err)
-	}
 	files, err := ioutil.ReadDir(currentDir)
 	if err != nil {
 		return "", fmt.Errorf("error reading directory contents: %v", err)
@@ -84,7 +82,7 @@ func determinePlatform() (string, error) {
 			return fileType, nil
 		}
 	}
-	return "", nil
+	return "", fmt.Errorf("no known build system files (such as pom.xml et al.) found")
 }
 
 func writeTo(dir string, startNaisIoResponse map[string]string) error {

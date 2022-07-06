@@ -8,9 +8,9 @@ import (
 )
 
 func InitAppStarterCmd(rootCmd *cobra.Command) {
-	appStarterCommand.Flags().StringP(flags.AppName, "n", "", "usagestuff appname goes here")
+	appStarterCommand.Flags().StringP(flags.AppName, "n", "", "application name (as it will be in the cluster)")
 	_ = appStarterCommand.MarkFlagRequired(flags.AppName)
-	appStarterCommand.Flags().StringP(flags.TeamName, "t", "", "usagestuff teamname goes here")
+	appStarterCommand.Flags().StringP(flags.TeamName, "t", "", "your team's name (app will be deployed to this namespace)")
 	_ = appStarterCommand.MarkFlagRequired(flags.TeamName)
 	rootCmd.AddCommand(appStarterCommand)
 }
