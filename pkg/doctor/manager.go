@@ -93,25 +93,13 @@ func (m *Manager) Run(ctx context.Context, verbose bool, skip, only []string) er
 			Log:           m.log.WithField("check", check.Name()),
 			Out:           m.out,
 		}
-		fmt.Fprint(m.out, "  "+iconDot+" ", check.Name())
+		fmt.Fprint(m.out, "  "+iconDot+" ", color.New(color.Bold).Sprint(check.Name()))
 		if verbose {
 			fmt.Fprintln(m.out)
 		}
-		err := check.Check(ctx, cfg)
-		if err != nil {
-			if errors.Is(err, ErrSkip) {
-				if !verbose {
-					fmt.Fprintln(m.out, " "+color.YellowString(iconSkip))
-				}
-				continue
-			}
+		errs := check.Check(ctx, cfg)
+		if m.newMethod(verbose, errs) {
 			hasError = true
-			if !verbose {
-				fmt.Fprintln(m.out, " "+iconError)
-			}
-			fmt.Fprintln(m.out, color.RedString(err.Error()))
-		} else if !verbose {
-			fmt.Fprintln(m.out, " "+color.GreenString(iconOK))
 		}
 	}
 
@@ -119,6 +107,45 @@ func (m *Manager) Run(ctx context.Context, verbose bool, skip, only []string) er
 		return fmt.Errorf("some checks failed")
 	}
 	return nil
+}
+
+func (m *Manager) newMethod(verbose bool, errs []error) bool {
+	handledErrors := 0
+	warnings := []error{}
+	hasSkip := false
+	for _, err := range errs {
+		if err == nil {
+			continue
+		}
+
+		if errors.Is(err, ErrSkip) {
+			hasSkip = true
+			continue
+		} else if errors.Is(err, ErrWarning) {
+			warnings = append(warnings, err)
+			continue
+		}
+		if !verbose {
+			fmt.Fprintln(m.out, " "+iconError)
+		}
+		fmt.Fprintln(m.out, color.RedString(err.Error()))
+		handledErrors++
+	}
+
+	if handledErrors == 0 {
+		if !verbose {
+			if hasSkip {
+				fmt.Fprintln(m.out, " "+color.YellowString(iconSkip))
+			} else {
+				fmt.Fprintln(m.out, " "+color.GreenString(iconOK))
+			}
+		}
+	}
+
+	for _, err := range warnings {
+		fmt.Fprintln(m.out, " "+color.YellowString(err.Error()))
+	}
+	return handledErrors > 0
 }
 
 func List(w io.Writer) {

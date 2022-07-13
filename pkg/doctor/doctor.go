@@ -10,7 +10,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-var ErrSkip = fmt.Errorf("skip")
+var (
+	ErrSkip    = fmt.Errorf("skip")
+	ErrWarning = fmt.Errorf("warning")
+)
 
 type Config struct {
 	Application   *nais_io_v1alpha1.Application
@@ -27,6 +30,14 @@ type Error struct {
 
 func (e Error) Error() string {
 	return e.Human
+}
+
+func (e Error) Unwrap() error {
+	return e.Err
+}
+
+func (e Error) Is(err error) bool {
+	return e.Err == err
 }
 
 // ErrorMsg return a error message with the given message and the error message

@@ -39,23 +39,24 @@ func (s *Postgres) Help() string {
 
 func (s *Postgres) Ack() {}
 
-func (s *Postgres) Check(ctx context.Context, cfg *doctor.Config) error {
+func (s *Postgres) Check(ctx context.Context, cfg *doctor.Config) []error {
 	s.cfg = cfg
 
 	if cfg.Application.Spec.GCP == nil || cfg.Application.Spec.GCP.SqlInstances == nil {
 		cfg.Log.Info("no postgres instances defined in the application spec")
-		return doctor.ErrSkip
+		return []error{doctor.ErrSkip}
 	}
 
 	psql := cfg.Application.Spec.GCP.SqlInstances
 
+	errs := []error{}
 	for _, instance := range psql {
 		if err := s.check(ctx, instance); err != nil {
-			return err
+			errs = append(errs, err)
 		}
 	}
 
-	return nil
+	return errs
 }
 
 func (s *Postgres) check(ctx context.Context, instance nais_io_v1.CloudSqlInstance) error {
@@ -171,7 +172,7 @@ func (s *Postgres) ping(ctx context.Context, log *logrus.Entry, name string, ins
 	defer db.Close()
 
 	if err := db.Ping(); err != nil {
-		return doctor.ErrorMsg(err, "Pinging PostgreSQL instance failed with error: "+err.Error())
+		return doctor.ErrorMsg(doctor.ErrWarning, "Pinging PostgreSQL instance failed with error (You might need to run `gcloud auth login --update-adc`): "+err.Error())
 	}
 
 	return nil

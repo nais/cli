@@ -11,7 +11,7 @@ func AddCheck(check Check) {
 type Check interface {
 	Name() string
 	Help() string
-	Check(ctx context.Context, cfg *Config) error
+	Check(ctx context.Context, cfg *Config) []error
 }
 
 // Ackable is implemented by checks that has to be acknowledged by the user.

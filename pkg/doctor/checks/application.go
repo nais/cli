@@ -6,6 +6,7 @@ import (
 	"regexp"
 
 	"github.com/nais/cli/pkg/doctor"
+	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -29,22 +30,17 @@ func (a *Application) Help() string {
 	return "Check common issues that prevent the application from functioning."
 }
 
-func (a *Application) Check(ctx context.Context, cfg *doctor.Config) error {
+func (a *Application) Check(ctx context.Context, cfg *doctor.Config) []error {
 	a.cfg = cfg
 
-	if err := a.checkConditions(); err != nil {
-		return err
+	errs := []error{
+		a.checkConditions(),
+		a.checkDeployment(ctx),
+		a.checkAnnotations(ctx),
+		a.checkIngresses(ctx),
 	}
 
-	if err := a.checkDeployment(ctx); err != nil {
-		return err
-	}
-
-	if err := a.checkAnnotations(ctx); err != nil {
-		return err
-	}
-
-	return nil
+	return errs
 }
 
 func (a *Application) checkConditions() error {
@@ -200,4 +196,29 @@ func (a *Application) containerTerminationState(ctx context.Context, pod corev1.
 		}
 	}
 	return doctor.ErrorMsg(fmt.Errorf("pod %s has error state", pod.Name), "pod has error state, likely exited with an error.")
+}
+
+func (a *Application) checkIngresses(ctx context.Context) error {
+	a.cfg.Log.Debug("checking ingresses")
+
+	for _, ing := range a.cfg.Application.Spec.Ingresses {
+		if err := a.checkIngress(ctx, ing); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+var regDeprecatedIngresses = regexp.MustCompile(`\.(?:dev|prod)\-gcp\.nais\.io(\/|$)`)
+
+func (a *Application) checkIngress(ctx context.Context, ing nais_io_v1.Ingress) error {
+	log := a.cfg.Log.WithField("ingress", ing)
+	log.Debug("checking ingress")
+
+	if regDeprecatedIngresses.MatchString(string(ing)) {
+		return doctor.ErrorMsg(doctor.ErrWarning, fmt.Sprintf("deprecated ingress %q. Please update it.", ing))
+	}
+
+	return nil
 }
