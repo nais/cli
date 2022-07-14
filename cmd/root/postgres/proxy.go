@@ -59,9 +59,11 @@ var proxyCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Starting proxy on %v:%v\n", host, port)
-
+	
 		address := fmt.Sprintf("%v:%v", host, port)
+	
+		fmt.Printf("Starting proxy on %v\n", address)
+		fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
 
 		pgpass := []byte(fmt.Sprintf("%s:%s:%s:%s", address, connectionInfo.dbName, email, token))
 		if home, err := os.UserHomeDir(); err == nil {

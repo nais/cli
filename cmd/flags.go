@@ -15,4 +15,8 @@ const (
 	UsernameFlag      = "username"
 	VerboseFlag       = "verbose"
 	PrivilegeFlag     = "privilege"
+	AppName           = "appname"
+	TeamName          = "teamname"
+	Extras            = "extras"
+	Topics            = "topics"
 )
