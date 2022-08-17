@@ -9,7 +9,7 @@ import (
 )
 
 var tenantCmd = &cobra.Command{
-	Use:     "set tenant",
+	Use:     "tenant",
 	Short:   "Sets tenant for naisdevice",
 	Example: `nais device tenant NAV`,
 	RunE: func(command *cobra.Command, args []string) error {
