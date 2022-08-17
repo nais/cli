@@ -39,7 +39,6 @@ var jitaCmd = &cobra.Command{
 
 func accessPrivilegedGateway(gatewayName string) error {
 	return open.Open(fmt.Sprintf("https://naisdevice-jita.nais.io/?gateway=%s", gatewayName))
-
 }
 
 func getGatewayList(ctx context.Context, toComplete string) []string {

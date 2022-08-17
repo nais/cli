@@ -21,6 +21,7 @@ type DeviceConfig struct {
 	config     *cobra.Command
 	configGet  *cobra.Command
 	configSet  *cobra.Command
+	tenant     *cobra.Command
 }
 
 func NewDeviceConfig() *DeviceConfig {
@@ -33,6 +34,7 @@ func NewDeviceConfig() *DeviceConfig {
 		config:     configCmd,
 		configGet:  configGetCmd,
 		configSet:  configSetCmd,
+		tenant:     tenantCmd,
 	}
 }
 
@@ -43,6 +45,7 @@ func (d DeviceConfig) InitCmds(root *cobra.Command) {
 	d.device.AddCommand(d.status)
 	d.device.AddCommand(d.jita)
 	d.device.AddCommand(d.config)
+	d.device.AddCommand(d.tenant)
 	d.config.AddCommand(d.configGet)
 	d.config.AddCommand(d.configSet)
 	d.status.Flags().BoolP(QuietFlag, QuietFlagShort, false, "Reduce verbosity.")
