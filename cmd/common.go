@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 )
 
 const (
@@ -30,7 +31,7 @@ func GetString(cmd *cobra.Command, flag string, required bool) (string, error) {
 	}
 	if arg == "" {
 		if required {
-			return "", fmt.Errorf("%s is reqired", flag)
+			return "", fmt.Errorf("%s is required", flag)
 		}
 	}
 	return arg, nil
@@ -46,7 +47,7 @@ func GetInt(cmd *cobra.Command, flag string, required bool) (int, error) {
 	}
 	if arg == 0 {
 		if required {
-			return 0, fmt.Errorf("%s is reqired", flag)
+			return 0, fmt.Errorf("%s is required", flag)
 		}
 	}
 	return arg, nil

@@ -7,6 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nais/cli/cmd/root/appstarter"
+	"github.com/nais/cli/cmd/root/validate"
+
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
 	"github.com/nais/cli/cmd/root/appstarter"
@@ -73,6 +76,7 @@ func init() {
 	naasConfig.InitCmds(rootCmd)
 	initVersionCmd()
 	appstarter.InitAppStarterCmd(rootCmd)
+	validate.InitValidateCmd(rootCmd)
 }
 
 func initConfig() {
