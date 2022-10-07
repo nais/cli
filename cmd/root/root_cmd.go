@@ -3,14 +3,15 @@ package root
 import (
 	"context"
 	"fmt"
-	"github.com/nais/cli/cmd/root/appstarter"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
+	"github.com/nais/cli/cmd/root/appstarter"
 	"github.com/nais/cli/cmd/root/device"
+	"github.com/nais/cli/cmd/root/naas"
 	"github.com/nais/cli/cmd/root/postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -55,6 +56,8 @@ func init() {
 	deviceConfig.InitCmds(rootCmd)
 	postgresConfig := postgres.NewConfig()
 	postgresConfig.InitCmds(rootCmd)
+	naasConfig := naas.NewConfig()
+	naasConfig.InitCmds(rootCmd)
 	initVersionCmd()
 	appstarter.InitAppStarterCmd(rootCmd)
 }
