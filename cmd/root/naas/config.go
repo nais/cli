@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var postgresCommand = &cobra.Command{
+var naasCommand = &cobra.Command{
 	Use:   "naas [command] [args] [flags]",
 	Short: "Commands related to a NAAS cluster",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -23,7 +23,7 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		naas:          postgresCommand,
+		naas:          naasCommand,
 		kubeconfigCmd: kubeconfigCmd,
 	}
 }
