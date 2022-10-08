@@ -15,6 +15,8 @@ const (
 )
 
 func NaisConfig(config []string) error {
+	validationFailed := false
+
 	for _, file := range config {
 		if _, err := os.Stat(file); err != nil {
 			return fmt.Errorf("file %s does not exist", file)
@@ -35,17 +37,23 @@ func NaisConfig(config []string) error {
 
 		result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 		if err != nil {
-			panic(err.Error())
+			return fmt.Errorf("failed to validate nais manifest: %w", err)
 		}
 
 		if result.Valid() {
 			fmt.Printf("%s is valid\n", file)
 		} else {
+			validationFailed = true
+
 			fmt.Printf("%s is not valid and has the following errors:\n", file)
 			for _, desc := range result.Errors() {
 				fmt.Printf("- %s\n", desc)
 			}
 		}
+	}
+
+	if validationFailed {
+		return fmt.Errorf("validation failed")
 	}
 
 	return nil
