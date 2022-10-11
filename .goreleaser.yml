@@ -30,7 +30,7 @@ brews:
   - tap:
       owner: nais
       name: homebrew-tap
-      token: "{{ .Env.PUSH_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_PUSH_TOKEN }}"
     name: nais
     homepage: "https://github.com/nais/cli"
     description: "Command-line interface for NAIS"
@@ -50,3 +50,11 @@ nfpms:
     formats:
       - deb
     version_metadata: git
+scoop:
+  bucket:
+    owner: nais
+    name: scoop-bucket
+    token: "{{ .Env.SCOOP_PUSH_TOKEN }}"
+  homepage: "https://github.com/nais/cli"
+  description: "Command-line interface for NAIS"
+  license: MIT
