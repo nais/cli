@@ -5,7 +5,7 @@ builds:
       - linux_amd64
       - darwin_amd64
       - darwin_arm64
-    id: nais
+    id: nais-other
     dir: .
     main: ./main/nais_cli
     binary: nais
@@ -14,7 +14,7 @@ builds:
   - env: [ CGO_ENABLED=0 ]
     targets:
       - windows_amd64
-    id: nais
+    id: nais-windows
     dir: .
     main: ./main/nais_cli
     binary: nais
