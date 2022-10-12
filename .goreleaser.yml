@@ -3,7 +3,6 @@ builds:
   - env: [ CGO_ENABLED=0 ]
     targets:
       - linux_amd64
-      - windows_amd64
       - darwin_amd64
       - darwin_arm64
     id: nais
@@ -12,6 +11,20 @@ builds:
     binary: nais
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
+  - env: [ CGO_ENABLED=0 ]
+    targets:
+      - windows_amd64
+    id: nais
+    dir: .
+    main: ./main/nais_cli
+    binary: nais
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
+    hooks:
+      post:
+        - osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "{{ .Path }}" -out "{{ .Path }}-signed"
+        - mv "{{ .Path }}-signed" "{{ .Path }}"
+
 checksum:
   name_template: 'checksums.txt'
 changelog:

@@ -66,6 +66,13 @@ jobs:
         run: |
           git tag ${{ needs.set-version.outputs.version }}
 
+      - name: Prepare for signing windows binaries
+        run: |
+          sudo apt update
+          sudo apt install --yes osslsigncode
+          echo "${SIGN_CERT}" > nais.crt
+          echo "${SIGN_KEY}" > nais.key
+
       - uses: navikt/github-app-token-generator@v1
         id: get-homebrew-token
         with:
