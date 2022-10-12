@@ -68,10 +68,10 @@ jobs:
 
       - name: Prepare for signing windows binaries
         run: |
-          sudo apt update
-          sudo apt install --yes osslsigncode
-          echo "${SIGN_CERT}" > nais.crt
-          echo "${SIGN_KEY}" > nais.key
+          sudo apt-get update
+          sudo apt-get install --yes osslsigncode
+          echo "${{ secrets.SIGN_CERT }}" > nais.crt
+          echo "${{ secrets.SIGN_KEY }}" > nais.key
 
       - uses: navikt/github-app-token-generator@v1
         id: get-homebrew-token
