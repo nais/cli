@@ -3,16 +3,18 @@ package aiven
 import (
 	"context"
 	"fmt"
-	services2 "github.com/nais/cli/pkg/aiven/services"
-	"github.com/nais/cli/pkg/common"
+	"log"
+	"strings"
+	"time"
+
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
-	"time"
+
+	services2 "github.com/nais/cli/pkg/aiven/services"
+	"github.com/nais/cli/pkg/common"
 )
 
 const (
@@ -115,6 +117,10 @@ func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 			log.Default().Printf("AivenApplication: '%v' created.", aivenApp.Name)
 		}
 	} else {
+		if len(existingAivenApp.GetObjectMeta().GetOwnerReferences()) > 0 {
+			return fmt.Errorf("username '%s' is owned by another resource; overwrite is not allowed", a.Properties.Username)
+		}
+
 		aivenApp.SetResourceVersion(existingAivenApp.GetResourceVersion())
 		err = a.Client.Update(a.Ctx, aivenApp)
 		if err != nil {
