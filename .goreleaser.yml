@@ -3,15 +3,28 @@ builds:
   - env: [ CGO_ENABLED=0 ]
     targets:
       - linux_amd64
-      - windows_amd64
       - darwin_amd64
       - darwin_arm64
-    id: nais
+    id: nais-other
     dir: .
     main: ./main/nais_cli
     binary: nais
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
+  - env: [ CGO_ENABLED=0 ]
+    targets:
+      - windows_amd64
+    id: nais-windows
+    dir: .
+    main: ./main/nais_cli
+    binary: nais
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser
+    hooks:
+      post:
+        - osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "{{ .Path }}" -out "{{ .Path }}-signed"
+        - mv "{{ .Path }}-signed" "{{ .Path }}"
+
 checksum:
   name_template: 'checksums.txt'
 changelog:
@@ -30,7 +43,7 @@ brews:
   - tap:
       owner: nais
       name: homebrew-tap
-      token: "{{ .Env.PUSH_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_PUSH_TOKEN }}"
     name: nais
     homepage: "https://github.com/nais/cli"
     description: "Command-line interface for NAIS"
@@ -50,3 +63,11 @@ nfpms:
     formats:
       - deb
     version_metadata: git
+scoop:
+  bucket:
+    owner: nais
+    name: scoop-bucket
+    token: "{{ .Env.SCOOP_PUSH_TOKEN }}"
+  homepage: "https://github.com/nais/cli"
+  description: "Command-line interface for NAIS"
+  license: MIT
