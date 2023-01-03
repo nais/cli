@@ -22,8 +22,6 @@ All IAM users in your GCP project will be able to connect to the instance.
 
 This operation is only required to run once for each postgresql instance.`
 
-const prepareHelp2 = ``
-
 var ddlStatements = []string{
 	"alter default privileges in schema public grant CHANGEME on tables to cloudsqliamuser;",
 	"alter default privileges in schema public grant CHANGEME on sequences to cloudsqliamuser;",
