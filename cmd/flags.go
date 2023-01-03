@@ -19,4 +19,5 @@ const (
 	TeamName          = "teamname"
 	Extras            = "extras"
 	Topics            = "topics"
+	AllPrivs          = "all-privs"
 )

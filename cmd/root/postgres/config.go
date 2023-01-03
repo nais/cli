@@ -65,6 +65,9 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.users.Flags().StringP(cmd.PrivilegeFlag, "", "select", "Privilege level for user in database schema")
 	viper.BindPFlag(cmd.PrivilegeFlag, c.users.Flags().Lookup(cmd.PrivilegeFlag))
 
+	c.prepare.Flags().BoolP(cmd.AllPrivs, "", false, "Should all privileges be given?")
+	viper.BindPFlag(cmd.AllPrivs, c.prepare.Flags().Lookup(cmd.AllPrivs))
+
 	root.AddCommand(c.postgres)
 	c.postgres.AddCommand(c.proxy)
 	c.postgres.AddCommand(c.grant)
