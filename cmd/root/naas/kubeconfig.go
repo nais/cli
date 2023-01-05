@@ -47,7 +47,7 @@ var kubeconfigCmd = &cobra.Command{
 	Long: `Create a kubeconfig file for connecting to available clusters.
 	This requires that you have the gcloud command line tool installed, configured and logged
 	in using:
-	gcloud auth login --update-adc.`,
+	gcloud auth login --update-adc`,
 	Args: cobra.ExactArgs(0),
 	RunE: func(command *cobra.Command, args []string) error {
 		ctx := command.Context()
@@ -122,7 +122,7 @@ func (k *kubeConfigSync) projects(ctx context.Context) ([]project, error) {
 	}
 
 	projects := []project{}
-	filter := "labels.environment:*"
+	filter := "labels.naiscluster:true"
 	if k.tenant != "" {
 		filter += " labels.tenant:" + k.tenant
 	}

@@ -38,9 +38,22 @@ func Execute(version, commit, date, builtBy string) {
 	DATE = date
 	BuiltBy = builtBy
 
-	const timeout = 10 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
+	var ctx context.Context
+
+	for _, arg := range os.Args {
+		// Since there's a default timeout of 10 seconds, we need to disable it for the "naas" and "postgres" subcommand.
+		if arg == "naas" || arg == "postgres" {
+			ctx = context.Background()
+			break
+		}
+	}
+
+	if ctx == nil {
+		const timeout = 10 * time.Second
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+	}
 
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
