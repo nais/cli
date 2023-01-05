@@ -3,14 +3,15 @@ package root
 import (
 	"context"
 	"fmt"
-	"github.com/nais/cli/cmd/root/appstarter"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
+	"github.com/nais/cli/cmd/root/appstarter"
 	"github.com/nais/cli/cmd/root/device"
+	"github.com/nais/cli/cmd/root/naas"
 	"github.com/nais/cli/cmd/root/postgres"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,9 +38,22 @@ func Execute(version, commit, date, builtBy string) {
 	DATE = date
 	BuiltBy = builtBy
 
-	const timeout = 10 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
+	var ctx context.Context
+
+	for _, arg := range os.Args {
+		// Since there's a default timeout of 10 seconds, we need to disable it for the "naas" and "postgres" subcommand.
+		if arg == "naas" || arg == "postgres" {
+			ctx = context.Background()
+			break
+		}
+	}
+
+	if ctx == nil {
+		const timeout = 10 * time.Second
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+	}
 
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -55,6 +69,8 @@ func init() {
 	deviceConfig.InitCmds(rootCmd)
 	postgresConfig := postgres.NewConfig()
 	postgresConfig.InitCmds(rootCmd)
+	naasConfig := naas.NewConfig()
+	naasConfig.InitCmds(rootCmd)
 	initVersionCmd()
 	appstarter.InitAppStarterCmd(rootCmd)
 }
