@@ -22,6 +22,13 @@ All IAM users in your GCP project will be able to connect to the instance.
 
 This operation is only required to run once for each postgresql instance.`
 
+var ddlStatements = []string{
+	"alter default privileges in schema public grant CHANGEME on tables to cloudsqliamuser;",
+	"alter default privileges in schema public grant CHANGEME on sequences to cloudsqliamuser;",
+	"grant CHANGEME on all tables in schema public to cloudsqliamuser;",
+	"grant CHANGEME on all sequences in schema public to cloudsqliamuser;",
+}
+
 var prepareCmd = &cobra.Command{
 	Use:   "prepare [app-name] [flags]",
 	Short: "Prepare your postgres instance for use with personal accounts",
@@ -31,6 +38,7 @@ var prepareCmd = &cobra.Command{
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
+		allPrivs := viper.GetBool(cmd.AllPrivs)
 		dbInfo, err := NewDBInfo(appName, namespace, context)
 		if err != nil {
 			return err
@@ -58,22 +66,14 @@ var prepareCmd = &cobra.Command{
 		}
 		defer db.Close()
 
-		_, err = db.ExecContext(ctx, "alter default privileges in schema public grant all on tables to cloudsqliamuser;")
-		if err != nil {
-			log.Fatal(err)
+		for _, ddl := range ddlStatements {
+			_, err = db.ExecContext(ctx, setGrant(ddl, allPrivs))
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
-		_, err = db.ExecContext(ctx, "alter default privileges in schema public grant all on sequences to cloudsqliamuser;")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = db.ExecContext(ctx, "grant all on all tables in schema public to cloudsqliamuser;")
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = db.ExecContext(ctx, "grant all on all sequences in schema public to cloudsqliamuser;")
-		return err
+		return nil
 	},
 }
 
@@ -84,4 +84,12 @@ func getSecretDataValue(secret *corev1.Secret, suffix string) string {
 		}
 	}
 	return ""
+}
+
+func setGrant(sql string, allPrivs bool) string {
+	sqlGrant := "SELECT"
+	if allPrivs {
+		sqlGrant = "ALL"
+	}
+	return strings.Replace(sql, "CHANGEME", sqlGrant, 1)
 }

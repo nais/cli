@@ -2,6 +2,7 @@ package cmd
 
 const (
 	AccessFlag            = "access"
+	AllPrivs              = "all-privs"
 	AppName               = "appname"
 	CommitInformation     = "commit"
 	ContextFlag           = "context"
@@ -10,8 +11,8 @@ const (
 	Extras                = "extras"
 	Force                 = "force"
 	HostFlag              = "host"
-	InstanceFlag          = "instance"
 	IncludeManagementFlag = "include-management"
+	InstanceFlag          = "instance"
 	NamespaceFlag         = "namespace"
 	PoolFlag              = "pool"
 	PortFlag              = "port"

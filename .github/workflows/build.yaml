@@ -21,7 +21,7 @@ jobs:
         id: set-version
         run: |
           echo Faking a Semantic Version
-          echo ::set-output name=version::1.$(date "+%Y%m%d%H%M%S")
+          echo "version=1.$(date "+%Y%m%d%H%M%S")" >> ${GITHUB_OUTPUT}
 
   test:
     needs:
@@ -34,7 +34,7 @@ jobs:
       - name: Extract version of Go to use
         run: echo "GOVERSION=$(cat go.mod | grep -w "go" | awk ' { print $2 } ' | grep -w "^[^v]")" >> $GITHUB_ENV
       - name: Set up Go
-        uses: actions/setup-go@v3.3.0
+        uses: actions/setup-go@v3.3.1
         with:
           go-version: ${{ env.GOVERSION }}
 
@@ -58,19 +58,33 @@ jobs:
       - name: Extract version of Go to use
         run: echo "GOVERSION=$(cat go.mod | grep -w "go" | awk ' { print $2 } ' | grep -w "^[^v]")" >> $GITHUB_ENV
       - name: Set up Go
-        uses: actions/setup-go@v3.3.0
+        uses: actions/setup-go@v3.3.1
         with:
           go-version: ${{ env.GOVERSION }}
 
       - name: Create tag
         run: |
           git tag ${{ needs.set-version.outputs.version }}
+
+      - name: Prepare for signing windows binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes osslsigncode
+          echo "${{ secrets.SIGN_CERT }}" > nais.crt
+          echo "${{ secrets.SIGN_KEY }}" > nais.key
+
       - uses: navikt/github-app-token-generator@v1
         id: get-homebrew-token
         with:
           private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
           app-id: ${{ secrets.NAIS_APP_ID }}
           repo: nais/homebrew-tap
+      - uses: navikt/github-app-token-generator@v1
+        id: get-scoop-token
+        with:
+          private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.NAIS_APP_ID }}
+          repo: nais/scoop-bucket
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
@@ -79,7 +93,8 @@ jobs:
           args: release -f .goreleaser.yml --rm-dist --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
+          HOMEBREW_PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
+          SCOOP_PUSH_TOKEN: ${{ steps.get-scoop-token.outputs.token }}
 
       - uses: navikt/github-app-token-generator@v1
         id: get-token
