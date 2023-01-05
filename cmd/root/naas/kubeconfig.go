@@ -21,10 +21,11 @@ import (
 )
 
 type kubeConfigSync struct {
-	prefix bool
-	tenant string
-	email  string
-	force  bool
+	prefix            bool
+	tenant            string
+	email             string
+	force             bool
+	includeManagement bool
 
 	log logrus.FieldLogger
 }
@@ -65,10 +66,11 @@ var kubeconfigCmd = &cobra.Command{
 		log.Level = logrus.WarnLevel
 
 		kcs := &kubeConfigSync{
-			tenant: viper.GetString(cmd.TenantFlag),
-			log:    log,
-			email:  email,
-			force:  viper.GetBool("force"),
+			tenant:            viper.GetString(cmd.TenantFlag),
+			log:               log,
+			email:             email,
+			force:             viper.GetBool("force"),
+			includeManagement: viper.GetBool(cmd.IncludeManagementFlag),
 		}
 
 		kcs.prefix = kcs.tenant != ""
@@ -123,6 +125,9 @@ func (k *kubeConfigSync) projects(ctx context.Context) ([]project, error) {
 
 	projects := []project{}
 	filter := "labels.naiscluster:true"
+	if !k.includeManagement {
+		filter += " labels.environment:*"
+	}
 	if k.tenant != "" {
 		filter += " labels.tenant:" + k.tenant
 	}

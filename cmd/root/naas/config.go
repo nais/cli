@@ -39,6 +39,9 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.kubeconfigCmd.Flags().StringP(cmd.Email, "", "", "Force kubeconfig to use this email address")
 	viper.BindPFlag(cmd.Email, c.kubeconfigCmd.Flags().Lookup(cmd.Email))
 
+	c.kubeconfigCmd.Flags().BoolP(cmd.IncludeManagementFlag, "", false, "Include management clusters")
+	viper.BindPFlag(cmd.IncludeManagementFlag, c.kubeconfigCmd.Flags().Lookup(cmd.IncludeManagementFlag))
+
 	root.AddCommand(c.naas)
 	c.naas.AddCommand(c.kubeconfigCmd)
 }
