@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/nais/cli/pkg/consts"
+	"github.com/nais/cli/pkg/aiven/consts"
 	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
