@@ -107,7 +107,12 @@ func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
 
 	sqlInstance := sqlInstances.Items[0]
 
-	i.connectionName = sqlInstance.Object["status"].(map[string]interface{})["connectionName"].(string)
+	connectionName, ok := sqlInstance.Object["status"].(map[string]interface{})["connectionName"]
+	if !ok {
+		return fmt.Errorf("missing 'connectionName' status field; run 'kubectl describe sqlinstance %s' and check for status failures", sqlInstance.GetName())
+	}
+
+	i.connectionName = connectionName.(string)
 	i.projectID = sqlInstance.GetAnnotations()["cnrm.cloud.google.com/project-id"]
 	return nil
 }
