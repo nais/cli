@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/aiven/client"
+	config2 "github.com/nais/cli/pkg/aiven/config"
 	"github.com/nais/cli/pkg/aiven/services"
-	"github.com/nais/cli/pkg/client"
 	"github.com/nais/cli/pkg/common"
-	"github.com/nais/cli/pkg/config"
 	v1 "k8s.io/api/core/v1"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -87,15 +87,15 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 }
 
 func (s *Secret) CreateKafkaConfigs() error {
-	err := config.NewJavaConfig(s.Secret, s.DestinationPath)
+	err := config2.NewJavaConfig(s.Secret, s.DestinationPath)
 	if err != nil {
 		return err
 	}
-	err = config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
+	err = config2.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
 	if err != nil {
 		return err
 	}
-	err = config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
+	err = config2.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (s *Secret) CreateKafkaConfigs() error {
 }
 
 func (s *Secret) CreateOpenSearchConfigs() error {
-	return config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
+	return config2.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
 }
 
 func (s *Secret) Config() error {
