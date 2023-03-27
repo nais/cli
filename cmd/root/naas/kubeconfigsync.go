@@ -84,6 +84,9 @@ func (k *kubeConfigSync) Run(ctx context.Context) error {
 	fmt.Println("kubeconfig written to", configLoad.GetDefaultFilename())
 
 	for _, user := range config.AuthInfos {
+		if user == nil || user.Exec == nil {
+			continue
+		}
 		if _, err := exec.LookPath(user.Exec.Command); err != nil {
 			fmt.Fprintf(os.Stderr, "\nWARNING: %v not found in PATH.\n", user.Exec.Command)
 			fmt.Fprintln(os.Stderr, user.Exec.InstallHint)
