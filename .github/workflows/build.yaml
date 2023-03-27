@@ -86,7 +86,7 @@ jobs:
           app-id: ${{ secrets.NAIS_APP_ID }}
           repo: nais/scoop-bucket
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
           version: v1.7.0
