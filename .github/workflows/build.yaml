@@ -143,6 +143,9 @@ jobs:
       - set-version
       - release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - id: "auth"
         name: "Authenticate to Google Cloud"
@@ -167,4 +170,4 @@ jobs:
           wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
           
           # Upload to GAR
-          gcloud --project nais-io beta artifacts apt upload nais --quiet --source nais_${VERSION}.deb --location europe-north1
+          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}.deb --location europe-north1
