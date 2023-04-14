@@ -49,6 +49,7 @@ func (k *kubeConfigSync) Run(ctx context.Context) error {
 
 	clusters := []clusterEntry{}
 	for _, project := range projects {
+		fmt.Printf("Getting clusters for %s ...\n", project)
 		cluster, err := k.clusters(ctx, project)
 		if err != nil {
 			return err
@@ -152,6 +153,7 @@ func (k *kubeConfigSync) clusters(ctx context.Context, project project) ([]clust
 		if k.prefix {
 			name = project.Tenant + "-" + strings.TrimPrefix(name, "nais-")
 		}
+		fmt.Printf("Adding cluster %s\n", name)
 		ret = append(ret, clusterEntry{
 			Name:     name,
 			Endpoint: "https://" + cluster.Endpoint,
@@ -197,6 +199,7 @@ func (k *kubeConfigSync) onpremClusters(ctx context.Context, project project) ([
 		if k.prefix {
 			name = project.Tenant + "-" + strings.TrimPrefix(name, "nais-")
 		}
+		fmt.Printf("Adding onprem cluster %s\n", name)
 		ret = append(ret, clusterEntry{
 			Name:     name,
 			Endpoint: config.URL,

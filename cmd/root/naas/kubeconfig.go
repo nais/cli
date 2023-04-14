@@ -67,7 +67,7 @@ var kubeconfigCmd = &cobra.Command{
 			includeManagement: viper.GetBool(cmd.IncludeManagementFlag),
 		}
 
-		kcs.prefix = kcs.tenant != ""
+		kcs.prefix = kcs.tenant == ""
 
 		return kcs.Run(ctx)
 	},
@@ -98,4 +98,8 @@ func gcloudEmail(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return cfg.Configuration.Properties.Core.Account, nil
+}
+
+func (p project) String() string {
+	return fmt.Sprintf("%s:%s (%s)", p.Tenant, p.Name, p.ID)
 }
