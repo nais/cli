@@ -9,7 +9,7 @@ require (
 	github.com/nais/device v0.0.0-20220810141421-71125b764262
 	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
 	golang.org/x/oauth2 v0.6.0
@@ -52,7 +52,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.7.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.7 // indirect
