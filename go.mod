@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.5
-	github.com/go-logr/logr v1.2.3
+	github.com/go-logr/logr v1.2.4
 	github.com/magiconair/properties v1.8.7
 	github.com/nais/device v0.0.0-20220810141421-71125b764262
 	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
