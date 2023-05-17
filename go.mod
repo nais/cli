@@ -8,7 +8,7 @@ require (
 	github.com/magiconair/properties v1.8.7
 	github.com/nais/device v0.0.0-20220810141421-71125b764262
 	github.com/nais/liberator v0.0.0-20220614090702-3c71da10780e
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.1
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
