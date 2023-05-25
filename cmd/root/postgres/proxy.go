@@ -3,19 +3,18 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
-	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/certs"
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/proxy"
+	"cloud.google.com/go/cloudsqlconn"
 	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	goauth "golang.org/x/oauth2/google"
 )
 
 var proxyCmd = &cobra.Command{
@@ -30,8 +29,9 @@ var proxyCmd = &cobra.Command{
 		context := viper.GetString(cmd.ContextFlag)
 		port := viper.GetString(cmd.PortFlag)
 		host := viper.GetString(cmd.HostFlag)
+		databaseName := viper.GetString(cmd.DatabaseFlag)
 
-		dbInfo, err := NewDBInfo(appName, namespace, context)
+		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
 			return err
 		}
@@ -54,25 +54,16 @@ var proxyCmd = &cobra.Command{
 			return err
 		}
 
-		token, err := getGCPToken(ctx)
-		if err != nil {
-			return err
-		}
-
-	
 		address := fmt.Sprintf("%v:%v", host, port)
-	
-		fmt.Printf("Starting proxy on %v\n", address)
-		fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
 
-		pgpass := []byte(fmt.Sprintf("%s:%s:%s:%s", address, connectionInfo.dbName, email, token))
-		if home, err := os.UserHomeDir(); err == nil {
-			if err := os.WriteFile(fmt.Sprintf("%s/.pgpass", home), pgpass, 0600); err != nil {
-				fmt.Printf("Failed to write contents to pgpass file: %v\n", err)
-			} else {
-				fmt.Printf("You can authenticate to %s using 'pgpass' method: log in using only <%s> as username\n", connectionInfo.dbName, email)
-			}
-		}
+		fmt.Printf("Starting proxy on %v\n", address)
+		fmt.Println("If you are using psql, you can connect to the database by running:")
+		fmt.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
+		fmt.Println()
+		fmt.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
+		fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
+		fmt.Println()
+		fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
 
 		return runProxy(ctx, projectID, connectionName, address, make(chan int, 1))
 	},
@@ -83,18 +74,16 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		return err
 	}
 
-	fmt.Println("Proxy to instance", connectionName)
-	if err := proxy.InitDefault(ctx); err != nil {
-		return err
+	opts := []cloudsqlconn.Option{
+		cloudsqlconn.WithIAMAuthN(),
+	}
+	d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
+	if err != nil {
+		return fmt.Errorf("failed to create dialer: %w", err)
 	}
 
-	oauthClient, err := goauth.DefaultClient(ctx, "https://www.googleapis.com/auth/sqlservice.admin")
-	if err != nil {
-		return err
-	}
-	proxyClient := &proxy.Client{
-		Port:  proxy.DefaultPort,
-		Certs: certs.NewCertSource("", oauthClient, true),
+	if err := d.Warmup(ctx, connectionName); err != nil {
+		return fmt.Errorf("failed to warmup connection: %w", err)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -102,51 +91,149 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 
-	connSrc := make(chan proxy.Conn, 2)
-	addr, err := net.ResolveTCPAddr("tcp", address)
+	lc := net.ListenConfig{}
+	listener, err := lc.Listen(ctx, "tcp", address)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to listen on TCP address: %w", err)
 	}
 
-	listener, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return err
-	}
+	fmt.Println("Listening on", listener.Addr().String())
 
 	port <- listener.Addr().(*net.TCPAddr).Port
 
 	go func() {
-		for {
-			c, err := listener.AcceptTCP()
+		<-ctx.Done()
+		// TODO: Make this not panic listener.Accept()
+		if err := listener.Close(); err != nil {
+			log.Println("error closing listener", err)
+		}
+	}()
+
+	wg := sync.WaitGroup{}
+OUTER:
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			select {
+			case <-ctx.Done():
+				break OUTER
+			default:
+			}
+			log.Println("error accepting connection", err)
+			continue
+		}
+		log.Println("New connection", conn.RemoteAddr())
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			ctx, cancel := context.WithCancel(ctx)
+			defer cancel()
+
+			go func() {
+				<-ctx.Done()
+				if err := conn.Close(); err != nil {
+					log.Println("error closing connection", err)
+				}
+			}()
+
+			conn2, err := d.Dial(ctx, connectionName)
 			if err != nil {
-				log.Println("Accept TCP", err)
+				log.Println("error dialing connection", err)
 				return
 			}
-			connSrc <- proxy.Conn{
-				Instance: connectionName,
-				Conn:     c,
-			}
-		}
-	}()
+			defer conn2.Close()
 
-	termTimeout := time.Second * 5
-	go func() {
-		defer func() { cancel() }()
-		<-ctx.Done()
+			closer := make(chan struct{}, 2)
+			go copy(closer, conn2, conn)
+			go copy(closer, conn, conn2)
+			<-closer
+			log.Println("Connection complete", conn.RemoteAddr())
+		}()
+	}
 
-		log.Printf("Received TERM signal. Waiting up to %s before terminating.", termTimeout)
-		if err := listener.Close(); err != nil {
-			log.Println(err)
-		}
-
-		err := proxyClient.Shutdown(termTimeout)
-		if err != nil {
-			log.Printf("Error during SIGTERM shutdown: %v", err)
-			return
-		}
-	}()
-
-	proxyClient.RunContext(ctx, connSrc)
+	fmt.Println("Waiting for connections to close")
+	wg.Wait()
 
 	return nil
 }
+
+func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
+	_, _ = io.Copy(dst, src)
+	closer <- struct{}{} // connection is closed, send signal to stop proxy
+}
+
+// func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int) error {
+// 	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour); err != nil {
+// 		return err
+// 	}
+
+// 	cloudsqlco
+
+// 	fmt.Println("Proxy to instance", connectionName)
+// 	if err := proxy.InitDefault(ctx); err != nil {
+// 		return err
+// 	}
+
+// 	oauthClient, err := goauth.DefaultClient(ctx, "https://www.googleapis.com/auth/sqlservice.admin")
+// 	if err != nil {
+// 		return err
+// 	}
+// 	proxyClient := &proxy.Client{
+// 		Port:  proxy.DefaultPort,
+// 		Certs: certs.NewCertSource("", oauthClient, true),
+// 	}
+
+// 	ctx, cancel := context.WithCancel(ctx)
+// 	defer cancel()
+// 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
+// 	defer stop()
+
+// 	connSrc := make(chan proxy.Conn, 2)
+// 	addr, err := net.ResolveTCPAddr("tcp", address)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	listener, err := net.ListenTCP("tcp", addr)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	port <- listener.Addr().(*net.TCPAddr).Port
+
+// 	go func() {
+// 		for {
+// 			c, err := listener.AcceptTCP()
+// 			if err != nil {
+// 				log.Println("Accept TCP", err)
+// 				return
+// 			}
+// 			connSrc <- proxy.Conn{
+// 				Instance: connectionName,
+// 				Conn:     c,
+// 			}
+// 		}
+// 	}()
+
+// 	termTimeout := time.Second * 5
+// 	go func() {
+// 		defer func() { cancel() }()
+// 		<-ctx.Done()
+
+// 		log.Printf("Received TERM signal. Waiting up to %s before terminating.", termTimeout)
+// 		if err := listener.Close(); err != nil {
+// 			log.Println(err)
+// 		}
+
+// 		err := proxyClient.Shutdown(termTimeout)
+// 		if err != nil {
+// 			log.Printf("Error during SIGTERM shutdown: %v", err)
+// 			return
+// 		}
+// 	}()
+
+// 	proxyClient.RunContext(ctx, connSrc)
+
+// 	return nil
+// }

@@ -24,13 +24,14 @@ Grant user access to tables in public schema.`,
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
 		privilege := viper.GetString(cmd.PrivilegeFlag)
+		databaseName := viper.GetString(cmd.DatabaseFlag)
 		ctx := command.Context()
 
 		if err := validateSQLVariables(user, password, privilege); err != nil {
 			return err
 		}
 
-		dbInfo, err := NewDBInfo(appName, namespace, context)
+		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
 			return err
 		}
