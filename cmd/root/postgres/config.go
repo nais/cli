@@ -53,6 +53,8 @@ func (c Config) InitCmds(root *cobra.Command) {
 	viper.BindPFlag(cmd.NamespaceFlag, c.postgres.PersistentFlags().Lookup(cmd.NamespaceFlag))
 	c.postgres.PersistentFlags().StringP(cmd.ContextFlag, "c", "", "Kubernetes context where the app is deployed (defaults to the one defined in kubeconfig)")
 	viper.BindPFlag(cmd.ContextFlag, c.postgres.PersistentFlags().Lookup(cmd.ContextFlag))
+	c.postgres.PersistentFlags().StringP(cmd.DatabaseFlag, "", "", "Database name when more than one database is defined in the same instance")
+	viper.BindPFlag(cmd.DatabaseFlag, c.postgres.PersistentFlags().Lookup(cmd.DatabaseFlag))
 
 	c.proxy.Flags().StringP(cmd.PortFlag, "p", "5432", "Local port for the proxy to listen on")
 	viper.BindPFlag(cmd.PortFlag, c.proxy.Flags().Lookup(cmd.PortFlag))

@@ -39,7 +39,8 @@ var prepareCmd = &cobra.Command{
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
 		allPrivs := viper.GetBool(cmd.AllPrivs)
-		dbInfo, err := NewDBInfo(appName, namespace, context)
+		databaseName := viper.GetString(cmd.DatabaseFlag)
+		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
 			return err
 		}
