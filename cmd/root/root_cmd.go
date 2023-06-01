@@ -7,15 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/cmd/root/appstarter"
-	"github.com/nais/cli/cmd/root/validate"
-
 	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/cmd/root/aiven"
 	"github.com/nais/cli/cmd/root/appstarter"
 	"github.com/nais/cli/cmd/root/device"
 	"github.com/nais/cli/cmd/root/naas"
 	"github.com/nais/cli/cmd/root/postgres"
+	"github.com/nais/cli/cmd/root/validate"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
