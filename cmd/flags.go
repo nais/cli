@@ -6,6 +6,7 @@ const (
 	AppName               = "appname"
 	CommitInformation     = "commit"
 	ContextFlag           = "context"
+	DatabaseFlag          = "database"
 	Email                 = "email"
 	ExpireFlag            = "expire"
 	Extras                = "extras"

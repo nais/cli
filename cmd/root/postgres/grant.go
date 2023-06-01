@@ -26,9 +26,10 @@ var grantCmd = &cobra.Command{
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
+		databaseName := viper.GetString(cmd.DatabaseFlag)
 		ctx := command.Context()
 
-		dbInfo, err := NewDBInfo(appName, namespace, context)
+		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
 			return err
 		}
@@ -43,9 +44,11 @@ var grantCmd = &cobra.Command{
 			return err
 		}
 
+		fmt.Println("Grant user access")
 		if err := grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute); err != nil {
 			return err
 		}
+		fmt.Println("Create sql user")
 		if err := createSQLUser(ctx, projectID, connectionName); err != nil {
 			fmt.Fprintln(os.Stderr, "Error creating SQL user. One might already exist.")
 			return err

@@ -19,9 +19,10 @@ var listUsersCmd = &cobra.Command{
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
+		databaseName := viper.GetString(cmd.DatabaseFlag)
 		ctx := command.Context()
 
-		dbInfo, err := NewDBInfo(appName, namespace, context)
+		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
 			return err
 		}

@@ -16,7 +16,7 @@ import (
 const (
 	JvmGradle    = "JVM_GRADLE"
 	JvmMaven     = "JVM_MAVEN"
-	NodeJS       = "NodeJS"
+	NodeJS       = "NODEJS"
 	GoMake       = "GO_MAKE"
 	PythonPoetry = "PYTHON_POETRY"
 	PythonPip    = "PYTHON_PIP"
