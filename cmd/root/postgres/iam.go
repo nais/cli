@@ -32,7 +32,7 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 		return err
 	}
 	if exists {
-		fmt.Println("User already has permanent access to database")
+		fmt.Println("User already has permanent access to database, will not grant temporary access")
 		return nil
 	}
 
@@ -51,6 +51,7 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 			formatCondition("request.time < timestamp('"+timestamp+"')", "nais_cli_access"),
 		)
 	}
+
 	cmd := exec.CommandContext(ctx, "gcloud", args...)
 	buf := &bytes.Buffer{}
 	cmd.Stdout = buf
