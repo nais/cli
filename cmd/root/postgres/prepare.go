@@ -8,12 +8,10 @@ import (
 	"os"
 	"strings"
 
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/nais/cli/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	corev1 "k8s.io/api/core/v1"
-
-	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 )
 
 const prepareHelp = `Prepare will prepare the postgres instance by connecting using the
@@ -76,15 +74,6 @@ var prepareCmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func getSecretDataValue(secret *corev1.Secret, suffix string) string {
-	for name, val := range secret.Data {
-		if strings.HasSuffix(name, suffix) {
-			return string(val)
-		}
-	}
-	return ""
 }
 
 func setGrant(sql string, allPrivs bool) string {
