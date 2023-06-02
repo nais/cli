@@ -13,6 +13,7 @@ import (
 	"github.com/nais/cli/cmd/root/device"
 	"github.com/nais/cli/cmd/root/naas"
 	"github.com/nais/cli/cmd/root/postgres"
+	"github.com/nais/cli/cmd/root/validate"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -73,6 +74,7 @@ func init() {
 	naasConfig.InitCmds(rootCmd)
 	initVersionCmd()
 	appstarter.InitAppStarterCmd(rootCmd)
+	validate.InitValidateCmd(rootCmd)
 }
 
 func initConfig() {
