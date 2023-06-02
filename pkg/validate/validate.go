@@ -2,7 +2,6 @@ package validate
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/ghodss/yaml"
@@ -22,7 +21,7 @@ func NaisConfig(config []string) error {
 			return fmt.Errorf("file %s does not exist", file)
 		}
 
-		content, err := ioutil.ReadFile(file)
+		content, err := os.ReadFile(file)
 		if err != nil {
 			return fmt.Errorf("failed to read file %s: %w", file, err)
 		}
