@@ -26,13 +26,14 @@ func NaisConfig(config []string) error {
 			return fmt.Errorf("failed to read file %s: %w", file, err)
 		}
 
-		json, err := yaml.YAMLToJSON(content)
+		var m interface{}
+		err = yaml.Unmarshal(content, &m)
 		if err != nil {
 			return fmt.Errorf("failed to convert yaml to json: %w", err)
 		}
 
 		schemaLoader := gojsonschema.NewReferenceLoader(NaisManifestSchema)
-		documentLoader := gojsonschema.NewStringLoader(string(json))
+		documentLoader := gojsonschema.NewGoLoader(m)
 
 		result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 		if err != nil {
