@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
 	"strings"
 
 	naisalpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
@@ -215,4 +216,13 @@ type ConnectionInfo struct {
 
 func (c *ConnectionInfo) ConnectionString() string {
 	return fmt.Sprintf("host=%v user=%v dbname=%v password=%v sslmode=disable", c.host, c.username, c.dbName, c.password)
+}
+
+func getSecretDataValue(secret *corev1.Secret, suffix string) string {
+	for name, val := range secret.Data {
+		if strings.HasSuffix(name, suffix) {
+			return string(val)
+		}
+	}
+	return ""
 }

@@ -14,29 +14,28 @@ import (
 	"github.com/spf13/viper"
 )
 
-const prepareHelp = `Prepare will prepare the postgres instance by connecting using the
-application credentials and modify the permissions on the public schema.
-All IAM users in your GCP project will be able to connect to the instance.
+const revokeHelp = `Revoke will revoke the role 'cloudsqliamuser' access to the
+tables in the postgres instance. This is done by connecting using the application
+credentials and modify the permissions on the public schema.
 
 This operation is only required to run once for each postgresql instance.`
 
-var ddlStatements = []string{
-	"alter default privileges in schema public grant CHANGEME on tables to cloudsqliamuser;",
-	"alter default privileges in schema public grant CHANGEME on sequences to cloudsqliamuser;",
-	"grant CHANGEME on all tables in schema public to cloudsqliamuser;",
-	"grant CHANGEME on all sequences in schema public to cloudsqliamuser;",
+var revokeDdlStatements = []string{
+	"alter default privileges in schema public revoke ALL on tables from cloudsqliamuser;",
+	"alter default privileges in schema public revoke ALL on sequences from cloudsqliamuser;",
+	"revoke ALL on all tables in schema public from cloudsqliamuser;",
+	"revoke ALL on all sequences in schema public from cloudsqliamuser;",
 }
 
-var prepareCmd = &cobra.Command{
-	Use:   "prepare [app-name] [flags]",
-	Short: "Prepare your postgres instance for use with personal accounts",
-	Long:  prepareHelp,
+var revokeCmd = &cobra.Command{
+	Use:   "revoke [app-name] [flags]",
+	Short: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
+	Long:  revokeHelp,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(command *cobra.Command, args []string) error {
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)
 		context := viper.GetString(cmd.ContextFlag)
-		allPrivs := viper.GetBool(cmd.AllPrivs)
 		databaseName := viper.GetString(cmd.DatabaseFlag)
 		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
 		if err != nil {
@@ -45,7 +44,7 @@ var prepareCmd = &cobra.Command{
 
 		ctx := command.Context()
 
-		fmt.Println(prepareHelp)
+		fmt.Println(revokeHelp)
 
 		fmt.Print("\nAre you sure you want to continue (y/N): ")
 		input := bufio.NewScanner(os.Stdin)
@@ -65,8 +64,8 @@ var prepareCmd = &cobra.Command{
 		}
 		defer db.Close()
 
-		for _, ddl := range ddlStatements {
-			_, err = db.ExecContext(ctx, setGrant(ddl, allPrivs))
+		for _, ddl := range revokeDdlStatements {
+			_, err = db.ExecContext(ctx, ddl)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -74,12 +73,4 @@ var prepareCmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func setGrant(sql string, allPrivs bool) string {
-	sqlGrant := "SELECT"
-	if allPrivs {
-		sqlGrant = "ALL"
-	}
-	return strings.Replace(sql, "CHANGEME", sqlGrant, 1)
 }
