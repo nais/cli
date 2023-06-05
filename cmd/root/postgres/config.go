@@ -76,6 +76,7 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.postgres.AddCommand(c.proxy)
 	c.postgres.AddCommand(c.grant)
 	c.postgres.AddCommand(c.prepare)
+	c.postgres.AddCommand(c.revoke)
 	c.postgres.AddCommand(c.psql)
 	c.postgres.AddCommand(c.users)
 	c.users.AddCommand(c.listUsers)
