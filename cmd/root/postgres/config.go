@@ -29,6 +29,7 @@ type Config struct {
 	proxy     *cobra.Command
 	grant     *cobra.Command
 	prepare   *cobra.Command
+	revoke    *cobra.Command
 	psql      *cobra.Command
 	users     *cobra.Command
 	listUsers *cobra.Command
@@ -41,6 +42,7 @@ func NewConfig() *Config {
 		proxy:     proxyCmd,
 		grant:     grantCmd,
 		prepare:   prepareCmd,
+		revoke:    revokeCmd,
 		psql:      psqlCmd,
 		users:     usersCommand,
 		listUsers: listUsersCmd,
