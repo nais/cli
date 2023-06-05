@@ -21,9 +21,6 @@ var tenantCmd = &cobra.Command{
 
 		tenant := strings.TrimSpace(args[0])
 
-		// workaround https://github.com/spf13/cobra/issues/340
-		command.SilenceUsage = true
-
 		connection, err := agentConnection()
 		if err != nil {
 			return formatGrpcError(err)
