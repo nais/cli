@@ -65,9 +65,14 @@ var passwordRotateCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
-		return updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
+		err = updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
+		if err != nil {
+			return err
+		}
 
 		fmt.Println("Password rotated")
+
+		return nil
 	},
 }
 
