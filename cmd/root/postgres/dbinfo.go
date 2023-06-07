@@ -103,12 +103,7 @@ func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
 		return nil, err
 	}
 
-	return &ConnectionInfo{
-		username: getSecretDataValue(secret, "_USERNAME"),
-		password: getSecretDataValue(secret, "_PASSWORD"),
-		dbName:   getSecretDataValue(secret, "_DATABASE"),
-		host:     connectionName,
-	}, nil
+	return createConnectionInfo(*secret, connectionName), nil
 }
 
 func (i *DBInfo) dbConnectionMultiDB(ctx context.Context) (*ConnectionInfo, error) {
@@ -126,16 +121,22 @@ func (i *DBInfo) dbConnectionMultiDB(ctx context.Context) (*ConnectionInfo, erro
 
 	for _, secret := range secrets.Items {
 		if strings.HasPrefix(secret.GetName(), "google-sql-"+i.appName+"-"+i.databaseName+"-"+i.user+"-") {
-			return &ConnectionInfo{
-				username: getSecretDataValue(&secret, "_USERNAME"),
-				password: getSecretDataValue(&secret, "_PASSWORD"),
-				dbName:   getSecretDataValue(&secret, "_DATABASE"),
-				host:     connectionName,
-			}, nil
+			return createConnectionInfo(secret, connectionName), nil
 		}
 	}
 
 	return nil, fmt.Errorf("unable to find secret for app %q in %q with database %q and user %q", i.appName, i.namespace, i.databaseName, i.user)
+}
+
+func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo {
+	return &ConnectionInfo{
+		username: getSecretDataValue(secret, "_USERNAME"),
+		password: getSecretDataValue(secret, "_PASSWORD"),
+		dbName:   getSecretDataValue(secret, "_DATABASE"),
+		port:     getSecretDataValue(secret, "_PORT"),
+		host:     getSecretDataValue(secret, "_HOST"),
+		instance: instance,
+	}
 }
 
 func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
@@ -211,14 +212,24 @@ type ConnectionInfo struct {
 	username string
 	password string
 	dbName   string
+	instance string
+	port     string
 	host     string
 }
 
 func (c *ConnectionInfo) ConnectionString() string {
-	return fmt.Sprintf("host=%v user=%v dbname=%v password=%v sslmode=disable", c.host, c.username, c.dbName, c.password)
+	return fmt.Sprintf("host=%v user=%v dbname=%v password=%v sslmode=disable", c.instance, c.username, c.dbName, c.password)
 }
 
-func getSecretDataValue(secret *corev1.Secret, suffix string) string {
+func (c *ConnectionInfo) JDBCURL() string {
+	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v", c.username, c.password, c.host, c.port, c.dbName)
+}
+
+func (c *ConnectionInfo) SetPassword(password string) {
+	c.password = password
+}
+
+func getSecretDataValue(secret corev1.Secret, suffix string) string {
 	for name, val := range secret.Data {
 		if strings.HasSuffix(name, suffix) {
 			return string(val)

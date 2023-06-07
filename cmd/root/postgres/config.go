@@ -25,28 +25,32 @@ var usersCommand = &cobra.Command{
 }
 
 type Config struct {
-	postgres  *cobra.Command
-	proxy     *cobra.Command
-	grant     *cobra.Command
-	prepare   *cobra.Command
-	revoke    *cobra.Command
-	psql      *cobra.Command
-	users     *cobra.Command
-	listUsers *cobra.Command
-	addUser   *cobra.Command
+	postgres       *cobra.Command
+	proxy          *cobra.Command
+	grant          *cobra.Command
+	prepare        *cobra.Command
+	revoke         *cobra.Command
+	psql           *cobra.Command
+	users          *cobra.Command
+	listUsers      *cobra.Command
+	addUser        *cobra.Command
+	password       *cobra.Command
+	passwordRotate *cobra.Command
 }
 
 func NewConfig() *Config {
 	return &Config{
-		postgres:  postgresCommand,
-		proxy:     proxyCmd,
-		grant:     grantCmd,
-		prepare:   prepareCmd,
-		revoke:    revokeCmd,
-		psql:      psqlCmd,
-		users:     usersCommand,
-		listUsers: listUsersCmd,
-		addUser:   addUserCmd,
+		postgres:       postgresCommand,
+		proxy:          proxyCmd,
+		grant:          grantCmd,
+		prepare:        prepareCmd,
+		revoke:         revokeCmd,
+		psql:           psqlCmd,
+		users:          usersCommand,
+		listUsers:      listUsersCmd,
+		addUser:        addUserCmd,
+		password:       passwordCmd,
+		passwordRotate: passwordRotateCmd,
 	}
 }
 
@@ -72,13 +76,21 @@ func (c Config) InitCmds(root *cobra.Command) {
 	c.prepare.Flags().BoolP(cmd.AllPrivs, "", false, "Should all privileges be given?")
 	viper.BindPFlag(cmd.AllPrivs, c.prepare.Flags().Lookup(cmd.AllPrivs))
 
+	c.password.AddCommand(
+		c.passwordRotate)
+
+	c.users.AddCommand(
+		c.listUsers,
+		c.addUser)
+
+	c.postgres.AddCommand(
+		c.proxy,
+		c.grant,
+		c.password,
+		c.prepare,
+		c.revoke,
+		c.psql,
+		c.users)
+
 	root.AddCommand(c.postgres)
-	c.postgres.AddCommand(c.proxy)
-	c.postgres.AddCommand(c.grant)
-	c.postgres.AddCommand(c.prepare)
-	c.postgres.AddCommand(c.revoke)
-	c.postgres.AddCommand(c.psql)
-	c.postgres.AddCommand(c.users)
-	c.users.AddCommand(c.listUsers)
-	c.users.AddCommand(c.addUser)
 }
