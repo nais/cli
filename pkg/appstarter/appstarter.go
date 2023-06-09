@@ -23,11 +23,12 @@ const (
 )
 
 type StartNaisIoRequest struct {
-	AppName     string   `json:"appName"`
-	Team        string   `json:"team"`
-	Platform    string   `json:"platform"`
-	Extras      []string `json:"extras"`
-	KafkaTopics []string `json:"kafkaTopics"`
+	AppName       string   `json:"appName"`
+	Team          string   `json:"team"`
+	Platform      string   `json:"platform"`
+	AppListenPort uint     `json:"appListenPort,omitempty"`
+	Extras        []string `json:"extras"`
+	KafkaTopics   []string `json:"kafkaTopics"`
 }
 
 var projectTypes = func() map[string]string {
@@ -44,17 +45,18 @@ var projectTypes = func() map[string]string {
 
 var currentDir, _ = os.Getwd()
 
-func Naisify(appName string, team string, extras []string, kafkaTopics []string) error {
+func Naisify(appName string, team string, extras []string, kafkaTopics []string, appPort uint) error {
 	appType, err := determinePlatform()
 	if err != nil || len(appType) == 0 {
 		return fmt.Errorf("unable to determine app type in %s: %v", currentDir, err)
 	}
 	request := StartNaisIoRequest{
-		AppName:     appName,
-		Team:        team,
-		Platform:    appType,
-		Extras:      extras,
-		KafkaTopics: kafkaTopics,
+		AppName:       appName,
+		Team:          team,
+		Platform:      appType,
+		Extras:        extras,
+		KafkaTopics:   kafkaTopics,
+		AppListenPort: appPort,
 	}
 	startNaisIoResponse, err := makeHttpRequest(&request)
 	if err != nil {

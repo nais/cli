@@ -14,6 +14,7 @@ func InitAppStarterCmd(rootCmd *cobra.Command) {
 	_ = appStarterCommand.MarkFlagRequired(flags.TeamName)
 	appStarterCommand.Flags().StringSliceP(flags.Extras, "e", []string{}, "comma separated list of desired extras (idporten,openSearch,aad,postgres)")
 	appStarterCommand.Flags().StringSliceP(flags.Topics, "c", []string{}, "comma separated list of desired kafka topic resources")
+	appStarterCommand.Flags().UintP(flags.AppPortFlag, "p", 8080, "the port the app will listen on")
 	rootCmd.AddCommand(appStarterCommand)
 }
 
@@ -37,6 +38,10 @@ var appStarterCommand = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("error while collecting flag: %v", err)
 		}
-		return appstarter.Naisify(appName, teamName, extras, topics)
+		appListenPort, err := cmd.Flags().GetUint(flags.AppPortFlag)
+		if err != nil {
+			return fmt.Errorf("error while collecting flag '%s': %v", flags.AppPortFlag, err)
+		}
+		return appstarter.Naisify(appName, teamName, extras, topics, appListenPort)
 	},
 }

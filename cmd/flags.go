@@ -25,4 +25,5 @@ const (
 	Topics                = "topics"
 	UsernameFlag          = "username"
 	VerboseFlag           = "verbose"
+	AppPortFlag           = "appListenPort"
 )
