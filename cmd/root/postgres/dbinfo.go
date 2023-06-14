@@ -3,8 +3,9 @@ package postgres
 import (
 	"context"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
 	"strings"
+
+	corev1 "k8s.io/api/core/v1"
 
 	naisalpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,13 +46,23 @@ func NewDBInfo(appName, namespace, context, databaseName string) (*DBInfo, error
 	if namespace == "" {
 		namespace, _, err = kubeConfig.Namespace()
 		if err != nil {
-			return nil, fmt.Errorf("NewDBConfig: unable to get namespace: %w", err)
+			return nil, fmt.Errorf("NewDBInfo: unable to get namespace: %w", err)
 		}
 	}
 
+	k8sClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBInfo: load kubeclient configuration: %w", err)
+	}
+
+	dynamicClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("NewDBInfo: load kubeclient configuration: %w", err)
+	}
+
 	return &DBInfo{
-		k8sClient:     kubernetes.NewForConfigOrDie(config),
-		dynamicClient: dynamic.NewForConfigOrDie(config),
+		k8sClient:     k8sClient,
+		dynamicClient: dynamicClient,
 		config:        kubeConfig,
 		namespace:     namespace,
 		appName:       appName,
