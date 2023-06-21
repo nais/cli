@@ -16,7 +16,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	cmd := exec.CommandContext(ctx, "gcloud", "config", "get-value", "account")
 	out, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("currentEmail: unable to retrieve email: %w", err)
+		return "", fmt.Errorf("currentEmail: unable to retrieve email: %w\n%v", err, string(out))
 	}
 	return strings.TrimSpace(string(out)), nil
 }
