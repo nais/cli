@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/xeipuuv/gojsonschema v1.2.0
 	google.golang.org/api v0.128.0
-	google.golang.org/grpc v1.55.0
+	google.golang.org/grpc v1.56.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.27.3
 	k8s.io/apimachinery v0.27.3
