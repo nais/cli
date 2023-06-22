@@ -2,11 +2,14 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
+	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -26,12 +29,12 @@ var proxyCmd = &cobra.Command{
 		ctx := context.Background()
 		appName := args[0]
 		namespace := viper.GetString(cmd.NamespaceFlag)
-		context := viper.GetString(cmd.ContextFlag)
+		kContext := viper.GetString(cmd.ContextFlag)
 		port := viper.GetString(cmd.PortFlag)
 		host := viper.GetString(cmd.HostFlag)
 		databaseName := viper.GetString(cmd.DatabaseFlag)
 
-		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
+		dbInfo, err := NewDBInfo(appName, namespace, kContext, databaseName)
 		if err != nil {
 			return err
 		}
@@ -65,11 +68,22 @@ var proxyCmd = &cobra.Command{
 		fmt.Println()
 		fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
 
-		return runProxy(ctx, projectID, connectionName, address, make(chan int, 1))
+		if err := runProxy(ctx, projectID, connectionName, address, make(chan int, 1)); err != nil {
+			if errors.Is(err, context.Canceled) {
+				return nil
+			}
+
+			fmt.Fprintln(os.Stderr, "\nERROR:", err)
+		}
+		return nil
 	},
 }
 
 func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int) error {
+	if err := checkPostgresqlPassword(); err != nil {
+		return err
+	}
+
 	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour); err != nil {
 		return err
 	}
@@ -161,4 +175,21 @@ OUTER:
 func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
 	_, _ = io.Copy(dst, src)
 	closer <- struct{}{} // connection is closed, send signal to stop proxy
+}
+
+func checkPostgresqlPassword() error {
+	if _, ok := os.LookupEnv("PGPASSWORD"); ok {
+		return fmt.Errorf("PGPASSWORD is set, please unset it before running this command")
+	}
+
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("could not get home directory, can not check for .pgpass file")
+		return nil
+	}
+
+	if s, err := os.Stat(filepath.Join(dirname, ".pgpass")); err == nil && !s.IsDir() {
+		return fmt.Errorf("found .pgpass file in home directory, please remove it before running this command")
+	}
+	return nil
 }
