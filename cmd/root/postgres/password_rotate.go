@@ -6,11 +6,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/nais/cli/cmd"
 	"github.com/nais/liberator/pkg/keygen"
@@ -82,7 +83,7 @@ func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInf
 		return fmt.Errorf("unable to the k8s secret %q in %q: %w", "google-sql-"+dbInfo.appName, dbInfo.namespace, err)
 	}
 
-	for key, _ := range secret.Data {
+	for key := range secret.Data {
 		if strings.HasSuffix(key, "_PASSWORD") {
 			secret.Data[key] = []byte(dbConnectionInfo.password)
 		}

@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"github.com/nais/cli/cmd"
@@ -89,13 +88,4 @@ var psqlCmd = &cobra.Command{
 
 		return cmd.Run()
 	},
-}
-
-func getGCPToken(ctx context.Context) (string, error) {
-	b, err := exec.CommandContext(ctx, "gcloud", "auth", "print-access-token").Output()
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(string(b)), nil
 }
