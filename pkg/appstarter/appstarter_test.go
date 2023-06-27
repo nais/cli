@@ -1,4 +1,4 @@
-package appstarter
+package appStarter
 
 import (
 	"github.com/magiconair/properties/assert"
