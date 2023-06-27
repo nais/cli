@@ -24,8 +24,8 @@ func configCommand() *cli.Command {
 
 func getConfigCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "get",
-		Usage: "Gets the current configuration",
+		Name:        "get",
+		Description: "Gets the current configuration",
 		Action: func(context *cli.Context) error {
 			config, err := naisdevice.GetConfiguration(context.Context)
 			if err != nil {
@@ -42,8 +42,8 @@ func getConfigCommand() *cli.Command {
 
 func setConfigCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "set",
-		Usage: "Sets a configuration value",
+		Name:        "set",
+		Description: "Sets a configuration value",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 2 {
 				return fmt.Errorf("missing required arguments: setting, value")

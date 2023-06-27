@@ -29,10 +29,8 @@ func commands() []*cli.Command {
 func main() {
 	app := &cli.App{
 		Name:                 "nais",
-		Usage:                "NAIS CLI",
+		Description:          "NAIS CLI",
 		Version:              version + "-" + commit,
-		Description:          "NAIS Administrator CLI",
-		Commands:             commands(),
 		EnableBashCompletion: true,
 		HideHelpCommand:      true,
 	}
