@@ -1,23 +1,14 @@
-package device
+package naisdevice
 
 import (
 	"fmt"
-	"path/filepath"
-
 	"github.com/nais/device/pkg/config"
-	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"path/filepath"
 )
-
-var deviceCmd = &cobra.Command{
-	Use:   "device [command] [args] [flags]",
-	Short: "Command used for management of 'naisdevice'",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return fmt.Errorf("missing required command")
-	},
-}
 
 func agentConnection() (*grpc.ClientConn, error) {
 	userConfigDir, err := config.UserConfigDir()
@@ -26,10 +17,15 @@ func agentConnection() (*grpc.ClientConn, error) {
 	}
 	socket := filepath.Join(userConfigDir, "agent.sock")
 
-	return grpc.Dial(
+	connection, err := grpc.Dial(
 		"unix:"+socket,
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+	if err != nil {
+		return nil, formatGrpcError(err)
+	}
+
+	return connection, nil
 }
 
 func formatGrpcError(err error) error {
@@ -39,8 +35,7 @@ func formatGrpcError(err error) error {
 	}
 	switch gerr.Code() {
 	case codes.Unavailable:
-		//goland:noinspection ALL
-		return fmt.Errorf("unable to connect to naisdevice; is it running?")
+		return fmt.Errorf("unable to connect to naisdevice; make sure naisdevice is running")
 	}
 	return fmt.Errorf("%s: %s", gerr.Code(), gerr.Message())
 }
