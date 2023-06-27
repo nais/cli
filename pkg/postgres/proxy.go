@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"io"
 	"log"
 	"net"
@@ -12,64 +13,53 @@ import (
 	"time"
 
 	"cloud.google.com/go/cloudsqlconn"
-	"github.com/nais/cli/cmd"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var proxyCmd = &cobra.Command{
-	Use:   "proxy [app-name] [flags]",
-	Short: "Create a proxy to a Postgres instance",
-	Long:  `Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.`,
-	Args:  cobra.ExactArgs(1),
-	RunE: func(command *cobra.Command, args []string) error {
-		ctx := context.Background()
-		appName := args[0]
-		namespace := viper.GetString(cmd.NamespaceFlag)
-		context := viper.GetString(cmd.ContextFlag)
-		port := viper.GetString(cmd.PortFlag)
-		host := viper.GetString(cmd.HostFlag)
-		databaseName := viper.GetString(cmd.DatabaseFlag)
+func RunProxy(ctx context.Context, appName, cluster, namespace, database, host string, port uint, verbose bool) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+	if err != nil {
+		return err
+	}
 
-		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
-		if err != nil {
-			return err
-		}
+	projectID, err := dbInfo.ProjectID(ctx)
+	if err != nil {
+		return err
+	}
 
-		projectID, err := dbInfo.ProjectID(ctx)
-		if err != nil {
-			return err
-		}
+	connectionName, err := dbInfo.ConnectionName(ctx)
+	if err != nil {
+		return err
+	}
 
-		connectionName, err := dbInfo.ConnectionName(ctx)
-		if err != nil {
-			return err
-		}
-		connectionInfo, err := dbInfo.DBConnection(ctx)
-		if err != nil {
-			return err
-		}
-		email, err := currentEmail(ctx)
-		if err != nil {
-			return err
-		}
+	connectionInfo, err := dbInfo.DBConnection(ctx)
+	if err != nil {
+		return err
+	}
 
-		address := fmt.Sprintf("%v:%v", host, port)
+	email, err := currentEmail(ctx)
+	if err != nil {
+		return err
+	}
 
-		fmt.Printf("Starting proxy on %v\n", address)
-		fmt.Println("If you are using psql, you can connect to the database by running:")
-		fmt.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
-		fmt.Println()
-		fmt.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
-		fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
-		fmt.Println()
-		fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
+	address := fmt.Sprintf("%v:%v", host, port)
 
-		return runProxy(ctx, projectID, connectionName, address, make(chan int, 1))
-	},
+	fmt.Printf("Starting proxy on %v\n", address)
+	fmt.Println("If you are using psql, you can connect to the database by running:")
+	fmt.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
+	fmt.Println()
+	fmt.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
+	fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
+	fmt.Println()
+	fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
+
+	return runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose)
 }
 
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int) error {
+func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool) error {
+	if !verbose {
+		logging.DisableLogging()
+	}
+
 	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour); err != nil {
 		return err
 	}
@@ -77,7 +67,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 	opts := []cloudsqlconn.Option{
 		cloudsqlconn.WithIAMAuthN(),
 	}
-	d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
+	d, err := cloudsqlconn.NewDialer(ctx, opts...)
 	if err != nil {
 		return fmt.Errorf("failed to create dialer: %w", err)
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/nais/cli/cmd/aivenCmd"
+	"github.com/nais/cli/cmd/postgresCmd"
 	"log"
 	"os"
 
@@ -22,6 +23,7 @@ func commands() []*cli.Command {
 		aivenCmd.Command(),
 		appStarterCmd.Command(),
 		deviceCmd.Command(),
+		postgresCmd.Command(),
 		validateCmd.Command(),
 	}
 }

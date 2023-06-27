@@ -5,75 +5,59 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/nais/liberator/pkg/keygen"
 	"io"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
-
-	"github.com/nais/cli/cmd"
-	"github.com/nais/liberator/pkg/keygen"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var passwordRotateCmd = &cobra.Command{
-	Use:   "rotate [app-name]",
-	Short: "Rotate the Postgres database password.",
-	Long:  `Rotate the Postgres database password, both in GCP and in the Kubernetes secret.`,
-	Args:  cobra.ExactArgs(1),
-	RunE: func(command *cobra.Command, args []string) error {
-		appName := args[0]
-		namespace := viper.GetString(cmd.NamespaceFlag)
-		context := viper.GetString(cmd.ContextFlag)
-		databaseName := viper.GetString(cmd.DatabaseFlag)
-		ctx := command.Context()
+func RotatePassword(ctx context.Context, appName, cluster, namespace, database string) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+	if err != nil {
+		return err
+	}
 
-		dbInfo, err := NewDBInfo(appName, namespace, context, databaseName)
-		if err != nil {
-			return err
-		}
+	projectID, err := dbInfo.ProjectID(ctx)
+	if err != nil {
+		return err
+	}
 
-		projectID, err := dbInfo.ProjectID(ctx)
-		if err != nil {
-			return err
-		}
+	dbConnectionInfo, err := dbInfo.DBConnection(ctx)
+	if err != nil {
+		return err
+	}
 
-		dbConnectionInfo, err := dbInfo.DBConnection(ctx)
-		if err != nil {
-			return err
-		}
+	fmt.Println("Grant user cloudsql.admin access for 5 minutes")
+	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute)
+	if err != nil {
+		return err
+	}
 
-		fmt.Println("Grant user cloudsql.admin access for 5 minutes")
-		err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute)
-		if err != nil {
-			return err
-		}
+	fmt.Println("Generating new password")
+	newPassword, err := generatePassword()
+	if err != nil {
+		return err
+	}
 
-		fmt.Println("Generating new password")
-		newPassword, err := generatePassword()
-		if err != nil {
-			return err
-		}
-		dbConnectionInfo.SetPassword(newPassword)
+	dbConnectionInfo.SetPassword(newPassword)
 
-		fmt.Printf("Rotating password for user %v in database %v\n", dbConnectionInfo.username, dbConnectionInfo.dbName)
-		err = rotatePasswordForDatabaseUser(ctx, projectID, dbConnectionInfo.instance, dbConnectionInfo.username, dbConnectionInfo.password)
-		if err != nil {
-			return err
-		}
+	fmt.Printf("Rotating password for user %v in database %v\n", dbConnectionInfo.username, dbConnectionInfo.dbName)
+	err = rotatePasswordForDatabaseUser(ctx, projectID, dbConnectionInfo.instance, dbConnectionInfo.username, dbConnectionInfo.password)
+	if err != nil {
+		return err
+	}
 
-		fmt.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
-		err = updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
-		if err != nil {
-			return err
-		}
+	fmt.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
+	err = updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
+	if err != nil {
+		return err
+	}
 
-		fmt.Println("Password rotated")
-
-		return nil
-	},
+	fmt.Println("Password rotated")
+	return nil
 }
 
 func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInfo *ConnectionInfo) error {
