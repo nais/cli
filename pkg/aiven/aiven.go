@@ -36,7 +36,7 @@ type Properties struct {
 	Service    services2.Service
 }
 
-func Setup(innClient ctrl.Client, service services2.Service, username, namespace, secretName, instance string, pool services2.KafkaPool, access services2.OpenSearchAccess, expiry int) *Aiven {
+func Setup(innClient ctrl.Client, service services2.Service, username, namespace, secretName, instance string, pool services2.KafkaPool, access services2.OpenSearchAccess, expiry uint) *Aiven {
 	aiven := Aiven{
 		context.Background(),
 		innClient,
@@ -44,7 +44,7 @@ func Setup(innClient ctrl.Client, service services2.Service, username, namespace
 			Username:   username,
 			Namespace:  namespace,
 			SecretName: secretName,
-			Expiry:     expiry,
+			Expiry:     int(expiry),
 			Service:    service,
 		},
 	}
@@ -58,7 +58,7 @@ func Setup(innClient ctrl.Client, service services2.Service, username, namespace
 	return &aiven
 }
 
-func (a *Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
+func (a Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
 	properties := a.Properties
 	namespace := v1.Namespace{}
 

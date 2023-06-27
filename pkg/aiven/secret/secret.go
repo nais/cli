@@ -3,20 +3,30 @@ package secret
 import (
 	"context"
 	"fmt"
-	"github.com/nais/cli/cmd"
 	"github.com/nais/cli/pkg/aiven/client"
 	config2 "github.com/nais/cli/pkg/aiven/config"
 	"github.com/nais/cli/pkg/aiven/services"
 	"github.com/nais/cli/pkg/common"
 	v1 "k8s.io/api/core/v1"
 	"log"
+	"os"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
+	FolderPrefix                         = "aiven-secret-"
 	AivenatorProtectedAnnotation         = "aivenator.aiven.nais.io/protected"
 	AivenatorProtectedExpireAtAnnotation = "aivenator.aiven.nais.io/with-time-limit"
 )
+
+func CreateDefaultDestination() (string, error) {
+	newPath, err := os.MkdirTemp("", FolderPrefix)
+	if err != nil {
+		return "", fmt.Errorf("failed to create temporary directory: %w", err)
+	}
+
+	return newPath, nil
+}
 
 type Secret struct {
 	Secret          *v1.Secret
@@ -54,7 +64,7 @@ func ExtractAndGenerateConfig(service services.Service, secretName, namespaceNam
 		return fmt.Errorf("validate namespace: %w", err)
 	}
 
-	dest, err := cmd.DefaultDestination()
+	dest, err := CreateDefaultDestination()
 	if err != nil {
 		return fmt.Errorf("setting default folder: %w", err)
 	}

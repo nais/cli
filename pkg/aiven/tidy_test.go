@@ -1,24 +1,24 @@
 package aiven
 
 import (
-	"github.com/nais/cli/cmd"
+	"github.com/nais/cli/pkg/aiven/secret"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAivenTidy(t *testing.T) {
-	_, err := cmd.DefaultDestination()
+	_, err := secret.CreateDefaultDestination()
 	assert.NoError(t, err, "Creating folder")
 
 	// created folders are found
-	folders, err := findFoldersToTidy()
+	folders, err := findFoldersToRemove()
 	assert.True(t, len(folders) > 0)
 	assert.NoError(t, err, "Folders found")
 
 	// created folders id tidy
-	err = Tidy(folders)
-	folders, err = findFoldersToTidy()
+	err = tidy(folders)
+	folders, err = findFoldersToRemove()
 	assert.NoError(t, err, "Folders found")
 	assert.True(t, len(folders) == 0)
-	assert.NoError(t, err, "Tidy")
+	assert.NoError(t, err, "tidy")
 }
