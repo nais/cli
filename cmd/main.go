@@ -15,8 +15,6 @@ var (
 	// Is set during build
 	version = "dev"
 	commit  = "none"
-	date    = "unknown"
-	builtBy = "you"
 )
 
 func commands() []*cli.Command {
