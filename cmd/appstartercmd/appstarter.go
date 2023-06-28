@@ -1,7 +1,7 @@
-package appStarterCmd
+package appstartercmd
 
 import (
-	"github.com/nais/cli/pkg/appStarter"
+	"github.com/nais/cli/pkg/appstarter"
 	"github.com/urfave/cli/v2"
 )
 
@@ -43,7 +43,7 @@ func Command() *cli.Command {
 			topics := context.StringSlice("topics")
 			port := context.Uint("port")
 
-			return appStarter.Naisify(appName, team, extras, topics, port)
+			return appstarter.Naisify(appName, team, extras, topics, port)
 		},
 	}
 }

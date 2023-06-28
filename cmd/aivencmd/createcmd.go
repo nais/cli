@@ -1,4 +1,4 @@
-package aivenCmd
+package aivencmd
 
 import (
 	"fmt"

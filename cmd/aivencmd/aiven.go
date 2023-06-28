@@ -1,4 +1,4 @@
-package aivenCmd
+package aivencmd
 
 import (
 	"github.com/urfave/cli/v2"

@@ -1,4 +1,4 @@
-package appStarter
+package appstarter
 
 import (
 	"bytes"

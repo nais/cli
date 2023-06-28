@@ -1,4 +1,4 @@
-package kubeconfigCmd
+package kubeconfigcmd
 
 import (
 	"github.com/nais/cli/pkg/gcp"

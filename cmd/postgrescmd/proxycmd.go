@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"fmt"
@@ -6,16 +6,24 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func psqlCommand() *cli.Command {
+func proxyCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "psql",
-		Usage:       "Connect to the database using psql",
-		Description: "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
+		Name:        "proxy",
+		Usage:       "Create a proxy to a Postgres instance",
+		Description: "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
 		ArgsUsage:   "appname",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "verbose",
 				Aliases: []string{"v"},
+			},
+			&cli.UintFlag{
+				Name:  "port",
+				Value: 5432,
+			},
+			&cli.StringFlag{
+				Name:  "host",
+				Value: "localhost",
 			},
 		},
 		Before: func(context *cli.Context) error {
@@ -32,8 +40,10 @@ func psqlCommand() *cli.Command {
 			cluster := context.String("context")
 			database := context.String("database")
 			verbose := context.Bool("verbose")
+			port := context.Uint("port")
+			host := context.String("host")
 
-			return postgres.RunPSQL(context.Context, appName, cluster, namespace, database, verbose)
+			return postgres.RunProxy(context.Context, appName, cluster, namespace, database, host, port, verbose)
 		},
 	}
 }

@@ -1,4 +1,4 @@
-package deviceCmd
+package devicecmd
 
 import (
 	"github.com/urfave/cli/v2"

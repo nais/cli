@@ -1,4 +1,4 @@
-package validateCmd
+package validatecmd
 
 import (
 	"fmt"

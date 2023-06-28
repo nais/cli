@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"bufio"
@@ -11,22 +11,16 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func prepareCommand() *cli.Command {
+func revokeCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "prepare",
-		Usage: "Prepare your postgres instance for use with personal accounts",
-		Description: `Prepare will prepare the postgres instance by connecting using the
-application credentials and modify the permissions on the public schema.
-All IAM users in your GCP project will be able to connect to the instance.
+		Name:  "revoke",
+		Usage: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
+		Description: `Revoke will revoke the role 'cloudsqliamuser' access to the
+tables in the postgres instance. This is done by connecting using the application
+credentials and modify the permissions on the public schema.
 
 This operation is only required to run once for each postgresql instance.`,
 		ArgsUsage: "appname",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:  "all-privs",
-				Usage: "Gives all privalges to users",
-			},
-		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing name of app")
@@ -37,7 +31,6 @@ This operation is only required to run once for each postgresql instance.`,
 		Action: func(context *cli.Context) error {
 			appName := context.Args().First()
 
-			allPrivs := context.Bool("all-privs")
 			namespace := context.String("namespace")
 			cluster := context.String("context")
 			database := context.String("database")
@@ -51,7 +44,7 @@ This operation is only required to run once for each postgresql instance.`,
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(context.Context, appName, namespace, cluster, database, allPrivs)
+			return postgres.RevokeAccess(context.Context, appName, namespace, cluster, database)
 		},
 	}
 }

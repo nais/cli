@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"fmt"

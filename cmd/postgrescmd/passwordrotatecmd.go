@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func grantCommand() *cli.Command {
+func passwordRotateCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "grant",
-		Usage:       "Grant yourself access to a Postgres database",
-		Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+		Name:        "rotate",
+		Usage:       "Rotate the Postgres database password",
+		Description: "The rotation is both done in GCP and in the Kubernetes secret",
 		ArgsUsage:   "appname",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
@@ -26,7 +26,7 @@ func grantCommand() *cli.Command {
 			cluster := context.String("context")
 			database := context.String("database")
 
-			return postgres.GrantAndCreateSQLUser(context.Context, appName, cluster, namespace, database)
+			return postgres.RotatePassword(context.Context, appName, namespace, cluster, database)
 		},
 	}
 }

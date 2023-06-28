@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/nais/cli/cmd/aivenCmd"
-	"github.com/nais/cli/cmd/kubeconfigCmd"
-	"github.com/nais/cli/cmd/postgresCmd"
 	"log"
 	"os"
 
-	"github.com/nais/cli/cmd/appStarterCmd"
-	"github.com/nais/cli/cmd/deviceCmd"
-	"github.com/nais/cli/cmd/validateCmd"
+	"github.com/nais/cli/cmd/aivencmd"
+	"github.com/nais/cli/cmd/appstartercmd"
+	"github.com/nais/cli/cmd/devicecmd"
+	"github.com/nais/cli/cmd/kubeconfigcmd"
+	"github.com/nais/cli/cmd/postgrescmd"
+	"github.com/nais/cli/cmd/validatecmd"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,12 +21,12 @@ var (
 
 func commands() []*cli.Command {
 	return []*cli.Command{
-		aivenCmd.Command(),
-		appStarterCmd.Command(),
-		deviceCmd.Command(),
-		kubeconfigCmd.Command(),
-		postgresCmd.Command(),
-		validateCmd.Command(),
+		aivencmd.Command(),
+		appstartercmd.Command(),
+		devicecmd.Command(),
+		kubeconfigcmd.Command(),
+		postgrescmd.Command(),
+		validatecmd.Command(),
 	}
 }
 

@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"fmt"
@@ -6,11 +6,12 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func usersListCommand() *cli.Command {
+func grantCommand() *cli.Command {
 	return &cli.Command{
-		Name:      "list",
-		Usage:     "List users in a Postgres database",
-		ArgsUsage: "appname",
+		Name:        "grant",
+		Usage:       "Grant yourself access to a Postgres database",
+		Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+		ArgsUsage:   "appname",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing name of app")
@@ -25,7 +26,7 @@ func usersListCommand() *cli.Command {
 			cluster := context.String("context")
 			database := context.String("database")
 
-			return postgres.ListUsers(context.Context, appName, cluster, namespace, database)
+			return postgres.GrantAndCreateSQLUser(context.Context, appName, cluster, namespace, database)
 		},
 	}
 }

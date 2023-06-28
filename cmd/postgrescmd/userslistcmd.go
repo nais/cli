@@ -1,4 +1,4 @@
-package postgresCmd
+package postgrescmd
 
 import (
 	"fmt"
@@ -6,12 +6,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func passwordRotateCommand() *cli.Command {
+func usersListCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "rotate",
-		Usage:       "Rotate the Postgres database password",
-		Description: "The rotation is both done in GCP and in the Kubernetes secret",
-		ArgsUsage:   "appname",
+		Name:      "list",
+		Usage:     "List users in a Postgres database",
+		ArgsUsage: "appname",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing name of app")
@@ -26,7 +25,7 @@ func passwordRotateCommand() *cli.Command {
 			cluster := context.String("context")
 			database := context.String("database")
 
-			return postgres.RotatePassword(context.Context, appName, namespace, cluster, database)
+			return postgres.ListUsers(context.Context, appName, cluster, namespace, database)
 		},
 	}
 }

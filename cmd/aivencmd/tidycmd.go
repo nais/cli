@@ -1,4 +1,4 @@
-package aivenCmd
+package aivencmd
 
 import (
 	"github.com/nais/cli/pkg/aiven"
