@@ -37,7 +37,7 @@ func CreateKubeconfig(ctx context.Context, email string, overwrite, clear, inclu
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Found %v clusters", len(clusters))
+	fmt.Printf("Found %v clusters\n", len(clusters))
 
 	err = addUsers(config, clusters, email, overwrite, includeOnprem, verbose)
 	if err != nil {
