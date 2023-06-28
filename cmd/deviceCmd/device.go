@@ -6,10 +6,8 @@ import (
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name:            "device",
-		Aliases:         []string{"d"},
-		Description:     "Command used for management of naisdevice",
-		HideHelpCommand: true,
+		Name:  "device",
+		Usage: "Command used for management of naisdevice",
 		Subcommands: []*cli.Command{
 			configCommand(),
 			connectCommand(),

@@ -10,9 +10,9 @@ import (
 
 func jitaCommand() *cli.Command {
 	return &cli.Command{
-		Name:            "jita",
-		Description:     "Connects to a JITA gateway",
-		HideHelpCommand: true,
+		Name:      "jita",
+		Usage:     "Connects to a JITA gateway",
+		ArgsUsage: "gateway",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing required arguments: gateway")

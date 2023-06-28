@@ -6,9 +6,8 @@ import (
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name:        "aiven",
-		Aliases:     []string{"a"},
-		Description: "Command used for management of AivenApplication",
+		Name:  "aiven",
+		Usage: "Command used for management of AivenApplication",
 		Subcommands: []*cli.Command{
 			createCommand(),
 			getCommand(),

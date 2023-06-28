@@ -13,7 +13,7 @@ import (
 func configCommand() *cli.Command {
 	return &cli.Command{
 		Name:            "config",
-		Description:     "Adjust or view the naisdevice configuration",
+		Usage:           "Adjust or view the naisdevice configuration",
 		HideHelpCommand: true,
 		Subcommands: []*cli.Command{
 			getConfigCommand(),
@@ -24,8 +24,8 @@ func configCommand() *cli.Command {
 
 func getConfigCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "get",
-		Description: "Gets the current configuration",
+		Name:  "get",
+		Usage: "Gets the current configuration",
 		Action: func(context *cli.Context) error {
 			config, err := naisdevice.GetConfiguration(context.Context)
 			if err != nil {
@@ -42,8 +42,9 @@ func getConfigCommand() *cli.Command {
 
 func setConfigCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "set",
-		Description: "Sets a configuration value",
+		Name:      "set",
+		Usage:     "Sets a configuration value",
+		ArgsUsage: "setting value",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 2 {
 				return fmt.Errorf("missing required arguments: setting, value")

@@ -9,9 +9,8 @@ import (
 
 func statusCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "status",
-		Aliases:     []string{"s"},
-		Description: "Shows the status of your naisdevice",
+		Name:  "status",
+		Usage: "Shows the status of your naisdevice",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "output",
@@ -22,7 +21,6 @@ func statusCommand() *cli.Command {
 				Aliases: []string{"q"},
 			},
 		},
-		HideHelpCommand: true,
 		Before: func(context *cli.Context) error {
 			outputFormat := context.String("output")
 			if !slices.Contains([]string{"yaml", "json"}, outputFormat) {

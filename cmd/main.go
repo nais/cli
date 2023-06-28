@@ -15,8 +15,8 @@ import (
 
 var (
 	// Is set during build
-	version = "dev"
-	commit  = "none"
+	version = "local"
+	commit  = "uncommited"
 )
 
 func commands() []*cli.Command {
@@ -33,10 +33,12 @@ func commands() []*cli.Command {
 func main() {
 	app := &cli.App{
 		Name:                 "nais",
-		Description:          "NAIS CLI",
+		Usage:                "A NAIS CLI",
+		Description:          "A simple CLI application that developers in NAV can use",
 		Version:              version + "-" + commit,
 		EnableBashCompletion: true,
 		HideHelpCommand:      true,
+		Commands:             commands(),
 	}
 
 	err := app.Run(os.Args)

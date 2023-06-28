@@ -9,9 +9,9 @@ import (
 
 func getCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "get",
-		Aliases:     []string{"g"},
-		Description: "Generate preferred config format to '/tmp' folder",
+		Name:      "get",
+		Usage:     "Generate preferred config format to '/tmp' folder",
+		ArgsUsage: "service username namespace",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 3 {
 				return fmt.Errorf("missing required arguments: service, secret, namespace")

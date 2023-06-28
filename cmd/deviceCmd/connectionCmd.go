@@ -7,9 +7,8 @@ import (
 
 func connectCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "connect",
-		Aliases:     []string{"c"},
-		Description: "Creates a naisdevice connection, will lock until connection",
+		Name:  "connect",
+		Usage: "Creates a naisdevice connection, will lock until connection",
 		Action: func(context *cli.Context) error {
 			return naisdevice.Connect(context.Context)
 		},
@@ -18,9 +17,8 @@ func connectCommand() *cli.Command {
 
 func disconnectCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "disconnect",
-		Aliases:     []string{"d"},
-		Description: "Disconnects your naisdevice",
+		Name:  "disconnect",
+		Usage: "Disconnects your naisdevice",
 		Action: func(context *cli.Context) error {
 			return naisdevice.Disconnect(context.Context)
 		},

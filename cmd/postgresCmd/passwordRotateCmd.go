@@ -9,7 +9,9 @@ import (
 func passwordRotateCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "rotate",
-		Description: "Rotate the Postgres database password, both in GCP and in the Kubernetes secret",
+		Usage:       "Rotate the Postgres database password",
+		Description: "The rotation is both done in GCP and in the Kubernetes secret",
+		ArgsUsage:   "appname",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing name of app")

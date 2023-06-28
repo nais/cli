@@ -9,7 +9,9 @@ import (
 func proxyCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "proxy",
+		Usage:       "Create a proxy to a Postgres instance",
 		Description: "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
+		ArgsUsage:   "appname",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "verbose",

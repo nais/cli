@@ -12,9 +12,9 @@ import (
 
 func createCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "create",
-		Aliases:     []string{"c"},
-		Description: "Creates a protected and time-limited AivenApplication",
+		Name:      "create",
+		Usage:     "Creates a protected and time-limited AivenApplication",
+		ArgsUsage: "service username namespace",
 		Flags: []cli.Flag{
 			&cli.UintFlag{
 				Name:  "expire",

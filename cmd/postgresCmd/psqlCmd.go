@@ -9,7 +9,9 @@ import (
 func psqlCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "psql",
+		Usage:       "Connect to the database using psql",
 		Description: "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
+		ArgsUsage:   "appname",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "verbose",

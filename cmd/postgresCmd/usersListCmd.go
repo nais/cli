@@ -8,9 +8,9 @@ import (
 
 func usersListCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "list",
-		Aliases:     []string{"l"},
-		Description: "List users in a Postgres database.",
+		Name:      "list",
+		Usage:     "List users in a Postgres database",
+		ArgsUsage: "appname",
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() != 1 {
 				return fmt.Errorf("missing name of app")

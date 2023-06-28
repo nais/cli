@@ -13,12 +13,14 @@ import (
 
 func prepareCommand() *cli.Command {
 	return &cli.Command{
-		Name: "prepare",
+		Name:  "prepare",
+		Usage: "Prepare your postgres instance for use with personal accounts",
 		Description: `Prepare will prepare the postgres instance by connecting using the
 application credentials and modify the permissions on the public schema.
 All IAM users in your GCP project will be able to connect to the instance.
 
 This operation is only required to run once for each postgresql instance.`,
+		ArgsUsage: "appname",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:  "all-privs",

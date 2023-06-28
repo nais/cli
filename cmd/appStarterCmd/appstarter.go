@@ -7,9 +7,8 @@ import (
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name:        "start",
-		Aliases:     []string{"v"},
-		Description: "Bootstrap basic yaml for nais and GitHub workflows",
+		Name:  "start",
+		Usage: "Bootstrap basic yaml for nais and GitHub workflows",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "appname",
@@ -37,7 +36,6 @@ func Command() *cli.Command {
 				Value:   8080,
 			},
 		},
-		HideHelpCommand: true,
 		Action: func(context *cli.Context) error {
 			appName := context.String("appname")
 			team := context.String("team")

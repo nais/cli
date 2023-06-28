@@ -10,8 +10,9 @@ import (
 func Command() *cli.Command {
 	return &cli.Command{
 		Name:            "validate",
-		Aliases:         []string{"v"},
-		Description:     "Validate nais.yaml configuration.",
+		Usage:           "Validate nais.yaml configuration",
+		ArgsUsage:       "nais.yaml [naiser.yaml...]",
+		UsageText:       "nais validate nais.yaml [naiser.yaml...]",
 		HideHelpCommand: true,
 		Action: func(context *cli.Context) error {
 			if context.Args().Len() == 0 {
