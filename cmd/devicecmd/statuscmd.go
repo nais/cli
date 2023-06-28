@@ -15,19 +15,18 @@ func statusCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:    "output",
 				Aliases: []string{"o"},
+				Action: func(context *cli.Context, flag string) error {
+					if !slices.Contains([]string{"yaml", "json"}, flag) {
+						return fmt.Errorf("%v is not a implemented format\n", flag)
+					}
+
+					return nil
+				},
 			},
 			&cli.BoolFlag{
 				Name:    "quiet",
 				Aliases: []string{"q"},
 			},
-		},
-		Before: func(context *cli.Context) error {
-			outputFormat := context.String("output")
-			if !slices.Contains([]string{"yaml", "json"}, outputFormat) {
-				fmt.Printf("%v is not a implemented format", outputFormat)
-			}
-
-			return nil
 		},
 		Action: func(context *cli.Context) error {
 			outputFormat := context.String("output")
