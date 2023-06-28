@@ -31,11 +31,11 @@ func getProjects(ctx context.Context, includeCi, includeManagement, includeOnpre
 	if includeKnada {
 		filter += " OR labels.kind=knada"
 	}
+	if includeManagement {
+		filter += " OR labels.kind=management"
+	}
 	filter += ")"
 
-	if !includeManagement {
-		filter += " labels.environment:*"
-	}
 	if !includeCi {
 		filter += " labels.environment!=ci*"
 	}
