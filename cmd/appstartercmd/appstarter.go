@@ -1,14 +1,16 @@
 package appstartercmd
 
 import (
+	"fmt"
 	"github.com/nais/cli/pkg/appstarter"
 	"github.com/urfave/cli/v2"
 )
 
 func Command() *cli.Command {
 	return &cli.Command{
-		Name:  "start",
-		Usage: "Bootstrap basic yaml for nais and GitHub workflows",
+		Name:      "start",
+		Usage:     "Bootstrap basic yaml for nais and GitHub workflows",
+		ArgsUsage: "teamname appname",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "appname",
@@ -36,9 +38,17 @@ func Command() *cli.Command {
 				Value:   8080,
 			},
 		},
+		Before: func(context *cli.Context) error {
+			if context.Args().Len() != 2 {
+				return fmt.Errorf("missing required arguments: %v", context.Command.ArgsUsage)
+			}
+
+			return nil
+		},
 		Action: func(context *cli.Context) error {
-			appName := context.String("appname")
-			team := context.String("team")
+			team := context.Args().Get(0)
+			appName := context.Args().Get(1)
+
 			extras := context.StringSlice("extras")
 			topics := context.StringSlice("topics")
 			port := context.Uint("port")
