@@ -1,10 +1,7 @@
-package config
+package aiven_config
 
 import (
-	"github.com/nais/cli/pkg/aiven/consts"
-	"github.com/nais/cli/pkg/test"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,20 +11,21 @@ import (
 func TestKcatConfigGenerated(t *testing.T) {
 
 	var envKeys = []string{
-		consts.KafkaCAKey,
-		consts.KafkaCertificateKey,
-		consts.KafkaPrivateKeyKey,
-		consts.KafkaClientKeyStoreP12File,
-		consts.KafkaClientTruststoreJksFile,
-		consts.KafkaCredStorePasswordKey,
-		consts.KafkaSchemaRegistryKey,
+		KafkaCAKey,
+		KafkaCertificateKey,
+		KafkaPrivateKeyKey,
+		KafkaClientKeyStoreP12File,
+		KafkaClientTruststoreJksFile,
+		KafkaCredStorePasswordKey,
+		KafkaSchemaRegistryKey,
 	}
 
-	tmpDest := test.SetupDest(t)
-	err := WriteKCatConfigToFile(test.SetupSecret(envKeys), tmpDest)
+	tmpDest, err := os.MkdirTemp(os.TempDir(), "test-")
+	assert.NoError(t, err)
+	err = WriteKCatConfigToFile(setupSecret(envKeys), tmpDest)
 	assert.NoError(t, err)
 
-	result, err := ioutil.ReadFile(filepath.Join(tmpDest, KafkaCatConfigName))
+	result, err := os.ReadFile(filepath.Join(tmpDest, KafkaCatConfigName))
 	assert.NoError(t, err)
 
 	assert.True(t, strings.Contains(string(result), KafkaCatSslCaLocation))

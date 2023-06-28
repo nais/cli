@@ -1,13 +1,12 @@
 package aiven
 
 import (
-	"github.com/nais/cli/pkg/aiven/secret"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAivenTidy(t *testing.T) {
-	_, err := secret.CreateDefaultDestination()
+	_, err := createDefaultDestination()
 	assert.NoError(t, err, "Creating folder")
 
 	// created folders are found

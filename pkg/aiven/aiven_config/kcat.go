@@ -1,10 +1,9 @@
-package config
+package aiven_config
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/aiven/consts"
-	"github.com/nais/cli/pkg/common"
 	v1 "k8s.io/api/core/v1"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -22,29 +21,31 @@ const (
 func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
 	configFile := fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace)
 	envsToFile := map[string]string{
-		KafkaCatBootstrapServers:       string(secret.Data[consts.KafkaBrokersKey]),
+		KafkaCatBootstrapServers:       string(secret.Data[KafkaBrokersKey]),
 		KafkaSecurityProtocolLocation:  "ssl",
-		KafkaCatSslCertificateLocation: filepath.Join(destinationPath, consts.KafkaCertificateCrtFile),
-		KafkaCatSslKeyLocation:         filepath.Join(destinationPath, consts.KafkaPrivateKeyPemFile),
-		KafkaCatSslCaLocation:          filepath.Join(destinationPath, consts.KafkaCACrtFile),
+		KafkaCatSslCertificateLocation: filepath.Join(destinationPath, KafkaCertificateCrtFile),
+		KafkaCatSslKeyLocation:         filepath.Join(destinationPath, KafkaPrivateKeyPemFile),
+		KafkaCatSslCaLocation:          filepath.Join(destinationPath, KafkaCACrtFile),
 	}
 	for key, value := range envsToFile {
 		configFile += fmt.Sprintf("%s=%s\n", key, value)
 
 	}
 
-	if err := common.WriteToFile(destinationPath, KafkaCatConfigName, []byte(configFile)); err != nil {
+	err := os.WriteFile(filepath.Join(destinationPath, KafkaCatConfigName), []byte(configFile), FilePermission)
+	if err != nil {
 		return fmt.Errorf("write to file: %s", err)
 	}
 
 	secretsToFile := map[string]string{
-		consts.KafkaCertificateKey: consts.KafkaCertificateCrtFile,
-		consts.KafkaPrivateKeyKey:  consts.KafkaPrivateKeyPemFile,
-		consts.KafkaCAKey:          consts.KafkaCACrtFile,
+		KafkaCertificateKey: KafkaCertificateCrtFile,
+		KafkaPrivateKeyKey:  KafkaPrivateKeyPemFile,
+		KafkaCAKey:          KafkaCACrtFile,
 	}
 
 	for key, fileName := range secretsToFile {
-		if err := common.WriteToFile(destinationPath, fileName, secret.Data[key]); err != nil {
+		err = os.WriteFile(filepath.Join(destinationPath, fileName), secret.Data[key], FilePermission)
+		if err != nil {
 			return err
 		}
 	}

@@ -5,8 +5,7 @@ import (
 	"strings"
 
 	"github.com/nais/cli/pkg/aiven"
-	"github.com/nais/cli/pkg/aiven/client"
-	"github.com/nais/cli/pkg/aiven/services"
+	"github.com/nais/cli/pkg/aiven/aiven_services"
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,12 +23,12 @@ func createCommand() *cli.Command {
 				Name:  "pool",
 				Value: "nav-dev",
 				Action: func(context *cli.Context, flag string) error {
-					service, err := services.ServiceFromString(context.Args().Get(0))
+					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
-					if !service.Is(&services.Kafka{}) {
+					if !service.Is(&aiven_services.Kafka{}) {
 						return fmt.Errorf("--pool is only supported for Kafka, not %v", service.Name())
 					}
 
@@ -42,12 +41,12 @@ func createCommand() *cli.Command {
 			&cli.StringFlag{
 				Name: "instance",
 				Action: func(context *cli.Context, flag string) error {
-					service, err := services.ServiceFromString(context.Args().Get(0))
+					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
-					if !service.Is(&services.OpenSearch{}) {
+					if !service.Is(&aiven_services.OpenSearch{}) {
 						return fmt.Errorf("--intance is only supported for OpenSearch, not %v", service.Name())
 					}
 
@@ -57,12 +56,12 @@ func createCommand() *cli.Command {
 			&cli.StringFlag{
 				Name: "access",
 				Action: func(context *cli.Context, flag string) error {
-					service, err := services.ServiceFromString(context.Args().Get(0))
+					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
-					if !service.Is(&services.OpenSearch{}) {
+					if !service.Is(&aiven_services.OpenSearch{}) {
 						return fmt.Errorf("--access is only supported for OpenSearch, not %v", service.Name())
 					}
 
@@ -75,7 +74,7 @@ func createCommand() *cli.Command {
 				return fmt.Errorf("missing required arguments: service, username, namespace")
 			}
 
-			_, err := services.ServiceFromString(context.Args().Get(0))
+			_, err := aiven_services.FromString(context.Args().Get(0))
 			if err != nil {
 				return err
 			}
@@ -83,7 +82,7 @@ func createCommand() *cli.Command {
 			return nil
 		},
 		Action: func(context *cli.Context) error {
-			service, err := services.ServiceFromString(context.Args().Get(0))
+			service, err := aiven_services.FromString(context.Args().Get(0))
 			if err != nil {
 				return err
 			}
@@ -95,17 +94,17 @@ func createCommand() *cli.Command {
 			secretName := context.String("secret")
 			instance := context.String("instance")
 
-			pool, err := services.KafkaPoolFromString(context.String("pool"))
+			pool, err := aiven_services.KafkaPoolFromString(context.String("pool"))
 			if err != nil {
-				return fmt.Errorf("valid values for pool: %v", strings.Join(services.KafkaPools, ", "))
+				return fmt.Errorf("valid values for pool: %v", strings.Join(aiven_services.KafkaPools, ", "))
 			}
 
-			access, err := services.OpenSearchAccessFromString(context.String("access"))
-			if err != nil && service.Is(&services.OpenSearch{}) {
-				return fmt.Errorf("valid values for access: %v", strings.Join(services.OpenSearchAccesses, ", "))
+			access, err := aiven_services.OpenSearchAccessFromString(context.String("access"))
+			if err != nil && service.Is(&aiven_services.OpenSearch{}) {
+				return fmt.Errorf("valid values for access: %v", strings.Join(aiven_services.OpenSearchAccesses, ", "))
 			}
 
-			aivenConfig := aiven.Setup(client.SetupClient(), service, username, namespace, secretName, instance, pool, access, expire)
+			aivenConfig := aiven.Setup(aiven.SetupClient(), service, username, namespace, secretName, instance, pool, access, expire)
 			aivenApp, err := aivenConfig.GenerateApplication()
 			if err != nil {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)

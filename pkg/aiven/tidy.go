@@ -2,7 +2,6 @@ package aiven
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/aiven/secret"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,7 +38,7 @@ func findFoldersToRemove() ([]string, error) {
 			return nil
 		}
 
-		if info.IsDir() && strings.Contains(path, secret.FolderPrefix) {
+		if info.IsDir() && strings.Contains(path, FolderPrefix) {
 			folders = append(folders, path)
 		}
 

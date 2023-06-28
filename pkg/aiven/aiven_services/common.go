@@ -1,9 +1,10 @@
-package services
+package aiven_services
 
 import (
 	"fmt"
-	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"strings"
+
+	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
 type ServiceSetup struct {
@@ -36,21 +37,7 @@ func init() {
 	}
 }
 
-func ValidServices() string {
-	sb := strings.Builder{}
-	first := true
-	for key := range Services {
-		if first {
-			first = false
-		} else {
-			sb.WriteString(", ")
-		}
-		sb.WriteString(key)
-	}
-	return sb.String()
-}
-
-func ServiceFromString(service string) (Service, error) {
+func FromString(service string) (Service, error) {
 	svc, ok := Services[strings.ToLower(service)]
 	if !ok {
 		return nil, fmt.Errorf("unknown service: %v", service)

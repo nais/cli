@@ -1,14 +1,13 @@
-package client
+package aiven
 
 import (
-	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
+	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
-
 	// Auth providers
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -16,7 +15,7 @@ import (
 
 var scheme = runtime.NewScheme()
 
-type AivenClient struct {
+type Client struct {
 	ctrl.Client
 }
 
@@ -37,7 +36,7 @@ func InitScheme(scheme *runtime.Scheme) {
 		log.Fatalf("error setting up client schema: %s.", err)
 	}
 
-	err = aiven_nais_io_v1.AddToScheme(scheme)
+	err = aivennaisiov1.AddToScheme(scheme)
 	if err != nil {
 		log.Fatalf("error setting up aiven application schema: %s.", err)
 	}
@@ -52,5 +51,5 @@ func SetupClient() ctrl.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &AivenClient{client}
+	return &Client{client}
 }

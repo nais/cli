@@ -3,22 +3,18 @@ package aiven
 import (
 	"context"
 	"fmt"
+	v1 "k8s.io/api/core/v1"
 	"log"
 	"strings"
 	"time"
 
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	v1 "k8s.io/api/core/v1"
+	"github.com/nais/liberator/pkg/namegen"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 
-	services2 "github.com/nais/cli/pkg/aiven/services"
-	"github.com/nais/cli/pkg/common"
-)
-
-const (
-	DefaultProtected = true
+	"github.com/nais/cli/pkg/aiven/aiven_services"
 )
 
 type Aiven struct {
@@ -33,10 +29,10 @@ type Properties struct {
 	Dest       string
 	SecretName string
 	Expiry     int
-	Service    services2.Service
+	Service    aiven_services.Service
 }
 
-func Setup(innClient ctrl.Client, service services2.Service, username, namespace, secretName, instance string, pool services2.KafkaPool, access services2.OpenSearchAccess, expiry uint) *Aiven {
+func Setup(innClient ctrl.Client, aivenService aiven_services.Service, username, namespace, secretName, instance string, pool aiven_services.KafkaPool, access aiven_services.OpenSearchAccess, expiry uint) *Aiven {
 	aiven := Aiven{
 		context.Background(),
 		innClient,
@@ -45,11 +41,11 @@ func Setup(innClient ctrl.Client, service services2.Service, username, namespace
 			Namespace:  namespace,
 			SecretName: secretName,
 			Expiry:     int(expiry),
-			Service:    service,
+			Service:    aivenService,
 		},
 	}
 
-	service.Setup(&services2.ServiceSetup{
+	aivenService.Setup(&aiven_services.ServiceSetup{
 		Instance: instance,
 		Pool:     pool,
 		Access:   access,
@@ -60,33 +56,34 @@ func Setup(innClient ctrl.Client, service services2.Service, username, namespace
 
 func (a Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
 	properties := a.Properties
-	namespace := v1.Namespace{}
 
-	err := common.ValidateNamespace(a.Ctx, a.Client, properties.Namespace, &namespace)
+	err := validateNamespace(a.Ctx, a.Client, properties.Namespace)
 	if err != nil {
 		return nil, err
 	}
-	properties.Namespace = namespace.Name
+	secretName := properties.SecretName
 
-	secretName, err := common.SetSecretName(properties.SecretName, properties.Username, properties.Namespace)
-	if err != nil {
-		return nil, err
+	if secretName == "" {
+		secretName, err = createSecretName(properties.Username, properties.Namespace)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	aivenApp := *a.AivenApplication(secretName)
-	err = a.CreateOrUpdate(&aivenApp)
+	aivenApp := *a.aivenApplication(secretName)
+	err = a.createOrUpdate(&aivenApp)
 	if err != nil {
 		return nil, fmt.Errorf("create/update: %v", err)
 	}
 	return &aivenApp, nil
 }
 
-func (a Aiven) AivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
+func (a Aiven) aivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
 	name := strings.ReplaceAll(a.Properties.Username, ".", "-")
 	expiresAt := time.Now().AddDate(0, 0, a.Properties.Expiry)
 	applicationSpec := aiven_nais_io_v1.AivenApplicationSpec{
 		SecretName: secretName,
-		Protected:  DefaultProtected,
+		Protected:  true,
 		ExpiresAt: &metav1.Time{
 			Time: expiresAt,
 		},
@@ -105,7 +102,7 @@ func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) 
 	}, existingAivenApp)
 }
 
-func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error {
+func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error {
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
 	err := a.getExisting(&existingAivenApp)
 	if err != nil {
@@ -129,4 +126,26 @@ func (a Aiven) CreateOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 		log.Default().Printf("AivenApplication: '%v' updated.", aivenApp.Name)
 	}
 	return nil
+}
+
+func validateNamespace(ctx context.Context, client ctrl.Client, name string) error {
+	var namespace v1.Namespace
+	err := client.Get(ctx, ctrl.ObjectKey{Name: name}, &namespace)
+	if err != nil {
+		return fmt.Errorf("get namespace: %w", err)
+	}
+
+	if namespace.GetLabels()["shared"] == "true" {
+		return fmt.Errorf("shared namespace is not allowed: %s", name)
+	}
+	return nil
+}
+
+func createSecretName(name, namespace string) (string, error) {
+	baseName := fmt.Sprintf("%s-%s", name, strings.ReplaceAll(namespace, ".", "-"))
+	secretName, err := namegen.ShortName(baseName, 64)
+	if err != nil {
+		return "", fmt.Errorf("could not create secretName: %s", err)
+	}
+	return secretName, nil
 }

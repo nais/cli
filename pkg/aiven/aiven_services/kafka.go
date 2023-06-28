@@ -1,10 +1,11 @@
-package services
+package aiven_services
 
 import (
 	"fmt"
-	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"reflect"
 	"strings"
+
+	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
 type KafkaPool int64

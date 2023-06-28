@@ -1,17 +1,19 @@
-package config
+package aiven_config
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/aiven/consts"
-	"github.com/nais/cli/pkg/common"
 	v1 "k8s.io/api/core/v1"
+	"os"
 	"path/filepath"
 	"time"
 )
 
 const (
-	KafkaEnvName      = "kafka-secret.env"
-	OpenSearchEnvName = "opensearch-secret.env"
+	KafkaEnvName          = "kafka-secret.env"
+	OpenSearchEnvName     = "opensearch-secret.env"
+	OpenSearchURIKey      = "OPEN_SEARCH_URI"
+	OpenSearchUsernameKey = "OPEN_SEARCH_USERNAME"
+	OpenSearchPasswordKey = "OPEN_SEARCH_PASSWORD"
 )
 
 type fileTuple struct {
@@ -21,23 +23,23 @@ type fileTuple struct {
 
 func WriteOpenSearchEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
 	envsToSaveToFile := []string{
-		consts.OpenSearchURIKey, consts.OpenSearchPasswordKey, consts.OpenSearchUsernameKey,
+		OpenSearchURIKey, OpenSearchPasswordKey, OpenSearchUsernameKey,
 	}
 	return writeConfigToFile(secret, destinationPath, OpenSearchEnvName, envsToSaveToFile, map[string]fileTuple{})
 }
 
 func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
 	kafkaSecretsToSaveToFile := map[string]fileTuple{
-		consts.KafkaCertificateCrtFile:      {consts.KafkaCertificateKey, consts.KafkaCertificatePathKey},
-		consts.KafkaPrivateKeyPemFile:       {consts.KafkaPrivateKeyKey, consts.KafkaPrivateKeyPathKey},
-		consts.KafkaCACrtFile:               {consts.KafkaCAKey, consts.KafkaCAPathKey},
-		consts.KafkaClientKeyStoreP12File:   {consts.KafkaClientKeyStoreP12File, consts.KafkaKeystorePathKey},
-		consts.KafkaClientTruststoreJksFile: {consts.KafkaClientTruststoreJksFile, consts.KafkaTruststorePathKey},
+		KafkaCertificateCrtFile:      {KafkaCertificateKey, KafkaCertificatePathKey},
+		KafkaPrivateKeyPemFile:       {KafkaPrivateKeyKey, KafkaPrivateKeyPathKey},
+		KafkaCACrtFile:               {KafkaCAKey, KafkaCAPathKey},
+		KafkaClientKeyStoreP12File:   {KafkaClientKeyStoreP12File, KafkaKeystorePathKey},
+		KafkaClientTruststoreJksFile: {KafkaClientTruststoreJksFile, KafkaTruststorePathKey},
 	}
 	kafkaEnvsToSaveToFile := []string{
-		consts.KafkaBrokersKey, consts.KafkaCredStorePasswordKey, consts.KafkaSchemaRegistryKey,
-		consts.KafkaSchemaRegistryPasswordKey, consts.KafkaSchemaRegistryUserKey, consts.KafkaCertificateKey,
-		consts.KafkaPrivateKeyKey, consts.KafkaCAKey,
+		KafkaBrokersKey, KafkaCredStorePasswordKey, KafkaSchemaRegistryKey,
+		KafkaSchemaRegistryPasswordKey, KafkaSchemaRegistryUserKey, KafkaCertificateKey,
+		KafkaPrivateKeyKey, KafkaCAKey,
 	}
 
 	return writeConfigToFile(secret, destinationPath, KafkaEnvName, kafkaEnvsToSaveToFile, kafkaSecretsToSaveToFile)
@@ -46,7 +48,7 @@ func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error 
 func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave map[string]fileTuple) error {
 	envsToFile := fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute))
 	for fileName, tuple := range secretFilesToSave {
-		err := common.WriteToFile(destinationPath, fileName, secret.Data[tuple.Key])
+		err := os.WriteFile(filepath.Join(destinationPath, fileName), secret.Data[tuple.Key], FilePermission)
 		if err != nil {
 			return err
 		}
@@ -58,7 +60,7 @@ func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename s
 		envsToFile += fmt.Sprintf("%s=\"%s\"\n", key, string(secret.Data[key]))
 	}
 
-	err := common.WriteToFile(destinationPath, destinationFilename, []byte(envsToFile))
+	err := os.WriteFile(filepath.Join(destinationPath, destinationFilename), []byte(envsToFile), FilePermission)
 	if err != nil {
 		return err
 	}
