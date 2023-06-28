@@ -50,10 +50,10 @@ func setConfigCommand() *cli.Command {
 				return fmt.Errorf("missing required arguments: setting, value")
 			}
 
-			setting := context.Args().Get(0)
+			setting := strings.ToLower(context.Args().Get(0))
 			value := context.Args().Get(1)
 
-			if !slices.Contains(naisdevice.AllowedSettings, setting) {
+			if !slices.Contains(naisdevice.AllowedSettingsLowerCase, setting) {
 				return fmt.Errorf("%v is not one of the allowed settings: %v", setting, strings.Join(naisdevice.AllowedSettings, ", "))
 			}
 

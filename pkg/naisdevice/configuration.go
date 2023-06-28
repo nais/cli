@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	AllowedSettings = []string{"AutoConnect", "CertRenewal"}
+	AllowedSettings          = []string{"AutoConnect", "CertRenewal"}
+	AllowedSettingsLowerCase = []string{"autoconnect", "certrenewal"}
 )
 
 func GetConfiguration(ctx context.Context) (*pb.AgentConfiguration, error) {
@@ -50,7 +51,7 @@ func SetConfiguration(ctx context.Context, setting string, value bool) error {
 	case "certrenewal":
 		configResponse.Config.CertRenewal = value
 	default:
-		return fmt.Errorf("setting must be one of [autoconnect, certrenewal]")
+		return fmt.Errorf("setting must be one of [%v]", strings.Join(AllowedSettings, ", "))
 	}
 
 	setConfigRequest := &pb.SetAgentConfigurationRequest{Config: configResponse.Config}
