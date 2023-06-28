@@ -27,8 +27,8 @@ type StartNaisIoRequest struct {
 	Team          string   `json:"team"`
 	Platform      string   `json:"platform"`
 	AppListenPort uint     `json:"appListenPort,omitempty"`
-	Extras        []string `json:"extras"`
-	KafkaTopics   []string `json:"kafkaTopics"`
+	Extras        []string `json:"extras,omitempty"`
+	KafkaTopics   []string `json:"kafkaTopics,omitempty"`
 }
 
 var projectTypes = func() map[string]string {
