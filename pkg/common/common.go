@@ -56,7 +56,7 @@ func secretNamePrefix(username, namespace string) string {
 }
 
 func RequiredSecretDataExists(required map[string]string, secretData map[string][]byte, filetype string) error {
-	for key, _ := range required {
+	for key := range required {
 		if _, ok := secretData[key]; !ok {
 			return fmt.Errorf("can not generate %s config, secret missing required key: %s", filetype, key)
 		}

@@ -66,7 +66,7 @@ func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInf
 		return fmt.Errorf("unable to the k8s secret %q in %q: %w", "google-sql-"+dbInfo.appName, dbInfo.namespace, err)
 	}
 
-	for key, _ := range secret.Data {
+	for key := range secret.Data {
 		if strings.HasSuffix(key, "_PASSWORD") {
 			secret.Data[key] = []byte(dbConnectionInfo.password)
 		}
