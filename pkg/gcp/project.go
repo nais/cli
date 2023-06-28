@@ -37,10 +37,10 @@ func getProjects(ctx context.Context, includeCi, includeManagement, includeOnpre
 	filter += ")"
 
 	if !includeCi {
-		filter += " labels.environment!=ci*"
+		filter += " AND NOT labels.environment=ci*"
 	}
 	if filterTenant != "" {
-		filter += " labels.tenant=" + filterTenant
+		filter += " AND labels.tenant=" + filterTenant
 	}
 
 	call := svc.Projects.Search().Query(filter)
