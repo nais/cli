@@ -1,6 +1,7 @@
 package postgrescmd
 
 import (
+	"github.com/nais/cli/pkg/gcp"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,6 +22,9 @@ func Command() *cli.Command {
 				Name:    "datebase",
 				Aliases: []string{"d"},
 			},
+		},
+		Before: func(context *cli.Context) error {
+			return gcp.ValidateUserLogin(context.Context, false)
 		},
 		Subcommands: []*cli.Command{
 			grantCommand(),
