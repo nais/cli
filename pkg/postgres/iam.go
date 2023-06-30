@@ -5,7 +5,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"golang.org/x/oauth2"
 	"io"
 	"os"
 	"os/exec"
@@ -218,6 +220,12 @@ func ListUsers(ctx context.Context, appName, cluster, namespace, database string
 
 	rows, err := db.QueryContext(ctx, "SELECT usename FROM pg_catalog.pg_user;")
 	if err != nil {
+		var retrieve *oauth2.RetrieveError
+		if errors.As(err, &retrieve) {
+			if retrieve.ErrorCode == "invalid_grant" {
+				return fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth application-default login` first\n")
+			}
+		}
 		return err
 	}
 	defer rows.Close()
