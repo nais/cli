@@ -21,7 +21,7 @@ secret.yml
 
 .config/
 
-tool/
+nais
 dist/
 
 # asdf

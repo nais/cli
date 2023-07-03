@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,8 +26,8 @@ type StartNaisIoRequest struct {
 	Team          string   `json:"team"`
 	Platform      string   `json:"platform"`
 	AppListenPort uint     `json:"appListenPort,omitempty"`
-	Extras        []string `json:"extras"`
-	KafkaTopics   []string `json:"kafkaTopics"`
+	Extras        []string `json:"extras,omitempty"`
+	KafkaTopics   []string `json:"kafkaTopics,omitempty"`
 }
 
 var projectTypes = func() map[string]string {
@@ -72,7 +71,7 @@ func Naisify(appName string, team string, extras []string, kafkaTopics []string,
 }
 
 func determinePlatform() (string, error) {
-	files, err := ioutil.ReadDir(currentDir)
+	files, err := os.ReadDir(currentDir)
 	if err != nil {
 		return "", fmt.Errorf("error reading directory contents: %v", err)
 	}
