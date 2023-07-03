@@ -9,7 +9,6 @@ import (
 func usersAddCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "add",
-		Aliases:     []string{"a"},
 		Usage:       "Add user to a Postgres database",
 		Description: "Will grant a user access to tables in public schema.",
 		ArgsUsage:   "appname username password",
