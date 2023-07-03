@@ -74,7 +74,7 @@ func RevokeAccess(ctx context.Context, appName, namespace, cluster, database str
 	for _, ddl := range revokeDdlStatements {
 		_, err = db.ExecContext(ctx, ddl)
 		if err != nil {
-			return err
+			return formatInvalidGrantError(err)
 		}
 	}
 

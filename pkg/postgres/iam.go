@@ -5,9 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"golang.org/x/oauth2"
 	"io"
 	"os"
 	"os/exec"
@@ -220,13 +218,7 @@ func ListUsers(ctx context.Context, appName, cluster, namespace, database string
 
 	rows, err := db.QueryContext(ctx, "SELECT usename FROM pg_catalog.pg_user;")
 	if err != nil {
-		var retrieve *oauth2.RetrieveError
-		if errors.As(err, &retrieve) {
-			if retrieve.ErrorCode == "invalid_grant" {
-				return fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth application-default login` first\n")
-			}
-		}
-		return err
+		return formatInvalidGrantError(err)
 	}
 	defer rows.Close()
 
@@ -268,18 +260,18 @@ func AddUser(ctx context.Context, appName, username, password, cluster, namespac
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER %v WITH ENCRYPTED PASSWORD '%v' NOCREATEDB;", username, password))
 	if err != nil {
-		return err
+		return formatInvalidGrantError(err)
 	}
 	fmt.Printf("Created user: %v", username)
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to %q;", privilege, username))
 	if err != nil {
-		return err
+		return formatInvalidGrantError(err)
 	}
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to %q;", privilege, username))
 	if err != nil {
-		return err
+		return formatInvalidGrantError(err)
 	}
 
 	return nil

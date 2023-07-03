@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"golang.org/x/oauth2"
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
@@ -247,4 +249,17 @@ func getSecretDataValue(secret corev1.Secret, suffix string) string {
 		}
 	}
 	return ""
+}
+
+// formatInvalidGrantError returns a custom error message if the error is of type oauth2.RetrieveError and if it has the
+// error code invalid_grant. If not it returns the error.
+func formatInvalidGrantError(err error) error {
+	var retrieve *oauth2.RetrieveError
+	if errors.As(err, &retrieve) {
+		if retrieve.ErrorCode == "invalid_grant" {
+			return fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth application-default login` first\n")
+		}
+	}
+
+	return err
 }
