@@ -22,7 +22,6 @@ func statusCommand() *cli.Command {
 
 					return nil
 				},
-				Value: "json",
 			},
 			&cli.BoolFlag{
 				Name:    "quiet",
