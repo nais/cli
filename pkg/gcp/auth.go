@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -45,8 +46,13 @@ func ValidateUserLogin(ctx context.Context, enforceNais bool) error {
 	if err != nil {
 		return err
 	}
+	configDir := homedir + "/.config/gcloud/application_default_credentials.json"
 
-	_, err = os.Stat(homedir + "/.config/gcloud/application_default_credentials.json")
+	if runtime.GOOS == "windows" {
+		configDir = "%APPDATA%\\gcloud\\application_default_credentials.json"
+	}
+
+	_, err = os.Stat(configDir)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("you are missing Application Default Credentials, run `gcloud auth application-default login` first")
