@@ -16,12 +16,14 @@ func createCommand() *cli.Command {
 		ArgsUsage: "service username namespace",
 		Flags: []cli.Flag{
 			&cli.UintFlag{
-				Name:  "expire",
-				Value: 1,
+				Name:    "expire",
+				Aliases: []string{"e"},
+				Value:   1,
 			},
 			&cli.StringFlag{
-				Name:  "pool",
-				Value: "nav-dev",
+				Name:    "pool",
+				Aliases: []string{"p"},
+				Value:   "nav-dev",
 				Action: func(context *cli.Context, flag string) error {
 					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {
@@ -36,10 +38,12 @@ func createCommand() *cli.Command {
 				},
 			},
 			&cli.StringFlag{
-				Name: "secret",
+				Name:    "secret",
+				Aliases: []string{"s"},
 			},
 			&cli.StringFlag{
-				Name: "instance",
+				Name:    "instance",
+				Aliases: []string{"i"},
 				Action: func(context *cli.Context, flag string) error {
 					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {
@@ -54,7 +58,8 @@ func createCommand() *cli.Command {
 				},
 			},
 			&cli.StringFlag{
-				Name: "access",
+				Name:    "access",
+				Aliases: []string{"a"},
 				Action: func(context *cli.Context, flag string) error {
 					service, err := aiven_services.FromString(context.Args().Get(0))
 					if err != nil {

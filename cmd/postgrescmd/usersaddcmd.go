@@ -14,8 +14,9 @@ func usersAddCommand() *cli.Command {
 		ArgsUsage:   "appname username password",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "privilege",
-				Value: "select",
+				Name:    "privilege",
+				Aliases: []string{"p"},
+				Value:   "select",
 			},
 		},
 		Before: func(context *cli.Context) error {

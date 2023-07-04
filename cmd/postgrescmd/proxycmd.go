@@ -13,17 +13,19 @@ func proxyCommand() *cli.Command {
 		Description: "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
 		ArgsUsage:   "appname",
 		Flags: []cli.Flag{
+			&cli.UintFlag{
+				Name:    "port",
+				Aliases: []string{"p"},
+				Value:   5432,
+			},
+			&cli.StringFlag{
+				Name:    "host",
+				Aliases: []string{"H"},
+				Value:   "localhost",
+			},
 			&cli.BoolFlag{
 				Name:    "verbose",
 				Aliases: []string{"v"},
-			},
-			&cli.UintFlag{
-				Name:  "port",
-				Value: 5432,
-			},
-			&cli.StringFlag{
-				Name:  "host",
-				Value: "localhost",
 			},
 		},
 		Before: func(context *cli.Context) error {

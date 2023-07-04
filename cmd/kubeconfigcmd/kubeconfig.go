@@ -19,19 +19,23 @@ gcloud auth login --update-adc`,
 				Name: "email",
 			},
 			&cli.BoolFlag{
-				Name: "overwrite",
+				Name:    "overwrite",
+				Aliases: []string{"o"},
 			},
 			&cli.BoolFlag{
-				Name: "clear",
+				Name:    "clear",
+				Aliases: []string{"c"},
 			},
 			&cli.BoolFlag{
-				Name: "include-onprem",
+				Name:    "include-onprem",
+				Aliases: []string{"io"},
 			},
 			&cli.BoolFlag{
 				Name: "include-ci",
 			},
 			&cli.BoolFlag{
-				Name: "verbose",
+				Name:    "verbose",
+				Aliases: []string{"v"},
 			},
 		},
 		Before: func(context *cli.Context) error {
