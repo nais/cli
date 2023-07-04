@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func RunPSQL(ctx context.Context, appName, cluster, namespace, database string, verbose bool) error {
@@ -45,6 +45,10 @@ func RunPSQL(ctx context.Context, appName, cluster, namespace, database string, 
 	go func() {
 		err := runProxy(ctx, projectID, connectionName, "localhost:0", portCh, verbose)
 		if err != nil {
+			if errors.Is(err, context.Canceled) {
+				return
+			}
+
 			fmt.Printf("ERROR: %v", err)
 			cancel()
 		}
@@ -68,13 +72,4 @@ func RunPSQL(ctx context.Context, appName, cluster, namespace, database string, 
 	cmd.Env = os.Environ()
 
 	return cmd.Run()
-}
-
-func getGCPToken(ctx context.Context) (string, error) {
-	b, err := exec.CommandContext(ctx, "gcloud", "auth", "print-access-token").Output()
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(string(b)), nil
 }
