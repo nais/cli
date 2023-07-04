@@ -212,7 +212,7 @@ func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
 	sqlInstance := sqlInstances.Items[0]
 
 	connectionName, ok, err := unstructured.NestedString(sqlInstance.Object, "status", "connectionName")
-	if !ok {
+	if !ok || err != nil {
 		return fmt.Errorf("missing 'connectionName' status field; run 'kubectl describe sqlinstance %s' and check for status failures", sqlInstance.GetName())
 	}
 

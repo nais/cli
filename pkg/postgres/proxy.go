@@ -2,12 +2,15 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"io"
 	"log"
 	"net"
+	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -52,10 +55,24 @@ func RunProxy(ctx context.Context, appName, cluster, namespace, database, host s
 	fmt.Println()
 	fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
 
-	return runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose)
+	err = runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose)
+	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil
+		}
+
+		fmt.Fprintln(os.Stderr, "\nERROR:", err)
+	}
+
+	return nil
 }
 
 func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool) error {
+	err := checkPostgresqlPassword()
+	if err != nil {
+		return err
+	}
+
 	if !verbose {
 		logging.DisableLogging()
 	}
@@ -151,4 +168,21 @@ OUTER:
 func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
 	_, _ = io.Copy(dst, src)
 	closer <- struct{}{} // connection is closed, send signal to stop proxy
+}
+
+func checkPostgresqlPassword() error {
+	if _, ok := os.LookupEnv("PGPASSWORD"); ok {
+		return fmt.Errorf("PGPASSWORD is set, please unset it before running this command")
+	}
+
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("could not get home directory, can not check for .pgpass file")
+		return nil
+	}
+
+	if s, err := os.Stat(filepath.Join(dirname, ".pgpass")); err == nil && !s.IsDir() {
+		return fmt.Errorf("found .pgpass file in home directory, please remove it before running this command")
+	}
+	return nil
 }
