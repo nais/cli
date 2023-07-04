@@ -12,16 +12,6 @@ func Command() *cli.Command {
 		Usage:     "Bootstrap basic yaml for nais and GitHub workflows",
 		ArgsUsage: "teamname appname",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "appname",
-				Aliases: []string{"n"},
-				Usage:   "application name (as it will be in the cluster)",
-			},
-			&cli.StringFlag{
-				Name:    "team",
-				Aliases: []string{"t"},
-				Usage:   "your team's name (app will be deployed to this namespace)",
-			},
 			&cli.StringSliceFlag{
 				Name:    "extra",
 				Aliases: []string{"e"},
