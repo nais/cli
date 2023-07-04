@@ -28,9 +28,6 @@ gcloud auth login --update-adc`,
 				Aliases: []string{"io"},
 			},
 			&cli.BoolFlag{
-				Name: "include-ci",
-			},
-			&cli.BoolFlag{
 				Name:    "verbose",
 				Aliases: []string{"v"},
 			},
@@ -42,7 +39,6 @@ gcloud auth login --update-adc`,
 			overwrite := context.Bool("overwrite")
 			clear := context.Bool("clear")
 			includeOnprem := context.Bool("include-onprem")
-			includeCi := context.Bool("include-ci")
 			verbose := context.Bool("verbose")
 
 			email, err := gcp.GetActiveUserEmail(context.Context)
@@ -50,7 +46,7 @@ gcloud auth login --update-adc`,
 				return err
 			}
 
-			return kubeconfig.CreateKubeconfig(context.Context, email, overwrite, clear, includeOnprem, includeCi, verbose)
+			return kubeconfig.CreateKubeconfig(context.Context, email, overwrite, clear, includeOnprem, verbose)
 		},
 	}
 }

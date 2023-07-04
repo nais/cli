@@ -14,7 +14,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email string, overwrite, clear, includeOnprem, includeCi, verbose bool) error {
+func CreateKubeconfig(ctx context.Context, email string, overwrite, clear, includeOnprem, verbose bool) error {
 	configLoad := kubeClient.NewDefaultClientConfigLoadingRules()
 
 	// If KUBECONFIG is set, but the file does not exist, kubeClient will throw a warning.
@@ -33,7 +33,7 @@ func CreateKubeconfig(ctx context.Context, email string, overwrite, clear, inclu
 	}
 
 	fmt.Println("Retreiving clusters")
-	clusters, err := gcp.GetClusters(ctx, includeCi, false, includeOnprem, false, false, true, "nav")
+	clusters, err := gcp.GetClusters(ctx, false, false, includeOnprem, false, false, true, "nav")
 	if err != nil {
 		return err
 	}
