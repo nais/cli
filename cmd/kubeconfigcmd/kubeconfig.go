@@ -15,9 +15,6 @@ This requires that you have the gcloud command line tool installed, configured a
 in using:
 gcloud auth login --update-adc`,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name: "email",
-			},
 			&cli.BoolFlag{
 				Name:    "overwrite",
 				Aliases: []string{"o"},
@@ -42,19 +39,15 @@ gcloud auth login --update-adc`,
 			return gcp.ValidateUserLogin(context.Context, false)
 		},
 		Action: func(context *cli.Context) error {
-			email := context.String("email")
 			overwrite := context.Bool("overwrite")
 			clear := context.Bool("clear")
 			includeOnprem := context.Bool("include-onprem")
 			includeCi := context.Bool("include-ci")
 			verbose := context.Bool("verbose")
 
-			if email == "" {
-				var err error
-				email, err = gcp.GetActiveUserEmail(context.Context)
-				if err != nil {
-					return err
-				}
+			email, err := gcp.GetActiveUserEmail(context.Context)
+			if err != nil {
+				return err
 			}
 
 			return kubeconfig.CreateKubeconfig(context.Context, email, overwrite, clear, includeOnprem, includeCi, verbose)
