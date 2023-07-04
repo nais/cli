@@ -44,7 +44,7 @@ jobs:
           go test ./... -count=1 -coverprofile cover.out -short
 
   release:
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - set-version
       - test
@@ -97,7 +97,7 @@ jobs:
           SCOOP_PUSH_TOKEN: ${{ steps.get-scoop-token.outputs.token }}
 
   upload-ppa:
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - set-version
       - release
@@ -138,7 +138,7 @@ jobs:
           git push
 
   upload-gar:
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - set-version
       - release
