@@ -24,17 +24,29 @@ func statusCommand() *cli.Command {
 				},
 			},
 			&cli.BoolFlag{
+				Name:    "quiet",
+				Aliases: []string{"q"},
+			},
+			&cli.BoolFlag{
 				Name:    "verbose",
 				Aliases: []string{"v"},
 			},
 		},
 		Action: func(context *cli.Context) error {
 			outputFormat := context.String("output")
+			quiet := context.Bool("quiet")
 			verbose := context.Bool("verbose")
 
 			status, err := naisdevice.GetStatus(context.Context)
 			if err != nil {
 				return err
+			}
+
+			if quiet {
+				if !naisdevice.IsConnected(status) {
+					return cli.Exit("", 1)
+				}
+				return nil
 			}
 
 			if outputFormat != "" {

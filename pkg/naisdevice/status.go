@@ -141,3 +141,7 @@ func PrintFormattedStatus(format string, status *pb.AgentStatus) error {
 
 	return nil
 }
+
+func IsConnected(status *pb.AgentStatus) bool {
+	return status.GetConnectionState() == pb.AgentState_Disconnected
+}
