@@ -13,7 +13,7 @@ func getCommand() *cli.Command {
 		Usage:     "Generate preferred config format to '/tmp' folder",
 		ArgsUsage: "service username namespace",
 		Before: func(context *cli.Context) error {
-			if context.Args().Len() >= 3 {
+			if context.Args().Len() < 3 {
 				return fmt.Errorf("missing required arguments: service, secret, namespace")
 			}
 

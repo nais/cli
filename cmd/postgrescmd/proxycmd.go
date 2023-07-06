@@ -29,7 +29,8 @@ func proxyCommand() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
-			if context.Args().Len() >= 1 {
+			fmt.Println(context.Args())
+			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")
 			}
 
