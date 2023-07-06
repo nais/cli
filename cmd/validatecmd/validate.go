@@ -14,11 +14,14 @@ func Command() *cli.Command {
 		ArgsUsage:       "nais.yaml [naiser.yaml...]",
 		UsageText:       "nais validate nais.yaml [naiser.yaml...]",
 		HideHelpCommand: true,
-		Action: func(context *cli.Context) error {
+		Before: func(context *cli.Context) error {
 			if context.Args().Len() == 0 {
 				return fmt.Errorf("no config files provided")
 			}
 
+			return nil
+		},
+		Action: func(context *cli.Context) error {
 			return validate.NaisConfig(context.Args().Slice())
 		},
 	}

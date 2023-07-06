@@ -28,7 +28,7 @@ This operation is only required to run once for each postgresql instance.`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			if context.Args().Len() != 1 {
+			if context.Args().Len() >= 1 {
 				return fmt.Errorf("missing name of app")
 			}
 

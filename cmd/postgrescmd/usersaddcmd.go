@@ -20,7 +20,7 @@ func usersAddCommand() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
-			if context.Args().Len() != 3 {
+			if context.Args().Len() >= 3 {
 				return fmt.Errorf("missing required arguments: appname, username, password")
 			}
 
