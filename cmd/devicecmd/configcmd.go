@@ -46,7 +46,7 @@ func setConfigCommand() *cli.Command {
 		Usage:     "Sets a configuration value",
 		ArgsUsage: "setting value",
 		Before: func(context *cli.Context) error {
-			if context.Args().Len() != 2 {
+			if context.Args().Len() >= 2 {
 				return fmt.Errorf("missing required arguments: setting, value")
 			}
 
