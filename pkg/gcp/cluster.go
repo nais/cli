@@ -27,7 +27,7 @@ type OnpremUser struct {
 	UserName string `json:"userName"`
 }
 
-func GetClusters(ctx context.Context, includeCi, includeManagement, includeOnprem, prefixTenant, includeKnada, skipNAVPrefix bool, tenant string) ([]Cluster, error) {
+func GetClusters(ctx context.Context, includeCi, includeManagement, includeOnprem, includeKnada, prefixTenant, skipNAVPrefix bool, tenant string) ([]Cluster, error) {
 	projects, err := getProjects(ctx, includeCi, includeManagement, includeOnprem, includeKnada, tenant)
 	if err != nil {
 		return nil, err
