@@ -38,6 +38,7 @@ func main() {
 		Version:              version + "-" + commit,
 		EnableBashCompletion: true,
 		HideHelpCommand:      true,
+		Suggest:              true,
 		Commands:             commands(),
 	}
 
