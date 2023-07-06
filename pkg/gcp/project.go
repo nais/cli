@@ -24,7 +24,9 @@ func getProjects(ctx context.Context, includeCi, includeManagement, includeOnpre
 		return nil, err
 	}
 
-	filter := "(labels.naiscluster=true OR labels.kind=legacy"
+	filter := "("
+	filter += "(labels.naiscluster=true AND labels.environment:*)"
+	filter += " OR labels.kind=legacy"
 	if includeOnprem {
 		filter += " OR labels.kind=onprem"
 	}
