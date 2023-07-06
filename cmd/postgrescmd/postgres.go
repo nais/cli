@@ -19,7 +19,7 @@ func Command() *cli.Command {
 				Aliases: []string{"n"},
 			},
 			&cli.StringFlag{
-				Name:    "datebase",
+				Name:    "database",
 				Aliases: []string{"d"},
 			},
 		},
