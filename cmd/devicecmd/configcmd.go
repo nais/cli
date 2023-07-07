@@ -71,7 +71,14 @@ func setConfigCommand() *cli.Command {
 				return err
 			}
 
-			return naisdevice.SetConfiguration(context.Context, setting, value)
+			err = naisdevice.SetConfiguration(context.Context, setting, value)
+			if err != nil {
+				return err
+			}
+
+			fmt.Printf("%v has been set to %v\n", setting, value)
+
+			return nil
 		},
 	}
 }
