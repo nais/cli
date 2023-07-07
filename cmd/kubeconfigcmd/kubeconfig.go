@@ -62,7 +62,9 @@ gcloud auth login --update-adc`,
 				return err
 			}
 
-			return kubeconfig.CreateKubeconfig(context.Context, email, overwrite, clear, includeOnprem, verbose)
+			tenant, err := naisdevice.GetActiveTenant(context.Context)
+
+			return kubeconfig.CreateKubeconfig(context.Context, email, tenant, overwrite, clear, includeOnprem, verbose)
 		},
 	}
 }

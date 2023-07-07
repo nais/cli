@@ -143,5 +143,20 @@ func PrintFormattedStatus(format string, status *pb.AgentStatus) error {
 }
 
 func IsConnected(status *pb.AgentStatus) bool {
-	return status.GetConnectionState() == pb.AgentState_Disconnected
+	return status.GetConnectionState() == pb.AgentState_Connected
+}
+
+func GetActiveTenant(ctx context.Context) (string, error) {
+	status, err := GetStatus(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	for _, tenant := range status.GetTenants() {
+		if tenant.Active {
+			return tenant.Name, nil
+		}
+	}
+
+	return "", fmt.Errorf("no active tenant found, are you running a really old naisdevice")
 }
