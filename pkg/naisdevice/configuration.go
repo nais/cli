@@ -3,14 +3,29 @@ package naisdevice
 import (
 	"context"
 	"fmt"
-	"github.com/nais/device/pkg/pb"
 	"strings"
+
+	"github.com/nais/device/pkg/pb"
 )
 
 var (
-	AllowedSettings          = []string{"AutoConnect", "CertRenewal"}
-	AllowedSettingsLowerCase = []string{"autoconnect", "certrenewal"}
+	allowedSettings = []string{"AutoConnect"}
+	hiddenSettings  = []string{"ILoveNinetiesBoybands"}
 )
+
+func GetAllowedSettings(withHidden, lowerCase bool) []string {
+	settings := allowedSettings
+
+	if withHidden {
+		settings = append(settings, hiddenSettings...)
+	}
+
+	if lowerCase {
+		for i, setting := range settings {
+			settings[i] = setting
+		}
+	}
+}
 
 func GetConfiguration(ctx context.Context) (*pb.AgentConfiguration, error) {
 	connection, err := agentConnection()
@@ -48,10 +63,10 @@ func SetConfiguration(ctx context.Context, setting string, value bool) error {
 	switch strings.ToLower(setting) {
 	case "autoconnect":
 		configResponse.Config.AutoConnect = value
-	case "certrenewal":
-		configResponse.Config.CertRenewal = value
+	case "iloveninetiesboybands":
+		configResponse.Config.ILoveNinetiesBoybands = value
 	default:
-		return fmt.Errorf("setting must be one of [%v]", strings.Join(AllowedSettings, ", "))
+		return fmt.Errorf("setting must be one of [%v]", strings.Join(GetAllowedSettings(false, false), ", "))
 	}
 
 	setConfigRequest := &pb.SetAgentConfigurationRequest{Config: configResponse.Config}

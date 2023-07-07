@@ -33,7 +33,6 @@ func getConfigCommand() *cli.Command {
 			}
 
 			fmt.Printf("AutoConnect:\t%v\n", config.AutoConnect)
-			fmt.Printf("CertRenewal:\t%v\n", config.CertRenewal)
 
 			return nil
 		},
@@ -53,8 +52,8 @@ func setConfigCommand() *cli.Command {
 			setting := strings.ToLower(context.Args().Get(0))
 			value := context.Args().Get(1)
 
-			if !slices.Contains(naisdevice.AllowedSettingsLowerCase, setting) {
-				return fmt.Errorf("%v is not one of the allowed settings: %v", setting, strings.Join(naisdevice.AllowedSettings, ", "))
+			if !slices.Contains(naisdevice.GetAllowedSettings(true, true), setting) {
+				return fmt.Errorf("%v is not one of the allowed settings: %v", setting, strings.Join(naisdevice.GetAllowedSettings(false, false), ", "))
 			}
 
 			_, err := strconv.ParseBool(value)
