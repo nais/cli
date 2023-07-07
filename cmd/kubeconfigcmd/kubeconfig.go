@@ -1,8 +1,10 @@
 package kubeconfigcmd
 
 import (
+	"fmt"
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
+	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,7 +35,21 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			return gcp.ValidateUserLogin(context.Context, false)
+			err := gcp.ValidateUserLogin(context.Context, false)
+			if err != nil {
+				return err
+			}
+
+			status, err := naisdevice.GetStatus(context.Context)
+			if err != nil {
+				return err
+			}
+
+			if !naisdevice.IsConnected(status) {
+				return fmt.Errorf("you need to be connected with naisdevice before using this command")
+			}
+
+			return nil
 		},
 		Action: func(context *cli.Context) error {
 			overwrite := context.Bool("overwrite")
