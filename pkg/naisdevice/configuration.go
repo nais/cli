@@ -25,6 +25,8 @@ func GetAllowedSettings(withHidden, lowerCase bool) []string {
 			settings[i] = setting
 		}
 	}
+
+	return settings
 }
 
 func GetConfiguration(ctx context.Context) (*pb.AgentConfiguration, error) {
