@@ -22,7 +22,7 @@ func GetAllowedSettings(withHidden, lowerCase bool) []string {
 
 	if lowerCase {
 		for i, setting := range settings {
-			settings[i] = setting
+			settings[i] = strings.ToLower(setting)
 		}
 	}
 
