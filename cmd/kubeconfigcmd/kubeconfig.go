@@ -2,6 +2,7 @@ package kubeconfigcmd
 
 import (
 	"fmt"
+
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
 	"github.com/nais/cli/pkg/naisdevice"
@@ -64,7 +65,11 @@ gcloud auth login --update-adc`,
 
 			tenant, err := naisdevice.GetActiveTenant(context.Context)
 
-			return kubeconfig.CreateKubeconfig(context.Context, email, tenant, overwrite, clear, includeOnprem, verbose)
+			return kubeconfig.CreateKubeconfig(context.Context, email, tenant,
+				kubeconfig.WithOverwriteData(overwrite),
+				kubeconfig.WithFromScratch(clear),
+				kubeconfig.WithOnpremClusters(includeOnprem),
+				kubeconfig.WithVerboseLogging(verbose))
 		},
 	}
 }

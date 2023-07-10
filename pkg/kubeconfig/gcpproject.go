@@ -1,4 +1,4 @@
-package gcp
+package kubeconfig
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
-type Project struct {
+type project struct {
 	ID     string
 	Tenant string
 	Name   string
 	Kind   Kind
 }
 
-func getProjects(ctx context.Context, includeCi, includeManagement, includeOnprem, includeKnada bool, filterTenant string) ([]Project, error) {
-	var projects []Project
+func getProjects(ctx context.Context, tenant string, options filterOptions) ([]project, error) {
+	var projects []project
 
 	svc, err := cloudresourcemanager.NewService(ctx)
 	if err != nil {
@@ -27,22 +27,22 @@ func getProjects(ctx context.Context, includeCi, includeManagement, includeOnpre
 	filter := "("
 	filter += "(labels.naiscluster=true AND labels.environment:*)"
 	filter += " OR labels.kind=legacy"
-	if includeOnprem {
+	if options.includeOnprem {
 		filter += " OR labels.kind=onprem"
 	}
-	if includeKnada {
+	if options.includeKnada {
 		filter += " OR labels.kind=knada"
 	}
-	if includeManagement {
+	if options.includeManagement {
 		filter += " OR labels.kind=management"
 	}
 	filter += ")"
 
-	if !includeCi {
+	if !options.includeCi {
 		filter += " AND NOT labels.environment=ci*"
 	}
-	if filterTenant != "" {
-		filter += " AND labels.tenant=" + filterTenant
+	if tenant != "" {
+		filter += " AND labels.tenant=" + tenant
 	}
 
 	call := svc.Projects.Search().Query(filter)
@@ -59,12 +59,12 @@ func getProjects(ctx context.Context, includeCi, includeManagement, includeOnpre
 			return nil, err
 		}
 
-		for _, project := range response.Projects {
-			projects = append(projects, Project{
-				ID:     project.ProjectId,
-				Tenant: project.Labels["tenant"],
-				Name:   project.Labels["environment"],
-				Kind:   ParseKind(project.Labels["kind"]),
+		for _, p := range response.Projects {
+			projects = append(projects, project{
+				ID:     p.ProjectId,
+				Tenant: p.Labels["tenant"],
+				Name:   p.Labels["environment"],
+				Kind:   parseKind(p.Labels["kind"]),
 			})
 		}
 		if response.NextPageToken == "" {

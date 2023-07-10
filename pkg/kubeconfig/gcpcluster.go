@@ -1,4 +1,4 @@
-package gcp
+package kubeconfig
 
 import (
 	"context"
@@ -9,26 +9,26 @@ import (
 	"google.golang.org/api/container/v1"
 )
 
-type Cluster struct {
+type k8sCluster struct {
 	Name        string
 	Endpoint    string
 	Location    string
 	CA          string
 	Tenant      string
-	User        *OnpremUser
+	User        *onpremUser
 	Kind        Kind
 	Environment string
 }
 
-type OnpremUser struct {
+type onpremUser struct {
 	ServerID string `json:"serverID"`
 	ClientID string `json:"clientID"`
 	TenantID string `json:"tenantID"`
 	UserName string `json:"userName"`
 }
 
-func GetClusters(ctx context.Context, includeCi, includeManagement, includeOnprem, includeKnada, prefixTenant, skipNAVPrefix bool, tenant string) ([]Cluster, error) {
-	projects, err := getProjects(ctx, includeCi, includeManagement, includeOnprem, includeKnada, tenant)
+func getClustersFromGCP(ctx context.Context, tenant string, options filterOptions) ([]k8sCluster, error) {
+	projects, err := getProjects(ctx, tenant, options)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,9 @@ func GetClusters(ctx context.Context, includeCi, includeManagement, includeOnpre
 		return nil, err
 	}
 
-	if prefixTenant {
+	if options.prefixWithTenant {
 		for i, cluster := range clusters {
-			if skipNAVPrefix && cluster.Tenant == "nav" {
+			if options.skipNAVPrefix && cluster.Tenant == "nav" {
 				continue
 			}
 
@@ -52,14 +52,14 @@ func GetClusters(ctx context.Context, includeCi, includeManagement, includeOnpre
 	return clusters, nil
 }
 
-func getClusters(ctx context.Context, projects []Project) ([]Cluster, error) {
-	var clusters []Cluster
+func getClusters(ctx context.Context, projects []project) ([]k8sCluster, error) {
+	var clusters []k8sCluster
 	for _, project := range projects {
-		var cluster []Cluster
+		var cluster []k8sCluster
 		var err error
 
 		switch project.Kind {
-		case KindOnprem:
+		case kindOnprem:
 			cluster, err = getOnpremClusters(ctx, project)
 		default:
 			cluster, err = getGCPClusters(ctx, project)
@@ -74,7 +74,7 @@ func getClusters(ctx context.Context, projects []Project) ([]Cluster, error) {
 	return clusters, nil
 }
 
-func getGCPClusters(ctx context.Context, project Project) ([]Cluster, error) {
+func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) {
 	svc, err := container.NewService(ctx)
 	if err != nil {
 		return nil, err
@@ -86,14 +86,14 @@ func getGCPClusters(ctx context.Context, project Project) ([]Cluster, error) {
 		return nil, err
 	}
 
-	var clusters []Cluster
+	var clusters []k8sCluster
 	for _, cluster := range response.Clusters {
 		name := cluster.Name
 		if cluster.Name == "knada-gke" {
 			name = "knada"
 		}
 
-		clusters = append(clusters, Cluster{
+		clusters = append(clusters, k8sCluster{
 			Name:        name,
 			Endpoint:    "https://" + cluster.Endpoint,
 			Location:    cluster.Location,
@@ -106,8 +106,8 @@ func getGCPClusters(ctx context.Context, project Project) ([]Cluster, error) {
 	return clusters, nil
 }
 
-func getOnpremClusters(ctx context.Context, project Project) ([]Cluster, error) {
-	if project.Kind != KindOnprem {
+func getOnpremClusters(ctx context.Context, project project) ([]k8sCluster, error) {
+	if project.Kind != kindOnprem {
 		return nil, nil
 	}
 
@@ -120,7 +120,7 @@ func getOnpremClusters(ctx context.Context, project Project) ([]Cluster, error) 
 		return nil, err
 	}
 
-	var clusters []Cluster
+	var clusters []k8sCluster
 	for _, meta := range proj.CommonInstanceMetadata.Items {
 		if meta.Key != "kubeconfig" || meta.Value == nil {
 			continue
@@ -137,12 +137,12 @@ func getOnpremClusters(ctx context.Context, project Project) ([]Cluster, error) 
 			return nil, err
 		}
 
-		clusters = append(clusters, Cluster{
+		clusters = append(clusters, k8sCluster{
 			Name:     project.Name,
 			Endpoint: config.URL,
 			Tenant:   "nav",
-			Kind:     KindOnprem,
-			User: &OnpremUser{
+			Kind:     kindOnprem,
+			User: &onpremUser{
 				ServerID: config.ServerID,
 				ClientID: config.ClientID,
 				TenantID: config.TenantID,

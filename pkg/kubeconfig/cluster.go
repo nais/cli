@@ -4,13 +4,12 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/nais/cli/pkg/gcp"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func addCluster(config *clientcmdapi.Config, cluster gcp.Cluster, overwrite, verbose bool) error {
-	if _, ok := config.Clusters[cluster.Name]; ok && !overwrite {
-		if verbose {
+func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, options filterOptions) error {
+	if _, ok := config.Clusters[cluster.Name]; ok && !options.overwrite {
+		if options.verbose {
 			fmt.Printf("Cluster %q already exists in kubeconfig, skipping\n", cluster.Name)
 		}
 		return nil
@@ -32,10 +31,10 @@ func addCluster(config *clientcmdapi.Config, cluster gcp.Cluster, overwrite, ver
 		CertificateAuthorityData: ca,
 	}
 
-	if cluster.Kind == gcp.KindLegacy {
+	if cluster.Kind == kindLegacy {
 		kubeconfigCluster.CertificateAuthorityData = nil
 		kubeconfigCluster.InsecureSkipTLSVerify = true
-		kubeconfigCluster.Server = gcp.GetClusterServerForLegacyGCP(cluster.Name)
+		kubeconfigCluster.Server = getClusterServerForLegacyGCP(cluster.Name)
 	}
 
 	config.Clusters[cluster.Name] = kubeconfigCluster

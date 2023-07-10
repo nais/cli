@@ -3,26 +3,25 @@ package kubeconfig
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/gcp"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func addUsers(config *clientcmdapi.Config, clusters []gcp.Cluster, email string, overwrite, includeOnprem, verbose bool) error {
-	addGCPUser(config, email, overwrite, verbose)
+func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions) error {
+	addGCPUser(config, email, options)
 
-	if !includeOnprem {
+	if !options.includeOnprem {
 		return nil
 	}
 
-	return addOnpremUser(config, clusters, overwrite, verbose)
+	return addOnpremUser(config, clusters, options)
 }
 
-func addOnpremUser(config *clientcmdapi.Config, clusters []gcp.Cluster, overwrite, verbose bool) error {
+func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions) error {
 	for _, cluster := range clusters {
-		if cluster.Kind == gcp.KindOnprem {
+		if cluster.Kind == kindOnprem {
 			user := cluster.User
-			if _, ok := config.AuthInfos[user.UserName]; ok && !overwrite {
-				if verbose {
+			if _, ok := config.AuthInfos[user.UserName]; ok && !options.overwrite {
+				if options.verbose {
 					fmt.Printf("User %q already exists in kubeconfig, skipping\n", user.UserName)
 				}
 				continue
@@ -58,9 +57,9 @@ func addOnpremUser(config *clientcmdapi.Config, clusters []gcp.Cluster, overwrit
 	return nil
 }
 
-func addGCPUser(config *clientcmdapi.Config, email string, overwrite, verbose bool) {
-	if _, ok := config.AuthInfos[email]; ok && !overwrite {
-		if verbose {
+func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions) {
+	if _, ok := config.AuthInfos[email]; ok && !options.overwrite {
+		if options.verbose {
 			fmt.Printf("User %q already exists in kubeconfig, skipping\n", email)
 		}
 		return
