@@ -3,7 +3,7 @@ module github.com/nais/cli
 go 1.20
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.3.0
+	cloud.google.com/go/cloudsqlconn v1.4.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.8
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.2.4
