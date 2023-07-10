@@ -7,14 +7,21 @@ import (
 	"os/exec"
 
 	"github.com/go-logr/logr"
-	"github.com/nais/cli/pkg/gcp"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email, tenant string, overwrite, clear, includeOnprem, verbose bool) error {
+func CreateKubeconfig(ctx context.Context, email, tenant string, opts ...FilterOption) error {
+	var options filterOptions
+	for _, opt := range DefaultFilterOptions {
+		opt(&options)
+	}
+	for _, opt := range opts {
+		opt(&options)
+	}
+
 	configLoad := kubeClient.NewDefaultClientConfigLoadingRules()
 
 	// If KUBECONFIG is set, but the file does not exist, kubeClient will throw a warning.
@@ -26,25 +33,25 @@ func CreateKubeconfig(ctx context.Context, email, tenant string, overwrite, clea
 		return err
 	}
 
-	if clear {
+	if options.fromScratch {
 		config.AuthInfos = map[string]*api.AuthInfo{}
 		config.Contexts = map[string]*api.Context{}
 		config.Clusters = map[string]*api.Cluster{}
 	}
 
 	fmt.Println("Retreiving clusters")
-	clusters, err := gcp.GetClusters(ctx, false, false, includeOnprem, false, false, true, tenant)
+	clusters, err := getClustersFromGCP(ctx, tenant, options)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Found %v clusters\n", len(clusters))
 
-	err = addUsers(config, clusters, email, overwrite, includeOnprem, verbose)
+	err = addUsers(config, clusters, email, options)
 	if err != nil {
 		return err
 	}
 
-	err = addClustersAndContexts(config, clusters, email, overwrite, verbose)
+	err = populateKubeconfig(config, clusters, email, options)
 	if err != nil {
 		return err
 	}
@@ -69,14 +76,14 @@ func CreateKubeconfig(ctx context.Context, email, tenant string, overwrite, clea
 	return nil
 }
 
-func addClustersAndContexts(config *clientcmdapi.Config, clusters []gcp.Cluster, email string, overwrite, verbose bool) error {
+func populateKubeconfig(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions) error {
 	for _, cluster := range clusters {
-		err := addCluster(config, cluster, overwrite, verbose)
+		err := populateWithClusters(config, cluster, options)
 		if err != nil {
 			return err
 		}
 
-		addContext(config, cluster, overwrite, verbose, email)
+		populateWithContexts(config, cluster, email, options)
 	}
 
 	return nil

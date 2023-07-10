@@ -3,20 +3,19 @@ package kubeconfig
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/gcp"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func addContext(config *clientcmdapi.Config, cluster gcp.Cluster, overwrite, verbose bool, email string) {
-	if _, ok := config.Contexts[cluster.Name]; ok && !overwrite {
-		if verbose {
+func populateWithContexts(config *clientcmdapi.Config, cluster k8sCluster, email string, options filterOptions) {
+	if _, ok := config.Contexts[cluster.Name]; ok && !options.overwrite {
+		if options.verbose {
 			fmt.Printf("Context %q already exists in kubeconfig, skipping\n", cluster.Name)
 		}
 		return
 	}
 
 	user := email
-	if cluster.Kind == gcp.KindOnprem {
+	if cluster.Kind == KindOnprem {
 		user = cluster.User.UserName
 	}
 
