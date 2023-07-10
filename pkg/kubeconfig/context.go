@@ -15,7 +15,7 @@ func populateWithContexts(config *clientcmdapi.Config, cluster k8sCluster, email
 	}
 
 	user := email
-	if cluster.Kind == KindOnprem {
+	if cluster.Kind == kindOnprem {
 		user = cluster.User.UserName
 	}
 

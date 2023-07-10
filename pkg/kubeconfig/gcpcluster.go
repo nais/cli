@@ -59,7 +59,7 @@ func getClusters(ctx context.Context, projects []project) ([]k8sCluster, error) 
 		var err error
 
 		switch project.Kind {
-		case KindOnprem:
+		case kindOnprem:
 			cluster, err = getOnpremClusters(ctx, project)
 		default:
 			cluster, err = getGCPClusters(ctx, project)
@@ -107,7 +107,7 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 }
 
 func getOnpremClusters(ctx context.Context, project project) ([]k8sCluster, error) {
-	if project.Kind != KindOnprem {
+	if project.Kind != kindOnprem {
 		return nil, nil
 	}
 
@@ -141,7 +141,7 @@ func getOnpremClusters(ctx context.Context, project project) ([]k8sCluster, erro
 			Name:     project.Name,
 			Endpoint: config.URL,
 			Tenant:   "nav",
-			Kind:     KindOnprem,
+			Kind:     kindOnprem,
 			User: &onpremUser{
 				ServerID: config.ServerID,
 				ClientID: config.ClientID,

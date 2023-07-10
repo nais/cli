@@ -64,7 +64,7 @@ func getProjects(ctx context.Context, tenant string, options filterOptions) ([]p
 				ID:     p.ProjectId,
 				Tenant: p.Labels["tenant"],
 				Name:   p.Labels["environment"],
-				Kind:   ParseKind(p.Labels["kind"]),
+				Kind:   parseKind(p.Labels["kind"]),
 			})
 		}
 		if response.NextPageToken == "" {

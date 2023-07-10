@@ -31,10 +31,10 @@ func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, optio
 		CertificateAuthorityData: ca,
 	}
 
-	if cluster.Kind == KindLegacy {
+	if cluster.Kind == kindLegacy {
 		kubeconfigCluster.CertificateAuthorityData = nil
 		kubeconfigCluster.InsecureSkipTLSVerify = true
-		kubeconfigCluster.Server = GetClusterServerForLegacyGCP(cluster.Name)
+		kubeconfigCluster.Server = getClusterServerForLegacyGCP(cluster.Name)
 	}
 
 	config.Clusters[cluster.Name] = kubeconfigCluster

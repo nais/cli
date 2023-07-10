@@ -18,7 +18,7 @@ func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, 
 
 func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions) error {
 	for _, cluster := range clusters {
-		if cluster.Kind == KindOnprem {
+		if cluster.Kind == kindOnprem {
 			user := cluster.User
 			if _, ok := config.AuthInfos[user.UserName]; ok && !options.overwrite {
 				if options.verbose {

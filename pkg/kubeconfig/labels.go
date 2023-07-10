@@ -5,32 +5,32 @@ import "strings"
 type Kind int64
 
 const (
-	KindOnprem Kind = iota
-	KindKNADA
-	KindNAIS
-	KindLegacy
-	KindManagment
-	KindUnknown
+	kindOnprem Kind = iota
+	kindKNADA
+	kindNAIS
+	kindLegacy
+	kindManagment
+	kindUnknown
 )
 
-func ParseKind(in string) Kind {
+func parseKind(in string) Kind {
 	switch strings.ToLower(in) {
 	case "knada":
-		return KindKNADA
+		return kindKNADA
 	case "onprem":
-		return KindOnprem
+		return kindOnprem
 	case "nais":
-		return KindNAIS
+		return kindNAIS
 	case "legacy":
-		return KindLegacy
+		return kindLegacy
 	case "managment":
-		return KindManagment
+		return kindManagment
 	default:
-		return KindUnknown
+		return kindUnknown
 	}
 }
 
-func GetClusterServerForLegacyGCP(name string) string {
+func getClusterServerForLegacyGCP(name string) string {
 	switch name {
 	case "prod-gcp":
 		return "https://10.255.240.6"
