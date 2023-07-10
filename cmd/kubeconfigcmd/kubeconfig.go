@@ -68,7 +68,7 @@ gcloud auth login --update-adc`,
 			return kubeconfig.CreateKubeconfig(context.Context, email, tenant,
 				kubeconfig.WithOverwriteData(overwrite),
 				kubeconfig.WithFromScratch(clear),
-				kubeconfig.WithIncludeOnprem(includeOnprem),
+				kubeconfig.WithOnpremClusters(includeOnprem),
 				kubeconfig.WithVerboseLogging(verbose))
 		},
 	}

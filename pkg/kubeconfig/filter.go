@@ -14,27 +14,33 @@ type filterOptions struct {
 
 type FilterOption func(options *filterOptions)
 
-func WithOverwriteData(enabled bool) FilterOption {
-	return func(options *filterOptions) {
-		options.overwrite = enabled
-	}
-}
-
 func WithFromScratch(enabled bool) FilterOption {
 	return func(options *filterOptions) {
 		options.fromScratch = enabled
 	}
 }
 
-func WithIncludeOnprem(include bool) FilterOption {
+func WithCiClusters(include bool) FilterOption {
 	return func(options *filterOptions) {
 		options.includeOnprem = include
 	}
 }
 
-func WithVerboseLogging(enabled bool) FilterOption {
+func WithKnadaCluster(include bool) FilterOption {
 	return func(options *filterOptions) {
-		options.verbose = enabled
+		options.includeOnprem = include
+	}
+}
+
+func WithManagementClusters(include bool) FilterOption {
+	return func(options *filterOptions) {
+		options.includeOnprem = include
+	}
+}
+
+func WithOnpremClusters(include bool) FilterOption {
+	return func(options *filterOptions) {
+		options.includeOnprem = include
 	}
 }
 
@@ -47,6 +53,18 @@ func WithNAVPrefixSkipped(enabled bool) FilterOption {
 func WithPrefixedTenant(enbaled bool) FilterOption {
 	return func(options *filterOptions) {
 		options.prefixWithTenant = enbaled
+	}
+}
+
+func WithOverwriteData(enabled bool) FilterOption {
+	return func(options *filterOptions) {
+		options.overwrite = enabled
+	}
+}
+
+func WithVerboseLogging(enabled bool) FilterOption {
+	return func(options *filterOptions) {
+		options.verbose = enabled
 	}
 }
 
