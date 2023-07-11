@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
+
 	"github.com/nais/device/pkg/pb"
 	"gopkg.in/yaml.v3"
-	"sort"
 )
 
 func Connect(ctx context.Context) error {
@@ -47,7 +48,6 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
 		KeepConnectionOnComplete: true,
 	})
-
 	if err != nil {
 		return formatGrpcError(err)
 	}

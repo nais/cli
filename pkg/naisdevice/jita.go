@@ -3,6 +3,7 @@ package naisdevice
 import (
 	"context"
 	"fmt"
+
 	"github.com/nais/device/pkg/device-agent/open"
 	"github.com/nais/device/pkg/pb"
 )

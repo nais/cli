@@ -1,8 +1,9 @@
 package aiven
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAivenTidy(t *testing.T) {

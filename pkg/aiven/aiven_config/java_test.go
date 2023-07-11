@@ -10,8 +10,7 @@ import (
 )
 
 func TestJavaConfigGenerated(t *testing.T) {
-
-	var envKeys = []string{
+	envKeys := []string{
 		KafkaBrokersKey,
 		KafkaClientKeyStoreP12File,
 		KafkaClientTruststoreJksFile,

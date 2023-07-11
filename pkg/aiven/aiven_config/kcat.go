@@ -2,10 +2,11 @@ package aiven_config
 
 import (
 	"fmt"
-	v1 "k8s.io/api/core/v1"
 	"os"
 	"path/filepath"
 	"time"
+
+	v1 "k8s.io/api/core/v1"
 )
 
 const (
@@ -29,7 +30,6 @@ func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
 	}
 	for key, value := range envsToFile {
 		configFile += fmt.Sprintf("%s=%s\n", key, value)
-
 	}
 
 	err := os.WriteFile(filepath.Join(destinationPath, KafkaCatConfigName), []byte(configFile), FilePermission)

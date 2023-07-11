@@ -44,7 +44,7 @@ var projectTypes = func() map[string]string {
 
 var currentDir, _ = os.Getwd()
 
-func Naisify(appName string, team string, extras []string, kafkaTopics []string, appPort uint) error {
+func Naisify(appName, team string, extras, kafkaTopics []string, appPort uint) error {
 	appType, err := determinePlatform()
 	if err != nil || len(appType) == 0 {
 		return fmt.Errorf("unable to determine app type in %s: %v", currentDir, err)
@@ -94,11 +94,11 @@ func writeTo(baseDir string, startNaisIoResponse map[string]string) error {
 		}
 		absoluteFilePath := baseDir + string(os.PathSeparator) + filename
 		dir, _ := filepath.Split(absoluteFilePath)
-		err := os.MkdirAll(dir, 0700)
+		err := os.MkdirAll(dir, 0o700)
 		if err != nil {
 			return fmt.Errorf("unable to create dir %s: %v", dir, err)
 		}
-		err = os.WriteFile(absoluteFilePath, []byte(contents), 0744)
+		err = os.WriteFile(absoluteFilePath, []byte(contents), 0o744)
 		if err != nil {
 			return fmt.Errorf("error while writing file: %v", err)
 		}

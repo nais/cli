@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"golang.org/x/oauth2"
 	"strings"
+
+	"golang.org/x/oauth2"
 
 	corev1 "k8s.io/api/core/v1"
 

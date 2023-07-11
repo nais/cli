@@ -2,17 +2,16 @@ package aiven
 
 import (
 	"context"
-	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 	"time"
 
+	"github.com/nais/cli/pkg/aiven/aiven_services"
 	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"github.com/nais/cli/pkg/aiven/aiven_services"
+	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 const (
@@ -23,13 +22,12 @@ const (
 )
 
 func buildWithScheme(objects ...runtime.Object) *fake.ClientBuilder {
-	var scheme = runtime.NewScheme()
+	scheme := runtime.NewScheme()
 	InitScheme(scheme)
 	return fake.NewClientBuilder().WithScheme(scheme).WithRuntimeObjects(objects...)
 }
 
 func TestGenerateAivenApplicationCreated(t *testing.T) {
-
 	namespace := v1.Namespace{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Namespace",

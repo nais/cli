@@ -10,7 +10,7 @@ import (
 )
 
 func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
-	var envKeys = []string{
+	envKeys := []string{
 		KafkaCAKey,
 		KafkaCertificateKey,
 		KafkaPrivateKeyKey,

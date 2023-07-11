@@ -2,12 +2,13 @@ package naisdevice
 
 import (
 	"fmt"
+	"path/filepath"
+
 	"github.com/nais/device/pkg/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-	"path/filepath"
 )
 
 func agentConnection() (*grpc.ClientConn, error) {

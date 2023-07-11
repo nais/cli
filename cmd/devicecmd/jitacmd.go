@@ -2,10 +2,11 @@ package devicecmd
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
-	"strings"
 )
 
 func jitaCommand() *cli.Command {

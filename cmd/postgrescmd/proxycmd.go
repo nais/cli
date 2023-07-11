@@ -2,6 +2,7 @@ package postgrescmd
 
 import (
 	"fmt"
+
 	"github.com/nais/cli/pkg/postgres"
 	"github.com/urfave/cli/v2"
 )

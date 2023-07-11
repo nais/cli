@@ -5,13 +5,15 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/nais/liberator/pkg/keygen"
 	"io"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/nais/liberator/pkg/keygen"
+
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func RotatePassword(ctx context.Context, appName, cluster, namespace, database string) error {

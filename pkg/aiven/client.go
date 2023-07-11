@@ -1,12 +1,14 @@
 package aiven
 
 import (
+	"log"
+
 	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"log"
+
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	// Auth providers
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"

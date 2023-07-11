@@ -2,12 +2,13 @@ package aiven_config
 
 import (
 	"fmt"
-	v1 "k8s.io/api/core/v1"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
+
+	v1 "k8s.io/api/core/v1"
 )
 
 const (
