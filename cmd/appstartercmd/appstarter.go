@@ -2,6 +2,7 @@ package appstartercmd
 
 import (
 	"fmt"
+
 	"github.com/nais/cli/pkg/appstarter"
 	"github.com/urfave/cli/v2"
 )

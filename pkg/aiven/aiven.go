@@ -3,18 +3,17 @@ package aiven
 import (
 	"context"
 	"fmt"
-	v1 "k8s.io/api/core/v1"
 	"log"
 	"strings"
 	"time"
 
+	"github.com/nais/cli/pkg/aiven/aiven_services"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
+	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/nais/cli/pkg/aiven/aiven_services"
 )
 
 type Aiven struct {

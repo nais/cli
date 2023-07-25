@@ -2,9 +2,9 @@ package validatecmd
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
 
 	"github.com/nais/cli/pkg/validate"
+	"github.com/urfave/cli/v2"
 )
 
 func Command() *cli.Command {

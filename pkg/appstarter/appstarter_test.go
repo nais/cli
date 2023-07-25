@@ -1,9 +1,10 @@
 package appstarter
 
 import (
-	"github.com/magiconair/properties/assert"
 	"os"
 	"testing"
+
+	"github.com/magiconair/properties/assert"
 )
 
 func TestProjectTypeIsRecognized(t *testing.T) {

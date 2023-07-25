@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"io"
 	"log"
 	"net"
@@ -14,6 +13,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 
 	"cloud.google.com/go/cloudsqlconn"
 )

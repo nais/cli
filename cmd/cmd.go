@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"log"
@@ -30,7 +30,7 @@ func commands() []*cli.Command {
 	}
 }
 
-func main() {
+func Run() {
 	app := &cli.App{
 		Name:                 "nais",
 		Usage:                "A NAIS CLI",

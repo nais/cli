@@ -20,5 +20,5 @@ const (
 	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD"
 	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
 	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD"
-	FilePermission                 = 0775
+	FilePermission                 = 0o775
 )
