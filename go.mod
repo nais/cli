@@ -16,7 +16,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/oauth2 v0.10.0
 	google.golang.org/api v0.132.0
-	google.golang.org/grpc v1.56.2
+	google.golang.org/grpc v1.57.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.27.4
 	k8s.io/apimachinery v0.27.4
