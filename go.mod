@@ -8,6 +8,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.2.4
 	github.com/magiconair/properties v1.8.7
+	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20230629074024-d0952a7905ec
 	github.com/nais/liberator v0.0.0-20230706133204-8d4ea02bd57f
 	github.com/stretchr/testify v1.8.4

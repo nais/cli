@@ -14,6 +14,7 @@ func Command() *cli.Command {
 			disconnectCommand(),
 			jitaCommand(),
 			statusCommand(),
+			doctorCommand(),
 		},
 	}
 }
