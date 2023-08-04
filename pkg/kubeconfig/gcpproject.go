@@ -45,6 +45,10 @@ func getProjects(ctx context.Context, tenant string, options filterOptions) ([]p
 		filter += " AND labels.tenant=" + tenant
 	}
 
+	if options.verbose {
+		fmt.Printf("filter: %s\n", filter)
+	}
+
 	call := svc.Projects.Search().Query(filter)
 	for {
 		response, err := call.Do()
@@ -71,6 +75,12 @@ func getProjects(ctx context.Context, tenant string, options filterOptions) ([]p
 			break
 		}
 		call.PageToken(response.NextPageToken)
+	}
+	if options.verbose {
+		fmt.Printf("projects:\n")
+		for _, p := range projects {
+			fmt.Printf("%s\t%s\t%s\t%v\n", p.ID, p.Tenant, p.Name, p.Kind)
+		}
 	}
 
 	return projects, nil

@@ -3,6 +3,7 @@ package kubeconfig
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"google.golang.org/api/compute/v1"
@@ -33,7 +34,7 @@ func getClustersFromGCP(ctx context.Context, tenant string, options filterOption
 		return nil, err
 	}
 
-	clusters, err := getClusters(ctx, projects)
+	clusters, err := getClusters(ctx, projects, options)
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +53,12 @@ func getClustersFromGCP(ctx context.Context, tenant string, options filterOption
 	return clusters, nil
 }
 
-func getClusters(ctx context.Context, projects []project) ([]k8sCluster, error) {
+func getClusters(ctx context.Context, projects []project, options filterOptions) ([]k8sCluster, error) {
 	var clusters []k8sCluster
 	for _, project := range projects {
+		if options.verbose {
+			fmt.Println("getting clusters for", project.ID)
+		}
 		var cluster []k8sCluster
 		var err error
 
