@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/cloudsqlconn v1.4.0
-	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.9
+	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.10
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.2.4
 	github.com/magiconair/properties v1.8.7

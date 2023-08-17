@@ -726,8 +726,8 @@ github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0/go.mod h1:okt5dMMTOFjX/aov
 github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0/go.mod h1:kgDmCTgBzIEPFElEF+FK0SdjAor06dRq2Go927dnQ6o=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.9 h1:YjE60yhoMx231GwDrJgeBWSTbTbazZAuK89H0iuXJlM=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.9/go.mod h1:+FaFzlKsx+X/2dR5Rjr6EN9ZzuYDW950s4MmFILchJM=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.10 h1:h2qYaJSDGyVzjGVj3HansB3mJUnyU9wBc/8/nm/kSLs=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.10/go.mod h1:+FaFzlKsx+X/2dR5Rjr6EN9ZzuYDW950s4MmFILchJM=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
