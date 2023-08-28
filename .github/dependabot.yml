@@ -6,7 +6,7 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 5
     groups:
-      dependencies:
+      gomod:
         patterns:
           - "k8s.io*"
   - package-ecosystem: github-actions
@@ -14,7 +14,7 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 5
-    groups:
+    gha:
       dependencies:
         patterns:
           - "*"
