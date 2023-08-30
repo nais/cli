@@ -9,7 +9,7 @@ import (
 )
 
 func AccessPrivilegedGateway(gatewayName string) error {
-	return open.Open(fmt.Sprintf("https://naisdevice-jita.nais.io/?gateway=%s", gatewayName))
+	return open.Open(fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName))
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
