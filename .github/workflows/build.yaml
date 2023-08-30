@@ -41,7 +41,8 @@ jobs:
       - name: Test Go
         run: |
           go mod tidy -v
-          go test ./... -count=1 -coverprofile cover.out -short
+          make test
+          make check
 
   release:
     if: ${{ github.ref == 'refs/heads/main' }}

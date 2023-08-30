@@ -9,7 +9,6 @@ import (
 	"github.com/go-logr/logr"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog/v2"
 )
 
@@ -76,7 +75,7 @@ func CreateKubeconfig(ctx context.Context, email, tenant string, opts ...FilterO
 	return nil
 }
 
-func populateKubeconfig(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions) error {
+func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions) error {
 	for _, cluster := range clusters {
 		err := populateWithClusters(config, cluster, options)
 		if err != nil {

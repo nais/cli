@@ -24,6 +24,9 @@ func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
 	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
 		KeepConnectionOnComplete: true,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	status, err := stream.Recv()
 	if err != nil {
