@@ -258,7 +258,7 @@ func formatInvalidGrantError(err error) error {
 	var retrieve *oauth2.RetrieveError
 	if errors.As(err, &retrieve) {
 		if retrieve.ErrorCode == "invalid_grant" {
-			return fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth application-default login` first\n")
+			return fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth application-default login` first")
 		}
 	}
 

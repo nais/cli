@@ -18,7 +18,7 @@ func statusCommand() *cli.Command {
 				Aliases: []string{"o"},
 				Action: func(context *cli.Context, flag string) error {
 					if !slices.Contains([]string{"yaml", "json"}, flag) {
-						return fmt.Errorf("%v is not a implemented format\n", flag)
+						return fmt.Errorf("%v is not an implemented format", flag)
 					}
 
 					return nil

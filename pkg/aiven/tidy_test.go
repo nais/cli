@@ -17,6 +17,7 @@ func TestAivenTidy(t *testing.T) {
 
 	// created folders id tidy
 	err = tidy(folders)
+	assert.NoError(t, err)
 	folders, err = findFoldersToRemove()
 	assert.NoError(t, err, "Folders found")
 	assert.True(t, len(folders) == 0)

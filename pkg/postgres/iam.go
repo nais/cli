@@ -39,7 +39,7 @@ func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace, dat
 	fmt.Println("Create sql user")
 	err = createSQLUser(ctx, projectID, connectionName)
 	if err != nil {
-		return fmt.Errorf("Error creating SQL user. One might already exist.\n%v", err)
+		return fmt.Errorf("error creating SQL user. One might already exist: %v", err)
 	}
 
 	return nil
