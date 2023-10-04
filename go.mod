@@ -1,6 +1,6 @@
 module github.com/nais/cli
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go/cloudsqlconn v1.4.3
