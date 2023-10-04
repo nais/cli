@@ -89,14 +89,11 @@ func GetActiveUserEmail(ctx context.Context) (string, error) {
 	return user, nil
 }
 
-func Login(ctx context.Context, skipADC bool) error {
+func Login(ctx context.Context) error {
 	args := []string{
 		"auth",
+		"application-default",
 		"login",
-	}
-
-	if !skipADC {
-		args = append(args, "--update-adc")
 	}
 
 	buf := &bytes.Buffer{}
