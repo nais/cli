@@ -56,7 +56,7 @@ func ValidateUserLogin(ctx context.Context, enforceNais bool) error {
 	_, err = os.Stat(filepath.Clean(homedir + "/gcloud/application_default_credentials.json"))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("you are missing Application Default Credentials, run `gcloud auth application-default login` first")
+			return fmt.Errorf("you are missing Application Default Credentials, run `gcloud auth login --update-adc` first")
 		}
 		return err
 	}
@@ -92,8 +92,8 @@ func GetActiveUserEmail(ctx context.Context) (string, error) {
 func Login(ctx context.Context) error {
 	args := []string{
 		"auth",
-		"application-default",
 		"login",
+		"--update-adc",
 	}
 
 	buf := &bytes.Buffer{}
