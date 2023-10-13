@@ -3,14 +3,19 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"strings"
+	"fmt"
 )
 
 var prepareDdlStatements = []string{
-	"alter default privileges in schema public grant CHANGEME on tables to cloudsqliamuser;",
-	"alter default privileges in schema public grant CHANGEME on sequences to cloudsqliamuser;",
-	"grant CHANGEME on all tables in schema public to cloudsqliamuser;",
-	"grant CHANGEME on all sequences in schema public to cloudsqliamuser;",
+	"alter default privileges in schema public grant %s on tables to cloudsqliamuser;",
+	"alter default privileges in schema public grant %s on sequences to cloudsqliamuser;",
+	"grant %s on all tables in schema public to cloudsqliamuser;",
+	"grant %s on all sequences in schema public to cloudsqliamuser;",
+}
+
+var grantCreatePublicStatements = []string{
+	"alter default privileges in schema public grant create to cloudsqliamuser;",
+	"grant create in schema public to cloudsqliamuser;",
 }
 
 func PrepareAccess(ctx context.Context, appName, namespace, cluster, database string, allPrivs bool) error {
@@ -31,21 +36,25 @@ func PrepareAccess(ctx context.Context, appName, namespace, cluster, database st
 	defer db.Close()
 
 	for _, ddl := range prepareDdlStatements {
-		_, err = db.ExecContext(ctx, setGrant(ddl, allPrivs))
+		grant := "SELECT"
+		if allPrivs {
+			grant = "ALL"
+		}
+		_, err = db.ExecContext(ctx, fmt.Sprint(ddl, grant))
 		if err != nil {
 			return err
 		}
 	}
+	if allPrivs {
+		for _, stmt := range grantCreatePublicStatements {
+			_, err = db.ExecContext(ctx, stmt)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
-}
-
-func setGrant(sql string, allPrivs bool) string {
-	sqlGrant := "SELECT"
-	if allPrivs {
-		sqlGrant = "ALL"
-	}
-	return strings.Replace(sql, "CHANGEME", sqlGrant, 1)
 }
 
 var revokeDdlStatements = []string{
