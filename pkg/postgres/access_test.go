@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,12 +8,12 @@ import (
 
 func TestPermissionsAll(t *testing.T) {
 	expected := "blabla whatever ALL stuff"
-	actual := fmt.Sprintf("blabla whatever %s stuff", "ALL")
+	actual := setGrant("blabla whatever CHANGEME stuff", true)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPermissionsOther(t *testing.T) {
 	expected := "blabla whatever SELECT stuff"
-	actual := fmt.Sprintf("blabla whatever %s stuff", "SELECT")
+	actual := setGrant("blabla whatever CHANGEME stuff", false)
 	assert.Equal(t, expected, actual)
 }
