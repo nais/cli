@@ -97,47 +97,6 @@ jobs:
           HOMEBREW_PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
           SCOOP_PUSH_TOKEN: ${{ steps.get-scoop-token.outputs.token }}
 
-  upload-ppa:
-    if: ${{ github.ref == 'refs/heads/main' }}
-    needs:
-      - set-version
-      - release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: navikt/github-app-token-generator@v1
-        id: get-token
-        with:
-          private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
-          app-id: ${{ secrets.NAIS_APP_ID }}
-          repo: nais/nais-ppa
-
-      - name: Checkout nais-ppa
-        uses: actions/checkout@v4
-        with:
-          repository: nais/nais-ppa
-          token: ${{ steps.get-token.outputs.token }}
-          path: pparepo
-
-      - name: Add new deb to ppa
-        id: update_ppa
-        env:
-          VERSION: ${{ needs.set-version.outputs.version }}
-          EMAIL: aura@nav.no
-        run: |
-          echo "Version ${VERSION} was released, adding to PPA"
-          cd pparepo
-          
-          # Fetch latest deb
-          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
-          
-          # Commit and push changes
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add nais_${VERSION}.deb
-          git --no-pager diff --cached
-          git commit --all --message "Add version ${VERSION} of nais-cli"
-          git push
-
   upload-gar:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
