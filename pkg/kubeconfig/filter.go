@@ -10,6 +10,7 @@ type filterOptions struct {
 	overwrite         bool
 	skipNAVPrefix     bool
 	verbose           bool
+	excludeClusters   []string
 }
 
 type FilterOption func(options *filterOptions)
@@ -41,6 +42,12 @@ func WithManagementClusters(include bool) FilterOption {
 func WithOnpremClusters(include bool) FilterOption {
 	return func(options *filterOptions) {
 		options.includeOnprem = include
+	}
+}
+
+func WithExcludeClusters(exclude []string) FilterOption {
+	return func(options *filterOptions) {
+		options.excludeClusters = exclude
 	}
 }
 

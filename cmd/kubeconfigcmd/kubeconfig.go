@@ -20,15 +20,18 @@ gcloud auth login --update-adc`,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "overwrite",
+				Usage:   "Overwrite existing kubeconfig data if conflicts are found",
 				Aliases: []string{"o"},
 			},
 			&cli.BoolFlag{
 				Name:    "clear",
+				Usage:   "Clear existing kubeconfig before writing new data",
 				Aliases: []string{"c"},
 			},
-			&cli.BoolFlag{
-				Name:    "include-onprem",
-				Aliases: []string{"io"},
+			&cli.StringSliceFlag{
+				Name:    "exclude",
+				Usage:   "Exclude clusters from kubeconfig. Can be specified multiple times or as a comma separated list",
+				Aliases: []string{"e"},
 			},
 			&cli.BoolFlag{
 				Name:    "verbose",
@@ -55,7 +58,7 @@ gcloud auth login --update-adc`,
 		Action: func(context *cli.Context) error {
 			overwrite := context.Bool("overwrite")
 			clear := context.Bool("clear")
-			includeOnprem := context.Bool("include-onprem")
+			exclude := context.StringSlice("exclude")
 			verbose := context.Bool("verbose")
 
 			email, err := gcp.GetActiveUserEmail(context.Context)
@@ -71,7 +74,8 @@ gcloud auth login --update-adc`,
 			return kubeconfig.CreateKubeconfig(context.Context, email, tenant,
 				kubeconfig.WithOverwriteData(overwrite),
 				kubeconfig.WithFromScratch(clear),
-				kubeconfig.WithOnpremClusters(includeOnprem),
+				kubeconfig.WithExcludeClusters(exclude),
+				kubeconfig.WithOnpremClusters(true),
 				kubeconfig.WithVerboseLogging(verbose))
 		},
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"slices"
 
 	"github.com/go-logr/logr"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
@@ -77,6 +78,13 @@ func CreateKubeconfig(ctx context.Context, email, tenant string, opts ...FilterO
 
 func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions) error {
 	for _, cluster := range clusters {
+		if slices.Contains(options.excludeClusters, cluster.Name) {
+			if options.verbose {
+				fmt.Printf("Cluster %q is excluded, skipping\n", cluster.Name)
+			}
+			continue
+		}
+
 		err := populateWithClusters(config, cluster, options)
 		if err != nil {
 			return err
