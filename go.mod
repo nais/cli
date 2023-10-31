@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/cloudsqlconn v1.4.3
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.10
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-logr/logr v1.2.4
+	github.com/go-logr/logr v1.3.0
 	github.com/magiconair/properties v1.8.7
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20230629074024-d0952a7905ec
@@ -20,10 +20,10 @@ require (
 	google.golang.org/grpc v1.58.3
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.6
-	k8s.io/api v0.28.1
-	k8s.io/apimachinery v0.28.1
-	k8s.io/client-go v0.28.1
-	k8s.io/klog/v2 v2.100.1
+	k8s.io/api v0.28.3
+	k8s.io/apimachinery v0.28.3
+	k8s.io/client-go v0.28.3
+	k8s.io/klog/v2 v2.110.1
 	k8s.io/utils v0.0.0-20230505201702-9f6742963106
 	sigs.k8s.io/controller-runtime v0.16.2
 )
