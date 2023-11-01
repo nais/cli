@@ -21,6 +21,20 @@ credentials and modify the permissions on the public schema.
 
 This operation is only required to run once for each postgresql instance.`,
 		ArgsUsage: "appname",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
+		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")

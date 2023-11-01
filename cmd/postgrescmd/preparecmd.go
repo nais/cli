@@ -26,6 +26,18 @@ This operation is only required to run once for each postgresql instance.`,
 				Name:  "all-privs",
 				Usage: "Gives all privalges to users",
 			},
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {

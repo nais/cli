@@ -19,6 +19,18 @@ func usersAddCommand() *cli.Command {
 				Aliases: []string{"p"},
 				Value:   "select",
 			},
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 3 {

@@ -13,6 +13,20 @@ func grantCommand() *cli.Command {
 		Usage:       "Grant yourself access to a Postgres database",
 		Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
 		ArgsUsage:   "appname",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
+		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")
