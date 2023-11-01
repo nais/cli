@@ -13,6 +13,20 @@ func passwordRotateCommand() *cli.Command {
 		Usage:       "Rotate the Postgres database password",
 		Description: "The rotation is both done in GCP and in the Kubernetes secret",
 		ArgsUsage:   "appname",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
+		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")

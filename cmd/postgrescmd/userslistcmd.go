@@ -12,6 +12,20 @@ func usersListCommand() *cli.Command {
 		Name:      "list",
 		Usage:     "List users in a Postgres database",
 		ArgsUsage: "appname",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "context",
+				Aliases: []string{"c"},
+			},
+			&cli.StringFlag{
+				Name:    "namespace",
+				Aliases: []string{"n"},
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+			},
+		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")
