@@ -33,7 +33,8 @@ func jitaCommand() *cli.Command {
 		},
 		Action: func(context *cli.Context) error {
 			gateway := context.Args().First()
-			return naisdevice.AccessPrivilegedGateway(gateway)
+			naisdevice.AccessPrivilegedGateway(gateway)
+			return nil
 		},
 	}
 }

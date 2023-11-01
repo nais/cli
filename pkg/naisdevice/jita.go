@@ -8,8 +8,8 @@ import (
 	"github.com/nais/device/pkg/pb"
 )
 
-func AccessPrivilegedGateway(gatewayName string) error {
-	return open.Open(fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName))
+func AccessPrivilegedGateway(gatewayName string) {
+	open.Open(fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName))
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
