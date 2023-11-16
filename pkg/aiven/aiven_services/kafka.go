@@ -15,9 +15,10 @@ const (
 	NavProd
 	NavIntegrationTest
 	NavInfrastructure
+	DevNaisDev
 )
 
-var KafkaPools = []string{"nav-dev", "nav-prod", "nav-integration-test", "nav-infrastructure"}
+var KafkaPools = []string{"nav-dev", "nav-prod", "nav-integration-test", "nav-infrastructure", "dev-nais-dev"}
 
 func KafkaPoolFromString(pool string) (KafkaPool, error) {
 	switch strings.ToLower(pool) {
@@ -29,6 +30,8 @@ func KafkaPoolFromString(pool string) (KafkaPool, error) {
 		return NavIntegrationTest, nil
 	case "nav-infrastructure":
 		return NavInfrastructure, nil
+	case "dev-nais-dev":
+		return DevNaisDev, nil
 	default:
 		return -1, fmt.Errorf("unknown pool: %v", pool)
 	}
