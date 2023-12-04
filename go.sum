@@ -8,8 +8,8 @@ cloud.google.com/go/compute/metadata v0.2.3/go.mod h1:VAV5nSsACxMJvgaAuX6Pk2Aawl
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/toml v1.3.2 h1:o7IhLm0Msx3BaB+n3Ag7L8EVlByGnpq14C4YWiu/gL8=
 github.com/BurntSushi/toml v1.3.2/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.13 h1:YqBGKzz+3tk8wggtBP8vc7x3B4YjKXRSao0VwrW1PfE=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.13/go.mod h1:kKriI3Fm6cu9XvHySgkpq5IWPPqxVds9Fflx68+92CQ=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.14 h1:9bRF9/edlX1kycHVm/icATaIWfVyHcUB9c68iWWeNok=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.14/go.mod h1:vroGijye9h4A6kMWeCtk9/zIh5ebseV/JmbKJ0VL3w8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
