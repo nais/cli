@@ -1,0 +1,4 @@
+app: some-app
+namespace: some-namespace
+team: some-team
+image: some-image
