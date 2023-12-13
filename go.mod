@@ -18,7 +18,7 @@ require (
 	golang.org/x/oauth2 v0.15.0
 	golang.org/x/vuln v1.0.1
 	google.golang.org/api v0.152.0
-	google.golang.org/grpc v1.59.0
+	google.golang.org/grpc v1.60.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.6
 	k8s.io/api v0.28.4
