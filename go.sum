@@ -8,8 +8,8 @@ cloud.google.com/go/compute/metadata v0.2.3/go.mod h1:VAV5nSsACxMJvgaAuX6Pk2Aawl
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/toml v1.3.2 h1:o7IhLm0Msx3BaB+n3Ag7L8EVlByGnpq14C4YWiu/gL8=
 github.com/BurntSushi/toml v1.3.2/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.13 h1:YqBGKzz+3tk8wggtBP8vc7x3B4YjKXRSao0VwrW1PfE=
-github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.13/go.mod h1:kKriI3Fm6cu9XvHySgkpq5IWPPqxVds9Fflx68+92CQ=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.15 h1:7VpdhpAaNeplth/YEdmtrqfeJgFsRBOxxRyjrozksgA=
+github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.15/go.mod h1:3g3UWOGAuHmmiroIbIgM0Nb/N/eVpiEQ3LMdrkYGOyw=
 github.com/aymerick/raymond v2.0.2+incompatible h1:VEp3GpgdAnv9B2GFyTvqgcKvY+mfKMjPOA3SbKLtnU0=
 github.com/aymerick/raymond v2.0.2+incompatible/go.mod h1:osfaiScAUVup+UC9Nfq76eWqDhXlp+4UYaA8uhTBO6g=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
