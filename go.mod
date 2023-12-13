@@ -3,8 +3,9 @@ module github.com/nais/cli
 go 1.21
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.5.0
+	cloud.google.com/go/cloudsqlconn v1.5.2
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.13
+	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.3.0
 	github.com/magiconair/properties v1.8.7
@@ -16,8 +17,8 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/oauth2 v0.15.0
 	golang.org/x/vuln v1.0.1
-	google.golang.org/api v0.152.0
-	google.golang.org/grpc v1.59.0
+	google.golang.org/api v0.153.0
+	google.golang.org/grpc v1.60.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.6
 	k8s.io/api v0.28.4
@@ -92,7 +93,7 @@ require (
 	golang.org/x/tools v0.14.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231211222908-989df2bf70f3 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
