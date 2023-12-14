@@ -14,10 +14,22 @@ const (
 	NaisManifestSchema = "https://storage.googleapis.com/nais-json-schema-2c91/nais-all.json"
 )
 
-func NaisConfig(resources []string, variables TemplateVariables) error {
-	validationFailed := false
+type Validate struct {
+	ResourcePaths []string
+	Variables     TemplateVariables
+	Verbose       bool
+}
 
-	for _, file := range resources {
+func New(resourcePaths []string) Validate {
+	return Validate{
+		ResourcePaths: resourcePaths,
+	}
+}
+
+func (v Validate) Validate() error {
+	fail := make([]string, 0)
+
+	for _, file := range v.ResourcePaths {
 		if _, err := os.Stat(file); err != nil {
 			return fmt.Errorf("file %s does not exist", file)
 		}
@@ -27,10 +39,16 @@ func NaisConfig(resources []string, variables TemplateVariables) error {
 			return fmt.Errorf("failed to read file %s: %w", file, err)
 		}
 
-		content, err = templatedFile(content, variables)
+		content, err = templatedFile(content, v.Variables)
 		if err != nil {
 			errMsg := strings.ReplaceAll(err.Error(), "\n", ": ")
 			return fmt.Errorf("%s: %s", file, errMsg)
+		}
+
+		if v.Verbose {
+			fmt.Printf("[🖨️] Printing %q...\n", file)
+			fmt.Println("---")
+			fmt.Println(string(content))
 		}
 
 		var m interface{}
@@ -48,19 +66,18 @@ func NaisConfig(resources []string, variables TemplateVariables) error {
 		}
 
 		if result.Valid() {
-			fmt.Printf("%s is valid\n", file)
+			fmt.Printf("[✅] %q is valid\n", file)
 		} else {
-			validationFailed = true
-
-			fmt.Printf("%s is not valid and has the following errors:\n", file)
+			fmt.Printf("[❌] %q is not valid and has the following errors:\n", file)
 			for _, desc := range result.Errors() {
 				fmt.Printf("- %s\n", desc)
 			}
+			fail = append(fail, file)
 		}
 	}
 
-	if validationFailed {
-		return fmt.Errorf("validation failed")
+	if len(fail) > 0 {
+		return fmt.Errorf("validation failed for %d file(s): %s", len(fail), strings.Join(fail, ", "))
 	}
 
 	return nil

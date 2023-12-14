@@ -19,9 +19,13 @@ func Command() *cli.Command {
 				Usage: "path to `FILE` containing template variables, must be JSON or YAML format.",
 			},
 			&cli.StringSliceFlag{
-				Name:    "var",
+				Name:  "var",
+				Usage: "template variable in KEY=VALUE form, can be specified multiple times.",
+			},
+			&cli.BoolFlag{
+				Name:    "verbose",
 				Aliases: []string{"v"},
-				Usage:   "template variable in KEY=VALUE form, can be specified multiple times.",
+				Usage:   "print all the template variables and final resources after templating.",
 			},
 		},
 		Before: func(context *cli.Context) error {
@@ -32,9 +36,10 @@ func Command() *cli.Command {
 			return nil
 		},
 		Action: func(context *cli.Context) error {
-			resources := context.Args().Slice()
+			resourcePaths := context.Args().Slice()
 			varsPath := context.String("vars")
 			vars := context.StringSlice("var")
+			verbose := context.Bool("verbose")
 
 			templateVars := make(validate.TemplateVariables)
 			var err error
@@ -45,7 +50,9 @@ func Command() *cli.Command {
 					return fmt.Errorf("load template variables: %v", err)
 				}
 				for key, val := range templateVars {
-					fmt.Printf("Setting template variable '%s' to '%v'\n", key, val)
+					if verbose {
+						fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
+					}
 					templateVars[key] = val
 				}
 			}
@@ -53,15 +60,20 @@ func Command() *cli.Command {
 			if len(vars) > 0 {
 				overrides := validate.TemplateVariablesFromSlice(vars)
 				for key, val := range overrides {
-					if oldval, ok := templateVars[key]; ok {
-						fmt.Printf("Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
+					if verbose {
+						if oldval, ok := templateVars[key]; ok {
+							fmt.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
+						}
+						fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
 					}
-					fmt.Printf("Setting template variable '%s' to '%v'\n", key, val)
 					templateVars[key] = val
 				}
 			}
 
-			return validate.NaisConfig(resources, templateVars)
+			v := validate.New(resourcePaths)
+			v.Variables = templateVars
+			v.Verbose = verbose
+			return v.Validate()
 		},
 	}
 }

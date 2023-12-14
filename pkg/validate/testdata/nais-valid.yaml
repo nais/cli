@@ -15,7 +15,7 @@ spec:
         - application: app3
           cluster: dev-gcp
           namespace: q2
-        - application: "*"
+        - application: '*'
           namespace: q3
         - application: app4
           permissions:
@@ -36,9 +36,11 @@ spec:
         - host: external-application.example.com
         - host: non-http-service.example.com
           ports:
-            - name: kafka
-              port: 9200
-              protocol: TCP
+            - port: 9200
+        - ipv4: 1.2.3.4
+        - host: non-http-service.example.com
+          ports:
+            - port: 9200
       rules:
         - application: app1
         - application: app2
@@ -46,21 +48,15 @@ spec:
         - application: app3
           cluster: dev-gcp
           namespace: q2
-        - application: "*"
+        - application: '*'
           namespace: q3
   azure:
     application:
       allowAllUsers: true
       claims:
-        extra:
-          - NAVident
-          - azp_name
         groups:
           - id: 00000000-0000-0000-0000-000000000000
       enabled: true
-      replyURLs:
-        - https://myapplication.nav.no/oauth2/callback
-      singlePageApplication: true
       tenant: nav.no
     sidecar:
       autoLogin: true
@@ -96,8 +92,14 @@ spec:
       mountPath: /var/run/configmaps
     - mountPath: /var/run/secrets
       secret: my-secret-file
+    - emptyDir:
+        medium: Memory
+      mountPath: /var/cache
     - mountPath: /var/run/pvc
       persistentVolumeClaim: pvc-name
+  frontend:
+    generatedConfig:
+      mountPath: /usr/share/nginx/html/js/nais.js
   gcp:
     bigQueryDatasets:
       - cascadingDelete: true
@@ -115,6 +117,7 @@ spec:
           numNewerVersions: 2
           withState: ARCHIVED
         name: my-cloud-storage-bucket
+        publicAccessPrevention: true
         retentionPeriodDays: 30
         uniformBucketLevelAccess: true
     permissions:
@@ -160,7 +163,7 @@ spec:
         - /path
         - /internal/*
       enabled: true
-      level: Level4
+      level: idporten-loa-high
       locale: nb
       resources:
         limits:
@@ -202,6 +205,9 @@ spec:
           enabled: true
           name: scope.read
           product: arbeid
+  observability:
+    tracing:
+      enabled: true
   openSearch:
     access: readwrite
     instance: my-open-search-instance
@@ -227,6 +233,9 @@ spec:
     periodSeconds: 5
     port: 8080
     timeout: 1
+  redis:
+    - access: readwrite
+      instance: cache
   replicas:
     cpuThresholdPercentage: 50
     disableAutoScaling: true
@@ -253,11 +262,15 @@ spec:
     port: 8080
     timeout: 1
   strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
     type: RollingUpdate
   terminationGracePeriodSeconds: 60
   tokenx:
     enabled: true
     mountSecretsAsFilesOnly: true
+  ttl: 1h
   vault:
     enabled: true
     paths:
