@@ -7,7 +7,7 @@ require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.15
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-logr/logr v1.3.0
+	github.com/go-logr/logr v1.4.1
 	github.com/magiconair/properties v1.8.7
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
@@ -24,7 +24,7 @@ require (
 	k8s.io/api v0.29.0
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
-	k8s.io/klog/v2 v2.110.1
+	k8s.io/klog/v2 v2.120.0
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	sigs.k8s.io/controller-runtime v0.16.3
 )
