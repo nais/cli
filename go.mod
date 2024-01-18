@@ -7,7 +7,7 @@ require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.15
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-logr/logr v1.3.0
+	github.com/go-logr/logr v1.4.1
 	github.com/magiconair/properties v1.8.7
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
@@ -21,10 +21,10 @@ require (
 	google.golang.org/grpc v1.60.1
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.6
-	k8s.io/api v0.29.0
-	k8s.io/apimachinery v0.29.0
-	k8s.io/client-go v0.29.0
-	k8s.io/klog/v2 v2.110.1
+	k8s.io/api v0.29.1
+	k8s.io/apimachinery v0.29.1
+	k8s.io/client-go v0.29.1
+	k8s.io/klog/v2 v2.120.0
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	sigs.k8s.io/controller-runtime v0.16.3
 )
@@ -89,14 +89,14 @@ require (
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/term v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.14.0 // indirect
+	golang.org/x/tools v0.16.1 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
