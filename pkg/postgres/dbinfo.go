@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
-	"golang.org/x/oauth2"
-
-	corev1 "k8s.io/api/core/v1"
-
+	naisv1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	naisalpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
+	"golang.org/x/oauth2"
+	corev1 "k8s.io/api/core/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -161,7 +161,10 @@ func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
 		Resource: "applications",
 	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
 	if err != nil {
-		return fmt.Errorf("fetchSQLDatabases: unable to get application %q in %q: %w", i.appName, i.namespace, err)
+		if k8serrors.IsNotFound(err) {
+			return i.fetchDBInstanceFromJob(ctx)
+		}
+		return fmt.Errorf("fetchSQLDatabases: unable to get application or naisjob %q in %q: %w", i.appName, i.namespace, err)
 	}
 
 	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, app); err != nil {
@@ -184,6 +187,45 @@ func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
 		if db.Name == i.databaseName {
 			i.multiDB = true
 			i.instanceName = app.Spec.GCP.SqlInstances[0].Name
+			i.user = db.Users[0].Name
+			return nil
+		}
+	}
+
+	return fmt.Errorf("database %q not found for app %q in %q", i.databaseName, i.appName, i.namespace)
+}
+
+func (i *DBInfo) fetchDBInstanceFromJob(ctx context.Context) error {
+	job := &naisv1.Naisjob{}
+	u, err := i.dynamicClient.Resource(schema.GroupVersionResource{
+		Group:    "nais.io",
+		Version:  "v1",
+		Resource: "naisjobs",
+	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("fetchSQLDatabases: unable to get application or naisjob %q in %q: %w", i.appName, i.namespace, err)
+	}
+
+	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, job); err != nil {
+		return fmt.Errorf("fetchSQLDatabases: unable to convert unstructured to application: %w", err)
+	}
+
+	if job.Spec.GCP != nil && len(job.Spec.GCP.SqlInstances) != 1 {
+		return fmt.Errorf("fetchSQLDatabases: expected exactly one sqlinstance, found %d", len(job.Spec.GCP.SqlInstances))
+	}
+
+	if len(job.Spec.GCP.SqlInstances[0].Databases) == 1 {
+		return nil
+	}
+
+	if i.databaseName == "" {
+		return fmt.Errorf("multiple databases found for app %q in %q, please specify one using the --database flag", i.appName, i.namespace)
+	}
+
+	for _, db := range job.Spec.GCP.SqlInstances[0].Databases {
+		if db.Name == i.databaseName {
+			i.multiDB = true
+			i.instanceName = job.Spec.GCP.SqlInstances[0].Name
 			i.user = db.Users[0].Name
 			return nil
 		}
