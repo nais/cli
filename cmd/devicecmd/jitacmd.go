@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
+
+	"github.com/nais/cli/pkg/naisdevice"
 )
 
 func jitaCommand() *cli.Command {
@@ -33,8 +34,7 @@ func jitaCommand() *cli.Command {
 		},
 		Action: func(context *cli.Context) error {
 			gateway := context.Args().First()
-			naisdevice.AccessPrivilegedGateway(gateway)
-			return nil
+			return naisdevice.AccessPrivilegedGateway(gateway)
 		},
 	}
 }

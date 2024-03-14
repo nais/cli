@@ -4,12 +4,18 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/device/pkg/device-agent/open"
 	"github.com/nais/device/pkg/pb"
+
+	"github.com/nais/cli/pkg/urlopen"
 )
 
-func AccessPrivilegedGateway(gatewayName string) {
-	open.Open(fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName))
+func AccessPrivilegedGateway(gatewayName string) error {
+	url := fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName)
+	err := urlopen.Open(url)
+	if err != nil {
+		return fmt.Errorf("unable to open your browser, please open this manually: %s", url)
+	}
+	return nil
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
