@@ -20,7 +20,7 @@ require (
 	google.golang.org/api v0.167.0
 	google.golang.org/grpc v1.62.1
 	gopkg.in/yaml.v3 v3.0.1
-	honnef.co/go/tools v0.4.6
+	honnef.co/go/tools v0.4.7
 	k8s.io/api v0.29.2
 	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.2
