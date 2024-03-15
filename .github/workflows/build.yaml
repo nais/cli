@@ -77,15 +77,17 @@ jobs:
       - uses: navikt/github-app-token-generator@v1
         id: get-homebrew-token
         with:
-          private-key: bullshit_debug_1
-          app-id: bullshit_debug_2
+          private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
+          app-id: "holloi:${{ secrets.NAIS_APP_ID }}:foo"
           repo: nais/homebrew-tap
+
       - uses: navikt/github-app-token-generator@v1
         id: get-scoop-token
         with:
           private-key: ${{ secrets.NAIS_APP_PRIVATE_KEY }}
           app-id: ${{ secrets.NAIS_APP_ID }}
           repo: nais/scoop-bucket
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
