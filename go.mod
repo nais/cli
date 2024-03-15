@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	cloud.google.com/go/cloudsqlconn v1.5.2
-	github.com/GoogleCloudPlatform/cloudsql-proxy v1.33.15
+	github.com/GoogleCloudPlatform/cloudsql-proxy v1.34.0
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.4.1
@@ -85,7 +85,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.23.0 // indirect
 	go.opentelemetry.io/otel/trace v1.23.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.26.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231006140011-7918f672742d // indirect
