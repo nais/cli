@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	naisv1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
@@ -143,12 +144,18 @@ func (i *DBInfo) dbConnectionMultiDB(ctx context.Context) (*ConnectionInfo, erro
 }
 
 func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo {
+	u, err := url.Parse(getSecretDataValue(secret, "_URL"))
+	if err != nil {
+		panic(err)
+	}
+
 	return &ConnectionInfo{
 		username: getSecretDataValue(secret, "_USERNAME"),
 		password: getSecretDataValue(secret, "_PASSWORD"),
 		dbName:   getSecretDataValue(secret, "_DATABASE"),
 		port:     getSecretDataValue(secret, "_PORT"),
 		host:     getSecretDataValue(secret, "_HOST"),
+		url:      u,
 		instance: instance,
 	}
 }
@@ -271,18 +278,20 @@ type ConnectionInfo struct {
 	instance string
 	port     string
 	host     string
+	url      *url.URL
 }
 
-func (c *ConnectionInfo) ConnectionString() string {
+func (c *ConnectionInfo) ProxyConnectionString() string {
 	return fmt.Sprintf("host=%v user=%v dbname=%v password=%v sslmode=disable", c.instance, c.username, c.dbName, c.password)
 }
 
 func (c *ConnectionInfo) JDBCURL() string {
-	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v", c.username, c.password, c.host, c.port, c.dbName)
+	return c.url.String()
 }
 
 func (c *ConnectionInfo) SetPassword(password string) {
 	c.password = password
+	c.url.User = url.UserPassword(c.username, password)
 }
 
 func getSecretDataValue(secret corev1.Secret, suffix string) string {

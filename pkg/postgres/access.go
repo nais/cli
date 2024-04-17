@@ -46,7 +46,7 @@ func sqlExecAsAppUser(ctx context.Context, appName, namespace, cluster, database
 		return err
 	}
 
-	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ConnectionString())
+	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
 		return err
 	}

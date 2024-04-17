@@ -211,7 +211,7 @@ func ListUsers(ctx context.Context, appName, cluster, namespace, database string
 		return err
 	}
 
-	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ConnectionString())
+	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func AddUser(ctx context.Context, appName, username, password, cluster, namespac
 		return err
 	}
 
-	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ConnectionString())
+	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
 		return err
 	}
