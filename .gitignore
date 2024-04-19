@@ -24,9 +24,6 @@ secret.yml
 nais
 dist/
 
-# asdf
-.tool-versions
-
 # Signing certificates on GHA
 nais.key
 nais.crt
