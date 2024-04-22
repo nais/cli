@@ -73,7 +73,11 @@ func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInf
 			secret.Data[key] = []byte(dbConnectionInfo.password)
 		}
 		if strings.HasSuffix(key, "_URL") {
-			secret.Data[key] = []byte(dbConnectionInfo.JDBCURL())
+			if strings.HasSuffix(key, "_JDBC_URL") {
+				secret.Data[key] = []byte(dbConnectionInfo.jdbcUrl.String())
+			} else {
+				secret.Data[key] = []byte(dbConnectionInfo.url.String())
+			}
 		}
 	}
 

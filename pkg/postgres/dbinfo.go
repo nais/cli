@@ -144,9 +144,21 @@ func (i *DBInfo) dbConnectionMultiDB(ctx context.Context) (*ConnectionInfo, erro
 }
 
 func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo {
-	u, err := url.Parse(getSecretDataValue(secret, "_URL"))
-	if err != nil {
-		panic(err)
+	var pgUrl *url.URL
+	var jdbcUrl *url.URL
+	var err error
+	for name, val := range secret.Data {
+		if strings.HasSuffix(name, "_URL") {
+			value := string(val)
+			if strings.HasPrefix("jdbc:", value) {
+				jdbcUrl, err = url.Parse(value)
+			} else {
+				pgUrl, err = url.Parse(value)
+			}
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 
 	return &ConnectionInfo{
@@ -155,7 +167,8 @@ func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo
 		dbName:   getSecretDataValue(secret, "_DATABASE"),
 		port:     getSecretDataValue(secret, "_PORT"),
 		host:     getSecretDataValue(secret, "_HOST"),
-		url:      u,
+		url:      pgUrl,
+		jdbcUrl:  jdbcUrl,
 		instance: instance,
 	}
 }
@@ -279,19 +292,23 @@ type ConnectionInfo struct {
 	port     string
 	host     string
 	url      *url.URL
+	jdbcUrl  *url.URL
 }
 
 func (c *ConnectionInfo) ProxyConnectionString() string {
 	return fmt.Sprintf("host=%v user=%v dbname=%v password=%v sslmode=disable", c.instance, c.username, c.dbName, c.password)
 }
 
-func (c *ConnectionInfo) JDBCURL() string {
-	return c.url.String()
-}
-
 func (c *ConnectionInfo) SetPassword(password string) {
 	c.password = password
-	c.url.User = url.UserPassword(c.username, password)
+	if c.url != nil {
+		c.url.User = url.UserPassword(c.username, password)
+	}
+	if c.jdbcUrl != nil {
+		queries := c.jdbcUrl.Query()
+		queries.Set("password", password)
+		c.jdbcUrl.RawQuery = queries.Encode()
+	}
 }
 
 func getSecretDataValue(secret corev1.Secret, suffix string) string {
