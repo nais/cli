@@ -2,6 +2,8 @@ module github.com/nais/cli
 
 go 1.22
 
+toolchain go1.22.2
+
 require (
 	cloud.google.com/go/cloudsqlconn v1.9.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.35.1
