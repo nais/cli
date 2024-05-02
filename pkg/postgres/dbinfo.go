@@ -308,6 +308,16 @@ func (c *ConnectionInfo) SetPassword(password string) {
 		queries := c.jdbcUrl.Query()
 		queries.Set("password", password)
 		c.jdbcUrl.RawQuery = queries.Encode()
+	} else {
+		queries := c.url.Query()
+		queries.Set("password", password)
+		queries.Set("user", c.username)
+		c.jdbcUrl = &url.URL{
+			Scheme:   "jdbc:postgres",
+			Host:     c.url.Host,
+			Path:     c.dbName,
+			RawQuery: queries.Encode(),
+		}
 	}
 }
 
