@@ -150,7 +150,7 @@ func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo
 	for name, val := range secret.Data {
 		if strings.HasSuffix(name, "_URL") {
 			value := string(val)
-			if strings.HasPrefix("jdbc:", value) {
+			if strings.HasSuffix(name, "_JDBC_URL") {
 				jdbcUrl, err = url.Parse(value)
 			} else {
 				pgUrl, err = url.Parse(value)
@@ -308,12 +308,12 @@ func (c *ConnectionInfo) SetPassword(password string) {
 		queries := c.jdbcUrl.Query()
 		queries.Set("password", password)
 		c.jdbcUrl.RawQuery = queries.Encode()
-	} else {
+	} else if c.url != nil {
 		queries := c.url.Query()
 		queries.Set("password", password)
 		queries.Set("user", c.username)
 		c.jdbcUrl = &url.URL{
-			Scheme:   "jdbc:postgres",
+			Scheme:   "jdbc:postgresql",
 			Host:     c.url.Host,
 			Path:     c.dbName,
 			RawQuery: queries.Encode(),
