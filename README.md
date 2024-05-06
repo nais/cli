@@ -1,6 +1,6 @@
 # nais-cli - A NAIS command-line interface
 
-See NAIS doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/?h=install)
+See NAIS doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
 
 ## Local Development
 
