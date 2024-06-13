@@ -3,8 +3,8 @@ name: Publish release
 on:
   push:
     paths-ignore:
-      - '**.md'
-      - 'doc/**'
+      - "**.md"
+      - "doc/**"
 
 concurrency:
   group: ${{ github.ref }}
@@ -34,7 +34,7 @@ jobs:
       - name: Extract version of Go to use
         run: echo "GOVERSION=$(cat go.mod | grep -w "go" | awk ' { print $2 } ' | grep -w "^[^v]")" >> $GITHUB_ENV
       - name: Set up Go
-        uses: actions/setup-go@v5.0.0
+        uses: actions/setup-go@v5.0.1
         with:
           go-version: ${{ env.GOVERSION }}
 
@@ -59,7 +59,7 @@ jobs:
       - name: Extract version of Go to use
         run: echo "GOVERSION=$(cat go.mod | grep -w "go" | awk ' { print $2 } ' | grep -w "^[^v]")" >> $GITHUB_ENV
       - name: Set up Go
-        uses: actions/setup-go@v5.0.0
+        uses: actions/setup-go@v5.0.1
         with:
           go-version: ${{ env.GOVERSION }}
 
@@ -89,7 +89,7 @@ jobs:
           repo: nais/scoop-bucket
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: v1.7.0
@@ -111,25 +111,25 @@ jobs:
     steps:
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@55bd3a7c6e2ae7cf1877fd1ccb9d54c0503c457c" # ratchet:google-github-actions/auth@v1.0.0
+        uses: "google-github-actions/auth@v2.1.3"
         with:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: "gh-cli@nais-io.iam.gserviceaccount.com"
           token_format: "access_token"
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
         with:
           install_components: beta
 
-      - name: 'Upload new deb file to Google repository'
+      - name: "Upload new deb file to Google repository"
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
           echo "Version ${VERSION} was released, adding to PPA"
-  
+
           # Fetch latest deb
           wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
-          
+
           # Upload to GAR
           gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}.deb --location europe-north1
