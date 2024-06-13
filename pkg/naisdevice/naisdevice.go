@@ -18,10 +18,11 @@ func agentConnection() (*grpc.ClientConn, error) {
 	}
 	socket := filepath.Join(userConfigDir, "agent.sock")
 
-	connection, err := grpc.Dial(
+	connection, err := grpc.NewClient(
 		"unix:"+socket,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+
 	if err != nil {
 		return nil, formatGrpcError(err)
 	}

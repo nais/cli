@@ -191,6 +191,10 @@ func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
 		return fmt.Errorf("fetchSQLDatabases: unable to convert unstructured to application: %w", err)
 	}
 
+	if app.Spec.GCP == nil {
+		return fmt.Errorf("fetchSQLDatabases: no GCP configuration found for app %q in %q", i.appName, i.namespace)
+	}
+
 	if app.Spec.GCP != nil && len(app.Spec.GCP.SqlInstances) != 1 {
 		return fmt.Errorf("fetchSQLDatabases: expected exactly one sqlinstance, found %d", len(app.Spec.GCP.SqlInstances))
 	}
