@@ -13,12 +13,11 @@ type KafkaPool int64
 const (
 	NavDev KafkaPool = iota
 	NavProd
-	NavIntegrationTest
 	NavInfrastructure
 	DevNaisDev
 )
 
-var KafkaPools = []string{"nav-dev", "nav-prod", "nav-integration-test", "nav-infrastructure", "dev-nais-dev"}
+var KafkaPools = []string{"nav-dev", "nav-prod", "nav-infrastructure", "dev-nais-dev"}
 
 func KafkaPoolFromString(pool string) (KafkaPool, error) {
 	switch strings.ToLower(pool) {
@@ -26,8 +25,6 @@ func KafkaPoolFromString(pool string) (KafkaPool, error) {
 		return NavDev, nil
 	case "nav-prod":
 		return NavProd, nil
-	case "nav-integration-test":
-		return NavIntegrationTest, nil
 	case "nav-infrastructure":
 		return NavInfrastructure, nil
 	case "dev-nais-dev":
