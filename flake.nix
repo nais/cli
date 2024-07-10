@@ -35,11 +35,11 @@
           inherit version;
           src = ./.;
           vendorHash = "sha256-dpDubwH6uSS4tiMhJIDhbdSS/GAuXlKa0WW85DS/lOk=";
+          postInstall = ''
+            mv $out/bin/cli $out/bin/nais
+          '';
         };
         default = nais;
-        postInstall = ''
-          mv $out/bin/cli $out/bin/nais
-        '';
       }
     );
 
