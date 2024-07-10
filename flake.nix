@@ -46,7 +46,6 @@
       };
     });
 
-    defaultPackage = withSystem (system: self.packages.${system}.nais);
     formatter = withPkgs (pkgs: pkgs.nixfmt-rfc-style);
   };
 }
