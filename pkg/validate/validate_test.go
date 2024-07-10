@@ -1,18 +1,25 @@
 package validate
 
 import (
+	_ "embed"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/xeipuuv/gojsonschema"
 )
+
+//go:embed schema.json
+var schema []byte
 
 func TestValidate(t *testing.T) {
 	t.Run("non-templated yaml", func(t *testing.T) {
 		v := New([]string{"testdata/nais-valid.yaml"})
+		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 		err := v.Validate()
 		assert.NoError(t, err)
 
 		v = New([]string{"testdata/nais-invalid.yaml"})
+		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 		err = v.Validate()
 		assert.Error(t, err)
 	})
@@ -26,11 +33,13 @@ func TestValidate(t *testing.T) {
 
 					v := New([]string{"testdata/nais-valid-template.yaml"})
 					v.Variables = vars
+					v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 					err = v.Validate()
 					assert.NoError(t, err)
 
 					v = New([]string{"testdata/nais-invalid-template.yaml"})
 					v.Variables = vars
+					v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 					err = v.Validate()
 					assert.Error(t, err)
 				})
@@ -47,11 +56,13 @@ func TestValidate(t *testing.T) {
 
 			v := New([]string{"testdata/nais-valid-template.yaml"})
 			v.Variables = vars
+			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 			err := v.Validate()
 			assert.NoError(t, err)
 
 			v = New([]string{"testdata/nais-invalid-template.yaml"})
 			v.Variables = vars
+			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 			err = v.Validate()
 			assert.Error(t, err)
 		})
