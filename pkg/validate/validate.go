@@ -1,6 +1,7 @@
 package validate
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"strings"
@@ -18,11 +19,13 @@ type Validate struct {
 	ResourcePaths []string
 	Variables     TemplateVariables
 	Verbose       bool
+	SchemaLoader  gojsonschema.JSONLoader
 }
 
 func New(resourcePaths []string) Validate {
 	return Validate{
 		ResourcePaths: resourcePaths,
+		SchemaLoader:  gojsonschema.NewReferenceLoader(NaisManifestSchema),
 	}
 }
 
@@ -57,10 +60,9 @@ func (v Validate) Validate() error {
 			return fmt.Errorf("failed to convert yaml to json: %w", err)
 		}
 
-		schemaLoader := gojsonschema.NewReferenceLoader(NaisManifestSchema)
 		documentLoader := gojsonschema.NewGoLoader(m)
 
-		result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+		result, err := gojsonschema.Validate(v.SchemaLoader, documentLoader)
 		if err != nil {
 			return fmt.Errorf("failed to validate nais manifest: %w", err)
 		}
