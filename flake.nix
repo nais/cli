@@ -17,20 +17,19 @@
         };
       });
     };
-    each = callback:
-      nixpkgs.lib.genAttrs ["x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin"] (
-        system: let
-          pkgs = import nixpkgs {
+    withSystem = nixpkgs.lib.genAttrs ["x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin"];
+    withPkgs = callback:
+      withSystem (
+        system:
+          callback
+          (import nixpkgs {
             inherit system;
             overlays = [goOverlay];
-          };
-        in (
-          callback system pkgs
-        )
+          })
       );
   in {
-    packages = each (
-      system: pkgs: rec {
+    packages = withPkgs (
+      pkgs: rec {
         nais = pkgs.buildGoModule {
           pname = "nais";
           inherit version;
@@ -41,13 +40,13 @@
       }
     );
 
-    devShells = each (system: pkgs: {
+    devShells = withPkgs (pkgs: {
       default = pkgs.mkShell {
         buildInputs = with pkgs; [go gopls gotools go-tools];
       };
     });
 
-    defaultPackage = each (system: _: self.packages.${system}.nais);
-    formatter = each (_: pkgs: pkgs.nixfmt-rfc-style);
+    defaultPackage = withSystem (system: self.packages.${system}.nais);
+    formatter = withPkgs (pkgs: pkgs.nixfmt-rfc-style);
   };
 }
