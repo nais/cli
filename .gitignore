@@ -27,3 +27,5 @@ dist/
 # Signing certificates on GHA
 nais.key
 nais.crt
+
+.direnv
