@@ -34,7 +34,7 @@
           pname = "nais";
           inherit version;
           src = ./.;
-          vendorHash = "sha256-AgRQO3h7Atq4lnieTBohzrwrw0lRcbQi2cvpeol3owM=";
+          vendorHash = "sha256-dpDubwH6uSS4tiMhJIDhbdSS/GAuXlKa0WW85DS/lOk=";
         };
         default = nais;
       }
