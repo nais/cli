@@ -66,5 +66,15 @@ func TestValidate(t *testing.T) {
 			err = v.Validate()
 			assert.Error(t, err)
 		})
+
+		t.Run("no variables provided", func(t *testing.T) {
+			v := New([]string{"testdata/nais-valid-template.yaml"})
+			err := v.Validate()
+			assert.NoError(t, err)
+
+			v = New([]string{"testdata/nais-invalid-template.yaml"})
+			err = v.Validate()
+			assert.Error(t, err)
+		})
 	})
 }

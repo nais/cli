@@ -7,3 +7,10 @@ metadata:
     team: {{team}}
 spec:
   image: {{image}}
+  {{#if env}}
+  env:
+  {{#each env}}
+    - name: {{@key}}
+      key: {{this}}
+  {{/each}}
+  {{/if}}

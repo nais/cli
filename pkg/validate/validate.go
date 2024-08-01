@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ghodss/yaml"
+	"github.com/goccy/go-yaml"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -14,6 +14,10 @@ const (
 	// NaisManifestSchema is the path to the JSON schema for validating a nais manifest
 	NaisManifestSchema = "https://storage.googleapis.com/nais-json-schema-2c91/nais-all.json"
 )
+
+func init() {
+	gojsonschema.Locale = locale{}
+}
 
 type Validate struct {
 	ResourcePaths []string
@@ -30,39 +34,16 @@ func New(resourcePaths []string) Validate {
 }
 
 func (v Validate) Validate() error {
-	fail := make([]string, 0)
+	schema := gojsonschema.NewReferenceLoader(NaisManifestSchema)
+	invalid := make([]string, 0)
 
 	for _, file := range v.ResourcePaths {
-		if _, err := os.Stat(file); err != nil {
-			return fmt.Errorf("file %s does not exist", file)
-		}
-
-		content, err := os.ReadFile(file)
+		document, err := v.loadDocument(file)
 		if err != nil {
-			return fmt.Errorf("failed to read file %s: %w", file, err)
+			return err
 		}
 
-		content, err = templatedFile(content, v.Variables)
-		if err != nil {
-			errMsg := strings.ReplaceAll(err.Error(), "\n", ": ")
-			return fmt.Errorf("%s: %s", file, errMsg)
-		}
-
-		if v.Verbose {
-			fmt.Printf("[🖨️] Printing %q...\n", file)
-			fmt.Println("---")
-			fmt.Println(string(content))
-		}
-
-		var m interface{}
-		err = yaml.Unmarshal(content, &m)
-		if err != nil {
-			return fmt.Errorf("failed to convert yaml to json: %w", err)
-		}
-
-		documentLoader := gojsonschema.NewGoLoader(m)
-
-		result, err := gojsonschema.Validate(v.SchemaLoader, documentLoader)
+		result, err := gojsonschema.Validate(schema, document)
 		if err != nil {
 			return fmt.Errorf("failed to validate nais manifest: %w", err)
 		}
@@ -70,17 +51,78 @@ func (v Validate) Validate() error {
 		if result.Valid() {
 			fmt.Printf("[✅] %q is valid\n", file)
 		} else {
-			fmt.Printf("[❌] %q is not valid and has the following errors:\n", file)
-			for _, desc := range result.Errors() {
-				fmt.Printf("- %s\n", desc)
-			}
-			fail = append(fail, file)
+			fmt.Printf("[❌] %q is invalid\n", file)
+			printErrors(result.Errors())
+			invalid = append(invalid, file)
 		}
 	}
 
-	if len(fail) > 0 {
-		return fmt.Errorf("validation failed for %d file(s): %s", len(fail), strings.Join(fail, ", "))
+	if len(invalid) > 0 {
+		return fmt.Errorf("validation failed for %d file(s): %s", len(invalid), strings.Join(invalid, ", "))
 	}
 
 	return nil
+}
+
+func (v Validate) loadDocument(name string) (gojsonschema.JSONLoader, error) {
+	_, err := os.Stat(name)
+	if err != nil {
+		return nil, fmt.Errorf("file %s does not exist", name)
+	}
+
+	raw, err := os.ReadFile(name)
+	if err != nil {
+		return nil, fmt.Errorf("reading file %s: %w", name, err)
+	}
+
+	rendered, err := ExecTemplate(raw, v.Variables)
+	if err != nil {
+		errMsg := strings.ReplaceAll(err.Error(), "\n", ": ")
+		return nil, fmt.Errorf("%s: %s", name, errMsg)
+	}
+
+	if v.Verbose {
+		fmt.Printf("[🖨️] Printing %q...\n---\n%s", name, rendered)
+	}
+
+	var src any
+	err = yaml.Unmarshal(rendered, &src)
+	if err != nil {
+		return nil, fmt.Errorf("parsing yaml: %w", err)
+	}
+
+	return gojsonschema.NewGoLoader(src), nil
+}
+
+func printErrors(errors []gojsonschema.ResultError) {
+	for _, err := range errors {
+		// skip noisy root error ("Must validate one and only one schema (oneOf)")
+		if err.Field() == gojsonschema.STRING_ROOT_SCHEMA_PROPERTY && err.Type() == "number_one_of" {
+			continue
+		}
+
+		fmt.Printf(" | %q:\n", err.Field())
+		fmt.Printf(" |   - %s\n", err.Description())
+	}
+}
+
+// locale overrides the default error strings from gojsonschema.DefaultLocale
+type locale struct {
+	gojsonschema.DefaultLocale
+}
+
+func (l locale) AdditionalPropertyNotAllowed() string {
+	return `unsupported field "{{.property}}"; it might be misspelled or incorrectly indented. Fields are case sensitive.`
+}
+
+func (l locale) Enum() string {
+	return `invalid value: must be one of [{{.allowed}}]`
+}
+
+func (l locale) InvalidType() string {
+	return `invalid type: expected "{{.expected}}", found "{{.given}}"`
+}
+
+func (l locale) Required() string {
+	return `missing required field "{{.property}}"`
 }
