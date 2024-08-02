@@ -7,10 +7,10 @@ toolchain go1.22.4
 require (
 	cloud.google.com/go/cloudsqlconn v1.11.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.35.4
-	github.com/aymerick/raymond v2.0.2+incompatible
-	github.com/ghodss/yaml v1.0.0
 	github.com/go-logr/logr v1.4.2
+	github.com/goccy/go-yaml v1.12.0
 	github.com/magiconair/properties v1.8.7
+	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
 	github.com/nais/liberator v0.0.0-20240604120701-30ca18330205
@@ -34,8 +34,12 @@ require (
 require (
 	cloud.google.com/go/auth v0.5.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
+	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
+	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 )
 
 require (

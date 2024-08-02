@@ -2,5 +2,9 @@
   "app": "some-app",
   "namespace": "some-namespace",
   "team": "some-team",
-  "image": "some-image"
+  "image": "some-image",
+  "env": {
+    "key1": "value1",
+    "key2": "value2"
+  }
 }
