@@ -2,11 +2,11 @@ package validate
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/goccy/go-yaml"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -34,25 +34,32 @@ func New(resourcePaths []string) Validate {
 }
 
 func (v Validate) Validate() error {
-	schema := gojsonschema.NewReferenceLoader(NaisManifestSchema)
 	invalid := make([]string, 0)
 
 	for _, file := range v.ResourcePaths {
-		document, err := v.loadDocument(file)
+		documents, err := v.loadFile(file)
 		if err != nil {
 			return err
 		}
 
-		result, err := gojsonschema.Validate(schema, document)
-		if err != nil {
-			return fmt.Errorf("failed to validate nais manifest: %w", err)
+		errors := make([]gojsonschema.ResultError, 0)
+		for _, document := range documents {
+			documentLoader := gojsonschema.NewBytesLoader(document)
+			result, err := gojsonschema.Validate(v.SchemaLoader, documentLoader)
+			if err != nil {
+				return fmt.Errorf("failed to validate nais manifest: %w", err)
+			}
+
+			if !result.Valid() {
+				errors = append(errors, result.Errors()...)
+			}
 		}
 
-		if result.Valid() {
+		if len(errors) == 0 {
 			fmt.Printf("[✅] %q is valid\n", file)
 		} else {
 			fmt.Printf("[❌] %q is invalid\n", file)
-			printErrors(result.Errors())
+			printErrors(errors)
 			invalid = append(invalid, file)
 		}
 	}
@@ -64,7 +71,7 @@ func (v Validate) Validate() error {
 	return nil
 }
 
-func (v Validate) loadDocument(name string) (gojsonschema.JSONLoader, error) {
+func (v Validate) loadFile(name string) ([]json.RawMessage, error) {
 	_, err := os.Stat(name)
 	if err != nil {
 		return nil, fmt.Errorf("file %s does not exist", name)
@@ -75,23 +82,16 @@ func (v Validate) loadDocument(name string) (gojsonschema.JSONLoader, error) {
 		return nil, fmt.Errorf("reading file %s: %w", name, err)
 	}
 
-	rendered, err := ExecTemplate(raw, v.Variables)
+	templated, err := ExecTemplate(raw, v.Variables)
 	if err != nil {
-		errMsg := strings.ReplaceAll(err.Error(), "\n", ": ")
-		return nil, fmt.Errorf("%s: %s", name, errMsg)
+		return nil, err
 	}
 
 	if v.Verbose {
-		fmt.Printf("[🖨️] Printing %q...\n---\n%s", name, rendered)
+		fmt.Printf("[🖨️] Printing %q...\n---\n%s", name, templated)
 	}
 
-	var src any
-	err = yaml.Unmarshal(rendered, &src)
-	if err != nil {
-		return nil, fmt.Errorf("parsing yaml: %w", err)
-	}
-
-	return gojsonschema.NewGoLoader(src), nil
+	return YAMLToJSONMessages(templated)
 }
 
 func printErrors(errors []gojsonschema.ResultError) {

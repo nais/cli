@@ -24,6 +24,18 @@ func TestValidate(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("multi-document yaml", func(t *testing.T) {
+		v := New([]string{"testdata/nais-valid-multidocument.yaml"})
+		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
+		err := v.Validate()
+		assert.NoError(t, err)
+
+		v = New([]string{"testdata/nais-invalid-multidocument.yaml"})
+		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
+		err = v.Validate()
+		assert.Error(t, err)
+	})
+
 	t.Run("templated yaml", func(t *testing.T) {
 		t.Run("variables from file", func(t *testing.T) {
 			for _, file := range []string{"testdata/vars.json", "testdata/vars.yaml"} {

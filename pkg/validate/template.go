@@ -1,8 +1,11 @@
 package validate
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"strings"
@@ -95,4 +98,34 @@ func ExecTemplate(data []byte, ctx TemplateVariables) ([]byte, error) {
 	}
 
 	return []byte(output), nil
+}
+
+// YAMLToJSONMessages converts raw multi-document YAML bytes to a slice of JSON messages.
+func YAMLToJSONMessages(data []byte) ([]json.RawMessage, error) {
+	messages := make([]json.RawMessage, 0)
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+
+	for {
+		content := new(any)
+		err := decoder.Decode(content)
+		if errors.Is(err, io.EOF) {
+			break
+		} else if err != nil {
+			return nil, err
+		}
+
+		raw, err := yaml.Marshal(content)
+		if err != nil {
+			return nil, err
+		}
+
+		data, err := yaml.YAMLToJSON(raw)
+		if err != nil {
+			return nil, err
+		}
+
+		messages = append(messages, data)
+	}
+
+	return messages, nil
 }

@@ -1,0 +1,20 @@
+---
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: some-app
+  namespace: some-team
+  labels:
+    team: some-team
+spec:
+  image: some-image
+---
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: some-other-app
+  namespace: some-team
+  labels:
+    team: some-team
+spec:
+  image: some-other-image
