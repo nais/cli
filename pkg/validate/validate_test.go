@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -12,81 +13,92 @@ import (
 var schema []byte
 
 func TestValidate(t *testing.T) {
-	t.Run("non-templated yaml", func(t *testing.T) {
-		v := New([]string{"testdata/nais-valid.yaml"})
-		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-		err := v.Validate()
-		assert.NoError(t, err)
+	schemaLoader := gojsonschema.NewBytesLoader(schema)
 
-		v = New([]string{"testdata/nais-invalid.yaml"})
-		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-		err = v.Validate()
-		assert.Error(t, err)
+	jsonVars, err := TemplateVariablesFromFile("testdata/vars.json")
+	require.NoError(t, err)
+	require.NotEmpty(t, jsonVars)
+
+	yamlVars, err := TemplateVariablesFromFile("testdata/vars.yaml")
+	require.NoError(t, err)
+	require.NotEmpty(t, yamlVars)
+
+	sliceVars := TemplateVariablesFromSlice([]string{
+		"app=some-app",
+		"namespace=some-namespace",
+		"image=some-image",
+		"team=some-team",
 	})
+	require.Contains(t, sliceVars, "app")
+	require.Contains(t, sliceVars, "namespace")
+	require.Contains(t, sliceVars, "image")
+	require.Contains(t, sliceVars, "team")
 
-	t.Run("multi-document yaml", func(t *testing.T) {
-		v := New([]string{"testdata/nais-valid-multidocument.yaml"})
-		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-		err := v.Validate()
-		assert.NoError(t, err)
+	for name, test := range map[string]struct {
+		path    string
+		vars    TemplateVariables
+		wantErr bool
+	}{
+		"valid": {
+			path: "testdata/nais-valid.yaml",
+		},
+		"valid multi-document": {
+			path: "testdata/nais-valid-multidocument.yaml",
+		},
+		"valid template with json vars": {
+			path: "testdata/nais-valid-template.yaml",
+			vars: jsonVars,
+		},
+		"valid template with yaml vars": {
+			path: "testdata/nais-valid-template.yaml",
+			vars: yamlVars,
+		},
+		"valid template with slice vars": {
+			path: "testdata/nais-valid-template.yaml",
+			vars: sliceVars,
+		},
+		"valid template with empty vars": {
+			path: "testdata/nais-valid-template.yaml",
+		},
+		"invalid": {
+			path:    "testdata/nais-invalid.yaml",
+			wantErr: true,
+		},
+		"invalid multi-document": {
+			path:    "testdata/nais-invalid-multidocument.yaml",
+			wantErr: true,
+		},
+		"invalid template with json vars": {
+			path:    "testdata/nais-invalid-template.yaml",
+			vars:    jsonVars,
+			wantErr: true,
+		},
+		"invalid template with yaml vars": {
+			path:    "testdata/nais-invalid-template.yaml",
+			vars:    yamlVars,
+			wantErr: true,
+		},
+		"invalid template with slice vars": {
+			path:    "testdata/nais-invalid-template.yaml",
+			vars:    sliceVars,
+			wantErr: true,
+		},
+		"invalid template with empty vars": {
+			path:    "testdata/nais-invalid-template.yaml",
+			wantErr: true,
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			v := New([]string{test.path})
+			v.SchemaLoader = schemaLoader
+			v.Variables = test.vars
 
-		v = New([]string{"testdata/nais-invalid-multidocument.yaml"})
-		v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-		err = v.Validate()
-		assert.Error(t, err)
-	})
-
-	t.Run("templated yaml", func(t *testing.T) {
-		t.Run("variables from file", func(t *testing.T) {
-			for _, file := range []string{"testdata/vars.json", "testdata/vars.yaml"} {
-				t.Run(file, func(t *testing.T) {
-					vars, err := TemplateVariablesFromFile(file)
-					assert.NoError(t, err)
-
-					v := New([]string{"testdata/nais-valid-template.yaml"})
-					v.Variables = vars
-					v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-					err = v.Validate()
-					assert.NoError(t, err)
-
-					v = New([]string{"testdata/nais-invalid-template.yaml"})
-					v.Variables = vars
-					v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-					err = v.Validate()
-					assert.Error(t, err)
-				})
+			err := v.Validate()
+			if test.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
-
-		t.Run("variables from slice", func(t *testing.T) {
-			vars := TemplateVariablesFromSlice([]string{
-				"app=some-app",
-				"namespace=some-namespace",
-				"image=some-image",
-				"team=some-team",
-			})
-
-			v := New([]string{"testdata/nais-valid-template.yaml"})
-			v.Variables = vars
-			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-			err := v.Validate()
-			assert.NoError(t, err)
-
-			v = New([]string{"testdata/nais-invalid-template.yaml"})
-			v.Variables = vars
-			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
-			err = v.Validate()
-			assert.Error(t, err)
-		})
-
-		t.Run("no variables provided", func(t *testing.T) {
-			v := New([]string{"testdata/nais-valid-template.yaml"})
-			err := v.Validate()
-			assert.NoError(t, err)
-
-			v = New([]string{"testdata/nais-invalid-template.yaml"})
-			err = v.Validate()
-			assert.Error(t, err)
-		})
-	})
+	}
 }
