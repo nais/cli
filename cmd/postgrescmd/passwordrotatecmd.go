@@ -41,7 +41,7 @@ func passwordRotateCommand() *cli.Command {
 			cluster := context.String("context")
 			database := context.String("database")
 
-			return postgres.RotatePassword(context.Context, appName, namespace, cluster, database)
+			return postgres.RotatePassword(context.Context, appName, cluster, namespace, database)
 		},
 	}
 }
