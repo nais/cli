@@ -18,7 +18,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/oauth2 v0.22.0
 	golang.org/x/vuln v1.1.3
-	google.golang.org/api v0.193.0
+	google.golang.org/api v0.194.0
 	google.golang.org/grpc v1.65.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.5.1
@@ -31,7 +31,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.9.0 // indirect
+	cloud.google.com/go/auth v0.9.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
