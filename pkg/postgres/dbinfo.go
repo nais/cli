@@ -36,10 +36,10 @@ type DBInfo struct {
 	user         string
 }
 
-func NewDBInfo(appName, namespace, context, databaseName string) (*DBInfo, error) {
+func NewDBInfo(appName, namespace, cluster, databaseName string) (*DBInfo, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
-		CurrentContext: context,
+		CurrentContext: cluster,
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
