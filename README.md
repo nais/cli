@@ -31,4 +31,5 @@ kubectl create namespace test
 
 ```
 make nais-cli
+bin/nais --version
 ```
