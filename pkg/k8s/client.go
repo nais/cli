@@ -20,9 +20,12 @@ type Client struct {
 	ctrl.Client
 }
 
-func getConfig() *rest.Config {
+func getConfig(overrides []ClientOverride) *rest.Config {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
+	for _, override := range overrides {
+		override(configOverrides)
+	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
@@ -38,9 +41,17 @@ func InitScheme(scheme *runtime.Scheme) {
 	}
 }
 
-func SetupClient() ctrl.Client {
+type ClientOverride func(*clientcmd.ConfigOverrides)
+
+func WithKubeContext(kubeCtx string) ClientOverride {
+	return func(overrides *clientcmd.ConfigOverrides) {
+		overrides.CurrentContext = kubeCtx
+	}
+}
+
+func SetupClient(overrides ...ClientOverride) ctrl.Client {
 	InitScheme(scheme)
-	config := getConfig()
+	config := getConfig(overrides)
 	client, err := ctrl.New(config, ctrl.Options{
 		Scheme: scheme,
 	})

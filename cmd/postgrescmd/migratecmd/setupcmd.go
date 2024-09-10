@@ -2,8 +2,13 @@ package migratecmd
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"github.com/nais/cli/pkg/k8s"
+	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/pkg/postgres/migrate"
 	"github.com/urfave/cli/v2"
+	"log"
 	"os"
 	"strings"
 )
@@ -63,8 +68,8 @@ func setupCommand() *cli.Command {
 				},
 			},
 		},
-		Before: func(context *cli.Context) error {
-			argCount := context.NArg()
+		Before: func(cCtx *cli.Context) error {
+			argCount := cCtx.NArg()
 			switch argCount {
 			case 0:
 				return fmt.Errorf("missing name of app")
@@ -78,17 +83,17 @@ func setupCommand() *cli.Command {
 
 			return fmt.Errorf("too many arguments")
 		},
-		Action: func(context *cli.Context) error {
-			appName := context.Args().Get(0)
-			namespace := context.Args().Get(1)
-			targetInstanceName := context.Args().Get(2)
+		Action: func(cCtx *cli.Context) error {
+			appName := cCtx.Args().Get(0)
+			namespace := cCtx.Args().Get(1)
+			targetInstanceName := cCtx.Args().Get(2)
 
-			cluster := context.String(contextFlagName)
-			tier := context.String(tierFlagName)
-			diskSize := context.String(diskSizeFlagName)
-			instanceType := context.String(typeFlagName)
+			cluster := cCtx.String(contextFlagName)
+			tier := cCtx.String(tierFlagName)
+			diskSize := cCtx.String(diskSizeFlagName)
+			instanceType := cCtx.String(typeFlagName)
 
-			fmt.Println(context.Command.Description)
+			fmt.Println(cCtx.Command.Description)
 
 			fmt.Printf(`
 Cluster (uses current context if unset): %s
@@ -110,7 +115,21 @@ Instance Type: %s
 				return fmt.Errorf("cancelled by user")
 			}
 
-			fmt.Println("TODO: Do stuff!")
+			cfg := migrate.Config{
+				AppName:   appName,
+				Namespace: namespace,
+				Target: migrate.InstanceConfig{
+					InstanceName: option.Some(targetInstanceName),
+				},
+			}
+
+			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
+			migrator := migrate.NewMigrator(client, cfg)
+
+			err := migrator.Setup(context.Background())
+			if err != nil {
+				log.Fatalf("error setting up migration: %s", err)
+			}
 			return nil
 		},
 	}
