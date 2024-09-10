@@ -24,13 +24,8 @@ type InstanceConfig struct {
 	Type         option.Option[string]
 }
 
-func NewInstanceConfig() InstanceConfig {
-	return InstanceConfig{
-		InstanceName: option.None[string](),
-		Tier:         option.None[string](),
-		DiskSize:     option.None[int](),
-		Type:         option.None[string](),
-	}
+func (ic *InstanceConfig) String() string {
+	return fmt.Sprintf("Name: %v\nTier: %v\nDiskSize: %v\nType: %v\n", ic.InstanceName, ic.Tier, ic.DiskSize, ic.Type)
 }
 
 func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appName, namespace string) error {

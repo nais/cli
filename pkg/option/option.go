@@ -1,5 +1,7 @@
 package option
 
+import "fmt"
+
 type Option[T any] struct {
 	isSome bool
 	value  T
@@ -23,6 +25,13 @@ func (o Option[T]) Do(f func(T)) {
 	if o.isSome {
 		f(o.value)
 	}
+}
+
+func (o Option[T]) String() string {
+	if o.isSome {
+		return fmt.Sprintf("%v", o.value)
+	}
+	return ""
 }
 
 func None[T any]() Option[T] {
