@@ -3,6 +3,7 @@ package aiven
 import (
 	"context"
 	"fmt"
+	"github.com/nais/cli/pkg/k8s"
 	"log"
 	"os"
 
@@ -25,7 +26,7 @@ type Secret struct {
 }
 
 func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namespaceName string) error {
-	aivenClient := SetupClient()
+	aivenClient := k8s.SetupClient()
 	ctx := context.Background()
 
 	err := validateNamespace(ctx, aivenClient, namespaceName)

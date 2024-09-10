@@ -1,11 +1,10 @@
-package aiven
+package k8s
 
 import (
+	liberatorscheme "github.com/nais/liberator/pkg/scheme"
 	"log"
 
-	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -33,14 +32,9 @@ func getConfig() *rest.Config {
 }
 
 func InitScheme(scheme *runtime.Scheme) {
-	err := clientgoscheme.AddToScheme(scheme)
+	scheme, err := liberatorscheme.AddAll(scheme)
 	if err != nil {
 		log.Fatalf("error setting up client schema: %s.", err)
-	}
-
-	err = aivennaisiov1.AddToScheme(scheme)
-	if err != nil {
-		log.Fatalf("error setting up aiven application schema: %s.", err)
 	}
 }
 

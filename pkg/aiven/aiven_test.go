@@ -2,6 +2,7 @@ package aiven
 
 import (
 	"context"
+	"github.com/nais/cli/pkg/k8s"
 	"testing"
 	"time"
 
@@ -23,7 +24,7 @@ const (
 
 func buildWithScheme(objects ...runtime.Object) *fake.ClientBuilder {
 	scheme := runtime.NewScheme()
-	InitScheme(scheme)
+	k8s.InitScheme(scheme)
 	return fake.NewClientBuilder().WithScheme(scheme).WithRuntimeObjects(objects...)
 }
 
