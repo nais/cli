@@ -22,7 +22,7 @@ require (
 	golang.org/x/oauth2 v0.22.0
 	golang.org/x/vuln v1.1.3
 	google.golang.org/api v0.193.0
-	google.golang.org/grpc v1.65.0
+	google.golang.org/grpc v1.66.1
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.5.1
 	k8s.io/api v0.31.0
