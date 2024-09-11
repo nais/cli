@@ -35,7 +35,7 @@ func getConfig(overrides []ClientOverride) *rest.Config {
 }
 
 func InitScheme(scheme *runtime.Scheme) {
-	scheme, err := liberatorscheme.AddAll(scheme)
+	_, err := liberatorscheme.AddAll(scheme)
 	if err != nil {
 		log.Fatalf("error setting up client schema: %s.", err)
 	}
