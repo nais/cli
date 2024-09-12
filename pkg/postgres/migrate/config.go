@@ -70,7 +70,11 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 	return nil
 }
 
-func (c Config) CreateConfigMap() corev1.ConfigMap {
+func (c Config) MigrationName() string {
+	return fmt.Sprintf("migration-%s-%s", c.AppName, c.Target.InstanceName)
+}
+
+func (c Config) CreateConfigMap() *corev1.ConfigMap {
 	data := map[string]string{
 		"APP_NAME":  c.AppName,
 		"NAMESPACE": c.Namespace,
@@ -86,10 +90,13 @@ func (c Config) CreateConfigMap() corev1.ConfigMap {
 	c.Source.DiskSize.Do(dataBuilder[int](data, "SOURCE_INSTANCE_DISKSIZE"))
 	c.Source.Type.Do(dataBuilder[string](data, "SOURCE_INSTANCE_TYPE"))
 
-	return corev1.ConfigMap{
+	return &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-migrate-config", c.AppName),
+			Name:      c.MigrationName(),
 			Namespace: c.Namespace,
+			Labels: map[string]string{
+				"migrator.nais.io/migration-name": c.MigrationName(),
+			},
 			Annotations: map[string]string{
 				"migrator.nais.io/created-by": "nais/cli",
 			},
