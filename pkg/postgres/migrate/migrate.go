@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -16,11 +17,15 @@ import (
 
 type Command string
 
+func (c Command) JobName(cfg Config) string {
+	return fmt.Sprintf("%s-%s", cfg.MigrationName(), strings.TrimPrefix(string(c), "/"))
+}
+
 const (
 	CommandCleanup  Command = "/cleanup"
-	CommandPromote          = "/promote"
-	CommandRollback         = "/rollback"
-	CommandSetup            = "/setup"
+	CommandPromote  Command = "/promote"
+	CommandRollback Command = "/rollback"
+	CommandSetup    Command = "/setup"
 )
 
 const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql-migrator"
@@ -72,16 +77,30 @@ func createObject[T interface {
 	return nil
 }
 
-func createRoleBinding(cfg Config) *rbacv1.RoleBinding {
+func makeRoleBinding(cfg Config) *rbacv1.RoleBinding {
 	return &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cfg.MigrationName(),
 			Namespace: cfg.Namespace,
 		},
-		Subjects: []rbacv1.Subject{{
-			Kind: "ServiceAccount",
-			Name: cfg.MigrationName(),
-		}},
+		Subjects: []rbacv1.Subject{
+			{
+				Kind: "ServiceAccount",
+				Name: CommandSetup.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandPromote.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandCleanup.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandRollback.JobName(cfg),
+			},
+		},
 		RoleRef: rbacv1.RoleRef{
 			Kind:     "ClusterRole",
 			Name:     "nais:developer",
@@ -111,10 +130,10 @@ func getLatestImageTag() (string, error) {
 	return v["tag_name"].(string), nil
 }
 
-func createJob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisjob {
+func makeNaisjob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisjob {
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      cfg.MigrationName(),
+			Name:      command.JobName(cfg),
 			Namespace: cfg.Namespace,
 			Labels: map[string]string{
 				"apiserver-access": "enabled",
@@ -135,6 +154,12 @@ func createJob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisjob
 						},
 					}, {
 						Role: "roles/datamigration.admin",
+						Resource: nais_io_v1.CloudIAMResource{
+							APIVersion: "resourcemanager.cnrm.cloud.google.com/v1beta1",
+							Kind:       "Project",
+						},
+					}, {
+						Role: "roles/monitoring.viewer",
 						Resource: nais_io_v1.CloudIAMResource{
 							APIVersion: "resourcemanager.cnrm.cloud.google.com/v1beta1",
 							Kind:       "Project",

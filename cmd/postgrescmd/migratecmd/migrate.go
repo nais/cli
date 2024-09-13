@@ -5,6 +5,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const (
+	contextFlagName = "context"
+)
+
 func Command() *cli.Command {
 	return &cli.Command{
 		Name:  "migrate",
@@ -14,6 +18,7 @@ func Command() *cli.Command {
 		},
 		Subcommands: []*cli.Command{
 			setupCommand(),
+			promoteCommand(),
 		},
 	}
 }

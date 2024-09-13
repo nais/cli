@@ -54,7 +54,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	}
 
 	fmt.Println("Creating RoleBinding")
-	roleBinding := createRoleBinding(m.cfg)
+	roleBinding := makeRoleBinding(m.cfg)
 	err = createObject(ctx, m, cfgMap, roleBinding)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
 	}
-	job := createJob(m.cfg, imageTag, CommandSetup)
+	job := makeNaisjob(m.cfg, imageTag, CommandSetup)
 	err = createObject(ctx, m, cfgMap, job)
 	if err != nil {
 		return err

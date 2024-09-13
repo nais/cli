@@ -3,6 +3,8 @@ package migrate
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -70,11 +72,11 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 	return nil
 }
 
-func (c Config) MigrationName() string {
+func (c *Config) MigrationName() string {
 	return fmt.Sprintf("migration-%s-%s", c.AppName, c.Target.InstanceName)
 }
 
-func (c Config) CreateConfigMap() *corev1.ConfigMap {
+func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 	data := map[string]string{
 		"APP_NAME":  c.AppName,
 		"NAMESPACE": c.Namespace,
@@ -103,6 +105,72 @@ func (c Config) CreateConfigMap() *corev1.ConfigMap {
 		},
 		Data: data,
 	}
+}
+
+func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) (*corev1.ConfigMap, error) {
+	configMap := &corev1.ConfigMap{}
+	err := client.Get(ctx, ctrl.ObjectKey{Namespace: c.Namespace, Name: c.MigrationName()}, configMap)
+	if err != nil {
+		return nil, err
+	}
+
+	c.Source.InstanceName = option.Some(configMap.Data["SOURCE_INSTANCE_NAME"])
+	c.Source.Tier = c.Source.Tier.OrMaybe(func() option.Option[string] {
+		sourceTier, ok := configMap.Data["SOURCE_INSTANCE_TIER"]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(sourceTier)
+	})
+	c.Source.DiskSize = c.Source.DiskSize.OrMaybe(func() option.Option[int] {
+		targetDiskSize, ok := configMap.Data["SOURCE_INSTANCE_DISKSIZE"]
+		if !ok {
+			return option.None[int]()
+		}
+
+		diskSize, err := strconv.Atoi(targetDiskSize)
+		if err != nil {
+			panic("BUG: converting source disk size: " + err.Error())
+		}
+		return option.Some(diskSize)
+	})
+	c.Source.Type = c.Source.Type.OrMaybe(func() option.Option[string] {
+		sourceType, ok := configMap.Data["SOURCE_INSTANCE_TYPE"]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(sourceType)
+	})
+
+	c.Target.InstanceName = option.Some(configMap.Data["TARGET_INSTANCE_NAME"])
+	c.Target.Tier = c.Target.Tier.OrMaybe(func() option.Option[string] {
+		targetTier, ok := configMap.Data["TARGET_INSTANCE_TIER"]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(targetTier)
+	})
+	c.Target.DiskSize = c.Target.DiskSize.OrMaybe(func() option.Option[int] {
+		targetDiskSize, ok := configMap.Data["TARGET_INSTANCE_DISKSIZE"]
+		if !ok {
+			return option.None[int]()
+		}
+
+		diskSize, err := strconv.Atoi(targetDiskSize)
+		if err != nil {
+			panic("BUG: converting target disk size: " + err.Error())
+		}
+		return option.Some(diskSize)
+	})
+	c.Target.Type = c.Target.Type.OrMaybe(func() option.Option[string] {
+		targetType, ok := configMap.Data["TARGET_INSTANCE_TYPE"]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(targetType)
+	})
+
+	return configMap, nil
 }
 
 func dataBuilder[T any](data map[string]string, key string) func(T) {

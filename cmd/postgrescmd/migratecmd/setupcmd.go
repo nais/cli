@@ -4,20 +4,20 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	"github.com/nais/cli/pkg/k8s"
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate"
 	"github.com/urfave/cli/v2"
-	"log"
-	"os"
-	"strings"
 )
 
 const (
 	tierFlagName     = "tier"
 	diskSizeFlagName = "disk-size"
 	typeFlagName     = "type"
-	contextFlagName  = "context"
 )
 
 func setupCommand() *cli.Command {
