@@ -4,36 +4,26 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
+type Command string
+
+const (
+	CommandCleanup  Command = "/cleanup"
+	CommandPromote          = "/promote"
+	CommandRollback         = "/rollback"
+	CommandSetup            = "/setup"
+)
+
 const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql-migrator"
-
-const SuccessMessage = `
-Migration setup has been started successfully.
-
-To monitor the migration, run the following command:
-	kubectl logs -f -l %s -n %s
-
-The setup will take some time to complete, you can check completion status with the following command:
-	kubectl get job %s -n %s
-
-When setup is complete, a new instance has been created and replication of data has started.
-You can check the replication progress in the Google Cloud Console:
-	%s
-
-When the migration has Status Running and is in the CDC or Ready to Promote phase,
-you can proceed with the next step of the migration:
-	nais postgres migrate promote %s %s %s
-
-Be aware that during promotion (the next step), your instance will be unavailable for some time.
-`
 
 type Migrator struct {
 	client ctrl.Client
@@ -45,58 +35,6 @@ func NewMigrator(client ctrl.Client, cfg Config) *Migrator {
 		client,
 		cfg,
 	}
-}
-
-func (m *Migrator) Setup(ctx context.Context) error {
-	fmt.Println("Resolving target instance config")
-	err := m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Resolved target:\n%s\n", m.cfg.Target.String())
-
-	fmt.Println("Resolving source instance config")
-	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Resolved source:\n%s\n", m.cfg.Source.String())
-
-	fmt.Println("Looking up GCP project ID")
-	gcpProjectId, err := m.LookupGcpProjectId(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to lookup GCP project ID: %w", err)
-	}
-
-	fmt.Println("Creating ConfigMap")
-	cfgMap := m.cfg.CreateConfigMap()
-	err = m.client.Create(ctx, cfgMap)
-	if err != nil {
-		return fmt.Errorf("failed to create ConfigMap: %w", err)
-	}
-
-	fmt.Println("Creating RoleBinding")
-	roleBinding := createRoleBinding(m.cfg)
-	err = createObject(ctx, m, cfgMap, roleBinding)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("Creating NaisJob")
-	imageTag, err := getLatestImageTag()
-	if err != nil {
-		return fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
-	}
-	job := createJob(m.cfg, imageTag)
-	err = createObject(ctx, m, cfgMap, job)
-	if err != nil {
-		return err
-	}
-
-	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
-	label := fmt.Sprintf("migrator.nais.io/migration-name=%s", m.cfg.MigrationName())
-	fmt.Printf(SuccessMessage, label, m.cfg.Namespace, job.Name, m.cfg.Namespace, cloudConsoleUrl, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
-	return nil
 }
 
 func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
@@ -173,7 +111,7 @@ func getLatestImageTag() (string, error) {
 	return v["tag_name"].(string), nil
 }
 
-func createJob(cfg Config, imageTag string) *nais_io_v1.Naisjob {
+func createJob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisjob {
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cfg.MigrationName(),
@@ -183,7 +121,7 @@ func createJob(cfg Config, imageTag string) *nais_io_v1.Naisjob {
 			},
 		},
 		Spec: nais_io_v1.NaisjobSpec{
-			Command: []string{"/setup"},
+			Command: []string{string(command)},
 			EnvFrom: []nais_io_v1.EnvFrom{{
 				ConfigMap: cfg.MigrationName(),
 			}},
