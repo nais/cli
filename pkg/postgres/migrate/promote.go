@@ -37,12 +37,12 @@ func (m *Migrator) Promote(ctx context.Context) error {
 		return fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
 	}
 	job := makeNaisjob(m.cfg, imageTag, CommandPromote)
-	err = createObject(ctx, m, cfgMap, job)
+	err = createObject(ctx, m, cfgMap, job, CommandPromote)
 	if err != nil {
 		return err
 	}
 
-	label := fmt.Sprintf("migrator.nais.io/migration-name=%s", m.cfg.MigrationName())
+	label := fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), CommandPromote)
 	fmt.Printf(PromoteSuccessMessage, label, m.cfg.Namespace, job.Name, m.cfg.Namespace, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
 	return nil
 }

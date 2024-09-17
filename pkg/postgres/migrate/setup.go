@@ -88,7 +88,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	}
 
 	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
-	label := fmt.Sprintf("migrator.nais.io/migration-name=%s", m.cfg.MigrationName())
+	label := fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), CommandSetup)
 	fmt.Printf(SetupSuccessMessage, label, m.cfg.Namespace, job.Name, m.cfg.Namespace, cloudConsoleUrl, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
 	return nil
 }

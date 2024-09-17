@@ -57,7 +57,7 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 func createObject[T interface {
 	ctrl.Object
 	*P
-}, P any](ctx context.Context, m *Migrator, owner metav1.Object, obj T) error {
+}, P any](ctx context.Context, m *Migrator, owner metav1.Object, obj T, Command Command) error {
 	err := controllerutil.SetOwnerReference(owner, obj, m.client.Scheme())
 	if err != nil {
 		return fmt.Errorf("failed to set owner reference: %w", err)
@@ -68,6 +68,9 @@ func createObject[T interface {
 		labels = make(map[string]string)
 	}
 	labels["migrator.nais.io/migration-name"] = m.cfg.MigrationName()
+	labels["migrator.nais.io/app-name"] = m.cfg.AppName
+	labels["migrator.nais.io/target-instance-name"] = m.cfg.Target.InstanceName.String()
+	labels["migrator.nais.io/command"] = string(Command)
 	obj.SetLabels(labels)
 
 	err = m.client.Create(ctx, obj)
