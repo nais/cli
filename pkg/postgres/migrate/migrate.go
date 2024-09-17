@@ -4,13 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
-
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -18,14 +16,14 @@ import (
 type Command string
 
 func (c Command) JobName(cfg Config) string {
-	return fmt.Sprintf("%s-%s", cfg.MigrationName(), strings.TrimPrefix(string(c), "/"))
+	return fmt.Sprintf("%s-%s", cfg.MigrationName(), string(c))
 }
 
 const (
-	CommandCleanup  Command = "/cleanup"
-	CommandPromote  Command = "/promote"
-	CommandRollback Command = "/rollback"
-	CommandSetup    Command = "/setup"
+	CommandCleanup  Command = "cleanup"
+	CommandPromote  Command = "promote"
+	CommandRollback Command = "rollback"
+	CommandSetup    Command = "setup"
 )
 
 const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql-migrator"
@@ -143,7 +141,7 @@ func makeNaisjob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisj
 			},
 		},
 		Spec: nais_io_v1.NaisjobSpec{
-			Command: []string{string(command)},
+			Command: []string{"/" + string(command)},
 			EnvFrom: []nais_io_v1.EnvFrom{{
 				ConfigMap: cfg.MigrationName(),
 			}},
