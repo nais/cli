@@ -3,6 +3,8 @@ package migrate
 import (
 	"context"
 	"fmt"
+	v1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const SetupSuccessMessage = `
@@ -26,8 +28,22 @@ Be aware that during promotion (the next step), your instance will be unavailabl
 `
 
 func (m *Migrator) Setup(ctx context.Context) error {
+	cfgMapList := &v1.ConfigMapList{}
+	listOptions := []client.ListOption{
+		client.InNamespace(m.cfg.Namespace),
+		client.MatchingLabels{"migrator.nais.io/app-name": m.cfg.AppName},
+	}
+	err := m.client.List(ctx, cfgMapList, listOptions...)
+	if err != nil {
+		return err
+	}
+
+	if len(cfgMapList.Items) > 0 {
+		return fmt.Errorf("migration config already exists for this application")
+	}
+
 	fmt.Println("Resolving target instance config")
-	err := m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
+	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}

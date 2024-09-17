@@ -97,7 +97,9 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 			Name:      c.MigrationName(),
 			Namespace: c.Namespace,
 			Labels: map[string]string{
-				"migrator.nais.io/migration-name": c.MigrationName(),
+				"migrator.nais.io/migration-name":       c.MigrationName(),
+				"migrator.nais.io/app-name":             c.AppName,
+				"migrator.nais.io/target-instance-name": c.Target.InstanceName.String(),
 			},
 			Annotations: map[string]string{
 				"migrator.nais.io/created-by": "nais/cli",
