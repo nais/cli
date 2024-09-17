@@ -34,7 +34,7 @@
           pname = "nais";
           inherit version;
           src = ./.;
-          vendorHash = "sha256-p/a/jTn8C5wZYlS/7b5YT0rPKtST5JGPZQ6Nahha0yQ=";
+          vendorHash = "sha256-1LuU26iUzWJYKjRR8Gz1ZeSQDHOzW1tQphBFTCiQO+0=";
           postInstall = ''
             mv $out/bin/cli $out/bin/nais
           '';
