@@ -90,7 +90,7 @@ func setupCommand() *cli.Command {
 
 			cluster := cCtx.String(contextFlagName)
 			tier := cCtx.String(tierFlagName)
-			diskSize := cCtx.String(diskSizeFlagName)
+			diskSize := cCtx.Int(diskSizeFlagName)
 			instanceType := cCtx.String(typeFlagName)
 
 			fmt.Println(cCtx.Command.Description)
@@ -104,7 +104,7 @@ Target Instance: %s
 
 Optional configuration, if blank, keeps current value:
 Tier: %s
-Disk Size: %s
+Disk Size: %d
 Instance Type: %s
 `, cluster, appName, namespace, targetInstanceName, tier, diskSize, instanceType)
 
@@ -120,6 +120,9 @@ Instance Type: %s
 				Namespace: namespace,
 				Target: migrate.InstanceConfig{
 					InstanceName: option.Some(targetInstanceName),
+					Tier:         isSet(tier),
+					DiskSize:     isSetInt(diskSize),
+					Type:         isSet(instanceType),
 				},
 			}
 
@@ -133,4 +136,18 @@ Instance Type: %s
 			return nil
 		},
 	}
+}
+
+func isSet(v string) option.Option[string] {
+	if v == "" {
+		return option.None[string]()
+	}
+	return option.Some(v)
+}
+
+func isSetInt(v int) option.Option[int] {
+	if v == 0 {
+		return option.None[int]()
+	}
+	return option.Some(v)
 }
