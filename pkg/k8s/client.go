@@ -1,14 +1,16 @@
 package k8s
 
 import (
-	liberatorscheme "github.com/nais/liberator/pkg/scheme"
 	"log"
 
+	"github.com/go-logr/logr"
+	liberatorscheme "github.com/nais/liberator/pkg/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
+	controllerruntime "sigs.k8s.io/controller-runtime"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 	// Auth providers
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -58,5 +60,7 @@ func SetupClient(overrides ...ClientOverride) ctrl.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	controllerruntime.SetLogger(logr.New(&ctrllog.NullLogSink{}))
 	return &Client{client}
 }
