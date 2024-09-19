@@ -1,15 +1,10 @@
 package migratecmd
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"strings"
 
 	"github.com/nais/cli/pkg/k8s"
-	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate"
 	"github.com/urfave/cli/v2"
 )
@@ -26,14 +21,10 @@ func promoteCommand() *cli.Command {
 		},
 		Before: beforeFunc,
 		Action: func(cCtx *cli.Context) error {
-			appName := cCtx.Args().Get(0)
-			namespace := cCtx.Args().Get(1)
-			targetInstanceName := cCtx.Args().Get(2)
-
+			cfg := makeConfig(cCtx)
 			cluster := cCtx.String(contextFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-
 			fmt.Printf(`
 Cluster (uses current context if unset): %s
 
@@ -43,29 +34,19 @@ Target Instance: %s
 
 Your application will not be able to reach the database during promotion.
 The database will be unavailable for a short period of time while the promotion is in progress.
-`, cluster, appName, namespace, targetInstanceName)
+`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName)
 
-			fmt.Print("\nAre you sure you want to continue (y/N): ")
-			input := bufio.NewScanner(os.Stdin)
-			input.Scan()
-			if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
-				return fmt.Errorf("cancelled by user")
-			}
-
-			cfg := migrate.Config{
-				AppName:   appName,
-				Namespace: namespace,
-				Target: migrate.InstanceConfig{
-					InstanceName: option.Some(targetInstanceName),
-				},
+			err := confirmContinue()
+			if err != nil {
+				return err
 			}
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err := migrator.Promote(context.Background())
+			err = migrator.Promote(context.Background())
 			if err != nil {
-				log.Fatalf("error promoting instance: %s", err)
+				return fmt.Errorf("error promoting instance: %w", err)
 			}
 			return nil
 		},

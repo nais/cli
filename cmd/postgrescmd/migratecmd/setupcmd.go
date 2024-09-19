@@ -1,11 +1,8 @@
 package migratecmd
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/nais/cli/pkg/k8s"
@@ -65,9 +62,7 @@ func setupCommand() *cli.Command {
 		},
 		Before: beforeFunc,
 		Action: func(cCtx *cli.Context) error {
-			appName := cCtx.Args().Get(0)
-			namespace := cCtx.Args().Get(1)
-			targetInstanceName := cCtx.Args().Get(2)
+			cfg := makeConfig(cCtx)
 
 			cluster := cCtx.String(contextFlagName)
 			tier := cCtx.String(tierFlagName)
@@ -75,7 +70,6 @@ func setupCommand() *cli.Command {
 			instanceType := cCtx.String(typeFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-
 			fmt.Printf(`
 Cluster (uses current context if unset): %s
 
@@ -87,32 +81,23 @@ Optional configuration (keeps existing values from source instance if blank or z
 Tier: %s
 Disk Size: %d
 Instance Type: %s
-`, cluster, appName, namespace, targetInstanceName, tier, diskSize, instanceType)
+`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName, tier, diskSize, instanceType)
 
-			fmt.Print("\nAre you sure you want to continue (y/N): ")
-			input := bufio.NewScanner(os.Stdin)
-			input.Scan()
-			if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
-				return fmt.Errorf("cancelled by user")
+			err := confirmContinue()
+			if err != nil {
+				return err
 			}
 
-			cfg := migrate.Config{
-				AppName:   appName,
-				Namespace: namespace,
-				Target: migrate.InstanceConfig{
-					InstanceName: option.Some(targetInstanceName),
-					Tier:         isSet(tier),
-					DiskSize:     isSetInt(diskSize),
-					Type:         isSet(instanceType),
-				},
-			}
+			cfg.Target.Tier = isSet(tier)
+			cfg.Target.DiskSize = isSetInt(diskSize)
+			cfg.Target.Type = isSet(instanceType)
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err := migrator.Setup(context.Background())
+			err = migrator.Setup(context.Background())
 			if err != nil {
-				log.Fatalf("error setting up migration: %s", err)
+				return fmt.Errorf("error setting up migration: %w", err)
 			}
 			return nil
 		},

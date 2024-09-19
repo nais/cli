@@ -1,9 +1,14 @@
 package migratecmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/nais/cli/pkg/gcp"
+	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/pkg/postgres/migrate"
 	"github.com/urfave/cli/v2"
 )
 
@@ -50,4 +55,29 @@ func beforeFunc(cCtx *cli.Context) error {
 	}
 
 	return fmt.Errorf("too many arguments")
+}
+
+func makeConfig(cCtx *cli.Context) migrate.Config {
+	appName := cCtx.Args().Get(0)
+	namespace := cCtx.Args().Get(1)
+	targetInstanceName := cCtx.Args().Get(2)
+
+	return migrate.Config{
+		AppName:   appName,
+		Namespace: namespace,
+		Target: migrate.InstanceConfig{
+			InstanceName: option.Some(targetInstanceName),
+		},
+	}
+}
+
+func confirmContinue() error {
+	fmt.Print("\nAre you sure you want to continue (y/N): ")
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+		return fmt.Errorf("cancelled by user")
+	}
+
+	return nil
 }
