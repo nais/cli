@@ -22,12 +22,7 @@ func rollbackCommand() *cli.Command {
 		Description: "Rollback will roll back the migration, and restore the application to use the original instance.",
 		Args:        true,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:        contextFlagName,
-				Aliases:     []string{"c"},
-				Usage:       "The kubeconfig `CONTEXT` to use",
-				DefaultText: "The current context in your kubeconfig",
-			},
+			kubeConfigFlag(),
 		},
 		Before: func(cCtx *cli.Context) error {
 			argCount := cCtx.NArg()

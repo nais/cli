@@ -22,12 +22,7 @@ func cleanupCommand() *cli.Command {
 		Description: "Cleanup will remove the source instance and associated resources after a successful migration.",
 		Args:        true,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:        contextFlagName,
-				Aliases:     []string{"c"},
-				Usage:       "The kubeconfig `CONTEXT` to use",
-				DefaultText: "The current context in your kubeconfig",
-			},
+			kubeConfigFlag(),
 		},
 		Before: func(cCtx *cli.Context) error {
 			argCount := cCtx.NArg()

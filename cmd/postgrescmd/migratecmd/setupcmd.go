@@ -28,12 +28,7 @@ func setupCommand() *cli.Command {
 		Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
 		Args:        true,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:        contextFlagName,
-				Aliases:     []string{"c"},
-				Usage:       "The kubeconfig `CONTEXT` to use",
-				DefaultText: "The current context in your kubeconfig",
-			},
+			kubeConfigFlag(),
 			&cli.StringFlag{
 				Name:        tierFlagName,
 				Usage:       "The `TIER` of the new instance",

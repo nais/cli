@@ -24,3 +24,12 @@ func Command() *cli.Command {
 		},
 	}
 }
+
+func kubeConfigFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:        contextFlagName,
+		Aliases:     []string{"c"},
+		Usage:       "The kubeconfig `CONTEXT` to use",
+		DefaultText: "The current context in your kubeconfig",
+	}
+}

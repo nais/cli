@@ -22,12 +22,7 @@ func promoteCommand() *cli.Command {
 		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
 		Args:        true,
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:        contextFlagName,
-				Aliases:     []string{"c"},
-				Usage:       "The kubeconfig `CONTEXT` to use",
-				DefaultText: "The current context in your kubeconfig",
-			},
+			kubeConfigFlag(),
 		},
 		Before: func(cCtx *cli.Context) error {
 			argCount := cCtx.NArg()
