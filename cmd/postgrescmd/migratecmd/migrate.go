@@ -20,6 +20,7 @@ func Command() *cli.Command {
 			setupCommand(),
 			promoteCommand(),
 			cleanupCommand(),
+			rollbackCommand(),
 		},
 	}
 }
