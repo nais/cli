@@ -48,6 +48,10 @@ func (m *Migrator) doCommand(ctx context.Context, command Command) (string, erro
 		return "", err
 	}
 
+	return m.doNaisJob(ctx, cfgMap, command)
+}
+
+func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
 	fmt.Println("Creating NaisJob")
 	imageTag, err := getLatestImageTag()
 	if err != nil {

@@ -25,24 +25,12 @@ If things are not working as expected, and you need to rollback to the previous 
 `
 
 func (m *Migrator) Promote(ctx context.Context) error {
-	fmt.Println("Resolving config")
-	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
+	jobName, err := m.doCommand(ctx, CommandPromote)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Creating NaisJob")
-	imageTag, err := getLatestImageTag()
-	if err != nil {
-		return fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
-	}
-	job := makeNaisjob(m.cfg, imageTag, CommandPromote)
-	err = createObject(ctx, m, cfgMap, job, CommandPromote)
-	if err != nil {
-		return err
-	}
-
-	label := fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), CommandPromote)
-	fmt.Printf(PromoteSuccessMessage, label, m.cfg.Namespace, job.Name, m.cfg.Namespace, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
+	label := m.kubectlLabelSelector(CommandPromote)
+	fmt.Printf(PromoteSuccessMessage, label, m.cfg.Namespace, jobName, m.cfg.Namespace, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
 	return nil
 }

@@ -3,6 +3,7 @@ package migrate
 import (
 	"context"
 	"fmt"
+
 	v1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -76,19 +77,13 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Println("Creating NaisJob")
-	imageTag, err := getLatestImageTag()
-	if err != nil {
-		return fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
-	}
-	job := makeNaisjob(m.cfg, imageTag, CommandSetup)
-	err = createObject(ctx, m, cfgMap, job, CommandSetup)
+	jobName, err := m.doNaisJob(ctx, cfgMap, CommandSetup)
 	if err != nil {
 		return err
 	}
 
 	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
-	label := fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), CommandSetup)
-	fmt.Printf(SetupSuccessMessage, label, m.cfg.Namespace, job.Name, m.cfg.Namespace, cloudConsoleUrl, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
+	label := m.kubectlLabelSelector(CommandSetup)
+	fmt.Printf(SetupSuccessMessage, label, m.cfg.Namespace, jobName, m.cfg.Namespace, cloudConsoleUrl, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
 	return nil
 }
