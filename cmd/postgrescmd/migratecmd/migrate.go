@@ -19,6 +19,7 @@ func Command() *cli.Command {
 		Subcommands: []*cli.Command{
 			setupCommand(),
 			promoteCommand(),
+			cleanupCommand(),
 		},
 	}
 }

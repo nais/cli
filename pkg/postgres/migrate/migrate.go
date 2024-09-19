@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -38,6 +39,32 @@ func NewMigrator(client ctrl.Client, cfg Config) *Migrator {
 		client,
 		cfg,
 	}
+}
+
+func (m *Migrator) doCommand(ctx context.Context, command Command) (string, error) {
+	fmt.Println("Resolving config")
+	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Println("Creating NaisJob")
+	imageTag, err := getLatestImageTag()
+	if err != nil {
+		return "", fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
+	}
+
+	job := makeNaisjob(m.cfg, imageTag, command)
+	err = createObject(ctx, m, cfgMap, job, command)
+	if err != nil {
+		return "", err
+	}
+
+	return job.Name, nil
+}
+
+func (m *Migrator) kubectlLabelSelector(command Command) string {
+	return fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), command)
 }
 
 func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
