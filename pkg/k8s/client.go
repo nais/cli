@@ -2,15 +2,17 @@ package k8s
 
 import (
 	"log"
+	"log/slog"
+	"os"
 
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	controllerruntime "sigs.k8s.io/controller-runtime"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
+
 	// Auth providers
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -52,6 +54,13 @@ func WithKubeContext(kubeCtx string) ClientOverride {
 }
 
 func SetupClient(overrides ...ClientOverride) ctrl.Client {
+	ctrllog.SetLogger(logr.FromSlogHandler(slog.NewTextHandler(
+		os.Stdout,
+		&slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		}),
+	))
+
 	InitScheme(scheme)
 	config := getConfig(overrides)
 	client, err := ctrl.New(config, ctrl.Options{
@@ -60,7 +69,5 @@ func SetupClient(overrides ...ClientOverride) ctrl.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	controllerruntime.SetLogger(logr.New(&ctrllog.NullLogSink{}))
 	return &Client{client}
 }
