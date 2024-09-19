@@ -102,7 +102,7 @@ Application: %s
 Namespace: %s
 Target Instance: %s
 
-Optional configuration, if blank, keeps current value:
+Optional configuration (blank or zero keeps existing values):
 Tier: %s
 Disk Size: %d
 Instance Type: %s
