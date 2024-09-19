@@ -1,6 +1,8 @@
 package migratecmd
 
 import (
+	"fmt"
+
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/urfave/cli/v2"
 )
@@ -32,4 +34,20 @@ func kubeConfigFlag() *cli.StringFlag {
 		Usage:       "The kubeconfig `CONTEXT` to use",
 		DefaultText: "The current context in your kubeconfig",
 	}
+}
+
+func beforeFunc(cCtx *cli.Context) error {
+	argCount := cCtx.NArg()
+	switch argCount {
+	case 0:
+		return fmt.Errorf("missing name of app")
+	case 1:
+		return fmt.Errorf("missing namespace")
+	case 2:
+		return fmt.Errorf("missing target instance name")
+	case 3:
+		return nil
+	}
+
+	return fmt.Errorf("too many arguments")
 }

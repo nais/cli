@@ -24,21 +24,7 @@ func rollbackCommand() *cli.Command {
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
 		},
-		Before: func(cCtx *cli.Context) error {
-			argCount := cCtx.NArg()
-			switch argCount {
-			case 0:
-				return fmt.Errorf("missing name of app")
-			case 1:
-				return fmt.Errorf("missing namespace")
-			case 2:
-				return fmt.Errorf("missing target instance name")
-			case 3:
-				return nil
-			}
-
-			return fmt.Errorf("too many arguments")
-		},
+		Before: beforeFunc,
 		Action: func(cCtx *cli.Context) error {
 			appName := cCtx.Args().Get(0)
 			namespace := cCtx.Args().Get(1)
