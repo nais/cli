@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 
 	"google.golang.org/api/compute/v1"
@@ -97,13 +98,18 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 			name = "knada"
 		}
 
+		kind := project.Kind
+		if slices.Contains([]string{"dev-gcp", "prod-gcp", "ci-gcp"}, name) {
+			kind = kindLegacy
+		}
+
 		clusters = append(clusters, k8sCluster{
 			Name:        name,
 			Endpoint:    "https://" + cluster.Endpoint,
 			Location:    cluster.Location,
 			CA:          cluster.MasterAuth.ClusterCaCertificate,
 			Tenant:      project.Tenant,
-			Kind:        project.Kind,
+			Kind:        kind,
 			Environment: project.Name,
 		})
 	}
