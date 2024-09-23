@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"github.com/sethvargo/go-retry"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ import (
 
 type Command string
 
-func (c Command) JobName(cfg Config) string {
+func (c Command) JobName(cfg config.Config) string {
 	return fmt.Sprintf("%s-%s", cfg.MigrationName(), string(c))
 }
 
@@ -34,10 +35,10 @@ const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql
 
 type Migrator struct {
 	client ctrl.Client
-	cfg    Config
+	cfg    config.Config
 }
 
-func NewMigrator(client ctrl.Client, cfg Config) *Migrator {
+func NewMigrator(client ctrl.Client, cfg config.Config) *Migrator {
 	return &Migrator{
 		client,
 		cfg,
@@ -75,7 +76,7 @@ func (m *Migrator) kubectlLabelSelector(command Command) string {
 }
 
 func (m *Migrator) deleteMigrationConfig(ctx context.Context) error {
-	err := ctrl.IgnoreNotFound(m.client.Delete(ctx, m.cfg.cfgMap))
+	err := ctrl.IgnoreNotFound(m.client.Delete(ctx, m.cfg.GetConfigMap()))
 	if err != nil {
 		return fmt.Errorf("failed to delete ConfigMap: %w", err)
 	}
@@ -121,7 +122,7 @@ func createObject[T interface {
 	return nil
 }
 
-func makeRoleBinding(cfg Config) *rbacv1.RoleBinding {
+func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 	return &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cfg.MigrationName(),
@@ -174,7 +175,7 @@ func getLatestImageTag() (string, error) {
 	return v["tag_name"].(string), nil
 }
 
-func makeNaisjob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisjob {
+func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v1.Naisjob {
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      command.JobName(cfg),

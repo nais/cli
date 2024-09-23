@@ -1,4 +1,4 @@
-package migrate
+package config
 
 import (
 	"context"
@@ -176,6 +176,13 @@ func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) 
 
 	c.cfgMap = configMap
 	return c.cfgMap, nil
+}
+
+func (c *Config) GetConfigMap() *corev1.ConfigMap {
+	if c.cfgMap == nil {
+		panic("BUG: ConfigMap not initialized")
+	}
+	return c.cfgMap
 }
 
 func dataBuilder[T any](data map[string]string, key string) func(T) {
