@@ -5,16 +5,22 @@ import (
 	"fmt"
 )
 
-const RollbackSuccessMessage = `
+const RollbackStartedMessage = `
 Rollback has been started successfully.
 
 To monitor the rollback, run the following command:
 	kubectl logs -f -l %s -n %s
 
-The rollback will take some time to complete, you can check completion status with the following command:
-	kubectl get job %s -n %s
+Pausing to wait for rollback job to complete in order to do final cleanup actions ...
+`
 
-When rollback is complete, your application should be up and running with the original database instance.
+const RollbackSuccessMessage = `
+Rollback has completed successfully.
+
+Your application should be up and running with the original database instance.
+The new instance has been deleted and the migration is stopped.
+
+You are now free to start another attempt if you wish.
 `
 
 func (m *Migrator) Rollback(ctx context.Context) error {
@@ -24,6 +30,13 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 	}
 
 	label := m.kubectlLabelSelector(CommandRollback)
-	fmt.Printf(RollbackSuccessMessage, label, m.cfg.Namespace, jobName, m.cfg.Namespace)
+	fmt.Printf(RollbackStartedMessage, label, m.cfg.Namespace)
+
+	err = m.waitForJobCompletion(ctx, jobName, CommandRollback)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf(RollbackSuccessMessage)
 	return nil
 }
