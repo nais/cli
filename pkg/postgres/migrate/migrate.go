@@ -4,9 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/sethvargo/go-retry"
 	"net/http"
+	"time"
 
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -202,4 +205,40 @@ func makeNaisjob(cfg Config, imageTag string, command Command) *nais_io_v1.Naisj
 			Image: fmt.Sprintf("%s:%s", MigratorImage, imageTag),
 		},
 	}
+}
+
+func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
+	listOptions := []ctrl.ListOption{
+		ctrl.InNamespace(m.cfg.Namespace),
+		ctrl.MatchingLabels{
+			"migrator.nais.io/migration-name": m.cfg.MigrationName(),
+			"migrator.nais.io/command":        string(command),
+		},
+	}
+
+	b := retry.NewConstant(20 * time.Second)
+	b = retry.WithMaxDuration(15*time.Minute, b)
+	return retry.Do(ctx, b, func(ctx context.Context) error {
+		jobs := &batchv1.JobList{}
+		err := m.client.List(ctx, jobs, listOptions...)
+		if err != nil {
+			fmt.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
+			return retry.RetryableError(err)
+		}
+		if len(jobs.Items) < 1 {
+			fmt.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
+			return retry.RetryableError(fmt.Errorf("no jobs found"))
+		}
+		if len(jobs.Items) > 1 {
+			fmt.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
+			return fmt.Errorf("multiple jobs found")
+		}
+		for _, job := range jobs.Items {
+			if job.Status.Succeeded == 1 {
+				return nil
+			}
+		}
+		fmt.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
+		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
+	})
 }

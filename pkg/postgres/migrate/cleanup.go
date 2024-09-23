@@ -5,16 +5,20 @@ import (
 	"fmt"
 )
 
-const CleanupSuccessMessage = `
+const CleanupStartedMessage = `
 Cleanup has been started successfully.
 
-To monitor the cleanup, run the following command:
+To monitor the cleanup, run the following command in a separate terminal:
 	kubectl logs -f -l %s -n %s
 
-The cleanup will take some time to complete, you can check completion status with the following command:
-	kubectl get job %s -n %s
+Pausing to wait for cleanup job to complete in order to do final cleanup actions ...
+`
 
-When cleanup is complete, the old instance has been deleted and the migration is complete.
+const CleanupSuccessMessage = `
+Cleanup has completed successfully.
+
+The old instance has been deleted and the migration is complete.
+
 Congratulations, you're all done! 🎉
 `
 
@@ -25,7 +29,13 @@ func (m *Migrator) Cleanup(ctx context.Context) error {
 	}
 
 	label := m.kubectlLabelSelector(CommandCleanup)
+	fmt.Printf(CleanupStartedMessage, label, m.cfg.Namespace)
 
-	fmt.Printf(CleanupSuccessMessage, label, m.cfg.Namespace, jobName, m.cfg.Namespace)
+	err = m.waitForJobCompletion(ctx, jobName, CommandCleanup)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(CleanupSuccessMessage)
 	return nil
 }
