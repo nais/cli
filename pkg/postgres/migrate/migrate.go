@@ -96,6 +96,42 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	return "", fmt.Errorf("namespace %s does not have a GCP project ID annotation", m.cfg.Namespace)
 }
 
+func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
+	listOptions := []ctrl.ListOption{
+		ctrl.InNamespace(m.cfg.Namespace),
+		ctrl.MatchingLabels{
+			"migrator.nais.io/migration-name": m.cfg.MigrationName(),
+			"migrator.nais.io/command":        string(command),
+		},
+	}
+
+	b := retry.NewConstant(20 * time.Second)
+	b = retry.WithMaxDuration(15*time.Minute, b)
+	return retry.Do(ctx, b, func(ctx context.Context) error {
+		jobs := &batchv1.JobList{}
+		err := m.client.List(ctx, jobs, listOptions...)
+		if err != nil {
+			fmt.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
+			return retry.RetryableError(err)
+		}
+		if len(jobs.Items) < 1 {
+			fmt.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
+			return retry.RetryableError(fmt.Errorf("no jobs found"))
+		}
+		if len(jobs.Items) > 1 {
+			fmt.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
+			return fmt.Errorf("multiple jobs found")
+		}
+		for _, job := range jobs.Items {
+			if job.Status.Succeeded == 1 {
+				return nil
+			}
+		}
+		fmt.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
+		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
+	})
+}
+
 func createObject[T interface {
 	ctrl.Object
 	*P
@@ -154,27 +190,6 @@ func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 	}
 }
 
-func getLatestImageTag() (string, error) {
-	resp, err := http.Get("https://api.github.com/repos/nais/cloudsql-migrator/releases/latest")
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to get latest release: %s", resp.Status)
-	}
-
-	decoder := json.NewDecoder(resp.Body)
-	v := map[string]interface{}{}
-	err = decoder.Decode(&v)
-	if err != nil {
-		return "", err
-	}
-
-	return v["tag_name"].(string), nil
-}
-
 func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v1.Naisjob {
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
@@ -217,38 +232,23 @@ func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v
 	}
 }
 
-func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
-	listOptions := []ctrl.ListOption{
-		ctrl.InNamespace(m.cfg.Namespace),
-		ctrl.MatchingLabels{
-			"migrator.nais.io/migration-name": m.cfg.MigrationName(),
-			"migrator.nais.io/command":        string(command),
-		},
+func getLatestImageTag() (string, error) {
+	resp, err := http.Get("https://api.github.com/repos/nais/cloudsql-migrator/releases/latest")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to get latest release: %s", resp.Status)
 	}
 
-	b := retry.NewConstant(20 * time.Second)
-	b = retry.WithMaxDuration(15*time.Minute, b)
-	return retry.Do(ctx, b, func(ctx context.Context) error {
-		jobs := &batchv1.JobList{}
-		err := m.client.List(ctx, jobs, listOptions...)
-		if err != nil {
-			fmt.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
-			return retry.RetryableError(err)
-		}
-		if len(jobs.Items) < 1 {
-			fmt.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
-			return retry.RetryableError(fmt.Errorf("no jobs found"))
-		}
-		if len(jobs.Items) > 1 {
-			fmt.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
-			return fmt.Errorf("multiple jobs found")
-		}
-		for _, job := range jobs.Items {
-			if job.Status.Succeeded == 1 {
-				return nil
-			}
-		}
-		fmt.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
-		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
-	})
+	decoder := json.NewDecoder(resp.Body)
+	v := map[string]interface{}{}
+	err = decoder.Decode(&v)
+	if err != nil {
+		return "", err
+	}
+
+	return v["tag_name"].(string), nil
 }
