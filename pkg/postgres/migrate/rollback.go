@@ -37,6 +37,11 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
+	err = m.deleteMigrationConfig(ctx)
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf(RollbackSuccessMessage)
 	return nil
 }

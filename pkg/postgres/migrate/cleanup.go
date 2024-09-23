@@ -36,6 +36,11 @@ func (m *Migrator) Cleanup(ctx context.Context) error {
 		return err
 	}
 
+	err = m.deleteMigrationConfig(ctx)
+	if err != nil {
+		return err
+	}
+
 	fmt.Print(CleanupSuccessMessage)
 	return nil
 }

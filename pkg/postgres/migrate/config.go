@@ -17,6 +17,7 @@ type Config struct {
 	Namespace string
 	Target    InstanceConfig
 	Source    InstanceConfig
+	cfgMap    *corev1.ConfigMap
 }
 
 type InstanceConfig struct {
@@ -92,7 +93,7 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 	c.Source.DiskSize.Do(dataBuilder[int](data, "SOURCE_INSTANCE_DISKSIZE"))
 	c.Source.Type.Do(dataBuilder[string](data, "SOURCE_INSTANCE_TYPE"))
 
-	return &corev1.ConfigMap{
+	c.cfgMap = &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      c.MigrationName(),
 			Namespace: c.Namespace,
@@ -107,6 +108,7 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 		},
 		Data: data,
 	}
+	return c.cfgMap
 }
 
 func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) (*corev1.ConfigMap, error) {
@@ -172,7 +174,8 @@ func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) 
 		return option.Some(targetType)
 	})
 
-	return configMap, nil
+	c.cfgMap = configMap
+	return c.cfgMap, nil
 }
 
 func dataBuilder[T any](data map[string]string, key string) func(T) {

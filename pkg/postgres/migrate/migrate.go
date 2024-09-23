@@ -74,6 +74,15 @@ func (m *Migrator) kubectlLabelSelector(command Command) string {
 	return fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), command)
 }
 
+func (m *Migrator) deleteMigrationConfig(ctx context.Context) error {
+	err := ctrl.IgnoreNotFound(m.client.Delete(ctx, m.cfg.cfgMap))
+	if err != nil {
+		return fmt.Errorf("failed to delete ConfigMap: %w", err)
+	}
+
+	return nil
+}
+
 func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	ns := &corev1.Namespace{}
 	err := m.client.Get(ctx, ctrl.ObjectKey{Name: m.cfg.Namespace}, ns)
