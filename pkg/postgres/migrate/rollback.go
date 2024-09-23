@@ -42,6 +42,6 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf(RollbackSuccessMessage)
+	fmt.Print(RollbackSuccessMessage)
 	return nil
 }
