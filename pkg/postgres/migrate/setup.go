@@ -63,6 +63,23 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return fmt.Errorf("failed to lookup GCP project ID: %w", err)
 	}
 
+	fmt.Printf(`
+Migration is configured as follows:
+
+Application: %s
+Namespace: %s
+
+Source instance: 
+	%s
+Target instance:
+	%s
+`, m.cfg.AppName, m.cfg.Namespace, m.cfg.Source.String(), m.cfg.Target.String())
+
+	err = confirmContinue()
+	if err != nil {
+		return err
+	}
+
 	fmt.Println("Creating ConfigMap")
 	cfgMap := m.cfg.CreateConfigMap()
 	err = m.client.Create(ctx, cfgMap)

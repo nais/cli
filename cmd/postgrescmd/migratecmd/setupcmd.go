@@ -70,24 +70,6 @@ func setupCommand() *cli.Command {
 			instanceType := cCtx.String(typeFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-			fmt.Printf(`
-Cluster (uses current context if unset): %s
-
-Application: %s
-Namespace: %s
-Target Instance: %s
-
-Optional configuration (keeps existing values from source instance if blank or zero):
-Tier: %s
-Disk Size: %d
-Instance Type: %s
-`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName, tier, diskSize, instanceType)
-
-			err := confirmContinue()
-			if err != nil {
-				return err
-			}
-
 			cfg.Target.Tier = isSet(tier)
 			cfg.Target.DiskSize = isSetInt(diskSize)
 			cfg.Target.Type = isSet(instanceType)
@@ -95,7 +77,7 @@ Instance Type: %s
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err = migrator.Setup(context.Background())
+			err := migrator.Setup(context.Background())
 			if err != nil {
 				return fmt.Errorf("error setting up migration: %w", err)
 			}

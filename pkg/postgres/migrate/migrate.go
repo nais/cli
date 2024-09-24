@@ -1,12 +1,15 @@
 package migrate
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"github.com/sethvargo/go-retry"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
@@ -251,4 +254,15 @@ func getLatestImageTag() (string, error) {
 	}
 
 	return v["tag_name"].(string), nil
+}
+
+func confirmContinue() error {
+	fmt.Print("\nAre you sure you want to continue (y/N): ")
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+		return fmt.Errorf("cancelled by user")
+	}
+
+	return nil
 }
