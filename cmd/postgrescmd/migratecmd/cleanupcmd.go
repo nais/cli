@@ -25,27 +25,11 @@ func cleanupCommand() *cli.Command {
 			cluster := cCtx.String(contextFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-			fmt.Printf(`
-Cluster (uses current context if unset): %s
-
-Application: %s
-Namespace: %s
-Target Instance: %s
-
-This will delete the old database instance. Rollback after this point is not possible.
-
-Only proceed if you are sure that the migration was successful and that your application is working as expected.
-`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName)
-
-			err := confirmContinue()
-			if err != nil {
-				return err
-			}
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err = migrator.Cleanup(context.Background())
+			err := migrator.Cleanup(context.Background())
 			if err != nil {
 				return fmt.Errorf("error cleaning up instance: %w", err)
 			}

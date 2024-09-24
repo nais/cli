@@ -23,7 +23,25 @@ Congratulations, you're all done! 🎉
 `
 
 func (m *Migrator) Cleanup(ctx context.Context) error {
-	jobName, err := m.doCommand(ctx, CommandCleanup)
+	fmt.Println("Resolving config")
+	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
+	if err != nil {
+		return err
+	}
+
+	m.printConfig()
+	fmt.Print(`
+This will delete the old database instance. Rollback after this point is not possible.
+
+Only proceed if you are sure that the migration was successful and that your application is working as expected.
+`)
+
+	err = confirmContinue()
+	if err != nil {
+		return err
+	}
+
+	jobName, err := m.doNaisJob(ctx, cfgMap, CommandCleanup)
 	if err != nil {
 		return err
 	}

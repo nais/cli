@@ -25,25 +25,11 @@ func rollbackCommand() *cli.Command {
 			cluster := cCtx.String(contextFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-			fmt.Printf(`
-Cluster (uses current context if unset): %s
-
-Application: %s
-Namespace: %s
-Target Instance: %s
-
-This will roll back the migration, and restore the application to use the original instance.
-`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName)
-
-			err := confirmContinue()
-			if err != nil {
-				return err
-			}
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err = migrator.Rollback(context.Background())
+			err := migrator.Rollback(context.Background())
 			if err != nil {
 				return fmt.Errorf("error rolling back instance: %w", err)
 			}

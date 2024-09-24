@@ -48,16 +48,6 @@ func NewMigrator(client ctrl.Client, cfg config.Config) *Migrator {
 	}
 }
 
-func (m *Migrator) doCommand(ctx context.Context, command Command) (string, error) {
-	fmt.Println("Resolving config")
-	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
-	if err != nil {
-		return "", err
-	}
-
-	return m.doNaisJob(ctx, cfgMap, command)
-}
-
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
 	fmt.Println("Creating NaisJob")
 	imageTag, err := getLatestImageTag()
@@ -133,6 +123,20 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		fmt.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
 		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
 	})
+}
+
+func (m *Migrator) printConfig() {
+	fmt.Printf(`
+Migration configuration:
+
+Application: %s
+Namespace: %s
+
+Source instance: 
+%s
+Target instance:
+%s
+`, m.cfg.AppName, m.cfg.Namespace, m.cfg.Source.String(), m.cfg.Target.String())
 }
 
 func createObject[T interface {

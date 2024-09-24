@@ -25,7 +25,24 @@ If things are not working as expected, and you need to rollback to the previous 
 `
 
 func (m *Migrator) Promote(ctx context.Context) error {
-	jobName, err := m.doCommand(ctx, CommandPromote)
+	fmt.Println("Resolving config")
+	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
+	if err != nil {
+		return err
+	}
+
+	m.printConfig()
+	fmt.Print(`
+Your application will not be able to reach the database during promotion.
+The database will be unavailable for a short period of time while the promotion is in progress.
+`)
+
+	err = confirmContinue()
+	if err != nil {
+		return err
+	}
+
+	jobName, err := m.doNaisJob(ctx, cfgMap, CommandPromote)
 	if err != nil {
 		return err
 	}

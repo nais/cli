@@ -1,14 +1,10 @@
 package migratecmd
 
 import (
-	"bufio"
 	"fmt"
-	"github.com/nais/cli/pkg/postgres/migrate/config"
-	"os"
-	"strings"
-
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"github.com/urfave/cli/v2"
 )
 
@@ -69,15 +65,4 @@ func makeConfig(cCtx *cli.Context) config.Config {
 			InstanceName: option.Some(targetInstanceName),
 		},
 	}
-}
-
-func confirmContinue() error {
-	fmt.Print("\nAre you sure you want to continue (y/N): ")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
-		return fmt.Errorf("cancelled by user")
-	}
-
-	return nil
 }

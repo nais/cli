@@ -25,26 +25,11 @@ func promoteCommand() *cli.Command {
 			cluster := cCtx.String(contextFlagName)
 
 			fmt.Println(cCtx.Command.Description)
-			fmt.Printf(`
-Cluster (uses current context if unset): %s
-
-Application: %s
-Namespace: %s
-Target Instance: %s
-
-Your application will not be able to reach the database during promotion.
-The database will be unavailable for a short period of time while the promotion is in progress.
-`, cluster, cfg.AppName, cfg.Namespace, cfg.Target.InstanceName)
-
-			err := confirmContinue()
-			if err != nil {
-				return err
-			}
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err = migrator.Promote(context.Background())
+			err := migrator.Promote(context.Background())
 			if err != nil {
 				return fmt.Errorf("error promoting instance: %w", err)
 			}

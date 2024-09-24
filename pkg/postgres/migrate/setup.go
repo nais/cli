@@ -63,18 +63,10 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return fmt.Errorf("failed to lookup GCP project ID: %w", err)
 	}
 
-	fmt.Printf(`
-Migration is configured as follows:
-
-Application: %s
-Namespace: %s
-
-Source instance: 
-	%s
-Target instance:
-	%s
-`, m.cfg.AppName, m.cfg.Namespace, m.cfg.Source.String(), m.cfg.Target.String())
-
+	m.printConfig()
+	fmt.Print(`
+This will create a new database instance and start replication of data from the source instance.
+`)
 	err = confirmContinue()
 	if err != nil {
 		return err

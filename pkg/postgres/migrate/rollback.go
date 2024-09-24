@@ -24,7 +24,23 @@ You are now free to start another attempt if you wish.
 `
 
 func (m *Migrator) Rollback(ctx context.Context) error {
-	jobName, err := m.doCommand(ctx, CommandRollback)
+	fmt.Println("Resolving config")
+	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
+	if err != nil {
+		return err
+	}
+
+	m.printConfig()
+	fmt.Print(`
+This will roll back the migration, and restore the application to use the original instance.
+`)
+
+	err = confirmContinue()
+	if err != nil {
+		return err
+	}
+
+	jobName, err := m.doNaisJob(ctx, cfgMap, CommandRollback)
 	if err != nil {
 		return err
 	}
