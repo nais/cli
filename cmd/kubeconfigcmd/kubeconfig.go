@@ -2,6 +2,7 @@ package kubeconfigcmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
@@ -66,7 +67,7 @@ gcloud auth login --update-adc`,
 				return err
 			}
 
-			tenant, err := naisdevice.GetActiveTenant(context.Context)
+			tenant, err := getTenantFromEmail(email)
 			if err != nil {
 				return err
 			}
@@ -79,4 +80,16 @@ gcloud auth login --update-adc`,
 				kubeconfig.WithVerboseLogging(verbose))
 		},
 	}
+}
+
+func getTenantFromEmail(email string) (string, error) {
+	_, after, found := strings.Cut(email, "@")
+
+	if !found {
+		return "", fmt.Errorf("could not extract tenant from %s", email)
+	}
+
+	before, _, _ := strings.Cut(after, ".")
+
+	return before, nil
 }
