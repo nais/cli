@@ -2,10 +2,9 @@ package kubeconfig
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"strings"
 
-	"golang.org/x/oauth2"
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
@@ -53,11 +52,8 @@ func getProjects(ctx context.Context, tenant string, options filterOptions) ([]p
 	for {
 		response, err := call.Do()
 		if err != nil {
-			var retrieve *oauth2.RetrieveError
-			if errors.As(err, &retrieve) {
-				if retrieve.ErrorCode == "invalid_grant" {
-					return nil, fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth login --update-adc` first")
-				}
+			if strings.Contains(err.Error(), "invalid_grant") {
+				return nil, fmt.Errorf("looks like you are missing Application Default Credentials, run `gcloud auth login --update-adc` first")
 			}
 
 			return nil, err
