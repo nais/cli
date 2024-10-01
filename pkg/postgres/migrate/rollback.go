@@ -11,7 +11,7 @@ Rollback has been started successfully.
 To monitor the rollback, run the following command in a separate terminal:
 	kubectl logs -f -l %s -n %s
 
-Pausing to wait for rollback job to complete in order to do final cleanup actions ...
+Pausing to wait for rollback job to complete in order to do final finalize actions ...
 `
 
 const RollbackSuccessMessage = `

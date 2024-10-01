@@ -9,12 +9,12 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func cleanupCommand() *cli.Command {
+func finalizeCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "cleanup",
-		Usage:       "Clean up after migration",
-		UsageText:   "nais postgres migrate cleanup APP_NAME NAMESPACE TARGET_INSTANCE_NAME",
-		Description: "Cleanup will remove the source instance and associated resources after a successful migration.",
+		Name:        "finalize",
+		Usage:       "Finalize the migration",
+		UsageText:   "nais postgres migrate finalize APP_NAME NAMESPACE TARGET_INSTANCE_NAME",
+		Description: "Finalize will remove the source instance and associated resources after a successful migration.",
 		Args:        true,
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
@@ -29,7 +29,7 @@ func cleanupCommand() *cli.Command {
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg)
 
-			err := migrator.Cleanup(context.Background())
+			err := migrator.Finalize(context.Background())
 			if err != nil {
 				return fmt.Errorf("error cleaning up instance: %w", err)
 			}

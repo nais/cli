@@ -5,24 +5,24 @@ import (
 	"fmt"
 )
 
-const CleanupStartedMessage = `
-Cleanup has been started successfully.
+const FinalizeStartedMessage = `
+Finalize has been started successfully.
 
-To monitor the cleanup, run the following command in a separate terminal:
+To monitor the finalize, run the following command in a separate terminal:
 	kubectl logs -f -l %s -n %s
 
-Pausing to wait for cleanup job to complete in order to do final cleanup actions ...
+Pausing to wait for finalize job to complete in order to do final finalize actions ...
 `
 
-const CleanupSuccessMessage = `
-Cleanup has completed successfully.
+const FinalizeSuccessMessage = `
+Finalize has completed successfully.
 
 The old instance has been deleted and the migration is complete.
 
 Congratulations, you're all done! 🎉
 `
 
-func (m *Migrator) Cleanup(ctx context.Context) error {
+func (m *Migrator) Finalize(ctx context.Context) error {
 	fmt.Println("Resolving config")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
@@ -41,15 +41,15 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
-	jobName, err := m.doNaisJob(ctx, cfgMap, CommandCleanup)
+	jobName, err := m.doNaisJob(ctx, cfgMap, CommandFinalize)
 	if err != nil {
 		return err
 	}
 
-	label := m.kubectlLabelSelector(CommandCleanup)
-	fmt.Printf(CleanupStartedMessage, label, m.cfg.Namespace)
+	label := m.kubectlLabelSelector(CommandFinalize)
+	fmt.Printf(FinalizeStartedMessage, label, m.cfg.Namespace)
 
-	err = m.waitForJobCompletion(ctx, jobName, CommandCleanup)
+	err = m.waitForJobCompletion(ctx, jobName, CommandFinalize)
 	if err != nil {
 		return err
 	}
@@ -59,6 +59,6 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
-	fmt.Print(CleanupSuccessMessage)
+	fmt.Print(FinalizeSuccessMessage)
 	return nil
 }

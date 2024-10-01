@@ -2,6 +2,7 @@ package migratecmd
 
 import (
 	"fmt"
+
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate/config"
@@ -22,7 +23,7 @@ func Command() *cli.Command {
 		Subcommands: []*cli.Command{
 			setupCommand(),
 			promoteCommand(),
-			cleanupCommand(),
+			finalizeCommand(),
 			rollbackCommand(),
 		},
 	}

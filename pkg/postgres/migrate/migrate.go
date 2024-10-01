@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/nais/cli/pkg/postgres/migrate/config"
-	"github.com/sethvargo/go-retry"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/nais/cli/pkg/postgres/migrate/config"
+	"github.com/sethvargo/go-retry"
 
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -28,7 +29,7 @@ func (c Command) JobName(cfg config.Config) string {
 }
 
 const (
-	CommandCleanup  Command = "cleanup"
+	CommandFinalize Command = "finalize"
 	CommandPromote  Command = "promote"
 	CommandRollback Command = "rollback"
 	CommandSetup    Command = "setup"
@@ -182,7 +183,7 @@ func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 			},
 			{
 				Kind: "ServiceAccount",
-				Name: CommandCleanup.JobName(cfg),
+				Name: CommandFinalize.JobName(cfg),
 			},
 			{
 				Kind: "ServiceAccount",

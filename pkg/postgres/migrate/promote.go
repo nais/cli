@@ -17,8 +17,8 @@ The promote will take some time to complete, you can check completion status wit
 When promotion is complete, your application should be up and running with the new database instance.
 At this point it is important to verify that your application works as expected, and that all data is present.
 
-Once you are satisfied that everything works as expected, you must perform the final cleanup step:
-	nais postgres migrate cleanup %s %s %s
+Once you are satisfied that everything works as expected, you must perform the final finalize step:
+	nais postgres migrate finalize %s %s %s
 
 If things are not working as expected, and you need to rollback to the previous database instance, you can run:
 	nais postgres migrate rollback %s %s %s
