@@ -57,6 +57,20 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	}
 	fmt.Printf("Resolved source:\n%s\n", m.cfg.Source.String())
 
+	sourceInstanceName := m.cfg.Source.InstanceName.String()
+	if sourceInstanceName == "" {
+		return fmt.Errorf("source instance name is empty")
+	}
+
+	targetInstanceName := m.cfg.Target.InstanceName.String()
+	if targetInstanceName == "" {
+		return fmt.Errorf("target instance name is required")
+	}
+
+	if sourceInstanceName == targetInstanceName {
+		return fmt.Errorf("source and target instance names cannot be the same")
+	}
+
 	fmt.Println("Looking up GCP project ID")
 	gcpProjectId, err := m.LookupGcpProjectId(ctx)
 	if err != nil {
