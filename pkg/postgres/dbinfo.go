@@ -199,7 +199,7 @@ func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
 		return fmt.Errorf("fetchSQLDatabases: expected exactly one sqlinstance, found %d", len(app.Spec.GCP.SqlInstances))
 	}
 
-	if len(app.Spec.GCP.SqlInstances[0].Databases) == 1 {
+	if len(app.Spec.GCP.SqlInstances[0].Databases) < 2 {
 		return nil
 	}
 
