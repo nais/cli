@@ -6,12 +6,16 @@
       "properties": {
         "apiVersion": {
           "description": "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
-          "enum": ["kafka.nais.io/v1"],
+          "enum": [
+            "kafka.nais.io/v1"
+          ],
           "type": "string"
         },
         "kind": {
           "description": "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-          "enum": ["Topic"],
+          "enum": [
+            "Topic"
+          ],
           "type": "string"
         },
         "metadata": {
@@ -45,7 +49,8 @@
               "items": {
                 "type": "string"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "set"
             },
             "generateName": {
               "description": "GenerateName is an optional prefix, used by the server, to generate a unique\nname ONLY IF the Name field has not been provided.\nIf this field is used, the name returned to the client will be different\nthan the name passed. This value will also be combined with a unique suffix.\nThe provided value has the same validation rules as the Name field,\nand may be truncated by the length of the suffix required to make the value\nunique on the server.\n\n\nIf this field is specified and the generated name exists, the server will return a 409.\n\n\nApplied only if Name is not specified.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency",
@@ -66,7 +71,9 @@
                   "type": "string"
                 }
               },
-              "required": ["team"],
+              "required": [
+                "team"
+              ],
               "type": "object"
             },
             "managedFields": {
@@ -105,7 +112,8 @@
                 },
                 "type": "object"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "atomic"
             },
             "name": {
               "description": "Name must be unique within a namespace. Is required when creating resources, although\nsome resources may allow a client to request the generation of an appropriate name\nautomatically. Name is primarily intended for creation idempotence and configuration\ndefinition.\nCannot be updated.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -145,11 +153,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["apiVersion", "kind", "name", "uid"],
+                "required": [
+                  "apiVersion",
+                  "kind",
+                  "name",
+                  "uid"
+                ],
                 "type": "object",
                 "x-kubernetes-map-type": "atomic"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-map-keys": [
+                "uid"
+              ],
+              "x-kubernetes-list-type": "map"
             },
             "resourceVersion": {
               "description": "An opaque value that represents the internal version of this object that can\nbe used by clients to determine when objects have changed. May be used for optimistic\nconcurrency, change detection, and the watch operation on a resource or set of resources.\nClients must treat these values as opaque and passed unmodified back to the server.\nThey may only be valid for a particular resource or set of resources.\n\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
@@ -164,7 +181,11 @@
               "type": "string"
             }
           },
-          "required": ["name", "namespace", "labels"],
+          "required": [
+            "name",
+            "namespace",
+            "labels"
+          ],
           "type": "object"
         },
         "spec": {
@@ -177,7 +198,11 @@
                 "properties": {
                   "access": {
                     "description": "Access type granted for a application.\nDefaults to `readwrite`.",
-                    "enum": ["read", "write", "readwrite"],
+                    "enum": [
+                      "read",
+                      "write",
+                      "readwrite"
+                    ],
                     "type": "string"
                   },
                   "application": {
@@ -189,7 +214,11 @@
                     "type": "string"
                   }
                 },
-                "required": ["access", "application", "team"],
+                "required": [
+                  "access",
+                  "application",
+                  "team"
+                ],
                 "type": "object"
               },
               "type": "array"
@@ -199,7 +228,11 @@
               "properties": {
                 "cleanupPolicy": {
                   "description": "CleanupPolicy is either \"delete\" or \"compact\" or both.\nThis designates the retention policy to use on old log segments.",
-                  "enum": ["delete", "compact", "compact,delete"],
+                  "enum": [
+                    "delete",
+                    "compact",
+                    "compact,delete"
+                  ],
                   "example": {
                     "Availability": "",
                     "Default": "delete",
@@ -388,7 +421,10 @@
               "type": "string"
             }
           },
-          "required": ["acl", "pool"],
+          "required": [
+            "acl",
+            "pool"
+          ],
           "type": "object"
         },
         "status": {
@@ -425,7 +461,12 @@
           "type": "object"
         }
       },
-      "required": ["spec", "kind", "metadata", "apiVersion"],
+      "required": [
+        "spec",
+        "kind",
+        "metadata",
+        "apiVersion"
+      ],
       "type": "object",
       "x-kubernetes-group-version-kind": [
         {
@@ -442,12 +483,16 @@
       "properties": {
         "apiVersion": {
           "description": "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
-          "enum": ["nais.io/v1"],
+          "enum": [
+            "nais.io/v1"
+          ],
           "type": "string"
         },
         "kind": {
           "description": "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-          "enum": ["Naisjob"],
+          "enum": [
+            "Naisjob"
+          ],
           "type": "string"
         },
         "metadata": {
@@ -481,7 +526,8 @@
               "items": {
                 "type": "string"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "set"
             },
             "generateName": {
               "description": "GenerateName is an optional prefix, used by the server, to generate a unique\nname ONLY IF the Name field has not been provided.\nIf this field is used, the name returned to the client will be different\nthan the name passed. This value will also be combined with a unique suffix.\nThe provided value has the same validation rules as the Name field,\nand may be truncated by the length of the suffix required to make the value\nunique on the server.\n\n\nIf this field is specified and the generated name exists, the server will return a 409.\n\n\nApplied only if Name is not specified.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency",
@@ -502,7 +548,9 @@
                   "type": "string"
                 }
               },
-              "required": ["team"],
+              "required": [
+                "team"
+              ],
               "type": "object"
             },
             "managedFields": {
@@ -541,7 +589,8 @@
                 },
                 "type": "object"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "atomic"
             },
             "name": {
               "description": "Name must be unique within a namespace. Is required when creating resources, although\nsome resources may allow a client to request the generation of an appropriate name\nautomatically. Name is primarily intended for creation idempotence and configuration\ndefinition.\nCannot be updated.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -581,11 +630,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["apiVersion", "kind", "name", "uid"],
+                "required": [
+                  "apiVersion",
+                  "kind",
+                  "name",
+                  "uid"
+                ],
                 "type": "object",
                 "x-kubernetes-map-type": "atomic"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-map-keys": [
+                "uid"
+              ],
+              "x-kubernetes-list-type": "map"
             },
             "resourceVersion": {
               "description": "An opaque value that represents the internal version of this object that can\nbe used by clients to determine when objects have changed. May be used for optimistic\nconcurrency, change detection, and the watch operation on a resource or set of resources.\nClients must treat these values as opaque and passed unmodified back to the server.\nThey may only be valid for a particular resource or set of resources.\n\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
@@ -600,7 +658,11 @@
               "type": "string"
             }
           },
-          "required": ["name", "namespace", "labels"],
+          "required": [
+            "name",
+            "namespace",
+            "labels"
+          ],
           "type": "object"
         },
         "spec": {
@@ -698,13 +760,17 @@
                             "type": "object"
                           }
                         },
-                        "required": ["application"],
+                        "required": [
+                          "application"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
                     }
                   },
-                  "required": ["rules"],
+                  "required": [
+                    "rules"
+                  ],
                   "type": "object"
                 },
                 "outbound": {
@@ -744,7 +810,9 @@
                                   "type": "integer"
                                 }
                               },
-                              "required": ["port"],
+                              "required": [
+                                "port"
+                              ],
                               "type": "object"
                             },
                             "type": "array"
@@ -771,7 +839,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["application"],
+                        "required": [
+                          "application"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -801,7 +871,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/auth/entra-id/"]
+                    "Link": [
+                      "https://doc.nais.io/auth/entra-id/"
+                    ]
                   },
                   "properties": {
                     "allowAllUsers": {
@@ -835,7 +907,10 @@
                             "Link": null
                           },
                           "items": {
-                            "enum": ["NAVident", "azp_name"],
+                            "enum": [
+                              "NAVident",
+                              "azp_name"
+                            ],
                             "type": "string"
                           },
                           "type": "array"
@@ -903,7 +978,10 @@
                     },
                     "tenant": {
                       "description": "Tenant targets a specific tenant for the Entra ID application.\nOnly works in the development clusters. Only use this if you have a specific reason to do so.\nUsing this will _isolate_ your application from all other applications that are not using the same tenant.",
-                      "enum": ["nav.no", "trygdeetaten.no"],
+                      "enum": [
+                        "nav.no",
+                        "trygdeetaten.no"
+                      ],
                       "example": {
                         "Availability": "",
                         "Default": "",
@@ -918,11 +996,15 @@
                       "type": "string"
                     }
                   },
-                  "required": ["enabled"],
+                  "required": [
+                    "enabled"
+                  ],
                   "type": "object"
                 }
               },
-              "required": ["application"],
+              "required": [
+                "application"
+              ],
               "type": "object"
             },
             "backoffLimit": {
@@ -955,7 +1037,11 @@
             },
             "concurrencyPolicy": {
               "description": "Specifies how to treat concurrent executions of a job that is created by this Naisjob-cron.",
-              "enum": ["Forbid", "Replace", "Allow"],
+              "enum": [
+                "Forbid",
+                "Replace",
+                "Allow"
+              ],
               "example": {
                 "Availability": "",
                 "Default": "Allow",
@@ -1013,15 +1099,21 @@
                             "type": "string"
                           }
                         },
-                        "required": ["fieldPath"],
+                        "required": [
+                          "fieldPath"
+                        ],
                         "type": "object"
                       }
                     },
-                    "required": ["fieldRef"],
+                    "required": [
+                      "fieldRef"
+                    ],
                     "type": "object"
                   }
                 },
-                "required": ["name"],
+                "required": [
+                  "name"
+                ],
                 "type": "object"
               },
               "type": "array"
@@ -1078,7 +1170,10 @@
                     "description": "Specification of an empty directory",
                     "properties": {
                       "medium": {
-                        "enum": ["Memory", "Disk"],
+                        "enum": [
+                          "Memory",
+                          "Disk"
+                        ],
                         "type": "string"
                       }
                     },
@@ -1122,7 +1217,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://cloud.google.com/bigquery/docs"]
+                    "Link": [
+                      "https://cloud.google.com/bigquery/docs"
+                    ]
                   },
                   "items": {
                     "properties": {
@@ -1168,7 +1265,10 @@
                       },
                       "permission": {
                         "description": "Permission level given to application.",
-                        "enum": ["READ", "READWRITE"],
+                        "enum": [
+                          "READ",
+                          "READWRITE"
+                        ],
                         "example": {
                           "Availability": "",
                           "Default": "",
@@ -1181,7 +1281,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["name", "permission"],
+                    "required": [
+                      "name",
+                      "permission"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -1195,7 +1298,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/persistence/buckets/"]
+                    "Link": [
+                      "https://doc.nais.io/persistence/buckets/"
+                    ]
                   },
                   "items": {
                     "properties": {
@@ -1231,7 +1336,12 @@
                           },
                           "withState": {
                             "description": "Condition is satisfied when the object has the specified state.",
-                            "enum": ["", "LIVE", "ARCHIVED", "ANY"],
+                            "enum": [
+                              "",
+                              "LIVE",
+                              "ARCHIVED",
+                              "ANY"
+                            ],
                             "type": "string"
                           }
                         },
@@ -1278,7 +1388,9 @@
                         "type": "boolean"
                       }
                     },
-                    "required": ["name"],
+                    "required": [
+                      "name"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -1312,7 +1424,10 @@
                             "type": "string"
                           }
                         },
-                        "required": ["apiVersion", "kind"],
+                        "required": [
+                          "apiVersion",
+                          "kind"
+                        ],
                         "type": "object"
                       },
                       "role": {
@@ -1320,7 +1435,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["resource", "role"],
+                    "required": [
+                      "resource",
+                      "role"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -1377,15 +1495,20 @@
                                     "type": "string"
                                   }
                                 },
-                                "required": ["name"],
+                                "required": [
+                                  "name"
+                                ],
                                 "type": "object"
                               },
                               "type": "array"
                             }
                           },
-                          "required": ["name"],
+                          "required": [
+                            "name"
+                          ],
                           "type": "object"
                         },
+                        "maxItems": 1,
                         "type": "array"
                       },
                       "diskAutoresize": {
@@ -1425,7 +1548,10 @@
                       },
                       "diskType": {
                         "description": "Disk type to use for storage in the database.",
-                        "enum": ["SSD", "HDD"],
+                        "enum": [
+                          "SSD",
+                          "HDD"
+                        ],
                         "type": "string"
                       },
                       "flags": {
@@ -1452,7 +1578,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name", "value"],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
                           "type": "object"
                         },
                         "type": "array"
@@ -1536,16 +1665,7 @@
                         "type": "integer"
                       },
                       "tier": {
-                        "description": "Server tier, i.e. how much CPU and memory allocated.\nAvailable tiers are `db-f1-micro`, `db-g1-small` and custom `db-custom-CPU-RAM`.\nCustom memory must be mulitple of 256 MB and at least 3.75 GB (e.g. `db-custom-1-3840` for 1 cpu, 3840 MB ram)",
-                        "example": {
-                          "Availability": "",
-                          "Default": "db-f1-micro",
-                          "Deprecated": false,
-                          "Experimental": false,
-                          "Hidden": false,
-                          "Immutable": false,
-                          "Link": null
-                        },
+                        "description": "Server tier, i.e. how much CPU and memory allocated.\nAvailable tiers are `db-f1-micro`, `db-g1-small` and custom `db-custom-CPU-RAM`.\nCustom instances must specify memory as a multiple of 256 MB and at least 3.75 GB (e.g. `db-custom-1-3840` for 1 cpu, 3840 MB ram).\nThe smallest possible instance is `db-f1-micro`, which is recommended only for development instances.\nFor production workloads, please specify at least `db-custom-1-3840`.",
                         "pattern": "db-.+",
                         "type": "string"
                       },
@@ -1567,7 +1687,7 @@
                         "type": "integer"
                       },
                       "type": {
-                        "description": "PostgreSQL version.\nAbout `POSTGRES_16`; if you are creating a *new* instance with this version, you will be enrolled with the [Enterprice Plus](https://cloud.google.com/sql/docs/postgres/editions-intro) edition.\nThis is a more expensive version than what previous version of Postgres was running on. As for now there is no way to change edition.\nIf you are upgrading from a previous version of Postgres, you will not be enrolled in the Enterprice Plus edition.",
+                        "description": "PostgreSQL version.",
                         "enum": [
                           "POSTGRES_11",
                           "POSTGRES_12",
@@ -1590,9 +1710,13 @@
                         "type": "string"
                       }
                     },
-                    "required": ["type"],
+                    "required": [
+                      "tier",
+                      "type"
+                    ],
                     "type": "object"
                   },
+                  "maxItems": 1,
                   "type": "array"
                 }
               },
@@ -1620,7 +1744,9 @@
                   "type": "string"
                 }
               },
-              "required": ["instance"],
+              "required": [
+                "instance"
+              ],
               "type": "object"
             },
             "kafka": {
@@ -1647,7 +1773,9 @@
                   "type": "boolean"
                 }
               },
-              "required": ["pool"],
+              "required": [
+                "pool"
+              ],
               "type": "object"
             },
             "liveness": {
@@ -1679,7 +1807,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "logformat": {
@@ -1702,7 +1832,10 @@
             },
             "logtransform": {
               "description": "Extra filters for modifying log content. This can e.g. be used for setting loglevel based on http status code.",
-              "enum": ["http_loglevel", "dns_loglevel"],
+              "enum": [
+                "http_loglevel",
+                "dns_loglevel"
+              ],
               "type": "string"
             },
             "maskinporten": {
@@ -1746,7 +1879,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["name"],
+                        "required": [
+                          "name"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -1816,14 +1951,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["orgno"],
+                              "required": [
+                                "orgno"
+                              ],
                               "type": "object"
                             },
                             "type": "array"
                           },
                           "delegationSource": {
                             "description": "Delegation source for the scope. Default is empty, which means no delegation is allowed.",
-                            "enum": ["altinn"],
+                            "enum": [
+                              "altinn"
+                            ],
                             "example": {
                               "Availability": "",
                               "Default": "",
@@ -1868,7 +2007,11 @@
                             "type": "string"
                           }
                         },
-                        "required": ["enabled", "name", "product"],
+                        "required": [
+                          "enabled",
+                          "name",
+                          "product"
+                        ],
                         "type": "object",
                         "x-kubernetes-validations": [
                           {
@@ -1883,7 +2026,9 @@
                   "type": "object"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "observability": {
@@ -1896,17 +2041,19 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/observability/"]
+                "Link": [
+                  "https://doc.nais.io/observability/"
+                ]
               },
               "properties": {
                 "autoInstrumentation": {
                   "additionalProperties": false,
-                  "description": "Enable auto-instrumenting your application using the OpenTelemetry Agent.",
+                  "description": "Auto-instrumentiation for your application using OpenTelemetry for collecting telemetry data such as traces, metrics and logs.",
                   "example": {
-                    "Availability": "GCP",
+                    "Availability": "",
                     "Default": "",
                     "Deprecated": false,
-                    "Experimental": true,
+                    "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
                     "Link": [
@@ -1914,13 +2061,45 @@
                     ]
                   },
                   "properties": {
+                    "destinations": {
+                      "description": "Destinations are where telemetry data should be stored.",
+                      "example": {
+                        "Availability": "",
+                        "Default": "",
+                        "Deprecated": false,
+                        "Experimental": false,
+                        "Hidden": false,
+                        "Immutable": false,
+                        "Link": [
+                          "https://doc.nais.io/observability/reference/auto-config/#destinations"
+                        ]
+                      },
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "Destination ID.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
                     "enabled": {
                       "description": "Enable automatic instrumentation of your application using OpenTelemetry Agent.",
                       "type": "boolean"
                     },
                     "runtime": {
                       "description": "Application runtime. Supported runtimes are `java`, `nodejs`, `python`, `sdk`.",
-                      "enum": ["java", "nodejs", "python", "sdk"],
+                      "enum": [
+                        "java",
+                        "nodejs",
+                        "python",
+                        "sdk"
+                      ],
                       "type": "string"
                     }
                   },
@@ -1936,7 +2115,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/observability/logging/"]
+                    "Link": [
+                      "https://doc.nais.io/observability/logging/"
+                    ]
                   },
                   "properties": {
                     "destinations": {
@@ -1958,7 +2139,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["id"],
+                        "required": [
+                          "id"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -1982,15 +2165,15 @@
                 },
                 "tracing": {
                   "additionalProperties": false,
-                  "description": "Enable application performance monitoring with traces collected using OpenTelemetry and the OTLP exporter.",
+                  "description": "Enable application performance monitoring with traces collected using OpenTelemetry and the OTLP exporter.\nDeprecated. Use AutoInstrumentation instead.",
                   "example": {
-                    "Availability": "GCP",
+                    "Availability": "",
                     "Default": "",
-                    "Deprecated": false,
-                    "Experimental": true,
-                    "Hidden": false,
+                    "Deprecated": true,
+                    "Experimental": false,
+                    "Hidden": true,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/observability/tracing/"]
+                    "Link": null
                   },
                   "properties": {
                     "enabled": {
@@ -2008,7 +2191,12 @@
               "properties": {
                 "access": {
                   "description": "Access level for OpenSearch user",
-                  "enum": ["read", "write", "readwrite", "admin"],
+                  "enum": [
+                    "read",
+                    "write",
+                    "readwrite",
+                    "admin"
+                  ],
                   "type": "string"
                 },
                 "instance": {
@@ -2016,7 +2204,9 @@
                   "type": "string"
                 }
               },
-              "required": ["instance"],
+              "required": [
+                "instance"
+              ],
               "type": "object"
             },
             "parallelism": {
@@ -2080,7 +2270,9 @@
                       "type": "integer"
                     }
                   },
-                  "required": ["path"],
+                  "required": [
+                    "path"
+                  ],
                   "type": "object"
                 }
               },
@@ -2115,7 +2307,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "redis": {
@@ -2127,13 +2321,20 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/persistence/redis/"]
+                "Link": [
+                  "https://doc.nais.io/persistence/redis/"
+                ]
               },
               "items": {
                 "properties": {
                   "access": {
                     "description": "Access level for redis user",
-                    "enum": ["read", "write", "readwrite", "admin"],
+                    "enum": [
+                      "read",
+                      "write",
+                      "readwrite",
+                      "admin"
+                    ],
                     "type": "string"
                   },
                   "instance": {
@@ -2195,7 +2396,10 @@
             },
             "restartPolicy": {
               "description": "RestartPolicy describes how the container should be restarted. Only one of the following restart policies may be specified.\nIf none of the following policies is specified, the default one is Never.\nRead more about [Kubernetes handling pod and container failures](https://kubernetes.io/docs/concepts/workloads/controllers/job/#handling-pod-and-container-failures)",
-              "enum": ["OnFailure", "Never"],
+              "enum": [
+                "OnFailure",
+                "Never"
+              ],
               "type": "string"
             },
             "schedule": {
@@ -2211,7 +2415,9 @@
                   "type": "boolean"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "skipCaBundle": {
@@ -2247,7 +2453,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "successfulJobsHistoryLimit": {
@@ -2281,7 +2489,9 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://github.com/navikt/vault-iac/tree/master/doc"]
+                "Link": [
+                  "https://github.com/navikt/vault-iac/tree/master/doc"
+                ]
               },
               "properties": {
                 "enabled": {
@@ -2313,7 +2523,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["kvPath", "mountPath"],
+                    "required": [
+                      "kvPath",
+                      "mountPath"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -2339,7 +2552,9 @@
               "type": "boolean"
             }
           },
-          "required": ["image"],
+          "required": [
+            "image"
+          ],
           "type": "object"
         },
         "status": {
@@ -2375,7 +2590,11 @@
                   },
                   "status": {
                     "description": "status of the condition, one of True, False, Unknown.",
-                    "enum": ["True", "False", "Unknown"],
+                    "enum": [
+                      "True",
+                      "False",
+                      "Unknown"
+                    ],
                     "type": "string"
                   },
                   "type": {
@@ -2420,7 +2639,12 @@
           "type": "object"
         }
       },
-      "required": ["spec", "kind", "metadata", "apiVersion"],
+      "required": [
+        "spec",
+        "kind",
+        "metadata",
+        "apiVersion"
+      ],
       "type": "object",
       "x-kubernetes-group-version-kind": [
         {
@@ -2437,12 +2661,16 @@
       "properties": {
         "apiVersion": {
           "description": "APIVersion defines the versioned schema of this representation of an object.\nServers should convert recognized schemas to the latest internal value, and\nmay reject unrecognized values.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
-          "enum": ["nais.io/v1alpha1"],
+          "enum": [
+            "nais.io/v1alpha1"
+          ],
           "type": "string"
         },
         "kind": {
           "description": "Kind is a string value representing the REST resource this object represents.\nServers may infer this from the endpoint the client submits requests to.\nCannot be updated.\nIn CamelCase.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-          "enum": ["Application"],
+          "enum": [
+            "Application"
+          ],
           "type": "string"
         },
         "metadata": {
@@ -2476,7 +2704,8 @@
               "items": {
                 "type": "string"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "set"
             },
             "generateName": {
               "description": "GenerateName is an optional prefix, used by the server, to generate a unique\nname ONLY IF the Name field has not been provided.\nIf this field is used, the name returned to the client will be different\nthan the name passed. This value will also be combined with a unique suffix.\nThe provided value has the same validation rules as the Name field,\nand may be truncated by the length of the suffix required to make the value\nunique on the server.\n\n\nIf this field is specified and the generated name exists, the server will return a 409.\n\n\nApplied only if Name is not specified.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#idempotency",
@@ -2497,7 +2726,9 @@
                   "type": "string"
                 }
               },
-              "required": ["team"],
+              "required": [
+                "team"
+              ],
               "type": "object"
             },
             "managedFields": {
@@ -2536,7 +2767,8 @@
                 },
                 "type": "object"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-type": "atomic"
             },
             "name": {
               "description": "Name must be unique within a namespace. Is required when creating resources, although\nsome resources may allow a client to request the generation of an appropriate name\nautomatically. Name is primarily intended for creation idempotence and configuration\ndefinition.\nCannot be updated.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -2576,11 +2808,20 @@
                     "type": "string"
                   }
                 },
-                "required": ["apiVersion", "kind", "name", "uid"],
+                "required": [
+                  "apiVersion",
+                  "kind",
+                  "name",
+                  "uid"
+                ],
                 "type": "object",
                 "x-kubernetes-map-type": "atomic"
               },
-              "type": "array"
+              "type": "array",
+              "x-kubernetes-list-map-keys": [
+                "uid"
+              ],
+              "x-kubernetes-list-type": "map"
             },
             "resourceVersion": {
               "description": "An opaque value that represents the internal version of this object that can\nbe used by clients to determine when objects have changed. May be used for optimistic\nconcurrency, change detection, and the watch operation on a resource or set of resources.\nClients must treat these values as opaque and passed unmodified back to the server.\nThey may only be valid for a particular resource or set of resources.\n\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency",
@@ -2595,7 +2836,11 @@
               "type": "string"
             }
           },
-          "required": ["name", "namespace", "labels"],
+          "required": [
+            "name",
+            "namespace",
+            "labels"
+          ],
           "type": "object"
         },
         "spec": {
@@ -2693,13 +2938,17 @@
                             "type": "object"
                           }
                         },
-                        "required": ["application"],
+                        "required": [
+                          "application"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
                     }
                   },
-                  "required": ["rules"],
+                  "required": [
+                    "rules"
+                  ],
                   "type": "object"
                 },
                 "outbound": {
@@ -2739,7 +2988,9 @@
                                   "type": "integer"
                                 }
                               },
-                              "required": ["port"],
+                              "required": [
+                                "port"
+                              ],
                               "type": "object"
                             },
                             "type": "array"
@@ -2766,7 +3017,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["application"],
+                        "required": [
+                          "application"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -2791,7 +3044,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/auth/entra-id/"]
+                    "Link": [
+                      "https://doc.nais.io/auth/entra-id/"
+                    ]
                   },
                   "properties": {
                     "allowAllUsers": {
@@ -2825,7 +3080,10 @@
                             "Link": null
                           },
                           "items": {
-                            "enum": ["NAVident", "azp_name"],
+                            "enum": [
+                              "NAVident",
+                              "azp_name"
+                            ],
                             "type": "string"
                           },
                           "type": "array"
@@ -2893,7 +3151,10 @@
                     },
                     "tenant": {
                       "description": "Tenant targets a specific tenant for the Entra ID application.\nOnly works in the development clusters. Only use this if you have a specific reason to do so.\nUsing this will _isolate_ your application from all other applications that are not using the same tenant.",
-                      "enum": ["nav.no", "trygdeetaten.no"],
+                      "enum": [
+                        "nav.no",
+                        "trygdeetaten.no"
+                      ],
                       "example": {
                         "Availability": "",
                         "Default": "",
@@ -2908,7 +3169,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["enabled"],
+                  "required": [
+                    "enabled"
+                  ],
                   "type": "object"
                 },
                 "sidecar": {
@@ -3002,11 +3265,15 @@
                       "type": "object"
                     }
                   },
-                  "required": ["enabled"],
+                  "required": [
+                    "enabled"
+                  ],
                   "type": "object"
                 }
               },
-              "required": ["application"],
+              "required": [
+                "application"
+              ],
               "type": "object"
             },
             "command": {
@@ -3060,15 +3327,21 @@
                             "type": "string"
                           }
                         },
-                        "required": ["fieldPath"],
+                        "required": [
+                          "fieldPath"
+                        ],
                         "type": "object"
                       }
                     },
-                    "required": ["fieldRef"],
+                    "required": [
+                      "fieldRef"
+                    ],
                     "type": "object"
                   }
                 },
-                "required": ["name"],
+                "required": [
+                  "name"
+                ],
                 "type": "object"
               },
               "type": "array"
@@ -3120,7 +3393,10 @@
                     "description": "Specification of an empty directory",
                     "properties": {
                       "medium": {
-                        "enum": ["Memory", "Disk"],
+                        "enum": [
+                          "Memory",
+                          "Disk"
+                        ],
                         "type": "string"
                       }
                     },
@@ -3175,7 +3451,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["mountPath"],
+                  "required": [
+                    "mountPath"
+                  ],
                   "type": "object"
                 }
               },
@@ -3202,7 +3480,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://cloud.google.com/bigquery/docs"]
+                    "Link": [
+                      "https://cloud.google.com/bigquery/docs"
+                    ]
                   },
                   "items": {
                     "properties": {
@@ -3248,7 +3528,10 @@
                       },
                       "permission": {
                         "description": "Permission level given to application.",
-                        "enum": ["READ", "READWRITE"],
+                        "enum": [
+                          "READ",
+                          "READWRITE"
+                        ],
                         "example": {
                           "Availability": "",
                           "Default": "",
@@ -3261,7 +3544,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["name", "permission"],
+                    "required": [
+                      "name",
+                      "permission"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -3275,7 +3561,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/persistence/buckets/"]
+                    "Link": [
+                      "https://doc.nais.io/persistence/buckets/"
+                    ]
                   },
                   "items": {
                     "properties": {
@@ -3311,7 +3599,12 @@
                           },
                           "withState": {
                             "description": "Condition is satisfied when the object has the specified state.",
-                            "enum": ["", "LIVE", "ARCHIVED", "ANY"],
+                            "enum": [
+                              "",
+                              "LIVE",
+                              "ARCHIVED",
+                              "ANY"
+                            ],
                             "type": "string"
                           }
                         },
@@ -3358,7 +3651,9 @@
                         "type": "boolean"
                       }
                     },
-                    "required": ["name"],
+                    "required": [
+                      "name"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -3392,7 +3687,10 @@
                             "type": "string"
                           }
                         },
-                        "required": ["apiVersion", "kind"],
+                        "required": [
+                          "apiVersion",
+                          "kind"
+                        ],
                         "type": "object"
                       },
                       "role": {
@@ -3400,7 +3698,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["resource", "role"],
+                    "required": [
+                      "resource",
+                      "role"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -3457,15 +3758,20 @@
                                     "type": "string"
                                   }
                                 },
-                                "required": ["name"],
+                                "required": [
+                                  "name"
+                                ],
                                 "type": "object"
                               },
                               "type": "array"
                             }
                           },
-                          "required": ["name"],
+                          "required": [
+                            "name"
+                          ],
                           "type": "object"
                         },
+                        "maxItems": 1,
                         "type": "array"
                       },
                       "diskAutoresize": {
@@ -3505,7 +3811,10 @@
                       },
                       "diskType": {
                         "description": "Disk type to use for storage in the database.",
-                        "enum": ["SSD", "HDD"],
+                        "enum": [
+                          "SSD",
+                          "HDD"
+                        ],
                         "type": "string"
                       },
                       "flags": {
@@ -3532,7 +3841,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name", "value"],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
                           "type": "object"
                         },
                         "type": "array"
@@ -3616,16 +3928,7 @@
                         "type": "integer"
                       },
                       "tier": {
-                        "description": "Server tier, i.e. how much CPU and memory allocated.\nAvailable tiers are `db-f1-micro`, `db-g1-small` and custom `db-custom-CPU-RAM`.\nCustom memory must be mulitple of 256 MB and at least 3.75 GB (e.g. `db-custom-1-3840` for 1 cpu, 3840 MB ram)",
-                        "example": {
-                          "Availability": "",
-                          "Default": "db-f1-micro",
-                          "Deprecated": false,
-                          "Experimental": false,
-                          "Hidden": false,
-                          "Immutable": false,
-                          "Link": null
-                        },
+                        "description": "Server tier, i.e. how much CPU and memory allocated.\nAvailable tiers are `db-f1-micro`, `db-g1-small` and custom `db-custom-CPU-RAM`.\nCustom instances must specify memory as a multiple of 256 MB and at least 3.75 GB (e.g. `db-custom-1-3840` for 1 cpu, 3840 MB ram).\nThe smallest possible instance is `db-f1-micro`, which is recommended only for development instances.\nFor production workloads, please specify at least `db-custom-1-3840`.",
                         "pattern": "db-.+",
                         "type": "string"
                       },
@@ -3647,7 +3950,7 @@
                         "type": "integer"
                       },
                       "type": {
-                        "description": "PostgreSQL version.\nAbout `POSTGRES_16`; if you are creating a *new* instance with this version, you will be enrolled with the [Enterprice Plus](https://cloud.google.com/sql/docs/postgres/editions-intro) edition.\nThis is a more expensive version than what previous version of Postgres was running on. As for now there is no way to change edition.\nIf you are upgrading from a previous version of Postgres, you will not be enrolled in the Enterprice Plus edition.",
+                        "description": "PostgreSQL version.",
                         "enum": [
                           "POSTGRES_11",
                           "POSTGRES_12",
@@ -3670,9 +3973,13 @@
                         "type": "string"
                       }
                     },
-                    "required": ["type"],
+                    "required": [
+                      "tier",
+                      "type"
+                    ],
                     "type": "object"
                   },
+                  "maxItems": 1,
                   "type": "array"
                 }
               },
@@ -3691,7 +3998,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/auth/idporten/"]
+                    "Link": [
+                      "https://doc.nais.io/auth/idporten/"
+                    ]
                   },
                   "type": "boolean"
                 },
@@ -3705,7 +4014,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/auth/idporten/how-to/login/"]
+                    "Link": [
+                      "https://doc.nais.io/auth/idporten/how-to/login/"
+                    ]
                   },
                   "properties": {
                     "autoLogin": {
@@ -3769,7 +4080,12 @@
                     },
                     "locale": {
                       "description": "Default user interface locale for all authentication requests.",
-                      "enum": ["nb", "nn", "en", "se"],
+                      "enum": [
+                        "nb",
+                        "nn",
+                        "en",
+                        "se"
+                      ],
                       "example": {
                         "Availability": "",
                         "Default": "nb",
@@ -3821,11 +4137,15 @@
                       "type": "object"
                     }
                   },
-                  "required": ["enabled"],
+                  "required": [
+                    "enabled"
+                  ],
                   "type": "object"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "image": {
@@ -3850,7 +4170,9 @@
                   "type": "string"
                 }
               },
-              "required": ["instance"],
+              "required": [
+                "instance"
+              ],
               "type": "object"
             },
             "ingresses": {
@@ -3871,7 +4193,9 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/persistence/kafka/"]
+                "Link": [
+                  "https://doc.nais.io/persistence/kafka/"
+                ]
               },
               "properties": {
                 "pool": {
@@ -3894,11 +4218,13 @@
                   "type": "boolean"
                 }
               },
-              "required": ["pool"],
+              "required": [
+                "pool"
+              ],
               "type": "object"
             },
             "leaderElection": {
-              "description": "If true, an HTTP endpoint will be available at `$ELECTOR_PATH` that returns the current leader.",
+              "description": "If true, an HTTP endpoint will be available at `$ELECTOR_GET_URL` that returns the current leader.",
               "example": {
                 "Availability": "",
                 "Default": "",
@@ -3906,7 +4232,9 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/services/leader-election/"]
+                "Link": [
+                  "https://doc.nais.io/services/leader-election/"
+                ]
               },
               "type": "boolean"
             },
@@ -3939,7 +4267,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "logformat": {
@@ -3960,9 +4290,62 @@
               ],
               "type": "string"
             },
+            "login": {
+              "additionalProperties": false,
+              "description": "Login configures a login proxy that sits in front of the application.",
+              "example": {
+                "Availability": "Tenant: SSB",
+                "Default": "",
+                "Deprecated": false,
+                "Experimental": false,
+                "Hidden": false,
+                "Immutable": false,
+                "Link": [
+                  "https://doc.nais.io/auth/explanations/#login-proxy"
+                ]
+              },
+              "properties": {
+                "enforce": {
+                  "additionalProperties": false,
+                  "description": "Enforce login for all requests to the application.",
+                  "properties": {
+                    "enabled": {
+                      "description": "If enabled, all unauthenticated requests to the application will be redirected to the login provider.",
+                      "type": "boolean"
+                    },
+                    "excludePaths": {
+                      "description": "Absolute paths to ignore when enforcing login.",
+                      "items": {
+                        "pattern": "^\\/.*$",
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "type": "object"
+                },
+                "provider": {
+                  "description": "Provider configures the authentication provider for the application.",
+                  "enum": [
+                    "openid"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "provider"
+              ],
+              "type": "object"
+            },
             "logtransform": {
               "description": "Extra filters for modifying log content. This can e.g. be used for setting loglevel based on http status code.",
-              "enum": ["http_loglevel", "dns_loglevel"],
+              "enum": [
+                "http_loglevel",
+                "dns_loglevel"
+              ],
               "type": "string"
             },
             "maskinporten": {
@@ -4006,7 +4389,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["name"],
+                        "required": [
+                          "name"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -4076,14 +4461,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["orgno"],
+                              "required": [
+                                "orgno"
+                              ],
                               "type": "object"
                             },
                             "type": "array"
                           },
                           "delegationSource": {
                             "description": "Delegation source for the scope. Default is empty, which means no delegation is allowed.",
-                            "enum": ["altinn"],
+                            "enum": [
+                              "altinn"
+                            ],
                             "example": {
                               "Availability": "",
                               "Default": "",
@@ -4128,7 +4517,11 @@
                             "type": "string"
                           }
                         },
-                        "required": ["enabled", "name", "product"],
+                        "required": [
+                          "enabled",
+                          "name",
+                          "product"
+                        ],
                         "type": "object",
                         "x-kubernetes-validations": [
                           {
@@ -4143,7 +4536,9 @@
                   "type": "object"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "observability": {
@@ -4156,17 +4551,19 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/observability/"]
+                "Link": [
+                  "https://doc.nais.io/observability/"
+                ]
               },
               "properties": {
                 "autoInstrumentation": {
                   "additionalProperties": false,
-                  "description": "Enable auto-instrumenting your application using the OpenTelemetry Agent.",
+                  "description": "Auto-instrumentiation for your application using OpenTelemetry for collecting telemetry data such as traces, metrics and logs.",
                   "example": {
-                    "Availability": "GCP",
+                    "Availability": "",
                     "Default": "",
                     "Deprecated": false,
-                    "Experimental": true,
+                    "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
                     "Link": [
@@ -4174,13 +4571,45 @@
                     ]
                   },
                   "properties": {
+                    "destinations": {
+                      "description": "Destinations are where telemetry data should be stored.",
+                      "example": {
+                        "Availability": "",
+                        "Default": "",
+                        "Deprecated": false,
+                        "Experimental": false,
+                        "Hidden": false,
+                        "Immutable": false,
+                        "Link": [
+                          "https://doc.nais.io/observability/reference/auto-config/#destinations"
+                        ]
+                      },
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "Destination ID.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
                     "enabled": {
                       "description": "Enable automatic instrumentation of your application using OpenTelemetry Agent.",
                       "type": "boolean"
                     },
                     "runtime": {
                       "description": "Application runtime. Supported runtimes are `java`, `nodejs`, `python`, `sdk`.",
-                      "enum": ["java", "nodejs", "python", "sdk"],
+                      "enum": [
+                        "java",
+                        "nodejs",
+                        "python",
+                        "sdk"
+                      ],
                       "type": "string"
                     }
                   },
@@ -4196,7 +4625,9 @@
                     "Experimental": false,
                     "Hidden": false,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/observability/logging/"]
+                    "Link": [
+                      "https://doc.nais.io/observability/logging/"
+                    ]
                   },
                   "properties": {
                     "destinations": {
@@ -4218,7 +4649,9 @@
                             "type": "string"
                           }
                         },
-                        "required": ["id"],
+                        "required": [
+                          "id"
+                        ],
                         "type": "object"
                       },
                       "type": "array"
@@ -4242,15 +4675,15 @@
                 },
                 "tracing": {
                   "additionalProperties": false,
-                  "description": "Enable application performance monitoring with traces collected using OpenTelemetry and the OTLP exporter.",
+                  "description": "Enable application performance monitoring with traces collected using OpenTelemetry and the OTLP exporter.\nDeprecated. Use AutoInstrumentation instead.",
                   "example": {
-                    "Availability": "GCP",
+                    "Availability": "",
                     "Default": "",
-                    "Deprecated": false,
-                    "Experimental": true,
-                    "Hidden": false,
+                    "Deprecated": true,
+                    "Experimental": false,
+                    "Hidden": true,
                     "Immutable": false,
-                    "Link": ["https://doc.nais.io/observability/tracing/"]
+                    "Link": null
                   },
                   "properties": {
                     "enabled": {
@@ -4272,12 +4705,19 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/persistence/opensearch/"]
+                "Link": [
+                  "https://doc.nais.io/persistence/opensearch/"
+                ]
               },
               "properties": {
                 "access": {
                   "description": "Access level for OpenSearch user",
-                  "enum": ["read", "write", "readwrite", "admin"],
+                  "enum": [
+                    "read",
+                    "write",
+                    "readwrite",
+                    "admin"
+                  ],
                   "type": "string"
                 },
                 "instance": {
@@ -4285,7 +4725,9 @@
                   "type": "string"
                 }
               },
-              "required": ["instance"],
+              "required": [
+                "instance"
+              ],
               "type": "object"
             },
             "port": {
@@ -4337,14 +4779,16 @@
                       "type": "integer"
                     }
                   },
-                  "required": ["path"],
+                  "required": [
+                    "path"
+                  ],
                   "type": "object"
                 }
               },
               "type": "object"
             },
             "preStopHookPath": {
-              "description": "A HTTP GET will be issued to this endpoint at least once before the pod is terminated.\nThis feature is deprecated and will be removed in the next major version (nais.io/v1).",
+              "description": "An HTTP GET will be issued to this endpoint at least once before the pod is terminated.\nThis feature is deprecated and will be removed in the next major version (nais.io/v1).",
               "example": {
                 "Availability": "",
                 "Default": "",
@@ -4403,7 +4847,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "redis": {
@@ -4415,13 +4861,20 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/persistence/redis/"]
+                "Link": [
+                  "https://doc.nais.io/persistence/redis/"
+                ]
               },
               "items": {
                 "properties": {
                   "access": {
                     "description": "Access level for redis user",
-                    "enum": ["read", "write", "readwrite", "admin"],
+                    "enum": [
+                      "read",
+                      "write",
+                      "readwrite",
+                      "admin"
+                    ],
                     "type": "string"
                   },
                   "instance": {
@@ -4503,7 +4956,11 @@
                           "type": "string"
                         }
                       },
-                      "required": ["consumerGroup", "threshold", "topic"],
+                      "required": [
+                        "consumerGroup",
+                        "threshold",
+                        "topic"
+                      ],
                       "type": "object"
                     }
                   },
@@ -4562,14 +5019,16 @@
             },
             "secureLogs": {
               "additionalProperties": false,
-              "description": "Whether or not to enable a sidecar container for secure logging.",
+              "description": "Whether to enable a sidecar container for secure logging.",
               "properties": {
                 "enabled": {
                   "description": "Whether to enable a sidecar container for secure logging.\nIf enabled, a volume is mounted in the pods where secure logs can be saved.",
                   "type": "boolean"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "service": {
@@ -4583,11 +5042,18 @@
                 },
                 "protocol": {
                   "description": "Which protocol the backend service runs on. Default is `http`.",
-                  "enum": ["http", "redis", "tcp", "grpc"],
+                  "enum": [
+                    "http",
+                    "redis",
+                    "tcp",
+                    "grpc"
+                  ],
                   "type": "string"
                 }
               },
-              "required": ["port"],
+              "required": [
+                "port"
+              ],
               "type": "object"
             },
             "skipCaBundle": {
@@ -4623,7 +5089,9 @@
                   "type": "integer"
                 }
               },
-              "required": ["path"],
+              "required": [
+                "path"
+              ],
               "type": "object"
             },
             "strategy": {
@@ -4663,7 +5131,10 @@
                 },
                 "type": {
                   "description": "Specifies the strategy used to replace old Pods by new ones.\n`RollingUpdate` is the default value.",
-                  "enum": ["Recreate", "RollingUpdate"],
+                  "enum": [
+                    "Recreate",
+                    "RollingUpdate"
+                  ],
                   "type": "string"
                 }
               },
@@ -4686,7 +5157,9 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://doc.nais.io/security/auth/tokenx/"]
+                "Link": [
+                  "https://doc.nais.io/security/auth/tokenx/"
+                ]
               },
               "properties": {
                 "enabled": {
@@ -4698,7 +5171,9 @@
                   "type": "boolean"
                 }
               },
-              "required": ["enabled"],
+              "required": [
+                "enabled"
+              ],
               "type": "object"
             },
             "ttl": {
@@ -4715,7 +5190,9 @@
                 "Experimental": false,
                 "Hidden": false,
                 "Immutable": false,
-                "Link": ["https://github.com/navikt/vault-iac/tree/master/doc"]
+                "Link": [
+                  "https://github.com/navikt/vault-iac/tree/master/doc"
+                ]
               },
               "properties": {
                 "enabled": {
@@ -4747,7 +5224,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["kvPath", "mountPath"],
+                    "required": [
+                      "kvPath",
+                      "mountPath"
+                    ],
                     "type": "object"
                   },
                   "type": "array"
@@ -4773,7 +5253,9 @@
               "type": "boolean"
             }
           },
-          "required": ["image"],
+          "required": [
+            "image"
+          ],
           "type": "object"
         },
         "status": {
@@ -4809,7 +5291,11 @@
                   },
                   "status": {
                     "description": "status of the condition, one of True, False, Unknown.",
-                    "enum": ["True", "False", "Unknown"],
+                    "enum": [
+                      "True",
+                      "False",
+                      "Unknown"
+                    ],
                     "type": "string"
                   },
                   "type": {
@@ -4854,7 +5340,12 @@
           "type": "object"
         }
       },
-      "required": ["spec", "kind", "metadata", "apiVersion"],
+      "required": [
+        "spec",
+        "kind",
+        "metadata",
+        "apiVersion"
+      ],
       "type": "object",
       "x-kubernetes-group-version-kind": [
         {
