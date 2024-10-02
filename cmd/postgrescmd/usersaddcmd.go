@@ -27,10 +27,6 @@ func usersAddCommand() *cli.Command {
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 3 {
@@ -46,10 +42,9 @@ func usersAddCommand() *cli.Command {
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 			privilege := context.String("privilege")
 
-			return postgres.AddUser(context.Context, appName, username, password, cluster, namespace, database, privilege)
+			return postgres.AddUser(context.Context, appName, username, password, cluster, namespace, privilege)
 		},
 	}
 }

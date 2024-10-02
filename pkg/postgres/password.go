@@ -16,8 +16,8 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName, cluster, namespace, database string) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+func RotatePassword(ctx context.Context, appName, cluster, namespace string) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

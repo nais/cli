@@ -14,8 +14,8 @@ import (
 	"time"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace, database string) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace string) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
@@ -200,8 +200,8 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName, cluster, namespace, database string) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+func ListUsers(ctx context.Context, appName, cluster, namespace string) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
@@ -237,13 +237,13 @@ func ListUsers(ctx context.Context, appName, cluster, namespace, database string
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password, cluster, namespace, database, privilege string) error {
+func AddUser(ctx context.Context, appName, username, password, cluster, namespace, privilege string) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

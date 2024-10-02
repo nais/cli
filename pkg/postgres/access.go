@@ -23,20 +23,20 @@ var revokeAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TA
 	REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM cloudsqliamuser;
 	REVOKE CREATE ON SCHEMA public FROM cloudsqliamuser;`
 
-func PrepareAccess(ctx context.Context, appName, namespace, cluster, database string, allPrivs bool) error {
+func PrepareAccess(ctx context.Context, appName, namespace, cluster string, allPrivs bool) error {
 	if allPrivs {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, database, grantAllPrivs)
+		return sqlExecAsAppUser(ctx, appName, namespace, cluster, grantAllPrivs)
 	} else {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, database, grantSelectPrivs)
+		return sqlExecAsAppUser(ctx, appName, namespace, cluster, grantSelectPrivs)
 	}
 }
 
-func RevokeAccess(ctx context.Context, appName, namespace, cluster, database string) error {
-	return sqlExecAsAppUser(ctx, appName, namespace, cluster, database, revokeAllPrivs)
+func RevokeAccess(ctx context.Context, appName, namespace, cluster string) error {
+	return sqlExecAsAppUser(ctx, appName, namespace, cluster, revokeAllPrivs)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName, namespace, cluster, database, statement string) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+func sqlExecAsAppUser(ctx context.Context, appName, namespace, cluster, statement string) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

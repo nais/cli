@@ -8,13 +8,13 @@ import (
 	"os/exec"
 )
 
-func RunPSQL(ctx context.Context, appName, cluster, namespace, database string, verbose bool) error {
+func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bool) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

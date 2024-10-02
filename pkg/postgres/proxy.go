@@ -19,8 +19,8 @@ import (
 	"cloud.google.com/go/cloudsqlconn"
 )
 
-func RunProxy(ctx context.Context, appName, cluster, namespace, database, host string, port uint, verbose bool) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster, database)
+func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool) error {
+	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

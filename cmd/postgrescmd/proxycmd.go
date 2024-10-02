@@ -36,10 +36,6 @@ func proxyCommand() *cli.Command {
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -53,12 +49,11 @@ func proxyCommand() *cli.Command {
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 			verbose := context.Bool("verbose")
 			port := context.Uint("port")
 			host := context.String("host")
 
-			return postgres.RunProxy(context.Context, appName, cluster, namespace, database, host, port, verbose)
+			return postgres.RunProxy(context.Context, appName, cluster, namespace, host, port, verbose)
 		},
 	}
 }

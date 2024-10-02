@@ -7,14 +7,10 @@ import (
 	"net/url"
 	"strings"
 
-	naisv1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
-	naisalpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"golang.org/x/oauth2"
 	corev1 "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -29,14 +25,9 @@ type DBInfo struct {
 	appName        string
 	projectID      string
 	connectionName string
-
-	multiDB      bool
-	instanceName string
-	databaseName string
-	user         string
 }
 
-func NewDBInfo(appName, namespace, context, databaseName string) (*DBInfo, error) {
+func NewDBInfo(appName, namespace, context string) (*DBInfo, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: context,
@@ -70,7 +61,6 @@ func NewDBInfo(appName, namespace, context, databaseName string) (*DBInfo, error
 		config:        kubeConfig,
 		namespace:     namespace,
 		appName:       appName,
-		databaseName:  databaseName,
 	}, nil
 }
 
@@ -95,19 +85,6 @@ func (i *DBInfo) ConnectionName(ctx context.Context) (string, error) {
 }
 
 func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
-	if err := i.fetchSQLDatabases(ctx); err != nil {
-		return nil, err
-	}
-
-	if i.multiDB {
-		i, err := i.dbConnectionMultiDB(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		return i, nil
-	}
-
 	secret, err := i.k8sClient.CoreV1().Secrets(i.namespace).Get(ctx, "google-sql-"+i.appName, v1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("unable to get database password from %q in %q: %w", "google-sql-"+i.appName, i.namespace, err)
@@ -119,28 +96,6 @@ func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
 	}
 
 	return createConnectionInfo(*secret, connectionName), nil
-}
-
-func (i *DBInfo) dbConnectionMultiDB(ctx context.Context) (*ConnectionInfo, error) {
-	secrets, err := i.k8sClient.CoreV1().Secrets(i.namespace).List(ctx, v1.ListOptions{
-		LabelSelector: "app=" + i.appName,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("unable list secrets for app %q in %q: %w", i.appName, i.namespace, err)
-	}
-
-	connectionName, err := i.ConnectionName(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, secret := range secrets.Items {
-		if strings.HasPrefix(secret.GetName(), "google-sql-"+i.appName+"-"+i.databaseName+"-"+i.user+"-") {
-			return createConnectionInfo(secret, connectionName), nil
-		}
-	}
-
-	return nil, fmt.Errorf("unable to find secret for app %q in %q with database %q and user %q", i.appName, i.namespace, i.databaseName, i.user)
 }
 
 func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo {
@@ -171,91 +126,6 @@ func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo
 		jdbcUrl:  jdbcUrl,
 		instance: instance,
 	}
-}
-
-func (i *DBInfo) fetchSQLDatabases(ctx context.Context) error {
-	app := &naisalpha1.Application{}
-	u, err := i.dynamicClient.Resource(schema.GroupVersionResource{
-		Group:    "nais.io",
-		Version:  "v1alpha1",
-		Resource: "applications",
-	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
-	if err != nil {
-		if k8serrors.IsNotFound(err) {
-			return i.fetchDBInstanceFromJob(ctx)
-		}
-		return fmt.Errorf("fetchSQLDatabases: unable to get application or naisjob %q in %q: %w", i.appName, i.namespace, err)
-	}
-
-	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, app); err != nil {
-		return fmt.Errorf("fetchSQLDatabases: unable to convert unstructured to application: %w", err)
-	}
-
-	if app.Spec.GCP == nil {
-		return fmt.Errorf("fetchSQLDatabases: no GCP configuration found for app %q in %q", i.appName, i.namespace)
-	}
-
-	if app.Spec.GCP != nil && len(app.Spec.GCP.SqlInstances) != 1 {
-		return fmt.Errorf("fetchSQLDatabases: expected exactly one sqlinstance, found %d", len(app.Spec.GCP.SqlInstances))
-	}
-
-	if len(app.Spec.GCP.SqlInstances[0].Databases) < 2 {
-		return nil
-	}
-
-	if i.databaseName == "" {
-		return fmt.Errorf("multiple databases found for app %q in %q, please specify one using the --database flag", i.appName, i.namespace)
-	}
-
-	for _, db := range app.Spec.GCP.SqlInstances[0].Databases {
-		if db.Name == i.databaseName {
-			i.multiDB = true
-			i.instanceName = app.Spec.GCP.SqlInstances[0].Name
-			i.user = db.Users[0].Name
-			return nil
-		}
-	}
-
-	return fmt.Errorf("database %q not found for app %q in %q", i.databaseName, i.appName, i.namespace)
-}
-
-func (i *DBInfo) fetchDBInstanceFromJob(ctx context.Context) error {
-	job := &naisv1.Naisjob{}
-	u, err := i.dynamicClient.Resource(schema.GroupVersionResource{
-		Group:    "nais.io",
-		Version:  "v1",
-		Resource: "naisjobs",
-	}).Namespace(i.namespace).Get(ctx, i.appName, v1.GetOptions{})
-	if err != nil {
-		return fmt.Errorf("fetchSQLDatabases: unable to get application or naisjob %q in %q: %w", i.appName, i.namespace, err)
-	}
-
-	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(u.Object, job); err != nil {
-		return fmt.Errorf("fetchSQLDatabases: unable to convert unstructured to application: %w", err)
-	}
-
-	if job.Spec.GCP != nil && len(job.Spec.GCP.SqlInstances) != 1 {
-		return fmt.Errorf("fetchSQLDatabases: expected exactly one sqlinstance, found %d", len(job.Spec.GCP.SqlInstances))
-	}
-
-	if len(job.Spec.GCP.SqlInstances[0].Databases) == 1 {
-		return nil
-	}
-
-	if i.databaseName == "" {
-		return fmt.Errorf("multiple databases found for app %q in %q, please specify one using the --database flag", i.appName, i.namespace)
-	}
-
-	for _, db := range job.Spec.GCP.SqlInstances[0].Databases {
-		if db.Name == i.databaseName {
-			i.multiDB = true
-			i.instanceName = job.Spec.GCP.SqlInstances[0].Name
-			i.user = db.Users[0].Name
-			return nil
-		}
-	}
-
-	return fmt.Errorf("database %q not found for app %q in %q", i.databaseName, i.appName, i.namespace)
 }
 
 func (i *DBInfo) fetchDBInstance(ctx context.Context) error {

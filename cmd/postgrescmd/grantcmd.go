@@ -22,10 +22,6 @@ func grantCommand() *cli.Command {
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -39,9 +35,8 @@ func grantCommand() *cli.Command {
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 
-			return postgres.GrantAndCreateSQLUser(context.Context, appName, cluster, namespace, database)
+			return postgres.GrantAndCreateSQLUser(context.Context, appName, cluster, namespace)
 		},
 	}
 }

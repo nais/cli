@@ -24,7 +24,7 @@ This operation is only required to run once for each postgresql instance.`,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:  "all-privs",
-				Usage: "Gives all privalges to users",
+				Usage: "Gives all privileges to users",
 			},
 			&cli.StringFlag{
 				Name:    "context",
@@ -33,10 +33,6 @@ This operation is only required to run once for each postgresql instance.`,
 			&cli.StringFlag{
 				Name:    "namespace",
 				Aliases: []string{"n"},
-			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
 			},
 		},
 		Before: func(context *cli.Context) error {
@@ -52,7 +48,6 @@ This operation is only required to run once for each postgresql instance.`,
 			allPrivs := context.Bool("all-privs")
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 
 			fmt.Println(context.Command.Description)
 
@@ -63,7 +58,7 @@ This operation is only required to run once for each postgresql instance.`,
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(context.Context, appName, namespace, cluster, database, allPrivs)
+			return postgres.PrepareAccess(context.Context, appName, namespace, cluster, allPrivs)
 		},
 	}
 }

@@ -21,10 +21,6 @@ func usersListCommand() *cli.Command {
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -38,9 +34,8 @@ func usersListCommand() *cli.Command {
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 
-			return postgres.ListUsers(context.Context, appName, cluster, namespace, database)
+			return postgres.ListUsers(context.Context, appName, cluster, namespace)
 		},
 	}
 }

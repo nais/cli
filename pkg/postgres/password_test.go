@@ -3,6 +3,9 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"strings"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
@@ -11,8 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
-	"net/url"
-	"strings"
 )
 
 const (
@@ -85,7 +86,7 @@ var _ = Describe("Password", func() {
 				Expect(err).To(BeNil())
 
 				dbInfo = createDbInfo(k8sClient)
-				dbConnectionInfo = createConnectionInfo(*secret, dbInfo.instanceName)
+				dbConnectionInfo = createConnectionInfo(*secret, dbInfo.connectionName)
 			})
 
 			It("rotating password", func(ctx context.Context) {
@@ -134,10 +135,6 @@ func createDbInfo(k8sClient kubernetes.Interface) *DBInfo {
 		appName:        appName,
 		projectID:      "project-id",
 		connectionName: "connection:name",
-		multiDB:        false,
-		instanceName:   "my-instance",
-		databaseName:   "my-database",
-		user:           "my-user",
 	}
 }
 

@@ -30,10 +30,6 @@ This operation is only required to run once for each postgresql instance.`,
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -47,7 +43,6 @@ This operation is only required to run once for each postgresql instance.`,
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 
 			fmt.Println(context.Command.Description)
 
@@ -58,7 +53,7 @@ This operation is only required to run once for each postgresql instance.`,
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.RevokeAccess(context.Context, appName, namespace, cluster, database)
+			return postgres.RevokeAccess(context.Context, appName, namespace, cluster)
 		},
 	}
 }

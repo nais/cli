@@ -26,10 +26,6 @@ func psqlCommand() *cli.Command {
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
-			&cli.StringFlag{
-				Name:    "database",
-				Aliases: []string{"d"},
-			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -43,10 +39,9 @@ func psqlCommand() *cli.Command {
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
-			database := context.String("database")
 			verbose := context.Bool("verbose")
 
-			return postgres.RunPSQL(context.Context, appName, cluster, namespace, database, verbose)
+			return postgres.RunPSQL(context.Context, appName, cluster, namespace, verbose)
 		},
 	}
 }
