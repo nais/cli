@@ -21,14 +21,14 @@ Once you are satisfied that everything works as expected, you must perform the f
 	nais postgres migrate finalize %s %s %s
 
 At this point it is also important to update your manifests to use the new database instance.
-	...
-	spec:
+    ...
+    spec:
       gcp:
-	    sqlInstances:
-		- name: %s
+        sqlInstances:
+        - name: %s
           type: %s
           tier: %s
-		  diskSize: %d
+          diskSize: %s
 
 If things are not working as expected, and you need to rollback to the previous database instance, you can run:
 	nais postgres migrate rollback %s %s %s
