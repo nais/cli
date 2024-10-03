@@ -20,6 +20,16 @@ At this point it is important to verify that your application works as expected,
 Once you are satisfied that everything works as expected, you must perform the final finalize step:
 	nais postgres migrate finalize %s %s %s
 
+At this point it is also important to update your manifests to use the new database instance.
+	...
+	spec:
+      gcp:
+	    sqlInstances:
+		- name: %s
+          type: %s
+          tier: %s
+		  diskSize: %d
+
 If things are not working as expected, and you need to rollback to the previous database instance, you can run:
 	nais postgres migrate rollback %s %s %s
 `
@@ -48,6 +58,12 @@ The database will be unavailable for a short period of time while the promotion 
 	}
 
 	label := m.kubectlLabelSelector(CommandPromote)
-	fmt.Printf(PromoteSuccessMessage, label, m.cfg.Namespace, jobName, m.cfg.Namespace, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName, m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName)
+	fmt.Printf(PromoteSuccessMessage,
+		label, m.cfg.Namespace,
+		jobName, m.cfg.Namespace,
+		m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName,
+		m.cfg.Target.InstanceName, m.cfg.Target.Type, m.cfg.Target.Tier, m.cfg.Target.DiskSize,
+		m.cfg.AppName, m.cfg.Namespace, m.cfg.Target.InstanceName,
+	)
 	return nil
 }
