@@ -3,6 +3,7 @@ package migrate
 import (
 	"context"
 	"github.com/pterm/pterm"
+	"github.com/pterm/pterm/putils"
 )
 
 func (m *Migrator) Finalize(ctx context.Context) error {
@@ -50,7 +51,8 @@ Only proceed if you are sure that the migration was successful and that your app
 	pterm.Println()
 	pterm.Println("The old instance has been deleted and the migration is complete.")
 	pterm.Println()
-	pterm.Println("Congratulations, you're all done! 🎉")
+	pterm.DefaultBigText.WithLetters(putils.LettersFromString("Congrats!")).Render()
+	pterm.Println("You are all done! 🎉")
 
 	return nil
 }
