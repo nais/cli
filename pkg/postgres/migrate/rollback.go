@@ -2,27 +2,8 @@ package migrate
 
 import (
 	"context"
-	"fmt"
 	"github.com/pterm/pterm"
 )
-
-const RollbackStartedMessage = `
-Rollback has been started successfully.
-
-To monitor the rollback, run the following command in a separate terminal:
-	kubectl logs -f -l %s -n %s
-
-Pausing to wait for rollback job to complete in order to do final finalize actions ...
-`
-
-const RollbackSuccessMessage = `
-Rollback has completed successfully.
-
-Your application should be up and running with the original database instance.
-The new instance has been deleted and the migration is stopped.
-
-You are now free to start another attempt if you wish.
-`
 
 func (m *Migrator) Rollback(ctx context.Context) error {
 	pterm.Println("Resolving config ...")
@@ -45,7 +26,12 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 	}
 
 	label := m.kubectlLabelSelector(CommandRollback)
-	fmt.Printf(RollbackStartedMessage, label, m.cfg.Namespace)
+	pterm.DefaultHeader.Println("Rollback has been started successfully")
+	pterm.Println()
+	pterm.Println("To monitor the rollback, run the following command in a separate terminal:")
+	cmdStyle.Printfln("\tkubectl logs -f -l %s -n %s", label, m.cfg.Namespace)
+	pterm.Println()
+	pterm.Println("Pausing to wait for rollback job to complete in order to do final finalize actions ...")
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandRollback)
 	if err != nil {
@@ -57,6 +43,12 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Print(RollbackSuccessMessage)
+	pterm.DefaultHeader.Println("Rollback has completed successfully")
+	pterm.Println()
+	pterm.Println("Your application should be up and running with the original database instance.")
+	pterm.Println("The new instance has been deleted and the migration is stopped.")
+	pterm.Println()
+	pterm.Println("You are now free to start another attempt if you wish.")
+
 	return nil
 }

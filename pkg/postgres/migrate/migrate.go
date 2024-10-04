@@ -63,6 +63,15 @@ func (m *Migrator) Create(ctx context.Context, obj ctrl.Object) error {
 	return m.client.Create(ctx, obj)
 }
 
+func (m *Migrator) Delete(ctx context.Context, obj ctrl.Object) error {
+	if m.dryRun {
+		v := reflect.Indirect(reflect.ValueOf(obj))
+		fmt.Printf("Dry run: Skipping deletion of %s: %s\n", v.Type().Name(), obj.GetName())
+		return nil
+	}
+	return m.client.Delete(ctx, obj)
+}
+
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
 	pterm.Println("Creating NaisJob ...")
 	imageTag, err := getLatestImageTag()
@@ -84,7 +93,7 @@ func (m *Migrator) kubectlLabelSelector(command Command) string {
 }
 
 func (m *Migrator) deleteMigrationConfig(ctx context.Context) error {
-	err := ctrl.IgnoreNotFound(m.client.Delete(ctx, m.cfg.GetConfigMap()))
+	err := ctrl.IgnoreNotFound(m.Delete(ctx, m.cfg.GetConfigMap()))
 	if err != nil {
 		return fmt.Errorf("failed to delete ConfigMap: %w", err)
 	}
@@ -105,6 +114,14 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 }
 
 func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
+	spinner, _ := pterm.DefaultSpinner.Start("Waiting for job to complete ...")
+
+	if m.dryRun {
+		pterm.Printf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName)
+		time.Sleep(5 * time.Second)
+		spinner.Success("Job completed")
+		return nil
+	}
 	listOptions := []ctrl.ListOption{
 		ctrl.InNamespace(m.cfg.Namespace),
 		ctrl.MatchingLabels{
@@ -115,19 +132,19 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 
 	b := retry.NewConstant(20 * time.Second)
 	b = retry.WithMaxDuration(15*time.Minute, b)
-	return retry.Do(ctx, b, func(ctx context.Context) error {
+	err := retry.Do(ctx, b, func(ctx context.Context) error {
 		jobs := &batchv1.JobList{}
 		err := m.client.List(ctx, jobs, listOptions...)
 		if err != nil {
-			fmt.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
+			pterm.Warning.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
 			return retry.RetryableError(err)
 		}
 		if len(jobs.Items) < 1 {
-			fmt.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
+			pterm.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
 			return retry.RetryableError(fmt.Errorf("no jobs found"))
 		}
 		if len(jobs.Items) > 1 {
-			fmt.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
+			pterm.Error.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
 			return fmt.Errorf("multiple jobs found")
 		}
 		for _, job := range jobs.Items {
@@ -135,9 +152,15 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 				return nil
 			}
 		}
-		fmt.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
+		pterm.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
 		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
 	})
+	if err != nil {
+		spinner.Fail()
+		return err
+	}
+	spinner.Success("Job completed")
+	return nil
 }
 
 func (m *Migrator) printConfig() {
