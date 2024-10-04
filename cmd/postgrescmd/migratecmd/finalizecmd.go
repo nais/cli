@@ -3,6 +3,7 @@ package migratecmd
 import (
 	"context"
 	"fmt"
+	"github.com/pterm/pterm"
 
 	"github.com/nais/cli/pkg/k8s"
 	"github.com/nais/cli/pkg/postgres/migrate"
@@ -25,7 +26,7 @@ func finalizeCommand() *cli.Command {
 			cfg := makeConfig(cCtx)
 			cluster := cCtx.String(contextFlagName)
 
-			fmt.Println(cCtx.Command.Description)
+			pterm.Println(cCtx.Command.Description)
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))

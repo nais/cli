@@ -2,37 +2,18 @@ package migrate
 
 import (
 	"context"
-	"fmt"
+	"github.com/pterm/pterm"
 )
 
-const FinalizeStartedMessage = `
-Finalize has been started successfully.
-
-To monitor the finalize, run the following command in a separate terminal:
-	kubectl logs -f -l %s -n %s
-
-Pausing to wait for finalize job to complete in order to do final finalize actions ...
-`
-
-const FinalizeSuccessMessage = `
-Finalize has completed successfully.
-
-The old instance has been deleted and the migration is complete.
-
-Congratulations, you're all done! 🎉
-`
-
 func (m *Migrator) Finalize(ctx context.Context) error {
-	fmt.Println("Resolving config")
+	pterm.Println("Resolving config ...")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
 		return err
 	}
 
 	m.printConfig()
-	fmt.Print(`
-This will delete the old database instance. Rollback after this point is not possible.
-
+	pterm.Warning.Print(`This will delete the old database instance. Rollback after this point is not possible.
 Only proceed if you are sure that the migration was successful and that your application is working as expected.
 `)
 
@@ -47,7 +28,13 @@ Only proceed if you are sure that the migration was successful and that your app
 	}
 
 	label := m.kubectlLabelSelector(CommandFinalize)
-	fmt.Printf(FinalizeStartedMessage, label, m.cfg.Namespace)
+
+	pterm.DefaultHeader.Println("Finalize has been started successfully")
+	pterm.Println()
+	pterm.Println("To monitor the finalize, run the following command in a separate terminal:")
+	cmdStyle.Printfln("\tkubectl logs -f -l %s -n %s", label, m.cfg.Namespace)
+	pterm.Println()
+	pterm.Println("Pausing to wait for finalize job to complete in order to do final finalize actions ...")
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandFinalize)
 	if err != nil {
@@ -59,6 +46,11 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
-	fmt.Print(FinalizeSuccessMessage)
+	pterm.DefaultHeader.Println("Finalize has completed successfully")
+	pterm.Println()
+	pterm.Println("The old instance has been deleted and the migration is complete.")
+	pterm.Println()
+	pterm.Println("Congratulations, you're all done! 🎉")
+
 	return nil
 }

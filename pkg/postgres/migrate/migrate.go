@@ -57,7 +57,7 @@ func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool) *Migrator {
 func (m *Migrator) Create(ctx context.Context, obj ctrl.Object) error {
 	if m.dryRun {
 		v := reflect.Indirect(reflect.ValueOf(obj))
-		fmt.Printf("Dry run: Skipping creation of %s: %s\n", v.Type().Name(), obj.GetName())
+		pterm.Printf("Dry run: Skipping creation of %s: %s\n", v.Type().Name(), obj.GetName())
 		return nil
 	}
 	return m.client.Create(ctx, obj)
@@ -66,7 +66,7 @@ func (m *Migrator) Create(ctx context.Context, obj ctrl.Object) error {
 func (m *Migrator) Delete(ctx context.Context, obj ctrl.Object) error {
 	if m.dryRun {
 		v := reflect.Indirect(reflect.ValueOf(obj))
-		fmt.Printf("Dry run: Skipping deletion of %s: %s\n", v.Type().Name(), obj.GetName())
+		pterm.Printf("Dry run: Skipping deletion of %s: %s\n", v.Type().Name(), obj.GetName())
 		return nil
 	}
 	return m.client.Delete(ctx, obj)
