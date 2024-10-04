@@ -2,7 +2,6 @@ package migratecmd
 
 import (
 	"fmt"
-
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate/config"

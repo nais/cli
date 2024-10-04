@@ -36,6 +36,10 @@ const (
 
 const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql-migrator"
 
+var cmdStyle = pterm.NewStyle(pterm.FgLightRed)
+var linkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
+var yamlStyle = pterm.NewStyle(pterm.FgLightYellow)
+
 type Migrator struct {
 	client ctrl.Client
 	cfg    config.Config

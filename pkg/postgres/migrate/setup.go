@@ -85,8 +85,6 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
 	label := m.kubectlLabelSelector(CommandSetup)
 
-	cmdStyle := pterm.NewStyle(pterm.FgLightRed)
-	linkStyle := pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
 	pterm.Println("Migration setup has been started successfully.")
 	pterm.Println()
 	pterm.Println("To monitor the migration, run the following command:")
