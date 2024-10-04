@@ -135,7 +135,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		},
 	}
 
-	b := retry.NewConstant(20 * time.Second)
+	b := retry.NewConstant(10 * time.Second)
 	b = retry.WithMaxDuration(15*time.Minute, b)
 	err := retry.Do(ctx, b, func(ctx context.Context) error {
 		jobs := &batchv1.JobList{}
