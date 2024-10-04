@@ -11,6 +11,7 @@ import (
 
 const (
 	contextFlagName = "context"
+	dryRunFlagName  = "dry-run"
 )
 
 func Command() *cli.Command {
@@ -65,5 +66,12 @@ func makeConfig(cCtx *cli.Context) config.Config {
 		Target: config.InstanceConfig{
 			InstanceName: option.Some(targetInstanceName),
 		},
+	}
+}
+
+func dryRunFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:  dryRunFlagName,
+		Usage: "Perform a dry run of the migration setup, without actually starting the migration",
 	}
 }

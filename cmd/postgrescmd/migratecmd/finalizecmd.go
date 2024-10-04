@@ -18,6 +18,7 @@ func finalizeCommand() *cli.Command {
 		Args:        true,
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
+			dryRunFlag(),
 		},
 		Before: beforeFunc,
 		Action: func(cCtx *cli.Context) error {
@@ -27,7 +28,7 @@ func finalizeCommand() *cli.Command {
 			fmt.Println(cCtx.Command.Description)
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
-			migrator := migrate.NewMigrator(client, cfg)
+			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
 
 			err := migrator.Finalize(context.Background())
 			if err != nil {

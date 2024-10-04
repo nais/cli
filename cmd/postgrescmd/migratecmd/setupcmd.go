@@ -26,6 +26,7 @@ func setupCommand() *cli.Command {
 		Args:        true,
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
+			dryRunFlag(),
 			&cli.StringFlag{
 				Name:        tierFlagName,
 				Usage:       "The `TIER` of the new instance",
@@ -75,7 +76,7 @@ func setupCommand() *cli.Command {
 			cfg.Target.Type = isSet(instanceType)
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
-			migrator := migrate.NewMigrator(client, cfg)
+			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
 
 			err := migrator.Setup(context.Background())
 			if err != nil {

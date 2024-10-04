@@ -40,13 +40,24 @@ const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql
 type Migrator struct {
 	client ctrl.Client
 	cfg    config.Config
+	dryRun bool
 }
 
-func NewMigrator(client ctrl.Client, cfg config.Config) *Migrator {
+func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool) *Migrator {
 	return &Migrator{
 		client,
 		cfg,
+		dryRun,
 	}
+}
+
+func (m *Migrator) Create(ctx context.Context, obj ctrl.Object) error {
+	if m.dryRun {
+		objKind := obj.GetObjectKind().GroupVersionKind().String()
+		fmt.Printf("Dry run: Skipping creation of %s: %s\n", objKind, obj.GetName())
+		return nil
+	}
+	return m.client.Create(ctx, obj)
 }
 
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
@@ -159,7 +170,7 @@ func createObject[T interface {
 	labels["migrator.nais.io/command"] = string(Command)
 	obj.SetLabels(labels)
 
-	err = m.client.Create(ctx, obj)
+	err = m.Create(ctx, obj)
 	if err != nil {
 		return fmt.Errorf("failed to create Object: %w", err)
 	}

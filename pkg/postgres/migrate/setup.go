@@ -88,7 +88,7 @@ This will create a new database instance and start replication of data from the 
 
 	fmt.Println("Creating ConfigMap")
 	cfgMap := m.cfg.CreateConfigMap()
-	err = m.client.Create(ctx, cfgMap)
+	err = m.Create(ctx, cfgMap)
 	if err != nil {
 		return fmt.Errorf("failed to create ConfigMap: %w", err)
 	}
