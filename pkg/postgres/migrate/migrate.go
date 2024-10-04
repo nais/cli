@@ -1,13 +1,12 @@
 package migrate
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pterm/pterm"
 	"net/http"
-	"os"
-	"strings"
+	"reflect"
 	"time"
 
 	"github.com/nais/cli/pkg/postgres/migrate/config"
@@ -53,15 +52,15 @@ func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool) *Migrator {
 
 func (m *Migrator) Create(ctx context.Context, obj ctrl.Object) error {
 	if m.dryRun {
-		objKind := obj.GetObjectKind().GroupVersionKind().String()
-		fmt.Printf("Dry run: Skipping creation of %s: %s\n", objKind, obj.GetName())
+		v := reflect.Indirect(reflect.ValueOf(obj))
+		fmt.Printf("Dry run: Skipping creation of %s: %s\n", v.Type().Name(), obj.GetName())
 		return nil
 	}
 	return m.client.Create(ctx, obj)
 }
 
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
-	fmt.Println("Creating NaisJob")
+	pterm.Println("Creating NaisJob ...")
 	imageTag, err := getLatestImageTag()
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)
@@ -138,17 +137,25 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 }
 
 func (m *Migrator) printConfig() {
-	fmt.Printf(`
-Migration configuration:
+	pterm.DefaultSection.Println("Migration configuration")
+	pterm.Printfln("Application: %s", m.cfg.AppName)
+	pterm.Printfln("Namespace: %s", m.cfg.Namespace)
+	pterm.DefaultSection.Println("Instance configuration")
+	sourceDiskSize := "<nais default>"
+	m.cfg.Source.DiskSize.Do(func(diskSize int) {
+		sourceDiskSize = fmt.Sprintf("%d GB", diskSize)
+	})
+	targetDiskSize := "<nais default>"
+	m.cfg.Target.DiskSize.Do(func(diskSize int) {
+		targetDiskSize = fmt.Sprintf("%d GB", diskSize)
+	})
 
-Application: %s
-Namespace: %s
-
-Source instance: 
-%s
-Target instance:
-%s
-`, m.cfg.AppName, m.cfg.Namespace, m.cfg.Source.String(), m.cfg.Target.String())
+	tableHeaderStyle := pterm.ThemeDefault.TableHeaderStyle
+	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
+		{"", "Name", "Tier", "Disk size", "Type"},
+		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceDiskSize, m.cfg.Source.Type.String()},
+		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetDiskSize, m.cfg.Target.Type.String()},
+	}).Render()
 }
 
 func createObject[T interface {
@@ -273,10 +280,11 @@ func getLatestImageTag() (string, error) {
 }
 
 func confirmContinue() error {
-	fmt.Print("\nAre you sure you want to continue (y/N): ")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+	pterm.Println()
+	result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+	pterm.Println()
+
+	if !result {
 		return fmt.Errorf("cancelled by user")
 	}
 

@@ -3,6 +3,7 @@ package migratecmd
 import (
 	"context"
 	"fmt"
+	"github.com/pterm/pterm"
 	"strings"
 
 	"github.com/nais/cli/pkg/k8s"
@@ -70,7 +71,7 @@ func setupCommand() *cli.Command {
 			diskSize := cCtx.Int(diskSizeFlagName)
 			instanceType := cCtx.String(typeFlagName)
 
-			fmt.Println(cCtx.Command.Description)
+			pterm.Println(cCtx.Command.Description)
 			cfg.Target.Tier = isSet(tier)
 			cfg.Target.DiskSize = isSetInt(diskSize)
 			cfg.Target.Type = isSet(instanceType)
