@@ -30,7 +30,7 @@ The database will be unavailable for a short period of time while the promotion 
 
 	label := m.kubectlLabelSelector(CommandPromote)
 
-	pterm.Println("Promotion has been started successfully.")
+	pterm.DefaultHeader.Println("Promotion has been started successfully")
 	pterm.Println()
 	pterm.Println("To monitor the migration, run the following command:")
 	cmdStyle.Printfln("\tkubectl logs -f -l %s -n %s", label, m.cfg.Namespace)

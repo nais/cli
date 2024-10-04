@@ -3,6 +3,7 @@ package migrate
 import (
 	"context"
 	"fmt"
+	"github.com/pterm/pterm"
 )
 
 const RollbackStartedMessage = `
@@ -24,16 +25,14 @@ You are now free to start another attempt if you wish.
 `
 
 func (m *Migrator) Rollback(ctx context.Context) error {
-	fmt.Println("Resolving config")
+	pterm.Println("Resolving config ...")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
 		return err
 	}
 
 	m.printConfig()
-	fmt.Print(`
-This will roll back the migration, and restore the application to use the original instance.
-`)
+	pterm.Warning.Println("This will roll back the migration, and restore the application to use the original instance.")
 
 	err = confirmContinue()
 	if err != nil {
