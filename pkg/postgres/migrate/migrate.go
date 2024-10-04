@@ -114,10 +114,15 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 }
 
 func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
-	spinner, _ := pterm.DefaultSpinner.Start("Waiting for job to complete ...")
+	multi := pterm.DefaultMultiPrinter
+	logOutput := pterm.DefaultLogger.WithMaxWidth(120).WithWriter(multi.NewWriter())
+	logOutput.Info(fmt.Sprintf("Pausing to wait for %s job to complete in order to do final cleanup actions ...", command))
+	spinner, _ := pterm.DefaultSpinner.WithWriter(multi.NewWriter()).Start("Waiting for job to complete ...")
+	multi.Start()
+	defer multi.Stop()
 
 	if m.dryRun {
-		pterm.Printf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName)
+		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName))
 		time.Sleep(5 * time.Second)
 		spinner.Success("Job completed")
 		return nil
@@ -136,15 +141,14 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		jobs := &batchv1.JobList{}
 		err := m.client.List(ctx, jobs, listOptions...)
 		if err != nil {
-			pterm.Warning.Printf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err)
+			logOutput.Warn(fmt.Sprintf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err))
 			return retry.RetryableError(err)
 		}
 		if len(jobs.Items) < 1 {
-			pterm.Printf("No jobs found %s/%s, retrying\n", m.cfg.Namespace, jobName)
 			return retry.RetryableError(fmt.Errorf("no jobs found"))
 		}
 		if len(jobs.Items) > 1 {
-			pterm.Error.Printf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName)
+			logOutput.Error(fmt.Sprintf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName))
 			return fmt.Errorf("multiple jobs found")
 		}
 		for _, job := range jobs.Items {
@@ -152,7 +156,6 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 				return nil
 			}
 		}
-		pterm.Printf("Job %s/%s has not completed yet, retrying\n", m.cfg.Namespace, jobName)
 		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
 	})
 	if err != nil {
