@@ -2,11 +2,11 @@ package aivencmd
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/k8s"
 	"strings"
 
 	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/aiven/aiven_services"
+	"github.com/nais/cli/pkg/k8s"
 	"github.com/urfave/cli/v2"
 )
 
@@ -116,7 +116,7 @@ func createCommand() *cli.Command {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 			}
 
-			fmt.Printf("use: 'nais aiven get %v %v %v' to generate configuration secrets\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			fmt.Printf("use the following command to generate configuration secrets:\nnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 			return nil
 		},
 	}

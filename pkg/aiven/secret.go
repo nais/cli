@@ -3,12 +3,12 @@ package aiven
 import (
 	"context"
 	"fmt"
-	"github.com/nais/cli/pkg/k8s"
 	"log"
 	"os"
 
 	"github.com/nais/cli/pkg/aiven/aiven_config"
 	"github.com/nais/cli/pkg/aiven/aiven_services"
+	"github.com/nais/cli/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -55,7 +55,7 @@ func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namesp
 	if err != nil {
 		return fmt.Errorf("generating config: %w", err)
 	}
-	log.Default().Printf("configurations from secret '%s' found here: '%s'.", existingSecret.Name, dest)
+	log.Default().Printf("configurations from secret '%s' found here:\n%s", existingSecret.Name, dest)
 	return nil
 }
 
