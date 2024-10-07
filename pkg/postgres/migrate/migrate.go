@@ -36,7 +36,7 @@ const (
 
 const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql-migrator"
 
-var cmdStyle = pterm.NewStyle(pterm.FgLightRed)
+var cmdStyle = pterm.NewStyle(pterm.FgLightMagenta)
 var linkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
 var yamlStyle = pterm.NewStyle(pterm.FgLightYellow)
 

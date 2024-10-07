@@ -30,12 +30,14 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		if errors.IsNotFound(err) {
+			pterm.Println()
 			pterm.Error.Printfln("Application %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
 			pterm.Println()
 			pterm.Println("Set the correct namespace in your kubeconfig context, using this command:")
 			cmdStyle.Printfln("\tkubectl config set-context --current --namespace=<namespace>")
 			pterm.Println()
 			pterm.Println("Or specify the namespace with the --namespace flag")
+			pterm.Println()
 			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
 		}
 		return err
