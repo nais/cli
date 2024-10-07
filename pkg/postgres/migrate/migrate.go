@@ -73,7 +73,6 @@ func (m *Migrator) Delete(ctx context.Context, obj ctrl.Object) error {
 }
 
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
-	pterm.Println("Creating NaisJob ...")
 	imageTag, err := getLatestImageTag()
 	if err != nil {
 		return "", fmt.Errorf("failed to get latest image tag for cloudsql-migrator: %w", err)

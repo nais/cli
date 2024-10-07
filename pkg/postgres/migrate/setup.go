@@ -3,10 +3,12 @@ package migrate
 import (
 	"context"
 	"fmt"
+	"github.com/nais/cli/pkg/option"
 	"github.com/pterm/pterm"
-
 	v1 "k8s.io/api/core/v1"
+	"log"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
 )
 
 func (m *Migrator) Setup(ctx context.Context) error {
@@ -24,14 +26,16 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return fmt.Errorf("migration config already exists for this application")
 	}
 
-	pterm.Println("Resolving target instance config ...")
-	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
+	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}
 
-	pterm.Println("Resolving source instance config ...")
-	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
+	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
+	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
+	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize)
+
+	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}
@@ -57,20 +61,17 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return err
 	}
 
-	pterm.Println("Looking up GCP project ID ...")
 	gcpProjectId, err := m.LookupGcpProjectId(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to lookup GCP project ID: %w", err)
 	}
 
-	pterm.Println("Creating ConfigMap ...")
 	cfgMap := m.cfg.CreateConfigMap()
 	err = m.Create(ctx, cfgMap)
 	if err != nil {
 		return fmt.Errorf("failed to create ConfigMap: %w", err)
 	}
 
-	pterm.Println("Creating RoleBinding ...")
 	roleBinding := makeRoleBinding(m.cfg)
 	err = createObject(ctx, m, cfgMap, roleBinding, CommandSetup)
 	if err != nil {
@@ -102,4 +103,104 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	pterm.Println()
 	pterm.Info.Println("Be aware that during promotion (the next step), your instance will be unavailable for some time.")
 	return nil
+}
+
+const otherOption = "Other"
+
+var tierOptions = []string{
+	"db-custom-1-3840",
+	"db-custom-2-5120",
+	"db-custom-2-7680",
+	"db-custom-4-15360",
+	otherOption,
+}
+
+func askForTier(sourceTier string) func() option.Option[string] {
+	return func() option.Option[string] {
+		options := []string{"Same as source"}
+		for _, tier := range tierOptions {
+			if tier != sourceTier {
+				options = append(options, tier)
+			}
+		}
+		pterm.Println()
+		tier, err := pterm.DefaultInteractiveSelect.
+			WithOptions(options).
+			WithMaxHeight(len(options)).
+			Show("Select a tier for the target instance")
+		if err != nil {
+			log.Fatalf("Error while creating text UI: %v", err)
+			return option.None[string]()
+		}
+		if tier == otherOption {
+			pterm.Println("Check the documentation for possible options:")
+			linkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
+			tier, err = pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
+			if err != nil {
+				log.Fatalf("Error while creating text UI: %v", err)
+				return option.None[string]()
+			}
+		}
+		return option.Some(tier)
+	}
+}
+
+var typeToVersion = map[string]int{
+	"POSTGRES_11": 11,
+	"POSTGRES_12": 12,
+	"POSTGRES_13": 13,
+	"POSTGRES_14": 14,
+	"POSTGRES_15": 15,
+	"POSTGRES_16": 16,
+}
+
+func askForType(sourceType string) func() option.Option[string] {
+	sourceVersion := typeToVersion[sourceType]
+	return func() option.Option[string] {
+		options := []string{"Same as source"}
+		for k, v := range typeToVersion {
+			if v > sourceVersion {
+				options = append(options, k)
+			}
+		}
+		if len(options) == 1 {
+			return option.None[string]()
+		}
+		pterm.Println()
+		instanceType, err := pterm.DefaultInteractiveSelect.
+			WithOptions(options).
+			WithMaxHeight(len(options)).
+			Show("Select a type for the target instance")
+		if err != nil {
+			log.Fatalf("Error while creating text UI: %v", err)
+			return option.None[string]()
+		}
+		if instanceType == "Same as source" {
+			return option.None[string]()
+		}
+		return option.Some(instanceType)
+	}
+}
+
+func askForDiskSize() option.Option[int] {
+	pterm.Println()
+	pterm.Println("Disk size is in GB, and must be greater than or equal to 10.")
+	diskSize, err := pterm.DefaultInteractiveTextInput.Show("Enter the disk size for the target instance. Leave empty to use same as source")
+	if err != nil {
+		log.Fatalf("Error while creating text UI: %v", err)
+		return option.None[int]()
+	}
+	if diskSize == "" {
+		return option.None[int]()
+	}
+	size, err := strconv.Atoi(diskSize)
+	if err != nil {
+		pterm.Error.Println("Disk size must be a number")
+		return askForDiskSize()
+	}
+	if size < 10 {
+		pterm.Error.Println("Disk size must be greater than or equal to 10")
+		return askForDiskSize()
+	}
+	return option.Some(size)
 }
