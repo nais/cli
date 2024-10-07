@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	contextFlagName = "context"
-	dryRunFlagName  = "dry-run"
+	namespaceFlagName = "namespace"
+	contextFlagName   = "context"
+	dryRunFlagName    = "dry-run"
 )
 
 func Command() *cli.Command {
@@ -26,6 +27,15 @@ func Command() *cli.Command {
 			finalizeCommand(),
 			rollbackCommand(),
 		},
+	}
+}
+
+func namespaceFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:        namespaceFlagName,
+		DefaultText: "The namespace from your current kubeconfig context",
+		Usage:       "The kubernetes `NAMESPACE` to use",
+		Aliases:     []string{"n"},
 	}
 }
 

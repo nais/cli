@@ -22,10 +22,11 @@ func setupCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "setup",
 		Usage:       "Make necessary setup for a new migration",
-		UsageText:   "nais postgres migrate setup APP_NAME NAMESPACE TARGET_INSTANCE_NAME",
+		UsageText:   "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
 		Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
 		Args:        true,
 		Flags: []cli.Flag{
+			namespaceFlag(),
 			kubeConfigFlag(),
 			dryRunFlag(),
 			&cli.StringFlag{
@@ -36,7 +37,7 @@ func setupCommand() *cli.Command {
 				DefaultText: "Source instance value",
 				Action: func(context *cli.Context, v string) error {
 					if !strings.HasPrefix(v, "db-") {
-						return fmt.Errorf("tier must start with db-")
+						return fmt.Errorf("tier must start with `db-`")
 					}
 					return nil
 				},
@@ -56,7 +57,7 @@ func setupCommand() *cli.Command {
 				DefaultText: "Source instance value",
 				Action: func(context *cli.Context, v string) error {
 					if !strings.HasPrefix(v, "POSTGRES_") {
-						return fmt.Errorf("instance type must start with POSTGRES_")
+						return fmt.Errorf("instance type must start with `POSTGRES_`")
 					}
 					return nil
 				},
@@ -70,6 +71,7 @@ func setupCommand() *cli.Command {
 			tier := cCtx.String(tierFlagName)
 			diskSize := cCtx.Int(diskSizeFlagName)
 			instanceType := cCtx.String(typeFlagName)
+			namespace := cCtx.String(namespaceFlagName)
 
 			pterm.Println(cCtx.Command.Description)
 			cfg.Target.Tier = isSet(tier)
@@ -78,6 +80,9 @@ func setupCommand() *cli.Command {
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
+			if namespace != "" {
+				cfg.Namespace = namespace
+			}
 
 			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
 

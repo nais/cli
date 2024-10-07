@@ -14,10 +14,11 @@ func promoteCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "promote",
 		Usage:       "Promote the migrated instance to the new primary instance",
-		UsageText:   "nais postgres migrate promote APP_NAME NAMESPACE TARGET_INSTANCE_NAME",
+		UsageText:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
 		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
 		Args:        true,
 		Flags: []cli.Flag{
+			namespaceFlag(),
 			kubeConfigFlag(),
 			dryRunFlag(),
 		},

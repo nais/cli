@@ -14,10 +14,11 @@ func finalizeCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "finalize",
 		Usage:       "Finalize the migration",
-		UsageText:   "nais postgres migrate finalize APP_NAME NAMESPACE TARGET_INSTANCE_NAME",
+		UsageText:   "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
 		Description: "Finalize will remove the source instance and associated resources after a successful migration.",
 		Args:        true,
 		Flags: []cli.Flag{
+			namespaceFlag(),
 			kubeConfigFlag(),
 			dryRunFlag(),
 		},
