@@ -22,9 +22,10 @@ var scheme = runtime.NewScheme()
 
 type Client struct {
 	ctrl.Client
+	CurrentNamespace string
 }
 
-func getConfig(overrides []ClientOverride) *rest.Config {
+func getConfig(overrides []ClientOverride) (*rest.Config, string) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
 	for _, override := range overrides {
@@ -33,9 +34,13 @@ func getConfig(overrides []ClientOverride) *rest.Config {
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
-		log.Fatalf("Unable to configure Kubernetes client. Check that naisdevice is connected, and your selected context is correct")
+		log.Fatal("Unable to configure Kubernetes client. Check that naisdevice is connected, and your selected context is correct")
 	}
-	return config
+	namespace, _, err := kubeConfig.Namespace()
+	if err != nil {
+		log.Fatal("Unable to determine current namespace")
+	}
+	return config, namespace
 }
 
 func InitScheme(scheme *runtime.Scheme) {
@@ -53,7 +58,7 @@ func WithKubeContext(kubeCtx string) ClientOverride {
 	}
 }
 
-func SetupClient(overrides ...ClientOverride) ctrl.Client {
+func SetupClient(overrides ...ClientOverride) *Client {
 	ctrllog.SetLogger(logr.FromSlogHandler(slog.NewTextHandler(
 		os.Stdout,
 		&slog.HandlerOptions{
@@ -62,12 +67,12 @@ func SetupClient(overrides ...ClientOverride) ctrl.Client {
 	))
 
 	InitScheme(scheme)
-	config := getConfig(overrides)
+	config, namespace := getConfig(overrides)
 	client, err := ctrl.New(config, ctrl.Options{
 		Scheme: scheme,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Client{client}
+	return &Client{client, namespace}
 }

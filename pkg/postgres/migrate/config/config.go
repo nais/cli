@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"strconv"
 
 	"github.com/nais/cli/pkg/option"
@@ -35,6 +36,9 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 	app := &nais_io_v1alpha1.Application{}
 	err := client.Get(ctx, ctrl.ObjectKey{Namespace: namespace, Name: appName}, app)
 	if err != nil {
+		if errors.IsNotFound(err) {
+			return fmt.Errorf("app %s not found in namespace %s", appName, namespace)
+		}
 		return err
 	}
 

@@ -29,6 +29,8 @@ func promoteCommand() *cli.Command {
 			pterm.Println(cCtx.Command.Description)
 
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
+			cfg.Namespace = client.CurrentNamespace
+
 			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
 
 			err := migrator.Promote(context.Background())

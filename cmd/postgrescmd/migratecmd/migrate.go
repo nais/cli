@@ -44,10 +44,8 @@ func beforeFunc(cCtx *cli.Context) error {
 	case 0:
 		return fmt.Errorf("missing name of app")
 	case 1:
-		return fmt.Errorf("missing namespace")
-	case 2:
 		return fmt.Errorf("missing target instance name")
-	case 3:
+	case 2:
 		return nil
 	}
 
@@ -56,12 +54,10 @@ func beforeFunc(cCtx *cli.Context) error {
 
 func makeConfig(cCtx *cli.Context) config.Config {
 	appName := cCtx.Args().Get(0)
-	namespace := cCtx.Args().Get(1)
-	targetInstanceName := cCtx.Args().Get(2)
+	targetInstanceName := cCtx.Args().Get(1)
 
 	return config.Config{
-		AppName:   appName,
-		Namespace: namespace,
+		AppName: appName,
 		Target: config.InstanceConfig{
 			InstanceName: option.Some(targetInstanceName),
 		},

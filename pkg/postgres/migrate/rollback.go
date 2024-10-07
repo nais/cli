@@ -29,7 +29,7 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 	pterm.DefaultHeader.Println("Rollback has been started successfully")
 	pterm.Println()
 	pterm.Println("To monitor the rollback, run the following command in a separate terminal:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s -n %s", label, m.cfg.Namespace)
+	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
 	pterm.Println()
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandRollback)

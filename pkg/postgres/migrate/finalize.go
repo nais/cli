@@ -33,7 +33,7 @@ Only proceed if you are sure that the migration was successful and that your app
 	pterm.DefaultHeader.Println("Finalize has been started successfully")
 	pterm.Println()
 	pterm.Println("To monitor the finalize, run the following command in a separate terminal:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s -n %s", label, m.cfg.Namespace)
+	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
 	pterm.Println()
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandFinalize)
