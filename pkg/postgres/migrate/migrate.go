@@ -1,13 +1,17 @@
 package migrate
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/pterm/pterm"
+	"golang.org/x/sync/errgroup"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/nais/cli/pkg/postgres/migrate/config"
@@ -40,6 +44,13 @@ const MigratorImage = "europe-north1-docker.pkg.dev/nais-io/nais/images/cloudsql
 var cmdStyle = pterm.NewStyle(pterm.FgLightMagenta)
 var linkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
 var yamlStyle = pterm.NewStyle(pterm.FgLightYellow)
+
+type logEntry struct {
+	Msg                 string `json:"msg"`
+	Level               string `json:"level"`
+	MigrationStep       int    `json:"migrationStep"`
+	MigrationStepsTotal int    `json:"migrationStepsTotal"`
+}
 
 type Migrator struct {
 	client    ctrl.Client
@@ -117,20 +128,135 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	return "", fmt.Errorf("namespace %s does not have a GCP project ID annotation", m.cfg.Namespace)
 }
 
+func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName string, logChannel chan<- string) {
+	for {
+		pods, err := m.clientset.CoreV1().Pods(m.cfg.Namespace).List(ctx, metav1.ListOptions{
+			LabelSelector: m.kubectlLabelSelector(command),
+		})
+		if err != nil {
+			logChannel <- fmt.Sprintf("Error getting job logs: %v", err)
+			return
+		}
+
+		pod := m.findPod(pods)
+		if pod == nil {
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		if pod.Status.Phase == corev1.PodSucceeded {
+			return
+		}
+
+		logs, err := m.clientset.CoreV1().Pods(m.cfg.Namespace).GetLogs(pod.Name, &corev1.PodLogOptions{
+			Container: jobName,
+			Follow:    true,
+		}).Stream(ctx)
+		if err != nil {
+			logChannel <- fmt.Sprintf("Error getting job logs: %v", err)
+			return
+		}
+
+		scanner := bufio.NewScanner(logs)
+		for scanner.Scan() {
+			logChannel <- scanner.Text()
+		}
+	}
+}
+
+func (m *Migrator) findPod(pods *corev1.PodList) *corev1.Pod {
+	for _, pod := range pods.Items {
+		if pod.Status.Phase == corev1.PodSucceeded {
+			return &pod
+		}
+		if pod.Status.Phase == corev1.PodRunning {
+			return &pod
+		}
+	}
+	return nil
+}
+
 func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, command Command) error {
+	logChannel := make(chan string)
+	go m.getJobLogs(ctx, command, jobName, logChannel)
+
+	l, err := m.waitForStartingMessage(logChannel)
+	if err != nil {
+		return err
+	}
+
 	multi := pterm.DefaultMultiPrinter
 	logOutput := pterm.DefaultLogger.WithMaxWidth(120).WithWriter(multi.NewWriter())
-	logOutput.Info(fmt.Sprintf("Pausing to wait for %s job to complete in order to do final cleanup actions ...", command))
-	spinner, _ := pterm.DefaultSpinner.WithWriter(multi.NewWriter()).Start("Waiting for job to complete ...")
+	logOutput.Info(l.Msg)
+	progress, _ := pterm.DefaultProgressbar.WithTotal(l.MigrationStepsTotal).WithMaxWidth(120).WithWriter(multi.NewWriter()).Start()
 	multi.Start()
 	defer multi.Stop()
 
 	if m.dryRun {
 		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName))
 		time.Sleep(5 * time.Second)
-		spinner.Success("Job completed")
+		progress.Add(l.MigrationStepsTotal)
 		return nil
 	}
+
+	eg := errgroup.Group{}
+	eg.Go(func() error {
+		return m.pollJobCompletion(ctx, jobName, command)
+	})
+	eg.Go(func() error {
+		for line := range logChannel {
+			err = json.Unmarshal([]byte(line), &l)
+			if err != nil {
+				return err
+			}
+			if l.MigrationStep > 0 {
+				progress.Current = l.MigrationStep
+				progress.UpdateTitle(l.Msg)
+			} else {
+				switch strings.ToLower(l.Level) {
+				case "error":
+					logOutput.Error(l.Msg)
+				case "warn":
+					logOutput.Warn(l.Msg)
+				default:
+					logOutput.Info(l.Msg)
+				}
+			}
+		}
+		return nil
+	})
+	err = eg.Wait()
+	if err != nil {
+		logOutput.Error(err.Error())
+		return fmt.Errorf("error waiting for job completion: %w", err)
+	}
+
+	return nil
+}
+
+func (m *Migrator) waitForStartingMessage(logChannel <-chan string) (*logEntry, error) {
+	spinner, _ := pterm.DefaultSpinner.Start("Waiting for job to start ...")
+	defer spinner.Stop()
+	l := logEntry{}
+	for line := range logChannel {
+		if strings.HasPrefix(line, "Error") {
+			spinner.Fail()
+			pterm.Error.Println(line)
+			return nil, errors.New(line)
+		}
+		err := json.Unmarshal([]byte(line), &l)
+		if err != nil {
+			spinner.Fail()
+			pterm.Error.Println(err)
+			return nil, err
+		}
+		if l.MigrationStepsTotal > 0 {
+			return &l, nil
+		}
+	}
+	return nil, errors.New("no starting message found")
+}
+
+func (m *Migrator) pollJobCompletion(ctx context.Context, jobName string, command Command) error {
 	listOptions := []ctrl.ListOption{
 		ctrl.InNamespace(m.cfg.Namespace),
 		ctrl.MatchingLabels{
@@ -141,19 +267,17 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 
 	b := retry.NewConstant(10 * time.Second)
 	b = retry.WithMaxDuration(15*time.Minute, b)
-	err := retry.Do(ctx, b, func(ctx context.Context) error {
+	return retry.Do(ctx, b, func(ctx context.Context) error {
 		jobs := &batchv1.JobList{}
 		err := m.client.List(ctx, jobs, listOptions...)
 		if err != nil {
-			logOutput.Warn(fmt.Sprintf("Error getting jobs %s/%s, retrying: %v\n", m.cfg.Namespace, jobName, err))
 			return retry.RetryableError(err)
 		}
 		if len(jobs.Items) < 1 {
 			return retry.RetryableError(fmt.Errorf("no jobs found"))
 		}
 		if len(jobs.Items) > 1 {
-			logOutput.Error(fmt.Sprintf("Multiple jobs found %s/%s! This should not happen, contact the nais team!\n", m.cfg.Namespace, jobName))
-			return fmt.Errorf("multiple jobs found")
+			return fmt.Errorf("multiple jobs found %s/%s, contact nais team", m.cfg.Namespace, jobName)
 		}
 		for _, job := range jobs.Items {
 			if job.Status.Succeeded == 1 {
@@ -162,12 +286,6 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		}
 		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
 	})
-	if err != nil {
-		spinner.Fail()
-		return err
-	}
-	spinner.Success("Job completed")
-	return nil
 }
 
 func (m *Migrator) printConfig() {
