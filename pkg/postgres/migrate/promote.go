@@ -32,13 +32,23 @@ The database will be unavailable for a short period of time while the promotion 
 
 	pterm.DefaultHeader.Println("Promotion has been started successfully")
 	pterm.Println()
-	pterm.Println("To monitor the migration, run the following command:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
-	pterm.Println()
-	pterm.Println("The promote will take some time to complete, you can check completion status with the following command:")
-	cmdStyle.Printfln("\tkubectl get job %s", jobName)
-	pterm.Println()
-	pterm.Println("When promotion is complete, your application should be up and running with the new database instance.")
+
+	if m.wait {
+		err = m.waitForJobCompletion(ctx, jobName, CommandPromote)
+		if err != nil {
+			return err
+		}
+		pterm.Println("Promotion is complete, your application should be up and running with the new database instance.")
+	} else {
+		pterm.Println("To monitor the migration, run the following command:")
+		cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
+		pterm.Println()
+		pterm.Println("The promote will take some time to complete, you can check completion status with the following command:")
+		cmdStyle.Printfln("\tkubectl get job %s", jobName)
+		pterm.Println()
+		pterm.Println("When promotion is complete, your application should be up and running with the new database instance.")
+	}
+
 	pterm.Println()
 	pterm.Info.Println(`At this point it is important to verify that your application works as expected, and that all data is present.
 Once you are satisfied that everything works as expected, you must perform the final finalize step:`)

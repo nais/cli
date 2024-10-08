@@ -12,6 +12,7 @@ const (
 	namespaceFlagName = "namespace"
 	contextFlagName   = "context"
 	dryRunFlagName    = "dry-run"
+	noWaitFlagName    = "no-wait"
 )
 
 func Command() *cli.Command {
@@ -45,6 +46,13 @@ func kubeConfigFlag() *cli.StringFlag {
 		Aliases:     []string{"c"},
 		Usage:       "The kubeconfig `CONTEXT` to use",
 		DefaultText: "The current context in your kubeconfig",
+	}
+}
+
+func noWaitFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:  noWaitFlagName,
+		Usage: "Do not wait for the job to complete",
 	}
 }
 

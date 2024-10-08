@@ -32,7 +32,7 @@ func rollbackCommand() *cli.Command {
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
 
-			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
+			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName), false)
 
 			err := migrator.Rollback(context.Background())
 			if err != nil {

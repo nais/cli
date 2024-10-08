@@ -21,6 +21,7 @@ func promoteCommand() *cli.Command {
 			namespaceFlag(),
 			kubeConfigFlag(),
 			dryRunFlag(),
+			noWaitFlag(),
 		},
 		Before: beforeFunc,
 		Action: func(cCtx *cli.Context) error {
@@ -32,7 +33,7 @@ func promoteCommand() *cli.Command {
 			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
 
-			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
+			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName), cCtx.Bool(noWaitFlagName))
 
 			err := migrator.Promote(context.Background())
 			if err != nil {

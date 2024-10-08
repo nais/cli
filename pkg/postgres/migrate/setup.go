@@ -100,13 +100,23 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	pterm.DefaultHeader.Println("Migration setup has been started successfully")
 	pterm.Println()
-	pterm.Println("To monitor the migration, run the following command:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
-	pterm.Println()
-	pterm.Println("The setup will take some time to complete, you can check completion status with the following command:")
-	cmdStyle.Printfln("\tkubectl get job %s", jobName)
-	pterm.Println()
-	pterm.Println("When setup is complete, a new instance has been created and replication of data has started.")
+
+	if m.wait {
+		err = m.waitForJobCompletion(ctx, jobName, CommandSetup)
+		if err != nil {
+			return err
+		}
+		pterm.Println("Setup is now complete, a new instance has been created and replication of data has started.")
+	} else {
+		pterm.Println("To monitor the migration, run the following command:")
+		cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
+		pterm.Println()
+		pterm.Println("The setup will take some time to complete, you can check completion status with the following command:")
+		cmdStyle.Printfln("\tkubectl get job %s", jobName)
+		pterm.Println()
+		pterm.Println("When setup is complete, a new instance has been created and replication of data has started.")
+	}
+
 	pterm.Println("You can check the replication progress in the Google Cloud Console:")
 	linkStyle.Printfln("\t%s", cloudConsoleUrl)
 	pterm.Println()

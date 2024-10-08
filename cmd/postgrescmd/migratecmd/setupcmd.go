@@ -29,6 +29,7 @@ func setupCommand() *cli.Command {
 			namespaceFlag(),
 			kubeConfigFlag(),
 			dryRunFlag(),
+			noWaitFlag(),
 			&cli.StringFlag{
 				Name:        tierFlagName,
 				Usage:       "The `TIER` of the new instance",
@@ -84,7 +85,7 @@ func setupCommand() *cli.Command {
 				cfg.Namespace = namespace
 			}
 
-			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName))
+			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName), cCtx.Bool(noWaitFlagName))
 
 			err := migrator.Setup(context.Background())
 			if err != nil {

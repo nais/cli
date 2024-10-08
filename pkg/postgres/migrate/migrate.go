@@ -44,13 +44,15 @@ type Migrator struct {
 	client ctrl.Client
 	cfg    config.Config
 	dryRun bool
+	wait   bool
 }
 
-func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool) *Migrator {
+func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool, noWait bool) *Migrator {
 	return &Migrator{
-		client,
-		cfg,
-		dryRun,
+		client: client,
+		cfg:    cfg,
+		dryRun: dryRun,
+		wait:   !noWait,
 	}
 }
 
@@ -256,6 +258,12 @@ func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v
 		},
 		Spec: nais_io_v1.NaisjobSpec{
 			Command: []string{"/" + string(command)},
+			Env: nais_io_v1.EnvVars{
+				{
+					Name:  "LOG_FORMAT",
+					Value: "JSON",
+				},
+			},
 			EnvFrom: []nais_io_v1.EnvFrom{{
 				ConfigMap: cfg.MigrationName(),
 			}},
