@@ -110,7 +110,7 @@ func createCommand() *cli.Command {
 				return fmt.Errorf("valid values for access: %v", strings.Join(aiven_services.OpenSearchAccesses, ", "))
 			}
 
-			aivenConfig := aiven.Setup(k8s.SetupClient(), service, username, namespace, secretName, instance, pool, access, expire)
+			aivenConfig := aiven.Setup(k8s.SetupControllerRuntimeClient(), service, username, namespace, secretName, instance, pool, access, expire)
 			aivenApp, err := aivenConfig.GenerateApplication()
 			if err != nil {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)

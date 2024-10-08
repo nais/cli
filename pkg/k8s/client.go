@@ -1,6 +1,8 @@
 package k8s
 
 import (
+	"fmt"
+	"k8s.io/client-go/kubernetes"
 	"log"
 	"log/slog"
 	"os"
@@ -58,7 +60,7 @@ func WithKubeContext(kubeCtx string) ClientOverride {
 	}
 }
 
-func SetupClient(overrides ...ClientOverride) *Client {
+func SetupControllerRuntimeClient(overrides ...ClientOverride) *Client {
 	ctrllog.SetLogger(logr.FromSlogHandler(slog.NewTextHandler(
 		os.Stdout,
 		&slog.HandlerOptions{
@@ -75,4 +77,23 @@ func SetupClient(overrides ...ClientOverride) *Client {
 		log.Fatal(err)
 	}
 	return &Client{client, namespace}
+}
+
+func SetupClientGo(context string) (kubernetes.Interface, error) {
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	configOverrides := &clientcmd.ConfigOverrides{
+		CurrentContext: context,
+	}
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+	config, err := kubeConfig.ClientConfig()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get kubeconfig: %w", err)
+	}
+
+	k8sClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("load kubeclient configuration: %w", err)
+	}
+
+	return k8sClient, err
 }

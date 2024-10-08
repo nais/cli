@@ -29,12 +29,17 @@ func rollbackCommand() *cli.Command {
 
 			pterm.Println(cCtx.Command.Description)
 
-			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
+			client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
 
-			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName), false)
+			clientset, err := k8s.SetupClientGo(cluster)
+			if err != nil {
+				return err
+			}
 
-			err := migrator.Rollback(context.Background())
+			migrator := migrate.NewMigrator(client, clientset, cfg, cCtx.Bool(dryRunFlagName), false)
+
+			err = migrator.Rollback(context.Background())
 			if err != nil {
 				return fmt.Errorf("error rolling back instance: %w", err)
 			}

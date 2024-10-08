@@ -79,15 +79,20 @@ func setupCommand() *cli.Command {
 			cfg.Target.DiskSize = isSetInt(diskSize)
 			cfg.Target.Type = isSet(instanceType)
 
-			client := k8s.SetupClient(k8s.WithKubeContext(cluster))
+			client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
 			if namespace != "" {
 				cfg.Namespace = namespace
 			}
 
-			migrator := migrate.NewMigrator(client, cfg, cCtx.Bool(dryRunFlagName), cCtx.Bool(noWaitFlagName))
+			clientset, err := k8s.SetupClientGo(cluster)
+			if err != nil {
+				return err
+			}
 
-			err := migrator.Setup(context.Background())
+			migrator := migrate.NewMigrator(client, clientset, cfg, cCtx.Bool(dryRunFlagName), cCtx.Bool(noWaitFlagName))
+
+			err = migrator.Setup(context.Background())
 			if err != nil {
 				return fmt.Errorf("error setting up migration: %w", err)
 			}

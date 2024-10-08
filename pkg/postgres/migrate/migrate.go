@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pterm/pterm"
+	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"reflect"
 	"time"
@@ -41,18 +42,20 @@ var linkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
 var yamlStyle = pterm.NewStyle(pterm.FgLightYellow)
 
 type Migrator struct {
-	client ctrl.Client
-	cfg    config.Config
-	dryRun bool
-	wait   bool
+	client    ctrl.Client
+	clientset kubernetes.Interface
+	cfg       config.Config
+	dryRun    bool
+	wait      bool
 }
 
-func NewMigrator(client ctrl.Client, cfg config.Config, dryRun bool, noWait bool) *Migrator {
+func NewMigrator(client ctrl.Client, clientset kubernetes.Interface, cfg config.Config, dryRun bool, noWait bool) *Migrator {
 	return &Migrator{
-		client: client,
-		cfg:    cfg,
-		dryRun: dryRun,
-		wait:   !noWait,
+		client:    client,
+		clientset: clientset,
+		cfg:       cfg,
+		dryRun:    dryRun,
+		wait:      !noWait,
 	}
 }
 

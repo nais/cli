@@ -26,7 +26,7 @@ type Secret struct {
 }
 
 func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namespaceName string) error {
-	aivenClient := k8s.SetupClient()
+	aivenClient := k8s.SetupControllerRuntimeClient()
 	ctx := context.Background()
 
 	err := validateNamespace(ctx, aivenClient, namespaceName)
