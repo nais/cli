@@ -213,7 +213,8 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 			le := logEntry{}
 			err = json.Unmarshal([]byte(line), &le)
 			if err != nil {
-				return err
+				logOutput.Debug(fmt.Sprintf("failed to unmarshal log entry: %q; ignoring...", line))
+				continue
 			}
 			if le.MigrationStep > 0 {
 				progress.Current = le.MigrationStep
@@ -235,7 +236,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		return nil
 	})
 	err = eg.Wait()
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		logOutput.Error(err.Error())
 		return fmt.Errorf("error waiting for job completion: %w", err)
 	}
