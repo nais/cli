@@ -208,6 +208,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	})
 	eg.Go(func() error {
 		defer cancel()
+		lastMsg := ""
 		for line := range logChannel {
 			le := logEntry{}
 			err = json.Unmarshal([]byte(line), &le)
@@ -218,14 +219,17 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 				progress.Current = le.MigrationStep
 				progress.UpdateTitle(le.Msg)
 			} else {
-				switch strings.ToLower(le.Level) {
-				case "error":
-					logOutput.Error(le.Msg)
-				case "warn":
-					logOutput.Warn(le.Msg)
-				default:
-					logOutput.Info(le.Msg)
+				if lastMsg != le.Msg {
+					switch strings.ToLower(le.Level) {
+					case "error":
+						logOutput.Error(le.Msg)
+					case "warn":
+						logOutput.Warn(le.Msg)
+					default:
+						logOutput.Info(le.Msg)
+					}
 				}
+				lastMsg = le.Msg
 			}
 		}
 		return nil
