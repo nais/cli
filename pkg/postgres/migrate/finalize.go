@@ -2,12 +2,12 @@ package migrate
 
 import (
 	"context"
+
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
 )
 
 func (m *Migrator) Finalize(ctx context.Context) error {
-	pterm.Println("Resolving config ...")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
 		return err
@@ -27,14 +27,6 @@ Only proceed if you are sure that the migration was successful and that your app
 	if err != nil {
 		return err
 	}
-
-	label := m.kubectlLabelSelector(CommandFinalize)
-
-	pterm.DefaultHeader.Println("Finalize has been started successfully")
-	pterm.Println()
-	pterm.Println("To monitor the finalize, run the following command in a separate terminal:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
-	pterm.Println()
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandFinalize)
 	if err != nil {

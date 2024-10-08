@@ -3,11 +3,11 @@ package migrate
 import (
 	"context"
 	"fmt"
+
 	"github.com/pterm/pterm"
 )
 
 func (m *Migrator) Promote(ctx context.Context) error {
-	pterm.Println("Resolving config ...")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
 		return err
@@ -30,16 +30,19 @@ The database will be unavailable for a short period of time while the promotion 
 
 	label := m.kubectlLabelSelector(CommandPromote)
 
-	pterm.DefaultHeader.Println("Promotion has been started successfully")
 	pterm.Println()
-
 	if m.wait {
 		err = m.waitForJobCompletion(ctx, jobName, CommandPromote)
 		if err != nil {
 			return err
 		}
+
+		pterm.DefaultHeader.Println("Promotion completed successfully")
+		pterm.Println()
 		pterm.Println("Promotion is complete, your application should be up and running with the new database instance.")
 	} else {
+		pterm.DefaultHeader.Println("Promotion has been started successfully")
+		pterm.Println()
 		pterm.Println("To monitor the migration, run the following command:")
 		cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
 		pterm.Println()

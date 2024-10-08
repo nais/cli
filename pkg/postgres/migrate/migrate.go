@@ -6,22 +6,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/pterm/pterm"
-	"golang.org/x/sync/errgroup"
-	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"reflect"
 	"strings"
 	"time"
 
 	"github.com/nais/cli/pkg/postgres/migrate/config"
-	"github.com/sethvargo/go-retry"
-
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
+	"github.com/pterm/pterm"
+	"github.com/sethvargo/go-retry"
+	"golang.org/x/sync/errgroup"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -50,6 +49,10 @@ type logEntry struct {
 	Level               string `json:"level"`
 	MigrationStep       int    `json:"migrationStep"`
 	MigrationStepsTotal int    `json:"migrationStepsTotal"`
+}
+
+var irrelevantExtraLogEntryKeys = []string{
+	"msg", "time", "level", "source", "migrationApp", "migrationTarget", "migrationPhase",
 }
 
 type Migrator struct {
@@ -188,7 +191,10 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	multi := pterm.DefaultMultiPrinter
 	logOutput := pterm.DefaultLogger.WithMaxWidth(120).WithWriter(multi.NewWriter())
 	logOutput.Info(startingMessage.Msg)
+
 	progress, _ := pterm.DefaultProgressbar.WithTotal(startingMessage.MigrationStepsTotal).WithMaxWidth(120).WithWriter(multi.NewWriter()).Start()
+	defer progress.Stop()
+
 	multi.Start()
 	defer multi.Stop()
 
@@ -211,7 +217,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		lastMsg := ""
 		for line := range logChannel {
 			le := logEntry{}
-			err = json.Unmarshal([]byte(line), &le)
+			err := json.Unmarshal([]byte(line), &le)
 			if err != nil {
 				logOutput.Debug(fmt.Sprintf("failed to unmarshal log entry: %q; ignoring...", line))
 				continue
@@ -221,13 +227,23 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 				progress.UpdateTitle(le.Msg)
 			} else {
 				if lastMsg != le.Msg {
+					extra := make(map[string]any)
+					// this error should be caught above in previous Unmarshal
+					_ = json.Unmarshal([]byte(line), &extra)
+
+					for _, key := range irrelevantExtraLogEntryKeys {
+						delete(extra, key)
+					}
+
+					args := logOutput.ArgsFromMap(extra)
+
 					switch strings.ToLower(le.Level) {
 					case "error":
-						logOutput.Error(le.Msg)
+						logOutput.Error(le.Msg, args)
 					case "warn":
-						logOutput.Warn(le.Msg)
+						logOutput.Warn(le.Msg, args)
 					default:
-						logOutput.Info(le.Msg)
+						logOutput.Info(le.Msg, args)
 					}
 				}
 				lastMsg = le.Msg

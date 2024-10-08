@@ -3,13 +3,14 @@ package migrate
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/nais/cli/pkg/option"
 	"github.com/pterm/pterm"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"log"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strconv"
 )
 
 func (m *Migrator) Setup(ctx context.Context) error {
@@ -98,7 +99,6 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
 	label := m.kubectlLabelSelector(CommandSetup)
 
-	pterm.DefaultHeader.Println("Migration setup has been started successfully")
 	pterm.Println()
 
 	if m.wait {
@@ -106,8 +106,12 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		pterm.DefaultHeader.Println("Migration setup completed successfully")
+		pterm.Println()
 		pterm.Println("Setup is now complete, a new instance has been created and replication of data has started.")
 	} else {
+		pterm.DefaultHeader.Println("Migration setup has been started successfully")
+		pterm.Println()
 		pterm.Println("To monitor the migration, run the following command:")
 		cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
 		pterm.Println()

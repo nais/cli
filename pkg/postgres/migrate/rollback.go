@@ -2,11 +2,11 @@ package migrate
 
 import (
 	"context"
+
 	"github.com/pterm/pterm"
 )
 
 func (m *Migrator) Rollback(ctx context.Context) error {
-	pterm.Println("Resolving config ...")
 	cfgMap, err := m.cfg.PopulateFromConfigMap(ctx, m.client)
 	if err != nil {
 		return err
@@ -24,13 +24,6 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
-	label := m.kubectlLabelSelector(CommandRollback)
-	pterm.DefaultHeader.Println("Rollback has been started successfully")
-	pterm.Println()
-	pterm.Println("To monitor the rollback, run the following command in a separate terminal:")
-	cmdStyle.Printfln("\tkubectl logs -f -l %s", label)
-	pterm.Println()
 
 	err = m.waitForJobCompletion(ctx, jobName, CommandRollback)
 	if err != nil {
