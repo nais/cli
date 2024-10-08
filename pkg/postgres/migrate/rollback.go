@@ -42,6 +42,7 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
+	pterm.Println()
 	pterm.DefaultHeader.Println("Rollback has completed successfully")
 	pterm.Println()
 	pterm.Println("Your application should be up and running with the original database instance.")

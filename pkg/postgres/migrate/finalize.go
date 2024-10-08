@@ -46,6 +46,7 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
+	pterm.Println()
 	pterm.DefaultHeader.Println("Finalize has completed successfully")
 	pterm.Println()
 	pterm.Println("The old instance has been deleted and the migration is complete.")
