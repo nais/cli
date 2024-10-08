@@ -188,15 +188,11 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		return err
 	}
 
-	multi := pterm.DefaultMultiPrinter
-	logOutput := pterm.DefaultLogger.WithMaxWidth(120).WithWriter(multi.NewWriter())
+	logOutput := pterm.DefaultLogger.WithMaxWidth(120)
 	logOutput.Info(startingMessage.Msg)
 
-	progress, _ := pterm.DefaultProgressbar.WithTotal(startingMessage.MigrationStepsTotal).WithMaxWidth(120).WithWriter(multi.NewWriter()).Start()
+	progress, _ := pterm.DefaultProgressbar.WithTotal(startingMessage.MigrationStepsTotal).WithMaxWidth(120).Start()
 	defer progress.Stop()
-
-	multi.Start()
-	defer multi.Stop()
 
 	if m.dryRun {
 		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName))

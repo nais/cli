@@ -99,17 +99,17 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
 	label := m.kubectlLabelSelector(CommandSetup)
 
-	pterm.Println()
-
 	if m.wait {
 		err = m.waitForJobCompletion(ctx, jobName, CommandSetup)
 		if err != nil {
 			return err
 		}
+		pterm.Println()
 		pterm.DefaultHeader.Println("Migration setup completed successfully")
 		pterm.Println()
 		pterm.Println("Setup is now complete, a new instance has been created and replication of data has started.")
 	} else {
+		pterm.Println()
 		pterm.DefaultHeader.Println("Migration setup has been started successfully")
 		pterm.Println()
 		pterm.Println("To monitor the migration, run the following command:")
