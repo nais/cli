@@ -127,7 +127,10 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	return nil
 }
 
-const otherOption = "Other"
+const (
+	otherOption        = "Other"
+	sameAsSourceOption = "Same as source"
+)
 
 var tierOptions = []string{
 	"db-custom-1-3840",
@@ -139,7 +142,7 @@ var tierOptions = []string{
 
 func askForTier(sourceTier string) func() option.Option[string] {
 	return func() option.Option[string] {
-		options := []string{"Same as source"}
+		options := []string{sameAsSourceOption}
 		for _, tier := range tierOptions {
 			if tier != sourceTier {
 				options = append(options, tier)
@@ -163,6 +166,9 @@ func askForTier(sourceTier string) func() option.Option[string] {
 				return option.None[string]()
 			}
 		}
+		if tier == sameAsSourceOption {
+			return option.None[string]()
+		}
 		return option.Some(tier)
 	}
 }
@@ -179,7 +185,7 @@ var typeToVersion = map[string]int{
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
 	return func() option.Option[string] {
-		options := []string{"Same as source"}
+		options := []string{sameAsSourceOption}
 		for k, v := range typeToVersion {
 			if v > sourceVersion {
 				options = append(options, k)
@@ -197,7 +203,7 @@ func askForType(sourceType string) func() option.Option[string] {
 			log.Fatalf("Error while creating text UI: %v", err)
 			return option.None[string]()
 		}
-		if instanceType == "Same as source" {
+		if instanceType == sameAsSourceOption {
 			return option.None[string]()
 		}
 		return option.Some(instanceType)
