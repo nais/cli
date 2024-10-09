@@ -132,6 +132,17 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 }
 
 func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName string, logChannel chan<- string) {
+	if m.dryRun {
+		b, _ := json.Marshal(logEntry{
+			Msg:                 fmt.Sprintf("Dry run: Starting %s", command),
+			Level:               "info",
+			MigrationStep:       1,
+			MigrationStepsTotal: 1,
+		})
+		logChannel <- string(b)
+		return
+	}
+
 	for {
 		pods, err := m.clientset.CoreV1().Pods(m.cfg.Namespace).List(ctx, metav1.ListOptions{
 			LabelSelector: m.kubectlLabelSelector(command),
