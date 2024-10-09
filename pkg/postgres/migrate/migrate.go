@@ -53,7 +53,16 @@ type logEntry struct {
 }
 
 var irrelevantExtraLogEntryKeys = []string{
-	"msg", "time", "level", "source", "migrationApp", "migrationTarget", "migrationPhase",
+	"msg",
+	"time",
+	"level",
+	"source",
+	"migrationApp",
+	"migrationTarget",
+	"migrationPhase",
+	"migrationStep",
+	"migrationStepsTotal",
+	"config",
 }
 
 type Migrator struct {
@@ -156,23 +165,22 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 			return
 		}
 
-		if pod == nil {
+		switch {
+		case pod == nil:
+			// No pod found; wait for it to be created.
 			time.Sleep(1 * time.Second)
 			continue
-		}
-
-		// If the pod succeeded, we're done.
-		if pod.Status.Phase == corev1.PodSucceeded {
+		case pod.Status.Phase == corev1.PodSucceeded:
+			// Pod (and thus Job) has completed successfully.
+			logChannel <- `{"msg": ">>> Pod succeeded", "level": "info", "pod": "` + pod.Name + `"}`
 			return
-		}
-
-		if pod.Status.Phase != corev1.PodRunning {
+		case pod.Status.Phase != corev1.PodRunning:
+			// Pod is not running yet; wait for it to start.
+			logChannel <- `{"msg": ">>> Pod not running yet, waiting...", "level": "info", "pod": "` + pod.Name + `", "phase": "` + string(pod.Status.Phase) + `"}`
 			time.Sleep(1 * time.Second)
 			continue
-		}
-
-		// We've already printed logs for this pod; wait for a new pod to be created.
-		if seenPods[pod.Name] {
+		case seenPods[pod.Name]:
+			// We've already printed logs for this pod; wait for a new pod to be created.
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -186,13 +194,13 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 			return
 		}
 
-		logChannel <- `{"msg":">>> Log stream started", "level": "system", "pod": "` + pod.Name + `"}`
+		logChannel <- `{"msg": ">>> Log stream started", "level": "info", "pod": "` + pod.Name + `"}`
 		scanner := bufio.NewScanner(logs)
 		for scanner.Scan() {
 			logChannel <- scanner.Text()
 		}
 		logs.Close()
-		logChannel <- `{"msg": ">>> Log stream ended", "level": "system", "pod": "` + pod.Name + `"}`
+		logChannel <- `{"msg": ">>> Log stream ended", "level": "info", "pod": "` + pod.Name + `"}`
 
 		// The stream ended, which likely means the pod either exited (whether successful or not) or was deleted.
 		// Mark the pod as seen to avoid printing its logs again.
@@ -281,12 +289,13 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 				if le.MigrationStep > 0 {
 					progress.Current = le.MigrationStep
 					progress.UpdateTitle(le.Msg)
-				} else {
-					if lastMsg != le.Msg {
-						logWithLevel(logOutput, le)
-					}
-					lastMsg = le.Msg
+					continue
 				}
+
+				if lastMsg != le.Msg {
+					logWithLevel(logOutput, le)
+				}
+				lastMsg = le.Msg
 			}
 		}
 	})
