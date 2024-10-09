@@ -23,7 +23,7 @@ require (
 	golang.org/x/sync v0.8.0
 	golang.org/x/vuln v1.1.3
 	google.golang.org/api v0.193.0
-	google.golang.org/grpc v1.65.0
+	google.golang.org/grpc v1.67.1
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.5.1
 	k8s.io/api v0.31.0
@@ -120,7 +120,6 @@ require (
 	golang.org/x/tools v0.24.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
