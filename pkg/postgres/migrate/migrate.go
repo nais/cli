@@ -146,14 +146,20 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 	defer close(errChannel)
 
 	if m.dryRun {
-		b, _ := json.Marshal(logEntry{
-			Msg:                 fmt.Sprintf("Dry run: Starting %s", command),
-			Level:               "info",
-			MigrationStep:       1,
-			MigrationStepsTotal: 1,
-		})
-		logChannel <- string(b)
-		return
+		send := func(entry logEntry) {
+			entry.Msg = fmt.Sprintf("Dry run: %s", entry.Msg)
+			b, _ := json.Marshal(entry)
+			logChannel <- string(b)
+			time.Sleep(500 * time.Millisecond)
+		}
+		send(logEntry{Msg: fmt.Sprintf("Starting %s", command), Level: "info", MigrationStep: 1, MigrationStepsTotal: 3})
+		send(logEntry{Msg: "Running", Level: "info", MigrationStep: 2})
+		send(logEntry{Msg: "Simulating log output", Level: "info"})
+		send(logEntry{Msg: "Simulating more log output", Level: "warn"})
+		send(logEntry{Msg: "Simulating even more log output", Level: "error"})
+		send(logEntry{Msg: "Job completed", Level: "info"})
+		send(logEntry{Msg: "Finished", Level: "info", MigrationStep: 3})
+		return nil
 	}
 
 	seenPods := make(map[string]bool)
