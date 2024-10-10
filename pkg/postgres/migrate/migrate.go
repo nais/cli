@@ -141,9 +141,8 @@ func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	return "", fmt.Errorf("namespace %s does not have a GCP project ID annotation", m.cfg.Namespace)
 }
 
-func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName string, logChannel chan<- string, errChannel chan<- error) {
+func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName string, logChannel chan<- string) error {
 	defer close(logChannel)
-	defer close(errChannel)
 
 	if m.dryRun {
 		send := func(entry logEntry) {
@@ -167,8 +166,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 	for ctx.Err() == nil {
 		pod, err := m.findLatestPod(ctx, command)
 		if err != nil {
-			errChannel <- fmt.Errorf("error finding pod: %w", err)
-			return
+			return fmt.Errorf("error finding pod: %w", err)
 		}
 
 		switch {
@@ -179,7 +177,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 		case pod.Status.Phase == corev1.PodSucceeded:
 			// Pod (and thus Job) has completed successfully.
 			logChannel <- `{"msg": ">>> Pod succeeded", "level": "info", "pod": "` + pod.Name + `"}`
-			return
+			return nil
 		case pod.Status.Phase != corev1.PodRunning:
 			// Pod is not running yet; wait for it to start.
 			logChannel <- `{"msg": ">>> Pod not running yet, waiting...", "level": "info", "pod": "` + pod.Name + `", "phase": "` + string(pod.Status.Phase) + `"}`
@@ -196,8 +194,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 			Follow:    true,
 		}).Stream(ctx)
 		if err != nil {
-			errChannel <- fmt.Errorf("error getting job logs: %w", err)
-			return
+			return fmt.Errorf("error getting job logs: %w", err)
 		}
 
 		logChannel <- `{"msg": ">>> Log stream started", "level": "info", "pod": "` + pod.Name + `"}`
@@ -214,10 +211,10 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 
 		err = scanner.Err()
 		if err != nil {
-			errChannel <- fmt.Errorf("error reading job logs: %w", err)
-			return
+			return fmt.Errorf("error reading job logs: %w", err)
 		}
 	}
+	return nil
 }
 
 // findLatestPod returns the latest pod for the given command. If no pods are found, nil is returned.
@@ -247,10 +244,14 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	defer cancel()
 
 	logChannel := make(chan string)
-	errChannel := make(chan error)
-	go m.getJobLogs(ctx, command, jobName, logChannel, errChannel)
 
-	startingMessage, err := m.waitForStartingMessage(logChannel, errChannel)
+	// ctx is now canceled if any goroutine within the errgroup returns an error, or all of them complete successfully.
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		return m.getJobLogs(ctx, command, jobName, logChannel)
+	})
+
+	startingMessage, err := m.waitForStartingMessage(ctx, logChannel)
 	if err != nil {
 		return err
 	}
@@ -261,52 +262,24 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	progress, _ := pterm.DefaultProgressbar.WithTotal(startingMessage.MigrationStepsTotal).WithMaxWidth(120).Start()
 	defer progress.Stop()
 
+	// this runs outside the errgroup as it does not return an error
+	go renderJobLogs(ctx, logChannel, logOutput, progress)
+
 	if m.dryRun {
 		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName))
 		time.Sleep(5 * time.Second)
-		progress.Add(startingMessage.MigrationStepsTotal)
 		return nil
 	}
 
-	eg := errgroup.Group{}
 	eg.Go(func() error {
-		err := m.pollJobCompletion(ctx, jobName, command)
-		cancel()
-		return err
+		return m.pollJobCompletion(ctx, jobName, command)
 	})
 
-	eg.Go(func() error {
-		defer cancel()
-		lastMsg := ""
-
-		for {
-			select {
-			case <-ctx.Done():
-				return nil
-			case err := <-errChannel:
-				return err
-			case line := <-logChannel:
-				le, err := parseLogLine(line)
-				if err != nil {
-					logOutput.Debug(fmt.Sprintf("failed to unmarshal log entry: %s (was %q); ignoring...", err, line))
-					continue
-				}
-
-				if le.MigrationStep > 0 {
-					progress.Current = le.MigrationStep
-					progress.UpdateTitle(le.Msg)
-					continue
-				}
-
-				if lastMsg != le.Msg {
-					logWithLevel(logOutput, le)
-				}
-				lastMsg = le.Msg
-			}
-		}
-	})
 	err = eg.Wait()
-	if err != nil && !errors.Is(err, context.Canceled) {
+	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			err = context.Cause(ctx)
+		}
 		logOutput.Error(err.Error())
 		return fmt.Errorf("error waiting for job completion: %w", err)
 	}
@@ -314,14 +287,15 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	return nil
 }
 
-func (m *Migrator) waitForStartingMessage(logChannel <-chan string, errChannel <-chan error) (*logEntry, error) {
+func (m *Migrator) waitForStartingMessage(ctx context.Context, logChannel <-chan string) (*logEntry, error) {
 	spinner, _ := pterm.DefaultSpinner.Start("Waiting for job to start ...")
 	defer spinner.Stop()
 
 	for {
 		select {
-		case err := <-errChannel:
+		case <-ctx.Done():
 			spinner.Fail()
+			err := context.Cause(ctx)
 			pterm.Error.Println(err)
 			return nil, err
 		case line := <-logChannel:
@@ -531,20 +505,6 @@ func confirmContinue() error {
 	return nil
 }
 
-func logWithLevel(logOutput *pterm.Logger, le logEntry) {
-	args := logOutput.ArgsFromMap(le.extra)
-	switch strings.ToLower(le.Level) {
-	case "error":
-		logOutput.Error(le.Msg, args)
-	case "warn":
-		logOutput.Warn(le.Msg, args)
-	case "info":
-		logOutput.Info(le.Msg, args)
-	default:
-		logOutput.Print(le.Msg, args)
-	}
-}
-
 func parseLogLine(line string) (logEntry, error) {
 	var le logEntry
 	err := json.Unmarshal([]byte(line), &le)
@@ -563,4 +523,41 @@ func parseLogLine(line string) (logEntry, error) {
 
 	le.extra = extra
 	return le, nil
+}
+
+func renderJobLogs(ctx context.Context, logChannel <-chan string, logOutput *pterm.Logger, progress *pterm.ProgressbarPrinter) {
+	lastMsg := ""
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case line := <-logChannel:
+			le, err := parseLogLine(line)
+			if err != nil {
+				logOutput.Debug(fmt.Sprintf("failed to unmarshal log entry: %s (was %q); ignoring...", err, line))
+				continue
+			}
+
+			if le.MigrationStep > 0 {
+				progress.Current = le.MigrationStep
+				progress.UpdateTitle(le.Msg)
+				continue
+			}
+
+			if lastMsg != le.Msg {
+				args := logOutput.ArgsFromMap(le.extra)
+				switch strings.ToLower(le.Level) {
+				case "error":
+					logOutput.Error(le.Msg, args)
+				case "warn":
+					logOutput.Warn(le.Msg, args)
+				case "info":
+					logOutput.Info(le.Msg, args)
+				default:
+					logOutput.Print(le.Msg, args)
+				}
+			}
+			lastMsg = le.Msg
+		}
+	}
 }
