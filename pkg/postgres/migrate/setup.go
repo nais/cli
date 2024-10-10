@@ -68,7 +68,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	}
 
 	m.printConfig()
-	pterm.Warning.Println("This will create a new database instance and start replication of data from the source instance.")
+	pterm.Warning.Println("Do not make structural database changes during migration!\nThis is not supported, and will cause problems!")
 	err = confirmContinue()
 	if err != nil {
 		return err
