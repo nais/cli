@@ -46,7 +46,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
 	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
-	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize)
+	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
 
 	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
@@ -133,7 +133,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 const (
 	otherOption        = "Other"
-	sameAsSourceOption = "Same as source"
+	sameAsSourceOption = "Same as source (%s)"
 )
 
 var tierOptions = []string{
@@ -146,7 +146,7 @@ var tierOptions = []string{
 
 func askForTier(sourceTier string) func() option.Option[string] {
 	return func() option.Option[string] {
-		options := []string{sameAsSourceOption}
+		options := []string{fmt.Sprintf(sameAsSourceOption, sourceTier)}
 		for _, tier := range tierOptions {
 			if tier != sourceTier {
 				options = append(options, tier)
@@ -189,7 +189,7 @@ var typeToVersion = map[string]int{
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
 	return func() option.Option[string] {
-		options := []string{sameAsSourceOption}
+		options := []string{fmt.Sprintf(sameAsSourceOption, sourceType)}
 		for k, v := range typeToVersion {
 			if v > sourceVersion {
 				options = append(options, k)
@@ -214,25 +214,34 @@ func askForType(sourceType string) func() option.Option[string] {
 	}
 }
 
-func askForDiskSize() option.Option[int] {
-	pterm.Println()
-	pterm.Println("Disk size is in GB, and must be greater than or equal to 10.")
-	diskSize, err := pterm.DefaultInteractiveTextInput.Show("Enter the disk size for the target instance. Leave empty to use same as source")
-	if err != nil {
-		log.Fatalf("Error while creating text UI: %v", err)
-		return option.None[int]()
+func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {
+	sourceSize := "<nais default>"
+	sourceDiskSize.Do(func(v int) {
+		sourceSize = fmt.Sprintf("%d GB", v)
+	})
+	var ask func() option.Option[int]
+	ask = func() option.Option[int] {
+		pterm.Println()
+		pterm.Println("Disk size is in GB, and must be greater than or equal to 10.")
+		msg := fmt.Sprintf("Enter the disk size for the target instance. Leave empty to use same as source (%s)", sourceSize)
+		diskSize, err := pterm.DefaultInteractiveTextInput.Show(msg)
+		if err != nil {
+			log.Fatalf("Error while creating text UI: %v", err)
+			return option.None[int]()
+		}
+		if diskSize == "" {
+			return option.None[int]()
+		}
+		size, err := strconv.Atoi(diskSize)
+		if err != nil {
+			pterm.Error.Println("Disk size must be a number")
+			return ask()
+		}
+		if size < 10 {
+			pterm.Error.Println("Disk size must be greater than or equal to 10")
+			return ask()
+		}
+		return option.Some(size)
 	}
-	if diskSize == "" {
-		return option.None[int]()
-	}
-	size, err := strconv.Atoi(diskSize)
-	if err != nil {
-		pterm.Error.Println("Disk size must be a number")
-		return askForDiskSize()
-	}
-	if size < 10 {
-		pterm.Error.Println("Disk size must be greater than or equal to 10")
-		return askForDiskSize()
-	}
-	return option.Some(size)
+	return ask
 }
