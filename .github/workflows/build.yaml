@@ -92,8 +92,8 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: v1.7.0
-          args: release -f .goreleaser.yml --rm-dist --debug
+          version: v2.3.2
+          args: release --config .goreleaser.yml --clean --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}

@@ -1,4 +1,11 @@
+version: 2
+
 project_name: nais-cli
+
+before:
+  hooks:
+    - go mod tidy
+
 builds:
   - env: [ CGO_ENABLED=0 ]
     targets:
@@ -27,31 +34,35 @@ builds:
 
 checksum:
   name_template: 'checksums.txt'
+
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+
 release:
   github:
     owner: nais
     name: cli
   header: |
     ## nais-cli ({{ .Version }})
+
 brews:
-  - tap:
+  - repository:
       owner: nais
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_PUSH_TOKEN }}"
     name: nais
     homepage: "https://github.com/nais/cli"
     description: "Command-line interface for NAIS"
-    folder: Formula
+    directory: Formula
     install: |
       bin.install "nais"
     test: |
       assert_match version, shell_output("#{bin}/nais version")
+
 nfpms:
   - package_name: nais
     file_name_template: "{{ .PackageName }}_{{ .Version }}"
@@ -63,11 +74,12 @@ nfpms:
     formats:
       - deb
     version_metadata: git
-scoop:
-  bucket:
-    owner: nais
-    name: scoop-bucket
-    token: "{{ .Env.SCOOP_PUSH_TOKEN }}"
-  homepage: "https://github.com/nais/cli"
-  description: "Command-line interface for NAIS"
-  license: MIT
+
+scoops:
+  - repository:
+      owner: nais
+      name: scoop-bucket
+      token: "{{ .Env.SCOOP_PUSH_TOKEN }}"
+    homepage: "https://github.com/nais/cli"
+    description: "Command-line interface for NAIS"
+    license: MIT
