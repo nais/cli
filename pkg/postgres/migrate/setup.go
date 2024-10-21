@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/nais/cli/pkg/option"
 	"github.com/pterm/pterm"
@@ -132,8 +133,8 @@ func (m *Migrator) Setup(ctx context.Context) error {
 }
 
 const (
-	otherOption        = "Other"
-	sameAsSourceOption = "Same as source (%s)"
+	otherOption              = "Other"
+	sameAsSourceOptionPrefix = "Same as source"
 )
 
 var tierOptions = []string{
@@ -146,7 +147,7 @@ var tierOptions = []string{
 
 func askForTier(sourceTier string) func() option.Option[string] {
 	return func() option.Option[string] {
-		options := []string{fmt.Sprintf(sameAsSourceOption, sourceTier)}
+		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceTier)}
 		for _, tier := range tierOptions {
 			if tier != sourceTier {
 				options = append(options, tier)
@@ -170,7 +171,7 @@ func askForTier(sourceTier string) func() option.Option[string] {
 				return option.None[string]()
 			}
 		}
-		if tier == sameAsSourceOption {
+		if strings.HasPrefix(tier, sameAsSourceOptionPrefix) {
 			return option.None[string]()
 		}
 		return option.Some(tier)
@@ -189,7 +190,7 @@ var typeToVersion = map[string]int{
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
 	return func() option.Option[string] {
-		options := []string{fmt.Sprintf(sameAsSourceOption, sourceType)}
+		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceType)}
 		for k, v := range typeToVersion {
 			if v > sourceVersion {
 				options = append(options, k)
@@ -207,7 +208,7 @@ func askForType(sourceType string) func() option.Option[string] {
 			log.Fatalf("Error while creating text UI: %v", err)
 			return option.None[string]()
 		}
-		if instanceType == sameAsSourceOption {
+		if strings.HasPrefix(instanceType, sameAsSourceOptionPrefix) {
 			return option.None[string]()
 		}
 		return option.Some(instanceType)
