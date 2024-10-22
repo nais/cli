@@ -47,6 +47,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
 	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
+	m.cfg.Target.DiskAutoresize = m.cfg.Target.DiskAutoresize.OrMaybe(askForDiskAutoresize(m.cfg.Source.DiskAutoresize))
 	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
 
 	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
@@ -137,45 +138,59 @@ const (
 	sameAsSourceOptionPrefix = "Same as source"
 )
 
+func stringCaster(s string) string { return s }
+func boolCaster(s string) bool     { return s == "true" }
+
+func askForOption[T any](prompt string, sourceValue T, options []string, caster func(string) T, otherHandler func() string) func() option.Option[T] {
+	return func() option.Option[T] {
+		source := fmt.Sprintf("%s (%v)", sameAsSourceOptionPrefix, sourceValue)
+		options = append([]string{source}, options...)
+		if otherHandler != nil {
+			options = append(options, otherOption)
+		}
+		pterm.Println()
+		selected, err := pterm.DefaultInteractiveSelect.
+			WithOptions(options).
+			WithMaxHeight(len(options)).
+			Show(prompt)
+		if err != nil {
+			log.Fatalf("Error while creating text UI: %v", err)
+			return option.None[T]()
+		}
+		if selected == otherOption {
+			selected = otherHandler()
+		}
+		if strings.HasPrefix(selected, sameAsSourceOptionPrefix) {
+			return option.None[T]()
+		}
+		return option.Some(caster(selected))
+	}
+}
+
 var tierOptions = []string{
 	"db-custom-1-3840",
 	"db-custom-2-5120",
 	"db-custom-2-7680",
 	"db-custom-4-15360",
-	otherOption,
 }
 
 func askForTier(sourceTier string) func() option.Option[string] {
-	return func() option.Option[string] {
-		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceTier)}
-		for _, tier := range tierOptions {
-			if tier != sourceTier {
-				options = append(options, tier)
-			}
+	var options []string
+	for _, tier := range tierOptions {
+		if tier != sourceTier {
+			options = append(options, tier)
 		}
-		pterm.Println()
-		tier, err := pterm.DefaultInteractiveSelect.
-			WithOptions(options).
-			WithMaxHeight(len(options)).
-			Show("Select a tier for the target instance")
+	}
+	return askForOption("Select a tier for the target instance", sourceTier, options, stringCaster, func() string {
+		pterm.Println("Check the documentation for possible options:")
+		linkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
+		tier, err := pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
 		if err != nil {
 			log.Fatalf("Error while creating text UI: %v", err)
-			return option.None[string]()
+			return ""
 		}
-		if tier == otherOption {
-			pterm.Println("Check the documentation for possible options:")
-			linkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
-			tier, err = pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
-			if err != nil {
-				log.Fatalf("Error while creating text UI: %v", err)
-				return option.None[string]()
-			}
-		}
-		if strings.HasPrefix(tier, sameAsSourceOptionPrefix) {
-			return option.None[string]()
-		}
-		return option.Some(tier)
-	}
+		return tier
+	})
 }
 
 var typeToVersion = map[string]int{
@@ -189,30 +204,30 @@ var typeToVersion = map[string]int{
 
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
-	return func() option.Option[string] {
-		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceType)}
-		for k, v := range typeToVersion {
-			if v > sourceVersion {
-				options = append(options, k)
-			}
+	var options []string
+	for k, v := range typeToVersion {
+		if v > sourceVersion {
+			options = append(options, k)
 		}
-		if len(options) == 1 {
-			return option.None[string]()
-		}
-		pterm.Println()
-		instanceType, err := pterm.DefaultInteractiveSelect.
-			WithOptions(options).
-			WithMaxHeight(len(options)).
-			Show("Select a type for the target instance")
-		if err != nil {
-			log.Fatalf("Error while creating text UI: %v", err)
-			return option.None[string]()
-		}
-		if strings.HasPrefix(instanceType, sameAsSourceOptionPrefix) {
-			return option.None[string]()
-		}
-		return option.Some(instanceType)
 	}
+	if len(options) == 0 {
+		return func() option.Option[string] { return option.None[string]() }
+	}
+	return askForOption("Select a type for the target instance", sourceType, options, stringCaster, nil)
+}
+
+func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
+	var options []string
+	autoresize := false
+	sourceDiskAutoresize.Do(func(v bool) {
+		autoresize = v
+	})
+	if autoresize {
+		options = append(options, "false")
+	} else {
+		options = append(options, "true")
+	}
+	return askForOption("Enable disk autoresize for the target instance?", autoresize, options, boolCaster, nil)
 }
 
 func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {

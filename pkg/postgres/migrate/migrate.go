@@ -357,12 +357,28 @@ func (m *Migrator) printConfig() {
 	m.cfg.Target.DiskSize.Do(func(diskSize int) {
 		targetDiskSize = fmt.Sprintf("%d GB", diskSize)
 	})
+	sourceAutoresize := "<nais default>"
+	m.cfg.Source.DiskAutoresize.Do(func(autoresize bool) {
+		if autoresize {
+			sourceAutoresize = "enabled"
+		} else {
+			sourceAutoresize = "disabled"
+		}
+	})
+	targetAutoresize := "<nais default>"
+	m.cfg.Target.DiskAutoresize.Do(func(autoresize bool) {
+		if autoresize {
+			targetAutoresize = "enabled"
+		} else {
+			targetAutoresize = "disabled"
+		}
+	})
 
 	tableHeaderStyle := pterm.ThemeDefault.TableHeaderStyle
 	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
-		{"", "Name", "Tier", "Disk size", "Type"},
-		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceDiskSize, m.cfg.Source.Type.String()},
-		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetDiskSize, m.cfg.Target.Type.String()},
+		{"", "Name", "Tier", "Disk autoresize", "Disk size", "Type"},
+		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceAutoresize, sourceDiskSize, m.cfg.Source.Type.String()},
+		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetAutoresize, targetDiskSize, m.cfg.Target.Type.String()},
 	}).Render()
 }
 

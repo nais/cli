@@ -21,10 +21,11 @@ type Config struct {
 }
 
 type InstanceConfig struct {
-	InstanceName option.Option[string]
-	Tier         option.Option[string]
-	DiskSize     option.Option[int]
-	Type         option.Option[string]
+	InstanceName   option.Option[string]
+	Tier           option.Option[string]
+	DiskAutoresize option.Option[bool]
+	DiskSize       option.Option[int]
+	Type           option.Option[string]
 }
 
 func (ic *InstanceConfig) String() string {
@@ -52,6 +53,14 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 			return option.None[string]()
 		}
 		return option.Some(tier)
+	})
+
+	ic.DiskAutoresize = ic.DiskAutoresize.OrMaybe(func() option.Option[bool] {
+		autoresize := app.Spec.GCP.SqlInstances[0].DiskAutoresize
+		if autoresize {
+			return option.Some(true)
+		}
+		return option.None[bool]()
 	})
 
 	ic.DiskSize = ic.DiskSize.OrMaybe(func() option.Option[int] {
@@ -85,11 +94,13 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 
 	c.Target.InstanceName.Do(dataBuilder[string](data, "TARGET_INSTANCE_NAME"))
 	c.Target.Tier.Do(dataBuilder[string](data, "TARGET_INSTANCE_TIER"))
+	c.Target.DiskAutoresize.Do(dataBuilder[bool](data, "TARGET_INSTANCE_DISK_AUTORESIZE"))
 	c.Target.DiskSize.Do(dataBuilder[int](data, "TARGET_INSTANCE_DISKSIZE"))
 	c.Target.Type.Do(dataBuilder[string](data, "TARGET_INSTANCE_TYPE"))
 
 	c.Source.InstanceName.Do(dataBuilder[string](data, "SOURCE_INSTANCE_NAME"))
 	c.Source.Tier.Do(dataBuilder[string](data, "SOURCE_INSTANCE_TIER"))
+	c.Source.DiskAutoresize.Do(dataBuilder[bool](data, "SOURCE_INSTANCE_DISK_AUTORESIZE"))
 	c.Source.DiskSize.Do(dataBuilder[int](data, "SOURCE_INSTANCE_DISKSIZE"))
 	c.Source.Type.Do(dataBuilder[string](data, "SOURCE_INSTANCE_TYPE"))
 
@@ -126,13 +137,25 @@ func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) 
 		}
 		return option.Some(sourceTier)
 	})
+	c.Source.DiskAutoresize = c.Source.DiskAutoresize.OrMaybe(func() option.Option[bool] {
+		sourceAutoresize, ok := configMap.Data["SOURCE_INSTANCE_DISK_AUTORESIZE"]
+		if !ok {
+			return option.None[bool]()
+		}
+
+		autoresize, err := strconv.ParseBool(sourceAutoresize)
+		if err != nil {
+			panic("BUG: converting source disk autoresize: " + err.Error())
+		}
+		return option.Some(autoresize)
+	})
 	c.Source.DiskSize = c.Source.DiskSize.OrMaybe(func() option.Option[int] {
-		targetDiskSize, ok := configMap.Data["SOURCE_INSTANCE_DISKSIZE"]
+		sourceDiskSize, ok := configMap.Data["SOURCE_INSTANCE_DISKSIZE"]
 		if !ok {
 			return option.None[int]()
 		}
 
-		diskSize, err := strconv.Atoi(targetDiskSize)
+		diskSize, err := strconv.Atoi(sourceDiskSize)
 		if err != nil {
 			panic("BUG: converting source disk size: " + err.Error())
 		}
@@ -153,6 +176,18 @@ func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) 
 			return option.None[string]()
 		}
 		return option.Some(targetTier)
+	})
+	c.Target.DiskAutoresize = c.Target.DiskAutoresize.OrMaybe(func() option.Option[bool] {
+		targetAutoresize, ok := configMap.Data["TARGET_INSTANCE_DISK_AUTORESIZE"]
+		if !ok {
+			return option.None[bool]()
+		}
+
+		autoresize, err := strconv.ParseBool(targetAutoresize)
+		if err != nil {
+			panic("BUG: converting source disk autoresize: " + err.Error())
+		}
+		return option.Some(autoresize)
 	})
 	c.Target.DiskSize = c.Target.DiskSize.OrMaybe(func() option.Option[int] {
 		targetDiskSize, ok := configMap.Data["TARGET_INSTANCE_DISKSIZE"]
