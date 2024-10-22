@@ -45,38 +45,18 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return err
 	}
 
-	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
-	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
-	m.cfg.Target.DiskAutoresize = m.cfg.Target.DiskAutoresize.OrMaybe(askForDiskAutoresize(m.cfg.Source.DiskAutoresize))
-	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
-		if !v {
-			m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
-		}
-	})
+	m.configureTarget()
 
 	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}
 
-	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
-		if v {
-			m.cfg.Target.DiskSize = option.None[int]()
-		}
-	})
+	m.clearDiskSizeIfDiskAutoresizeEnabled()
 
-	sourceInstanceName := m.cfg.Source.InstanceName.String()
-	if sourceInstanceName == "" {
-		return fmt.Errorf("source instance name is empty")
-	}
-
-	targetInstanceName := m.cfg.Target.InstanceName.String()
-	if targetInstanceName == "" {
-		return fmt.Errorf("target instance name is required")
-	}
-
-	if sourceInstanceName == targetInstanceName {
-		return fmt.Errorf("source and target instance names cannot be the same")
+	err = m.validateInstanceNames()
+	if err != nil {
+		return err
 	}
 
 	m.printConfig()
@@ -141,6 +121,42 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	pterm.Println()
 	pterm.Info.Println("Be aware that during promotion (the next step), your instance will be unavailable for some time.")
 	return nil
+}
+
+func (m *Migrator) validateInstanceNames() error {
+	sourceInstanceName := m.cfg.Source.InstanceName.String()
+	if sourceInstanceName == "" {
+		return fmt.Errorf("source instance name is empty")
+	}
+
+	targetInstanceName := m.cfg.Target.InstanceName.String()
+	if targetInstanceName == "" {
+		return fmt.Errorf("target instance name is required")
+	}
+
+	if sourceInstanceName == targetInstanceName {
+		return fmt.Errorf("source and target instance names cannot be the same")
+	}
+	return nil
+}
+
+func (m *Migrator) clearDiskSizeIfDiskAutoresizeEnabled() {
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if v {
+			m.cfg.Target.DiskSize = option.None[int]()
+		}
+	})
+}
+
+func (m *Migrator) configureTarget() {
+	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
+	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
+	m.cfg.Target.DiskAutoresize = m.cfg.Target.DiskAutoresize.OrMaybe(askForDiskAutoresize(m.cfg.Source.DiskAutoresize))
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if !v {
+			m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
+		}
+	})
 }
 
 const (
