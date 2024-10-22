@@ -48,12 +48,22 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
 	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
 	m.cfg.Target.DiskAutoresize = m.cfg.Target.DiskAutoresize.OrMaybe(askForDiskAutoresize(m.cfg.Source.DiskAutoresize))
-	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if !v {
+			m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
+		}
+	})
 
 	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}
+
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if v {
+			m.cfg.Target.DiskSize = option.None[int]()
+		}
+	})
 
 	sourceInstanceName := m.cfg.Source.InstanceName.String()
 	if sourceInstanceName == "" {
@@ -227,7 +237,13 @@ func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() optio
 	} else {
 		options = append(options, "true")
 	}
-	return askForOption("Enable disk autoresize for the target instance?", autoresize, options, boolCaster, nil)
+	return func() option.Option[bool] {
+		targetDiskAutoresize := askForOption("Enable disk autoresize for the target instance?", autoresize, options, boolCaster, nil)()
+		sourceDiskAutoresize.OrValue(false).Do(func(v bool) {
+			targetDiskAutoresize = targetDiskAutoresize.OrValue(v)
+		})
+		return targetDiskAutoresize
+	}
 }
 
 func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {
