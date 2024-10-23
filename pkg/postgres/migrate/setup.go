@@ -2,7 +2,9 @@ package migrate
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"log"
 	"strconv"
 	"strings"
@@ -10,7 +12,7 @@ import (
 	"github.com/nais/cli/pkg/option"
 	"github.com/pterm/pterm"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -31,7 +33,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			pterm.Println()
 			pterm.Error.Printfln("Application %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
 			pterm.Println()
@@ -41,31 +43,26 @@ func (m *Migrator) Setup(ctx context.Context) error {
 			pterm.Println("Or specify the namespace with the --namespace flag")
 			pterm.Println()
 			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
+		} else if errors.Is(err, config.ErrMissingSqlInstance) {
+			pterm.Println()
+			pterm.Error.Printfln("The Application %s does not have any SQL instances defined in the spec", m.cfg.AppName)
+			pterm.Println()
 		}
 		return err
 	}
 
-	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
-	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
-	m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
+	m.configureTarget()
 
 	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
 		return err
 	}
 
-	sourceInstanceName := m.cfg.Source.InstanceName.String()
-	if sourceInstanceName == "" {
-		return fmt.Errorf("source instance name is empty")
-	}
+	m.clearDiskSizeIfDiskAutoresizeEnabled()
 
-	targetInstanceName := m.cfg.Target.InstanceName.String()
-	if targetInstanceName == "" {
-		return fmt.Errorf("target instance name is required")
-	}
-
-	if sourceInstanceName == targetInstanceName {
-		return fmt.Errorf("source and target instance names cannot be the same")
+	err = m.validateInstanceNames()
+	if err != nil {
+		return err
 	}
 
 	m.printConfig()
@@ -132,50 +129,100 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	return nil
 }
 
+func (m *Migrator) validateInstanceNames() error {
+	sourceInstanceName := m.cfg.Source.InstanceName.String()
+	if sourceInstanceName == "" {
+		return fmt.Errorf("source instance name is empty")
+	}
+
+	targetInstanceName := m.cfg.Target.InstanceName.String()
+	if targetInstanceName == "" {
+		return fmt.Errorf("target instance name is required")
+	}
+
+	if sourceInstanceName == targetInstanceName {
+		return fmt.Errorf("source and target instance names cannot be the same")
+	}
+	return nil
+}
+
+func (m *Migrator) clearDiskSizeIfDiskAutoresizeEnabled() {
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if v {
+			m.cfg.Target.DiskSize = option.None[int]()
+		}
+	})
+}
+
+func (m *Migrator) configureTarget() {
+	m.cfg.Target.Tier = m.cfg.Target.Tier.OrMaybe(askForTier(m.cfg.Source.Tier.String()))
+	m.cfg.Target.Type = m.cfg.Target.Type.OrMaybe(askForType(m.cfg.Source.Type.String()))
+	m.cfg.Target.DiskAutoresize = m.cfg.Target.DiskAutoresize.OrMaybe(askForDiskAutoresize(m.cfg.Source.DiskAutoresize))
+	m.cfg.Target.DiskAutoresize.Do(func(v bool) {
+		if !v {
+			m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(askForDiskSize(m.cfg.Source.DiskSize))
+		}
+	})
+}
+
 const (
 	otherOption              = "Other"
 	sameAsSourceOptionPrefix = "Same as source"
 )
+
+func stringCaster(s string) string { return s }
+func boolCaster(s string) bool     { return s == "true" }
+
+func askForOption[T any](prompt string, sourceValue T, options []string, caster func(string) T, otherHandler func() string) func() option.Option[T] {
+	return func() option.Option[T] {
+		source := fmt.Sprintf("%s (%v)", sameAsSourceOptionPrefix, sourceValue)
+		options = append([]string{source}, options...)
+		if otherHandler != nil {
+			options = append(options, otherOption)
+		}
+		pterm.Println()
+		selected, err := pterm.DefaultInteractiveSelect.
+			WithOptions(options).
+			WithMaxHeight(len(options)).
+			Show(prompt)
+		if err != nil {
+			log.Fatalf("Error while creating text UI: %v", err)
+			return option.None[T]()
+		}
+		if selected == otherOption {
+			selected = otherHandler()
+		}
+		if strings.HasPrefix(selected, sameAsSourceOptionPrefix) {
+			return option.None[T]()
+		}
+		return option.Some(caster(selected))
+	}
+}
 
 var tierOptions = []string{
 	"db-custom-1-3840",
 	"db-custom-2-5120",
 	"db-custom-2-7680",
 	"db-custom-4-15360",
-	otherOption,
 }
 
 func askForTier(sourceTier string) func() option.Option[string] {
-	return func() option.Option[string] {
-		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceTier)}
-		for _, tier := range tierOptions {
-			if tier != sourceTier {
-				options = append(options, tier)
-			}
+	var options []string
+	for _, tier := range tierOptions {
+		if tier != sourceTier {
+			options = append(options, tier)
 		}
-		pterm.Println()
-		tier, err := pterm.DefaultInteractiveSelect.
-			WithOptions(options).
-			WithMaxHeight(len(options)).
-			Show("Select a tier for the target instance")
+	}
+	return askForOption("Select a tier for the target instance", sourceTier, options, stringCaster, func() string {
+		pterm.Println("Check the documentation for possible options:")
+		linkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
+		tier, err := pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
 		if err != nil {
 			log.Fatalf("Error while creating text UI: %v", err)
-			return option.None[string]()
+			return ""
 		}
-		if tier == otherOption {
-			pterm.Println("Check the documentation for possible options:")
-			linkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
-			tier, err = pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
-			if err != nil {
-				log.Fatalf("Error while creating text UI: %v", err)
-				return option.None[string]()
-			}
-		}
-		if strings.HasPrefix(tier, sameAsSourceOptionPrefix) {
-			return option.None[string]()
-		}
-		return option.Some(tier)
-	}
+		return tier
+	})
 }
 
 var typeToVersion = map[string]int{
@@ -189,29 +236,35 @@ var typeToVersion = map[string]int{
 
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
-	return func() option.Option[string] {
-		options := []string{fmt.Sprintf("%s (%s)", sameAsSourceOptionPrefix, sourceType)}
-		for k, v := range typeToVersion {
-			if v > sourceVersion {
-				options = append(options, k)
-			}
+	var options []string
+	for k, v := range typeToVersion {
+		if v > sourceVersion {
+			options = append(options, k)
 		}
-		if len(options) == 1 {
-			return option.None[string]()
-		}
-		pterm.Println()
-		instanceType, err := pterm.DefaultInteractiveSelect.
-			WithOptions(options).
-			WithMaxHeight(len(options)).
-			Show("Select a type for the target instance")
-		if err != nil {
-			log.Fatalf("Error while creating text UI: %v", err)
-			return option.None[string]()
-		}
-		if strings.HasPrefix(instanceType, sameAsSourceOptionPrefix) {
-			return option.None[string]()
-		}
-		return option.Some(instanceType)
+	}
+	if len(options) == 0 {
+		return func() option.Option[string] { return option.None[string]() }
+	}
+	return askForOption("Select a type for the target instance", sourceType, options, stringCaster, nil)
+}
+
+func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
+	var options []string
+	autoresize := false
+	sourceDiskAutoresize.Do(func(v bool) {
+		autoresize = v
+	})
+	if autoresize {
+		options = append(options, "false")
+	} else {
+		options = append(options, "true")
+	}
+	return func() option.Option[bool] {
+		targetDiskAutoresize := askForOption("Enable disk autoresize for the target instance?", autoresize, options, boolCaster, nil)()
+		sourceDiskAutoresize.OrValue(false).Do(func(v bool) {
+			targetDiskAutoresize = targetDiskAutoresize.OrValue(v)
+		})
+		return targetDiskAutoresize
 	}
 }
 

@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	tierFlagName     = "tier"
-	diskSizeFlagName = "disk-size"
-	typeFlagName     = "type"
+	tierFlagName           = "tier"
+	diskAutoresizeFlagName = "disk-autoresize"
+	diskSizeFlagName       = "disk-size"
+	typeFlagName           = "type"
 )
 
 func setupCommand() *cli.Command {
@@ -42,6 +43,13 @@ func setupCommand() *cli.Command {
 					}
 					return nil
 				},
+			},
+			&cli.BoolFlag{
+				Name:        diskAutoresizeFlagName,
+				Usage:       "Enable disk autoresize for the new instance",
+				Category:    "Target instance configuration",
+				EnvVars:     []string{"TARGET_INSTANCE_DISK_AUTORESIZE"},
+				DefaultText: "Source instance value",
 			},
 			&cli.IntFlag{
 				Name:        diskSizeFlagName,
@@ -70,12 +78,14 @@ func setupCommand() *cli.Command {
 
 			cluster := cCtx.String(contextFlagName)
 			tier := cCtx.String(tierFlagName)
+			diskAutoresize := cCtx.Bool(diskAutoresizeFlagName)
 			diskSize := cCtx.Int(diskSizeFlagName)
 			instanceType := cCtx.String(typeFlagName)
 			namespace := cCtx.String(namespaceFlagName)
 
 			pterm.Println(cCtx.Command.Description)
 			cfg.Target.Tier = isSet(tier)
+			cfg.Target.DiskAutoresize = isSetBool(diskAutoresize)
 			cfg.Target.DiskSize = isSetInt(diskSize)
 			cfg.Target.Type = isSet(instanceType)
 
@@ -106,6 +116,13 @@ func isSet(v string) option.Option[string] {
 		return option.None[string]()
 	}
 	return option.Some(v)
+}
+
+func isSetBool(autoresize bool) option.Option[bool] {
+	if autoresize {
+		return option.Some(true)
+	}
+	return option.None[bool]()
 }
 
 func isSetInt(v int) option.Option[int] {

@@ -7,6 +7,13 @@ type Option[T any] struct {
 	value  T
 }
 
+func (o Option[T]) OrValue(v T) Option[T] {
+	if o.isSome {
+		return o
+	}
+	return Some(v)
+}
+
 func (o Option[T]) Or(f func() T) Option[T] {
 	if o.isSome {
 		return o

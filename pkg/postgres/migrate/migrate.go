@@ -120,8 +120,8 @@ func (m *Migrator) kubectlLabelSelector(command Command) string {
 	return fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), command)
 }
 
-func (m *Migrator) deleteMigrationConfig(ctx context.Context) error {
-	err := ctrl.IgnoreNotFound(m.Delete(ctx, m.cfg.GetConfigMap()))
+func (m *Migrator) deleteMigrationConfig(ctx context.Context, cfgMap *corev1.ConfigMap) error {
+	err := ctrl.IgnoreNotFound(m.Delete(ctx, cfgMap))
 	if err != nil {
 		return fmt.Errorf("failed to delete ConfigMap: %w", err)
 	}
@@ -357,12 +357,28 @@ func (m *Migrator) printConfig() {
 	m.cfg.Target.DiskSize.Do(func(diskSize int) {
 		targetDiskSize = fmt.Sprintf("%d GB", diskSize)
 	})
+	sourceAutoresize := "<nais default>"
+	m.cfg.Source.DiskAutoresize.Do(func(autoresize bool) {
+		if autoresize {
+			sourceAutoresize = "enabled"
+		} else {
+			sourceAutoresize = "disabled"
+		}
+	})
+	targetAutoresize := "<nais default>"
+	m.cfg.Target.DiskAutoresize.Do(func(autoresize bool) {
+		if autoresize {
+			targetAutoresize = "enabled"
+		} else {
+			targetAutoresize = "disabled"
+		}
+	})
 
 	tableHeaderStyle := pterm.ThemeDefault.TableHeaderStyle
 	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
-		{"", "Name", "Tier", "Disk size", "Type"},
-		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceDiskSize, m.cfg.Source.Type.String()},
-		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetDiskSize, m.cfg.Target.Type.String()},
+		{"", "Name", "Tier", "Disk autoresize", "Disk size", "Type"},
+		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceAutoresize, sourceDiskSize, m.cfg.Source.Type.String()},
+		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetAutoresize, targetDiskSize, m.cfg.Target.Type.String()},
 	}).Render()
 }
 

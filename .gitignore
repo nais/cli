@@ -13,6 +13,9 @@ secret.yml
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Junit test reports
+report.xml
+
 # IntelliJ
 .idea/
 

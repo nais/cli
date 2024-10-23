@@ -33,7 +33,7 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
-	err = m.deleteMigrationConfig(ctx)
+	err = m.deleteMigrationConfig(ctx, cfgMap)
 	if err != nil {
 		return err
 	}
