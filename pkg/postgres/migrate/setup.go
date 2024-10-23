@@ -2,7 +2,9 @@ package migrate
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"log"
 	"strconv"
 	"strings"
@@ -10,7 +12,7 @@ import (
 	"github.com/nais/cli/pkg/option"
 	"github.com/pterm/pterm"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -31,7 +33,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			pterm.Println()
 			pterm.Error.Printfln("Application %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
 			pterm.Println()
@@ -41,6 +43,10 @@ func (m *Migrator) Setup(ctx context.Context) error {
 			pterm.Println("Or specify the namespace with the --namespace flag")
 			pterm.Println()
 			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
+		} else if errors.Is(err, config.MissingSqlInstanceError) {
+			pterm.Println()
+			pterm.Error.Printfln("The Application %s does not have any SQL instances defined in the spec", m.cfg.AppName)
+			pterm.Println()
 		}
 		return err
 	}

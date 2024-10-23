@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -28,6 +29,8 @@ type InstanceConfig struct {
 	Type           option.Option[string]
 }
 
+var MissingSqlInstanceError = errors.New("MissingSqlInstanceError")
+
 func (ic *InstanceConfig) String() string {
 	return fmt.Sprintf("Name: %v\nTier: %v\nDiskSize: %v\nType: %v\n", ic.InstanceName, ic.Tier, ic.DiskSize, ic.Type)
 }
@@ -37,6 +40,10 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 	err := client.Get(ctx, ctrl.ObjectKey{Namespace: namespace, Name: appName}, app)
 	if err != nil {
 		return err
+	}
+
+	if app.Spec.GCP == nil || len(app.Spec.GCP.SqlInstances) == 0 {
+		return fmt.Errorf("no sql instances found in app spec, %w", MissingSqlInstanceError)
 	}
 
 	ic.InstanceName = ic.InstanceName.Or(func() string {
