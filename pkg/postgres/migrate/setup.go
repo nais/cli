@@ -43,7 +43,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 			pterm.Println("Or specify the namespace with the --namespace flag")
 			pterm.Println()
 			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
-		} else if errors.Is(err, config.MissingSqlInstanceError) {
+		} else if errors.Is(err, config.ErrMissingSqlInstance) {
 			pterm.Println()
 			pterm.Error.Printfln("The Application %s does not have any SQL instances defined in the spec", m.cfg.AppName)
 			pterm.Println()
