@@ -120,8 +120,8 @@ func (m *Migrator) kubectlLabelSelector(command Command) string {
 	return fmt.Sprintf("migrator.nais.io/migration-name=%s,migrator.nais.io/command=%s", m.cfg.MigrationName(), command)
 }
 
-func (m *Migrator) deleteMigrationConfig(ctx context.Context) error {
-	err := ctrl.IgnoreNotFound(m.Delete(ctx, m.cfg.GetConfigMap()))
+func (m *Migrator) deleteMigrationConfig(ctx context.Context, cfgMap *corev1.ConfigMap) error {
+	err := ctrl.IgnoreNotFound(m.Delete(ctx, cfgMap))
 	if err != nil {
 		return fmt.Errorf("failed to delete ConfigMap: %w", err)
 	}

@@ -30,7 +30,7 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
-	err = m.deleteMigrationConfig(ctx)
+	err = m.deleteMigrationConfig(ctx, cfgMap)
 	if err != nil {
 		return err
 	}
