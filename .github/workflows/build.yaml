@@ -41,8 +41,15 @@ jobs:
       - name: Test Go
         run: |
           go mod tidy -v
-          make test
+          make test-ci
           make check
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            report.xml
 
   release:
     if: ${{ github.ref == 'refs/heads/main' }}
