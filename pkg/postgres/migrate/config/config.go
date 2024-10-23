@@ -89,6 +89,52 @@ func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appNa
 	return nil
 }
 
+func makeKey(prefix, key string) string {
+	return fmt.Sprintf("%s_%s", prefix, key)
+}
+
+func (ic *InstanceConfig) PopulateFromConfigMap(configMap *corev1.ConfigMap, prefix string) {
+	ic.InstanceName = option.Some(configMap.Data[makeKey(prefix, "INSTANCE_NAME")])
+	ic.Tier = ic.Tier.OrMaybe(func() option.Option[string] {
+		configTier, ok := configMap.Data[makeKey(prefix, "INSTANCE_TIER")]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(configTier)
+	})
+	ic.DiskAutoresize = ic.DiskAutoresize.OrMaybe(func() option.Option[bool] {
+		configAutoresize, ok := configMap.Data[makeKey(prefix, "INSTANCE_DISK_AUTORESIZE")]
+		if !ok {
+			return option.None[bool]()
+		}
+
+		autoresize, err := strconv.ParseBool(configAutoresize)
+		if err != nil {
+			panic(fmt.Sprintf("BUG: converting %s disk autoresize: %v", prefix, err.Error()))
+		}
+		return option.Some(autoresize)
+	})
+	ic.DiskSize = ic.DiskSize.OrMaybe(func() option.Option[int] {
+		configDiskSize, ok := configMap.Data[makeKey(prefix, "INSTANCE_DISKSIZE")]
+		if !ok {
+			return option.None[int]()
+		}
+
+		diskSize, err := strconv.Atoi(configDiskSize)
+		if err != nil {
+			panic(fmt.Sprintf("BUG: converting %s disk size: %v", prefix, err.Error()))
+		}
+		return option.Some(diskSize)
+	})
+	ic.Type = ic.Type.OrMaybe(func() option.Option[string] {
+		configType, ok := configMap.Data[makeKey(prefix, "INSTANCE_TYPE")]
+		if !ok {
+			return option.None[string]()
+		}
+		return option.Some(configType)
+	})
+}
+
 func (c *Config) MigrationName() string {
 	return fmt.Sprintf("migration-%s-%s", c.AppName, c.Target.InstanceName)
 }
@@ -136,85 +182,8 @@ func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) 
 		return nil, err
 	}
 
-	c.Source.InstanceName = option.Some(configMap.Data["SOURCE_INSTANCE_NAME"])
-	c.Source.Tier = c.Source.Tier.OrMaybe(func() option.Option[string] {
-		sourceTier, ok := configMap.Data["SOURCE_INSTANCE_TIER"]
-		if !ok {
-			return option.None[string]()
-		}
-		return option.Some(sourceTier)
-	})
-	c.Source.DiskAutoresize = c.Source.DiskAutoresize.OrMaybe(func() option.Option[bool] {
-		sourceAutoresize, ok := configMap.Data["SOURCE_INSTANCE_DISK_AUTORESIZE"]
-		if !ok {
-			return option.None[bool]()
-		}
-
-		autoresize, err := strconv.ParseBool(sourceAutoresize)
-		if err != nil {
-			panic("BUG: converting source disk autoresize: " + err.Error())
-		}
-		return option.Some(autoresize)
-	})
-	c.Source.DiskSize = c.Source.DiskSize.OrMaybe(func() option.Option[int] {
-		sourceDiskSize, ok := configMap.Data["SOURCE_INSTANCE_DISKSIZE"]
-		if !ok {
-			return option.None[int]()
-		}
-
-		diskSize, err := strconv.Atoi(sourceDiskSize)
-		if err != nil {
-			panic("BUG: converting source disk size: " + err.Error())
-		}
-		return option.Some(diskSize)
-	})
-	c.Source.Type = c.Source.Type.OrMaybe(func() option.Option[string] {
-		sourceType, ok := configMap.Data["SOURCE_INSTANCE_TYPE"]
-		if !ok {
-			return option.None[string]()
-		}
-		return option.Some(sourceType)
-	})
-
-	c.Target.InstanceName = option.Some(configMap.Data["TARGET_INSTANCE_NAME"])
-	c.Target.Tier = c.Target.Tier.OrMaybe(func() option.Option[string] {
-		targetTier, ok := configMap.Data["TARGET_INSTANCE_TIER"]
-		if !ok {
-			return option.None[string]()
-		}
-		return option.Some(targetTier)
-	})
-	c.Target.DiskAutoresize = c.Target.DiskAutoresize.OrMaybe(func() option.Option[bool] {
-		targetAutoresize, ok := configMap.Data["TARGET_INSTANCE_DISK_AUTORESIZE"]
-		if !ok {
-			return option.None[bool]()
-		}
-
-		autoresize, err := strconv.ParseBool(targetAutoresize)
-		if err != nil {
-			panic("BUG: converting source disk autoresize: " + err.Error())
-		}
-		return option.Some(autoresize)
-	})
-	c.Target.DiskSize = c.Target.DiskSize.OrMaybe(func() option.Option[int] {
-		targetDiskSize, ok := configMap.Data["TARGET_INSTANCE_DISKSIZE"]
-		if !ok {
-			return option.None[int]()
-		}
-
-		diskSize, err := strconv.Atoi(targetDiskSize)
-		if err != nil {
-			panic("BUG: converting target disk size: " + err.Error())
-		}
-		return option.Some(diskSize)
-	})
-	c.Target.Type = c.Target.Type.OrMaybe(func() option.Option[string] {
-		targetType, ok := configMap.Data["TARGET_INSTANCE_TYPE"]
-		if !ok {
-			return option.None[string]()
-		}
-		return option.Some(targetType)
-	})
+	c.Source.PopulateFromConfigMap(configMap, "SOURCE")
+	c.Target.PopulateFromConfigMap(configMap, "TARGET")
 
 	c.cfgMap = configMap
 	return c.cfgMap, nil
