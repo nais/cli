@@ -54,7 +54,9 @@ var tierOptions = []string{
 	"db-custom-4-15360",
 }
 
-func AskForTier(sourceTier string) func() option.Option[string] {
+var AskForTier = askForTier
+
+func askForTier(sourceTier string) func() option.Option[string] {
 	var options []string
 	for _, tier := range tierOptions {
 		if tier != sourceTier {
@@ -82,7 +84,9 @@ var typeToVersion = map[string]int{
 	"POSTGRES_16": 16,
 }
 
-func AskForType(sourceType string) func() option.Option[string] {
+var AskForType = askForType
+
+func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
 	var options []string
 	for k, v := range typeToVersion {
@@ -96,7 +100,9 @@ func AskForType(sourceType string) func() option.Option[string] {
 	return askForOption("Select a type for the target instance", sourceType, options, stringCaster, nil)
 }
 
-func AskForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
+var AskForDiskAutoresize = askForDiskAutoresize
+
+func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
 	var options []string
 	autoresize := false
 	sourceDiskAutoresize.Do(func(v bool) {
@@ -116,7 +122,9 @@ func AskForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() optio
 	}
 }
 
-func AskForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {
+var AskForDiskSize = askForDiskSize
+
+func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {
 	sourceSize := "<nais default>"
 	sourceDiskSize.Do(func(v int) {
 		sourceSize = fmt.Sprintf("%d GB", v)

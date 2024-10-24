@@ -2,8 +2,10 @@ package migrate_test
 
 import (
 	"context"
+	"fmt"
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate/config"
+	"github.com/nais/cli/pkg/postgres/migrate/ui"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
@@ -19,6 +21,18 @@ import (
 )
 
 const namespace = "test-namespace"
+
+const (
+	sourceName     = "source-instance"
+	sourceType     = "source-type"
+	sourceDiskSize = 15
+	sourceTier     = "source-tier"
+
+	targetName     = "target-instance"
+	targetType     = "target-type"
+	targetDiskSize = 20
+	targetTier     = "target-tier"
+)
 
 var _ = Describe("Migrator", func() {
 	var err error
@@ -39,7 +53,7 @@ var _ = Describe("Migrator", func() {
 		clientset = fake.NewClientset()
 
 		source = config.InstanceConfig{}
-		target = config.InstanceConfig{InstanceName: option.Some("target-instance")}
+		target = config.InstanceConfig{InstanceName: option.Some(targetName)}
 
 		cfg = config.Config{
 			Namespace: namespace,
@@ -55,14 +69,14 @@ var _ = Describe("Migrator", func() {
 
 	Context("Setup", func() {
 		BeforeEach(func() {
-			no_instance_app := &nais_io_v1alpha1.Application{
+			noInstanceApp := &nais_io_v1alpha1.Application{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "no-instance",
 					Namespace: namespace,
 				},
 				Spec: nais_io_v1alpha1.ApplicationSpec{},
 			}
-			already_migrating_app := &nais_io_v1alpha1.Application{
+			alreadyMigratingApp := &nais_io_v1alpha1.Application{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "already-migrating",
 					Namespace: namespace,
@@ -70,7 +84,7 @@ var _ = Describe("Migrator", func() {
 				Spec: nais_io_v1alpha1.ApplicationSpec{
 					GCP: &nais_io_v1.GCP{
 						SqlInstances: []nais_io_v1.CloudSqlInstance{{
-							Name: "target-instance",
+							Name: targetName,
 						}},
 					},
 				},
@@ -90,13 +104,13 @@ var _ = Describe("Migrator", func() {
 				Spec: nais_io_v1alpha1.ApplicationSpec{
 					GCP: &nais_io_v1.GCP{
 						SqlInstances: []nais_io_v1.CloudSqlInstance{{
-							Name: "target-instance",
+							Name: targetName,
 						}},
 					},
 				},
 			}
 
-			clientBuilder.WithObjects(no_instance_app, already_migrating_app, app, cfgMap)
+			clientBuilder.WithObjects(noInstanceApp, alreadyMigratingApp, app, cfgMap)
 		})
 
 		It("should return an error if application is not found", func() {
@@ -119,5 +133,163 @@ var _ = Describe("Migrator", func() {
 			err := m.Setup(context.Background())
 			Expect(err).To(HaveOccurred())
 		})
+	})
+
+	Context("ConfigureTarget", func() {
+		DescribeTableSubtree("when source config has", func(source config.InstanceConfig) {
+			BeforeEach(func() {
+				cfg.Source = source
+
+				ui.AskForDiskAutoresize = func(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
+					return func() option.Option[bool] {
+						return sourceDiskAutoresize
+					}
+				}
+				ui.AskForDiskSize = func(sourceDiskSize option.Option[int]) func() option.Option[int] {
+					return func() option.Option[int] {
+						return sourceDiskSize
+					}
+				}
+				ui.AskForTier = func(sourceTier string) func() option.Option[string] {
+					return func() option.Option[string] {
+						return option.Some(sourceTier)
+					}
+				}
+				ui.AskForType = func(sourceType string) func() option.Option[string] {
+					return func() option.Option[string] {
+						return option.Some(sourceType)
+					}
+				}
+			})
+
+			When("instance type", func() {
+				It("target type is set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Type: option.Some(targetType)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.Type).To(Equal(option.Some(targetType)))
+				})
+				It("target type is not set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.Type).To(Equal(option.None[string]()))
+				})
+			})
+
+			When("instance tier", func() {
+				It("target tier is set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Tier: option.Some(targetTier)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.Tier.String()).To(Equal(targetTier))
+				})
+				It("target tier is not set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.Tier).To(Equal(option.None[string]()))
+				})
+			})
+
+			When("instance disk size", func() {
+				It("target disk size is set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskSize.String()).To(Equal(fmt.Sprintf("%v", targetDiskSize)))
+				})
+				It("target disk size is not set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
+				})
+			})
+
+			When("instance disk autoresize", func() {
+				It("target disk autoresize is set to false and target disk size is set", func() {
+					cfg.Target = config.InstanceConfig{
+						InstanceName:   option.Some(targetName),
+						DiskAutoresize: option.Some(false),
+						DiskSize:       option.Some(targetDiskSize),
+					}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("false"))
+					Expect(cfg.Target.DiskSize).To(Equal(option.Some(targetDiskSize)))
+				})
+
+				It("target disk autoresize is set to false and target disk size is not set", func() {
+					cfg.Target = config.InstanceConfig{
+						InstanceName:   option.Some(targetName),
+						DiskAutoresize: option.Some(false),
+					}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("false"))
+					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
+				})
+
+				It("target disk autoresize is set to true and target disk size is set", func() {
+					cfg.Target = config.InstanceConfig{
+						InstanceName:   option.Some(targetName),
+						DiskAutoresize: option.Some(true),
+						DiskSize:       option.Some(targetDiskSize),
+					}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("true"))
+				})
+
+				It("target disk autoresize is set to true and target disk size is not set", func() {
+					cfg.Target = config.InstanceConfig{
+						InstanceName:   option.Some(targetName),
+						DiskAutoresize: option.Some(true),
+					}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("true"))
+				})
+
+				It("target disk autoresize is not set and target disk size is set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize).To(Equal(option.None[bool]()))
+					Expect(cfg.Target.DiskSize).To(Equal(option.Some(targetDiskSize)))
+				})
+				It("target disk autoresize is not set and target disk size is not set", func() {
+					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+					m = migratorBuilder()
+					m.ConfigureTarget()
+					Expect(cfg.Target.DiskAutoresize).To(Equal(option.None[bool]()))
+					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
+				})
+			})
+		},
+			Entry("only default values", config.InstanceConfig{InstanceName: option.Some(sourceName)}),
+			Entry("all values", config.InstanceConfig{
+				InstanceName:   option.Some(sourceName),
+				Tier:           option.Some(sourceTier),
+				DiskAutoresize: option.Some(true),
+				DiskSize:       option.Some(sourceDiskSize),
+				Type:           option.Some(sourceType),
+			}),
+			Entry("all values, no autoresize", config.InstanceConfig{
+				InstanceName:   option.Some(sourceName),
+				Tier:           option.Some(sourceTier),
+				DiskAutoresize: option.None[bool](),
+				DiskSize:       option.Some(sourceDiskSize),
+				Type:           option.Some(sourceType),
+			}),
+			Entry("autoresize, no disk size", config.InstanceConfig{
+				InstanceName:   option.Some(sourceName),
+				Tier:           option.Some(sourceTier),
+				DiskAutoresize: option.Some(true),
+				DiskSize:       option.None[int](),
+				Type:           option.Some(sourceType),
+			}),
+		)
 	})
 })
