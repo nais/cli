@@ -18,6 +18,7 @@ func (f *fakeTextInput) Show(_ ...string) (string, error) {
 
 type fakeTextSelector struct {
 	selected string
+	options  []string
 }
 
 func (f *fakeTextSelector) Show(_ ...string) (string, error) {
@@ -26,6 +27,7 @@ func (f *fakeTextSelector) Show(_ ...string) (string, error) {
 
 func (f *fakeTextSelector) WithOptions(options []string) ui.Selector {
 	Expect(options).To(ContainElement(ContainSubstring(f.selected)))
+	f.options = options
 	return f
 }
 
@@ -76,6 +78,16 @@ var _ = Describe("Ui", func() {
 				Expect(result).To(Equal(option.Some("db-custom-16-8192")))
 			})
 		})
+
+		When("source value is in preset list of options", func() {
+			It("is only listed once", func() {
+				f := &fakeTextSelector{selected: "db-custom-2-5120"}
+				ui.TextSelector = f
+				ui.AskForTier("db-custom-2-5120")()
+				Expect(f.options).To(ContainElement("Same as source (db-custom-2-5120)"))
+				Expect(f.options).ToNot(ContainElement("db-custom-2-5120"))
+			})
+		})
 	})
 
 	Context("AskForType", func() {
@@ -88,5 +100,18 @@ var _ = Describe("Ui", func() {
 			Entry(nil, "POSTGRES_13", "Same as source (POSTGRES_13)", option.None[string]()),
 			Entry(nil, "POSTGRES_13", "POSTGRES_14", option.Some("POSTGRES_14")),
 		)
+
+		When("source version is POSTGRES_14", func() {
+			It("only lists versions 15 and 16", func() {
+				f := &fakeTextSelector{selected: "POSTGRES_15"}
+				ui.TextSelector = f
+				ui.AskForType("POSTGRES_14")()
+				Expect(f.options).To(ContainElement("Same as source (POSTGRES_14)"))
+				Expect(f.options).To(ContainElement("POSTGRES_15"))
+				Expect(f.options).To(ContainElement("POSTGRES_16"))
+				Expect(f.options).To(HaveLen(3))
+				Expect(f.options).ToNot(ContainElement("POSTGRES_13"))
+			})
+		})
 	})
 })
