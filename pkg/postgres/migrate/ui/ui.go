@@ -21,6 +21,42 @@ var YamlStyle = pterm.NewStyle(pterm.FgLightYellow)
 func stringCaster(s string) string { return s }
 func boolCaster(s string) bool     { return s == "true" }
 
+type Prompter interface {
+	Show(text ...string) (string, error)
+}
+
+var TextInput Prompter = pterm.DefaultInteractiveTextInput
+
+type Selector interface {
+	Prompter
+	WithOptions(options []string) Selector
+}
+
+type textSelector struct {
+	defaultSelector *pterm.InteractiveSelectPrinter
+}
+
+func (t *textSelector) Show(text ...string) (string, error) {
+	return t.defaultSelector.Show(text...)
+}
+
+func (t *textSelector) WithOptions(options []string) Selector {
+	return &textSelector{
+		defaultSelector: pterm.DefaultInteractiveSelect.
+			WithOptions(options).
+			WithMaxHeight(len(options)),
+	}
+}
+
+var TextSelector Selector = &textSelector{defaultSelector: &pterm.DefaultInteractiveSelect}
+
+// askForOption is a generic function to ask for an option from a list of options.
+//
+// It returns a function that can be called to ask for the option.
+// The function returns the selected option as an Option[T].
+// If the selected option is the "Same as source" option, it returns None[T].
+// If the selected option is "Other", it calls the otherHandler function to ask for the value.
+// The selected value is then cast to the desired type T using caster function, and returned as Some[T].
 func askForOption[T any](prompt string, sourceValue T, options []string, caster func(string) T, otherHandler func() string) func() option.Option[T] {
 	return func() option.Option[T] {
 		source := fmt.Sprintf("%s (%v)", sameAsSourceOptionPrefix, sourceValue)
@@ -29,9 +65,8 @@ func askForOption[T any](prompt string, sourceValue T, options []string, caster 
 			options = append(options, otherOption)
 		}
 		pterm.Println()
-		selected, err := pterm.DefaultInteractiveSelect.
+		selected, err := TextSelector.
 			WithOptions(options).
-			WithMaxHeight(len(options)).
 			Show(prompt)
 		if err != nil {
 			log.Fatalf("Error while creating text UI: %v", err)
@@ -47,6 +82,7 @@ func askForOption[T any](prompt string, sourceValue T, options []string, caster 
 	}
 }
 
+// Suggested options for tier when asking user for a target tier.
 var tierOptions = []string{
 	"db-custom-1-3840",
 	"db-custom-2-5120",
@@ -56,6 +92,13 @@ var tierOptions = []string{
 
 var AskForTier = askForTier
 
+// askForTier asks for a tier for the target instance.
+//
+// It returns a function that can be called to ask for the tier.
+// The function returns the selected tier as an Option[string].
+// If the selected tier is the "Same as source" tier, it returns None[string].
+// If the selected tier is "Other", it asks the user to enter a custom tier.
+// The selected value is returned as Some[string].
 func askForTier(sourceTier string) func() option.Option[string] {
 	var options []string
 	for _, tier := range tierOptions {
@@ -66,7 +109,7 @@ func askForTier(sourceTier string) func() option.Option[string] {
 	return askForOption("Select a tier for the target instance", sourceTier, options, stringCaster, func() string {
 		pterm.Println("Check the documentation for possible options:")
 		LinkStyle.Printfln("\thttps://doc.nais.io/persistence/postgres/reference/#server-size")
-		tier, err := pterm.DefaultInteractiveTextInput.Show("Enter the tier for the target instance")
+		tier, err := TextInput.Show("Enter the tier for the target instance")
 		if err != nil {
 			log.Fatalf("Error while creating text UI: %v", err)
 			return ""
@@ -75,6 +118,7 @@ func askForTier(sourceTier string) func() option.Option[string] {
 	})
 }
 
+// Mapping from instance type to version.
 var typeToVersion = map[string]int{
 	"POSTGRES_11": 11,
 	"POSTGRES_12": 12,
@@ -86,6 +130,13 @@ var typeToVersion = map[string]int{
 
 var AskForType = askForType
 
+// askForType asks for a type for the target instance.
+//
+// It returns a function that can be called to ask for the type.
+// The function returns the selected type as an Option[string].
+// If the selected type is the "Same as source" type, it returns None[string].
+// It is not possible to select a type (postgres version) less than source.
+// The selected value is returned as Some[string].
 func askForType(sourceType string) func() option.Option[string] {
 	sourceVersion := typeToVersion[sourceType]
 	var options []string
@@ -102,6 +153,12 @@ func askForType(sourceType string) func() option.Option[string] {
 
 var AskForDiskAutoresize = askForDiskAutoresize
 
+// askForDiskAutoresize asks for disk autoresize for the target instance.
+//
+// It returns a function that can be called to ask for disk autoresize.
+// The function returns the selected disk autoresize as an Option[bool].
+// If the source was unset, source is considered false (the nais default), and the "Same as source" option returns Some(false).
+// It always returns Some(value), where value is the selected option.
 func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
 	var options []string
 	autoresize := false
@@ -124,6 +181,12 @@ func askForDiskAutoresize(sourceDiskAutoresize option.Option[bool]) func() optio
 
 var AskForDiskSize = askForDiskSize
 
+// askForDiskSize asks for disk size for the target instance.
+//
+// It returns a function that can be called to ask for the disk size.
+// The function returns the selected disk size as an Option[int].
+// If the user enters a blank string, it returns None[int].
+// If the user enters a number, it returns Some(value), where value is the entered number.
 func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int] {
 	sourceSize := "<nais default>"
 	sourceDiskSize.Do(func(v int) {
@@ -134,7 +197,7 @@ func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int]
 		pterm.Println()
 		pterm.Println("Disk size is in GB, and must be greater than or equal to 10.")
 		msg := fmt.Sprintf("Enter the disk size for the target instance. Leave empty to use same as source (%s)", sourceSize)
-		diskSize, err := pterm.DefaultInteractiveTextInput.Show(msg)
+		diskSize, err := TextInput.Show(msg)
 		if err != nil {
 			log.Fatalf("Error while creating text UI: %v", err)
 			return option.None[int]()
@@ -144,7 +207,7 @@ func askForDiskSize(sourceDiskSize option.Option[int]) func() option.Option[int]
 		}
 		size, err := strconv.Atoi(diskSize)
 		if err != nil {
-			pterm.Error.Println("Disk size must be a number")
+			pterm.Error.Println("Disk size must be a whole number")
 			return ask()
 		}
 		if size < 10 {
