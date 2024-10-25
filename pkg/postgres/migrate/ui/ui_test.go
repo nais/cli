@@ -18,7 +18,6 @@ func (f *fakeTextInput) Show(_ ...string) (string, error) {
 
 type fakeTextSelector struct {
 	selected string
-	options  []string
 }
 
 func (f *fakeTextSelector) Show(_ ...string) (string, error) {
@@ -26,111 +25,36 @@ func (f *fakeTextSelector) Show(_ ...string) (string, error) {
 }
 
 func (f *fakeTextSelector) WithOptions(options []string) ui.Selector {
-	f.options = options
 	Expect(options).To(ContainElement(ContainSubstring(f.selected)))
 	return f
 }
 
-func (f *fakeTextSelector) Options() []string {
-	return f.options
-}
-
 var _ = Describe("Ui", func() {
 	Context("AskForDiskSize", func() {
-		When("user presses enter", func() {
-			BeforeEach(func() {
-				ui.TextInput = &fakeTextInput{text: ""}
-			})
-
-			It("should return the default value", func() {
-				result := ui.AskForDiskSize(option.Some(100))()
-				Expect(result).To(Equal(option.None[int]()))
-			})
-		})
-
-		When("user types in 200", func() {
-			BeforeEach(func() {
-				ui.TextInput = &fakeTextInput{text: "200"}
-			})
-
-			It("should return the entered value", func() {
-				result := ui.AskForDiskSize(option.Some(100))()
-				Expect(result).To(Equal(option.Some(200)))
-			})
-		})
+		DescribeTable("when source has", func(source option.Option[int], enteredValue string, expected option.Option[int]) {
+			ui.TextInput = &fakeTextInput{text: enteredValue}
+			result := ui.AskForDiskSize(source)()
+			Expect(result).To(Equal(expected))
+		},
+			Entry("a value and user presses Enter", option.Some(100), "", option.None[int]()),
+			Entry("a value and user types in 200", option.Some(100), "200", option.Some(200)),
+			Entry("no value and user presses Enter", option.None[int](), "", option.None[int]()),
+			Entry("no value and user types in 200", option.None[int](), "200", option.Some(200)),
+		)
 	})
 
 	Context("AskForDiskAutoresize", func() {
-		When("source has true", func() {
-			When("user presses enter", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "Same as source (true)"}
-				})
-
-				It("should return true", func() {
-					result := ui.AskForDiskAutoresize(option.Some(true))()
-					Expect(result).To(Equal(option.Some(true)))
-				})
-			})
-
-			When("user selects false", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "false"}
-				})
-
-				It("should return the entered value", func() {
-					result := ui.AskForDiskAutoresize(option.Some(true))()
-					Expect(result).To(Equal(option.Some(false)))
-				})
-			})
-		})
-
-		When("source is not set", func() {
-			When("user presses enter", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "Same as source (false)"}
-				})
-
-				It("should return false", func() {
-					result := ui.AskForDiskAutoresize(option.None[bool]())()
-					Expect(result).To(Equal(option.Some(false)))
-				})
-			})
-
-			When("user selects true", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "true"}
-				})
-
-				It("should return the entered value", func() {
-					result := ui.AskForDiskAutoresize(option.None[bool]())()
-					Expect(result).To(Equal(option.Some(true)))
-				})
-			})
-		})
-
-		When("source has false", func() {
-			When("user presses enter", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "Same as source (false)"}
-				})
-
-				It("should return false", func() {
-					result := ui.AskForDiskAutoresize(option.Some(false))()
-					Expect(result).To(Equal(option.Some(false)))
-				})
-			})
-
-			When("user selects true", func() {
-				BeforeEach(func() {
-					ui.TextSelector = &fakeTextSelector{selected: "true"}
-				})
-
-				It("should return the entered value", func() {
-					result := ui.AskForDiskAutoresize(option.Some(false))()
-					Expect(result).To(Equal(option.Some(true)))
-				})
-			})
-		})
+		DescribeTable("when source has", func(source option.Option[bool], selectedValue string, expected option.Option[bool]) {
+			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
+			result := ui.AskForDiskAutoresize(source)()
+			Expect(result).To(Equal(expected))
+		},
+			Entry("true and user presses Enter", option.Some(true), "Same as source (true)", option.Some(true)),
+			Entry("true and user selects false", option.Some(true), "false", option.Some(false)),
+			Entry("false and user presses Enter", option.Some(false), "Same as source (false)", option.Some(false)),
+			Entry("false and user selects true", option.Some(false), "true", option.Some(true)),
+			Entry("unset and user presses Enter", option.None[bool](), "Same as source (false)", option.Some(false)),
+			Entry("unset and user selects true", option.None[bool](), "true", option.Some(true)),
+		)
 	})
 })
