@@ -57,4 +57,36 @@ var _ = Describe("Ui", func() {
 			Entry("unset and user selects true", option.None[bool](), "true", option.Some(true)),
 		)
 	})
+
+	Context("AskForTier", func() {
+		DescribeTable("when source has a value and", func(selectedValue string, expected option.Option[string]) {
+			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
+			result := ui.AskForTier("db-f1-micro")()
+			Expect(result).To(Equal(expected))
+		},
+			Entry("user presses Enter", "Same as source (db-f1-micro)", option.None[string]()),
+			Entry("user selects db-custom-2-5120", "db-custom-2-5120", option.Some("db-custom-2-5120")),
+		)
+
+		When("user selects Other and enters a value", func() {
+			It("returns the entered value", func() {
+				ui.TextSelector = &fakeTextSelector{selected: "Other"}
+				ui.TextInput = &fakeTextInput{text: "db-custom-16-8192"}
+				result := ui.AskForTier("db-f1-micro")()
+				Expect(result).To(Equal(option.Some("db-custom-16-8192")))
+			})
+		})
+	})
+
+	Context("AskForType", func() {
+		DescribeTable("", func(source string, selectedValue string, expected option.Option[string]) {
+			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
+			result := ui.AskForType(source)()
+			Expect(result).To(Equal(expected))
+		},
+			EntryDescription("source: %s, selected: %s => %v"),
+			Entry(nil, "POSTGRES_13", "Same as source (POSTGRES_13)", option.None[string]()),
+			Entry(nil, "POSTGRES_13", "POSTGRES_14", option.Some("POSTGRES_14")),
+		)
+	})
 })
