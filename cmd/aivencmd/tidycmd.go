@@ -2,14 +2,10 @@ package aivencmd
 
 import (
 	"github.com/nais/cli/pkg/aiven"
-	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
 func tidyCommand() *cli.Command {
-	metrics := metrics.GetMetrics()
-	metrics.RecordSubcommandUsage("aiven-tidy")
-	metrics.PushMetrics(metrics.PushgatewayURL)
 
 	return &cli.Command{
 		Name:  "tidy",

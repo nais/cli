@@ -5,7 +5,6 @@ import (
 	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/aiven/aiven_services"
 	"github.com/nais/cli/pkg/k8s"
-	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 	"strings"
 )
@@ -88,10 +87,6 @@ func createCommand() *cli.Command {
 			return nil
 		},
 		Action: func(context *cli.Context) error {
-			metrics := metrics.GetMetrics()
-			metrics.RecordSubcommandUsage("aiven-create")
-			metrics.PushMetrics(metrics.PushgatewayURL)
-
 			service, err := aiven_services.FromString(context.Args().Get(0))
 			if err != nil {
 				return err
