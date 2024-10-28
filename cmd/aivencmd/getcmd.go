@@ -11,7 +11,7 @@ import (
 
 func getCommand() *cli.Command {
 	metrics := metrics.GetMetrics()
-	metrics.RecordSubcommandUsage("aiven-get")
+	metrics.RecordSubcommandUsage("aiven", "get")
 	metrics.PushMetrics(metrics.PushgatewayURL)
 
 	return &cli.Command{

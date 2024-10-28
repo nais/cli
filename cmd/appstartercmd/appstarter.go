@@ -2,12 +2,17 @@ package appstartercmd
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 
 	"github.com/nais/cli/pkg/appstarter"
 	"github.com/urfave/cli/v2"
 )
 
 func Command() *cli.Command {
+	metrics := metrics.GetMetrics()
+	metrics.RecordSubcommandUsage("start")
+	metrics.PushMetrics(metrics.PushgatewayURL)
+
 	return &cli.Command{
 		Name:      "start",
 		Usage:     "Bootstrap basic yaml for nais and GitHub workflows",

@@ -39,7 +39,8 @@ func NewMetrics(pushgatewayURL string) *Metrics {
 				Subsystem: "aiven",
 				Name:      "subcommand_usage_total",
 				Help:      "Total number of usages of the subcommand in the label",
-			}, []string{"subcommand"},
+			}, []string{"subcommand"}, // [subcommand, aiven, create]
+			// [subcommand, gcp, auth]
 		)
 
 	return &Metrics{
@@ -53,8 +54,10 @@ func (m *Metrics) RecordError() {
 	m.errorCounter.Inc()
 }
 
-func (m *Metrics) RecordSubcommandUsage(label string) {
-	m.subCommandCounter.WithLabelValues(label).Inc()
+func (m *Metrics) RecordSubcommandUsage(labels ...string) {
+	for _, label := range labels {
+		m.subCommandCounter.WithLabelValues(label).Inc()
+	}
 }
 
 func (m *Metrics) PushMetrics(name string) error {

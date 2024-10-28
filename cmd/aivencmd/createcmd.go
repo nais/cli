@@ -11,10 +11,6 @@ import (
 )
 
 func createCommand() *cli.Command {
-	metrics := metrics.GetMetrics()
-	metrics.RecordSubcommandUsage("aiven-create")
-	metrics.PushMetrics(metrics.PushgatewayURL)
-
 	return &cli.Command{
 		Name:      "create",
 		Usage:     "Creates a protected and time-limited AivenApplication",
@@ -92,6 +88,10 @@ func createCommand() *cli.Command {
 			return nil
 		},
 		Action: func(context *cli.Context) error {
+			metrics := metrics.GetMetrics()
+			metrics.RecordSubcommandUsage("aiven-create")
+			metrics.PushMetrics(metrics.PushgatewayURL)
+
 			service, err := aiven_services.FromString(context.Args().Get(0))
 			if err != nil {
 				return err
@@ -121,6 +121,7 @@ func createCommand() *cli.Command {
 			}
 
 			fmt.Printf("use the following command to generate configuration secrets:\nnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+
 			return nil
 		},
 	}
