@@ -5,10 +5,15 @@ import (
 
 	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/aiven/aiven_services"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
 func getCommand() *cli.Command {
+	metrics := metrics.GetMetrics()
+	metrics.RecordSubcommandUsage("aiven-get")
+	metrics.PushMetrics(metrics.PushgatewayURL)
+
 	return &cli.Command{
 		Name:      "get",
 		Usage:     "Generate preferred config format to '/tmp' folder",

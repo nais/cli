@@ -2,15 +2,19 @@ package aivencmd
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/nais/cli/pkg/aiven"
 	"github.com/nais/cli/pkg/aiven/aiven_services"
 	"github.com/nais/cli/pkg/k8s"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
+	"strings"
 )
 
 func createCommand() *cli.Command {
+	metrics := metrics.GetMetrics()
+	metrics.RecordSubcommandUsage("aiven-create")
+	metrics.PushMetrics(metrics.PushgatewayURL)
+
 	return &cli.Command{
 		Name:      "create",
 		Usage:     "Creates a protected and time-limited AivenApplication",
