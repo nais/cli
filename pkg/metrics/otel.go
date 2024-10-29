@@ -22,7 +22,7 @@ func NewResource() (*resource.Resource, error) {
 }
 
 func NewMeterProvider(res *resource.Resource) (*metric.MeterProvider, error) {
-	metricExporter, err := otlpmetrichttp.New(context.Background(), otlpmetrichttp.WithEndpointURL("http://localhost:1234"))
+	metricExporter, err := otlpmetrichttp.New(context.Background(), otlpmetrichttp.WithEndpointURL("https://collector-internet.nav.cloud.nais.io"))
 	if err != nil {
 		return nil, err
 	}
