@@ -2,7 +2,7 @@ package postgrescmd
 
 import (
 	"fmt"
-
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/postgres"
 	"github.com/urfave/cli/v2"
 )
@@ -24,6 +24,7 @@ func grantCommand() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("postgres", "postgres_grant_total")
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")
 			}

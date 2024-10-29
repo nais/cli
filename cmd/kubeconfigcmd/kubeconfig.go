@@ -2,11 +2,11 @@ package kubeconfigcmd
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 	"strings"
 
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
-	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 )

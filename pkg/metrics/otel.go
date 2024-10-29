@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -12,42 +11,39 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
+var (
+	// Is set during build
+	version = "local"
+	commit  = "uncommited"
+	// Global variables
+	m *metric.MeterProvider
+)
+
 func NewResource() (*resource.Resource, error) {
 	return resource.Merge(resource.Default(),
 		resource.NewWithAttributes(semconv.SchemaURL,
 			semconv.ServiceName("nais_cli"),
-			// TODO: How is this number passed down?
-			semconv.ServiceVersion("1.2.0"),
+			semconv.ServiceVersion(version+":"+commit),
 		))
 }
 
-func NewMeterProvider(res *resource.Resource) (*metric.MeterProvider, error) {
-	metricExporter, err := otlpmetrichttp.New(context.Background(), otlpmetrichttp.WithEndpointURL("https://collector-internet.nav.cloud.nais.io"))
-	if err != nil {
-		return nil, err
-	}
-
+func NewMeterProvider(res *resource.Resource) *metric.MeterProvider {
+	metricExporter, _ := otlpmetrichttp.New(
+		context.Background(),
+		otlpmetrichttp.WithEndpointURL("https://collector-internet.nav.cloud.nais.io"),
+	)
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),
 		metric.WithReader(metric.NewPeriodicReader(metricExporter,
 			metric.WithInterval(1*time.Second))),
 	)
-	return meterProvider, nil
+	return meterProvider
 }
 
 func New() *metric.MeterProvider {
-	res, err := NewResource()
-	if err != nil {
-		panic(err)
-	}
-
-	meterProvider, err := NewMeterProvider(res)
-	if err != nil {
-		panic(err)
-	}
-
+	res, _ := NewResource()
+	meterProvider := NewMeterProvider(res)
 	return meterProvider
-
 }
 
 // This calls New(), creating a whole new MeterProvider on every invocation.
@@ -58,14 +54,11 @@ func New() *metric.MeterProvider {
 // add a metric anf forceflush it. v0v
 // We tried using the global set/get meterprovider but that does not give forceflush and instead
 // you end up doing a sleep(2s) to get the metrics sent which is maybe not the best ux I can imagine.
-func AddOne(meterName, counterName string) error {
-	myMetric := New()
-	counter, err := myMetric.Meter(meterName).Int64Counter(counterName)
-	counter.Add(context.Background(), 1)
-	if err != nil {
-		return fmt.Errorf("metrics provider")
-	}
-	myMetric.ForceFlush(
-		context.Background())
-	return nil
+func AddOne(meterName, counterName string) {
+	ctx := context.Background()
+	m = New()
+	counter, _ := m.Meter(meterName).Int64Counter(counterName)
+	defer m.Shutdown(ctx)
+	counter.Add(ctx, 1)
+	_ = m.ForceFlush(ctx)
 }

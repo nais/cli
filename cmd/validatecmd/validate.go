@@ -2,6 +2,7 @@ package validatecmd
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/validate"
 	"github.com/urfave/cli/v2"
 )
@@ -29,6 +30,7 @@ func Command() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("validate", "validate_nais_yaml_total")
 			if context.Args().Len() == 0 {
 				return fmt.Errorf("no config files provided")
 			}

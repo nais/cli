@@ -2,6 +2,7 @@ package devicecmd
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 	"strconv"
 	"strings"
 
@@ -27,6 +28,7 @@ func getConfigCommand() *cli.Command {
 		Name:  "get",
 		Usage: "Gets the current configuration",
 		Action: func(context *cli.Context) error {
+			metrics.AddOne("device", "device_config_get_total")
 			config, err := naisdevice.GetConfiguration(context.Context)
 			if err != nil {
 				return err
@@ -45,6 +47,7 @@ func setConfigCommand() *cli.Command {
 		Usage:     "Sets a configuration value",
 		ArgsUsage: "setting value",
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("device", "device_config_set_total")
 			if context.Args().Len() < 2 {
 				return fmt.Errorf("missing required arguments: setting, value")
 			}

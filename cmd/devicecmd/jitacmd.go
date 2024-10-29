@@ -2,6 +2,7 @@ package devicecmd
 
 import (
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 	"strings"
 
 	"github.com/urfave/cli/v2"
@@ -16,6 +17,7 @@ func jitaCommand() *cli.Command {
 		Usage:     "Connects to a JITA gateway",
 		ArgsUsage: "gateway",
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("jita", "jita_connect_total")
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing required arguments: gateway")
 			}

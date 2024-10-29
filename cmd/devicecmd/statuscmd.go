@@ -2,7 +2,7 @@ package devicecmd
 
 import (
 	"fmt"
-
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
@@ -34,6 +34,7 @@ func statusCommand() *cli.Command {
 			},
 		},
 		Action: func(context *cli.Context) error {
+			metrics.AddOne("device", "device_status_total")
 			outputFormat := context.String("output")
 			quiet := context.Bool("quiet")
 			verbose := context.Bool("verbose")

@@ -2,13 +2,12 @@ package appstartercmd
 
 import (
 	"fmt"
-
 	"github.com/nais/cli/pkg/appstarter"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
 func Command() *cli.Command {
-
 	return &cli.Command{
 		Name:      "start",
 		Usage:     "Bootstrap basic yaml for nais and GitHub workflows",
@@ -31,6 +30,7 @@ func Command() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("start", "appstarter_total")
 			if context.Args().Len() < 2 {
 				return fmt.Errorf("missing required arguments: %v", context.Command.ArgsUsage)
 			}

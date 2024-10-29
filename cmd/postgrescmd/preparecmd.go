@@ -3,6 +3,7 @@ package postgrescmd
 import (
 	"bufio"
 	"fmt"
+	"github.com/nais/cli/pkg/metrics"
 	"os"
 	"strings"
 
@@ -36,6 +37,7 @@ This operation is only required to run once for each postgresql instance.`,
 			},
 		},
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("postgres", "postgres_prepare_total")
 			if context.Args().Len() < 1 {
 				return fmt.Errorf("missing name of app")
 			}
