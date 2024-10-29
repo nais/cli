@@ -2,6 +2,7 @@ package aivencmd
 
 import (
 	"github.com/nais/cli/pkg/aiven"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,6 +14,7 @@ func tidyCommand() *cli.Command {
 		Description: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
 Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
 		Action: func(context *cli.Context) error {
+			metrics.AddOne("Aiven", "aiven_tidy_total")
 			return aiven.TidyLocalSecrets()
 		},
 	}

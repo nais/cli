@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 )
@@ -40,6 +41,8 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("kube", "kube_kubeconfig_total")
+
 			err := gcp.ValidateUserLogin(context.Context, false)
 			if err != nil {
 				return err
