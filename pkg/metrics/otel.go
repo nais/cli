@@ -7,6 +7,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
+	"strings"
 
 	"go.opentelemetry.io/otel/sdk/resource"
 	"os"
@@ -56,10 +57,7 @@ func New() *metric.MeterProvider {
 }
 
 func RecordCommandUsage(ctx context.Context, histogram m.Int64Histogram, flags []string) {
-	for _, f := range flags {
-		histogram.Record(ctx, 1, m.WithAttributes(attribute.String("flag", f)))
-	}
-
+	histogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", strings.Join(flags, "_"))))
 }
 
 // Intersection

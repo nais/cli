@@ -48,7 +48,7 @@ func collectCommandHistogram(app *cli.App) {
 	meterProv := m.New()
 	defer meterProv.Shutdown(context.Background())
 
-	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("flag_usage", metric.WithDescription("Usage frequency of command flags"))
+	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("command_usage", metric.WithDescription("Usage frequency of command flags"))
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	m.RecordCommandUsage(context.Background(), commandHistogram, m.Intersection(os.Args, validSubcommands))
 	meterProv.ForceFlush(context.Background())
