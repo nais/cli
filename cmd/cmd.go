@@ -2,16 +2,11 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
-	"time"
 
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	m "github.com/nais/cli/pkg/metrics"
 	"go.opentelemetry.io/otel/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/resource"
 
 	"github.com/nais/cli/cmd/aivencmd"
 	"github.com/nais/cli/cmd/appstartercmd"
@@ -21,8 +16,6 @@ import (
 	"github.com/nais/cli/cmd/rootcmd"
 	"github.com/nais/cli/cmd/validatecmd"
 	"github.com/urfave/cli/v2"
-
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 var (
@@ -63,72 +56,18 @@ func Run() {
 		}
 	}
 
-	meterProv := New()
+	meterProv := m.New()
 	defer meterProv.Shutdown(context.Background())
+
 	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("flag_usage", metric.WithDescription("Usage frequency of command flags"))
-	ctx := context.Background()
+
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
-	recordCommandUsage(ctx, commandHistogram, intersection(os.Args, validSubcommands))
+	m.RecordCommandUsage(context.Background(), commandHistogram, m.Intersection(os.Args, validSubcommands))
 	meterProv.ForceFlush(context.Background())
 
 	err := app.Run(os.Args)
+
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func NewResource() (*resource.Resource, error) {
-	return resource.Merge(resource.Default(),
-		resource.NewWithAttributes(semconv.SchemaURL,
-			semconv.ServiceName("nais_cli"),
-			semconv.ServiceVersion(version+":"+commit),
-		))
-}
-
-func NewMeterProvider(res *resource.Resource) *sdkmetric.MeterProvider {
-	dnt := os.Getenv("DO_NOT_TRACK")
-	var url string
-	if dnt == "1" {
-		fmt.Println("We are respecting your do-not-track")
-		url = "http://localhost:1234"
-	} else {
-		url = "https://collector-internet.nav.cloud.nais.io"
-	}
-	metricExporter, _ := otlpmetrichttp.New(
-		context.Background(),
-		otlpmetrichttp.WithEndpointURL(url),
-	)
-	meterProvider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithResource(res),
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExporter,
-			sdkmetric.WithInterval(1*time.Second))),
-	)
-	return meterProvider
-}
-
-func New() *sdkmetric.MeterProvider {
-	res, _ := NewResource()
-	meterProvider := NewMeterProvider(res)
-	return meterProvider
-}
-
-func recordCommandUsage(ctx context.Context, histogram metric.Int64Histogram, flags []string) {
-	for _, f := range flags {
-		histogram.Record(ctx, 1, metric.WithAttributes(attribute.String("flag", f)))
-	}
-
-}
-
-func intersection(list1, list2 []string) []string {
-	elements := make(map[string]bool)
-	for _, item := range list1 {
-		elements[item] = true
-	}
-	var result []string
-	for _, item := range list2 {
-		if elements[item] {
-			result = append(result, item)
-		}
-	}
-	return result
 }

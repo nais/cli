@@ -2,11 +2,15 @@ package metrics
 
 import (
 	"context"
-	"time"
-
+	"fmt"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
+	m "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
+
 	"go.opentelemetry.io/otel/sdk/resource"
+	"os"
+	"time"
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
@@ -15,8 +19,6 @@ var (
 	// Is set during build
 	version = "local"
 	commit  = "uncommited"
-	// Global variables
-	m *metric.MeterProvider
 )
 
 func NewResource() (*resource.Resource, error) {
@@ -28,9 +30,17 @@ func NewResource() (*resource.Resource, error) {
 }
 
 func NewMeterProvider(res *resource.Resource) *metric.MeterProvider {
+	dnt := os.Getenv("DO_NOT_TRACK")
+	var url string
+	if dnt == "1" {
+		fmt.Println("We are respecting your do-not-track")
+		url = "http://localhost:1234"
+	} else {
+		url = "https://collector-internet.nav.cloud.nais.io"
+	}
 	metricExporter, _ := otlpmetrichttp.New(
 		context.Background(),
-		otlpmetrichttp.WithEndpointURL("https://collector-internet.nav.cloud.nais.io"),
+		otlpmetrichttp.WithEndpointURL(url),
 	)
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),
@@ -46,6 +56,29 @@ func New() *metric.MeterProvider {
 	return meterProvider
 }
 
+func RecordCommandUsage(ctx context.Context, histogram m.Int64Histogram, flags []string) {
+	for _, f := range flags {
+		histogram.Record(ctx, 1, m.WithAttributes(attribute.String("flag", f)))
+	}
+
+}
+
+// Just a list intersection, used to create the intersection
+// between os.args and all the args we have in the cli
+func Intersection(list1, list2 []string) []string {
+	elements := make(map[string]bool)
+	for _, item := range list1 {
+		elements[item] = true
+	}
+	var result []string
+	for _, item := range list2 {
+		if elements[item] {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
 // This calls New(), creating a whole new MeterProvider on every invocation.
 // This will result in many 1s being sent as their own unique snowflake 1.
 // This is because the otel.setMeterprovider/otel.getMeterProvider doesn't expose
@@ -56,9 +89,9 @@ func New() *metric.MeterProvider {
 // you end up doing a sleep(2s) to get the metrics sent which is maybe not the best ux I can imagine.
 func AddOne(meterName, counterName string) {
 	ctx := context.Background()
-	m = New()
-	counter, _ := m.Meter(meterName).Int64Counter(counterName)
-	defer m.Shutdown(ctx)
+	meter := New()
+	counter, _ := meter.Meter(meterName).Int64Counter(counterName)
+	defer meter.Shutdown(ctx)
 	counter.Add(ctx, 1)
-	_ = m.ForceFlush(ctx)
+	_ = meter.ForceFlush(ctx)
 }
