@@ -2,14 +2,16 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"log"
-	"os"
-	"time"
 
 	"github.com/nais/cli/cmd/aivencmd"
 	"github.com/nais/cli/cmd/appstartercmd"
@@ -65,6 +67,7 @@ func Run() {
 	defer meterProv.Shutdown(context.Background())
 	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("flag_usage", metric.WithDescription("Usage frequency of command flags"))
 	ctx := context.Background()
+	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	recordCommandUsage(ctx, commandHistogram, intersection(os.Args, validSubcommands))
 	meterProv.ForceFlush(context.Background())
 
@@ -86,7 +89,8 @@ func NewMeterProvider(res *resource.Resource) *sdkmetric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
 	var url string
 	if dnt == "1" {
-		url = "http://localhost"
+		fmt.Println("We are respecting your do-not-track")
+		url = "http://localhost:1234"
 	} else {
 		url = "https://collector-internet.nav.cloud.nais.io"
 	}
@@ -109,9 +113,10 @@ func New() *sdkmetric.MeterProvider {
 }
 
 func recordCommandUsage(ctx context.Context, histogram metric.Int64Histogram, flags []string) {
-	for _, flag := range flags {
-		histogram.Record(ctx, 1, metric.WithAttributes(attribute.String("flag", flag)))
+	for _, f := range flags {
+		histogram.Record(ctx, 1, metric.WithAttributes(attribute.String("flag", f)))
 	}
+
 }
 
 func intersection(list1, list2 []string) []string {
