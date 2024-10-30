@@ -3,10 +3,10 @@
 
   inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs, }:
+  outputs =
+    { self, nixpkgs }:
     let
-      version = builtins.substring 0 8
-        (self.lastModifiedDate or self.lastModified or "19700101");
+      version = builtins.substring 0 8 (self.lastModifiedDate or self.lastModified or "19700101");
       goOverlay = final: prev: {
         go = prev.go.overrideAttrs (old: {
           version = "1.23.2";
@@ -22,13 +22,19 @@
         "aarch64-linux"
         "aarch64-darwin"
       ];
-      withPkgs = callback:
-        withSystem (system:
-          callback (import nixpkgs {
-            inherit system;
-            overlays = [ goOverlay ];
-          }));
-    in {
+      withPkgs =
+        callback:
+        withSystem (
+          system:
+          callback (
+            import nixpkgs {
+              inherit system;
+              overlays = [ goOverlay ];
+            }
+          )
+        );
+    in
+    {
       packages = withPkgs (pkgs: rec {
         nais = pkgs.buildGoModule {
           pname = "nais-cli";
@@ -44,7 +50,14 @@
 
       devShells = withPkgs (pkgs: {
         default = pkgs.mkShell {
-          buildInputs = with pkgs; [ go gopls gotools go-tools ];
+          buildInputs = with pkgs; [
+            go
+            gopls
+            gotools
+            go-tools
+            nodejs_20
+            nodePackages.prettier
+          ];
         };
       });
 
