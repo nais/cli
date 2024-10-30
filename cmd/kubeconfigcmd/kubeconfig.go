@@ -54,6 +54,7 @@ gcloud auth login --update-adc`,
 			}
 
 			if !naisdevice.IsConnected(status) {
+				metrics.AddOne("nais_cli", "kubeconfig_connect_error_total")
 				return fmt.Errorf("you need to be connected with naisdevice before using this command")
 			}
 
@@ -89,6 +90,7 @@ func getTenantFromEmail(email string) (string, error) {
 	_, after, found := strings.Cut(email, "@")
 
 	if !found {
+		metrics.AddOne("nais_cli", "kubeconfig_tenant_extract_error_total")
 		return "", fmt.Errorf("could not extract tenant from %s", email)
 	}
 

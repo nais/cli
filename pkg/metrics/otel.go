@@ -91,7 +91,7 @@ func AddOne(meterName, counterName string) {
 	ctx := context.Background()
 	meter := New()
 	counter, _ := meter.Meter(meterName).Int64Counter(counterName)
-	defer meter.Shutdown(ctx)
 	counter.Add(ctx, 1)
 	_ = meter.ForceFlush(ctx)
+	defer meter.Shutdown(ctx)
 }

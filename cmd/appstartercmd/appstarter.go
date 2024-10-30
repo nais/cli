@@ -32,6 +32,7 @@ func Command() *cli.Command {
 		Before: func(context *cli.Context) error {
 			metrics.AddOne("start", "appstarter_total")
 			if context.Args().Len() < 2 {
+				metrics.AddOne("nais_cli", "appstarter_arguments_error_total")
 				return fmt.Errorf("missing required arguments: %v", context.Command.ArgsUsage)
 			}
 

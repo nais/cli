@@ -19,6 +19,7 @@ func jitaCommand() *cli.Command {
 		Before: func(context *cli.Context) error {
 			metrics.AddOne("jita", "jita_connect_total")
 			if context.Args().Len() < 1 {
+				metrics.AddOne("nais_cli", "jita_arguments_error_total")
 				return fmt.Errorf("missing required arguments: gateway")
 			}
 
@@ -29,6 +30,7 @@ func jitaCommand() *cli.Command {
 			}
 
 			if !slices.Contains(privilegedGateways, gateway) {
+				metrics.AddOne("nais_cli", "device_gateway_error_total")
 				return fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
 			}
 

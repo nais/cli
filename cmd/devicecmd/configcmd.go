@@ -49,12 +49,14 @@ func setConfigCommand() *cli.Command {
 		Before: func(context *cli.Context) error {
 			metrics.AddOne("device", "device_config_set_total")
 			if context.Args().Len() < 2 {
+				metrics.AddOne("nais_cli", "device_settings_error_total")
 				return fmt.Errorf("missing required arguments: setting, value")
 			}
 
 			setting := context.Args().Get(0)
 			value := context.Args().Get(1)
 			if !slices.Contains(naisdevice.GetAllowedSettings(true, true), strings.ToLower(setting)) {
+				metrics.AddOne("nais_cli", "device_settings_error_total")
 				return fmt.Errorf("%v is not one of the allowed settings: %v", setting, strings.Join(naisdevice.GetAllowedSettings(false, false), ", "))
 			}
 

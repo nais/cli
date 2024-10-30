@@ -18,6 +18,8 @@ func getCommand() *cli.Command {
 		Before: func(context *cli.Context) error {
 			metrics.AddOne("Aiven", "aiven_get_total")
 			if context.Args().Len() < 3 {
+				metrics.AddOne("nais_cli", "aiven_get_arguments_error_total")
+
 				return fmt.Errorf("missing required arguments: service, secret, namespace")
 			}
 
@@ -39,6 +41,7 @@ func getCommand() *cli.Command {
 
 			err = aiven.ExtractAndGenerateConfig(service, secretName, namespace)
 			if err != nil {
+				metrics.AddOne("nais_cli", "aiven_get_secret_and_config_error_total")
 				return fmt.Errorf("retrieve secret and generating config: %w", err)
 			}
 

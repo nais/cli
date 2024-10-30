@@ -18,6 +18,7 @@ func statusCommand() *cli.Command {
 				Aliases: []string{"o"},
 				Action: func(context *cli.Context, flag string) error {
 					if !slices.Contains([]string{"yaml", "json"}, flag) {
+						metrics.AddOne("nais_cli", "status_file_format_error_total")
 						return fmt.Errorf("%v is not an implemented format", flag)
 					}
 
