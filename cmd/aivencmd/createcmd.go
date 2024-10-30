@@ -52,7 +52,7 @@ func createCommand() *cli.Command {
 					}
 
 					if !service.Is(&aiven_services.OpenSearch{}) {
-						return fmt.Errorf("--intance is only supported for OpenSearch, not %v", service.Name())
+						return fmt.Errorf("--instance is only supported for OpenSearch, not %v", service.Name())
 					}
 
 					return nil
