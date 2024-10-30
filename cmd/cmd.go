@@ -39,8 +39,8 @@ func commands() []*cli.Command {
 func Run() {
 	app := &cli.App{
 		Name:                 "nais",
-		Usage:                "A NAIS CLI",
-		Description:          "A simple CLI application that developers in NAV can use",
+		Usage:                "A Nais cli",
+		Description:          "Nais platform utility cli, respects consoledonottrack.com",
 		Version:              version + "-" + commit,
 		EnableBashCompletion: true,
 		HideHelpCommand:      true,
