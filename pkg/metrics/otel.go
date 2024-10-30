@@ -16,20 +16,11 @@ import (
 )
 
 var (
-	// Is set during build
 	version = "local"
 	commit  = "uncommited"
 )
 
-func NewResource() (*resource.Resource, error) {
-	return resource.Merge(resource.Default(),
-		resource.NewWithAttributes(semconv.SchemaURL,
-			semconv.ServiceName("nais_cli"),
-			semconv.ServiceVersion(version+":"+commit),
-		))
-}
-
-func NewMeterProvider(res *resource.Resource) *metric.MeterProvider {
+func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
 	var url string
 	if dnt == "1" {
@@ -50,9 +41,17 @@ func NewMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	return meterProvider
 }
 
+func newResource() (*resource.Resource, error) {
+	return resource.Merge(resource.Default(),
+		resource.NewWithAttributes(semconv.SchemaURL,
+			semconv.ServiceName("nais_cli"),
+			semconv.ServiceVersion(version+":"+commit),
+		))
+}
+
 func New() *metric.MeterProvider {
-	res, _ := NewResource()
-	meterProvider := NewMeterProvider(res)
+	res, _ := newResource()
+	meterProvider := newMeterProvider(res)
 	return meterProvider
 }
 
@@ -63,6 +62,7 @@ func RecordCommandUsage(ctx context.Context, histogram m.Int64Histogram, flags [
 
 }
 
+// Intersection
 // Just a list intersection, used to create the intersection
 // between os.args and all the args we have in the cli
 func Intersection(list1, list2 []string) []string {
@@ -79,6 +79,7 @@ func Intersection(list1, list2 []string) []string {
 	return result
 }
 
+// AddOne
 // This calls New(), creating a whole new MeterProvider on every invocation.
 // This will result in many 1s being sent as their own unique snowflake 1.
 // This is because the otel.setMeterprovider/otel.getMeterProvider doesn't expose

@@ -10,7 +10,6 @@ import (
 )
 
 func getCommand() *cli.Command {
-
 	return &cli.Command{
 		Name:      "get",
 		Usage:     "Generate preferred config format to '/tmp' folder",

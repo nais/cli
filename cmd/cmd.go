@@ -36,18 +36,7 @@ func commands() []*cli.Command {
 	)
 }
 
-func Run() {
-	app := &cli.App{
-		Name:                 "nais",
-		Usage:                "A Nais cli",
-		Description:          "Nais platform utility cli, respects consoledonottrack.com",
-		Version:              version + "-" + commit,
-		EnableBashCompletion: true,
-		HideHelpCommand:      true,
-		Suggest:              true,
-		Commands:             commands(),
-	}
-
+func collectCommandHistogram(app *cli.App) {
 	var validSubcommands []string
 	for _, command := range app.Commands {
 		validSubcommands = append(validSubcommands, command.Name)
@@ -60,13 +49,26 @@ func Run() {
 	defer meterProv.Shutdown(context.Background())
 
 	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("flag_usage", metric.WithDescription("Usage frequency of command flags"))
-
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	m.RecordCommandUsage(context.Background(), commandHistogram, m.Intersection(os.Args, validSubcommands))
 	meterProv.ForceFlush(context.Background())
+}
+
+func Run() {
+	app := &cli.App{
+		Name:                 "nais",
+		Usage:                "A Nais cli",
+		Description:          "Nais platform utility cli, respects consoledonottrack.com",
+		Version:              version + "-" + commit,
+		EnableBashCompletion: true,
+		HideHelpCommand:      true,
+		Suggest:              true,
+		Commands:             commands(),
+	}
+
+	collectCommandHistogram(app)
 
 	err := app.Run(os.Args)
-
 	if err != nil {
 		log.Fatal(err)
 	}
