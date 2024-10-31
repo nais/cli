@@ -2,8 +2,9 @@ package kubeconfigcmd
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/metrics"
 	"strings"
+
+	"github.com/nais/cli/pkg/metrics"
 
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
@@ -41,7 +42,7 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("kube", "kube_kubeconfig_total")
+			metrics.AddOne("kube_kubeconfig_total")
 
 			err := gcp.ValidateUserLogin(context.Context, false)
 			if err != nil {
@@ -54,7 +55,7 @@ gcloud auth login --update-adc`,
 			}
 
 			if !naisdevice.IsConnected(status) {
-				metrics.AddOne("nais_cli", "kubeconfig_connect_error_total")
+				metrics.AddOne("kubeconfig_connect_error_total")
 				return fmt.Errorf("you need to be connected with naisdevice before using this command")
 			}
 
@@ -90,7 +91,7 @@ func getTenantFromEmail(email string) (string, error) {
 	_, after, found := strings.Cut(email, "@")
 
 	if !found {
-		metrics.AddOne("nais_cli", "kubeconfig_tenant_extract_error_total")
+		metrics.AddOne("kubeconfig_tenant_extract_error_total")
 		return "", fmt.Errorf("could not extract tenant from %s", email)
 	}
 

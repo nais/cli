@@ -3,9 +3,10 @@ package postgrescmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/nais/cli/pkg/metrics"
 	"os"
 	"strings"
+
+	"github.com/nais/cli/pkg/metrics"
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/nais/cli/pkg/postgres"
@@ -33,9 +34,9 @@ This operation is only required to run once for each postgresql instance.`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("postgres", "postgres_revoke_total")
+			metrics.AddOne("postgres_revoke_total")
 			if context.Args().Len() < 1 {
-				metrics.AddOne("nais_cli", "postgres_missing_app_name_error_total")
+				metrics.AddOne("postgres_missing_app_name_error_total")
 				return fmt.Errorf("missing name of app")
 			}
 

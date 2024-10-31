@@ -2,11 +2,12 @@ package ui
 
 import (
 	"fmt"
-	"github.com/nais/cli/pkg/option"
-	"github.com/pterm/pterm"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/nais/cli/pkg/option"
+	"github.com/pterm/pterm"
 )
 
 const (
@@ -14,9 +15,11 @@ const (
 	sameAsSourceOptionPrefix = "Same as source"
 )
 
-var CmdStyle = pterm.NewStyle(pterm.FgLightMagenta)
-var LinkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
-var YamlStyle = pterm.NewStyle(pterm.FgLightYellow)
+var (
+	CmdStyle  = pterm.NewStyle(pterm.FgLightMagenta)
+	LinkStyle = pterm.NewStyle(pterm.FgLightBlue, pterm.Underscore)
+	YamlStyle = pterm.NewStyle(pterm.FgLightYellow)
+)
 
 func stringCaster(s string) string { return s }
 func boolCaster(s string) bool     { return s == "true" }

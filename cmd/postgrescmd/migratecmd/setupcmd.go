@@ -3,8 +3,9 @@ package migratecmd
 import (
 	"context"
 	"fmt"
-	"github.com/pterm/pterm"
 	"strings"
+
+	"github.com/pterm/pterm"
 
 	"github.com/nais/cli/pkg/k8s"
 	"github.com/nais/cli/pkg/option"

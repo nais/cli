@@ -2,6 +2,7 @@ package postgrescmd
 
 import (
 	"fmt"
+
 	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/postgres"
 	"github.com/urfave/cli/v2"
@@ -29,9 +30,9 @@ func usersAddCommand() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("postgres", "postgres_users_add_total")
+			metrics.AddOne("postgres_users_add_total")
 			if context.Args().Len() < 3 {
-				metrics.AddOne("nais_cli", "postgres_missing_args_error_total")
+				metrics.AddOne("postgres_missing_args_error_total")
 				return fmt.Errorf("missing required arguments: appname, username, password")
 			}
 

@@ -2,20 +2,20 @@ package devicecmd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/mitchellh/go-ps"
 	"github.com/nais/cli/pkg/doctor"
 	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
-	"log"
 )
 
 func doctorCommand() *cli.Command {
-
 	return &cli.Command{
 		Name:  "doctor",
 		Usage: "Examine the health of your naisdevice",
 		Action: func(context *cli.Context) error {
-			metrics.AddOne("device", "device_doctor_total")
+			metrics.AddOne("device_doctor_total")
 			results := examination().Run()
 			for key, value := range results {
 				fmt.Printf("%s ", key)

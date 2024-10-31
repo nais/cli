@@ -2,6 +2,8 @@ package config_test
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate/config"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
@@ -13,7 +15,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"strconv"
 )
 
 const (

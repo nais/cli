@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"log"
 	"os"
 
@@ -34,27 +33,6 @@ func commands() []*cli.Command {
 	)
 }
 
-func collectCommandHistogram(app *cli.App) {
-	ctx := context.Background()
-	var validSubcommands []string
-	for _, command := range app.Commands {
-		validSubcommands = append(validSubcommands, command.Name)
-		for _, subcommand := range command.Subcommands {
-			validSubcommands = append(validSubcommands, subcommand.Name)
-		}
-	}
-
-	doNotTrack := os.Getenv("DO_NOT_TRACK")
-	if doNotTrack == "1" {
-		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
-	}
-
-	provider := m.NewMeterProvider()
-	defer provider.Shutdown(ctx)
-	// Record usages of subcommands that are exactly in the list of args we have, nothing else
-	m.RecordCommandUsage(ctx, provider, m.Intersection(os.Args, validSubcommands))
-}
-
 func Run() {
 	app := &cli.App{
 		Name:                 "nais",
@@ -67,7 +45,7 @@ func Run() {
 		Commands:             commands(),
 	}
 
-	collectCommandHistogram(app)
+	m.CollectCommandHistogram(app.Commands)
 
 	err := app.Run(os.Args)
 	if err != nil {

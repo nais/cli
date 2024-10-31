@@ -2,27 +2,39 @@ package metrics
 
 import (
 	"context"
+	"log"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
-	"strings"
 
 	"go.opentelemetry.io/otel/sdk/resource"
-	"os"
-	"time"
 
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 var (
-	version = "local"
-	commit  = "uncommited"
+	version           = "local"
+	commit            = "uncommited"
+	naisCliPrefixName = "nais_cli"
 )
+
+func newResource() (*resource.Resource, error) {
+	return resource.Merge(resource.Default(),
+		resource.NewWithAttributes(semconv.SchemaURL,
+			semconv.ServiceName("nais_cli"),
+			semconv.ServiceVersion(version+":"+commit),
+		))
+}
 
 func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
-	var url = "https://collector-internet.nav.cloud.nais.io"
+	url := "https://collector-internet.nav.cloud.nais.io"
 	if dnt == "1" {
 		url = "http://localhost:1234"
 	}
@@ -38,40 +50,66 @@ func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	return meterProvider
 }
 
-func newResource() (*resource.Resource, error) {
-	return resource.Merge(resource.Default(),
-		resource.NewWithAttributes(semconv.SchemaURL,
-			semconv.ServiceName("nais_cli"),
-			semconv.ServiceVersion(version+":"+commit),
-		))
-}
-
-func NewMeterProvider() *metric.MeterProvider {
-	res, _ := newResource()
-	meterProvider := newMeterProvider(res)
-	return meterProvider
-}
-
-func RecordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
-	commandHistogram, _ := provider.Meter("nais-cli").Int64Histogram("command_usage", m.WithDescription("Usage frequency of command flags"))
+func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
+	commandHistogram, _ := provider.Meter(naisCliPrefixName).Int64Histogram(
+		naisCliPrefixName+"_command_usage",
+		m.WithUnit("1"),
+		m.WithDescription("Usage frequency of command flags"))
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", strings.Join(flags, "_"))))
 }
 
-// Intersection
+// intersection
 // Just a list intersection, used to create the intersection
 // between os.args and all the args we have in the cli
-func Intersection(list1, list2 []string) []string {
+func intersection(list1, list2 []string) []string {
 	elements := make(map[string]bool)
+	resultSet := make(map[string]bool)
+
+	// Mark elements in list1
 	for _, item := range list1 {
 		elements[item] = true
 	}
-	var result []string
+
+	// Check for intersections and add to resultSet to ensure uniqueness
 	for _, item := range list2 {
-		if elements[item] {
-			result = append(result, item)
+		if elements[item] && !resultSet[item] {
+			resultSet[item] = true
 		}
 	}
+
+	// Collect the unique intersection elements into a slice
+	var result []string
+	for item := range resultSet {
+		result = append(result, item)
+	}
+
 	return result
+}
+
+func CollectCommandHistogram(commands []*cli.Command) {
+	ctx := context.Background()
+	var validSubcommands []string
+	for _, command := range commands {
+		gatherCommands(command, &validSubcommands)
+	}
+
+	doNotTrack := os.Getenv("DO_NOT_TRACK")
+	if doNotTrack == "1" {
+		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
+	}
+
+	res, _ := newResource()
+	provider := newMeterProvider(res)
+	defer provider.Shutdown(ctx)
+	// Record usages of subcommands that are exactly in the list of args we have, nothing else
+	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands))
+}
+
+func gatherCommands(command *cli.Command, validSubcommands *[]string) {
+	*validSubcommands = append(*validSubcommands, command.Name)
+	for _, subcommand := range command.Subcommands {
+		gatherCommands(subcommand, validSubcommands) // Recursively handle subcommands
+	}
 }
 
 // AddOne
@@ -83,10 +121,17 @@ func Intersection(list1, list2 []string) []string {
 // add a metric anf forceflush it. v0v
 // We tried using the global set/get meterprovider but that does not give forceflush and instead
 // you end up doing a sleep(2s) to get the metrics sent which is maybe not the best ux I can imagine.
-func AddOne(meterName, counterName string) {
+func AddOne(metricName string) {
 	ctx := context.Background()
-	meter := NewMeterProvider()
-	counter, _ := meter.Meter(meterName).Int64Counter(counterName)
+	counterName := naisCliPrefixName + "_" + metricName
+	res, _ := newResource()
+	meter := newMeterProvider(res)
+	counter, _ := meter.Meter(naisCliPrefixName).Int64Counter(
+		counterName,
+		m.WithUnit("1"),
+		m.WithDescription("Counter for "+counterName),
+	)
+
 	counter.Add(ctx, 1)
 	_ = meter.ForceFlush(ctx)
 	defer meter.Shutdown(ctx)

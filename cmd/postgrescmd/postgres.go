@@ -23,7 +23,7 @@ func Command() *cli.Command {
 		Name:  "postgres",
 		Usage: "Command used for connecting to Postgres",
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("postgres", "postgres_connect_total")
+			metrics.AddOne("postgres_connect_total")
 			return gcp.ValidateUserLogin(context.Context, false)
 		},
 		Subcommands: commands,

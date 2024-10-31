@@ -12,7 +12,7 @@ func loginCommand() *cli.Command {
 		Usage:       "Login using Google Auth.",
 		Description: "This is a wrapper around gcloud auth login --update-adc.",
 		Action: func(context *cli.Context) error {
-			metrics.AddOne("login", "login_total")
+			metrics.AddOne("login_total")
 			return gcp.Login(context.Context)
 		},
 	}
