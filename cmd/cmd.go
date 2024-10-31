@@ -5,9 +5,6 @@ import (
 	"log"
 	"os"
 
-	m "github.com/nais/cli/pkg/metrics"
-	"go.opentelemetry.io/otel/metric"
-
 	"github.com/nais/cli/cmd/aivencmd"
 	"github.com/nais/cli/cmd/appstartercmd"
 	"github.com/nais/cli/cmd/devicecmd"
@@ -15,6 +12,7 @@ import (
 	"github.com/nais/cli/cmd/postgrescmd"
 	"github.com/nais/cli/cmd/rootcmd"
 	"github.com/nais/cli/cmd/validatecmd"
+	m "github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
@@ -37,6 +35,7 @@ func commands() []*cli.Command {
 }
 
 func collectCommandHistogram(app *cli.App) {
+	ctx := context.Background()
 	var validSubcommands []string
 	for _, command := range app.Commands {
 		validSubcommands = append(validSubcommands, command.Name)
@@ -45,13 +44,15 @@ func collectCommandHistogram(app *cli.App) {
 		}
 	}
 
-	meterProv := m.New()
-	defer meterProv.Shutdown(context.Background())
+	doNotTrack := os.Getenv("DO_NOT_TRACK")
+	if doNotTrack == "1" {
+		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
+	}
 
-	commandHistogram, _ := meterProv.Meter("nais-cli").Int64Histogram("command_usage", metric.WithDescription("Usage frequency of command flags"))
+	provider := m.NewMeterProvider()
+	defer provider.Shutdown(ctx)
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
-	m.RecordCommandUsage(context.Background(), commandHistogram, m.Intersection(os.Args, validSubcommands))
-	meterProv.ForceFlush(context.Background())
+	m.RecordCommandUsage(ctx, provider, m.Intersection(os.Args, validSubcommands))
 }
 
 func Run() {

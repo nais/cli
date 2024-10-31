@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"context"
-	"fmt"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
@@ -23,12 +22,9 @@ var (
 
 func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
-	var url string
+	var url = "https://collector-internet.nav.cloud.nais.io"
 	if dnt == "1" {
-		fmt.Println("We are respecting your do-not-track")
 		url = "http://localhost:1234"
-	} else {
-		url = "https://collector-internet.nav.cloud.nais.io"
 	}
 	metricExporter, _ := otlpmetrichttp.New(
 		context.Background(),
@@ -50,14 +46,15 @@ func newResource() (*resource.Resource, error) {
 		))
 }
 
-func New() *metric.MeterProvider {
+func NewMeterProvider() *metric.MeterProvider {
 	res, _ := newResource()
 	meterProvider := newMeterProvider(res)
 	return meterProvider
 }
 
-func RecordCommandUsage(ctx context.Context, histogram m.Int64Histogram, flags []string) {
-	histogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", strings.Join(flags, "_"))))
+func RecordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
+	commandHistogram, _ := provider.Meter("nais-cli").Int64Histogram("command_usage", m.WithDescription("Usage frequency of command flags"))
+	commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", strings.Join(flags, "_"))))
 }
 
 // Intersection
@@ -78,7 +75,7 @@ func Intersection(list1, list2 []string) []string {
 }
 
 // AddOne
-// This calls New(), creating a whole new MeterProvider on every invocation.
+// This calls NewMeterProvider(), creating a whole new MeterProvider on every invocation.
 // This will result in many 1s being sent as their own unique snowflake 1.
 // This is because the otel.setMeterprovider/otel.getMeterProvider doesn't expose
 // ForceFlush meaning we have to wait a second or so after every command to send the
@@ -88,7 +85,7 @@ func Intersection(list1, list2 []string) []string {
 // you end up doing a sleep(2s) to get the metrics sent which is maybe not the best ux I can imagine.
 func AddOne(meterName, counterName string) {
 	ctx := context.Background()
-	meter := New()
+	meter := NewMeterProvider()
 	counter, _ := meter.Meter(meterName).Int64Counter(counterName)
 	counter.Add(ctx, 1)
 	_ = meter.ForceFlush(ctx)
