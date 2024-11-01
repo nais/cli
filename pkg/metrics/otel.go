@@ -29,7 +29,7 @@ func newResource() (*resource.Resource, error) {
 	return resource.Merge(resource.Default(),
 		resource.NewWithAttributes(semconv.SchemaURL,
 			semconv.ServiceName("nais_cli"),
-			semconv.ServiceVersion(version+":"+commit),
+			semconv.ServiceVersion(version+"-"+commit),
 		))
 }
 
