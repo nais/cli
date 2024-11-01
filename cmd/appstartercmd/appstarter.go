@@ -40,6 +40,8 @@ func Command() *cli.Command {
 			return nil
 		},
 		Action: func(context *cli.Context) error {
+			return fmt.Errorf("Not implemented")
+
 			team := context.Args().Get(0)
 			appName := context.Args().Get(1)
 
