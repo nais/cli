@@ -22,6 +22,7 @@ var (
 	version           = "local"
 	commit            = "uncommited"
 	naisCliPrefixName = "nais_cli"
+	collectorURL      = "https://collector-internet.nav.cloud.nais.io"
 )
 
 func newResource() (*resource.Resource, error) {
@@ -34,7 +35,7 @@ func newResource() (*resource.Resource, error) {
 
 func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
-	url := "https://collector-internet.nav.cloud.nais.io"
+	url := collectorURL
 	if dnt == "1" {
 		url = "http://localhost:1234"
 	}
@@ -132,7 +133,7 @@ func AddOne(metricName string) {
 		m.WithDescription("Counter for "+counterName),
 	)
 
-	counter.Add(ctx, 1)
+	counter.Add(ctx, 1, m.WithAttributes(attribute.String("command", metricName)))
 	_ = meter.ForceFlush(ctx)
 	defer meter.Shutdown(ctx)
 }
