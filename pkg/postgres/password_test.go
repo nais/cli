@@ -27,8 +27,10 @@ const (
 	pgUrlTmpl   = "postgresql://my-user:%s@localhost:5432/my-database"
 )
 
-var newJdbcUrl *url.URL
-var newPgUrl *url.URL
+var (
+	newJdbcUrl *url.URL
+	newPgUrl   *url.URL
+)
 
 func init() {
 	var err error

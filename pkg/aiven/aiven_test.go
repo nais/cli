@@ -2,9 +2,10 @@ package aiven
 
 import (
 	"context"
-	"github.com/nais/cli/pkg/k8s"
 	"testing"
 	"time"
+
+	"github.com/nais/cli/pkg/k8s"
 
 	"github.com/nais/cli/pkg/aiven/aiven_services"
 	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"

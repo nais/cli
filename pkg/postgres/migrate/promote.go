@@ -3,6 +3,7 @@ package migrate
 import (
 	"context"
 	"fmt"
+
 	"github.com/nais/cli/pkg/postgres/migrate/ui"
 
 	"github.com/pterm/pterm"

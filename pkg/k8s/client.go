@@ -2,10 +2,11 @@ package k8s
 
 import (
 	"fmt"
-	"k8s.io/client-go/kubernetes"
 	"log"
 	"log/slog"
 	"os"
+
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"

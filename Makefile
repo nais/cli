@@ -1,6 +1,15 @@
+.PHONY: build test test-ci nais-cli check fmt vet
 
-test:
+build:
+	go build
+
+test: fmt vet
 	go run github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty
+
+fmt:
+	go run mvdan.cc/gofumpt -w ./
+vet:
+	go vet ./...
 
 test-ci:
 	go run github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output

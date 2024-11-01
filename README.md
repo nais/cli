@@ -33,3 +33,12 @@ kubectl create namespace test
 make nais-cli
 bin/nais --version
 ```
+
+## Instrumentation
+
+We use [otel](https://opentelemetry.io) for instrumentation and record the user interaction with the CLI to see if we can 
+optimize the user experience.
+
+We respect your privacy and do not collect any data if you set the environment variable `DO_NOT_TRACK`
+according to the [Do Not Track](https://consoledonottrack.com).
+

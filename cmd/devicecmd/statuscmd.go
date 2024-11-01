@@ -3,6 +3,7 @@ package devicecmd
 import (
 	"fmt"
 
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
@@ -18,6 +19,7 @@ func statusCommand() *cli.Command {
 				Aliases: []string{"o"},
 				Action: func(context *cli.Context, flag string) error {
 					if !slices.Contains([]string{"yaml", "json"}, flag) {
+						metrics.AddOne("status_file_format_error_total")
 						return fmt.Errorf("%v is not an implemented format", flag)
 					}
 
@@ -34,6 +36,7 @@ func statusCommand() *cli.Command {
 			},
 		},
 		Action: func(context *cli.Context) error {
+			metrics.AddOne("device_status_total")
 			outputFormat := context.String("output")
 			quiet := context.Bool("quiet")
 			verbose := context.Bool("verbose")

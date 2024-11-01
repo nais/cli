@@ -11,6 +11,7 @@ import (
 	"github.com/nais/cli/cmd/postgrescmd"
 	"github.com/nais/cli/cmd/rootcmd"
 	"github.com/nais/cli/cmd/validatecmd"
+	m "github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
@@ -35,14 +36,16 @@ func commands() []*cli.Command {
 func Run() {
 	app := &cli.App{
 		Name:                 "nais",
-		Usage:                "A NAIS CLI",
-		Description:          "A simple CLI application that developers in NAV can use",
+		Usage:                "A Nais cli",
+		Description:          "Nais platform utility cli, respects consoledonottrack.com",
 		Version:              version + "-" + commit,
 		EnableBashCompletion: true,
 		HideHelpCommand:      true,
 		Suggest:              true,
 		Commands:             commands(),
 	}
+
+	m.CollectCommandHistogram(app.Commands)
 
 	err := app.Run(os.Args)
 	if err != nil {

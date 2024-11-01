@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/pkg/metrics"
+
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
 
@@ -16,7 +18,9 @@ func jitaCommand() *cli.Command {
 		Usage:     "Connects to a JITA gateway",
 		ArgsUsage: "gateway",
 		Before: func(context *cli.Context) error {
+			metrics.AddOne("jita_connect_total")
 			if context.Args().Len() < 1 {
+				metrics.AddOne("jita_arguments_error_total")
 				return fmt.Errorf("missing required arguments: gateway")
 			}
 
@@ -27,6 +31,7 @@ func jitaCommand() *cli.Command {
 			}
 
 			if !slices.Contains(privilegedGateways, gateway) {
+				metrics.AddOne("device_gateway_error_total")
 				return fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
 			}
 

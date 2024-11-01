@@ -22,7 +22,6 @@ func agentConnection() (*grpc.ClientConn, error) {
 		"unix:"+socket,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
 	if err != nil {
 		return nil, formatGrpcError(err)
 	}
