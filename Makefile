@@ -1,4 +1,7 @@
-.PHONY: test test-ci nais-cli check build fmt vet
+.PHONY: build test test-ci nais-cli check fmt vet
+
+build:
+	go build
 
 test: fmt vet
 	go run github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty
