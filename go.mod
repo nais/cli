@@ -13,7 +13,7 @@ require (
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
 	github.com/nais/liberator v0.0.0-20241101125801-cc4bc469b422
 	github.com/onsi/ginkgo/v2 v2.20.2
-	github.com/onsi/gomega v1.34.1
+	github.com/onsi/gomega v1.35.1
 	github.com/pterm/pterm v0.12.79
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.9.0
