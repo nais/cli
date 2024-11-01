@@ -6,14 +6,14 @@ require (
 	cloud.google.com/go/cloudsqlconn v1.12.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.1
 	github.com/go-logr/logr v1.4.2
-	github.com/goccy/go-yaml v1.12.0
+	github.com/goccy/go-yaml v1.13.2
 	github.com/magiconair/properties v1.8.7
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
 	github.com/nais/liberator v0.0.0-20241101125801-cc4bc469b422
-	github.com/onsi/ginkgo/v2 v2.20.2
-	github.com/onsi/gomega v1.34.1
+	github.com/onsi/ginkgo/v2 v2.21.0
+	github.com/onsi/gomega v1.35.1
 	github.com/pterm/pterm v0.12.79
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.9.0
@@ -62,7 +62,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
-	github.com/fatih/color v1.17.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
@@ -77,7 +77,7 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/pprof v0.0.0-20240827171923-fa2c70bbbfe5 // indirect
+	github.com/google/pprof v0.0.0-20241029153458-d1b30febd7db // indirect
 	github.com/google/s2a-go v0.1.8 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
@@ -130,7 +130,6 @@ require (
 	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	golang.org/x/tools v0.26.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241007155032-5fefd90f89a9 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241007155032-5fefd90f89a9 // indirect
