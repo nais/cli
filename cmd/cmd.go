@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/nais/cli/cmd/aivencmd"
-	"github.com/nais/cli/cmd/appstartercmd"
 	"github.com/nais/cli/cmd/devicecmd"
 	"github.com/nais/cli/cmd/kubeconfigcmd"
 	"github.com/nais/cli/cmd/postgrescmd"
@@ -25,7 +24,6 @@ func commands() []*cli.Command {
 	return append(
 		rootcmd.Commands(),
 		aivencmd.Command(),
-		appstartercmd.Command(),
 		devicecmd.Command(),
 		kubeconfigcmd.Command(),
 		postgrescmd.Command(),
