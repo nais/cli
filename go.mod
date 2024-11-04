@@ -7,7 +7,6 @@ require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.1
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.13.2
-	github.com/magiconair/properties v1.8.7
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9

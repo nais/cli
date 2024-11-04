@@ -2,12 +2,12 @@ package metrics
 
 import (
 	"context"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
@@ -134,6 +134,5 @@ func AddOne(metricName string) {
 	)
 
 	counter.Add(ctx, 1, m.WithAttributes(attribute.String("command", metricName)))
-	_ = meter.ForceFlush(ctx)
 	defer meter.Shutdown(ctx)
 }
