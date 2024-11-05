@@ -56,7 +56,7 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
 
-	var attributes []attribute.KeyValue
+	attributes := make([]attribute.KeyValue, len(flags))
 	for i, f := range flags {
 		if i == 0 {
 			attributes[0] = attribute.String("command", f)
