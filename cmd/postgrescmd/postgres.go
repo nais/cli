@@ -3,7 +3,6 @@ package postgrescmd
 import (
 	"github.com/nais/cli/cmd/postgrescmd/migratecmd"
 	"github.com/nais/cli/pkg/gcp"
-	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 

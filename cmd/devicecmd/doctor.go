@@ -6,7 +6,6 @@ import (
 
 	"github.com/mitchellh/go-ps"
 	"github.com/nais/cli/pkg/doctor"
-	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
