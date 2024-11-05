@@ -5,7 +5,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -56,7 +55,15 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 		naisCliPrefixName+"_command_usage",
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
-	commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", strings.Join(flags, "_"))))
+	if flags != nil {
+		commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", flags[0])))
+	}
+	for i, f := range flags {
+		if i == 0 {
+			continue
+		}
+		commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("subcommand", f)))
+	}
 }
 
 // intersection
@@ -88,22 +95,23 @@ func intersection(list1, list2 []string) []string {
 }
 
 func CollectCommandHistogram(commands []*cli.Command) {
+	doNotTrack := os.Getenv("DO_NOT_TRACK")
+	if doNotTrack == "1" {
+		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
+	}
+
 	ctx := context.Background()
 	var validSubcommands []string
 	for _, command := range commands {
 		gatherCommands(command, &validSubcommands)
 	}
 
-	doNotTrack := os.Getenv("DO_NOT_TRACK")
-	if doNotTrack == "1" {
-		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
-	}
-
 	res, _ := newResource()
 	provider := newMeterProvider(res)
-	defer provider.Shutdown(ctx)
+
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands))
+	provider.Shutdown(ctx)
 }
 
 func gatherCommands(command *cli.Command, validSubcommands *[]string) {
