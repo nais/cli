@@ -5,6 +5,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -56,12 +57,12 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
 
-	attributes := make([]attribute.KeyValue, len(flags))
-	for i, f := range flags {
-		if i == 0 {
-			attributes[0] = attribute.String("command", f)
-		} else {
-			attributes[i] = attribute.String("subcommand", f)
+	attributes := make([]attribute.KeyValue, 2)
+
+	if len(flags) > 0 {
+		attributes[0] = attribute.String("command", flags[0])
+		if len(flags) >= 2 {
+			attributes[1] = attribute.String("subcommand", strings.Join(flags[1:], "_"))
 		}
 	}
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
