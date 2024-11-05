@@ -15,7 +15,6 @@ func doctorCommand() *cli.Command {
 		Name:  "doctor",
 		Usage: "Examine the health of your naisdevice",
 		Action: func(context *cli.Context) error {
-			metrics.AddOne("device_doctor_total")
 			results := examination().Run()
 			for key, value := range results {
 				fmt.Printf("%s ", key)

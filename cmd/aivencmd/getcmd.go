@@ -16,7 +16,6 @@ func getCommand() *cli.Command {
 		Usage:     "Generate preferred config format to '/tmp' folder",
 		ArgsUsage: "service username namespace",
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("aiven_get_total")
 			if context.Args().Len() < 3 {
 				metrics.AddOne("aiven_get_arguments_error_total")
 

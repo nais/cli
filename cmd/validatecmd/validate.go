@@ -31,7 +31,6 @@ func Command() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("validate_nais_yaml_total")
 			if context.Args().Len() == 0 {
 				metrics.AddOne("validate_enonent_error_total")
 				return fmt.Errorf("no config files provided")

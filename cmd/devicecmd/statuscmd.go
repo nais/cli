@@ -36,7 +36,6 @@ func statusCommand() *cli.Command {
 			},
 		},
 		Action: func(context *cli.Context) error {
-			metrics.AddOne("device_status_total")
 			outputFormat := context.String("output")
 			quiet := context.Bool("quiet")
 			verbose := context.Bool("verbose")

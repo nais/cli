@@ -80,7 +80,6 @@ func createCommand() *cli.Command {
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("aiven_create_total")
 			if context.Args().Len() < 3 {
 				metrics.AddOne("aiven_create_required_args_error_total")
 				return fmt.Errorf("missing required arguments: service, username, namespace")

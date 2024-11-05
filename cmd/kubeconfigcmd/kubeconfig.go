@@ -42,7 +42,6 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("kube_kubeconfig_total")
 
 			err := gcp.ValidateUserLogin(context.Context, false)
 			if err != nil {

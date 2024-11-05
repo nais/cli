@@ -18,7 +18,6 @@ func jitaCommand() *cli.Command {
 		Usage:     "Connects to a JITA gateway",
 		ArgsUsage: "gateway",
 		Before: func(context *cli.Context) error {
-			metrics.AddOne("jita_connect_total")
 			if context.Args().Len() < 1 {
 				metrics.AddOne("jita_arguments_error_total")
 				return fmt.Errorf("missing required arguments: gateway")
