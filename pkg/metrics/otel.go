@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"context"
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -52,6 +53,7 @@ func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 }
 
 func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
+	fmt.Println(flags)
 	commandHistogram, _ := provider.Meter(naisCliPrefixName).Int64Histogram(
 		naisCliPrefixName+"_command_usage",
 		m.WithUnit("1"),
@@ -72,8 +74,9 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 // Just a list intersection, used to create the intersection
 // between os.args and all the args we have in the cli
 func intersection(list1, list2 []string) []string {
+
 	elements := make(map[string]bool)
-	resultSet := make(map[string]bool)
+	seen := make(map[string]bool)
 
 	// Mark elements in list1
 	for _, item := range list1 {
@@ -81,18 +84,13 @@ func intersection(list1, list2 []string) []string {
 	}
 
 	// Check for intersections and add to resultSet to ensure uniqueness
+	var result []string
 	for _, item := range list2 {
-		if elements[item] && !resultSet[item] {
-			resultSet[item] = true
+		if elements[item] && !seen[item] {
+			result = append(result, item)
+			seen[item] = true
 		}
 	}
-
-	// Collect the unique intersection elements into a slice
-	var result []string
-	for item := range resultSet {
-		result = append(result, item)
-	}
-
 	return result
 }
 
