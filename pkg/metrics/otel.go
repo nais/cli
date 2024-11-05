@@ -60,8 +60,9 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 	for i, f := range flags {
 		if i == 0 {
 			attributes[0] = attribute.String("command", f)
+		} else {
+			attributes[i] = attribute.String("subcommand", f)
 		}
-		attributes[i] = attribute.String("subcommand", f)
 	}
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
 }
