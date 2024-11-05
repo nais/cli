@@ -57,12 +57,11 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
 
-	attributes := make([]attribute.KeyValue, 2)
-
+	attributes := make([]attribute.KeyValue, 0)
 	if len(flags) > 0 {
-		attributes[0] = attribute.String("command", flags[0])
-		if len(flags) >= 2 {
-			attributes[1] = attribute.String("subcommand", strings.Join(flags[1:], "_"))
+		attributes = append(attributes, attribute.String("command", flags[0]))
+		if len(flags) > 1 {
+			attributes = append(attributes, attribute.String("subcommand", strings.Join(flags[1:], "_")))
 		}
 	}
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
