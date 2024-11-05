@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"context"
-	"fmt"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -53,7 +52,6 @@ func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 }
 
 func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
-	fmt.Println(flags)
 	commandHistogram, _ := provider.Meter(naisCliPrefixName).Int64Histogram(
 		naisCliPrefixName+"_command_usage",
 		m.WithUnit("1"),
