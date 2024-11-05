@@ -55,15 +55,15 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 		naisCliPrefixName+"_command_usage",
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
-	if flags != nil {
-		commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("command", flags[0])))
-	}
+
+	var attributes []attribute.KeyValue
 	for i, f := range flags {
 		if i == 0 {
-			continue
+			attributes[0] = attribute.String("command", f)
 		}
-		commandHistogram.Record(ctx, 1, m.WithAttributes(attribute.String("subcommand", f)))
+		attributes[i] = attribute.String("subcommand", f)
 	}
+	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
 }
 
 // intersection
