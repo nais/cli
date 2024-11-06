@@ -41,7 +41,7 @@ func Setup(client kubernetes.Interface, cfg Config) *Debug {
 func (d *Debug) getApp() (*v1.Deployment, error) {
 	app, err := d.client.AppsV1().Deployments(d.cfg.Namespace).Get(d.ctx, d.cfg.AppName, metav1.GetOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get application: %w", err)
+		return nil, fmt.Errorf("failed to get application in namespace \"%s\": %w", d.cfg.Namespace, err)
 	}
 	return app, nil
 }

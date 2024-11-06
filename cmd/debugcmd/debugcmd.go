@@ -17,13 +17,12 @@ const (
 func Command() *cli.Command {
 	return &cli.Command{
 		Name:      "debug",
-		Usage:     "Debug nais application",
+		Usage:     "Debug an application",
 		ArgsUsage: "appname",
 		Subcommands: []*cli.Command{
 			tidyCommand(),
 		},
 		Flags: []cli.Flag{
-			namespaceFlag(),
 			kubeConfigFlag(),
 		},
 		Before: func(context *cli.Context) error {
@@ -36,11 +35,9 @@ func Command() *cli.Command {
 		Action: func(cCtx *cli.Context) error {
 			cfg := makeConfig(cCtx)
 			cluster := cCtx.String(contextFlagName)
-			namespace := cCtx.String(namespaceFlagName)
 			client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
-			cfg.Namespace = client.CurrentNamespace
-			if namespace != "" {
-				cfg.Namespace = namespace
+			if cfg.Namespace == "" {
+				cfg.Namespace = client.CurrentNamespace
 			}
 
 			clientset, err := k8s.SetupClientGo(cluster)
@@ -50,19 +47,10 @@ func Command() *cli.Command {
 
 			dg := debug.Setup(clientset, cfg)
 			if err := dg.Debug(); err != nil {
-				return fmt.Errorf("error debugging instance: %w", err)
+				return fmt.Errorf("debugging instance: %w", err)
 			}
 			return nil
 		},
-	}
-}
-
-func namespaceFlag() *cli.StringFlag {
-	return &cli.StringFlag{
-		Name:        namespaceFlagName,
-		DefaultText: "The namespace from your current kubeconfig context",
-		Usage:       "The kubernetes `NAMESPACE` to use",
-		Aliases:     []string{"n"},
 	}
 }
 
@@ -76,7 +64,7 @@ func kubeConfigFlag() *cli.StringFlag {
 }
 
 func makeConfig(cCtx *cli.Context) debug.Config {
-	appName := cCtx.Args().Get(0)
+	appName := cCtx.Args().First()
 	namespace := cCtx.Args().Get(1)
 
 	return debug.Config{

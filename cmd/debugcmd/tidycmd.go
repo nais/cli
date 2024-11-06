@@ -14,7 +14,6 @@ func tidyCommand() *cli.Command {
 		Usage:     "Clean up ephemeral containers and debug pods",
 		ArgsUsage: "appname",
 		Flags: []cli.Flag{
-			namespaceFlag(),
 			kubeConfigFlag(),
 		},
 		Before: func(context *cli.Context) error {
@@ -41,7 +40,7 @@ func tidyCommand() *cli.Command {
 
 			dg := debug.Setup(clientset, cfg)
 			if err := dg.Tidy(); err != nil {
-				return fmt.Errorf("error debugging instance: %w", err)
+				return fmt.Errorf("debugging instance: %w", err)
 			}
 			return nil
 		},
