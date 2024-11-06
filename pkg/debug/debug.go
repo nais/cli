@@ -16,17 +16,17 @@ import (
 type Debug struct {
 	ctx    context.Context
 	client kubernetes.Interface
-	cfg    Config
+	cfg    *Config
 }
 
 type Config struct {
-	Namespace  string
-	Context    string
-	AppName    string
-	DebugImage string
+	Namespace    string
+	Context      string
+	WorkloadName string
+	DebugImage   string
 }
 
-func Setup(client kubernetes.Interface, cfg Config) *Debug {
+func Setup(client kubernetes.Interface, cfg *Config) *Debug {
 	return &Debug{
 		ctx:    context.Background(),
 		client: client,
@@ -34,15 +34,15 @@ func Setup(client kubernetes.Interface, cfg Config) *Debug {
 	}
 }
 
-func (d *Debug) getPods() (*core_v1.PodList, error) {
+func (d *Debug) getPodsForWorkload() (*core_v1.PodList, error) {
 	var podList *core_v1.PodList
 	var err error
 	podList, err = d.client.CoreV1().Pods(d.cfg.Namespace).List(d.ctx, metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("app.kubernetes.io/name=%s", d.cfg.AppName),
+		LabelSelector: fmt.Sprintf("app.kubernetes.io/name=%s", d.cfg.WorkloadName),
 	})
 	if len(podList.Items) == 0 {
 		podList, err = d.client.CoreV1().Pods(d.cfg.Namespace).List(d.ctx, metav1.ListOptions{
-			LabelSelector: fmt.Sprintf("app=%s", d.cfg.AppName),
+			LabelSelector: fmt.Sprintf("app=%s", d.cfg.WorkloadName),
 		})
 	}
 	if err != nil {
@@ -76,11 +76,13 @@ func (d *Debug) debugPod(podName string) error {
 		return fmt.Errorf("command failed: %v", err)
 	}
 
+	fmt.Printf("Run 'nais debug tidy %s' to clean up debug containers, this will delete pod(s) with debug containers \n", d.cfg.WorkloadName)
+
 	return nil
 }
 
 func (d *Debug) Debug() error {
-	pods, err := d.getPods()
+	pods, err := d.getPodsForWorkload()
 	if err != nil {
 		return err
 	}

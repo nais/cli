@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/pkg/debug"
-	"github.com/nais/cli/pkg/k8s"
 	"github.com/urfave/cli/v2"
 )
 
 func tidyCommand() *cli.Command {
 	return &cli.Command{
-		Name:      "tidy",
-		Usage:     "Clean up ephemeral containers and debug pods",
-		ArgsUsage: "appname",
+		Name:        "tidy",
+		Usage:       "Clean up debug containers and debug pods from your workload",
+		Description: "Remove debug containers created by the debug command, the pods will be deleted automatically",
+		ArgsUsage:   "workloadname [namespace]",
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
 		},
@@ -25,15 +25,7 @@ func tidyCommand() *cli.Command {
 		},
 		Action: func(cCtx *cli.Context) error {
 			cfg := makeConfig(cCtx)
-			cluster := cCtx.String(contextFlagName)
-			namespace := cCtx.String(namespaceFlagName)
-			client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
-			cfg.Namespace = client.CurrentNamespace
-			if namespace != "" {
-				cfg.Namespace = namespace
-			}
-
-			clientset, err := k8s.SetupClientGo(cluster)
+			clientset, err := setupClient(cfg, cCtx)
 			if err != nil {
 				return err
 			}
