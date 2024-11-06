@@ -3,12 +3,10 @@ package debug
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
 
-	"github.com/creack/pty"
 	"github.com/manifoldco/promptui"
 
 	v1 "k8s.io/api/apps/v1"
@@ -115,36 +113,16 @@ func (d *Debug) debugPod(podName string) error {
 		"--profile=restricted",
 		"--image", d.cfg.DebugImage)
 
-	// Start a pseudo-terminal for the command
-	ptyFile, err := pty.Start(cmd)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start pseudo-terminal: %v\n", err)
-		os.Exit(1)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start command: %v", err)
 	}
-	defer func() { _ = ptyFile.Close() }()
-
-	fmt.Println("Debug container started. You are now connected.")
-
-	// Create channels for copying output and input streams
-	done := make(chan struct{})
-
-	// Copy output from ptyFile to os.Stdout
-	go func() {
-		_, _ = io.Copy(os.Stdout, ptyFile)
-		done <- struct{}{}
-	}()
-
-	// Copy input from os.Stdin to ptyFile
-	go func() {
-		_, _ = io.Copy(ptyFile, os.Stdin)
-		done <- struct{}{}
-	}()
-
-	// Block until the process completes or is closed
-	<-done
 
 	if err := cmd.Wait(); err != nil {
-		fmt.Printf("Command finished with error: %v", err)
+		return fmt.Errorf("command failed: %v", err)
 	}
 
 	return nil
