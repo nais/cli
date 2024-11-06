@@ -52,17 +52,22 @@ func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
 	return meterProvider
 }
 
-func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, flags []string) {
+func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, allCommands []string, mainCommands []*cli.Command) {
 	commandHistogram, _ := provider.Meter(naisCliPrefixName).Int64Histogram(
 		naisCliPrefixName+"_command_usage",
 		m.WithUnit("1"),
 		m.WithDescription("Usage frequency of command flags"))
 
+	validCommands := map[string]bool{}
+	for _, command := range mainCommands {
+		validCommands[command.Name] = true
+	}
+
 	attributes := make([]attribute.KeyValue, 0)
-	if len(flags) > 0 {
-		attributes = append(attributes, attribute.String("command", flags[0]))
-		if len(flags) > 1 {
-			attributes = append(attributes, attribute.String("subcommand", strings.Join(flags[1:], "_")))
+	if len(allCommands) > 0 && validCommands[allCommands[0]] {
+		attributes = append(attributes, attribute.String("command", allCommands[0]))
+		if len(allCommands) > 1 {
+			attributes = append(attributes, attribute.String("subcommand", strings.Join(allCommands[1:], "_")))
 		}
 	}
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
@@ -107,7 +112,7 @@ func CollectCommandHistogram(commands []*cli.Command) {
 	provider := newMeterProvider(res)
 
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
-	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands))
+	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands), commands)
 	provider.Shutdown(ctx)
 }
 
