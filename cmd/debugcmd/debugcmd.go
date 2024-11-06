@@ -17,7 +17,7 @@ const (
 func Command() *cli.Command {
 	return &cli.Command{
 		Name:      "debug",
-		Usage:     "Debug an application",
+		Usage:     "Create and attach to a debug container",
 		ArgsUsage: "appname",
 		Subcommands: []*cli.Command{
 			tidyCommand(),

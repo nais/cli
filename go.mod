@@ -5,7 +5,6 @@ go 1.23.2
 require (
 	cloud.google.com/go/cloudsqlconn v1.12.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.1
-	github.com/creack/pty v1.1.18
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.13.2
 	github.com/mailgun/raymond/v2 v2.0.48
