@@ -2,11 +2,12 @@ package metrics
 
 import (
 	"context"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/urfave/cli/v2"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -71,7 +72,6 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, fla
 // Just a list intersection, used to create the intersection
 // between os.args and all the args we have in the cli
 func intersection(list1, list2 []string) []string {
-
 	elements := make(map[string]bool)
 	seen := make(map[string]bool)
 

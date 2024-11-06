@@ -70,6 +70,10 @@ func (d *Debug) Debug() error {
 	}
 
 	pods, err := d.getPods(app)
+	if err != nil {
+		return err
+	}
+
 	var podNames []string
 	for _, pod := range pods.Items {
 		podNames = append(podNames, pod.Name)
@@ -153,6 +157,10 @@ func (d *Debug) Tidy() error {
 	}
 
 	pods, err := d.getPods(app)
+	if err != nil {
+		return err
+	}
+
 	var podNames []string
 	for _, pod := range pods.Items {
 		podNames = append(podNames, pod.Name)
