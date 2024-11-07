@@ -10,11 +10,13 @@ import (
 func tidyCommand() *cli.Command {
 	return &cli.Command{
 		Name:        "tidy",
-		Usage:       "Clean up debug containers and debug pods from your workload",
-		Description: "Remove debug containers created by the debug command, the pods will be deleted automatically",
-		ArgsUsage:   "workloadname [namespace]",
+		Usage:       "Clean up debug containers and debug pods",
+		Description: "Remove debug containers created by the 'debug' command. To delete copy pods set the '--copy' flag.",
+		ArgsUsage:   "workloadname",
 		Flags: []cli.Flag{
 			kubeConfigFlag(),
+			namespaceFlag(),
+			copyFlag(),
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+
 	"github.com/manifoldco/promptui"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -25,42 +27,52 @@ func (d *Debug) Tidy() error {
 		return nil
 	}
 
-	epHConTotal := 0
 	for _, pod := range pods.Items {
-		if len(pod.Spec.EphemeralContainers) == 0 {
+		podName := pod.Name
+		if d.cfg.CopyPod {
+			podName = debuggerContainerName(pod.Name)
+		}
+
+		if !d.cfg.CopyPod && len(pod.Spec.EphemeralContainers) == 0 {
+			fmt.Printf("No debug container found for: %s\n", pod.Name)
 			continue
 		}
 
-		epHConTotal += len(pod.Spec.EphemeralContainers)
+		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
+		if err != nil {
+			if k8serrors.IsNotFound(err) {
+				fmt.Printf("No debug pod found for: %s\n", pod.Name)
+				continue
+			}
+			fmt.Printf("Failed to get pod %s: %v\n", podName, err)
+			return err
+		}
+
 		prompt := promptui.Prompt{
-			Label:     fmt.Sprintf("Pod '%s' contains '%d' debug container(s), do you want to clean up", pod.Name, len(pod.Spec.EphemeralContainers)),
+			Label:     fmt.Sprintf("Pod '%s' with debug container, do you want to clean up", podName),
 			IsConfirm: true,
 		}
 
 		answer, err := prompt.Run()
 		if err != nil {
 			if errors.Is(err, promptui.ErrAbort) {
-				fmt.Printf("Skipping deletion for pod: %s\n", pod.Name)
+				fmt.Printf("Skipping deletion for pod: %s\n", podName)
 				continue
 			}
-			fmt.Printf("Error reading input for pod %s: %v\n", pod.Name, err)
+			fmt.Printf("Error reading input for pod %s: %v\n", podName, err)
 			return err
 		}
 
 		// Delete pod if user confirms with "y" or "yes"
 		if strings.ToLower(answer) == "y" || strings.ToLower(answer) == "yes" {
-			if err := d.client.CoreV1().Pods(d.cfg.Namespace).Delete(d.ctx, pod.Name, metav1.DeleteOptions{}); err != nil {
-				fmt.Printf("Failed to delete pod %s: %v\n", pod.Name, err)
+			if err := d.client.CoreV1().Pods(d.cfg.Namespace).Delete(d.ctx, podName, metav1.DeleteOptions{}); err != nil {
+				fmt.Printf("Failed to delete pod %s: %v\n", podName, err)
 			} else {
-				fmt.Println("Deleted pod:", pod.Name)
+				fmt.Println("Deleted pod:", podName)
 			}
 		} else {
-			fmt.Println("Skipped pod:", pod.Name)
+			fmt.Println("Skipped pod:", podName)
 		}
-	}
-
-	if epHConTotal == 0 {
-		fmt.Printf("Workload '%s' does not contain any debug containers\n", d.cfg.WorkloadName)
 	}
 	return nil
 }
