@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 
@@ -16,7 +17,8 @@ import (
 )
 
 const (
-	debuggerSuffix = "nais-debugger"
+	debuggerSuffix               = "nais-debugger"
+	debuggerContainerDefaultName = "debugger"
 )
 
 type Debug struct {
@@ -64,13 +66,33 @@ func debuggerContainerName(podName string) string {
 }
 
 func (d *Debug) debugPod(podName string) error {
+	const maxRetries = 6
+	const pollInterval = 5
+
 	if d.cfg.CopyPod {
 		pN := debuggerContainerName(podName)
 		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
 		if err == nil {
-			fmt.Printf("Debug pod copy %s already exists. Attaching...\n", pN)
-			// Debug pod copy already exists, attach to it
-			return d.attachToExistingDebugContainer(pN)
+			fmt.Printf("%s already exists, trying to attach...\n", pN)
+
+			// Polling loop to check if the debugger container is running
+			for i := 0; i < maxRetries; i++ {
+				fmt.Printf("attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
+				pod, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
+				if err != nil {
+					return fmt.Errorf("failed to get debug pod copy %s: %v", pN, err)
+				}
+
+				for _, c := range pod.Status.ContainerStatuses {
+					if c.Name == debuggerContainerDefaultName && c.State.Running != nil {
+						return d.attachToExistingDebugContainer(pN)
+					}
+				}
+				time.Sleep(time.Duration(pollInterval) * time.Second)
+			}
+
+			// If the loop finishes without finding the running container
+			return fmt.Errorf("container did not start within the expected time")
 		} else if !k8serrors.IsNotFound(err) {
 			return fmt.Errorf("failed to check for existing debug pod copy %s: %v", pN, err)
 		}
@@ -81,8 +103,8 @@ func (d *Debug) debugPod(podName string) error {
 		}
 
 		if len(pod.Spec.EphemeralContainers) > 0 {
-			fmt.Printf("The container %s already has %d terminated debug containers. \n", podName, len(pod.Spec.EphemeralContainers))
-			fmt.Printf("Please consider using 'nais debug tidy %s' to clean up\n", d.cfg.WorkloadName)
+			fmt.Printf("the container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
+			fmt.Printf("please consider using 'nais debug tidy %s' to clean up\n", d.cfg.WorkloadName)
 		}
 	}
 
@@ -90,13 +112,12 @@ func (d *Debug) debugPod(podName string) error {
 }
 
 func (d *Debug) attachToExistingDebugContainer(podName string) error {
-	defaultDebuggerName := "debugger"
 	cmd := exec.Command(
 		"kubectl",
 		"attach",
 		"-n", d.cfg.Namespace,
 		fmt.Sprintf("pod/%s", podName),
-		"-c", defaultDebuggerName,
+		"-c", debuggerContainerDefaultName,
 		"-i",
 		"-t",
 		"--context", d.cfg.Context,
@@ -109,7 +130,7 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start attach command: %v", err)
 	}
-	fmt.Printf("Attaching to existing debug container %s in pod %s\n", defaultDebuggerName, podName)
+	fmt.Printf("attached to pod %s\n", podName)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("attach command failed: %v", err)
@@ -149,18 +170,18 @@ func (d *Debug) createDebugPod(podName string) error {
 	}
 
 	if d.cfg.CopyPod {
-		fmt.Printf("Debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
+		fmt.Printf("debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
 	} else {
-		fmt.Printf("Debugging container created...\n")
+		fmt.Printf("debugging container created...\n")
 	}
-	fmt.Printf("Using debugger image %s\n", d.cfg.DebugImage)
+	fmt.Printf("using debugger image %s\n", d.cfg.DebugImage)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("debug command failed: %v", err)
 	}
 
 	if d.cfg.CopyPod {
-		fmt.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", podName)
+		fmt.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.cfg.WorkloadName)
 	}
 
 	return nil

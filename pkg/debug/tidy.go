@@ -34,17 +34,17 @@ func (d *Debug) Tidy() error {
 		}
 
 		if !d.cfg.CopyPod && len(pod.Spec.EphemeralContainers) == 0 {
-			fmt.Printf("No debug container found for: %s\n", pod.Name)
+			fmt.Printf("no debug container found for: %s\n", pod.Name)
 			continue
 		}
 
 		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
 		if err != nil {
 			if k8serrors.IsNotFound(err) {
-				fmt.Printf("No debug pod found for: %s\n", pod.Name)
+				fmt.Printf("no debug pod found for: %s\n", pod.Name)
 				continue
 			}
-			fmt.Printf("Failed to get pod %s: %v\n", podName, err)
+			fmt.Printf("failed to get pod %s: %v\n", podName, err)
 			return err
 		}
 
@@ -56,10 +56,10 @@ func (d *Debug) Tidy() error {
 		answer, err := prompt.Run()
 		if err != nil {
 			if errors.Is(err, promptui.ErrAbort) {
-				fmt.Printf("Skipping deletion for pod: %s\n", podName)
+				fmt.Printf("skipping deletion for pod: %s\n", podName)
 				continue
 			}
-			fmt.Printf("Error reading input for pod %s: %v\n", podName, err)
+			fmt.Printf("error reading input for pod %s: %v\n", podName, err)
 			return err
 		}
 
