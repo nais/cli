@@ -21,7 +21,6 @@ import (
 
 var (
 	version           = "local"
-	commit            = "uncommited"
 	naisCliPrefixName = "nais_cli"
 	collectorURL      = "https://collector-internet.nav.cloud.nais.io"
 )
@@ -30,7 +29,7 @@ func newResource() (*resource.Resource, error) {
 	return resource.Merge(resource.Default(),
 		resource.NewWithAttributes(semconv.SchemaURL,
 			semconv.ServiceName("nais_cli"),
-			semconv.ServiceVersion(version+"-"+commit),
+			semconv.ServiceVersion(version),
 		))
 }
 

@@ -18,7 +18,7 @@ builds:
     binary: nais
     ldflags:
       - -s -w -X github.com/nais/cli/cmd.version={{.Version}} -X github.com/nais/cli/cmd.commit={{.Commit}}
-      - -s -w -X github.com/nais/cli/pkg/metrics.version={{.Version}} -X github.com/nais/cli/pkg/metrics.commit={{.Commit}}
+      - -s -w -X github.com/nais/cli/pkg/metrics.version={{.Version}}
   - env: [ CGO_ENABLED=0 ]
     targets:
       - windows_amd64
@@ -28,7 +28,7 @@ builds:
     binary: nais
     ldflags:
       - -s -w -X github.com/nais/cli/cmd.version={{.Version}} -X github.com/nais/cli/cmd.commit={{.Commit}}
-      - -s -w -X github.com/nais/cli/pkg/metrics.version={{.Version}} -X github.com/nais/cli/pkg/metrics.commit={{.Commit}}
+      - -s -w -X github.com/nais/cli/pkg/metrics.version={{.Version}}
     hooks:
       post:
         - osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "{{ .Path }}" -out "{{ .Path }}-signed"

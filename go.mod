@@ -8,7 +8,6 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.13.2
 	github.com/mailgun/raymond/v2 v2.0.48
-	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
 	github.com/nais/liberator v0.0.0-20241101125801-cc4bc469b422
@@ -39,7 +38,6 @@ require (
 
 require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect

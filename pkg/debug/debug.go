@@ -7,9 +7,8 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/pterm/pterm"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-
-	"github.com/manifoldco/promptui"
 
 	core_v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,6 +44,7 @@ func Setup(client kubernetes.Interface, cfg *Config) *Debug {
 }
 
 func (d *Debug) getPodsForWorkload() (*core_v1.PodList, error) {
+	pterm.Info.Println("Fetching workload...")
 	var podList *core_v1.PodList
 	var err error
 	podList, err = d.client.CoreV1().Pods(d.cfg.Namespace).List(d.ctx, metav1.ListOptions{
@@ -73,11 +73,11 @@ func (d *Debug) debugPod(podName string) error {
 		pN := debuggerContainerName(podName)
 		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
 		if err == nil {
-			fmt.Printf("%s already exists, trying to attach...\n", pN)
+			pterm.Info.Printf("%s already exists, trying to attach...\n", pN)
 
 			// Polling loop to check if the debugger container is running
 			for i := 0; i < maxRetries; i++ {
-				fmt.Printf("attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
+				pterm.Info.Printf("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
 				pod, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
 				if err != nil {
 					return fmt.Errorf("failed to get debug pod copy %s: %v", pN, err)
@@ -85,6 +85,7 @@ func (d *Debug) debugPod(podName string) error {
 
 				for _, c := range pod.Status.ContainerStatuses {
 					if c.Name == debuggerContainerDefaultName && c.State.Running != nil {
+						pterm.Success.Println("Container is running. Attaching...")
 						return d.attachToExistingDebugContainer(pN)
 					}
 				}
@@ -103,8 +104,8 @@ func (d *Debug) debugPod(podName string) error {
 		}
 
 		if len(pod.Spec.EphemeralContainers) > 0 {
-			fmt.Printf("the container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
-			fmt.Printf("please consider using 'nais debug tidy %s' to clean up\n", d.cfg.WorkloadName)
+			pterm.Warning.Printf("The container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
+			pterm.Info.Printf("Please consider using 'nais debug tidy %s' to clean up\n", d.cfg.WorkloadName)
 		}
 	}
 
@@ -130,7 +131,7 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start attach command: %v", err)
 	}
-	fmt.Printf("attached to pod %s\n", podName)
+	pterm.Success.Printf("Attached to pod %s\n", podName)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("attach command failed: %v", err)
@@ -170,18 +171,18 @@ func (d *Debug) createDebugPod(podName string) error {
 	}
 
 	if d.cfg.CopyPod {
-		fmt.Printf("debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
+		pterm.Info.Printf("Debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
 	} else {
-		fmt.Printf("debugging container created...\n")
+		pterm.Info.Println("Debugging container created...")
 	}
-	fmt.Printf("using debugger image %s\n", d.cfg.DebugImage)
+	pterm.Info.Printf("Using debugger image %s\n", d.cfg.DebugImage)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("debug command failed: %v", err)
 	}
 
 	if d.cfg.CopyPod {
-		fmt.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.cfg.WorkloadName)
+		pterm.Info.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.cfg.WorkloadName)
 	}
 
 	return nil
@@ -199,26 +200,22 @@ func (d *Debug) Debug() error {
 	}
 
 	if len(podNames) == 0 {
-		fmt.Println("No pods found.")
+		pterm.Info.Println("No pods found.")
 		return nil
 	}
 
 	podName := podNames[0]
 	if d.cfg.ByPod {
-		prompt := promptui.Select{
-			Label: "Select pod to Debug",
-			Items: podNames,
-		}
-
-		_, podName, err = prompt.Run()
+		result, err := pterm.DefaultInteractiveSelect.WithOptions(podNames).Show()
 		if err != nil {
-			fmt.Printf("prompt failed %v\n", err)
+			pterm.Error.Printf("Prompt failed: %v\n", err)
 			return err
 		}
+		podName = result
 	}
 
 	if err := d.debugPod(podName); err != nil {
-		fmt.Printf("failed to debug pod %s: %v\n", podName, err)
+		pterm.Error.Printf("Failed to debug pod %s: %v\n", podName, err)
 	}
 
 	return nil

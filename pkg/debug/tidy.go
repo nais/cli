@@ -1,13 +1,11 @@
 package debug
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 
-	"github.com/manifoldco/promptui"
+	"github.com/pterm/pterm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -23,7 +21,7 @@ func (d *Debug) Tidy() error {
 	}
 
 	if len(podNames) == 0 {
-		fmt.Println("No pods found")
+		pterm.Info.Println("No pods found")
 		return nil
 	}
 
@@ -34,44 +32,34 @@ func (d *Debug) Tidy() error {
 		}
 
 		if !d.cfg.CopyPod && len(pod.Spec.EphemeralContainers) == 0 {
-			fmt.Printf("no debug container found for: %s\n", pod.Name)
+			pterm.Info.Printf("No debug container found for: %s\n", pod.Name)
 			continue
 		}
 
 		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
 		if err != nil {
 			if k8serrors.IsNotFound(err) {
-				fmt.Printf("no debug pod found for: %s\n", pod.Name)
+				pterm.Info.Printf("No debug pod found for: %s\n", pod.Name)
 				continue
 			}
-			fmt.Printf("failed to get pod %s: %v\n", podName, err)
+			pterm.Error.Printf("Failed to get pod %s: %v\n", podName, err)
 			return err
 		}
 
-		prompt := promptui.Prompt{
-			Label:     fmt.Sprintf("Pod '%s' with debug container, do you want to clean up", podName),
-			IsConfirm: true,
+		confirm, _ := pterm.DefaultInteractiveConfirm.
+			WithDefaultText(fmt.Sprintf("Pod '%s' with debug container, do you want to clean up?", podName)).
+			Show()
+
+		if !confirm {
+			pterm.Info.Printf("Skipping deletion for pod: %s\n", podName)
+			continue
 		}
 
-		answer, err := prompt.Run()
-		if err != nil {
-			if errors.Is(err, promptui.ErrAbort) {
-				fmt.Printf("skipping deletion for pod: %s\n", podName)
-				continue
-			}
-			fmt.Printf("error reading input for pod %s: %v\n", podName, err)
-			return err
-		}
-
-		// Delete pod if user confirms with "y" or "yes"
-		if strings.ToLower(answer) == "y" || strings.ToLower(answer) == "yes" {
-			if err := d.client.CoreV1().Pods(d.cfg.Namespace).Delete(d.ctx, podName, metav1.DeleteOptions{}); err != nil {
-				fmt.Printf("Failed to delete pod %s: %v\n", podName, err)
-			} else {
-				fmt.Println("Deleted pod:", podName)
-			}
+		// Delete pod if user confirms
+		if err := d.client.CoreV1().Pods(d.cfg.Namespace).Delete(d.ctx, podName, metav1.DeleteOptions{}); err != nil {
+			pterm.Error.Printf("Failed to delete pod %s: %v\n", podName, err)
 		} else {
-			fmt.Println("Skipped pod:", podName)
+			pterm.Success.Printf("Deleted pod: %s\n", podName)
 		}
 	}
 	return nil
