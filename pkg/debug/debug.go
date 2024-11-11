@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/pterm/pterm"
@@ -121,8 +122,11 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 		"-c", debuggerContainerDefaultName,
 		"-i",
 		"-t",
-		"--context", d.cfg.Context,
 	)
+
+	if d.cfg.Context != "" {
+		cmd.Args = append(cmd.Args, "--context", d.cfg.Context)
+	}
 
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -148,10 +152,13 @@ func (d *Debug) createDebugPod(podName string) error {
 		"-it",
 		"--stdin",
 		"--tty",
-		"--context", d.cfg.Context,
 		"--profile=restricted",
 		"-q",
 		"--image", d.cfg.DebugImage,
+	}
+
+	if d.cfg.Context != "" {
+		args = append(args, "--context", d.cfg.Context)
 	}
 
 	if d.cfg.CopyPod {
@@ -159,6 +166,9 @@ func (d *Debug) createDebugPod(podName string) error {
 			"--copy-to", debuggerContainerName(podName),
 			"-c", "debugger",
 		)
+	} else {
+		args = append(args,
+			"--target", d.cfg.WorkloadName)
 	}
 
 	cmd := exec.Command("kubectl", args...)
@@ -178,6 +188,10 @@ func (d *Debug) createDebugPod(podName string) error {
 	pterm.Info.Printf("Using debugger image %s\n", d.cfg.DebugImage)
 
 	if err := cmd.Wait(); err != nil {
+		if strings.Contains(err.Error(), "exit status 1") {
+			pterm.Info.Println("Debugging container exited")
+			return nil
+		}
 		return fmt.Errorf("debug command failed: %v", err)
 	}
 

@@ -63,8 +63,12 @@ func Command() *cli.Command {
 func setupClient(cfg *debug.Config, cCtx *cli.Context) (kubernetes.Interface, error) {
 	cluster := cCtx.String(contextFlagName)
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
+
 	if cfg.Namespace == "" {
 		cfg.Namespace = client.CurrentNamespace
+	}
+	if cluster != "" {
+		cfg.Context = cluster
 	}
 
 	clientset, err := k8s.SetupClientGo(cluster)
@@ -112,6 +116,7 @@ func namespaceFlag() *cli.StringFlag {
 
 func makeConfig(cCtx *cli.Context) *debug.Config {
 	appName := cCtx.Args().First()
+
 	return &debug.Config{
 		WorkloadName: appName,
 		Namespace:    cCtx.String(namespaceFlagName),
