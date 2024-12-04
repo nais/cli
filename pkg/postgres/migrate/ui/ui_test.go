@@ -102,14 +102,15 @@ var _ = Describe("Ui", func() {
 		)
 
 		When("source version is POSTGRES_14", func() {
-			It("only lists versions 15 and 16", func() {
+			It("only lists versions 15 and 16 and 17", func() {
 				f := &fakeTextSelector{selected: "POSTGRES_15"}
 				ui.TextSelector = f
 				ui.AskForType("POSTGRES_14")()
 				Expect(f.options).To(ContainElement("Same as source (POSTGRES_14)"))
 				Expect(f.options).To(ContainElement("POSTGRES_15"))
 				Expect(f.options).To(ContainElement("POSTGRES_16"))
-				Expect(f.options).To(HaveLen(3))
+				Expect(f.options).To(ContainElement("POSTGRES_17"))
+				Expect(f.options).To(HaveLen(4))
 				Expect(f.options).ToNot(ContainElement("POSTGRES_13"))
 			})
 		})
