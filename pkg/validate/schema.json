@@ -1694,7 +1694,8 @@
                           "POSTGRES_13",
                           "POSTGRES_14",
                           "POSTGRES_15",
-                          "POSTGRES_16"
+                          "POSTGRES_16",
+                          "POSTGRES_17"
                         ],
                         "example": {
                           "Availability": "",
@@ -3957,7 +3958,8 @@
                           "POSTGRES_13",
                           "POSTGRES_14",
                           "POSTGRES_15",
-                          "POSTGRES_16"
+                          "POSTGRES_16",
+                          "POSTGRES_17"
                         ],
                         "example": {
                           "Availability": "",
