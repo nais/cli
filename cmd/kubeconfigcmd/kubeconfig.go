@@ -2,6 +2,7 @@ package kubeconfigcmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/nais/cli/pkg/metrics"
@@ -11,6 +12,31 @@ import (
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 )
+
+func mightBeWSL() bool {
+	// https://superuser.com/a/1749811
+	env := os.Getenv("WSL_DISTRO_NAME")
+	if env != "" {
+		fmt.Printf("WSL detected: WSL_DISTRO_NAME=%v\n", env)
+		return true
+	}
+
+	wslInteropPath := "/proc/sys/fs/binfmt_misc/WSLInterop"
+	if _, err := os.Stat(wslInteropPath); err == nil {
+		fmt.Printf("WSL detected: %q exists\n", wslInteropPath)
+		return true
+	}
+
+	procVersionPath := "/proc/version"
+	if b, err := os.ReadFile(procVersionPath); err == nil {
+		if strings.Contains(string(b), "Microsoft") {
+			fmt.Printf("WSL detected: %q contains 'Microsoft'\n", procVersionPath)
+			return true
+		}
+	}
+
+	return false
+}
 
 func Command() *cli.Command {
 	return &cli.Command{
@@ -42,20 +68,23 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-
 			err := gcp.ValidateUserLogin(context.Context, false)
 			if err != nil {
 				return err
 			}
 
-			status, err := naisdevice.GetStatus(context.Context)
-			if err != nil {
-				return err
-			}
+			if mightBeWSL() {
+				fmt.Println("Skipping naisdevice check in WSL. Assuming it's connected and ready to go.")
+			} else {
+				status, err := naisdevice.GetStatus(context.Context)
+				if err != nil {
+					return err
+				}
 
-			if !naisdevice.IsConnected(status) {
-				metrics.AddOne("kubeconfig_connect_error_total")
-				return fmt.Errorf("you need to be connected with naisdevice before using this command")
+				if !naisdevice.IsConnected(status) {
+					metrics.AddOne("kubeconfig_connect_error_total")
+					return fmt.Errorf("you need to be connected with naisdevice before using this command")
+				}
 			}
 
 			return nil
