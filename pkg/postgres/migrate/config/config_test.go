@@ -254,4 +254,46 @@ var _ = Describe("config", func() {
 			})
 		})
 	})
+
+	Describe("Config", func() {
+		Context("MigrationName", func() {
+			var cfg config.Config
+
+			DescribeTableSubtree("given configuration", func(mutateFn func(), expected string) {
+				BeforeEach(func() {
+					cfg = config.Config{
+						AppName:   "some-app",
+						Namespace: "test-namespace",
+						Target: config.InstanceConfig{
+							InstanceName: option.Some("target-instance"),
+						},
+					}
+					mutateFn()
+				})
+
+				It("should generate valid migration name", func() {
+					actual := cfg.MigrationName()
+					Expect(len(actual)).To(BeNumerically("<=", 63))
+					Expect(actual).To(Equal(expected))
+				})
+			},
+				Entry("happy path with reasonable lengths for app and instance",
+					func() {},
+					"migration-some-app-target-instance",
+				),
+				Entry("very long app name",
+					func() {
+						cfg.AppName = "some-unnecessarily-long-app-name-that-should-be-truncated"
+					},
+					"migration-some-unnecessarily-long-app-name-that-should-377bba1c",
+				),
+				Entry("very long instance name",
+					func() {
+						cfg.Target.InstanceName = option.Some("some-unnecessarily-long-instance-name-that-should-be-truncated")
+					},
+					"migration-some-app-some-unnecessarily-long-instance-na-59326cd8",
+				),
+			)
+		})
+	})
 })

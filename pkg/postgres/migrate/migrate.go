@@ -13,6 +13,7 @@ import (
 
 	"github.com/nais/cli/pkg/postgres/migrate/config"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
+	"github.com/nais/liberator/pkg/namegen"
 	"github.com/pterm/pterm"
 	"github.com/sethvargo/go-retry"
 	"golang.org/x/sync/errgroup"
@@ -20,6 +21,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -28,7 +30,20 @@ import (
 type Command string
 
 func (c Command) JobName(cfg config.Config) string {
-	return fmt.Sprintf("%s-%s", cfg.MigrationName(), string(c))
+	base := cfg.MigrationName()
+	suffix := string(c)
+	name := fmt.Sprintf("%s-%s", base, suffix)
+	maxlen := validation.DNS1123LabelMaxLength
+
+	if len(name) > maxlen {
+		truncated, err := namegen.SuffixedShortName(base, suffix, maxlen)
+		if err != nil {
+			panic(fmt.Sprintf("BUG: generating job name: %v", err.Error()))
+		}
+		return truncated
+	}
+
+	return name
 }
 
 const (
