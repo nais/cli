@@ -8,8 +8,10 @@ import (
 
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
+	"github.com/nais/liberator/pkg/namegen"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/validation"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -136,7 +138,18 @@ func (ic *InstanceConfig) PopulateFromConfigMap(configMap *corev1.ConfigMap, pre
 }
 
 func (c *Config) MigrationName() string {
-	return fmt.Sprintf("migration-%s-%s", c.AppName, c.Target.InstanceName)
+	name := fmt.Sprintf("migration-%s-%s", c.AppName, c.Target.InstanceName)
+	maxlen := validation.DNS1123LabelMaxLength
+
+	if len(name) > maxlen {
+		truncated, err := namegen.ShortName(name, maxlen)
+		if err != nil {
+			panic(fmt.Sprintf("BUG: generating migration name: %v", err.Error()))
+		}
+		return truncated
+	}
+
+	return name
 }
 
 func (c *Config) CreateConfigMap() *corev1.ConfigMap {
