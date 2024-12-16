@@ -9,6 +9,7 @@ updates:
       gomod:
         patterns:
           - "k8s.io*"
+          - "*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
