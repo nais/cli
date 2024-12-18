@@ -103,6 +103,7 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 		projectID,
 		"--member", "user:" + email,
 		"--role", role,
+		"--billing-project", projectID,
 	}
 
 	if duration > 0 {
@@ -130,6 +131,7 @@ func cleanupPermissions(ctx context.Context, projectID, email, role, conditionNa
 		"get-iam-policy",
 		projectID,
 		"--format", "json",
+		"--billing-project", projectID,
 	}
 	cmd := exec.CommandContext(ctx, "gcloud", args...)
 	out, err := cmd.Output()
@@ -173,6 +175,7 @@ OUTER:
 		"--member", "user:" + email,
 		"--role", role,
 		"--condition", expr,
+		"--billing-project", projectID,
 	}
 	cmd = exec.CommandContext(ctx, "gcloud", args...)
 	buf := &bytes.Buffer{}
