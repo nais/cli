@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/cloudsqlconn v1.13.2
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.3
 	github.com/go-logr/logr v1.4.2
-	github.com/goccy/go-yaml v1.15.10
+	github.com/goccy/go-yaml v1.15.11
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
@@ -23,8 +23,8 @@ require (
 	golang.org/x/oauth2 v0.24.0
 	golang.org/x/sync v0.10.0
 	golang.org/x/vuln v1.1.3
-	google.golang.org/api v0.210.0
-	google.golang.org/grpc v1.69.0
+	google.golang.org/api v0.213.0
+	google.golang.org/grpc v1.69.2
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.5.1
 	k8s.io/api v0.32.0
@@ -49,9 +49,9 @@ require (
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
-	cloud.google.com/go/auth v0.12.1 // indirect
+	cloud.google.com/go/auth v0.13.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
-	cloud.google.com/go/compute/metadata v0.5.2 // indirect
+	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
