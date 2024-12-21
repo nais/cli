@@ -93,13 +93,22 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 
 	var clusters []k8sCluster
 	for _, cluster := range response.Clusters {
+		// Skip legacy clusters
+		if project.Tenant == "nav" && slices.Contains([]string{"dev-gcp"}, cluster.Name) {
+			continue
+		}
+
 		name := cluster.Name
 		if cluster.Name == "knada-gke" {
 			name = "knada"
 		}
 
+		if project.Tenant == "nav" && cluster.Name == "nais-dev" {
+			name = "dev-gcp"
+		}
+
 		kind := project.Kind
-		if slices.Contains([]string{"dev-gcp", "prod-gcp", "ci-gcp"}, name) {
+		if slices.Contains([]string{"prod-gcp", "ci-gcp"}, name) {
 			kind = kindLegacy
 		}
 
