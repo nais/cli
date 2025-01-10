@@ -52,7 +52,9 @@ func Run() {
 	if len(os.Args) > 1 {
 		if !isCommand(os.Args[1], app.Commands) {
 			binaryName := "nais-" + os.Args[1]
-			if err := runOtherBin(binaryName, os.Args[2:]); err != nil {
+			if err := runOtherBin(binaryName, os.Args[2:]); err == nil {
+				os.Exit(0)
+
 			}
 		}
 	}
