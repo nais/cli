@@ -49,6 +49,11 @@ func Run() {
 
 	m.CollectCommandHistogram(app.Commands)
 
+	// first, before running the cli propper we check if the argv[1] contains a
+	// thing that is named nais-argv[1]. if so, we run that with the rest of the
+	// argument string and then exit.
+	// This gives us and our users a nice way of extending the cli by just shipping other
+	// binaries. this is spiritually what git and others do.
 	if len(os.Args) > 1 {
 		if !isCommand(os.Args[1], app.Commands) {
 			binaryName := "nais-" + os.Args[1]
