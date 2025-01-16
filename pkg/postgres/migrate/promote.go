@@ -60,7 +60,7 @@ The database will be unavailable for a short period of time while the promotion 
 Once you are satisfied that everything works as expected, you must perform the final finalize step:`)
 	ui.CmdStyle.Printfln("\tnais postgres migrate finalize %s %s", m.cfg.AppName, m.cfg.Target.InstanceName)
 	pterm.Println()
-	pterm.Info.Println("You must update your manifests to use the new database instance:")
+	pterm.Info.Println("After completion of the finalize step, you must update your manifests to use the new database instance:")
 	diskSizeLine := ""
 	m.cfg.Target.DiskSize.Do(func(diskSize int) {
 		diskSizeLine = fmt.Sprintf("diskSize: %d", diskSize)
