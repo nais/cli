@@ -32,6 +32,11 @@ This operation is only required to run once for each postgresql instance.`,
 				Name:    "namespace",
 				Aliases: []string{"n"},
 			},
+			&cli.StringFlag{
+				Name:  "schema",
+				Value: "public",
+				Usage: "Schema to revoke access from",
+			},
 		},
 		Before: func(context *cli.Context) error {
 			if context.Args().Len() < 1 {
@@ -46,6 +51,7 @@ This operation is only required to run once for each postgresql instance.`,
 
 			namespace := context.String("namespace")
 			cluster := context.String("context")
+			schema := context.String("schema")
 
 			fmt.Println(context.Command.Description)
 
@@ -56,7 +62,7 @@ This operation is only required to run once for each postgresql instance.`,
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.RevokeAccess(context.Context, appName, namespace, cluster)
+			return postgres.RevokeAccess(context.Context, appName, namespace, cluster, schema)
 		},
 	}
 }
