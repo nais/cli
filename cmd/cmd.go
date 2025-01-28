@@ -59,7 +59,6 @@ func Run() {
 			binaryName := "nais-" + os.Args[1]
 			if err := runOtherBin(binaryName, os.Args[2:]); err == nil {
 				os.Exit(0)
-
 			}
 		}
 	}
