@@ -28,6 +28,7 @@ jobs:
       - set-version
     runs-on: ubuntu-latest
     permissions:
+      checks: write
       pull-requests: write
     steps:
       - name: Checkout latest code
