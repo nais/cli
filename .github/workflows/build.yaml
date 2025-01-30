@@ -27,6 +27,8 @@ jobs:
     needs:
       - set-version
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
