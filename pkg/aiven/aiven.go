@@ -134,9 +134,6 @@ func validateNamespace(ctx context.Context, client ctrl.Client, name string) err
 		return fmt.Errorf("get namespace: %w", err)
 	}
 
-	if namespace.GetLabels()["shared"] == "true" {
-		return fmt.Errorf("shared namespace is not allowed: %s", name)
-	}
 	return nil
 }
 

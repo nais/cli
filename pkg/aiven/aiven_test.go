@@ -119,26 +119,6 @@ func TestGenerateAivenApplicationUpdated_HasOwnerReference(t *testing.T) {
 	assert.EqualError(t, err, "create/update: username 'user' is owned by another resource; overwrite is not allowed")
 }
 
-func TestValidateNamespaceShared(t *testing.T) {
-	ctx := context.Background()
-	namespaceName := "default"
-
-	namespace := &v1.Namespace{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Namespace",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   namespaceName,
-			Labels: map[string]string{"shared": "true"},
-		},
-	}
-
-	fakeClient := buildWithScheme(namespace).Build()
-	err := validateNamespace(ctx, fakeClient, namespaceName)
-	assert.EqualError(t, err, "shared namespace is not allowed: default")
-}
-
 func TestValidNamespace(t *testing.T) {
 	ctx := context.Background()
 	namespaceName := "team-namespace"
