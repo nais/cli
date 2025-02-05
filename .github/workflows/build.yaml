@@ -139,7 +139,9 @@ jobs:
           echo "Version ${VERSION} was released, adding to PPA"
 
           # Fetch latest deb
-          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}.deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}_arm64.deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}_amd64.deb
 
           # Upload to GAR
-          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}.deb --location europe-north1
+          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}_arm64.deb --location europe-north1
+          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}_amd64.deb --location europe-north1
