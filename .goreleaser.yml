@@ -68,11 +68,11 @@ brews:
 
 nfpms:
   - package_name: nais
-    vendor: NAV / nais team
     file_name_template: "{{ .PackageName }}_{{ .Version }}_{{ .Arch }}"
+    vendor: Nav / Nais team
     homepage: "https://github.com/nais/cli"
-    maintainer: NAV / nais team
-    description: "Command-line interface for NAIS"
+    maintainer: Nav / Nais team
+    description: "Command-line interface for Nais"
     license: MIT
     formats:
       - deb
