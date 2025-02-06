@@ -8,6 +8,7 @@ import (
 
 func Command() *cli.Command {
 	commands := []*cli.Command{
+		auditCommand(),
 		grantCommand(),
 		migratecmd.Command(),
 		passwordCommand(),
