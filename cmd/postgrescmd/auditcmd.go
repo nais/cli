@@ -10,7 +10,7 @@ import (
 
 func auditCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "audit",
+		Name:        "enable-audit",
 		Usage:       "Enable audit extension in Postgres database",
 		Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
 		ArgsUsage:   "appname",
