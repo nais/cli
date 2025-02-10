@@ -2,10 +2,9 @@ package aiven_services
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
-	"github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
+	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
 type OpenSearchAccess int64
@@ -65,5 +64,5 @@ func (o *OpenSearch) Generate(generator SecretGenerator) error {
 }
 
 func (o *OpenSearch) Is(other Service) bool {
-	return reflect.TypeOf(other) == reflect.TypeOf(o)
+	return o.Name() == other.Name()
 }
