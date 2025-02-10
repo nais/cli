@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"log"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -152,6 +153,8 @@ func askForType(sourceType string) func() option.Option[string] {
 	if len(options) == 0 {
 		return func() option.Option[string] { return option.None[string]() }
 	}
+	slices.Sort(options)
+	slices.Reverse(options)
 	return askForOption("Select a type for the target instance", sourceType, options, stringCaster, nil)
 }
 
