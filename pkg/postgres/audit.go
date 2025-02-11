@@ -36,7 +36,7 @@ func enableAuditAsAppUser(ctx context.Context, appName, namespace, cluster strin
 
 	defer db.Close()
 
-	enableAudit := fmt.Sprintf(`CREATE EXTENSION IF NOT EXISTS pgaudit; ALTER USER %s IN DATABASE %s SET pgaudit.log TO 'none';`, connectionInfo.username, connectionInfo.dbName)
+	enableAudit := fmt.Sprintf(`CREATE EXTENSION IF NOT EXISTS pgaudit; ALTER USER "%s" IN DATABASE "%s" SET pgaudit.log TO 'none';`, connectionInfo.username, connectionInfo.dbName)
 	_, err = db.ExecContext(ctx, enableAudit)
 	if err != nil {
 		return fmt.Errorf("enableAuditAsAppUser: error enabling pgaudit: %w", err)
