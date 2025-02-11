@@ -8,8 +8,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// this is used for all privileges and select, as it covers both cases
-
 func EnableAuditLogging(ctx context.Context, appName, cluster, namespace string) error {
 	return enableAuditAsAppUser(ctx, appName, namespace, cluster)
 }
@@ -30,8 +28,6 @@ func enableAuditAsAppUser(ctx context.Context, appName, namespace, cluster strin
 		return fmt.Errorf("required flags missing for instance: %v", err)
 	}
 
-	enablePGAudit := fmt.Sprintf("CREATE EXTENSION pgaudit; ALTER USER %s IN DATABASE %s SET pgaudit.log TO 'none';", connectionInfo.username, connectionInfo.dbName)
-
 	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
 		return err
@@ -39,7 +35,8 @@ func enableAuditAsAppUser(ctx context.Context, appName, namespace, cluster strin
 
 	defer db.Close()
 
-	_, err = db.ExecContext(ctx, enablePGAudit)
+	enableAudit := fmt.Sprintf(`CREATE EXTENSION IF NOT EXISTS pgaudit; ALTER USER %s IN DATABASE %s SET pgaudit.log TO 'none';`, connectionInfo.username, connectionInfo.dbName)
+	_, err = db.ExecContext(ctx, enableAudit)
 	if err != nil {
 		return fmt.Errorf("enableAuditAsAppUser: error enabling pgaudit: %w", err)
 	}
