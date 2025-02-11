@@ -51,10 +51,16 @@ func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namesp
 		return fmt.Errorf("secret is must have at least one of these annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
-	err = secret.generateConfig()
-	if err != nil {
+	if err := secret.generateConfig(); err != nil {
 		return fmt.Errorf("generating config: %w", err)
 	}
+
+	if secret.Service.Is(&aiven_services.OpenSearch{}) {
+		data := secret.Secret.Data
+		log.Default().Printf("OpenSearch dashboard: https://%s (username: %s, password: %s)",
+			data[aiven_config.OpenSearchHostKey], data[aiven_config.OpenSearchUsernameKey], data[aiven_config.OpenSearchPasswordKey])
+	}
+
 	log.Default().Printf("configurations from secret '%s' found here:\n%s", existingSecret.Name, dest)
 	return nil
 }

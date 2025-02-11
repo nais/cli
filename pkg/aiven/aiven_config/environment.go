@@ -12,6 +12,7 @@ import (
 const (
 	KafkaEnvName          = "kafka-secret.env"
 	OpenSearchEnvName     = "opensearch-secret.env"
+	OpenSearchHostKey     = "OPEN_SEARCH_HOST"
 	OpenSearchURIKey      = "OPEN_SEARCH_URI"
 	OpenSearchUsernameKey = "OPEN_SEARCH_USERNAME"
 	OpenSearchPasswordKey = "OPEN_SEARCH_PASSWORD"
