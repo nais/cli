@@ -19,14 +19,14 @@ func TidyLocalSecrets() error {
 func tidy(folders []string) error {
 	if len(folders) > 0 {
 		for _, folder := range folders {
-			fmt.Printf("deleting: %s\n", folder)
+			fmt.Printf("Deleting: %s\n", folder)
 			err := os.RemoveAll(folder)
 			if err != nil {
 				return fmt.Errorf("failed deleting %v: %v", folder, err)
 			}
 		}
 	} else {
-		fmt.Println("all tidy")
+		fmt.Println("All tidy")
 	}
 	return nil
 }

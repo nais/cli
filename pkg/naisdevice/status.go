@@ -57,7 +57,7 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 		if err != nil {
 			return fmt.Errorf("error while receiving status: %w", err)
 		}
-		fmt.Printf("state: %s\n", status.ConnectionState)
+		fmt.Printf("State: %s\n", status.ConnectionState)
 		if status.ConnectionState == wantedAgentState {
 			return nil
 		}
@@ -105,7 +105,7 @@ func gatewayPrivileged(gw *pb.Gateway) string {
 }
 
 func PrintVerboseStatus(status *pb.AgentStatus) {
-	fmt.Printf("naisdevice status: %s\n", status.ConnectionStateString())
+	fmt.Printf("Naisdevice status: %s\n", status.ConnectionStateString())
 	if status.NewVersionAvailable {
 		fmt.Printf("\nNew version of naisdevice available!\nSee https://doc.nais.io/device/update for upgrade instructions.\n")
 	}

@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -98,7 +98,7 @@ func intersection(list1, list2 []string) []string {
 func CollectCommandHistogram(commands []*cli.Command) {
 	doNotTrack := os.Getenv("DO_NOT_TRACK")
 	if doNotTrack == "1" {
-		log.Default().Println("DO_NOT_TRACK is set, not collecting metrics")
+		fmt.Println("DO_NOT_TRACK is set, not collecting metrics")
 	}
 
 	ctx := context.Background()

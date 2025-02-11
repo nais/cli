@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -14,9 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
-
 	"cloud.google.com/go/cloudsqlconn"
+	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 )
 
 func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool) error {
@@ -113,7 +111,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		<-ctx.Done()
 		// TODO: Make this not panic listener.Accept()
 		if err := listener.Close(); err != nil {
-			log.Println("error closing listener", err)
+			fmt.Println("error closing listener", err)
 		}
 	}()
 
@@ -127,10 +125,10 @@ OUTER:
 				break OUTER
 			default:
 			}
-			log.Println("error accepting connection", err)
+			fmt.Println("error accepting connection", err)
 			continue
 		}
-		log.Println("New connection", conn.RemoteAddr())
+		fmt.Println("New connection", conn.RemoteAddr())
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -141,13 +139,13 @@ OUTER:
 			go func() {
 				<-ctx.Done()
 				if err := conn.Close(); err != nil {
-					log.Println("error closing connection", err)
+					fmt.Println("error closing connection", err)
 				}
 			}()
 
 			conn2, err := d.Dial(ctx, connectionName)
 			if err != nil {
-				log.Println("error dialing connection", err)
+				fmt.Println("error dialing connection", err)
 				return
 			}
 			defer conn2.Close()
@@ -156,7 +154,7 @@ OUTER:
 			go copy(closer, conn2, conn)
 			go copy(closer, conn, conn2)
 			<-closer
-			log.Println("Connection complete", conn.RemoteAddr())
+			fmt.Println("Connection complete", conn.RemoteAddr())
 		}()
 	}
 
@@ -178,7 +176,7 @@ func checkPostgresqlPassword() error {
 
 	dirname, err := os.UserHomeDir()
 	if err != nil {
-		log.Println("could not get home directory, can not check for .pgpass file")
+		fmt.Println("could not get home directory, can not check for .pgpass file")
 		return nil
 	}
 

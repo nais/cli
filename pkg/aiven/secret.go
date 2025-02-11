@@ -3,7 +3,6 @@ package aiven
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/nais/cli/pkg/aiven/aiven_config"
@@ -57,11 +56,11 @@ func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namesp
 
 	if secret.Service.Is(&aiven_services.OpenSearch{}) {
 		data := secret.Secret.Data
-		log.Default().Printf("OpenSearch dashboard: https://%s (username: %s, password: %s)",
+		fmt.Printf("OpenSearch dashboard: https://%s (username: %s, password: %s)",
 			data[aiven_config.OpenSearchHostKey], data[aiven_config.OpenSearchUsernameKey], data[aiven_config.OpenSearchPasswordKey])
 	}
 
-	log.Default().Printf("configurations from secret '%s' found here:\n%s", existingSecret.Name, dest)
+	fmt.Printf("Configurations from secret '%s' found here:\n%s", existingSecret.Name, dest)
 	return nil
 }
 
@@ -113,7 +112,7 @@ func (s *Secret) CreateOpenSearchConfigs() error {
 }
 
 func (s *Secret) generateConfig() error {
-	log.Default().Printf("generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
+	fmt.Printf("Generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
 	return s.Service.Generate(s)
 }
 

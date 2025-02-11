@@ -2,7 +2,6 @@ package devicecmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/mitchellh/go-ps"
 	"github.com/nais/cli/pkg/doctor"
@@ -59,7 +58,7 @@ func kolideWorker(checkName string) doctor.Worker {
 func isRunning(desiredProc string) (bool, error) {
 	runningProcs, err := ps.Processes()
 	if err != nil {
-		log.Printf("process listing failed: %v\n", err)
+		fmt.Printf("Process listing failed: %v\n", err)
 		return false, err
 	}
 	for _, runningProc := range runningProcs {

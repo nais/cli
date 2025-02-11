@@ -6,11 +6,10 @@ import (
 	"log/slog"
 	"os"
 
-	"k8s.io/client-go/kubernetes"
-
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"

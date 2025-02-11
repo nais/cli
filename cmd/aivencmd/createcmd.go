@@ -124,7 +124,7 @@ func createCommand() *cli.Command {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 			}
 
-			fmt.Printf("use the following command to generate configuration secrets:\nnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			fmt.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 
 			return nil
 		},

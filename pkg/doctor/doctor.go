@@ -28,7 +28,7 @@ type Examination struct {
 }
 
 func (e Examination) Run() map[string]CheckReport {
-	fmt.Printf("running %d check(s)\n", len(e.Checks))
+	fmt.Printf("Running %d check(s)\n", len(e.Checks))
 	resultQueue := make(chan CheckReport, len(e.Checks))
 	results := make(map[string]CheckReport)
 	for _, check := range e.Checks {

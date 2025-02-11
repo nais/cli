@@ -3,7 +3,6 @@ package aiven
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -110,7 +109,7 @@ func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 			if err != nil {
 				return err
 			}
-			log.Default().Printf("AivenApplication: '%v' created.", aivenApp.Name)
+			fmt.Printf("AivenApplication: '%v' created.", aivenApp.Name)
 		}
 	} else {
 		if len(existingAivenApp.GetObjectMeta().GetOwnerReferences()) > 0 {
@@ -122,7 +121,7 @@ func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 		if err != nil {
 			return err
 		}
-		log.Default().Printf("AivenApplication: '%v' updated.", aivenApp.Name)
+		fmt.Printf("AivenApplication: '%v' updated.", aivenApp.Name)
 	}
 	return nil
 }

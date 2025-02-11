@@ -1,19 +1,18 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 
-	"github.com/nais/cli/cmd/debugcmd"
-
 	"github.com/nais/cli/cmd/aivencmd"
+	"github.com/nais/cli/cmd/debugcmd"
 	"github.com/nais/cli/cmd/devicecmd"
 	"github.com/nais/cli/cmd/kubeconfigcmd"
 	"github.com/nais/cli/cmd/postgrescmd"
 	"github.com/nais/cli/cmd/rootcmd"
 	"github.com/nais/cli/cmd/validatecmd"
-	m "github.com/nais/cli/pkg/metrics"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/urfave/cli/v2"
 )
 
@@ -47,7 +46,7 @@ func Run() {
 		Commands:             commands(),
 	}
 
-	m.CollectCommandHistogram(app.Commands)
+	metrics.CollectCommandHistogram(app.Commands)
 
 	// first, before running the cli propper we check if the argv[1] contains a
 	// thing that is named nais-argv[1]. if so, we run that with the rest of the
@@ -65,7 +64,8 @@ func Run() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
 
