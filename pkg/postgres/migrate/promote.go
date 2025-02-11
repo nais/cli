@@ -33,6 +33,7 @@ The database will be unavailable for a short period of time while the promotion 
 	label := m.kubectlLabelSelector(CommandPromote)
 
 	if m.wait {
+		printWaitingForJobHeader()
 		err = m.waitForJobCompletion(ctx, jobName, CommandPromote)
 		if err != nil {
 			return err

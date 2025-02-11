@@ -532,6 +532,12 @@ func confirmContinue() error {
 	return nil
 }
 
+func printWaitingForJobHeader() {
+	pterm.Println("Several of the operations done by the migrator are eventually consistent, and may fail a few times before succeeding.")
+	pterm.Println("This leads to some log messages about errors or failures, but the operations will typically be retried and eventually succeed.")
+	pterm.Println("If there is an unrecoverable error, the migrator will exit with an error message.")
+}
+
 func parseLogLine(line string) (logEntry, error) {
 	var le logEntry
 	err := json.Unmarshal([]byte(line), &le)

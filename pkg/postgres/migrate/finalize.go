@@ -28,6 +28,7 @@ Only proceed if you are sure that the migration was successful and that your app
 		return err
 	}
 
+	printWaitingForJobHeader()
 	err = m.waitForJobCompletion(ctx, jobName, CommandFinalize)
 	if err != nil {
 		return err

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -60,7 +61,6 @@ func validateAuditFlags(ctx context.Context, info *DBInfo) error {
 		return fmt.Errorf("validateAuditFlags: %v", err)
 	}
 	return nil
-
 }
 
 func validateRequiredFlags(dbFlags map[string]string, requiredFlags []string) error {

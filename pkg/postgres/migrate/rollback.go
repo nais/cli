@@ -25,6 +25,7 @@ func (m *Migrator) Rollback(ctx context.Context) error {
 		return err
 	}
 
+	printWaitingForJobHeader()
 	err = m.waitForJobCompletion(ctx, jobName, CommandRollback)
 	if err != nil {
 		return err

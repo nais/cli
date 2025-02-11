@@ -96,6 +96,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	label := m.kubectlLabelSelector(CommandSetup)
 
 	if m.wait {
+		printWaitingForJobHeader()
 		err = m.waitForJobCompletion(ctx, jobName, CommandSetup)
 		if err != nil {
 			return err
