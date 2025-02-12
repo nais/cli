@@ -7,34 +7,17 @@ import (
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
-type KafkaPool int64
-
-const (
-	NavDev KafkaPool = iota
-	NavProd
-	NavInfrastructure
-	DevNaisDev
-)
-
-var KafkaPools = []string{"nav-dev", "nav-prod", "nav-infrastructure", "dev-nais-dev"}
+type KafkaPool string
 
 func KafkaPoolFromString(pool string) (KafkaPool, error) {
-	switch strings.ToLower(pool) {
-	case "nav-dev":
-		return NavDev, nil
-	case "nav-prod":
-		return NavProd, nil
-	case "nav-infrastructure":
-		return NavInfrastructure, nil
-	case "dev-nais-dev":
-		return DevNaisDev, nil
-	default:
-		return -1, fmt.Errorf("unknown pool: %v", pool)
+	if !strings.Contains(pool, "-") {
+		return "", fmt.Errorf("invalid pool: %v", pool)
 	}
+	return KafkaPool(pool), nil
 }
 
 func (p KafkaPool) String() string {
-	return KafkaPools[p]
+	return string(p)
 }
 
 type Kafka struct {

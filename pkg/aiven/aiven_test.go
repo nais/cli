@@ -21,6 +21,7 @@ const (
 	team       = "team"
 	secretName = "secret-name"
 	expiry     = 1
+	pool       = "nav-dev"
 )
 
 func buildWithScheme(objects ...runtime.Object) *fake.ClientBuilder {
@@ -42,14 +43,14 @@ func TestGenerateAivenApplicationCreated(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", aiven_services.NavDev, aiven_services.Read, expiry)
+	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
 	assert.Equal(t, team, currentAivenApp.Namespace, "Namespace has the same value")
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
-	assert.Equal(t, aiven_services.NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
+	assert.Equal(t, pool, currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
 	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
@@ -74,14 +75,14 @@ func TestGenerateAivenApplicationUpdated(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", aiven_services.NavDev, aiven_services.Read, expiry)
+	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
 	assert.Equal(t, team, currentAivenApp.Namespace, "Namespace has the same value")
 	assert.Equal(t, secretName, currentAivenApp.Spec.SecretName, "SecretName has the same value")
-	assert.Equal(t, aiven_services.NavDev.String(), currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
+	assert.Equal(t, pool, currentAivenApp.Spec.Kafka.Pool, "Pool has the same value")
 
 	assert.True(t, currentAivenApp.Spec.ExpiresAt.After(time.Now()), "Parsed date is still valid")
 }
@@ -114,7 +115,7 @@ func TestGenerateAivenApplicationUpdated_HasOwnerReference(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", aiven_services.NavDev, aiven_services.Read, expiry)
+	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	_, err := aiven.GenerateApplication()
 	assert.EqualError(t, err, "create/update: username 'user' is owned by another resource; overwrite is not allowed")
 }

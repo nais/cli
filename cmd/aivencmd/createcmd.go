@@ -108,7 +108,7 @@ func createCommand() *cli.Command {
 			pool, err := aiven_services.KafkaPoolFromString(context.String("pool"))
 			if err != nil {
 				metrics.AddOne("aiven_create_pool_values_error_total")
-				return fmt.Errorf("valid values for pool: %v", strings.Join(aiven_services.KafkaPools, ", "))
+				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
 			}
 
 			access, err := aiven_services.OpenSearchAccessFromString(context.String("access"))
