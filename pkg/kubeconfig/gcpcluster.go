@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
-	"strings"
 
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
@@ -16,7 +15,6 @@ type k8sCluster struct {
 	Endpoint    string
 	Location    string
 	CA          string
-	Tenant      string
 	User        *onpremUser
 	Kind        Kind
 	Environment string
@@ -29,26 +27,22 @@ type onpremUser struct {
 	UserName string `json:"userName"`
 }
 
-func getClustersFromGCP(ctx context.Context, tenant string, options filterOptions) ([]k8sCluster, error) {
-	projects, err := getProjects(ctx, tenant, options)
+func getClustersFromGCP(ctx context.Context, options filterOptions) ([]k8sCluster, error) {
+	projects, err := getProjects(ctx, options)
 	if err != nil {
 		return nil, err
+	}
+
+	if options.verbose {
+		fmt.Printf("Found %v projects:\n", len(projects))
+		for _, project := range projects {
+			fmt.Println(project)
+		}
 	}
 
 	clusters, err := getClusters(ctx, projects, options)
 	if err != nil {
 		return nil, err
-	}
-
-	if options.prefixWithTenant {
-		for i, cluster := range clusters {
-			if options.skipNAVPrefix && cluster.Tenant == "nav" {
-				continue
-			}
-
-			cluster.Name = cluster.Tenant + "-" + strings.TrimPrefix(cluster.Name, "nais-")
-			clusters[i] = cluster
-		}
 	}
 
 	return clusters, nil
@@ -117,7 +111,6 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 			Endpoint:    "https://" + cluster.Endpoint,
 			Location:    cluster.Location,
 			CA:          cluster.MasterAuth.ClusterCaCertificate,
-			Tenant:      project.Tenant,
 			Kind:        kind,
 			Environment: project.Name,
 		})
@@ -159,7 +152,6 @@ func getOnpremClusters(ctx context.Context, project project) ([]k8sCluster, erro
 		clusters = append(clusters, k8sCluster{
 			Name:     project.Name,
 			Endpoint: config.URL,
-			Tenant:   "nav",
 			Kind:     kindOnprem,
 			User: &onpremUser{
 				ServerID: config.ServerID,

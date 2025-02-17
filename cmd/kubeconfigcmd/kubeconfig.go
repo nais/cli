@@ -100,12 +100,7 @@ gcloud auth login --update-adc`,
 				return err
 			}
 
-			tenant, err := getTenantFromEmail(email)
-			if err != nil {
-				return err
-			}
-
-			return kubeconfig.CreateKubeconfig(context.Context, email, tenant,
+			return kubeconfig.CreateKubeconfig(context.Context, email,
 				kubeconfig.WithOverwriteData(overwrite),
 				kubeconfig.WithFromScratch(clear),
 				kubeconfig.WithExcludeClusters(exclude),
@@ -113,17 +108,4 @@ gcloud auth login --update-adc`,
 				kubeconfig.WithVerboseLogging(verbose))
 		},
 	}
-}
-
-func getTenantFromEmail(email string) (string, error) {
-	_, after, found := strings.Cut(email, "@")
-
-	if !found {
-		metrics.AddOne("kubeconfig_tenant_extract_error_total")
-		return "", fmt.Errorf("could not extract tenant from %s", email)
-	}
-
-	before, _, _ := strings.Cut(after, ".")
-
-	return before, nil
 }

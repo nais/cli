@@ -6,9 +6,7 @@ type filterOptions struct {
 	includeKnada      bool
 	includeManagement bool
 	includeOnprem     bool
-	prefixWithTenant  bool
 	overwrite         bool
-	skipNAVPrefix     bool
 	verbose           bool
 	excludeClusters   []string
 }
@@ -51,18 +49,6 @@ func WithExcludeClusters(exclude []string) FilterOption {
 	}
 }
 
-func WithNAVPrefixSkipped(enabled bool) FilterOption {
-	return func(options *filterOptions) {
-		options.skipNAVPrefix = enabled
-	}
-}
-
-func WithPrefixedTenant(enbaled bool) FilterOption {
-	return func(options *filterOptions) {
-		options.prefixWithTenant = enbaled
-	}
-}
-
 func WithOverwriteData(enabled bool) FilterOption {
 	return func(options *filterOptions) {
 		options.overwrite = enabled
@@ -75,6 +61,4 @@ func WithVerboseLogging(enabled bool) FilterOption {
 	}
 }
 
-var DefaultFilterOptions = []FilterOption{
-	WithNAVPrefixSkipped(true),
-}
+var DefaultFilterOptions = []FilterOption{}

@@ -13,7 +13,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email, tenant string, opts ...FilterOption) error {
+func CreateKubeconfig(ctx context.Context, email string, opts ...FilterOption) error {
 	var options filterOptions
 	for _, opt := range DefaultFilterOptions {
 		opt(&options)
@@ -40,7 +40,7 @@ func CreateKubeconfig(ctx context.Context, email, tenant string, opts ...FilterO
 	}
 
 	fmt.Println("Retreiving clusters")
-	clusters, err := getClustersFromGCP(ctx, tenant, options)
+	clusters, err := getClustersFromGCP(ctx, options)
 	if err != nil {
 		return err
 	}
