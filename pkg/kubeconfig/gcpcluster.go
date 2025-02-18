@@ -33,13 +33,6 @@ func getClustersFromGCP(ctx context.Context, options filterOptions) ([]k8sCluste
 		return nil, err
 	}
 
-	if options.verbose {
-		fmt.Printf("Found %v projects:\n", len(projects))
-		for _, project := range projects {
-			fmt.Println(project)
-		}
-	}
-
 	clusters, err := getClusters(ctx, projects, options)
 	if err != nil {
 		return nil, err
