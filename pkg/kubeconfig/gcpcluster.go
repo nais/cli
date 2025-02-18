@@ -45,7 +45,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions)
 	var clusters []k8sCluster
 	for _, project := range projects {
 		if options.verbose {
-			fmt.Println("Getting clusters for", project.ID)
+			fmt.Printf("Getting clusters for %s (%s, %s)\n", project.Name, project.ID, project.Tenant)
 		}
 		var cluster []k8sCluster
 		var err error

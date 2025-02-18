@@ -58,9 +58,10 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 
 		for _, p := range response.Projects {
 			projects = append(projects, project{
-				ID:   p.ProjectId,
-				Name: p.Labels["environment"],
-				Kind: parseKind(p.Labels["kind"]),
+				ID:     p.ProjectId,
+				Tenant: p.Labels["tenant"],
+				Name:   p.Labels["environment"],
+				Kind:   parseKind(p.Labels["kind"]),
 			})
 		}
 		if response.NextPageToken == "" {
@@ -71,7 +72,7 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 	if options.verbose {
 		fmt.Printf("Projects:\n")
 		for _, p := range projects {
-			fmt.Printf("%s\t%s\t%v\n", p.ID, p.Name, p.Kind)
+			fmt.Printf("%s\t%s\t%s\t%v\n", p.ID, p.Tenant, p.Name, p.Kind)
 		}
 	}
 
