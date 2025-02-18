@@ -34,8 +34,6 @@ func getClusterServerForLegacyGCP(name string) string {
 	switch name {
 	case "prod-gcp":
 		return "https://10.255.240.6"
-	case "dev-gcp":
-		return "https://10.255.240.5"
 	case "ci-gcp":
 		return "https://10.255.240.7"
 	default:
