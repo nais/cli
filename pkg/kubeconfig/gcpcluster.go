@@ -89,8 +89,12 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 			name = "dev-gcp"
 		}
 
+		if project.Tenant == "nav" && cluster.Name == "nais-prod" {
+			name = "prod-gcp"
+		}
+
 		kind := project.Kind
-		if slices.Contains([]string{"prod-gcp", "ci-gcp"}, name) {
+		if slices.Contains([]string{"ci-gcp"}, name) {
 			kind = kindLegacy
 		}
 
