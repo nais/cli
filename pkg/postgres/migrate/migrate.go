@@ -109,7 +109,11 @@ func (m *Migrator) Delete(ctx context.Context, obj ctrl.Object) error {
 		pterm.Printf("Dry run: Skipping deletion of %s: %s\n", v.Type().Name(), obj.GetName())
 		return nil
 	}
-	return m.client.Delete(ctx, obj)
+
+	opts := []ctrl.DeleteOption{
+		ctrl.PropagationPolicy(metav1.DeletePropagationForeground),
+	}
+	return m.client.Delete(ctx, obj, opts...)
 }
 
 func (m *Migrator) doNaisJob(ctx context.Context, cfgMap *corev1.ConfigMap, command Command) (string, error) {
@@ -397,7 +401,7 @@ func createObject[T interface {
 	ctrl.Object
 	*P
 }, P any](ctx context.Context, m *Migrator, owner metav1.Object, obj T, Command Command) error {
-	err := controllerutil.SetOwnerReference(owner, obj, m.client.Scheme())
+	err := controllerutil.SetOwnerReference(owner, obj, m.client.Scheme(), controllerutil.WithBlockOwnerDeletion(true))
 	if err != nil {
 		return fmt.Errorf("failed to set owner reference: %w", err)
 	}
