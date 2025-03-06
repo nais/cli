@@ -8,6 +8,7 @@ import (
 	"github.com/nais/cli/pkg/option"
 	"github.com/nais/cli/pkg/postgres/migrate/config"
 	"github.com/nais/cli/pkg/postgres/migrate/ui"
+	"github.com/nais/liberator/pkg/namegen"
 	"github.com/pterm/pterm"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -92,7 +93,18 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return err
 	}
 
-	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s-%s?project=%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName, gcpProjectId)
+	// Make sure this logic is in sync with the corresponding logic in cloudsql-migrator...
+	migrationJobName := fmt.Sprintf("%s-%s", m.cfg.Source.InstanceName, m.cfg.Target.InstanceName)
+	maxlen := 60 // Google limit for migration job names
+	if len(migrationJobName) > maxlen {
+		var err error
+		migrationJobName, err = namegen.ShortName(migrationJobName, maxlen)
+		if err != nil {
+			return fmt.Errorf("failed to shorten migration job name: %w", err)
+		}
+	}
+
+	cloudConsoleUrl := fmt.Sprintf("https://console.cloud.google.com/dbmigration/migrations/locations/europe-north1/instances/%s?project=%s", migrationJobName, gcpProjectId)
 	label := m.kubectlLabelSelector(CommandSetup)
 
 	if m.wait {
