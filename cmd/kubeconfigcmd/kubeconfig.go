@@ -5,10 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nais/cli/pkg/metrics"
-
 	"github.com/nais/cli/pkg/gcp"
 	"github.com/nais/cli/pkg/kubeconfig"
+	"github.com/nais/cli/pkg/metrics"
 	"github.com/nais/cli/pkg/naisdevice"
 	"github.com/urfave/cli/v2"
 )
@@ -68,7 +67,7 @@ gcloud auth login --update-adc`,
 			},
 		},
 		Before: func(context *cli.Context) error {
-			err := gcp.ValidateUserLogin(context.Context, false)
+			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
 			if err != nil {
 				return err
 			}
@@ -90,9 +89,9 @@ gcloud auth login --update-adc`,
 			return nil
 		},
 		Action: func(context *cli.Context) error {
-			overwrite := context.Bool("overwrite")
 			clear := context.Bool("clear")
 			exclude := context.StringSlice("exclude")
+			overwrite := context.Bool("overwrite")
 			verbose := context.Bool("verbose")
 
 			email, err := gcp.GetActiveUserEmail(context.Context)

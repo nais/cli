@@ -23,7 +23,8 @@ func Command() *cli.Command {
 		Name:  "postgres",
 		Usage: "Command used for connecting to Postgres",
 		Before: func(context *cli.Context) error {
-			return gcp.ValidateUserLogin(context.Context, false)
+			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
+			return err
 		},
 		Subcommands: commands,
 	}

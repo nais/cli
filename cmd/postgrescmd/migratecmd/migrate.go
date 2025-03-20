@@ -21,7 +21,8 @@ func Command() *cli.Command {
 		Name:  "migrate",
 		Usage: "Command used for migrating to a new Postgres instance",
 		Before: func(context *cli.Context) error {
-			return gcp.ValidateUserLogin(context.Context, false)
+			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
+			return err
 		},
 		Subcommands: []*cli.Command{
 			setupCommand(),
