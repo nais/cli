@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"slices"
+	"strings"
 
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
@@ -54,7 +54,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions)
 		case kindOnprem:
 			cluster, err = getOnpremClusters(ctx, project)
 		default:
-			cluster, err = getGCPClusters(ctx, project)
+			cluster, err = getGCPClusters(ctx, project, options)
 		}
 
 		if err != nil {
@@ -66,7 +66,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions)
 	return clusters, nil
 }
 
-func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) {
+func getGCPClusters(ctx context.Context, project project, options filterOptions) ([]k8sCluster, error) {
 	svc, err := container.NewService(ctx)
 	if err != nil {
 		return nil, err
@@ -82,12 +82,21 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 	for _, cluster := range response.Clusters {
 		name := cluster.Name
 
-		if project.Tenant == "nav" && cluster.Name == "nais-dev" {
-			name = "dev-gcp"
+		if project.Tenant == "nav" {
+			switch cluster.Name {
+			case "nais-dev":
+				name = "dev-gcp"
+			case "nais-prod":
+				name = "prod-gcp"
+			}
 		}
 
-		if project.Tenant == "nav" && cluster.Name == "nais-prod" {
-			name = "prod-gcp"
+		if options.prefixWithTenants {
+			name = project.Tenant + "-" + strings.ReplaceAll(cluster.Name, "nais-", "")
+
+			if cluster.Name == "nais-io" {
+				name = "nais-io" // ReplaceAll vil fjerne 'nais-' fra 'nais-io'
+			}
 		}
 
 		clusters = append(clusters, k8sCluster{

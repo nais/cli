@@ -54,6 +54,13 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 		}
 
 		for _, p := range response.Projects {
+			if p.State != "ACTIVE" {
+				// Only check active projects. When a project is deleted,
+				// it is marked as DELETING for a while before it is removed.
+				// This results in a 403 when trying to list clusters.
+				continue
+			}
+
 			projects = append(projects, project{
 				ID:     p.ProjectId,
 				Tenant: p.Labels["tenant"],
