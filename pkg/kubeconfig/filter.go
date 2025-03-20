@@ -21,19 +21,19 @@ func WithFromScratch(enabled bool) FilterOption {
 
 func WithCiClusters(include bool) FilterOption {
 	return func(options *filterOptions) {
-		options.includeOnprem = include
+		options.includeCi = include
 	}
 }
 
 func WithKnadaCluster(include bool) FilterOption {
 	return func(options *filterOptions) {
-		options.includeOnprem = include
+		options.includeKnada = include
 	}
 }
 
 func WithManagementClusters(include bool) FilterOption {
 	return func(options *filterOptions) {
-		options.includeOnprem = include
+		options.includeManagement = include
 	}
 }
 
