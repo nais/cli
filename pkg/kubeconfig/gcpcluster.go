@@ -93,17 +93,12 @@ func getGCPClusters(ctx context.Context, project project) ([]k8sCluster, error) 
 			name = "prod-gcp"
 		}
 
-		kind := project.Kind
-		if slices.Contains([]string{"ci-gcp"}, name) {
-			kind = kindLegacy
-		}
-
 		clusters = append(clusters, k8sCluster{
 			Name:        name,
 			Endpoint:    "https://" + cluster.Endpoint,
 			Location:    cluster.Location,
 			CA:          cluster.MasterAuth.ClusterCaCertificate,
-			Kind:        kind,
+			Kind:        project.Kind,
 			Environment: project.Name,
 		})
 	}
