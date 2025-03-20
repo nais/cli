@@ -6,7 +6,6 @@ type Kind int64
 
 const (
 	kindOnprem Kind = iota
-	kindKNADA
 	kindNAIS
 	kindLegacy
 	kindManagment
@@ -15,8 +14,6 @@ const (
 
 func parseKind(in string) Kind {
 	switch strings.ToLower(in) {
-	case "knada":
-		return kindKNADA
 	case "onprem":
 		return kindOnprem
 	case "nais":

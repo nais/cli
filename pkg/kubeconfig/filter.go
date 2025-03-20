@@ -3,7 +3,6 @@ package kubeconfig
 type filterOptions struct {
 	fromScratch       bool
 	includeCi         bool
-	includeKnada      bool
 	includeManagement bool
 	includeOnprem     bool
 	overwrite         bool
@@ -22,12 +21,6 @@ func WithFromScratch(enabled bool) FilterOption {
 func WithCiClusters(include bool) FilterOption {
 	return func(options *filterOptions) {
 		options.includeCi = include
-	}
-}
-
-func WithKnadaCluster(include bool) FilterOption {
-	return func(options *filterOptions) {
-		options.includeKnada = include
 	}
 }
 

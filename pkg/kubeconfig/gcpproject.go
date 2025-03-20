@@ -29,9 +29,6 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 	if options.includeOnprem {
 		filter += " OR labels.kind=onprem"
 	}
-	if options.includeKnada {
-		filter += " OR labels.kind=knada"
-	}
 	if options.includeManagement {
 		filter += " OR labels.kind=management"
 	}
