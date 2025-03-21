@@ -21,7 +21,7 @@ jobs:
         id: set-version
         run: |
           echo Faking a Semantic Version
-          echo "version=1.0.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
+          echo "version=1.3.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
 
   test:
     needs:
