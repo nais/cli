@@ -7,6 +7,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
+	"github.com/lestrrat-go/jwx/v2/jwt"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/container/v1"
 	"google.golang.org/api/option"
@@ -46,41 +47,29 @@ func Login(ctx context.Context) error {
 		fmt.Printf("Token: %v\n", tok)
 	}
 
-	// // Parse access token as jwt
-	// jwt, err := jwt.ParseString(tok.AccessToken, jwt.WithVerify(false))
-	// if err != nil {
-	// 	return fmt.Errorf("parse jwt: %w", err)
-	// }
+	idToken := tok.Extra("id_token").(string)
 
-	// fmt.Printf("JWT: %v\n", jwt)
+	// Parse access token as jwt
+	j, err := jwt.ParseString(idToken, jwt.WithVerify(false))
+	if err != nil {
+		return fmt.Errorf("parse jwt: %w", err)
+	}
+	orgID, ok := j.Get("urn:zitadel:iam:user:resourceowner:id")
+	if !ok {
+		return fmt.Errorf("missing claim 'urn:zitadel:iam:user:resourceowner:id' in jwt")
+	}
 
-	// gt, ok := jwt.Get("google.access_token")
-	// if !ok {
-	// 	return fmt.Errorf("google.access_token not found in jwt")
-	// }
-
-	// googleToken, ok := gt.(string)
-	// if !ok {
-	// 	return fmt.Errorf("google.access_token is not a string")
-	// }
-
-	// tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: googleToken})
-
-	/*
-		Workforce Identity
-	*/
 	stsClient, err := sts.NewService(ctx, option.WithoutAuthentication())
 	if err != nil {
 		return err
 	}
-
 	stsResp, err := stsClient.V1.Token(&sts.GoogleIdentityStsV1ExchangeTokenRequest{
-		Audience:           "//iam.googleapis.com/locations/global/workforcePools/zitadel-nais-io/providers/nais-io", // TODO: set provider ID from claim in jwt
+		Audience:           "//iam.googleapis.com/locations/global/workforcePools/zitadel-nais/providers/" + orgID.(string),
 		GrantType:          "urn:ietf:params:oauth:grant-type:token-exchange",
 		RequestedTokenType: "urn:ietf:params:oauth:token-type:access_token",
 		Scope:              "https://www.googleapis.com/auth/cloud-platform",
 		SubjectTokenType:   "urn:ietf:params:oauth:token-type:id_token",
-		SubjectToken:       tok.Extra("id_token").(string),
+		SubjectToken:       idToken,
 	}).Context(ctx).Do()
 	if err != nil {
 		return err
