@@ -14,7 +14,7 @@ import (
 )
 
 const zitadelDomain = "https://login-test.nais.io"
-const zitadelClientID = "312714460110344010"
+const zitadelClientID = "312750485188752940"
 
 func Login(ctx context.Context) error {
 	conf := &oauth2.Config{
@@ -75,7 +75,7 @@ func Login(ctx context.Context) error {
 	}
 
 	stsResp, err := stsClient.V1.Token(&sts.GoogleIdentityStsV1ExchangeTokenRequest{
-		Audience:           "//iam.googleapis.com/locations/global/workforcePools/zitadel-dev-nais/providers/zitadel",
+		Audience:           "//iam.googleapis.com/locations/global/workforcePools/zitadel-nais-io/providers/nais-io", // TODO: set provider ID from claim in jwt
 		GrantType:          "urn:ietf:params:oauth:grant-type:token-exchange",
 		RequestedTokenType: "urn:ietf:params:oauth:token-type:access_token",
 		Scope:              "https://www.googleapis.com/auth/cloud-platform",
