@@ -3,16 +3,16 @@ module github.com/nais/cli
 go 1.24.2
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.15.0
-	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.5
+	cloud.google.com/go/cloudsqlconn v1.16.0
+	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.6
 	github.com/go-logr/logr v1.4.2
-	github.com/goccy/go-yaml v1.15.23
+	github.com/goccy/go-yaml v1.17.1
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20231030073017-240e8a0234d9
 	github.com/nais/liberator v0.0.0-20250210140717-70bb7da67963
-	github.com/onsi/ginkgo/v2 v2.23.0
-	github.com/onsi/gomega v1.36.2
+	github.com/onsi/ginkgo/v2 v2.23.3
+	github.com/onsi/gomega v1.37.0
 	github.com/pterm/pterm v0.12.80
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.10.0
@@ -23,24 +23,24 @@ require (
 	golang.org/x/oauth2 v0.28.0
 	golang.org/x/sync v0.12.0
 	golang.org/x/vuln v1.1.4
-	google.golang.org/api v0.222.0
-	google.golang.org/grpc v1.71.0
+	google.golang.org/api v0.227.0
+	google.golang.org/grpc v1.71.1
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.6.1
-	k8s.io/api v0.32.2
-	k8s.io/apimachinery v0.32.2
-	k8s.io/client-go v0.32.2
+	k8s.io/api v0.32.3
+	k8s.io/apimachinery v0.32.3
+	k8s.io/client-go v0.32.3
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20241210054802-24370beab758
 	mvdan.cc/gofumpt v0.7.0
-	sigs.k8s.io/controller-runtime v0.20.3
+	sigs.k8s.io/controller-runtime v0.20.4
 )
 
 require (
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
-	cloud.google.com/go/auth v0.14.1 // indirect
+	cloud.google.com/go/auth v0.15.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.4 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.1
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
@@ -123,11 +123,11 @@ require (
 	golang.org/x/telemetry v0.0.0-20241004145657-5eebfecbdf1f // indirect
 	golang.org/x/term v0.30.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/time v0.10.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250218202821-56aae31c358a // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
