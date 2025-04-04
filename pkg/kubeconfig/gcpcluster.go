@@ -3,8 +3,11 @@ package kubeconfig
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
+
+	"google.golang.org/api/googleapi"
 
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
@@ -42,28 +45,28 @@ func getClustersFromGCP(ctx context.Context, options filterOptions) ([]k8sCluste
 }
 
 func getClusters(ctx context.Context, projects []project, options filterOptions) ([]k8sCluster, error) {
-	var clusters []k8sCluster
+	var allClusters []k8sCluster
 	for _, project := range projects {
 		if options.verbose {
 			fmt.Printf("Getting clusters for %s (%s, %s)\n", project.Name, project.ID, project.Tenant)
 		}
-		var cluster []k8sCluster
+		var projectClusters []k8sCluster
 		var err error
 
 		switch project.Kind {
 		case kindOnprem:
-			cluster, err = getOnpremClusters(ctx, project)
+			projectClusters, err = getOnpremClusters(ctx, project)
 		default:
-			cluster, err = getGCPClusters(ctx, project, options)
+			projectClusters, err = getGCPClusters(ctx, project, options)
 		}
 
 		if err != nil {
 			return nil, err
 		}
-		clusters = append(clusters, cluster...)
+		allClusters = append(allClusters, projectClusters...)
 	}
 
-	return clusters, nil
+	return allClusters, nil
 }
 
 func getGCPClusters(ctx context.Context, project project, options filterOptions) ([]k8sCluster, error) {
@@ -72,13 +75,25 @@ func getGCPClusters(ctx context.Context, project project, options filterOptions)
 		return nil, err
 	}
 
+	var clusters []k8sCluster
+
 	call := svc.Projects.Locations.Clusters.List("projects/" + project.ID + "/locations/-")
 	response, err := call.Do()
 	if err != nil {
+		if errors.Is(err, &googleapi.Error{}) {
+			var googleErr *googleapi.Error
+			errors.As(err, &googleErr)
+			if googleErr.Code == 403 {
+				if options.verbose {
+					fmt.Printf("No access to project %s, skipping\n", project.ID)
+				}
+				return clusters, nil
+			}
+			return nil, fmt.Errorf("failed to list clusters: %w", err)
+		}
 		return nil, err
 	}
 
-	var clusters []k8sCluster
 	for _, cluster := range response.Clusters {
 		name := cluster.Name
 
