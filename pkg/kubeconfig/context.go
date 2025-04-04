@@ -19,11 +19,19 @@ func populateWithContexts(config *clientcmdapi.Config, cluster k8sCluster, email
 		user = cluster.User.UserName
 	}
 
-	config.Contexts[cluster.Name] = &clientcmdapi.Context{
+	context := &clientcmdapi.Context{
 		Cluster:   cluster.Name,
 		AuthInfo:  user,
 		Namespace: "default",
 	}
+	if existingCtx, ok := config.Contexts[cluster.Name]; ok && existingCtx.Namespace != "" {
+		if options.verbose {
+			fmt.Printf("Preserving namespace %q for existing context %q\n", existingCtx.Namespace, cluster.Name)
+		}
+		context.Namespace = existingCtx.Namespace
+	}
+
+	config.Contexts[cluster.Name] = context
 
 	fmt.Printf("Added context %v for %v to config\n", cluster.Name, user)
 }
