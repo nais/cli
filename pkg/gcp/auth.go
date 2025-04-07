@@ -34,9 +34,9 @@ func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, err
 		return "", fmt.Errorf("missing active user, have you logged in with 'gcloud auth login --update-adc'")
 	}
 
-	// if enforceNais && !strings.HasSuffix(user, "@nais.io") {
-	// 	return "", fmt.Errorf("active gcloud-user is not a nais.io-user: %v", user)
-	// }
+	if enforceNais && !strings.HasSuffix(user, "@nais.io") {
+		return "", fmt.Errorf("active gcloud-user is not a nais.io-user: %v", user)
+	}
 
 	_, exists := os.LookupEnv("GOOGLE_APPLICATION_CREDENTIALS")
 	if exists {
