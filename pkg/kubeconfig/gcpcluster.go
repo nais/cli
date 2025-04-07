@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/api/googleapi"
+	"net/http"
 	"strings"
 
 	"google.golang.org/api/compute/v1"
@@ -79,10 +80,9 @@ func getGCPClusters(ctx context.Context, project project, options filterOptions)
 	call := svc.Projects.Locations.Clusters.List("projects/" + project.ID + "/locations/-")
 	response, err := call.Do()
 	if err != nil {
-		if errors.Is(err, &apierror.APIError{}) {
-			var apiErr *apierror.APIError
-			errors.As(err, &apiErr)
-			if apiErr.HTTPCode() == 403 {
+		var googleErr *googleapi.Error
+		if errors.As(err, &googleErr) {
+			if googleErr.Code == http.StatusForbidden {
 				if options.verbose {
 					fmt.Printf("No access to project %s, skipping\n", project.ID)
 				}
