@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -510,8 +511,19 @@ func getLatestImageTag() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to get latest release: %s", resp.Status)
+	switch resp.StatusCode {
+	case http.StatusTooManyRequests:
+		fallthrough
+	case http.StatusForbidden:
+		retryTime, err := calculateRetryTime(resp)
+		if err != nil {
+			return "", fmt.Errorf("rate limit error when attempting to query GitHub for latest migrator image. Additionally, an error occurred when attempting to find a suitable retry time: %w", err)
+		}
+		return "", fmt.Errorf("rate limit exceeded when attempting to query GitHub for latest migrator image, retry after %s", retryTime.Format(time.RFC1123))
+	case http.StatusOK:
+		// do nothing
+	default:
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
@@ -522,6 +534,28 @@ func getLatestImageTag() (string, error) {
 	}
 
 	return v["tag_name"].(string), nil
+}
+
+// calculateRetryTime calculates when it is ok to retry a request based on the available headers.
+// See more in GitHub API documentation:
+// https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28#rate-limit-errors
+func calculateRetryTime(resp *http.Response) (time.Time, error) {
+	retryAfter := resp.Header.Get("retry-after")
+	if retryAfter != "" {
+		retryAfterSeconds, err := strconv.Atoi(retryAfter)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("failed to parse retry-after header: %w", err)
+		}
+		return time.Now().Add(time.Duration(retryAfterSeconds) * time.Second), nil
+	} else if resp.Header.Get("x-ratelimit-remaining") == "0" {
+		rateLimitReset := resp.Header.Get("x-ratelimit-reset")
+		retryEpoch, err := strconv.Atoi(rateLimitReset)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("failed to parse rate limit reset epoch: %w", err)
+		}
+		return time.Unix(int64(retryEpoch), 0), nil
+	}
+	return time.Now().Add(1 * time.Minute), nil
 }
 
 func confirmContinue() error {
