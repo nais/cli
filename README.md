@@ -30,7 +30,7 @@ kubectl create namespace test
 - Generate executable program and test your changes.
 
 ```
-make nais-cli
+make build
 bin/nais --version
 ```
 

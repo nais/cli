@@ -45,7 +45,7 @@ kubectl apply -f path/to/secret
 * Generate executable program and test your changes.
 
 ```
-make nais-cli
+make build
 ```
 
 It´s possible to use and test changes of the CLI to a NAIS cluster. But it can be useful and safe to run 'aivenator'
