@@ -6,25 +6,25 @@ build: check fmt
 check: staticcheck vulncheck deadcode
 
 staticcheck:
-	go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+	go tool honnef.co/go/tools/cmd/staticcheck ./...
 
 vulncheck:
-	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+	go tool golang.org/x/vuln/cmd/govulncheck ./...
 
 deadcode:
-	go run golang.org/x/tools/cmd/deadcode@latest -test ./...
+	go tool golang.org/x/tools/cmd/deadcode -test ./...
 
 vet:
 	go vet ./...
 
 fmt:
-	go run mvdan.cc/gofumpt@latest -w ./
+	go tool mvdan.cc/gofumpt -w ./
 
 test: fmt vet
-	go run github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty
+	go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty
 
 test-ci: vet
-	go run github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output
+	go tool github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output
 
 nais-cli:
 	go build -installsuffix cgo -o bin/nais main.go
