@@ -3,8 +3,8 @@ package validatecmd
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/metrics"
-	"github.com/nais/cli/pkg/validate"
+	"github.com/nais/cli/internal/metrics"
+	"github.com/nais/cli/internal/validate"
 	"github.com/urfave/cli/v2"
 )
 

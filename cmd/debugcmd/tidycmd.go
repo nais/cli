@@ -3,7 +3,7 @@ package debugcmd
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/debug"
+	"github.com/nais/cli/internal/debug"
 	"github.com/urfave/cli/v2"
 )
 

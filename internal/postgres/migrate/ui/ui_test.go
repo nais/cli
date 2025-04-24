@@ -1,11 +1,11 @@
 package ui_test
 
 import (
-	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/internal/option"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/nais/cli/pkg/postgres/migrate/ui"
+	"github.com/nais/cli/internal/postgres/migrate/ui"
 )
 
 type fakeTextInput struct {

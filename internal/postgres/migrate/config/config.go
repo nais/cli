@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/internal/option"
 	"github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"github.com/nais/liberator/pkg/namegen"
 	corev1 "k8s.io/api/core/v1"

@@ -1,7 +1,7 @@
 package devicecmd
 
 import (
-	"github.com/nais/cli/pkg/naisdevice"
+	"github.com/nais/cli/internal/naisdevice"
 	"github.com/urfave/cli/v2"
 )
 

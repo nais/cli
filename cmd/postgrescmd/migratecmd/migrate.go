@@ -3,9 +3,9 @@ package migratecmd
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/gcp"
-	"github.com/nais/cli/pkg/option"
-	"github.com/nais/cli/pkg/postgres/migrate/config"
+	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 	"github.com/urfave/cli/v2"
 )
 

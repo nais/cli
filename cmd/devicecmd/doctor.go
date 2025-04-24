@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/go-ps"
-	"github.com/nais/cli/pkg/doctor"
+	"github.com/nais/cli/internal/doctor"
 	"github.com/urfave/cli/v2"
 )
 

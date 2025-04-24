@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nais/cli/pkg/gcp"
-	"github.com/nais/cli/pkg/kubeconfig"
-	"github.com/nais/cli/pkg/metrics"
-	"github.com/nais/cli/pkg/naisdevice"
+	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/kubeconfig"
+	"github.com/nais/cli/internal/metrics"
+	"github.com/nais/cli/internal/naisdevice"
 	"github.com/urfave/cli/v2"
 )
 

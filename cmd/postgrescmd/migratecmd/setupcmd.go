@@ -7,9 +7,9 @@ import (
 
 	"github.com/pterm/pterm"
 
-	"github.com/nais/cli/pkg/k8s"
-	"github.com/nais/cli/pkg/option"
-	"github.com/nais/cli/pkg/postgres/migrate"
+	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/urfave/cli/v2"
 )
 

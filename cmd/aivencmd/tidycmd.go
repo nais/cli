@@ -1,7 +1,7 @@
 package aivencmd
 
 import (
-	"github.com/nais/cli/pkg/aiven"
+	"github.com/nais/cli/internal/aiven"
 	"github.com/urfave/cli/v2"
 )
 

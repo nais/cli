@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/metrics"
+	"github.com/nais/cli/internal/metrics"
 
 	"github.com/urfave/cli/v2"
 	"k8s.io/utils/strings/slices"
 
-	"github.com/nais/cli/pkg/naisdevice"
+	"github.com/nais/cli/internal/naisdevice"
 )
 
 func jitaCommand() *cli.Command {

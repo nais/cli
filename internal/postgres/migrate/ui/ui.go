@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nais/cli/pkg/option"
+	"github.com/nais/cli/internal/option"
 	"github.com/pterm/pterm"
 )
 

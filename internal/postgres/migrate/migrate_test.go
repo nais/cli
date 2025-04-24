@@ -1,9 +1,9 @@
 package migrate_test
 
 import (
-	"github.com/nais/cli/pkg/option"
-	"github.com/nais/cli/pkg/postgres/migrate"
-	"github.com/nais/cli/pkg/postgres/migrate/config"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

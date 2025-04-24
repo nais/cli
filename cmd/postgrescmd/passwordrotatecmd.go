@@ -3,8 +3,8 @@ package postgrescmd
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/metrics"
-	"github.com/nais/cli/pkg/postgres"
+	"github.com/nais/cli/internal/metrics"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/urfave/cli/v2"
 )
 

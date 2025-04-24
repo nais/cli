@@ -12,7 +12,7 @@ import (
 	"github.com/nais/cli/cmd/postgrescmd"
 	"github.com/nais/cli/cmd/rootcmd"
 	"github.com/nais/cli/cmd/validatecmd"
-	"github.com/nais/cli/pkg/metrics"
+	"github.com/nais/cli/internal/metrics"
 	"github.com/urfave/cli/v2"
 )
 

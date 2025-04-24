@@ -5,8 +5,8 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/nais/cli/pkg/debug"
-	"github.com/nais/cli/pkg/k8s"
+	"github.com/nais/cli/internal/debug"
+	"github.com/nais/cli/internal/k8s"
 	"github.com/urfave/cli/v2"
 )
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/pkg/option"
-	"github.com/nais/cli/pkg/postgres/migrate/config"
-	"github.com/nais/cli/pkg/postgres/migrate/ui"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate/config"
+	"github.com/nais/cli/internal/postgres/migrate/ui"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
@@ -18,7 +18,7 @@ import (
 	"k8s.io/client-go/kubernetes/fake"
 	ctrl_fake "sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	"github.com/nais/cli/pkg/postgres/migrate"
+	"github.com/nais/cli/internal/postgres/migrate"
 )
 
 const namespace = "test-namespace"
