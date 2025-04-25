@@ -66,7 +66,7 @@ func createSQLUser(ctx context.Context, projectID, instance string) error {
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		io.Copy(os.Stdout, buf)
+		_, _ = io.Copy(os.Stdout, buf)
 		return fmt.Errorf("error running gcloud command: %w", err)
 	}
 	return nil
@@ -119,7 +119,7 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		io.Copy(os.Stdout, buf)
+		_, _ = io.Copy(os.Stdout, buf)
 		return fmt.Errorf("grantUserAccess: error running gcloud command: %w", err)
 	}
 	return nil
@@ -137,7 +137,7 @@ func cleanupPermissions(ctx context.Context, projectID, email, role, conditionNa
 	out, err := cmd.Output()
 	if err != nil {
 		if e, ok := err.(*exec.ExitError); ok {
-			fmt.Fprintln(os.Stderr, string(e.Stderr))
+			_, _ = fmt.Fprintln(os.Stderr, string(e.Stderr))
 		}
 		return false, fmt.Errorf("cleanupPermissions: error getting permissions: %w", err)
 	}
@@ -182,7 +182,7 @@ OUTER:
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		io.Copy(os.Stdout, buf)
+		_, _ = io.Copy(os.Stdout, buf)
 		return false, fmt.Errorf("cleanupPermissions: error running gcloud command: %w", err)
 	}
 	return false, nil
@@ -223,7 +223,9 @@ func ListUsers(ctx context.Context, appName, cluster, namespace string) error {
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	fmt.Println("Users in database:")
 	for rows.Next() {

@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/nais/cli/internal/aiven"
@@ -103,6 +104,9 @@ func create() *cli.Command {
 			namespace := cmd.Args().Get(2)
 
 			expire := cmd.Uint("expire")
+			if expire > uint(math.MaxInt) {
+				return fmt.Errorf("--expire must be less than %v", math.MaxInt)
+			}
 			secretName := cmd.String("secret")
 			instance := cmd.String("instance")
 

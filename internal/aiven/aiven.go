@@ -38,7 +38,7 @@ func Setup(ctx context.Context, innClient ctrl.Client, aivenService aiven_servic
 			Username:   username,
 			Namespace:  namespace,
 			SecretName: secretName,
-			Expiry:     int(expiry),
+			Expiry:     int(expiry), // #nosec G115
 			Service:    aivenService,
 		},
 	}

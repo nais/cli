@@ -218,7 +218,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 		for scanner.Scan() {
 			logChannel <- scanner.Text()
 		}
-		logs.Close()
+		_ = logs.Close()
 		logChannel <- `{"msg": ">>> Log stream ended", "level": "info", "pod": "` + pod.Name + `"}`
 
 		// The stream ended, which likely means the pod either exited (whether successful or not) or was deleted.
@@ -276,7 +276,9 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	logOutput.Info(startingMessage.Msg)
 
 	progress, _ := pterm.DefaultProgressbar.WithTotal(startingMessage.MigrationStepsTotal).WithMaxWidth(120).Start()
-	defer progress.Stop()
+	defer func() {
+		_, _ = progress.Stop()
+	}()
 
 	// this runs outside the errgroup as it does not return an error
 	go renderJobLogs(ctx, logChannel, logOutput, progress)
@@ -291,8 +293,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 		return m.pollJobCompletion(ctx, jobName, command)
 	})
 
-	err = eg.Wait()
-	if err != nil {
+	if err := eg.Wait(); err != nil {
 		if errors.Is(err, context.Canceled) {
 			err = context.Cause(ctx)
 		}
@@ -305,7 +306,9 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 
 func (m *Migrator) waitForStartingMessage(ctx context.Context, logChannel <-chan string) (*logEntry, error) {
 	spinner, _ := pterm.DefaultSpinner.Start("Waiting for job to start ...")
-	defer spinner.Stop()
+	defer func() {
+		_ = spinner.Stop()
+	}()
 
 	for {
 		select {
@@ -391,7 +394,7 @@ func (m *Migrator) printConfig() {
 	})
 
 	tableHeaderStyle := pterm.ThemeDefault.TableHeaderStyle
-	pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
+	_ = pterm.DefaultTable.WithHasHeader().WithData(pterm.TableData{
 		{"", "Name", "Tier", "Disk autoresize", "Disk size", "Type"},
 		{tableHeaderStyle.Sprint("Source"), m.cfg.Source.InstanceName.String(), m.cfg.Source.Tier.String(), sourceAutoresize, sourceDiskSize, m.cfg.Source.Type.String()},
 		{tableHeaderStyle.Sprint("Target"), m.cfg.Target.InstanceName.String(), m.cfg.Target.Tier.String(), targetAutoresize, targetDiskSize, m.cfg.Target.Type.String()},

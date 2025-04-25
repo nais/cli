@@ -16,9 +16,9 @@ const (
 	KafkaPrivateKeyKey             = "KAFKA_PRIVATE_KEY"
 	KafkaCAKey                     = "KAFKA_CA"
 	KafkaBrokersKey                = "KAFKA_BROKERS"
-	KafkaSchemaRegistryKey         = "KAFKA_SCHEMA_REGISTRY"
-	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD"
+	KafkaSchemaRegistryKey         = "KAFKA_SCHEMA_REGISTRY"          // #nosec G101
+	KafkaSchemaRegistryPasswordKey = "KAFKA_SCHEMA_REGISTRY_PASSWORD" // #nosec G101
 	KafkaSchemaRegistryUserKey     = "KAFKA_SCHEMA_REGISTRY_USER"
-	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD"
+	KafkaCredStorePasswordKey      = "KAFKA_CREDSTORE_PASSWORD" // #nosec G101
 	FilePermission                 = 0o775
 )

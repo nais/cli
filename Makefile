@@ -24,6 +24,10 @@ deadcode:
 vet:
 	go vet ./...
 
+.PHONY: gosec
+gosec:
+	go tool github.com/securego/gosec/v2/cmd/gosec --exclude-generated -terse ./...
+
 .PHONY: fmt
 fmt:
 	go tool mvdan.cc/gofumpt -w ./

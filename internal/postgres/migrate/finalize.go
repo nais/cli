@@ -44,7 +44,7 @@ Only proceed if you are sure that the migration was successful and that your app
 	pterm.Println()
 	pterm.Println("The old instance has been deleted and the migration is complete.")
 	pterm.Println()
-	pterm.DefaultBigText.WithLetters(putils.LettersFromString("Congrats!")).Render()
+	_ = pterm.DefaultBigText.WithLetters(putils.LettersFromString("Congrats!")).Render()
 	pterm.Println("You are all done! 🎉")
 
 	return nil

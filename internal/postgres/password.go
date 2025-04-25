@@ -115,7 +115,7 @@ func rotatePasswordForDatabaseUser(ctx context.Context, projectID, instance, use
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		io.Copy(os.Stdout, buf)
+		_, _ = io.Copy(os.Stdout, buf)
 		return fmt.Errorf("error running gcloud command: %w", err)
 	}
 

@@ -15,8 +15,8 @@ const (
 	KafkaJavaConfigName = "kafka.properties"
 
 	KeyPassProp            = "ssl.key.password"
-	KeyStorePassProp       = "ssl.keystore.password"
-	TrustStorePassProp     = "ssl.truststore.password"
+	KeyStorePassProp       = "ssl.keystore.password"   // #nosec G101
+	TrustStorePassProp     = "ssl.truststore.password" // #nosec G101
 	KeyStoreLocationProp   = "ssl.keystore.location"
 	TrustStoreLocationProp = "ssl.truststore.location"
 

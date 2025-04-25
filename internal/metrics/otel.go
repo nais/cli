@@ -108,7 +108,7 @@ func CollectCommandHistogram(ctx context.Context, commands []*cli.Command) {
 
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands), commands)
-	provider.Shutdown(ctx)
+	_ = provider.Shutdown(ctx)
 }
 
 func gatherCommands(command *cli.Command, validSubcommands *[]string) {
@@ -138,5 +138,7 @@ func AddOne(ctx context.Context, metricName string) {
 	)
 
 	counter.Add(ctx, 1, m.WithAttributes(attribute.String("command", metricName)))
-	defer meter.Shutdown(ctx)
+	defer func() {
+		_ = meter.Shutdown(ctx)
+	}()
 }
