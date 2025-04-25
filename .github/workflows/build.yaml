@@ -34,16 +34,13 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5.4.0
-        with:
-          go-version-file: go.mod
+      - uses: jdx/mise-action@v2
 
       - name: Test Go
         run: |
           go mod tidy -v
-          make test-ci
-          make check
+          mise run test-ci
+          mise run check
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -64,10 +61,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v5.4.0
-        with:
-          go-version-file: go.mod
+      - uses: jdx/mise-action@v2
 
       - name: Create tag
         run: |

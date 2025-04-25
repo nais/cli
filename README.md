@@ -1,8 +1,14 @@
-# nais-cli - A NAIS command-line interface
+# nais-cli - A Nais command-line interface
 
-See NAIS doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
+See Nais doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
 
 ## Local Development
+
+Install the required go version:
+
+```bash
+mise install
+```
 
 - Be sure to run your local cluster, recommend: [minkube](https://minikube.sigs.k8s.io/docs/start/).
 
@@ -30,7 +36,7 @@ kubectl create namespace test
 - Generate executable program and test your changes.
 
 ```
-make build
+mise run build
 bin/nais --version
 ```
 
