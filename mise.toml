@@ -22,10 +22,17 @@ wait_for = ['fmt']
 run = "go vet ./..."
 
 [tasks.test]
+depends = ['gotest', 'ginkgo']
+
+[tasks.gotest]
+wait_for = ['fmt']
+run = "go test --race ./..."
+
+[tasks.ginkgo]
 wait_for = ['fmt']
 run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty"
 
-[tasks.test-ci]
+[tasks.ginkgo-ci]
 wait_for = ['fmt']
 run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output"
 

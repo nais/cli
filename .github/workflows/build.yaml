@@ -39,8 +39,8 @@ jobs:
       - name: Test Go
         run: |
           go mod tidy -v
-          mise run test-ci
-          mise run check
+          mise run test ::: check
+          mise run ginkgo-ci
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
