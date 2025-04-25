@@ -12,11 +12,10 @@ import (
 
 func promote() *cli.Command {
 	return &cli.Command{
-		Name:              "promote",
-		Usage:             "Promote the migrated instance to the new primary instance",
-		UsageText:         "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
-		Description:       "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
-		ReadArgsFromStdin: true, // TODO: Not sure about this one. Used to be `Args: true`, but field no longer exists
+		Name:        "promote",
+		Usage:       "Promote the migrated instance to the new primary instance",
+		UsageText:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
+		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
 		Flags: []cli.Flag{
 			namespaceFlag(),
 			kubeConfigFlag(),
@@ -39,11 +38,10 @@ func promote() *cli.Command {
 			}
 
 			migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool(dryRunFlagName), cmd.Bool(noWaitFlagName))
-
-			err = migrator.Promote(context.Background())
-			if err != nil {
+			if err := migrator.Promote(ctx); err != nil {
 				return fmt.Errorf("error promoting instance: %w", err)
 			}
+
 			return nil
 		},
 	}

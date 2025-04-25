@@ -21,11 +21,10 @@ const (
 
 func setup() *cli.Command {
 	return &cli.Command{
-		Name:              "setup",
-		Usage:             "Make necessary setup for a new migration",
-		UsageText:         "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
-		Description:       "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
-		ReadArgsFromStdin: true, // TODO: Not sure about this one. Used to be `Args: true`, but field no longer exists
+		Name:        "setup",
+		Usage:       "Make necessary setup for a new migration",
+		UsageText:   "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
+		Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
 		Flags: []cli.Flag{
 			namespaceFlag(),
 			kubeConfigFlag(),
@@ -101,11 +100,10 @@ func setup() *cli.Command {
 			}
 
 			migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool(dryRunFlagName), cmd.Bool(noWaitFlagName))
-
-			err = migrator.Setup(context.Background())
-			if err != nil {
+			if err := migrator.Setup(ctx); err != nil {
 				return fmt.Errorf("error setting up migration: %w", err)
 			}
+
 			return nil
 		},
 	}

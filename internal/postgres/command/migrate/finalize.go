@@ -12,11 +12,10 @@ import (
 
 func finalize() *cli.Command {
 	return &cli.Command{
-		Name:              "finalize",
-		Usage:             "Finalize the migration",
-		UsageText:         "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
-		Description:       "Finalize will remove the source instance and associated resources after a successful migration.",
-		ReadArgsFromStdin: true, // TODO: Not sure about this one. Used to be `Args: true`, but field no longer exists
+		Name:        "finalize",
+		Usage:       "Finalize the migration",
+		UsageText:   "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
+		Description: "Finalize will remove the source instance and associated resources after a successful migration.",
 		Flags: []cli.Flag{
 			namespaceFlag(),
 			kubeConfigFlag(),
@@ -38,11 +37,10 @@ func finalize() *cli.Command {
 			}
 
 			migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool(dryRunFlagName), false)
-
-			err = migrator.Finalize(context.Background())
-			if err != nil {
+			if err := migrator.Finalize(ctx); err != nil {
 				return fmt.Errorf("error cleaning up instance: %w", err)
 			}
+
 			return nil
 		},
 	}
