@@ -1,8 +1,10 @@
 package command
 
 import (
+	"context"
+
 	"github.com/nais/cli/internal/gcp"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func Login() *cli.Command {
@@ -10,8 +12,8 @@ func Login() *cli.Command {
 		Name:        "login",
 		Usage:       "Login using Google Auth.",
 		Description: "This is a wrapper around gcloud auth login --update-adc.",
-		Action: func(context *cli.Context) error {
-			return gcp.Login(context.Context)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			return gcp.Login(ctx)
 		},
 	}
 }

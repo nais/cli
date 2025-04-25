@@ -1,11 +1,12 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/postgres"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func psql() *cli.Command {
@@ -28,22 +29,22 @@ func psql() *cli.Command {
 				Aliases: []string{"n"},
 			},
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 1 {
-				metrics.AddOne("postgres_missing_app_name_error_total")
-				return fmt.Errorf("missing name of app")
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 1 {
+				metrics.AddOne(ctx, "postgres_missing_app_name_error_total")
+				return ctx, fmt.Errorf("missing name of app")
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			appName := context.Args().First()
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			appName := cmd.Args().First()
 
-			namespace := context.String("namespace")
-			cluster := context.String("context")
-			verbose := context.Bool("verbose")
+			namespace := cmd.String("namespace")
+			cluster := cmd.String("context")
+			verbose := cmd.Bool("verbose")
 
-			return postgres.RunPSQL(context.Context, appName, cluster, namespace, verbose)
+			return postgres.RunPSQL(ctx, appName, cluster, namespace, verbose)
 		},
 	}
 }

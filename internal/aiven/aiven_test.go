@@ -43,7 +43,7 @@ func TestGenerateAivenApplicationCreated(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
+	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestGenerateAivenApplicationUpdated(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
+	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	currentAivenApp, err := aiven.GenerateApplication()
 	assert.NoError(t, err)
 
@@ -115,7 +115,7 @@ func TestGenerateAivenApplicationUpdated_HasOwnerReference(t *testing.T) {
 
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
-	aiven := Setup(fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
+	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, "", pool, aiven_services.Read, expiry)
 	_, err := aiven.GenerateApplication()
 	assert.EqualError(t, err, "create/update: username 'user' is owned by another resource; overwrite is not allowed")
 }

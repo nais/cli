@@ -1,11 +1,12 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/validate"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func Validate() *cli.Command {
@@ -30,19 +31,19 @@ func Validate() *cli.Command {
 				Usage:   "print all the template variables and final resources after templating.",
 			},
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() == 0 {
-				metrics.AddOne("validate_enonent_error_total")
-				return fmt.Errorf("no config files provided")
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() == 0 {
+				metrics.AddOne(ctx, "validate_enonent_error_total")
+				return ctx, fmt.Errorf("no config files provided")
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			resourcePaths := context.Args().Slice()
-			varsPath := context.String("vars")
-			vars := context.StringSlice("var")
-			verbose := context.Bool("verbose")
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			resourcePaths := cmd.Args().Slice()
+			varsPath := cmd.String("vars")
+			vars := cmd.StringSlice("var")
+			verbose := cmd.Bool("verbose")
 
 			templateVars := make(validate.TemplateVariables)
 			var err error

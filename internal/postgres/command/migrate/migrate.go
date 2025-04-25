@@ -1,12 +1,13 @@
 package migrate
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/option"
 	"github.com/nais/cli/internal/postgres/migrate/config"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -20,11 +21,11 @@ func Migrate() *cli.Command {
 	return &cli.Command{
 		Name:  "migrate",
 		Usage: "Command used for migrating to a new Postgres instance",
-		Before: func(context *cli.Context) error {
-			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
-			return err
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			_, err := gcp.ValidateAndGetUserLogin(ctx, false)
+			return ctx, err
 		},
-		Subcommands: []*cli.Command{
+		Commands: []*cli.Command{
 			setup(),
 			promote(),
 			finalize(),
@@ -58,23 +59,23 @@ func noWaitFlag() *cli.BoolFlag {
 	}
 }
 
-func beforeFunc(cCtx *cli.Context) error {
-	argCount := cCtx.NArg()
+func beforeFunc(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+	argCount := cmd.NArg()
 	switch argCount {
 	case 0:
-		return fmt.Errorf("missing name of app")
+		return ctx, fmt.Errorf("missing name of app")
 	case 1:
-		return fmt.Errorf("missing target instance name")
+		return ctx, fmt.Errorf("missing target instance name")
 	case 2:
-		return nil
+		return ctx, nil
 	}
 
-	return fmt.Errorf("too many arguments")
+	return ctx, fmt.Errorf("too many arguments")
 }
 
-func makeConfig(cCtx *cli.Context) config.Config {
-	appName := cCtx.Args().Get(0)
-	targetInstanceName := cCtx.Args().Get(1)
+func makeConfig(cmd *cli.Command) config.Config {
+	appName := cmd.Args().Get(0)
+	targetInstanceName := cmd.Args().Get(1)
 
 	return config.Config{
 		AppName: appName,

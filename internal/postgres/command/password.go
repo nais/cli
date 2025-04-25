@@ -1,14 +1,14 @@
 package command
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func password() *cli.Command {
 	return &cli.Command{
 		Name:  "password",
 		Usage: "Administrate Postgres password",
-		Subcommands: []*cli.Command{
+		Commands: []*cli.Command{
 			passwordRotate(),
 		},
 	}

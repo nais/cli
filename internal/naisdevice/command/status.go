@@ -1,11 +1,12 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"k8s.io/utils/strings/slices"
 )
 
@@ -17,9 +18,9 @@ func status() *cli.Command {
 			&cli.StringFlag{
 				Name:    "output",
 				Aliases: []string{"o"},
-				Action: func(context *cli.Context, flag string) error {
+				Action: func(ctx context.Context, cmd *cli.Command, flag string) error {
 					if !slices.Contains([]string{"yaml", "json"}, flag) {
-						metrics.AddOne("status_file_format_error_total")
+						metrics.AddOne(ctx, "status_file_format_error_total")
 						return fmt.Errorf("%v is not an implemented format", flag)
 					}
 
@@ -35,12 +36,12 @@ func status() *cli.Command {
 				Aliases: []string{"v"},
 			},
 		},
-		Action: func(context *cli.Context) error {
-			outputFormat := context.String("output")
-			quiet := context.Bool("quiet")
-			verbose := context.Bool("verbose")
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			outputFormat := cmd.String("output")
+			quiet := cmd.Bool("quiet")
+			verbose := cmd.Bool("verbose")
 
-			status, err := naisdevice.GetStatus(context.Context)
+			status, err := naisdevice.GetStatus(ctx)
 			if err != nil {
 				return err
 			}

@@ -14,7 +14,7 @@ import (
 	naisdevicecommand "github.com/nais/cli/internal/naisdevice/command"
 	postgrescommand "github.com/nais/cli/internal/postgres/command"
 	validatecommand "github.com/nais/cli/internal/validate/command"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -36,18 +36,18 @@ func commands() []*cli.Command {
 }
 
 func Run(ctx context.Context) {
-	app := &cli.App{
-		Name:                 "nais",
-		Usage:                "A Nais cli",
-		Description:          "Nais platform utility cli, respects consoledonottrack.com",
-		Version:              version + "-" + commit,
-		EnableBashCompletion: true,
-		HideHelpCommand:      true,
-		Suggest:              true,
-		Commands:             commands(),
+	app := &cli.Command{
+		Name:                  "nais",
+		Usage:                 "A Nais cli",
+		Description:           "Nais platform utility cli, respects consoledonottrack.com",
+		Version:               version + "-" + commit,
+		EnableShellCompletion: true,
+		HideHelpCommand:       true,
+		Suggest:               true,
+		Commands:              commands(),
 	}
 
-	metrics.CollectCommandHistogram(app.Commands)
+	metrics.CollectCommandHistogram(ctx, app.Commands)
 
 	// first, before running the cli propper we check if the argv[1] contains a
 	// thing that is named nais-argv[1]. if so, we run that with the rest of the
@@ -63,7 +63,7 @@ func Run(ctx context.Context) {
 		}
 	}
 
-	err := app.Run(os.Args)
+	err := app.Run(ctx, os.Args)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

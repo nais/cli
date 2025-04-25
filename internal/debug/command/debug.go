@@ -1,13 +1,14 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -28,7 +29,7 @@ func Debug() *cli.Command {
 			"allowing you to troubleshoot without affecting the live pod.\n" +
 			"To debug a live pod, run the command without the '--copy' flag.\n" +
 			"You can only reconnect to the debug session if the pod is running.",
-		Subcommands: []*cli.Command{
+		Commands: []*cli.Command{
 			tidy(),
 		},
 		Flags: []cli.Flag{
@@ -37,16 +38,16 @@ func Debug() *cli.Command {
 			namespaceFlag(),
 			byPodFlag(),
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 1 {
-				return fmt.Errorf("missing required arguments: %v", context.Command.ArgsUsage)
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 1 {
+				return ctx, fmt.Errorf("missing required arguments: %v", cmd.ArgsUsage)
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(cCtx *cli.Context) error {
-			cfg := makeConfig(cCtx)
-			clientset, err := setupClient(cfg, cCtx)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			cfg := makeConfig(cmd)
+			clientset, err := setupClient(cfg, cmd)
 			if err != nil {
 				return err
 			}
@@ -60,8 +61,8 @@ func Debug() *cli.Command {
 	}
 }
 
-func setupClient(cfg *debug.Config, cCtx *cli.Context) (kubernetes.Interface, error) {
-	cluster := cCtx.String(contextFlagName)
+func setupClient(cfg *debug.Config, cmd *cli.Command) (kubernetes.Interface, error) {
+	cluster := cmd.String(contextFlagName)
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 
 	if cfg.Namespace == "" {
@@ -114,14 +115,14 @@ func namespaceFlag() *cli.StringFlag {
 	}
 }
 
-func makeConfig(cCtx *cli.Context) *debug.Config {
-	appName := cCtx.Args().First()
+func makeConfig(cmd *cli.Command) *debug.Config {
+	appName := cmd.Args().First()
 
 	return &debug.Config{
 		WorkloadName: appName,
-		Namespace:    cCtx.String(namespaceFlagName),
+		Namespace:    cmd.String(namespaceFlagName),
 		DebugImage:   debugImageDefault,
-		CopyPod:      cCtx.Bool(copyFlagName),
-		ByPod:        cCtx.Bool(byPodFlagName),
+		CopyPod:      cmd.Bool(copyFlagName),
+		ByPod:        cmd.Bool(byPodFlagName),
 	}
 }

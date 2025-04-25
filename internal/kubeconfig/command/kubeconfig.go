@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func mightBeWSL() bool {
@@ -66,40 +67,39 @@ gcloud auth login --update-adc`,
 				Aliases: []string{"v"},
 			},
 		},
-		Before: func(context *cli.Context) error {
-			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
-			if err != nil {
-				return err
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {
+				return ctx, err
 			}
 
 			if mightBeWSL() {
 				fmt.Println("Skipping naisdevice check in WSL. Assuming it's connected and ready to go.")
 			} else {
-				status, err := naisdevice.GetStatus(context.Context)
+				status, err := naisdevice.GetStatus(ctx)
 				if err != nil {
-					return err
+					return ctx, err
 				}
 
 				if !naisdevice.IsConnected(status) {
-					metrics.AddOne("kubeconfig_connect_error_total")
-					return fmt.Errorf("you need to be connected with naisdevice before using this command")
+					metrics.AddOne(ctx, "kubeconfig_connect_error_total")
+					return ctx, fmt.Errorf("you need to be connected with naisdevice before using this command")
 				}
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			clear := context.Bool("clear")
-			exclude := context.StringSlice("exclude")
-			overwrite := context.Bool("overwrite")
-			verbose := context.Bool("verbose")
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			clear := cmd.Bool("clear")
+			exclude := cmd.StringSlice("exclude")
+			overwrite := cmd.Bool("overwrite")
+			verbose := cmd.Bool("verbose")
 
-			email, err := gcp.GetActiveUserEmail(context.Context)
+			email, err := gcp.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err
 			}
 
-			return kubeconfig.CreateKubeconfig(context.Context, email,
+			return kubeconfig.CreateKubeconfig(ctx, email,
 				kubeconfig.WithOverwriteData(overwrite),
 				kubeconfig.WithFromScratch(clear),
 				kubeconfig.WithExcludeClusters(exclude),

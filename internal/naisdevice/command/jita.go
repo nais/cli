@@ -1,12 +1,13 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/nais/cli/internal/metrics"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"k8s.io/utils/strings/slices"
 
 	"github.com/nais/cli/internal/naisdevice"
@@ -17,27 +18,27 @@ func jita() *cli.Command {
 		Name:      "jita",
 		Usage:     "Connects to a JITA gateway",
 		ArgsUsage: "gateway",
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 1 {
-				metrics.AddOne("jita_arguments_error_total")
-				return fmt.Errorf("missing required arguments: gateway")
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 1 {
+				metrics.AddOne(ctx, "jita_arguments_error_total")
+				return ctx, fmt.Errorf("missing required arguments: gateway")
 			}
 
-			gateway := context.Args().First()
-			privilegedGateways, err := naisdevice.GetPrivilegedGateways(context.Context)
+			gateway := cmd.Args().First()
+			privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
 			if err != nil {
-				return err
+				return ctx, err
 			}
 
 			if !slices.Contains(privilegedGateways, gateway) {
-				metrics.AddOne("device_gateway_error_total")
-				return fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
+				metrics.AddOne(ctx, "device_gateway_error_total")
+				return ctx, fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			gateway := context.Args().First()
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			gateway := cmd.Args().First()
 			return naisdevice.AccessPrivilegedGateway(gateway)
 		},
 	}

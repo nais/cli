@@ -30,11 +30,11 @@ type Properties struct {
 	Service    aiven_services.Service
 }
 
-func Setup(innClient ctrl.Client, aivenService aiven_services.Service, username, namespace, secretName, instance string, pool aiven_services.KafkaPool, access aiven_services.OpenSearchAccess, expiry uint) *Aiven {
+func Setup(ctx context.Context, innClient ctrl.Client, aivenService aiven_services.Service, username, namespace, secretName, instance string, pool aiven_services.KafkaPool, access aiven_services.OpenSearchAccess, expiry uint) *Aiven {
 	aiven := Aiven{
-		context.Background(),
-		innClient,
-		Properties{
+		Ctx:    ctx,
+		Client: innClient,
+		Properties: Properties{
 			Username:   username,
 			Namespace:  namespace,
 			SecretName: secretName,

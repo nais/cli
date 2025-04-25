@@ -1,14 +1,14 @@
 package command
 
 import (
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func Device() *cli.Command {
 	return &cli.Command{
 		Name:  "device",
 		Usage: "Command used for management of naisdevice",
-		Subcommands: []*cli.Command{
+		Commands: []*cli.Command{
 			config(),
 			connect(),
 			disconnect(),

@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/metrics"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func create() *cli.Command {
@@ -26,14 +27,14 @@ func create() *cli.Command {
 				Name:    "pool",
 				Aliases: []string{"p"},
 				Value:   "nav-dev",
-				Action: func(context *cli.Context, flag string) error {
-					service, err := aiven_services.FromString(context.Args().Get(0))
+				Action: func(ctx context.Context, cmd *cli.Command, flag string) error {
+					service, err := aiven_services.FromString(cmd.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
 					if !service.Is(&aiven_services.Kafka{}) {
-						metrics.AddOne("aiven_create_pool_error_total")
+						metrics.AddOne(ctx, "aiven_create_pool_error_total")
 						return fmt.Errorf("--pool is only supported for Kafka, not %v", service.Name())
 					}
 
@@ -47,14 +48,14 @@ func create() *cli.Command {
 			&cli.StringFlag{
 				Name:    "instance",
 				Aliases: []string{"i"},
-				Action: func(context *cli.Context, flag string) error {
-					service, err := aiven_services.FromString(context.Args().Get(0))
+				Action: func(ctx context.Context, cmd *cli.Command, flag string) error {
+					service, err := aiven_services.FromString(cmd.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
 					if !service.Is(&aiven_services.OpenSearch{}) {
-						metrics.AddOne("aiven_create_instance_error_total")
+						metrics.AddOne(ctx, "aiven_create_instance_error_total")
 						return fmt.Errorf("--instance is only supported for OpenSearch, not %v", service.Name())
 					}
 
@@ -64,14 +65,14 @@ func create() *cli.Command {
 			&cli.StringFlag{
 				Name:    "access",
 				Aliases: []string{"a"},
-				Action: func(context *cli.Context, flag string) error {
-					service, err := aiven_services.FromString(context.Args().Get(0))
+				Action: func(ctx context.Context, cmd *cli.Command, flag string) error {
+					service, err := aiven_services.FromString(cmd.Args().Get(0))
 					if err != nil {
 						return err
 					}
 
 					if !service.Is(&aiven_services.OpenSearch{}) {
-						metrics.AddOne("aiven_create_access_error_total")
+						metrics.AddOne(ctx, "aiven_create_access_error_total")
 						return fmt.Errorf("--access is only supported for OpenSearch, not %v", service.Name())
 					}
 
@@ -79,48 +80,48 @@ func create() *cli.Command {
 				},
 			},
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 3 {
-				metrics.AddOne("aiven_create_required_args_error_total")
-				return fmt.Errorf("missing required arguments: service, username, namespace")
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 3 {
+				metrics.AddOne(ctx, "aiven_create_required_args_error_total")
+				return ctx, fmt.Errorf("missing required arguments: service, username, namespace")
 			}
 
-			_, err := aiven_services.FromString(context.Args().Get(0))
+			_, err := aiven_services.FromString(cmd.Args().Get(0))
 			if err != nil {
-				return err
+				return ctx, err
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			service, err := aiven_services.FromString(context.Args().Get(0))
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			service, err := aiven_services.FromString(cmd.Args().Get(0))
 			if err != nil {
 				return err
 			}
 
-			username := context.Args().Get(1)
-			namespace := context.Args().Get(2)
+			username := cmd.Args().Get(1)
+			namespace := cmd.Args().Get(2)
 
-			expire := context.Uint("expire")
-			secretName := context.String("secret")
-			instance := context.String("instance")
+			expire := cmd.Uint("expire")
+			secretName := cmd.String("secret")
+			instance := cmd.String("instance")
 
-			pool, err := aiven_services.KafkaPoolFromString(context.String("pool"))
+			pool, err := aiven_services.KafkaPoolFromString(cmd.String("pool"))
 			if err != nil {
-				metrics.AddOne("aiven_create_pool_values_error_total")
+				metrics.AddOne(ctx, "aiven_create_pool_values_error_total")
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
 			}
 
-			access, err := aiven_services.OpenSearchAccessFromString(context.String("access"))
+			access, err := aiven_services.OpenSearchAccessFromString(cmd.String("access"))
 			if err != nil && service.Is(&aiven_services.OpenSearch{}) {
-				metrics.AddOne("aiven_create_access_value_error_total")
+				metrics.AddOne(ctx, "aiven_create_access_value_error_total")
 				return fmt.Errorf("valid values for access: %v", strings.Join(aiven_services.OpenSearchAccesses, ", "))
 			}
 
-			aivenConfig := aiven.Setup(k8s.SetupControllerRuntimeClient(), service, username, namespace, secretName, instance, pool, access, expire)
+			aivenConfig := aiven.Setup(ctx, k8s.SetupControllerRuntimeClient(), service, username, namespace, secretName, instance, pool, access, expire)
 			aivenApp, err := aivenConfig.GenerateApplication()
 			if err != nil {
-				metrics.AddOne("aiven_create_generating_aivenapplication_error_total")
+				metrics.AddOne(ctx, "aiven_create_generating_aivenapplication_error_total")
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 			}
 

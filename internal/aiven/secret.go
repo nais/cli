@@ -24,12 +24,10 @@ type Secret struct {
 	Service         aiven_services.Service
 }
 
-func ExtractAndGenerateConfig(service aiven_services.Service, secretName, namespaceName string) error {
+func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string) error {
 	aivenClient := k8s.SetupControllerRuntimeClient()
-	ctx := context.Background()
 
-	err := validateNamespace(ctx, aivenClient, namespaceName)
-	if err != nil {
+	if err := validateNamespace(ctx, aivenClient, namespaceName); err != nil {
 		return fmt.Errorf("validate namespace: %w", err)
 	}
 
@@ -92,18 +90,18 @@ func hasAnnotation(secret *v1.Secret, key string) bool {
 }
 
 func (s *Secret) CreateKafkaConfigs() error {
-	err := aiven_config.NewJavaConfig(s.Secret, s.DestinationPath)
-	if err != nil {
+	if err := aiven_config.NewJavaConfig(s.Secret, s.DestinationPath); err != nil {
 		return err
 	}
-	err = aiven_config.WriteKCatConfigToFile(s.Secret, s.DestinationPath)
-	if err != nil {
+
+	if err := aiven_config.WriteKCatConfigToFile(s.Secret, s.DestinationPath); err != nil {
 		return err
 	}
-	err = aiven_config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath)
-	if err != nil {
+
+	if err := aiven_config.WriteKafkaEnvConfigToFile(s.Secret, s.DestinationPath); err != nil {
 		return err
 	}
+
 	return nil
 }
 

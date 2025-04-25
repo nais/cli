@@ -1,18 +1,19 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/mitchellh/go-ps"
 	doc "github.com/nais/cli/internal/doctor"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func doctor() *cli.Command {
 	return &cli.Command{
 		Name:  "doctor",
 		Usage: "Examine the health of your naisdevice",
-		Action: func(context *cli.Context) error {
+		Action: func(ctx context.Context, cmd *cli.Command) error {
 			results := examination().Run()
 			for key, value := range results {
 				fmt.Printf("%s ", key)

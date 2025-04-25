@@ -1,10 +1,11 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/debug"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func tidy() *cli.Command {
@@ -18,16 +19,16 @@ func tidy() *cli.Command {
 			namespaceFlag(),
 			copyFlag(),
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 1 {
-				return fmt.Errorf("missing required arguments: %v", context.Command.ArgsUsage)
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 1 {
+				return ctx, fmt.Errorf("missing required arguments: %v", cmd.ArgsUsage)
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(cCtx *cli.Context) error {
-			cfg := makeConfig(cCtx)
-			clientset, err := setupClient(cfg, cCtx)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			cfg := makeConfig(cmd)
+			clientset, err := setupClient(cfg, cmd)
 			if err != nil {
 				return err
 			}

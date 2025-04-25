@@ -1,11 +1,12 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/postgres"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func usersAdd() *cli.Command {
@@ -29,24 +30,24 @@ func usersAdd() *cli.Command {
 				Aliases: []string{"n"},
 			},
 		},
-		Before: func(context *cli.Context) error {
-			if context.Args().Len() < 3 {
-				metrics.AddOne("postgres_missing_args_error_total")
-				return fmt.Errorf("missing required arguments: appname, username, password")
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			if cmd.Args().Len() < 3 {
+				metrics.AddOne(ctx, "postgres_missing_args_error_total")
+				return ctx, fmt.Errorf("missing required arguments: appname, username, password")
 			}
 
-			return nil
+			return ctx, nil
 		},
-		Action: func(context *cli.Context) error {
-			appName := context.Args().Get(0)
-			username := context.Args().Get(1)
-			password := context.Args().Get(2)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			appName := cmd.Args().Get(0)
+			username := cmd.Args().Get(1)
+			password := cmd.Args().Get(2)
 
-			namespace := context.String("namespace")
-			cluster := context.String("context")
-			privilege := context.String("privilege")
+			namespace := cmd.String("namespace")
+			cluster := cmd.String("context")
+			privilege := cmd.String("privilege")
 
-			return postgres.AddUser(context.Context, appName, username, password, cluster, namespace, privilege)
+			return postgres.AddUser(ctx, appName, username, password, cluster, namespace, privilege)
 		},
 	}
 }

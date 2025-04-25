@@ -1,9 +1,11 @@
 package command
 
 import (
+	"context"
+
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/postgres/command/migrate"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func Postgres() *cli.Command {
@@ -22,10 +24,10 @@ func Postgres() *cli.Command {
 	return &cli.Command{
 		Name:  "postgres",
 		Usage: "Command used for connecting to Postgres",
-		Before: func(context *cli.Context) error {
-			_, err := gcp.ValidateAndGetUserLogin(context.Context, false)
-			return err
+		Before: func(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+			_, err := gcp.ValidateAndGetUserLogin(ctx, false)
+			return ctx, err
 		},
-		Subcommands: commands,
+		Commands: commands,
 	}
 }

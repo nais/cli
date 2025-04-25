@@ -7,15 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urfave/cli/v2"
-
+	"github.com/urfave/cli/v3"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
-
 	"go.opentelemetry.io/otel/sdk/resource"
-
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
@@ -33,14 +30,14 @@ func newResource() (*resource.Resource, error) {
 		))
 }
 
-func newMeterProvider(res *resource.Resource) *metric.MeterProvider {
+func newMeterProvider(ctx context.Context, res *resource.Resource) *metric.MeterProvider {
 	dnt := os.Getenv("DO_NOT_TRACK")
 	url := collectorURL
 	if dnt == "1" {
 		url = "http://localhost:1234"
 	}
 	metricExporter, _ := otlpmetrichttp.New(
-		context.Background(),
+		ctx,
 		otlpmetrichttp.WithEndpointURL(url),
 	)
 	meterProvider := metric.NewMeterProvider(
@@ -95,20 +92,19 @@ func intersection(list1, list2 []string) []string {
 	return result
 }
 
-func CollectCommandHistogram(commands []*cli.Command) {
+func CollectCommandHistogram(ctx context.Context, commands []*cli.Command) {
 	doNotTrack := os.Getenv("DO_NOT_TRACK")
 	if doNotTrack == "1" {
 		fmt.Println("DO_NOT_TRACK is set, not collecting metrics")
 	}
 
-	ctx := context.Background()
 	var validSubcommands []string
 	for _, command := range commands {
 		gatherCommands(command, &validSubcommands)
 	}
 
 	res, _ := newResource()
-	provider := newMeterProvider(res)
+	provider := newMeterProvider(ctx, res)
 
 	// Record usages of subcommands that are exactly in the list of args we have, nothing else
 	recordCommandUsage(ctx, provider, intersection(os.Args, validSubcommands), commands)
@@ -117,7 +113,7 @@ func CollectCommandHistogram(commands []*cli.Command) {
 
 func gatherCommands(command *cli.Command, validSubcommands *[]string) {
 	*validSubcommands = append(*validSubcommands, command.Name)
-	for _, subcommand := range command.Subcommands {
+	for _, subcommand := range command.Commands {
 		gatherCommands(subcommand, validSubcommands) // Recursively handle subcommands
 	}
 }
@@ -131,11 +127,10 @@ func gatherCommands(command *cli.Command, validSubcommands *[]string) {
 // add a metric anf forceflush it. v0v
 // We tried using the global set/get meterprovider but that does not give forceflush and instead
 // you end up doing a sleep(2s) to get the metrics sent which is maybe not the best ux I can imagine.
-func AddOne(metricName string) {
-	ctx := context.Background()
+func AddOne(ctx context.Context, metricName string) {
 	counterName := naisCliPrefixName + "_" + metricName
 	res, _ := newResource()
-	meter := newMeterProvider(res)
+	meter := newMeterProvider(ctx, res)
 	counter, _ := meter.Meter(naisCliPrefixName).Int64Counter(
 		counterName,
 		m.WithUnit("1"),

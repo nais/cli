@@ -7,16 +7,16 @@ import (
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/pterm/pterm"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 func promote() *cli.Command {
 	return &cli.Command{
-		Name:        "promote",
-		Usage:       "Promote the migrated instance to the new primary instance",
-		UsageText:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
-		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
-		Args:        true,
+		Name:              "promote",
+		Usage:             "Promote the migrated instance to the new primary instance",
+		UsageText:         "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
+		Description:       "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
+		ReadArgsFromStdin: true, // TODO: Not sure about this one. Used to be `Args: true`, but field no longer exists
 		Flags: []cli.Flag{
 			namespaceFlag(),
 			kubeConfigFlag(),
@@ -24,11 +24,11 @@ func promote() *cli.Command {
 			noWaitFlag(),
 		},
 		Before: beforeFunc,
-		Action: func(cCtx *cli.Context) error {
-			cfg := makeConfig(cCtx)
-			cluster := cCtx.String(contextFlagName)
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			cfg := makeConfig(cmd)
+			cluster := cmd.String(contextFlagName)
 
-			pterm.Println(cCtx.Command.Description)
+			pterm.Println(cmd.Description)
 
 			client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 			cfg.Namespace = client.CurrentNamespace
@@ -38,7 +38,7 @@ func promote() *cli.Command {
 				return err
 			}
 
-			migrator := migrate.NewMigrator(client, clientset, cfg, cCtx.Bool(dryRunFlagName), cCtx.Bool(noWaitFlagName))
+			migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool(dryRunFlagName), cmd.Bool(noWaitFlagName))
 
 			err = migrator.Promote(context.Background())
 			if err != nil {
