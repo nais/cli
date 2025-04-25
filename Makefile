@@ -1,9 +1,12 @@
+.PHONY: all
+all: fmt check test test-ci build
+
 .PHONY: build
-build: check fmt
+build:
 	go build -installsuffix cgo -o bin/nais ./cmd/cli
 
 .PHONY: check
-check: staticcheck vulncheck deadcode
+check: staticcheck vulncheck deadcode vet
 
 .PHONY: staticcheck
 staticcheck:
@@ -26,9 +29,9 @@ fmt:
 	go tool mvdan.cc/gofumpt -w ./
 
 .PHONY: test
-test: fmt vet
+test:
 	go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty
 
 .PHONY: test-ci
-test-ci: vet
+test-ci:
 	go tool github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output
