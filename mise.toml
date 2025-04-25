@@ -1,49 +1,57 @@
 [tasks.check]
+description = "Run all static analysis tools"
 depends = ['staticcheck','vulncheck','deadcode','vet']
 
 [tasks.staticcheck]
+description = "Run staticcheck"
 wait_for = ['fmt']
 run = "go tool honnef.co/go/tools/cmd/staticcheck ./..."
 
 [tasks.vulncheck]
+description = "Run govulncheck"
 wait_for = ['fmt']
 run = "go tool golang.org/x/vuln/cmd/govulncheck ./..."
 
 [tasks.deadcode]
+description = "Run deadcode"
 wait_for = ['fmt']
 run = "go tool golang.org/x/tools/cmd/deadcode -test ./..."
 
 [tasks.gosec]
+description = "Run gosec"
 wait_for = ['fmt']
 run = "go tool github.com/securego/gosec/v2/cmd/gosec --exclude-generated -terse ./..."
 
 [tasks.vet]
+description = "Run go vet"
 wait_for = ['fmt']
 run = "go vet ./..."
 
 [tasks.test]
+description = "Run regular go tests and ginkgo tests"
 depends = ['gotest', 'ginkgo']
 
 [tasks.gotest]
+description = "Run go tests"
 wait_for = ['fmt']
 run = "go test --race ./..."
 
 [tasks.ginkgo]
+description = "Run ginkgo tests with coverage"
 wait_for = ['fmt']
-run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty"
-
-[tasks.ginkgo-ci]
-wait_for = ['fmt']
-run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --race --trace --junit-report=report.xml --github-output"
+run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --trace --junit-report=report.xml --github-output"
 
 [tasks.fmt]
+description = "Format all go code using gofumpt"
 run = "go tool mvdan.cc/gofumpt -w ./"
 
 [tasks.build]
+description = "Build the Nais CLI binary"
 wait_for = ['fmt']
 run = "go build -installsuffix cgo -o bin/nais ./"
 
 [tasks.all]
+description = "Run all tasks"
 depends = ['fmt', 'check', 'test', 'build']
 
 [settings]
