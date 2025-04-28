@@ -3,14 +3,12 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/metrics"
-
-	"github.com/urfave/cli/v3"
-	"k8s.io/utils/strings/slices"
-
 	"github.com/nais/cli/internal/naisdevice"
+	"github.com/urfave/cli/v3"
 )
 
 func jita() *cli.Command {

@@ -3,11 +3,11 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/urfave/cli/v3"
-	"k8s.io/utils/strings/slices"
 )
 
 func status() *cli.Command {
