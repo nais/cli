@@ -8,7 +8,7 @@ gosec:
 staticcheck:
 	go tool honnef.co/go/tools/cmd/staticcheck ./...
 
-govulncheck:
+vulncheck:
 	go tool golang.org/x/vuln/cmd/govulncheck ./...
 
 deadcode:
