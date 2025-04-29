@@ -11,7 +11,7 @@ tool (
 )
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.16.1
+	cloud.google.com/go/cloudsqlconn v1.17.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.17.1
@@ -34,8 +34,8 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.35.0
 	golang.org/x/oauth2 v0.29.0
 	golang.org/x/sync v0.13.0
-	google.golang.org/api v0.229.0
-	google.golang.org/grpc v1.71.1
+	google.golang.org/api v0.230.0
+	google.golang.org/grpc v1.72.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.33.0
 	k8s.io/apimachinery v0.33.0
@@ -49,7 +49,7 @@ require (
 	atomicgo.dev/cursor v0.2.0 // indirect
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
-	cloud.google.com/go/auth v0.16.0 // indirect
+	cloud.google.com/go/auth v0.16.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
