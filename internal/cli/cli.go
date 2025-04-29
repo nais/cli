@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	aivencommand "github.com/nais/cli/internal/aiven/command"
 	debugcommand "github.com/nais/cli/internal/debug/command"
@@ -22,7 +20,7 @@ var (
 	commit  = "uncommited"
 )
 
-func Run(ctx context.Context) {
+func Run(ctx context.Context, args []string) error {
 	app := &cli.Command{
 		Name:                  "nais",
 		Usage:                 "A Nais cli",
@@ -43,9 +41,5 @@ func Run(ctx context.Context) {
 	}
 
 	metrics.CollectCommandHistogram(ctx, app.Commands)
-
-	if err := app.Run(ctx, os.Args); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	return app.Run(ctx, args)
 }
