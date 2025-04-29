@@ -11,7 +11,13 @@ import (
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/metrics"
-	naisdevicecommand "github.com/nais/cli/internal/naisdevice/command"
+	naisdeviceconfigget "github.com/nais/cli/internal/naisdevice/config/get"
+	naisdeviceconfigset "github.com/nais/cli/internal/naisdevice/config/set"
+	naisdeviceconnect "github.com/nais/cli/internal/naisdevice/connect"
+	naisdevicedisconnect "github.com/nais/cli/internal/naisdevice/disconnect"
+	naisdevicedoctor "github.com/nais/cli/internal/naisdevice/doctor"
+	naisdevicejita "github.com/nais/cli/internal/naisdevice/jita"
+	naisdevicestatus "github.com/nais/cli/internal/naisdevice/status"
 	postgrescommand "github.com/nais/cli/internal/postgres/command"
 	"github.com/nais/cli/internal/validate"
 	"github.com/urfave/cli/v3"
@@ -179,7 +185,72 @@ Caution - This will delete all files in '/tmp' folder starting with 'aiven-secre
 					},
 				},
 			},
-			naisdevicecommand.Device(),
+			{
+				Name:  "device",
+				Usage: "Command used for management of naisdevice",
+				Commands: []*cli.Command{
+					{
+						Name:  "config",
+						Usage: "Adjust or view the naisdevice configuration",
+						Commands: []*cli.Command{
+							{
+								Name:   "get",
+								Usage:  "Gets the current configuration",
+								Action: naisdeviceconfigget.Action,
+							},
+							{
+								Name:      "set",
+								Usage:     "Sets a configuration value",
+								ArgsUsage: "setting value",
+								Before:    naisdeviceconfigset.Before,
+								Action:    naisdeviceconfigset.Action,
+							},
+						},
+					},
+					{
+						Name:   "connect",
+						Usage:  "Creates a naisdevice connection, will lock until connection",
+						Action: naisdeviceconnect.Action,
+					},
+					{
+						Name:   "disconnect",
+						Usage:  "Disconnects your naisdevice",
+						Action: naisdevicedisconnect.Action,
+					},
+					{
+						Name:      "jita",
+						Usage:     "Connects to a JITA gateway",
+						ArgsUsage: "gateway",
+						Before:    naisdevicejita.Before,
+						Action:    naisdevicejita.Action,
+					},
+					{
+						Name:  "status",
+						Usage: "Shows the status of your naisdevice",
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "output",
+								Aliases: []string{"o"},
+								Action:  naisdevicestatus.OutputFlagAction,
+							},
+							&cli.BoolFlag{
+								Name:    "quiet",
+								Aliases: []string{"q"},
+							},
+							&cli.BoolFlag{
+								Name:    "verbose",
+								Aliases: []string{"v"},
+							},
+						},
+						Action: naisdevicestatus.Action,
+					},
+					{
+						Name:   "doctor",
+						Usage:  "Examine the health of your naisdevice",
+						Action: naisdevicedoctor.Action,
+					},
+				},
+			},
 			postgrescommand.Postgres(),
 		},
 	}

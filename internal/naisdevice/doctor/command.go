@@ -1,4 +1,4 @@
-package command
+package doctor
 
 import (
 	"context"
@@ -9,24 +9,18 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-func doctor() *cli.Command {
-	return &cli.Command{
-		Name:  "doctor",
-		Usage: "Examine the health of your naisdevice",
-		Action: func(ctx context.Context, cmd *cli.Command) error {
-			results := examination().Run()
-			for key, value := range results {
-				fmt.Printf("%s ", key)
-				if value.Result == doc.OK {
-					println("✅")
-				} else {
-					fmt.Printf("❌ (%s)\n", value.ErrMsg)
-				}
-			}
-			println()
-			return nil
-		},
+func Action(ctx context.Context, cmd *cli.Command) error {
+	results := examination().Run()
+	for key, value := range results {
+		fmt.Printf("%s ", key)
+		if value.Result == doc.OK {
+			println("✅")
+		} else {
+			fmt.Printf("❌ (%s)\n", value.ErrMsg)
+		}
 	}
+	println()
+	return nil
 }
 
 func examination() doc.Examination {
