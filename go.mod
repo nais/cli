@@ -26,7 +26,7 @@ require (
 	github.com/pterm/pterm v0.12.80
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.10.0
-	github.com/urfave/cli/v3 v3.3.1
+	github.com/urfave/cli/v3 v3.3.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.35.0
