@@ -22,11 +22,12 @@ var (
 
 func Run(ctx context.Context, args []string) error {
 	app := &cli.Command{
-		Name:                  "nais",
-		Usage:                 "A Nais cli",
-		Description:           "Nais platform utility cli, respects consoledonottrack.com",
-		Version:               version + "-" + commit,
-		EnableShellCompletion: true,
+		Name:                   "nais",
+		Usage:                  "A Nais cli",
+		Description:            "Nais platform utility cli, respects consoledonottrack.com",
+		Version:                version + "-" + commit,
+		UseShortOptionHandling: true,
+		EnableShellCompletion:  true,
 		Commands: []*cli.Command{
 			gcpcommand.Login(),
 			kubeconfigcommand.Kubeconfig(),
