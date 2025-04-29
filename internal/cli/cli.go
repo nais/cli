@@ -6,7 +6,7 @@ import (
 	aivencommand "github.com/nais/cli/internal/aiven/command"
 	debugcommand "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/gcp"
-	kubeconfigcommand "github.com/nais/cli/internal/kubeconfig/command"
+	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/metrics"
 	naisdevicecommand "github.com/nais/cli/internal/naisdevice/command"
 	postgrescommand "github.com/nais/cli/internal/postgres/command"
@@ -35,7 +35,37 @@ func Run(ctx context.Context, args []string) error {
 				Description: "This is a wrapper around gcloud auth login --update-adc.",
 				Action:      gcp.LoginCommand,
 			},
-			kubeconfigcommand.Kubeconfig(),
+			{
+				Name:  "kubeconfig",
+				Usage: "Create a kubeconfig file for connecting to available clusters",
+				Description: `Create a kubeconfig file for connecting to available clusters.
+This requires that you have the gcloud command line tool installed, configured and logged
+in using:
+gcloud auth login --update-adc`,
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "overwrite",
+						Usage:   "Overwrite existing kubeconfig data if conflicts are found",
+						Aliases: []string{"o"},
+					},
+					&cli.BoolFlag{
+						Name:    "clear",
+						Usage:   "Clear existing kubeconfig before writing new data",
+						Aliases: []string{"c"},
+					},
+					&cli.StringSliceFlag{
+						Name:    "exclude",
+						Usage:   "Exclude clusters from kubeconfig. Can be specified multiple times or as a comma separated list",
+						Aliases: []string{"e"},
+					},
+					&cli.BoolFlag{
+						Name:    "verbose",
+						Aliases: []string{"v"},
+					},
+				},
+				Before: kubeconfig.Before,
+				Action: kubeconfig.Action,
+			},
 			validatecommand.Validate(),
 			debugcommand.Debug(),
 			aivencommand.Aiven(),
