@@ -18,7 +18,17 @@ import (
 	naisdevicedoctor "github.com/nais/cli/internal/naisdevice/doctor"
 	naisdevicejita "github.com/nais/cli/internal/naisdevice/jita"
 	naisdevicestatus "github.com/nais/cli/internal/naisdevice/status"
-	postgrescommand "github.com/nais/cli/internal/postgres/command"
+	"github.com/nais/cli/internal/postgres"
+	postgresaudit "github.com/nais/cli/internal/postgres/audit"
+	"github.com/nais/cli/internal/postgres/command/migrate"
+	postgresgrant "github.com/nais/cli/internal/postgres/grant"
+	postgrespasswordrotate "github.com/nais/cli/internal/postgres/password/rotate"
+	postgresprepare "github.com/nais/cli/internal/postgres/prepare"
+	postgresproxy "github.com/nais/cli/internal/postgres/proxy"
+	postgrespsql "github.com/nais/cli/internal/postgres/psql"
+	postgresrevoke "github.com/nais/cli/internal/postgres/revoke"
+	postgresusersadd "github.com/nais/cli/internal/postgres/users/add"
+	postgresuserslist "github.com/nais/cli/internal/postgres/users/list"
 	"github.com/nais/cli/internal/validate"
 	"github.com/urfave/cli/v3"
 )
@@ -251,7 +261,233 @@ Caution - This will delete all files in '/tmp' folder starting with 'aiven-secre
 					},
 				},
 			},
-			postgrescommand.Postgres(),
+			{
+				Name:   "postgres",
+				Usage:  "Command used for connecting to Postgres",
+				Before: postgres.Before,
+				Commands: []*cli.Command{
+					{
+						Name:        "enable-audit",
+						Usage:       "Enable audit extension in Postgres database",
+						Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
+						ArgsUsage:   "appname",
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+						},
+						Before: postgresaudit.Before,
+						Action: postgresaudit.Action,
+					},
+					{
+						Name:        "grant",
+						Usage:       "Grant yourself access to a Postgres database",
+						Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+						ArgsUsage:   "appname",
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+						},
+						Before: postgresgrant.Before,
+						Action: postgresgrant.Action,
+					},
+					migrate.Migrate(),
+					{
+						Name:  "password",
+						Usage: "Administrate Postgres password",
+						Commands: []*cli.Command{
+							{
+								Name:        "rotate",
+								Usage:       "Rotate the Postgres database password",
+								Description: "The rotation is both done in GCP and in the Kubernetes secret",
+								ArgsUsage:   "appname",
+								Flags: []cli.Flag{
+									&cli.StringFlag{
+										Name:    "context",
+										Aliases: []string{"c"},
+									},
+									&cli.StringFlag{
+										Name:    "namespace",
+										Aliases: []string{"n"},
+									},
+								},
+								Before: postgrespasswordrotate.Before,
+								Action: postgrespasswordrotate.Action,
+							},
+						},
+					},
+					{
+						Name:  "prepare",
+						Usage: "Prepare your postgres instance for use with personal accounts",
+						Description: `Prepare will prepare the postgres instance by connecting using the
+application credentials and modify the permissions on the public schema.
+All IAM users in your GCP project will be able to connect to the instance.
+
+This operation is only required to run once for each postgresql instance.`,
+						ArgsUsage: "appname",
+						Flags: []cli.Flag{
+							&cli.BoolFlag{
+								Name:  "all-privs",
+								Usage: "Gives all privileges to users",
+							},
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+							&cli.StringFlag{
+								Name:  "schema",
+								Value: "public",
+								Usage: "Schema to grant access to",
+							},
+						},
+						Before: postgresprepare.Before,
+						Action: postgresprepare.Action,
+					},
+					{
+						Name:        "proxy",
+						Usage:       "Create a proxy to a Postgres instance",
+						Description: "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
+						ArgsUsage:   "appname",
+						Flags: []cli.Flag{
+							&cli.UintFlag{
+								Name:    "port",
+								Aliases: []string{"p"},
+								Value:   5432,
+							},
+							&cli.StringFlag{
+								Name:    "host",
+								Aliases: []string{"H"},
+								Value:   "localhost",
+							},
+							&cli.BoolFlag{
+								Name:    "verbose",
+								Aliases: []string{"v"},
+							},
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+						},
+						Before: postgresproxy.Before,
+						Action: postgresproxy.Action,
+					},
+					{
+						Name:        "psql",
+						Usage:       "Connect to the database using psql",
+						Description: "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
+						ArgsUsage:   "appname",
+						Flags: []cli.Flag{
+							&cli.BoolFlag{
+								Name:    "verbose",
+								Aliases: []string{"v"},
+							},
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+						},
+						Before: postgrespsql.Before,
+						Action: postgrespsql.Action,
+					},
+					{
+						Name:  "revoke",
+						Usage: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
+						Description: `Revoke will revoke the role 'cloudsqliamuser' access to the
+tables in the postgres instance. This is done by connecting using the application
+credentials and modify the permissions on the public schema.
+
+This operation is only required to run once for each postgresql instance.`,
+						ArgsUsage: "appname",
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "context",
+								Aliases: []string{"c"},
+							},
+							&cli.StringFlag{
+								Name:    "namespace",
+								Aliases: []string{"n"},
+							},
+							&cli.StringFlag{
+								Name:  "schema",
+								Value: "public",
+								Usage: "Schema to revoke access from",
+							},
+						},
+						Before: postgresrevoke.Before,
+						Action: postgresrevoke.Action,
+					},
+					{
+						Name:        "users",
+						Usage:       "Administrate users in your Postgres instance",
+						Description: "Command used for listing and adding users to database",
+						Commands: []*cli.Command{
+							{
+								Name:        "add",
+								Usage:       "Add user to a Postgres database",
+								Description: "Will grant a user access to tables in public schema.",
+								ArgsUsage:   "appname username password",
+								Flags: []cli.Flag{
+									&cli.StringFlag{
+										Name:    "privilege",
+										Aliases: []string{"p"},
+										Value:   "select",
+									},
+									&cli.StringFlag{
+										Name:    "context",
+										Aliases: []string{"c"},
+									},
+									&cli.StringFlag{
+										Name:    "namespace",
+										Aliases: []string{"n"},
+									},
+								},
+								Before: postgresusersadd.Before,
+								Action: postgresusersadd.Action,
+							},
+							{
+								Name:      "list",
+								Usage:     "List users in a Postgres database",
+								ArgsUsage: "appname",
+								Flags: []cli.Flag{
+									&cli.StringFlag{
+										Name:    "context",
+										Aliases: []string{"c"},
+									},
+									&cli.StringFlag{
+										Name:    "namespace",
+										Aliases: []string{"n"},
+									},
+								},
+								Before: postgresuserslist.Before,
+								Action: postgresuserslist.Action,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 
