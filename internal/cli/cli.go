@@ -10,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/metrics"
 	naisdevicecommand "github.com/nais/cli/internal/naisdevice/command"
 	postgrescommand "github.com/nais/cli/internal/postgres/command"
-	validatecommand "github.com/nais/cli/internal/validate/command"
+	"github.com/nais/cli/internal/validate"
 	"github.com/urfave/cli/v3"
 )
 
@@ -66,7 +66,29 @@ gcloud auth login --update-adc`,
 				Before: kubeconfig.Before,
 				Action: kubeconfig.Action,
 			},
-			validatecommand.Validate(),
+			{
+				Name:      "validate",
+				Usage:     "Validate nais.yaml configuration",
+				ArgsUsage: "nais.yaml [naiser.yaml...]",
+				UsageText: "nais validate nais.yaml [naiser.yaml...]",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "vars",
+						Usage: "path to `FILE` containing template variables, must be JSON or YAML format.",
+					},
+					&cli.StringSliceFlag{
+						Name:  "var",
+						Usage: "template variable in KEY=VALUE form, can be specified multiple times.",
+					},
+					&cli.BoolFlag{
+						Name:    "verbose",
+						Aliases: []string{"v"},
+						Usage:   "print all the template variables and final resources after templating.",
+					},
+				},
+				Before: validate.Before,
+				Action: validate.Action,
+			},
 			debugcommand.Debug(),
 			aivencommand.Aiven(),
 			naisdevicecommand.Device(),
