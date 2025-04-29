@@ -4,7 +4,8 @@ import (
 	"context"
 
 	aivencommand "github.com/nais/cli/internal/aiven/command"
-	debugcommand "github.com/nais/cli/internal/debug/command"
+	"github.com/nais/cli/internal/debug"
+	"github.com/nais/cli/internal/debug/tidy"
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/metrics"
@@ -89,7 +90,39 @@ gcloud auth login --update-adc`,
 				Before: validate.Before,
 				Action: validate.Action,
 			},
-			debugcommand.Debug(),
+			{
+				Name:      "debug",
+				Usage:     "Create and attach to a debug container",
+				ArgsUsage: "workloadname",
+				Description: "Create and attach to a debug pod or container. \n" +
+					"When flag '--copy' is set, the command can be used to debug a copy of the original pod, \n" +
+					"allowing you to troubleshoot without affecting the live pod.\n" +
+					"To debug a live pod, run the command without the '--copy' flag.\n" +
+					"You can only reconnect to the debug session if the pod is running.",
+				Commands: []*cli.Command{
+					{
+						Name:        "tidy",
+						Usage:       "Clean up debug containers and debug pods",
+						Description: "Remove debug containers created by the 'debug' command. To delete copy pods set the '--copy' flag.",
+						ArgsUsage:   "workloadname",
+						Flags: []cli.Flag{
+							contextFlag(),
+							namespaceFlag(),
+							copyFlag(),
+						},
+						Before: tidy.Before,
+						Action: tidy.Action,
+					},
+				},
+				Flags: []cli.Flag{
+					contextFlag(),
+					copyFlag(),
+					namespaceFlag(),
+					byPodFlag(),
+				},
+				Before: debug.Before,
+				Action: debug.Action,
+			},
 			aivencommand.Aiven(),
 			naisdevicecommand.Device(),
 			postgrescommand.Postgres(),
