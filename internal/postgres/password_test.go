@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/types"
-	core_v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -52,11 +52,11 @@ type test struct {
 
 var _ = Describe("Password", func() {
 	var k8sClient *fake.Clientset
-	var secret *core_v1.Secret
+	var secret *corev1.Secret
 
 	BeforeEach(func() {
-		k8sClient = fake.NewSimpleClientset()
-		secret = &core_v1.Secret{
+		k8sClient = fake.NewClientset()
+		secret = &corev1.Secret{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "Secret",
 				APIVersion: "v1",
@@ -101,7 +101,7 @@ var _ = Describe("Password", func() {
 				actual, err := k8sClient.Tracker().Get(gvr, secret.Namespace, secret.Name)
 				Expect(err).To(BeNil())
 
-				actualSecret, ok := actual.(*core_v1.Secret)
+				actualSecret, ok := actual.(*corev1.Secret)
 				Expect(ok).To(BeTrue())
 
 				for _, assert := range test.assertSecret {
@@ -140,21 +140,21 @@ func createDbInfo(k8sClient kubernetes.Interface) *DBInfo {
 	}
 }
 
-type SecretPrep func(secret *core_v1.Secret)
+type SecretPrep func(secret *corev1.Secret)
 
-func AddPassword(secret *core_v1.Secret) {
+func AddPassword(secret *corev1.Secret) {
 	secret.Data["DB_PASSWORD"] = []byte(oldPassword)
 }
 
-func AddUrl(secret *core_v1.Secret) {
+func AddUrl(secret *corev1.Secret) {
 	secret.Data["DB_URL"] = []byte(fmt.Sprintf(pgUrlTmpl, oldPassword))
 }
 
-func AddJdbcUrl(secret *core_v1.Secret) {
+func AddJdbcUrl(secret *corev1.Secret) {
 	secret.Data["DB_JDBC_URL"] = []byte(fmt.Sprintf(jdbcUrlTmpl, oldPassword))
 }
 
-type AssertSecret func(actual *core_v1.Secret)
+type AssertSecret func(actual *corev1.Secret)
 
 func EqualUrlNoQuery(expected *url.URL) types.GomegaMatcher {
 	expectedNoQuery, _, _ := strings.Cut(expected.String(), "?")
@@ -171,13 +171,13 @@ func EqualQuery(expected *url.URL) types.GomegaMatcher {
 	}, Equal(expectedQuery))
 }
 
-func HasPassword(actual *core_v1.Secret) {
+func HasPassword(actual *corev1.Secret) {
 	By("should have new password in DB_PASSWORD", func() {
 		Expect(actual.Data["DB_PASSWORD"]).To(Equal([]byte(newPassword)))
 	})
 }
 
-func HasUrl(actual *core_v1.Secret) {
+func HasUrl(actual *corev1.Secret) {
 	By("should have new password in DB_URL", func() {
 		u, err := url.Parse(string(actual.Data["DB_URL"]))
 		Expect(err).To(BeNil())
@@ -188,14 +188,14 @@ func HasUrl(actual *core_v1.Secret) {
 	})
 }
 
-func HasNoUrl(actual *core_v1.Secret) {
+func HasNoUrl(actual *corev1.Secret) {
 	By("should not have DB_URL", func() {
 		_, ok := actual.Data["DB_URL"]
 		Expect(ok).To(BeFalse())
 	})
 }
 
-func HasJdbcUrl(actual *core_v1.Secret) {
+func HasJdbcUrl(actual *corev1.Secret) {
 	By("should have new password in DB_JDBC_URL", func() {
 		u, err := url.Parse(string(actual.Data["DB_JDBC_URL"]))
 		Expect(err).To(BeNil())
@@ -206,7 +206,7 @@ func HasJdbcUrl(actual *core_v1.Secret) {
 	})
 }
 
-func HasNoJdbcUrl(actual *core_v1.Secret) {
+func HasNoJdbcUrl(actual *corev1.Secret) {
 	By("should not have DB_JDBC_URL", func() {
 		_, ok := actual.Data["DB_JDBC_URL"]
 		Expect(ok).To(BeFalse())
