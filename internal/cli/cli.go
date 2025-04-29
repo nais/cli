@@ -3,7 +3,9 @@ package cli
 import (
 	"context"
 
-	aivencommand "github.com/nais/cli/internal/aiven/command"
+	aivencreate "github.com/nais/cli/internal/aiven/create"
+	aivenget "github.com/nais/cli/internal/aiven/get"
+	aiventidy "github.com/nais/cli/internal/aiven/tidy"
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/tidy"
 	"github.com/nais/cli/internal/gcp"
@@ -123,7 +125,60 @@ gcloud auth login --update-adc`,
 				Before: debug.Before,
 				Action: debug.Action,
 			},
-			aivencommand.Aiven(),
+			{
+				Name:  "aiven",
+				Usage: "Command used for management of AivenApplication",
+				Commands: []*cli.Command{
+					{
+						Name:      "create",
+						Usage:     "Creates a protected and time-limited AivenApplication",
+						ArgsUsage: "service username namespace",
+						Flags: []cli.Flag{
+							&cli.UintFlag{
+								Name:    "expire",
+								Aliases: []string{"e"},
+								Value:   1,
+							},
+							&cli.StringFlag{
+								Name:    "pool",
+								Aliases: []string{"p"},
+								Value:   "nav-dev",
+								Action:  aivencreate.PoolFlagAction,
+							},
+							&cli.StringFlag{
+								Name:    "secret",
+								Aliases: []string{"s"},
+							},
+							&cli.StringFlag{
+								Name:    "instance",
+								Aliases: []string{"i"},
+								Action:  aivencreate.InstanceFlagAction,
+							},
+							&cli.StringFlag{
+								Name:    "access",
+								Aliases: []string{"a"},
+								Action:  aivencreate.AccessFlagAction,
+							},
+						},
+						Before: aivencreate.Before,
+						Action: aivencreate.Action,
+					},
+					{
+						Name:      "get",
+						Usage:     "Generate preferred config format to '/tmp' folder",
+						ArgsUsage: "service username namespace",
+						Before:    aivenget.Before,
+						Action:    aivenget.Action,
+					},
+					{
+						Name:  "tidy",
+						Usage: "Clean up /tmp/aiven-secret-* made by nais-cli",
+						Description: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
+Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
+						Action: aiventidy.Action,
+					},
+				},
+			},
 			naisdevicecommand.Device(),
 			postgrescommand.Postgres(),
 		},
