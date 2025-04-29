@@ -5,7 +5,7 @@ import (
 
 	aivencommand "github.com/nais/cli/internal/aiven/command"
 	debugcommand "github.com/nais/cli/internal/debug/command"
-	gcpcommand "github.com/nais/cli/internal/gcp/command"
+	"github.com/nais/cli/internal/gcp"
 	kubeconfigcommand "github.com/nais/cli/internal/kubeconfig/command"
 	"github.com/nais/cli/internal/metrics"
 	naisdevicecommand "github.com/nais/cli/internal/naisdevice/command"
@@ -29,7 +29,12 @@ func Run(ctx context.Context, args []string) error {
 		UseShortOptionHandling: true,
 		EnableShellCompletion:  true,
 		Commands: []*cli.Command{
-			gcpcommand.Login(),
+			{
+				Name:        "login",
+				Usage:       "Login using Google Auth.",
+				Description: "This is a wrapper around gcloud auth login --update-adc.",
+				Action:      gcp.LoginCommand,
+			},
 			kubeconfigcommand.Kubeconfig(),
 			validatecommand.Validate(),
 			debugcommand.Debug(),
