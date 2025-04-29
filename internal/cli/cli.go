@@ -27,8 +27,6 @@ func Run(ctx context.Context, args []string) error {
 		Description:           "Nais platform utility cli, respects consoledonottrack.com",
 		Version:               version + "-" + commit,
 		EnableShellCompletion: true,
-		HideHelpCommand:       true,
-		Suggest:               true,
 		Commands: []*cli.Command{
 			gcpcommand.Login(),
 			kubeconfigcommand.Kubeconfig(),
@@ -40,6 +38,15 @@ func Run(ctx context.Context, args []string) error {
 		},
 	}
 
+	setDefaults(app)
 	metrics.CollectCommandHistogram(ctx, app.Commands)
 	return app.Run(ctx, args)
+}
+
+func setDefaults(c *cli.Command) {
+	c.HideHelpCommand = true
+
+	for i := range c.Commands {
+		setDefaults(c.Commands[i])
+	}
 }

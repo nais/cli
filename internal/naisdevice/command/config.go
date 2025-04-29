@@ -14,9 +14,8 @@ import (
 
 func config() *cli.Command {
 	return &cli.Command{
-		Name:            "config",
-		Usage:           "Adjust or view the naisdevice configuration",
-		HideHelpCommand: true,
+		Name:  "config",
+		Usage: "Adjust or view the naisdevice configuration",
 		Commands: []*cli.Command{
 			getConfig(),
 			setConfig(),

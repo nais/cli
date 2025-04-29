@@ -11,11 +11,10 @@ import (
 
 func Validate() *cli.Command {
 	return &cli.Command{
-		Name:            "validate",
-		Usage:           "Validate nais.yaml configuration",
-		ArgsUsage:       "nais.yaml [naiser.yaml...]",
-		UsageText:       "nais validate nais.yaml [naiser.yaml...]",
-		HideHelpCommand: true,
+		Name:      "validate",
+		Usage:     "Validate nais.yaml configuration",
+		ArgsUsage: "nais.yaml [naiser.yaml...]",
+		UsageText: "nais validate nais.yaml [naiser.yaml...]",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "vars",
