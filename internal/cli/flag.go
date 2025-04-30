@@ -11,15 +11,6 @@ func contextFlag() *cli.StringFlag {
 	}
 }
 
-func byPodFlag() *cli.BoolFlag {
-	return &cli.BoolFlag{
-		Name:        "by-pod",
-		Aliases:     []string{"p"},
-		Usage:       "Attach to a specific `BY-POD` in a workload",
-		DefaultText: "The first pod in the workload",
-	}
-}
-
 func copyFlag() *cli.BoolFlag {
 	return &cli.BoolFlag{
 		Name:        "copy",
