@@ -20,8 +20,12 @@ import (
 	naisdevicestatus "github.com/nais/cli/internal/naisdevice/status"
 	"github.com/nais/cli/internal/postgres"
 	postgresaudit "github.com/nais/cli/internal/postgres/audit"
-	"github.com/nais/cli/internal/postgres/command/migrate"
 	postgresgrant "github.com/nais/cli/internal/postgres/grant"
+	postgresmigrate "github.com/nais/cli/internal/postgres/migrate"
+	postgresmigratefinalize "github.com/nais/cli/internal/postgres/migrate/finalize"
+	postgresmigratepromote "github.com/nais/cli/internal/postgres/migrate/promote"
+	postgresmigraterollback "github.com/nais/cli/internal/postgres/migrate/rollback"
+	postgresmigratesetup "github.com/nais/cli/internal/postgres/migrate/setup"
 	postgrespasswordrotate "github.com/nais/cli/internal/postgres/password/rotate"
 	postgresprepare "github.com/nais/cli/internal/postgres/prepare"
 	postgresproxy "github.com/nais/cli/internal/postgres/proxy"
@@ -302,7 +306,97 @@ Caution - This will delete all files in '/tmp' folder starting with 'aiven-secre
 						Before: postgresgrant.Before,
 						Action: postgresgrant.Action,
 					},
-					migrate.Migrate(),
+					{
+						Name:   "migrate",
+						Usage:  "Command used for migrating to a new Postgres instance",
+						Before: postgresmigrate.Before,
+						Commands: []*cli.Command{
+							{
+								Name:        "setup",
+								Usage:       "Make necessary setup for a new migration",
+								UsageText:   "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
+								Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
+								Flags: []cli.Flag{
+									namespaceFlag(),
+									contextFlag(),
+									dryRunFlag(),
+									noWaitFlag(),
+									&cli.StringFlag{
+										Name:        "tier",
+										Usage:       "The `TIER` of the new instance",
+										Category:    "Target instance configuration",
+										Sources:     cli.EnvVars("TARGET_INSTANCE_TIER"),
+										DefaultText: "Source instance value",
+										Action:      postgresmigratesetup.TierFlagAction,
+									},
+									&cli.BoolFlag{
+										Name:        "disk-autoresize",
+										Usage:       "Enable disk autoresize for the new instance",
+										Category:    "Target instance configuration",
+										Sources:     cli.EnvVars("TARGET_INSTANCE_DISK_AUTORESIZE"),
+										DefaultText: "Source instance value",
+									},
+									&cli.IntFlag{
+										Name:        "disk-size",
+										Usage:       "The `DISK_SIZE` of the new instance",
+										Category:    "Target instance configuration",
+										Sources:     cli.EnvVars("TARGET_INSTANCE_DISKSIZE"),
+										DefaultText: "Source instance value",
+									},
+									&cli.StringFlag{
+										Name:        "type",
+										Usage:       "The `TYPE` of the new instance",
+										Category:    "Target instance configuration",
+										Sources:     cli.EnvVars("TARGET_INSTANCE_TYPE"),
+										DefaultText: "Source instance value",
+										Action:      postgresmigratesetup.TypeFlagAction,
+									},
+								},
+								Before: postgresmigratesetup.Before,
+								Action: postgresmigratesetup.Action,
+							},
+							{
+								Name:        "promote",
+								Usage:       "Promote the migrated instance to the new primary instance",
+								UsageText:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
+								Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
+								Flags: []cli.Flag{
+									namespaceFlag(),
+									contextFlag(),
+									dryRunFlag(),
+									noWaitFlag(),
+								},
+								Before: postgresmigratepromote.Before,
+								Action: postgresmigratepromote.Action,
+							},
+							{
+								Name:        "finalize",
+								Usage:       "Finalize the migration",
+								UsageText:   "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
+								Description: "Finalize will remove the source instance and associated resources after a successful migration.",
+								Flags: []cli.Flag{
+									namespaceFlag(),
+									contextFlag(),
+									dryRunFlag(),
+								},
+								Before: postgresmigratefinalize.Before,
+								Action: postgresmigratefinalize.Action,
+							},
+							{
+								Name:        "rollback",
+								Usage:       "Roll back the migration",
+								UsageText:   "nais postgres migrate rollback APP_NAME TARGET_INSTANCE_NAME",
+								Description: "Rollback will roll back the migration, and restore the application to use the original instance.",
+								Flags: []cli.Flag{
+									namespaceFlag(),
+									contextFlag(),
+									dryRunFlag(),
+								},
+								Before: postgresmigraterollback.Before,
+								Action: postgresmigraterollback.Action,
+							},
+						},
+					},
 					{
 						Name:  "password",
 						Usage: "Administrate Postgres password",

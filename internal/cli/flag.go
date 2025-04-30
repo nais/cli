@@ -33,7 +33,21 @@ func namespaceFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:        "namespace",
 		Aliases:     []string{"n"},
-		Usage:       "The `NAMESPACE` to use",
-		DefaultText: "The current namespace in your kubeconfig",
+		Usage:       "The kubernetes `NAMESPACE` to use",
+		DefaultText: "The namespace from your current kubeconfig context",
+	}
+}
+
+func noWaitFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:  "no-wait",
+		Usage: "Do not wait for the job to complete",
+	}
+}
+
+func dryRunFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:  "dry-run",
+		Usage: "Perform a dry run of the migration setup, without actually starting the migration",
 	}
 }
