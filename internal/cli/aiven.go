@@ -1,4 +1,4 @@
-package cli2
+package cli
 
 import (
 	"fmt"
@@ -26,9 +26,6 @@ func aivencmd() *cobra.Command {
 		Use:   "create service username namespace",
 		Short: "Creates a protected and time-limited AivenApplication",
 		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return create.Action(cmd.Context(), createArgs(args), createFlags)
-		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if createFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
@@ -39,6 +36,9 @@ func aivencmd() *cobra.Command {
 			}
 
 			return create.Validate(cmd.Context(), createArgs(args), createFlags)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return create.Action(cmd.Context(), createArgs(args), createFlags)
 		},
 	}
 
@@ -53,8 +53,14 @@ func aivencmd() *cobra.Command {
 	getCmd := &cobra.Command{
 		Use:   "get service username namespace",
 		Short: "Generate preferred config format to '/tmp' folder",
-		// Before:    aivenget.Before,
-		// Run:       aivenget.Action,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return aivenget.Before( ... )
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return aivenget.Action( ... )
+		},
 	}
 	aivenCmd.AddCommand(getCmd)
 
@@ -63,7 +69,14 @@ func aivencmd() *cobra.Command {
 		Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
 		Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
 	Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
-		// Run: aiventidy.Action,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return aiventidy.Before( ... )
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return aiventidy.Action( ... )
+		},
 	}
 	aivenCmd.AddCommand(tidyCmd)
 

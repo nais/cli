@@ -1,40 +1,7 @@
 package cli
 
 import (
-	"context"
-
-	aivencreate "github.com/nais/cli/internal/aiven/create"
-	aivenget "github.com/nais/cli/internal/aiven/get"
-	aiventidy "github.com/nais/cli/internal/aiven/tidy"
-	"github.com/nais/cli/internal/debug"
-	"github.com/nais/cli/internal/debug/tidy"
-	"github.com/nais/cli/internal/gcp"
-	"github.com/nais/cli/internal/kubeconfig"
-	"github.com/nais/cli/internal/metrics"
-	naisdeviceconfigget "github.com/nais/cli/internal/naisdevice/config/get"
-	naisdeviceconfigset "github.com/nais/cli/internal/naisdevice/config/set"
-	naisdeviceconnect "github.com/nais/cli/internal/naisdevice/connect"
-	naisdevicedisconnect "github.com/nais/cli/internal/naisdevice/disconnect"
-	naisdevicedoctor "github.com/nais/cli/internal/naisdevice/doctor"
-	naisdevicejita "github.com/nais/cli/internal/naisdevice/jita"
-	naisdevicestatus "github.com/nais/cli/internal/naisdevice/status"
-	"github.com/nais/cli/internal/postgres"
-	postgresaudit "github.com/nais/cli/internal/postgres/audit"
-	postgresgrant "github.com/nais/cli/internal/postgres/grant"
-	postgresmigrate "github.com/nais/cli/internal/postgres/migrate"
-	postgresmigratefinalize "github.com/nais/cli/internal/postgres/migrate/finalize"
-	postgresmigratepromote "github.com/nais/cli/internal/postgres/migrate/promote"
-	postgresmigraterollback "github.com/nais/cli/internal/postgres/migrate/rollback"
-	postgresmigratesetup "github.com/nais/cli/internal/postgres/migrate/setup"
-	postgrespasswordrotate "github.com/nais/cli/internal/postgres/password/rotate"
-	postgresprepare "github.com/nais/cli/internal/postgres/prepare"
-	postgresproxy "github.com/nais/cli/internal/postgres/proxy"
-	postgrespsql "github.com/nais/cli/internal/postgres/psql"
-	postgresrevoke "github.com/nais/cli/internal/postgres/revoke"
-	postgresusersadd "github.com/nais/cli/internal/postgres/users/add"
-	postgresuserslist "github.com/nais/cli/internal/postgres/users/list"
-	"github.com/nais/cli/internal/validate"
-	"github.com/urfave/cli/v3"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -43,508 +10,330 @@ var (
 	commit  = "uncommited"
 )
 
-func Run(ctx context.Context, args []string) error {
-	app := &cli.Command{
-		Name:                   "nais",
-		Usage:                  "A Nais cli",
-		Description:            "Nais platform utility cli, respects consoledonottrack.com",
-		Version:                version + "-" + commit,
-		UseShortOptionHandling: true,
-		EnableShellCompletion:  true,
-		Commands: []*cli.Command{
-			{
-				Name:        "login",
-				Usage:       "Login using Google Auth.",
-				Description: "This is a wrapper around gcloud auth login --update-adc.",
-				Action:      gcp.LoginCommand,
-			},
-			{
-				Name:  "kubeconfig",
-				Usage: "Create a kubeconfig file for connecting to available clusters",
-				Description: `Create a kubeconfig file for connecting to available clusters.
-This requires that you have the gcloud command line tool installed, configured and logged
-in using:
-gcloud auth login --update-adc`,
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:    "overwrite",
-						Usage:   "Overwrite existing kubeconfig data if conflicts are found",
-						Aliases: []string{"o"},
-					},
-					&cli.BoolFlag{
-						Name:    "clear",
-						Usage:   "Clear existing kubeconfig before writing new data",
-						Aliases: []string{"c"},
-					},
-					&cli.StringSliceFlag{
-						Name:    "exclude",
-						Usage:   "Exclude clusters from kubeconfig. Can be specified multiple times or as a comma separated list",
-						Aliases: []string{"e"},
-					},
-					&cli.BoolFlag{
-						Name:    "verbose",
-						Aliases: []string{"v"},
-					},
-				},
-				Before: kubeconfig.Before,
-				Action: kubeconfig.Action,
-			},
-			{
-				Name:      "validate",
-				Usage:     "Validate nais.yaml configuration",
-				ArgsUsage: "nais.yaml [naiser.yaml...]",
-				UsageText: "nais validate nais.yaml [naiser.yaml...]",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:  "vars",
-						Usage: "path to `FILE` containing template variables, must be JSON or YAML format.",
-					},
-					&cli.StringSliceFlag{
-						Name:  "var",
-						Usage: "template variable in KEY=VALUE form, can be specified multiple times.",
-					},
-					&cli.BoolFlag{
-						Name:    "verbose",
-						Aliases: []string{"v"},
-						Usage:   "print all the template variables and final resources after templating.",
-					},
-				},
-				Before: validate.Before,
-				Action: validate.Action,
-			},
-			{
-				Name:      "debug",
-				Usage:     "Create and attach to a debug container",
-				ArgsUsage: "workloadname",
-				Description: "Create and attach to a debug pod or container. \n" +
-					"When flag '--copy' is set, the command can be used to debug a copy of the original pod, \n" +
-					"allowing you to troubleshoot without affecting the live pod.\n" +
-					"To debug a live pod, run the command without the '--copy' flag.\n" +
-					"You can only reconnect to the debug session if the pod is running.",
-				Commands: []*cli.Command{
-					{
-						Name:        "tidy",
-						Usage:       "Clean up debug containers and debug pods",
-						Description: "Remove debug containers created by the 'debug' command. To delete copy pods set the '--copy' flag.",
-						ArgsUsage:   "workloadname",
-						Flags: []cli.Flag{
-							contextFlag(),
-							namespaceFlag(),
-							copyFlag(),
-						},
-						Before: tidy.Before,
-						Action: tidy.Action,
-					},
-				},
-				Flags: []cli.Flag{
-					contextFlag(),
-					copyFlag(),
-					namespaceFlag(),
-					&cli.BoolFlag{
-						Name:        "by-pod",
-						Aliases:     []string{"p"},
-						Usage:       "Attach to a specific `BY-POD` in a workload",
-						DefaultText: "The first pod in the workload",
-					},
-				},
-				Before: debug.Before,
-				Action: debug.Action,
-			},
-			{
-				Name:  "aiven",
-				Usage: "Command used for management of AivenApplication",
-				Commands: []*cli.Command{
-					{
-						Name:      "create",
-						Usage:     "Creates a protected and time-limited AivenApplication",
-						ArgsUsage: "service username namespace",
-						Flags: []cli.Flag{
-							&cli.UintFlag{
-								Name:    "expire",
-								Aliases: []string{"e"},
-								Value:   1,
-							},
-							&cli.StringFlag{
-								Name:    "pool",
-								Aliases: []string{"p"},
-								Value:   "nav-dev",
-								Action:  aivencreate.PoolFlagAction,
-							},
-							&cli.StringFlag{
-								Name:    "secret",
-								Aliases: []string{"s"},
-							},
-							&cli.StringFlag{
-								Name:    "instance",
-								Aliases: []string{"i"},
-								Action:  aivencreate.InstanceFlagAction,
-							},
-							&cli.StringFlag{
-								Name:    "access",
-								Aliases: []string{"a"},
-								Action:  aivencreate.AccessFlagAction,
-							},
-						},
-						Before: aivencreate.Before,
-						Action: aivencreate.Action,
-					},
-					{
-						Name:      "get",
-						Usage:     "Generate preferred config format to '/tmp' folder",
-						ArgsUsage: "service username namespace",
-						Before:    aivenget.Before,
-						Action:    aivenget.Action,
-					},
-					{
-						Name:  "tidy",
-						Usage: "Clean up /tmp/aiven-secret-* made by nais-cli",
-						Description: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
-Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
-						Action: aiventidy.Action,
-					},
-				},
-			},
-			{
-				Name:  "device",
-				Usage: "Command used for management of naisdevice",
-				Commands: []*cli.Command{
-					{
-						Name:  "config",
-						Usage: "Adjust or view the naisdevice configuration",
-						Commands: []*cli.Command{
-							{
-								Name:   "get",
-								Usage:  "Gets the current configuration",
-								Action: naisdeviceconfigget.Action,
-							},
-							{
-								Name:      "set",
-								Usage:     "Sets a configuration value",
-								ArgsUsage: "setting value",
-								Before:    naisdeviceconfigset.Before,
-								Action:    naisdeviceconfigset.Action,
-							},
-						},
-					},
-					{
-						Name:   "connect",
-						Usage:  "Creates a naisdevice connection, will lock until connection",
-						Action: naisdeviceconnect.Action,
-					},
-					{
-						Name:   "disconnect",
-						Usage:  "Disconnects your naisdevice",
-						Action: naisdevicedisconnect.Action,
-					},
-					{
-						Name:      "jita",
-						Usage:     "Connects to a JITA gateway",
-						ArgsUsage: "gateway",
-						Before:    naisdevicejita.Before,
-						Action:    naisdevicejita.Action,
-					},
-					{
-						Name:  "status",
-						Usage: "Shows the status of your naisdevice",
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:    "output",
-								Aliases: []string{"o"},
-								Action:  naisdevicestatus.OutputFlagAction,
-							},
-							&cli.BoolFlag{
-								Name:    "quiet",
-								Aliases: []string{"q"},
-							},
-							&cli.BoolFlag{
-								Name:    "verbose",
-								Aliases: []string{"v"},
-							},
-						},
-						Action: naisdevicestatus.Action,
-					},
-					{
-						Name:   "doctor",
-						Usage:  "Examine the health of your naisdevice",
-						Action: naisdevicedoctor.Action,
-					},
-				},
-			},
-			{
-				Name:   "postgres",
-				Usage:  "Command used for connecting to Postgres",
-				Before: postgres.Before,
-				Commands: []*cli.Command{
-					{
-						Name:        "enable-audit",
-						Usage:       "Enable audit extension in Postgres database",
-						Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
-						ArgsUsage:   "appname",
-						Flags: []cli.Flag{
-							contextFlag(),
-							namespaceFlag(),
-						},
-						Before: postgresaudit.Before,
-						Action: postgresaudit.Action,
-					},
-					{
-						Name:        "grant",
-						Usage:       "Grant yourself access to a Postgres database",
-						Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
-						ArgsUsage:   "appname",
-						Flags: []cli.Flag{
-							contextFlag(),
-							namespaceFlag(),
-						},
-						Before: postgresgrant.Before,
-						Action: postgresgrant.Action,
-					},
-					{
-						Name:   "migrate",
-						Usage:  "Command used for migrating to a new Postgres instance",
-						Before: postgresmigrate.Before,
-						Commands: []*cli.Command{
-							{
-								Name:        "setup",
-								Usage:       "Make necessary setup for a new migration",
-								UsageText:   "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
-								Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
-								Flags: []cli.Flag{
-									namespaceFlag(),
-									contextFlag(),
-									dryRunFlag(),
-									noWaitFlag(),
-									&cli.StringFlag{
-										Name:        "tier",
-										Usage:       "The `TIER` of the new instance",
-										Category:    "Target instance configuration",
-										Sources:     cli.EnvVars("TARGET_INSTANCE_TIER"),
-										DefaultText: "Source instance value",
-										Action:      postgresmigratesetup.TierFlagAction,
-									},
-									&cli.BoolFlag{
-										Name:        "disk-autoresize",
-										Usage:       "Enable disk autoresize for the new instance",
-										Category:    "Target instance configuration",
-										Sources:     cli.EnvVars("TARGET_INSTANCE_DISK_AUTORESIZE"),
-										DefaultText: "Source instance value",
-									},
-									&cli.IntFlag{
-										Name:        "disk-size",
-										Usage:       "The `DISK_SIZE` of the new instance",
-										Category:    "Target instance configuration",
-										Sources:     cli.EnvVars("TARGET_INSTANCE_DISKSIZE"),
-										DefaultText: "Source instance value",
-									},
-									&cli.StringFlag{
-										Name:        "type",
-										Usage:       "The `TYPE` of the new instance",
-										Category:    "Target instance configuration",
-										Sources:     cli.EnvVars("TARGET_INSTANCE_TYPE"),
-										DefaultText: "Source instance value",
-										Action:      postgresmigratesetup.TypeFlagAction,
-									},
-								},
-								Before: postgresmigratesetup.Before,
-								Action: postgresmigratesetup.Action,
-							},
-							{
-								Name:        "promote",
-								Usage:       "Promote the migrated instance to the new primary instance",
-								UsageText:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
-								Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
-								Flags: []cli.Flag{
-									namespaceFlag(),
-									contextFlag(),
-									dryRunFlag(),
-									noWaitFlag(),
-								},
-								Before: postgresmigratepromote.Before,
-								Action: postgresmigratepromote.Action,
-							},
-							{
-								Name:        "finalize",
-								Usage:       "Finalize the migration",
-								UsageText:   "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
-								Description: "Finalize will remove the source instance and associated resources after a successful migration.",
-								Flags: []cli.Flag{
-									namespaceFlag(),
-									contextFlag(),
-									dryRunFlag(),
-								},
-								Before: postgresmigratefinalize.Before,
-								Action: postgresmigratefinalize.Action,
-							},
-							{
-								Name:        "rollback",
-								Usage:       "Roll back the migration",
-								UsageText:   "nais postgres migrate rollback APP_NAME TARGET_INSTANCE_NAME",
-								Description: "Rollback will roll back the migration, and restore the application to use the original instance.",
-								Flags: []cli.Flag{
-									namespaceFlag(),
-									contextFlag(),
-									dryRunFlag(),
-								},
-								Before: postgresmigraterollback.Before,
-								Action: postgresmigraterollback.Action,
-							},
-						},
-					},
-					{
-						Name:  "password",
-						Usage: "Administrate Postgres password",
-						Commands: []*cli.Command{
-							{
-								Name:        "rotate",
-								Usage:       "Rotate the Postgres database password",
-								Description: "The rotation is both done in GCP and in the Kubernetes secret",
-								ArgsUsage:   "appname",
-								Flags: []cli.Flag{
-									contextFlag(),
-									namespaceFlag(),
-								},
-								Before: postgrespasswordrotate.Before,
-								Action: postgrespasswordrotate.Action,
-							},
-						},
-					},
-					{
-						Name:  "prepare",
-						Usage: "Prepare your postgres instance for use with personal accounts",
-						Description: `Prepare will prepare the postgres instance by connecting using the
-application credentials and modify the permissions on the public schema.
-All IAM users in your GCP project will be able to connect to the instance.
-
-This operation is only required to run once for each postgresql instance.`,
-						ArgsUsage: "appname",
-						Flags: []cli.Flag{
-							&cli.BoolFlag{
-								Name:  "all-privs",
-								Usage: "Gives all privileges to users",
-							},
-							contextFlag(),
-							namespaceFlag(),
-							&cli.StringFlag{
-								Name:  "schema",
-								Value: "public",
-								Usage: "Schema to grant access to",
-							},
-						},
-						Before: postgresprepare.Before,
-						Action: postgresprepare.Action,
-					},
-					{
-						Name:        "proxy",
-						Usage:       "Create a proxy to a Postgres instance",
-						Description: "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
-						ArgsUsage:   "appname",
-						Flags: []cli.Flag{
-							&cli.UintFlag{
-								Name:    "port",
-								Aliases: []string{"p"},
-								Value:   5432,
-							},
-							&cli.StringFlag{
-								Name:    "host",
-								Aliases: []string{"H"},
-								Value:   "localhost",
-							},
-							&cli.BoolFlag{
-								Name:    "verbose",
-								Aliases: []string{"v"},
-							},
-							contextFlag(),
-							namespaceFlag(),
-						},
-						Before: postgresproxy.Before,
-						Action: postgresproxy.Action,
-					},
-					{
-						Name:        "psql",
-						Usage:       "Connect to the database using psql",
-						Description: "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
-						ArgsUsage:   "appname",
-						Flags: []cli.Flag{
-							&cli.BoolFlag{
-								Name:    "verbose",
-								Aliases: []string{"v"},
-							},
-							contextFlag(),
-							namespaceFlag(),
-						},
-						Before: postgrespsql.Before,
-						Action: postgrespsql.Action,
-					},
-					{
-						Name:  "revoke",
-						Usage: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
-						Description: `Revoke will revoke the role 'cloudsqliamuser' access to the
-tables in the postgres instance. This is done by connecting using the application
-credentials and modify the permissions on the public schema.
-
-This operation is only required to run once for each postgresql instance.`,
-						ArgsUsage: "appname",
-						Flags: []cli.Flag{
-							contextFlag(),
-							namespaceFlag(),
-							&cli.StringFlag{
-								Name:  "schema",
-								Value: "public",
-								Usage: "Schema to revoke access from",
-							},
-						},
-						Before: postgresrevoke.Before,
-						Action: postgresrevoke.Action,
-					},
-					{
-						Name:        "users",
-						Usage:       "Administrate users in your Postgres instance",
-						Description: "Command used for listing and adding users to database",
-						Commands: []*cli.Command{
-							{
-								Name:        "add",
-								Usage:       "Add user to a Postgres database",
-								Description: "Will grant a user access to tables in public schema.",
-								ArgsUsage:   "appname username password",
-								Flags: []cli.Flag{
-									&cli.StringFlag{
-										Name:    "privilege",
-										Aliases: []string{"p"},
-										Value:   "select",
-									},
-									contextFlag(),
-									namespaceFlag(),
-								},
-								Before: postgresusersadd.Before,
-								Action: postgresusersadd.Action,
-							},
-							{
-								Name:      "list",
-								Usage:     "List users in a Postgres database",
-								ArgsUsage: "appname",
-								Flags: []cli.Flag{
-									contextFlag(),
-									namespaceFlag(),
-								},
-								Before: postgresuserslist.Before,
-								Action: postgresuserslist.Action,
-							},
-						},
-					},
-				},
-			},
-		},
+func Run() error {
+	app := &cobra.Command{
+		Use:     "nais",
+		Short:   "A Nais cli",
+		Long:    "Nais platform utility cli, respects consoledonottrack.com",
+		Version: version + "-" + commit,
 	}
 
-	setDefaults(app)
-	metrics.CollectCommandHistogram(ctx, app.Commands)
-	return app.Run(ctx, args)
+	app.AddCommand(logincmd())
+	app.AddCommand(kubeconfigcmd())
+	app.AddCommand(validatecmd())
+	app.AddCommand(debugcmd())
+	app.AddCommand(aivencmd())
+	app.AddCommand(devicecmd())
+	app.AddCommand(postgrescmd())
+
+	return app.Execute()
 }
 
-func setDefaults(c *cli.Command) {
-	c.HideHelpCommand = true
-
-	for i := range c.Commands {
-		setDefaults(c.Commands[i])
-	}
-}
+// 	postgresCommand := &cobra.Command{
+// 		Use:    "postgres",
+// 		Short:  "Command used for connecting to Postgres",
+// 		Before: postgres.Before,
+// 	}
+// 	postgresEnableAuditCommand := &cli.Command{
+// 		Use:       "enable-audit",
+// 		Short:     "Enable audit extension in Postgres database",
+// 		Long:      "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgresaudit.Before,
+// 		Run:    postgresaudit.Action,
+// 	}
+// 	postgresGrandtCommand := &cli.Command{
+// 		Use:       "grant",
+// 		Short:     "Grant yourself access to a Postgres database",
+// 		Long:      "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgresgrant.Before,
+// 		Run:    postgresgrant.Action,
+// 	}
+// 	postgresMigrateCommand := &cli.Command{
+// 		Use:    "migrate",
+// 		Short:  "Command used for migrating to a new Postgres instance",
+// 		Before: postgresmigrate.Before,
+// 	}
+// 	postgresMigrateSetupCommand := &cli.Command{
+// 		Use:       "setup",
+// 		Short:     "Make necessary setup for a new migration",
+// 		UsageText: "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
+// 		Long:      "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
+// 		Flags: []cli.Flag{
+// 			namespaceFlag(),
+// 			contextFlag(),
+// 			dryRunFlag(),
+// 			noWaitFlag(),
+// 			&cli.StringFlag{
+// 				Use:         "tier",
+// 				Short:       "The `TIER` of the new instance",
+// 				Category:    "Target instance configuration",
+// 				Sources:     cli.EnvVars("TARGET_INSTANCE_TIER"),
+// 				DefaultText: "Source instance value",
+// 				Run:         postgresmigratesetup.TierFlagAction,
+// 			},
+// 			&cli.BoolFlag{
+// 				Use:         "disk-autoresize",
+// 				Short:       "Enable disk autoresize for the new instance",
+// 				Category:    "Target instance configuration",
+// 				Sources:     cli.EnvVars("TARGET_INSTANCE_DISK_AUTORESIZE"),
+// 				DefaultText: "Source instance value",
+// 			},
+// 			&cli.IntFlag{
+// 				Use:         "disk-size",
+// 				Short:       "The `DISK_SIZE` of the new instance",
+// 				Category:    "Target instance configuration",
+// 				Sources:     cli.EnvVars("TARGET_INSTANCE_DISKSIZE"),
+// 				DefaultText: "Source instance value",
+// 			},
+// 			&cli.StringFlag{
+// 				Use:         "type",
+// 				Short:       "The `TYPE` of the new instance",
+// 				Category:    "Target instance configuration",
+// 				Sources:     cli.EnvVars("TARGET_INSTANCE_TYPE"),
+// 				DefaultText: "Source instance value",
+// 				Run:         postgresmigratesetup.TypeFlagAction,
+// 			},
+// 		},
+// 		Before: postgresmigratesetup.Before,
+// 		Run:    postgresmigratesetup.Action,
+// 	}
+// 	postgresMigratePromoteCommand := &cli.Command{
+// 		Use:       "promote",
+// 		Short:     "Promote the migrated instance to the new primary instance",
+// 		UsageText: "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
+// 		Long:      "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
+// 		Flags: []cli.Flag{
+// 			namespaceFlag(),
+// 			contextFlag(),
+// 			dryRunFlag(),
+// 			noWaitFlag(),
+// 		},
+// 		Before: postgresmigratepromote.Before,
+// 		Run:    postgresmigratepromote.Action,
+// 	}
+// 	postgresMigrateFinalizeCommand := &cli.Command{
+// 		Use:       "finalize",
+// 		Short:     "Finalize the migration",
+// 		UsageText: "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
+// 		Long:      "Finalize will remove the source instance and associated resources after a successful migration.",
+// 		Flags: []cli.Flag{
+// 			namespaceFlag(),
+// 			contextFlag(),
+// 			dryRunFlag(),
+// 		},
+// 		Before: postgresmigratefinalize.Before,
+// 		Run:    postgresmigratefinalize.Action,
+// 	}
+// 	postgresMigrateRollbackCommand := &cli.Command{
+// 		Use:       "rollback",
+// 		Short:     "Roll back the migration",
+// 		UsageText: "nais postgres migrate rollback APP_NAME TARGET_INSTANCE_NAME",
+// 		Long:      "Rollback will roll back the migration, and restore the application to use the original instance.",
+// 		Flags: []cli.Flag{
+// 			namespaceFlag(),
+// 			contextFlag(),
+// 			dryRunFlag(),
+// 		},
+// 		Before: postgresmigraterollback.Before,
+// 		Run:    postgresmigraterollback.Action,
+// 	}
+//
+// 	postgresPasswordCommand := &cli.Command{
+// 		Use:   "password",
+// 		Short: "Administrate Postgres password",
+// 	}
+// 	postgresPasswordRotateCommand := &cli.Command{
+// 		Use:       "rotate",
+// 		Short:     "Rotate the Postgres database password",
+// 		Long:      "The rotation is both done in GCP and in the Kubernetes secret",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgrespasswordrotate.Before,
+// 		Run:    postgrespasswordrotate.Action,
+// 	}
+// 	postgresPrepareCommand := &cli.Command{
+// 		Use:   "prepare",
+// 		Short: "Prepare your postgres instance for use with personal accounts",
+// 		Long: `Prepare will prepare the postgres instance by connecting using the
+// application credentials and modify the permissions on the public schema.
+// All IAM users in your GCP project will be able to connect to the instance.
+//
+// This operation is only required to run once for each postgresql instance.`,
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			&cli.BoolFlag{
+// 				Use:   "all-privs",
+// 				Short: "Gives all privileges to users",
+// 			},
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 			&cli.StringFlag{
+// 				Use:   "schema",
+// 				Value: "public",
+// 				Short: "Schema to grant access to",
+// 			},
+// 		},
+// 		Before: postgresprepare.Before,
+// 		Run:    postgresprepare.Action,
+// 	}
+// 	postgresProxyCommand := &cli.Command{
+// 		Use:       "proxy",
+// 		Short:     "Create a proxy to a Postgres instance",
+// 		Long:      "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			&cli.UintFlag{
+// 				Use:     "port",
+// 				Aliases: []string{"p"},
+// 				Value:   5432,
+// 			},
+// 			&cli.StringFlag{
+// 				Use:     "host",
+// 				Aliases: []string{"H"},
+// 				Value:   "localhost",
+// 			},
+// 			&cli.BoolFlag{
+// 				Use:     "verbose",
+// 				Aliases: []string{"v"},
+// 			},
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgresproxy.Before,
+// 		Run:    postgresproxy.Action,
+// 	}
+// 	postgresPsqlCommand := &cli.Command{
+// 		Use:       "psql",
+// 		Short:     "Connect to the database using psql",
+// 		Long:      "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			&cli.BoolFlag{
+// 				Use:     "verbose",
+// 				Aliases: []string{"v"},
+// 			},
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgrespsql.Before,
+// 		Run:    postgrespsql.Action,
+// 	}
+// 	postgresRevokeCommand := &cli.Command{
+// 		Use:   "revoke",
+// 		Short: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
+// 		Long: `Revoke will revoke the role 'cloudsqliamuser' access to the
+// tables in the postgres instance. This is done by connecting using the application
+// credentials and modify the permissions on the public schema.
+//
+// This operation is only required to run once for each postgresql instance.`,
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 			&cli.StringFlag{
+// 				Use:   "schema",
+// 				Value: "public",
+// 				Short: "Schema to revoke access from",
+// 			},
+// 		},
+// 		Before: postgresrevoke.Before,
+// 		Run:    postgresrevoke.Action,
+// 	}
+// 	postgresUsersCommand := &cli.Command{
+// 		Use:   "users",
+// 		Short: "Administrate users in your Postgres instance",
+// 		Long:  "Command used for listing and adding users to database",
+// 	}
+// 	postgresUsersAddCommand := &cli.Command{
+// 		Use:       "add",
+// 		Short:     "Add user to a Postgres database",
+// 		Long:      "Will grant a user access to tables in public schema.",
+// 		ArgsShort: "appname username password",
+// 		Flags: []cli.Flag{
+// 			&cli.StringFlag{
+// 				Use:     "privilege",
+// 				Aliases: []string{"p"},
+// 				Value:   "select",
+// 			},
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgresusersadd.Before,
+// 		Run:    postgresusersadd.Action,
+// 	}
+// 	postgresUsersListCommand := &cli.Command{
+// 		Use:       "list",
+// 		Short:     "List users in a Postgres database",
+// 		ArgsShort: "appname",
+// 		Flags: []cli.Flag{
+// 			contextFlag(),
+// 			namespaceFlag(),
+// 		},
+// 		Before: postgresuserslist.Before,
+// 		Run:    postgresuserslist.Action,
+// 	}
+//
+// 	return app.Execute()
+// }
+//
+// func setDefaults(c *cli.Command) {
+// 	c.HideHelpCommand = true
+//
+// 	for i := range c.Commands {
+// 		setDefaults(c.Commands[i])
+// 	}
+// }
+//
+// func contextFlag() *cli.StringFlag {
+// 	return &cli.StringFlag{
+// 		Use:         "context",
+// 		Aliases:     []string{"c"},
+// 		Short:       "The kubeconfig `CONTEXT` to use",
+// 		DefaultText: "The current context in your kubeconfig",
+// 	}
+// }
+//
+// func copyFlag() *cli.BoolFlag {
+// 	return &cli.BoolFlag{
+// 		Use:         "copy",
+// 		Aliases:     []string{"cp"},
+// 		Short:       "To create or delete a 'COPY' of pod with a debug container. The original pod remains running and unaffected",
+// 		DefaultText: "Attach to the current 'live' pod",
+// 	}
+// }
+//
+// func namespaceFlag() *cli.StringFlag {
+// 	return &cli.StringFlag{
+// 		Use:         "namespace",
+// 		Aliases:     []string{"n"},
+// 		Short:       "The kubernetes `NAMESPACE` to use",
+// 		DefaultText: "The namespace from your current kubeconfig context",
+// 	}
+// }
+//
+// func noWaitFlag() *cli.BoolFlag {
+// 	return &cli.BoolFlag{
+// 		Use:   "no-wait",
+// 		Short: "Do not wait for the job to complete",
+// 	}
+// }
+//
+// func dryRunFlag() *cli.BoolFlag {
+// 	return &cli.BoolFlag{
+// 		Use:   "dry-run",
+// 		Short: "Perform a dry run of the migration setup, without actually starting the migration",
+// 	}
+// }

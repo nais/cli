@@ -1,13 +1,19 @@
-package cli2
+package cli
 
 import "github.com/spf13/cobra"
 
 func validatecmd() *cobra.Command {
 	validate := &cobra.Command{
-		Use:   "validate [file]",
+		Use:   "validate file...",
 		Short: "Validate nais.yaml configuration",
-		// Before: validate.Before,
-		// Run:    validate.Action,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return validate.Before( ... )
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return validate.Action( ... )
+		},
 	}
 	validate.Flags().String("vars", "", "Path to the `file` containing template variables, must be JSON or YAML format.")
 	validate.Flags().StringArray("var", nil, "Template variable in KEY=VALUE form, can be specified multiple times.")

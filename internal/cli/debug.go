@@ -1,4 +1,4 @@
-package cli2
+package cli
 
 import "github.com/spf13/cobra"
 
@@ -11,8 +11,14 @@ func debugcmd() *cobra.Command {
 			"allowing you to troubleshoot without affecting the live pod.\n" +
 			"To debug a live pod, run the command without the '--copy' flag.\n" +
 			"You can only reconnect to the debug session if the pod is running.",
-		// Before: debug.Before,
-		// Run:    debug.Action,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return debug.Before( ... )
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return debug.Action( ... )
+		},
 	}
 	debug.Flags().String("context", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
 	debug.Flags().String("namespace", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")
@@ -23,8 +29,14 @@ func debugcmd() *cobra.Command {
 		Use:   "tidy [app]",
 		Short: "Clean up debug containers and debug pods",
 		Long:  "Remove debug containers created by the 'debug' command. To delete copy pods set the '--copy' flag.",
-		// Before: tidy.Before,
-		// Run:    tidy.Action,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return tidy.Before( ... )
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+			// return tidy.Action( ... )
+		},
 	}
 	tidy.Flags().String("context", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
 	tidy.Flags().String("namespace", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")

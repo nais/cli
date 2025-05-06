@@ -1,4 +1,4 @@
-package cli2
+package cli
 
 import (
 	"fmt"
@@ -21,50 +21,65 @@ func devicecmd() *cobra.Command {
 	}
 	deviceCmd.AddCommand(configCmd)
 
-	configGetCmd := &cobra.Command{
+	configCmd.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Gets the current configuration",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("er det noe her?")
-		}, // naisdeviceconfigget.Action,
-	}
-	configCmd.AddCommand(configGetCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
-	configSetCmd := &cobra.Command{
+	configCmd.AddCommand(&cobra.Command{
 		Use:   "set setting value",
 		Short: "Sets a configuration value",
-		// Before:    naisdeviceconfigset.Before,
-		// Run:       naisdeviceconfigset.Action,
-	}
-	configCmd.AddCommand(configSetCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
-	connectCmd := &cobra.Command{
+	configCmd.AddCommand(&cobra.Command{
 		Use:   "connect",
 		Short: "Creates a naisdevice connection, will lock until connection",
-		// Run:   naisdeviceconnect.Action,
-	}
-	configCmd.AddCommand(connectCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
-	disconnectCmd := &cobra.Command{
+	deviceCmd.AddCommand(&cobra.Command{
 		Use:   "disconnect",
 		Short: "Disconnects your naisdevice",
-		// Run:   naisdevicedisconnect.Action,
-	}
-	deviceCmd.AddCommand(disconnectCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
-	jitaCmd := &cobra.Command{
+	deviceCmd.AddCommand(&cobra.Command{
 		Use:   "jita gateway-name",
 		Short: "Connects to a JITA gateway",
-		// Before:    naisdevicejita.Before,
-		// Run:       naisdevicejita.Action,
-	}
-	deviceCmd.AddCommand(jitaCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
 	statusFlags := status.Flags{}
 	statusCmd := &cobra.Command{
 		Use:   "status",
 		Short: "Shows the status of your naisdevice",
-
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if !slices.Contains([]string{"yaml", "json"}, statusFlags.Output) {
 				metrics.AddOne(cmd.Context(), "status_file_format_error_total")
@@ -72,19 +87,25 @@ func devicecmd() *cobra.Command {
 			}
 			return nil
 		},
-		// Run: naisdevicestatus.Action,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
 	}
 	statusCmd.Flags().StringVarP(&statusFlags.Output, "output", "o", "yaml", "Output format (yaml or json)")
 	statusCmd.Flags().BoolVarP(&statusFlags.Verbose, "verbose", "v", false, "Verbose output")
 	statusCmd.Flags().BoolVarP(&statusFlags.Quiet, "quiet", "q", false, "Quiet output")
 	deviceCmd.AddCommand(statusCmd)
 
-	doctorCmd := &cobra.Command{
+	deviceCmd.AddCommand(&cobra.Command{
 		Use:   "doctor",
 		Short: "Examine the health of your naisdevice",
-		// Run:   naisdevicedoctor.Action,
-	}
-	deviceCmd.AddCommand(doctorCmd)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	})
 
 	return deviceCmd
 }

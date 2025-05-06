@@ -2,10 +2,8 @@ package gcp
 
 import (
 	"context"
-
-	"github.com/urfave/cli/v3"
 )
 
-func LoginCommand(ctx context.Context, cmd *cli.Command) error {
+func LoginCommand(ctx context.Context) error {
 	return Login(ctx)
 }
