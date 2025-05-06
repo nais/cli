@@ -7,8 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func aivencmd() *cobra.Command {
-	aivenCmd := &cobra.Command{
+func aiven() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "aiven",
 		Short: "Command used for management of AivenApplication",
 	}
@@ -48,37 +48,31 @@ func aivencmd() *cobra.Command {
 	createCmd.Flags().StringVarP(&createFlags.Instance, "instance", "i", "", "Instance name")
 	createCmd.Flags().StringVarP(&createFlags.Access, "access", "a", "", "Access name")
 
-	aivenCmd.AddCommand(createCmd)
-
-	getCmd := &cobra.Command{
-		Use:   "get service username namespace",
-		Short: "Generate preferred config format to '/tmp' folder",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-			// return aivenget.Before( ... )
+	cmd.AddCommand(
+		createCmd,
+		&cobra.Command{
+			Use:   "get service username namespace",
+			Short: "Generate preferred config format to '/tmp' folder",
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				return nil
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return nil
+			},
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-			// return aivenget.Action( ... )
-		},
-	}
-	aivenCmd.AddCommand(getCmd)
-
-	tidyCmd := &cobra.Command{
-		Use:   "tidy",
-		Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
-		Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
+		&cobra.Command{
+			Use:   "tidy",
+			Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
+			Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
 	Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-			// return aiventidy.Before( ... )
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				return nil
+			},
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return nil
+			},
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-			// return aiventidy.Action( ... )
-		},
-	}
-	aivenCmd.AddCommand(tidyCmd)
+	)
 
-	return aivenCmd
+	return cmd
 }

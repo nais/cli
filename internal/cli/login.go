@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func logincmd() *cobra.Command {
+func login() *cobra.Command {
 	return &cobra.Command{
 		Use:   "login",
 		Short: "Login using Google Auth.",
