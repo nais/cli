@@ -3,7 +3,6 @@ package create
 import (
 	"context"
 	"fmt"
-	"math"
 	"strings"
 
 	"github.com/nais/cli/internal/aiven"
@@ -13,48 +12,53 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if cmd.Args().Len() < 3 {
-		metrics.AddOne(ctx, "aiven_create_required_args_error_total")
-		return ctx, fmt.Errorf("missing required arguments: service, username, namespace")
-	}
-
-	if _, err := aiven_services.FromString(cmd.Args().Get(0)); err != nil {
-		return ctx, err
-	}
-
-	return ctx, nil
+type Flags struct {
+	Expire   uint
+	Pool     string
+	Access   string
+	Secret   string
+	Instance string
+	aiven.Flags
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	service, err := aiven_services.FromString(cmd.Args().Get(0))
+type Args struct {
+	Service   string
+	Username  string
+	Namespace string
+}
+
+func Validate(ctx context.Context, args Args, flags Flags) error {
+	_, err := aiven_services.FromString(args.Service)
 	if err != nil {
 		return err
 	}
 
-	username := cmd.Args().Get(1)
-	namespace := cmd.Args().Get(2)
+	return nil
+}
 
-	expire := cmd.Uint("expire")
-	if expire > uint(math.MaxInt) {
-		return fmt.Errorf("--expire must be less than %v", math.MaxInt)
+func Action(ctx context.Context, args Args, flags Flags) error {
+	service, err := aiven_services.FromString(args.Service)
+	if err != nil {
+		return err
 	}
-	secretName := cmd.String("secret")
-	instance := cmd.String("instance")
 
-	pool, err := aiven_services.KafkaPoolFromString(cmd.String("pool"))
+	if flags.Expire > 30 {
+		return fmt.Errorf("expire must be less than %v days", 30)
+	}
+
+	pool, err := aiven_services.KafkaPoolFromString(flags.Pool)
 	if err != nil {
 		metrics.AddOne(ctx, "aiven_create_pool_values_error_total")
 		return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
 	}
 
-	access, err := aiven_services.OpenSearchAccessFromString(cmd.String("access"))
+	access, err := aiven_services.OpenSearchAccessFromString(flags.Access)
 	if err != nil && service.Is(&aiven_services.OpenSearch{}) {
 		metrics.AddOne(ctx, "aiven_create_access_value_error_total")
 		return fmt.Errorf("valid values for access: %v", strings.Join(aiven_services.OpenSearchAccesses, ", "))
 	}
 
-	aivenConfig := aiven.Setup(ctx, k8s.SetupControllerRuntimeClient(), service, username, namespace, secretName, instance, pool, access, expire)
+	aivenConfig := aiven.Setup(ctx, k8s.SetupControllerRuntimeClient(), service, args.Username, args.Namespace, flags.Secret, flags.Instance, pool, access, flags.Expire)
 	aivenApp, err := aivenConfig.GenerateApplication()
 	if err != nil {
 		metrics.AddOne(ctx, "aiven_create_generating_aivenapplication_error_total")
