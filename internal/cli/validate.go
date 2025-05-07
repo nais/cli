@@ -1,21 +1,25 @@
 package cli
 
-import "github.com/spf13/cobra"
+import (
+	validatecmd "github.com/nais/cli/internal/validate"
+	"github.com/spf13/cobra"
+)
 
 func validate() *cobra.Command {
+	flags := validatecmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "validate file...",
-		Short: "Validate nais.yaml configuration",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
+		Short: "Validate one or more Nais manifest files",
+		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			verbose, _ := cmd.Flags().GetBool("verbose")
+			flags.Verbose = verbose
+			return validatecmd.Run(args, flags)
 		},
 	}
-	cmd.Flags().String("vars", "", "Path to the `file` containing template variables, must be JSON or YAML format.")
-	cmd.Flags().StringArray("var", nil, "Template variable in KEY=VALUE form, can be specified multiple times.")
-	cmd.Flags().String("verbose", "", "Print all the template variables and final resources after templating.")
+	fs := cmd.Flags()
+	fs.StringVarP(&flags.VarsFilePath, "vars", "f", "", "Path to the `file` containing template variables, must be JSON or YAML format.")
+	fs.StringSliceVar(&flags.Vars, "var", nil, "Template variable in `KEY=VALUE` form. Can be repeated.")
 
 	return cmd
 }

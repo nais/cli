@@ -1,48 +1,36 @@
 package validate
 
 import (
-	"context"
 	"fmt"
-
-	"github.com/nais/cli/internal/metrics"
-	"github.com/urfave/cli/v3"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if cmd.Args().Len() == 0 {
-		metrics.AddOne(ctx, "validate_enonent_error_total")
-		return ctx, fmt.Errorf("no config files provided")
-	}
-
-	return ctx, nil
+type Flags struct {
+	Verbose      bool
+	VarsFilePath string
+	Vars         []string
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	resourcePaths := cmd.Args().Slice()
-	varsPath := cmd.String("vars")
-	vars := cmd.StringSlice("var")
-	verbose := cmd.Bool("verbose")
-
+func Run(files []string, flags Flags) error {
 	templateVars := make(TemplateVariables)
-	var err error
 
-	if varsPath != "" {
-		templateVars, err = TemplateVariablesFromFile(varsPath)
+	if flags.VarsFilePath != "" {
+		var err error
+		templateVars, err = TemplateVariablesFromFile(flags.VarsFilePath)
 		if err != nil {
 			return fmt.Errorf("load template variables: %v", err)
 		}
 		for key, val := range templateVars {
-			if verbose {
+			if flags.Verbose {
 				fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			}
 			templateVars[key] = val
 		}
 	}
 
-	if len(vars) > 0 {
-		overrides := TemplateVariablesFromSlice(vars)
+	if len(flags.Vars) > 0 {
+		overrides := TemplateVariablesFromSlice(flags.Vars)
 		for key, val := range overrides {
-			if verbose {
+			if flags.Verbose {
 				if oldval, ok := templateVars[key]; ok {
 					fmt.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
 				}
@@ -52,8 +40,8 @@ func Action(ctx context.Context, cmd *cli.Command) error {
 		}
 	}
 
-	v := New(resourcePaths)
+	v := New(files)
 	v.Variables = templateVars
-	v.Verbose = verbose
+	v.Verbose = flags.Verbose
 	return v.Validate()
 }
