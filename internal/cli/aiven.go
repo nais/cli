@@ -8,6 +8,7 @@ import (
 	aivencreate "github.com/nais/cli/internal/aiven/create"
 	aivencreatekafka "github.com/nais/cli/internal/aiven/create/kafka"
 	aivencreateopensearch "github.com/nais/cli/internal/aiven/create/opensearch"
+	"github.com/nais/cli/internal/aiven/get"
 	"github.com/spf13/cobra"
 )
 
@@ -103,11 +104,21 @@ func aiven() *cobra.Command {
 		&cobra.Command{
 			Use:   "get service username namespace",
 			Short: "Generate preferred config format to '/tmp' folder",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+			Args:  cobra.ExactArgs(3),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+				// TODO: audocomplete service name (kafka / opensearch)
+				return []string{}, cobra.ShellCompDirectiveNoFileComp
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+				service, err := aiven_services.FromString(args[0])
+				if err != nil {
+					return err
+				}
+
+				return get.Run(cmd.Context(), service, get.Arguments{
+					SecretName: args[1],
+					Namespace:  args[2],
+				})
 			},
 		},
 		&cobra.Command{
