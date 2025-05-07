@@ -25,8 +25,8 @@ require (
 	github.com/onsi/gomega v1.37.0
 	github.com/pterm/pterm v0.12.80
 	github.com/sethvargo/go-retry v0.3.0
+	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
-	github.com/urfave/cli/v3 v3.3.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.35.0
@@ -108,7 +108,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/securego/gosec/v2 v2.22.3 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/spf13/cobra v1.9.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
