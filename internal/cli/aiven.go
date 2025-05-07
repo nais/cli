@@ -24,7 +24,7 @@ func aiven() *cobra.Command {
 		Use:   "create",
 		Short: "Creates a protected and time-limited AivenApplication",
 		Args:  cobra.ExactArgs(3),
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PersistentPreRunE: func(*cobra.Command, []string) error {
 			if commonCreateFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
 			}
@@ -127,7 +127,7 @@ func aiven() *cobra.Command {
 			Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
 			Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
 	Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
-			RunE: func(cmd *cobra.Command, args []string) error {
+			RunE: func(*cobra.Command, []string) error {
 				return tidy.Run()
 			},
 		},
