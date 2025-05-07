@@ -6,10 +6,9 @@ import (
 
 	"github.com/mitchellh/go-ps"
 	doc "github.com/nais/cli/internal/doctor"
-	"github.com/urfave/cli/v3"
 )
 
-func Action(ctx context.Context, cmd *cli.Command) error {
+func Run(ctx context.Context) error {
 	results := examination().Run()
 	for key, value := range results {
 		fmt.Printf("%s ", key)

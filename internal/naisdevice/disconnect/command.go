@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/urfave/cli/v3"
 )
 
-func Action(ctx context.Context, cmd *cli.Command) error {
+func Run(ctx context.Context) error {
 	return naisdevice.Disconnect(ctx)
 }

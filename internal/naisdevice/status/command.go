@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/urfave/cli/v3"
 )
 
 type Flags struct {
@@ -14,17 +13,17 @@ type Flags struct {
 	Output  string
 }
 
-func Action(ctx context.Context, flags Flags) error {
+func Run(ctx context.Context, flags Flags) error {
 	status, err := naisdevice.GetStatus(ctx)
 	if err != nil {
 		return err
 	}
 
-	if flags.Quiet {
-		if !naisdevice.IsConnected(status) {
-			return cli.Exit("", 1)
+	if !naisdevice.IsConnected(status) {
+		if flags.Quiet {
+			return nil
 		}
-		return nil
+		return fmt.Errorf("not connected to naisdevice")
 	}
 
 	if flags.Output != "" {

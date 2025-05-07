@@ -5,9 +5,12 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/naisdevice/config/get"
 	"github.com/nais/cli/internal/naisdevice/config/set"
+	"github.com/nais/cli/internal/naisdevice/connect"
+	"github.com/nais/cli/internal/naisdevice/disconnect"
+	"github.com/nais/cli/internal/naisdevice/doctor"
+	"github.com/nais/cli/internal/naisdevice/jita"
 	"github.com/nais/cli/internal/naisdevice/status"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +38,7 @@ func device() *cobra.Command {
 		Use:   "set setting value",
 		Short: "Sets a configuration value",
 		Args:  cobra.ExactArgs(2),
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 			if len(args) == 0 {
 				return set.GetAllowedSettings(false, false), cobra.ShellCompDirectiveDefault
 			} else if len(args) == 1 {
@@ -68,11 +71,8 @@ func device() *cobra.Command {
 	connectCmd := &cobra.Command{
 		Use:   "connect",
 		Short: "Creates a naisdevice connection, will lock until connection",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return connect.Run(cmd.Context())
 		},
 	}
 
@@ -81,17 +81,17 @@ func device() *cobra.Command {
 		Use:   "status",
 		Short: "Shows the status of your naisdevice",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if !slices.Contains([]string{"yaml", "json"}, statusFlags.Output) {
-				metrics.AddOne(cmd.Context(), "status_file_format_error_total")
+			if !slices.Contains([]string{"", "yaml", "json"}, statusFlags.Output) {
+				// metrics.AddOne(cmd.Context(), "status_file_format_error_total")
 				return fmt.Errorf("%v is not an implemented format", statusFlags.Output)
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return status.Run(cmd.Context(), statusFlags)
 		},
 	}
-	statusCmd.Flags().StringVarP(&statusFlags.Output, "output", "o", "yaml", "Output format (yaml or json)")
+	statusCmd.Flags().StringVarP(&statusFlags.Output, "output", "o", "", "Output format (yaml or json)")
 	statusCmd.Flags().BoolVarP(&statusFlags.Verbose, "verbose", "v", false, "Verbose output")
 	statusCmd.Flags().BoolVarP(&statusFlags.Quiet, "quiet", "q", false, "Quiet output")
 
@@ -102,31 +102,36 @@ func device() *cobra.Command {
 		&cobra.Command{
 			Use:   "disconnect",
 			Short: "Disconnects your naisdevice",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+				return disconnect.Run(cmd.Context())
 			},
 		},
 		&cobra.Command{
 			Use:   "jita gateway-name",
 			Short: "Connects to a JITA gateway",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+			Args:  cobra.MinimumNArgs(1),
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+				gateways, err := jita.Gateways(cmd.Context())
+
+				// don't suggest gateways already present in args
+				gateways = slices.DeleteFunc(gateways, func(gateway string) bool {
+					return slices.Contains(args, gateway)
+				})
+
+				if err != nil {
+					return cobra.AppendActiveHelp(nil, "not connected to naisdevice - is it running?"), cobra.ShellCompDirectiveNoFileComp
+				}
+				return gateways, cobra.ShellCompDirectiveNoFileComp
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+				return jita.Run(cmd.Context(), jita.Arguments{Gateways: args})
 			},
 		},
 		&cobra.Command{
 			Use:   "doctor",
 			Short: "Examine the health of your naisdevice",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+				return doctor.Run(cmd.Context())
 			},
 		},
 	)

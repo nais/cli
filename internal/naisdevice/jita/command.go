@@ -6,32 +6,39 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/urfave/cli/v3"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if cmd.Args().Len() < 1 {
-		metrics.AddOne(ctx, "jita_arguments_error_total")
-		return ctx, fmt.Errorf("missing required arguments: gateway")
-	}
-
-	gateway := cmd.Args().First()
-	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
-	if err != nil {
-		return ctx, err
-	}
-
-	if !slices.Contains(privilegedGateways, gateway) {
-		metrics.AddOne(ctx, "device_gateway_error_total")
-		return ctx, fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
-	}
-
-	return ctx, nil
+type Arguments struct {
+	Gateways []string
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	gateway := cmd.Args().First()
-	return naisdevice.AccessPrivilegedGateway(gateway)
+func Gateways(ctx context.Context) ([]string, error) {
+	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return privilegedGateways, nil
+}
+
+func Run(ctx context.Context, args Arguments) error {
+	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, gateway := range args.Gateways {
+		if !slices.Contains(privilegedGateways, gateway) {
+			return fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
+		}
+	}
+
+	for _, gateway := range args.Gateways {
+		if err := naisdevice.AccessPrivilegedGateway(gateway); err != nil {
+			return fmt.Errorf("access JITA gateway: %w", err)
+		}
+	}
+
+	return nil
 }
