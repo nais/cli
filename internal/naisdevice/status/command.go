@@ -5,12 +5,14 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisdevice"
+	"github.com/nais/cli/internal/root"
 )
 
 type Flags struct {
-	Quiet   bool
-	Verbose bool
-	Output  string
+	Quiet  bool
+	Output string
+
+	*root.Flags
 }
 
 func Run(ctx context.Context, flags Flags) error {

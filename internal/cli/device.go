@@ -12,6 +12,7 @@ import (
 	"github.com/nais/cli/internal/naisdevice/doctor"
 	"github.com/nais/cli/internal/naisdevice/jita"
 	"github.com/nais/cli/internal/naisdevice/status"
+	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
@@ -76,7 +77,7 @@ func device() *cobra.Command {
 		},
 	}
 
-	statusFlags := status.Flags{}
+	statusFlags := status.Flags{Flags: &root.Flags{}}
 	statusCmd := &cobra.Command{
 		Use:   "status",
 		Short: "Shows the status of your naisdevice",
@@ -88,11 +89,15 @@ func device() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			err := parseRootFlags(cmd, statusFlags.Flags)
+			if err != nil {
+				return err
+			}
+
 			return status.Run(cmd.Context(), statusFlags)
 		},
 	}
 	statusCmd.Flags().StringVarP(&statusFlags.Output, "output", "o", "", "Output format (yaml or json)")
-	statusCmd.Flags().BoolVarP(&statusFlags.Verbose, "verbose", "v", false, "Verbose output")
 	statusCmd.Flags().BoolVarP(&statusFlags.Quiet, "quiet", "q", false, "Quiet output")
 
 	cmd.AddCommand(
