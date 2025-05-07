@@ -1,16 +1,17 @@
 package cli
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 )
 
 var (
-	// Is set during build
 	version = "local"
 	commit  = "uncommited"
 )
 
-func Run() error {
+func Run(ctx context.Context) error {
 	app := &cobra.Command{
 		Use:     "nais",
 		Short:   "A Nais cli",
@@ -28,5 +29,5 @@ func Run() error {
 		postgres(),
 	)
 
-	return app.Execute()
+	return app.ExecuteContext(ctx)
 }

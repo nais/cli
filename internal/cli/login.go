@@ -11,7 +11,7 @@ func login() *cobra.Command {
 		Short: "Login using Google Auth.",
 		Long:  "This is a wrapper around gcloud auth login --update-adc.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return gcp.LoginCommand(cmd.Context())
+			return gcp.Run(cmd.Context())
 		},
 	}
 }

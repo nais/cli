@@ -4,6 +4,6 @@ import (
 	"context"
 )
 
-func LoginCommand(ctx context.Context) error {
+func Run(ctx context.Context) error {
 	return Login(ctx)
 }

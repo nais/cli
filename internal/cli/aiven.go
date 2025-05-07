@@ -2,8 +2,12 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/nais/cli/internal/aiven/create"
+	"github.com/nais/cli/internal/aiven/aiven_services"
+	aivencreate "github.com/nais/cli/internal/aiven/create"
+	aivencreatekafka "github.com/nais/cli/internal/aiven/create/kafka"
+	aivencreateopensearch "github.com/nais/cli/internal/aiven/create/opensearch"
 	"github.com/spf13/cobra"
 )
 
@@ -13,40 +17,86 @@ func aiven() *cobra.Command {
 		Short: "Command used for management of AivenApplication",
 	}
 
-	createFlags := create.Flags{}
-	createArgs := func(args []string) create.Args {
-		return create.Args{
-			Service:   args[0],
-			Username:  args[1],
-			Namespace: args[2],
-		}
-	}
-
+	commonCreateFlags := aivencreate.Flags{}
 	createCmd := &cobra.Command{
-		Use:   "create service username namespace",
+		Use:   "create",
 		Short: "Creates a protected and time-limited AivenApplication",
 		Args:  cobra.ExactArgs(3),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if createFlags.Expire > 30 {
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if commonCreateFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
 			}
 
-			if createFlags.Pool == "" {
-				return fmt.Errorf("--pool must not be empty")
-			}
-
-			return create.Validate(cmd.Context(), createArgs(args), createFlags)
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return create.Action(cmd.Context(), createArgs(args), createFlags)
+			return nil
 		},
 	}
+	fs := createCmd.PersistentFlags()
+	fs.UintVarP(&commonCreateFlags.Expire, "expire", "e", 1, "Days until credential expires")
+	fs.StringVarP(&commonCreateFlags.Secret, "secret", "s", "", "Secret name to store credentials. Will be generated if not provided")
 
-	createCmd.Flags().UintVarP(&createFlags.Expire, "expire", "e", 1, "Days until credential expires")
-	createCmd.Flags().StringVarP(&createFlags.Pool, "pool", "p", "nav-dev", "Kafka pool")
-	createCmd.Flags().StringVarP(&createFlags.Secret, "secret", "s", "", "Secret name to store credentials. Will be generated if not provided")
-	createCmd.Flags().StringVarP(&createFlags.Instance, "instance", "i", "", "Instance name")
-	createCmd.Flags().StringVarP(&createFlags.Access, "access", "a", "", "Access name")
+	createArgs := func(args []string) aivencreate.Arguments {
+		return aivencreate.Arguments{
+			Username:  args[0],
+			Namespace: args[1],
+		}
+	}
+
+	var createKafkaPool string
+	createKafkaCmd := &cobra.Command{
+		Use:   "kafka username namespace",
+		Short: "Creates a protected and time-limited AivenApplication",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pool, err := aiven_services.KafkaPoolFromString(createKafkaPool)
+			if err != nil {
+				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
+			}
+
+			return aivencreatekafka.Run(
+				cmd.Context(),
+				createArgs(args),
+				aivencreatekafka.Flags{
+					Flags: commonCreateFlags,
+					Pool:  pool,
+				},
+			)
+		},
+	}
+	createKafkaCmd.Flags().StringVarP(&createKafkaPool, "pool", "p", "nav-dev", "Kafka pool")
+	_ = createKafkaCmd.MarkFlagRequired("pool")
+
+	var createOpenSearchAccess, createOpenSearchInstance string
+	createOpenSearchCmd := &cobra.Command{
+		Use:   "opensearch username namespace",
+		Short: "Creates a protected and time-limited AivenApplication",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchAccess)
+			if err != nil {
+				return fmt.Errorf(
+					"valid values for access: %v",
+					strings.Join(aiven_services.OpenSearchAccesses, ", "),
+				)
+			}
+
+			return aivencreateopensearch.Run(
+				cmd.Context(),
+				createArgs(args),
+				aivencreateopensearch.Flags{
+					Flags:  commonCreateFlags,
+					Access: access,
+				},
+			)
+		},
+	}
+	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchAccess, "access", "a", "", "Access name")
+	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchInstance, "instance", "i", "", "Instance name")
+	_ = createOpenSearchCmd.MarkFlagRequired("access")
+
+	createCmd.AddCommand(
+		createKafkaCmd,
+		createOpenSearchCmd,
+	)
 
 	cmd.AddCommand(
 		createCmd,
