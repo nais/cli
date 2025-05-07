@@ -1,32 +1,29 @@
 package debug
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/k8s"
-	"github.com/urfave/cli/v3"
 	"k8s.io/client-go/kubernetes"
 )
 
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if cmd.Args().Len() < 1 {
-		return ctx, fmt.Errorf("missing required arguments: %v", cmd.ArgsUsage)
-	}
-
-	return ctx, nil
+type Flags struct {
+	Context   string
+	Namespace string
+	Copy      bool
+	ByPod     bool
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	cfg := MakeConfig(cmd)
-	clientset, err := SetupClient(cfg, cmd)
+func Run(workloadName string, flags Flags) error {
+	cfg := MakeConfig(workloadName, flags)
+	clientSet, err := SetupClient(cfg, flags.Context)
 	if err != nil {
 		return err
 	}
 
-	dg := Setup(clientset, cfg)
+	dg := Setup(clientSet, cfg)
 	if err := dg.Debug(); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
@@ -34,8 +31,7 @@ func Action(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func SetupClient(cfg *Config, cmd *cli.Command) (kubernetes.Interface, error) {
-	cluster := cmd.String("context")
+func SetupClient(cfg *Config, cluster string) (kubernetes.Interface, error) {
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 
 	if cfg.Namespace == "" {
@@ -46,20 +42,20 @@ func SetupClient(cfg *Config, cmd *cli.Command) (kubernetes.Interface, error) {
 		cfg.Context = cluster
 	}
 
-	clientset, err := k8s.SetupClientGo(cluster)
+	clientSet, err := k8s.SetupClientGo(cluster)
 	if err != nil {
 		return nil, err
 	}
 
-	return clientset, nil
+	return clientSet, nil
 }
 
-func MakeConfig(cmd *cli.Command) *Config {
+func MakeConfig(workloadName string, flags Flags) *Config {
 	return &Config{
-		WorkloadName: cmd.Args().First(),
-		Namespace:    cmd.String("namespace"),
+		WorkloadName: workloadName,
+		Namespace:    flags.Namespace,
 		DebugImage:   debugImageDefault,
-		CopyPod:      cmd.Bool("copy"),
-		ByPod:        cmd.Bool("by-pod"),
+		CopyPod:      flags.Copy,
+		ByPod:        flags.ByPod,
 	}
 }
