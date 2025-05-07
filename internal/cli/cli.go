@@ -2,7 +2,9 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
@@ -32,4 +34,14 @@ func Run(ctx context.Context) error {
 	)
 
 	return app.ExecuteContext(ctx)
+}
+
+func parseRootFlags(cmd *cobra.Command, flags *root.Flags) error {
+	if verbose, err := strconv.ParseBool(cmd.Flag("verbose").Value.String()); err != nil {
+		return err
+	} else {
+		flags.Verbose = verbose
+	}
+
+	return nil
 }
