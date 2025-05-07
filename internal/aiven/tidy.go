@@ -44,6 +44,7 @@ func findFoldersToRemove() ([]string, error) {
 
 		return nil
 	})
+
 	if err != nil {
 		return nil, fmt.Errorf("walking path: %w", err)
 	}

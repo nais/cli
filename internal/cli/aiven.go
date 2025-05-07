@@ -9,6 +9,7 @@ import (
 	aivencreatekafka "github.com/nais/cli/internal/aiven/create/kafka"
 	aivencreateopensearch "github.com/nais/cli/internal/aiven/create/opensearch"
 	"github.com/nais/cli/internal/aiven/get"
+	"github.com/nais/cli/internal/aiven/tidy"
 	"github.com/spf13/cobra"
 )
 
@@ -126,11 +127,8 @@ func aiven() *cobra.Command {
 			Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
 			Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
 	Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
+				return tidy.Run()
 			},
 		},
 	)
