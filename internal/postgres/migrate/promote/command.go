@@ -5,30 +5,38 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/migrate"
-	"github.com/pterm/pterm"
-	"github.com/urfave/cli/v3"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	return migrate.BeforeSubCommands(ctx, cmd)
+type Flags struct {
+	postgres.Flags
+	DryRun bool
+	NoWait bool
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	cfg := migrate.MakeConfig(cmd)
-	cluster := cmd.String("context")
+func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
+	cfg := config.Config{
+		AppName: args.ApplicationName,
+		Target: config.InstanceConfig{
+			InstanceName: option.Some(args.TargetInstanceName),
+		},
+	}
 
-	pterm.Println(cmd.Description)
+	// TODO
+	// pterm.Println(cmd.Description)
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(flags.Context))
 	cfg.Namespace = client.CurrentNamespace
 
-	clientset, err := k8s.SetupClientGo(cluster)
+	clientSet, err := k8s.SetupClientGo(flags.Context)
 	if err != nil {
 		return err
 	}
 
-	migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool("dry-run"), cmd.Bool("no-wait"))
+	migrator := migrate.NewMigrator(client, clientSet, cfg, flags.DryRun, flags.NoWait)
 	if err := migrator.Promote(ctx); err != nil {
 		return fmt.Errorf("error promoting instance: %w", err)
 	}

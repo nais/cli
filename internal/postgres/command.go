@@ -4,10 +4,17 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/gcp"
-	"github.com/urfave/cli/v3"
+	"github.com/nais/cli/internal/root"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+type Flags struct {
+	root.Flags
+	Namespace string
+	Context   string
+}
+
+// TODO: Do something with this
+func Before(ctx context.Context) (context.Context, error) {
 	_, err := gcp.ValidateAndGetUserLogin(ctx, false)
 	return ctx, err
 }

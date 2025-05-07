@@ -3,30 +3,42 @@ package setup
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/migrate"
-	"github.com/pterm/pterm"
-	"github.com/urfave/cli/v3"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	return migrate.BeforeSubCommands(ctx, cmd)
+type Flags struct {
+	postgres.Flags
+	Tier           string
+	DiskAutoResize bool
+	DiskSize       int
+	InstanceType   string
+	DryRun         bool
+	NoWait         bool
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	cfg := migrate.MakeConfig(cmd)
+func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
+	cfg := config.Config{
+		AppName: args.ApplicationName,
+		Target: config.InstanceConfig{
+			InstanceName: option.Some(args.TargetInstanceName),
+		},
+	}
 
-	cluster := cmd.String("context")
-	tier := cmd.String("tier")
-	diskAutoresize := cmd.Bool("disk-autoresize")
-	diskSize := cmd.Int("disk-size")
-	instanceType := cmd.String("type")
-	namespace := cmd.String("namespace")
+	cluster := flags.Context
+	tier := flags.Tier
+	diskAutoresize := flags.DiskAutoResize
+	diskSize := flags.DiskSize
+	instanceType := flags.InstanceType
+	namespace := flags.Namespace
 
-	pterm.Println(cmd.Description)
+	// TODO
+	// pterm.Println(cmd.Description)
+
 	cfg.Target.Tier = isSet(tier)
 	cfg.Target.DiskAutoresize = isSetBool(diskAutoresize)
 	cfg.Target.DiskSize = isSetInt(diskSize)
@@ -38,30 +50,16 @@ func Action(ctx context.Context, cmd *cli.Command) error {
 		cfg.Namespace = namespace
 	}
 
-	clientset, err := k8s.SetupClientGo(cluster)
+	clientSet, err := k8s.SetupClientGo(cluster)
 	if err != nil {
 		return err
 	}
 
-	migrator := migrate.NewMigrator(client, clientset, cfg, cmd.Bool("dry-run"), cmd.Bool("no-wait"))
+	migrator := migrate.NewMigrator(client, clientSet, cfg, flags.DryRun, flags.NoWait)
 	if err := migrator.Setup(ctx); err != nil {
 		return fmt.Errorf("error setting up migration: %w", err)
 	}
 
-	return nil
-}
-
-func TierFlagAction(ctx context.Context, cmd *cli.Command, v string) error {
-	if !strings.HasPrefix(v, "db-") {
-		return fmt.Errorf("tier must start with `db-`")
-	}
-	return nil
-}
-
-func TypeFlagAction(ctx context.Context, cmd *cli.Command, v string) error {
-	if !strings.HasPrefix(v, "POSTGRES_") {
-		return fmt.Errorf("instance type must start with `POSTGRES_`")
-	}
 	return nil
 }
 

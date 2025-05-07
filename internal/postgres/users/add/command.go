@@ -2,30 +2,21 @@ package add
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/nais/cli/internal/metrics"
 	"github.com/nais/cli/internal/postgres"
-	"github.com/urfave/cli/v3"
 )
 
-func Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if cmd.Args().Len() < 3 {
-		metrics.AddOne(ctx, "postgres_missing_args_error_total")
-		return ctx, fmt.Errorf("missing required arguments: appname, username, password")
-	}
-
-	return ctx, nil
+type Arguments struct {
+	ApplicationName string
+	Username        string
+	Password        string
 }
 
-func Action(ctx context.Context, cmd *cli.Command) error {
-	appName := cmd.Args().Get(0)
-	username := cmd.Args().Get(1)
-	password := cmd.Args().Get(2)
+type Flags struct {
+	postgres.Flags
+	Privilege string
+}
 
-	namespace := cmd.String("namespace")
-	cluster := cmd.String("context")
-	privilege := cmd.String("privilege")
-
-	return postgres.AddUser(ctx, appName, username, password, cluster, namespace, privilege)
+func Run(ctx context.Context, args Arguments, flags Flags) error {
+	return postgres.AddUser(ctx, args.ApplicationName, args.Username, args.Username, flags.Context, flags.Namespace, flags.Privilege)
 }

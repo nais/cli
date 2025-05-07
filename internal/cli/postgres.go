@@ -1,336 +1,296 @@
 package cli
 
 import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
+	postgrescmd "github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/audit"
+	"github.com/nais/cli/internal/postgres/grant"
+	"github.com/nais/cli/internal/postgres/migrate"
+	"github.com/nais/cli/internal/postgres/migrate/finalize"
+	"github.com/nais/cli/internal/postgres/migrate/promote"
+	"github.com/nais/cli/internal/postgres/migrate/rollback"
+	"github.com/nais/cli/internal/postgres/migrate/setup"
+	"github.com/nais/cli/internal/postgres/password/rotate"
+	"github.com/nais/cli/internal/postgres/prepare"
+	"github.com/nais/cli/internal/postgres/proxy"
+	"github.com/nais/cli/internal/postgres/psql"
+	"github.com/nais/cli/internal/postgres/revoke"
+	"github.com/nais/cli/internal/postgres/users/add"
+	"github.com/nais/cli/internal/postgres/users/list"
 	"github.com/spf13/cobra"
 )
 
 func postgres() *cobra.Command {
+	persistentFlags := postgrescmd.Flags{}
+
 	cmd := &cobra.Command{
 		Use:   "postgres",
 		Short: "Command used for connecting to Postgres",
+	}
+
+	cmd.PersistentFlags().StringVarP(&persistentFlags.Namespace, "namespace", "n", "", "The kubernetes `namespace` to use")
+	cmd.PersistentFlags().StringVarP(&persistentFlags.Context, "context", "c", "", "The kubeconfig `context` to use")
+	_ = cmd.MarkFlagRequired("namespace")
+	_ = cmd.MarkFlagRequired("context")
+
+	migrateArguments := func(args []string) migrate.Arguments {
+		return migrate.Arguments{
+			ApplicationName:    args[0],
+			TargetInstanceName: args[1],
+		}
+	}
+	migrateCmd := &cobra.Command{
+		Use:   "migrate",
+		Short: "Command used for migrating to a new Postgres instance",
+	}
+
+	migrateSetupCmdFlags := setup.Flags{Flags: persistentFlags}
+	migrateSetupCmd := &cobra.Command{
+		Use:   "setup APP_NAME TARGET_INSTANCE_NAME",
+		Short: "Make necessary setup for a new migration",
+		Long:  "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
+		Args:  cobra.ExactArgs(2),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !strings.HasPrefix(cmd.Flag("tier").Value.String(), "db-") {
+				return fmt.Errorf("tier must start with `db-`")
+			}
+
+			if !strings.HasPrefix(cmd.Flag("type").Value.String(), "POSTGRES_") {
+				return fmt.Errorf("instance type must start with `POSTGRES_`")
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return setup.Run(
+				cmd.Context(),
+				migrateArguments(args),
+				migrateSetupCmdFlags,
+			)
 		},
 	}
 
-	postgresMigrateCommand := &cobra.Command{
-		Use:   "migrate",
-		Short: "Command used for migrating to a new Postgres instance",
-		// TODO: PersistentPreRunE eller PreRunE?
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
+	diskSize := 0
+	if v, err := strconv.Atoi(os.Getenv("TARGET_INSTANCE_DISKSIZE")); err == nil {
+		diskSize = v
 	}
 
-	postgresMigrateCommand.AddCommand(
-		&cobra.Command{
-			Use:   "nais postgres migrate setup APP_NAME TARGET_INSTANCE_NAME",
-			Short: "Make necessary setup for a new migration",
-			Long:  "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
-			// 		Flags: []cli.Flag{
-			// 			namespaceFlag(),
-			// 			contextFlag(),
-			// 			dryRunFlag(),
-			// 			noWaitFlag(),
-			// 			&cli.StringFlag{
-			// 				Use:         "tier",
-			// 				Short:       "The `TIER` of the new instance",
-			// 				Category:    "Target instance configuration",
-			// 				Sources:     cli.EnvVars("TARGET_INSTANCE_TIER"),
-			// 				DefaultText: "Source instance value",
-			// 				Run:         postgresmigratesetup.TierFlagAction,
-			// 			},
-			// 			&cli.BoolFlag{
-			// 				Use:         "disk-autoresize",
-			// 				Short:       "Enable disk autoresize for the new instance",
-			// 				Category:    "Target instance configuration",
-			// 				Sources:     cli.EnvVars("TARGET_INSTANCE_DISK_AUTORESIZE"),
-			// 				DefaultText: "Source instance value",
-			// 			},
-			// 			&cli.IntFlag{
-			// 				Use:         "disk-size",
-			// 				Short:       "The `DISK_SIZE` of the new instance",
-			// 				Category:    "Target instance configuration",
-			// 				Sources:     cli.EnvVars("TARGET_INSTANCE_DISKSIZE"),
-			// 				DefaultText: "Source instance value",
-			// 			},
-			// 			&cli.StringFlag{
-			// 				Use:         "type",
-			// 				Short:       "The `TYPE` of the new instance",
-			// 				Category:    "Target instance configuration",
-			// 				Sources:     cli.EnvVars("TARGET_INSTANCE_TYPE"),
-			// 				DefaultText: "Source instance value",
-			// 				Run:         postgresmigratesetup.TypeFlagAction,
-			// 			},
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	diskAutoResize := false
+	if v, err := strconv.ParseBool(os.Getenv("TARGET_INSTANCE_DISK_AUTORESIZE")); err == nil {
+		diskAutoResize = v
+	}
+
+	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
+	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.NoWait, "no-wait", false, "Do not wait for the job to complete")
+	migrateSetupCmd.Flags().StringVar(&migrateSetupCmdFlags.Tier, "tier", os.Getenv("TARGET_INSTANCE_TIER"), "The `TIER` of the new instance")
+	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.DiskAutoResize, "disk-autoresize", diskAutoResize, "Enable disk autoresize for the new instance")
+	migrateSetupCmd.Flags().IntVar(&migrateSetupCmdFlags.DiskSize, "disk-size", diskSize, "The `DISK_SIZE` of the new instance")
+	migrateSetupCmd.Flags().StringVar(&migrateSetupCmdFlags.InstanceType, "type", os.Getenv("TARGET_INSTANCE_TYPE"), "The `TYPE` of the new instance")
+
+	_ = migrateSetupCmd.MarkFlagRequired("tier")
+	_ = migrateSetupCmd.MarkFlagRequired("disk-autoresize")
+	_ = migrateSetupCmd.MarkFlagRequired("disk-size")
+	_ = migrateSetupCmd.MarkFlagRequired("type")
+
+	migratePromoteCmdFlags := promote.Flags{Flags: persistentFlags}
+	migratePromoteCmd := &cobra.Command{
+		Use:   "promote APP_NAME TARGET_INSTANCE_NAME",
+		Short: "Promote the migrated instance to the new primary instance",
+		Long:  "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return promote.Run(
+				cmd.Context(),
+				migrateArguments(args),
+				migratePromoteCmdFlags)
 		},
-		&cobra.Command{
-			Use:   "nais postgres migrate promote APP_NAME TARGET_INSTANCE_NAME",
-			Short: "Promote the migrated instance to the new primary instance",
-			Long:  "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
-			// 		Flags: []cli.Flag{
-			// 			namespaceFlag(),
-			// 			contextFlag(),
-			// 			dryRunFlag(),
-			// 			noWaitFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
+	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.NoWait, "no-wait", false, "Do not wait for the job to complete")
+
+	migrateFinalizeCmdFlags := finalize.Flags{Flags: persistentFlags}
+	migrateFinalizeCmd := &cobra.Command{
+		Use:   "finalize APP_NAME TARGET_INSTANCE_NAME",
+		Short: "Finalize the migration",
+		Long:  "Finalize will remove the source instance and associated resources after a successful migration.",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return finalize.Run(
+				cmd.Context(),
+				migrateArguments(args),
+				migrateFinalizeCmdFlags)
 		},
-		&cobra.Command{
-			Use:   "nais postgres migrate finalize APP_NAME TARGET_INSTANCE_NAME",
-			Short: "Finalize the migration",
-			Long:  "Finalize will remove the source instance and associated resources after a successful migration.",
-			// 		Flags: []cli.Flag{
-			// 			namespaceFlag(),
-			// 			contextFlag(),
-			// 			dryRunFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+	migrateFinalizeCmd.Flags().BoolVar(&migrateFinalizeCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
+
+	migrateRollbackCmdFlags := rollback.Flags{Flags: persistentFlags}
+	migrateRollbackCmd := &cobra.Command{
+		Use:   "rollback APP_NAME TARGET_INSTANCE_NAME",
+		Short: "Roll back the migration",
+		Long:  "Rollback will roll back the migration, and restore the application to use the original instance.",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return rollback.Run(
+				cmd.Context(),
+				migrateArguments(args),
+				migrateRollbackCmdFlags)
 		},
-		&cobra.Command{
-			Use:   "nais postgres migrate rollback APP_NAME TARGET_INSTANCE_NAME",
-			Short: "Roll back the migration",
-			Long:  "Rollback will roll back the migration, and restore the application to use the original instance.",
-			// 		Flags: []cli.Flag{
-			// 			namespaceFlag(),
-			// 			contextFlag(),
-			// 			dryRunFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-		},
+	}
+	migrateRollbackCmd.Flags().BoolVar(&migrateRollbackCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
+
+	migrateCmd.AddCommand(
+		migrateSetupCmd,
+		migratePromoteCmd,
+		migrateFinalizeCmd,
+		migrateRollbackCmd,
 	)
 
-	postgresPasswordCommand := &cobra.Command{
+	passwordCmd := &cobra.Command{
 		Use:   "password",
 		Short: "Administrate Postgres password",
 	}
 
-	postgresPasswordCommand.AddCommand(&cobra.Command{
-		Use:   "rotate",
+	passwordRotateCmd := &cobra.Command{
+		Use:   "rotate app",
 		Short: "Rotate the Postgres database password",
 		Long:  "The rotation is both done in GCP and in the Kubernetes secret",
-		// 		ArgsShort: "appname",
-		// 		Flags: []cli.Flag{
-		// 			contextFlag(),
-		// 			namespaceFlag(),
-		// 		},
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return rotate.Run(cmd.Context(), args[0], persistentFlags)
 		},
-	})
+	}
 
-	postgresUsersCommand := &cobra.Command{
+	passwordCmd.AddCommand(passwordRotateCmd)
+
+	usersCmd := &cobra.Command{
 		Use:   "users",
 		Short: "Administrate users in your Postgres instance",
 		Long:  "Command used for listing and adding users to database",
 	}
 
-	postgresUsersCommand.AddCommand(
-		&cobra.Command{
-			Use:   "add",
-			Short: "Add user to a Postgres database",
-			Long:  "Will grant a user access to tables in public schema.",
-			// 		ArgsShort: "appname username password",
-			// 		Flags: []cli.Flag{
-			// 			&cli.StringFlag{
-			// 				Use:     "privilege",
-			// 				Aliases: []string{"p"},
-			// 				Value:   "select",
-			// 			},
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	usersAddCmdFlags := add.Flags{Flags: persistentFlags}
+	usersAddCmd := &cobra.Command{
+		Use:   "add app username password",
+		Short: "Add user to a Postgres database",
+		Long:  "Will grant a user access to tables in public schema.",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return add.Run(
+				cmd.Context(),
+				add.Arguments{
+					ApplicationName: args[0],
+					Username:        args[1],
+					Password:        args[2],
+				},
+				usersAddCmdFlags,
+			)
 		},
-		&cobra.Command{
-			Use:   "list",
-			Short: "List users in a Postgres database",
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+	usersAddCmd.Flags().StringVarP(&usersAddCmdFlags.Privilege, "privilege", "P", "select", "TODO")
+
+	usersListCmd := &cobra.Command{
+		Use:   "list app",
+		Short: "List users in a Postgres database",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return list.Run(cmd.Context(), args[0], persistentFlags)
 		},
+	}
+	usersCmd.AddCommand(
+		usersAddCmd,
+		usersListCmd,
 	)
 
-	cmd.AddCommand(
-		postgresMigrateCommand,
-		postgresPasswordCommand,
-		postgresUsersCommand,
-		&cobra.Command{
-			Use:   "enable-audit",
-			Short: "Enable audit extension in Postgres database",
-			Long:  "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
-			// ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	enableAuditCmd := &cobra.Command{
+		Use:   "enable-audit app",
+		Short: "Enable audit extension in Postgres database",
+		Long:  "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return audit.Run(cmd.Context(), args[0], persistentFlags)
 		},
-		&cobra.Command{
-			Use:   "grant",
-			Short: "Grant yourself access to a Postgres database",
-			Long:  "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+
+	grantCmd := &cobra.Command{
+		Use:   "grant app",
+		Short: "Grant yourself access to a Postgres database",
+		Long:  "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return grant.Run(cmd.Context(), args[0], persistentFlags)
 		},
-		&cobra.Command{
-			Use:   "prepare",
-			Short: "Prepare your postgres instance for use with personal accounts",
-			Long: `Prepare will prepare the postgres instance by connecting using the
+	}
+
+	prepareCmdFlags := prepare.Flags{Flags: persistentFlags}
+	prepareCmd := &cobra.Command{
+		Use:   "prepare app",
+		Short: "Prepare your postgres instance for use with personal accounts",
+		Long: `Prepare will prepare the postgres instance by connecting using the
 		 application credentials and modify the permissions on the public schema.
 		 All IAM users in your GCP project will be able to connect to the instance.
 		
 		 This operation is only required to run once for each postgresql instance.`,
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			&cli.BoolFlag{
-			// 				Use:   "all-privs",
-			// 				Short: "Gives all privileges to users",
-			// 			},
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 			&cli.StringFlag{
-			// 				Use:   "schema",
-			// 				Value: "public",
-			// 				Short: "Schema to grant access to",
-			// 			},
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return prepare.Run(cmd.Context(), args[0], prepareCmdFlags)
 		},
-		&cobra.Command{
-			Use:   "proxy",
-			Short: "Create a proxy to a Postgres instance",
-			Long:  "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			&cli.UintFlag{
-			// 				Use:     "port",
-			// 				Aliases: []string{"p"},
-			// 				Value:   5432,
-			// 			},
-			// 			&cli.StringFlag{
-			// 				Use:     "host",
-			// 				Aliases: []string{"H"},
-			// 				Value:   "localhost",
-			// 			},
-			// 			&cli.BoolFlag{
-			// 				Use:     "verbose",
-			// 				Aliases: []string{"v"},
-			// 			},
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+	prepareCmd.Flags().BoolVar(&prepareCmdFlags.AllPrivileges, "all-privs", false, "Gives all privileges to users")
+	prepareCmd.Flags().StringVar(&prepareCmdFlags.Schema, "schema", "public", "Schema to grant access to")
+
+	proxyCmdFlags := proxy.Flags{Flags: persistentFlags}
+	proxyCmd := &cobra.Command{
+		Use:   "proxy app",
+		Short: "Create a proxy to a Postgres instance",
+		Long:  "Update IAM policies by giving your user the a timed sql.cloudsql.instanceUser role, then start a proxy to the instance.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return proxy.Run(cmd.Context(), args[0], proxyCmdFlags)
 		},
-		&cobra.Command{
-			Use:   "psql",
-			Short: "Connect to the database using psql",
-			Long:  "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			&cli.BoolFlag{
-			// 				Use:     "verbose",
-			// 				Aliases: []string{"v"},
-			// 			},
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+	proxyCmd.Flags().UintVar(&proxyCmdFlags.Port, "port", 5432, "Port to use for the proxy")
+	proxyCmd.Flags().StringVar(&proxyCmdFlags.Host, "host", "localhost", "Host to use for the proxy")
+
+	psqlCmd := &cobra.Command{
+		Use:   "psql app",
+		Short: "Connect to the database using psql",
+		Long:  "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return psql.Run(cmd.Context(), args[0], persistentFlags)
 		},
-		&cobra.Command{
-			Use:   "revoke",
-			Short: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
-			Long: `Revoke will revoke the role 'cloudsqliamuser' access to the
+	}
+
+	revokeCmdFlags := revoke.Flags{Flags: persistentFlags}
+	revokeCmd := &cobra.Command{
+		Use:   "revoke app",
+		Short: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",
+		Long: `Revoke will revoke the role 'cloudsqliamuser' access to the
 		 tables in the postgres instance. This is done by connecting using the application
 		 credentials and modify the permissions on the public schema.
 		
 		 This operation is only required to run once for each postgresql instance.`,
-			// 		ArgsShort: "appname",
-			// 		Flags: []cli.Flag{
-			// 			contextFlag(),
-			// 			namespaceFlag(),
-			// 			&cli.StringFlag{
-			// 				Use:   "schema",
-			// 				Value: "public",
-			// 				Short: "Schema to revoke access from",
-			// 			},
-			// 		},
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return revoke.Run(cmd.Context(), args[0], revokeCmdFlags)
 		},
+	}
+	revokeCmd.Flags().StringVar(&revokeCmdFlags.Schema, "schema", "public", "Schema to revoke access from")
+
+	cmd.AddCommand(
+		migrateCmd,
+		passwordCmd,
+		usersCmd,
+		enableAuditCmd,
+		grantCmd,
+		prepareCmd,
+		proxyCmd,
+		psqlCmd,
+		revokeCmd,
 	)
 
 	return cmd

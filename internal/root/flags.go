@@ -1,3 +1,5 @@
 package root
 
-type Flags struct{}
+type Flags struct {
+	Verbose bool
+}
