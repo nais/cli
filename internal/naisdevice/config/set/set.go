@@ -1,10 +1,11 @@
-package naisdevice
+package set
 
 import (
 	"context"
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/device/pkg/pb"
 )
 
@@ -12,6 +13,23 @@ var (
 	allowedSettings = []string{"AutoConnect"}
 	hiddenSettings  = []string{"ILoveNinetiesBoybands"}
 )
+
+func GetSettingValues(setting string) map[string]string {
+	switch strings.ToLower(setting) {
+	case "autoconnect":
+		return map[string]string{
+			"true":  "Enable autoconnect",
+			"false": "Disable autoconnect",
+		}
+	case "iloveninetiesboybands":
+		return map[string]string{
+			"true":  "Enable tenant switching",
+			"false": "Disable tenant switching",
+		}
+	default:
+		return nil
+	}
+}
 
 func GetAllowedSettings(withHidden, lowerCase bool) []string {
 	settings := allowedSettings
@@ -29,25 +47,8 @@ func GetAllowedSettings(withHidden, lowerCase bool) []string {
 	return settings
 }
 
-func GetConfiguration(ctx context.Context) (*pb.AgentConfiguration, error) {
-	connection, err := agentConnection()
-	if err != nil {
-		return nil, err
-	}
-
-	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
-
-	configResponse, err := client.GetAgentConfiguration(ctx, &pb.GetAgentConfigurationRequest{})
-	if err != nil {
-		return nil, formatGrpcError(err)
-	}
-
-	return configResponse.Config, nil
-}
-
-func SetConfiguration(ctx context.Context, setting string, value bool) error {
-	connection, err := agentConnection()
+func set(ctx context.Context, setting string, value bool) error {
+	connection, err := naisdevice.AgentConnection()
 	if err != nil {
 		return err
 	}
@@ -59,7 +60,7 @@ func SetConfiguration(ctx context.Context, setting string, value bool) error {
 	// SetAgentConfiguration on the agent's side replaces its config with the payload we send
 	configResponse, err := client.GetAgentConfiguration(ctx, &pb.GetAgentConfigurationRequest{})
 	if err != nil {
-		return formatGrpcError(err)
+		return naisdevice.FormatGrpcError(err)
 	}
 
 	switch strings.ToLower(setting) {
@@ -74,7 +75,7 @@ func SetConfiguration(ctx context.Context, setting string, value bool) error {
 	setConfigRequest := &pb.SetAgentConfigurationRequest{Config: configResponse.Config}
 	_, err = client.SetAgentConfiguration(ctx, setConfigRequest)
 	if err != nil {
-		return formatGrpcError(err)
+		return naisdevice.FormatGrpcError(err)
 	}
 
 	return nil

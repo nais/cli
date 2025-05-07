@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func agentConnection() (*grpc.ClientConn, error) {
+func AgentConnection() (*grpc.ClientConn, error) {
 	userConfigDir, err := config.UserConfigDir()
 	if err != nil {
 		return nil, fmt.Errorf("naisdevice config directory: %v", err)
@@ -23,13 +23,13 @@ func agentConnection() (*grpc.ClientConn, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return nil, formatGrpcError(err)
+		return nil, FormatGrpcError(err)
 	}
 
 	return connection, nil
 }
 
-func formatGrpcError(err error) error {
+func FormatGrpcError(err error) error {
 	gerr, ok := status.FromError(err)
 	if !ok {
 		return err

@@ -11,7 +11,7 @@ import (
 )
 
 func Connect(ctx context.Context) error {
-	connection, err := agentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return err
 	}
@@ -21,14 +21,14 @@ func Connect(ctx context.Context) error {
 
 	_, err = client.Login(ctx, &pb.LoginRequest{})
 	if err != nil {
-		return formatGrpcError(err)
+		return FormatGrpcError(err)
 	}
 
 	return waitForConnectionState(ctx, client, pb.AgentState_Connected)
 }
 
 func Disconnect(ctx context.Context) error {
-	connection, err := agentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func Disconnect(ctx context.Context) error {
 
 	_, err = client.Logout(ctx, &pb.LogoutRequest{})
 	if err != nil {
-		return formatGrpcError(err)
+		return FormatGrpcError(err)
 	}
 
 	return waitForConnectionState(ctx, client, pb.AgentState_Disconnected)
@@ -49,7 +49,7 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 		KeepConnectionOnComplete: true,
 	})
 	if err != nil {
-		return formatGrpcError(err)
+		return FormatGrpcError(err)
 	}
 
 	for stream.Context().Err() == nil {
@@ -67,7 +67,7 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 }
 
 func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
-	connection, err := agentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 		KeepConnectionOnComplete: true,
 	})
 	if err != nil {
-		return nil, formatGrpcError(err)
+		return nil, FormatGrpcError(err)
 	}
 
 	return stream.Recv()

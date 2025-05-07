@@ -3,8 +3,11 @@ package cli
 import (
 	"fmt"
 	"slices"
+	"strconv"
 
 	"github.com/nais/cli/internal/metrics"
+	"github.com/nais/cli/internal/naisdevice/config/get"
+	"github.com/nais/cli/internal/naisdevice/config/set"
 	"github.com/nais/cli/internal/naisdevice/status"
 	"github.com/spf13/cobra"
 )
@@ -19,38 +22,59 @@ func device() *cobra.Command {
 		Use:   "config",
 		Short: "Adjust or view the naisdevice configuration",
 	}
-	configCmd.AddCommand(
-		&cobra.Command{
-			Use:   "get",
-			Short: "Gets the current configuration",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+
+	getCmd := &cobra.Command{
+		Use:   "get",
+		Short: "Gets the current configuration",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return get.Run(cmd.Context())
 		},
-		&cobra.Command{
-			Use:   "set setting value",
-			Short: "Sets a configuration value",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+	}
+
+	setCmd := &cobra.Command{
+		Use:   "set setting value",
+		Short: "Sets a configuration value",
+		Args:  cobra.ExactArgs(2),
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			if len(args) == 0 {
+				return set.GetAllowedSettings(false, false), cobra.ShellCompDirectiveDefault
+			} else if len(args) == 1 {
+				var completions []cobra.Completion
+				for key, value := range set.GetSettingValues(args[0]) {
+					completions = append(completions, cobra.CompletionWithDesc(key, value))
+				}
+				return cobra.AppendActiveHelp(completions, "Possible values"), cobra.ShellCompDirectiveDefault
+			}
+			return cobra.AppendActiveHelp(nil, "no more inputs expected, press enter"), cobra.ShellCompDirectiveNoFileComp
 		},
-		&cobra.Command{
-			Use:   "connect",
-			Short: "Creates a naisdevice connection, will lock until connection",
-			PreRunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return nil
-			},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			setting := args[0]
+			value, err := strconv.ParseBool(args[1])
+			if err != nil {
+				return err
+			}
+
+			arguments := set.Arguments{
+				Setting: setting,
+				Value:   value,
+			}
+
+			return set.Run(cmd.Context(), arguments)
 		},
-	)
+	}
+
+	configCmd.AddCommand(getCmd, setCmd)
+
+	connectCmd := &cobra.Command{
+		Use:   "connect",
+		Short: "Creates a naisdevice connection, will lock until connection",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	}
 
 	statusFlags := status.Flags{}
 	statusCmd := &cobra.Command{
@@ -73,6 +97,7 @@ func device() *cobra.Command {
 
 	cmd.AddCommand(
 		configCmd,
+		connectCmd,
 		statusCmd,
 		&cobra.Command{
 			Use:   "disconnect",

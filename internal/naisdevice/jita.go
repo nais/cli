@@ -19,7 +19,7 @@ func AccessPrivilegedGateway(gatewayName string) error {
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
-	connection, err := agentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return nil, err
 	}
