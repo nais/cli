@@ -7,7 +7,7 @@ import (
 )
 
 func debug() *cobra.Command {
-	flags := debugcmd.Flags{}
+	cmdFlags := debugcmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "debug app",
 		Short: "Create and attach to a debug container for a given `app`",
@@ -18,31 +18,28 @@ func debug() *cobra.Command {
 			"You can only reconnect to the debug session if the pod is running.",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return debugcmd.Run(args[0], flags)
+			return debugcmd.Run(args[0], cmdFlags)
 		},
 	}
-	fs := cmd.Flags()
-	fs.StringVarP(&flags.Context, "context", "c", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
-	fs.StringVarP(&flags.Namespace, "namespace", "n", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")
-	fs.BoolVarP(&flags.Copy, "copy", "C", false, "To create or delete a 'COPY' of pod with a debug container. The original pod remains running and unaffected")
-	fs.BoolVarP(&flags.ByPod, "by-pod", "b", false, "Attach to a specific `BY-POD` in a workload")
+	cmd.Flags().StringVarP(&cmdFlags.Context, "context", "c", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
+	cmd.Flags().StringVarP(&cmdFlags.Namespace, "namespace", "n", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")
+	cmd.Flags().BoolVarP(&cmdFlags.Copy, "copy", "C", false, "To create or delete a 'COPY' of pod with a debug container. The original pod remains running and unaffected")
+	cmd.Flags().BoolVarP(&cmdFlags.ByPod, "by-pod", "b", false, "Attach to a specific `BY-POD` in a workload")
 
-	tidyFlags := tidycmd.Flags{}
-	tidy := &cobra.Command{
+	tidyCmdFlags := tidycmd.Flags{}
+	tidyCmd := &cobra.Command{
 		Use:   "tidy app",
 		Short: "Clean up debug containers and debug pods",
 		Long:  "Remove debug containers created by the 'debug' command. To delete copy pods set the '--copy' flag.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return tidycmd.Run(args[0], tidyFlags)
+			return tidycmd.Run(args[0], tidyCmdFlags)
 		},
 	}
+	tidyCmd.Flags().StringVarP(&tidyCmdFlags.Context, "context", "c", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
+	tidyCmd.Flags().StringVarP(&tidyCmdFlags.Namespace, "namespace", "n", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")
+	tidyCmd.Flags().BoolVarP(&tidyCmdFlags.Copy, "copy", "C", false, "To create or delete a 'COPY' of pod with a debug container. The original pod remains running and unaffected")
 
-	fs = tidy.Flags()
-	fs.StringVarP(&tidyFlags.Context, "context", "c", "", "The kubeconfig `CONTEXT` to use. Defaults to current context.")
-	fs.StringVarP(&tidyFlags.Namespace, "namespace", "n", "", "The kubernetes `NAMESPACE` to use. Defaults to current namespace in kubeconfig.")
-	fs.BoolVarP(&tidyFlags.Copy, "copy", "C", false, "To create or delete a 'COPY' of pod with a debug container. The original pod remains running and unaffected")
-
-	cmd.AddCommand(tidy)
+	cmd.AddCommand(tidyCmd)
 
 	return cmd
 }

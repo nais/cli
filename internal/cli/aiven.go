@@ -19,22 +19,21 @@ func aiven() *cobra.Command {
 		Short: "Command used for management of AivenApplication",
 	}
 
-	commonCreateFlags := aivencreate.Flags{}
+	createCmdFlags := aivencreate.Flags{}
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "Creates a protected and time-limited AivenApplication",
 		Args:  cobra.ExactArgs(3),
 		PersistentPreRunE: func(*cobra.Command, []string) error {
-			if commonCreateFlags.Expire > 30 {
+			if createCmdFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
 			}
 
 			return nil
 		},
 	}
-	fs := createCmd.PersistentFlags()
-	fs.UintVarP(&commonCreateFlags.Expire, "expire", "e", 1, "Days until credential expires")
-	fs.StringVarP(&commonCreateFlags.Secret, "secret", "s", "", "Secret name to store credentials. Will be generated if not provided")
+	createCmd.PersistentFlags().UintVarP(&createCmdFlags.Expire, "expire", "e", 1, "Days until credential expires")
+	createCmd.PersistentFlags().StringVarP(&createCmdFlags.Secret, "secret", "s", "", "Secret name to store credentials. Will be generated if not provided")
 
 	createArgs := func(args []string) aivencreate.Arguments {
 		return aivencreate.Arguments{
@@ -58,7 +57,7 @@ func aiven() *cobra.Command {
 				cmd.Context(),
 				createArgs(args),
 				aivencreatekafka.Flags{
-					Flags: commonCreateFlags,
+					Flags: createCmdFlags,
 					Pool:  pool,
 				},
 			)
@@ -85,7 +84,7 @@ func aiven() *cobra.Command {
 				cmd.Context(),
 				createArgs(args),
 				aivencreateopensearch.Flags{
-					Flags:  commonCreateFlags,
+					Flags:  createCmdFlags,
 					Access: access,
 				},
 			)

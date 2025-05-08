@@ -10,7 +10,7 @@ import (
 )
 
 func kubeconfig() *cobra.Command {
-	flags := kubeconfigcmd.Flags{}
+	cmdFlags := kubeconfigcmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "kubeconfig",
 		Short: "Create a kubeconfig file for connecting to available clusters",
@@ -45,15 +45,13 @@ gcloud auth login --update-adc`,
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			verbose, _ := cmd.Flags().GetBool("verbose")
-			flags.Verbose = verbose
-			return kubeconfigcmd.Run(cmd.Context(), flags)
+			cmdFlags.Verbose, _ = cmd.Flags().GetBool("verbose")
+			return kubeconfigcmd.Run(cmd.Context(), cmdFlags)
 		},
 	}
-	fs := cmd.Flags()
-	fs.StringSliceVarP(&flags.Exclude, "exclude", "e", nil, "Exclude clusters from cmd. Can be specified as a comma separated list")
-	fs.BoolVarP(&flags.Overwrite, "overwrite", "o", false, "Overwrite existing kubeconfig data if conflicts are found")
-	fs.BoolVarP(&flags.Clear, "clear", "c", false, "Clear existing kubeconfig before writing new data")
+	cmd.Flags().StringSliceVarP(&cmdFlags.Exclude, "exclude", "e", nil, "Exclude clusters from cmd. Can be specified as a comma separated list")
+	cmd.Flags().BoolVarP(&cmdFlags.Overwrite, "overwrite", "o", false, "Overwrite existing kubeconfig data if conflicts are found")
+	cmd.Flags().BoolVarP(&cmdFlags.Clear, "clear", "c", false, "Clear existing kubeconfig before writing new data")
 
 	return cmd
 }

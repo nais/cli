@@ -20,8 +20,7 @@ func Run(ctx context.Context) error {
 		Long:    "Nais platform utility cli, respects consoledonottrack.com",
 		Version: version + "-" + commit,
 	}
-	fs := app.PersistentFlags()
-	fs.BoolP("verbose", "v", false, "Verbose output")
+	app.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
 
 	app.AddCommand(
 		login(),

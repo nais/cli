@@ -6,7 +6,7 @@ import (
 )
 
 func validate() *cobra.Command {
-	flags := validatecmd.Flags{}
+	cmdFlags := validatecmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "validate file...",
 		Short: "Validate one or more Nais manifest files",
@@ -19,15 +19,12 @@ func validate() *cobra.Command {
 			return comps, cobra.ShellCompDirectiveDefault
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			verbose, _ := cmd.Flags().GetBool("verbose")
-			flags.Verbose = verbose
-			return validatecmd.Run(args, flags)
+			cmdFlags.Verbose, _ = cmd.Flags().GetBool("verbose")
+			return validatecmd.Run(args, cmdFlags)
 		},
 	}
-
-	fs := cmd.Flags()
-	fs.StringVarP(&flags.VarsFilePath, "vars", "f", "", "Path to the `file` containing template variables, must be JSON or YAML format.")
-	fs.StringSliceVar(&flags.Vars, "var", nil, "Template variable in `KEY=VALUE` form. This flag can be repeated.")
+	cmd.Flags().StringVarP(&cmdFlags.VarsFilePath, "vars", "f", "", "Path to the `file` containing template variables, must be JSON or YAML format.")
+	cmd.Flags().StringSliceVar(&cmdFlags.Vars, "var", nil, "Template variable in `KEY=VALUE` form. This flag can be repeated.")
 
 	return cmd
 }

@@ -25,15 +25,13 @@ import (
 )
 
 func postgres() *cobra.Command {
-	persistentFlags := postgrescmd.Flags{}
-
+	cmdFlags := postgrescmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "postgres",
 		Short: "Command used for connecting to Postgres",
 	}
-
-	cmd.PersistentFlags().StringVarP(&persistentFlags.Namespace, "namespace", "n", "", "The kubernetes `namespace` to use")
-	cmd.PersistentFlags().StringVarP(&persistentFlags.Context, "context", "c", "", "The kubeconfig `context` to use")
+	cmd.PersistentFlags().StringVarP(&cmdFlags.Namespace, "namespace", "n", "", "The kubernetes `namespace` to use")
+	cmd.PersistentFlags().StringVarP(&cmdFlags.Context, "context", "c", "", "The kubeconfig `context` to use")
 	_ = cmd.MarkFlagRequired("namespace")
 	_ = cmd.MarkFlagRequired("context")
 
@@ -48,7 +46,7 @@ func postgres() *cobra.Command {
 		Short: "Command used for migrating to a new Postgres instance",
 	}
 
-	migrateSetupCmdFlags := setup.Flags{Flags: persistentFlags}
+	migrateSetupCmdFlags := setup.Flags{Flags: cmdFlags}
 	migrateSetupCmd := &cobra.Command{
 		Use:   "setup APP_NAME TARGET_INSTANCE_NAME",
 		Short: "Make necessary setup for a new migration",
@@ -96,7 +94,7 @@ func postgres() *cobra.Command {
 	_ = migrateSetupCmd.MarkFlagRequired("disk-size")
 	_ = migrateSetupCmd.MarkFlagRequired("type")
 
-	migratePromoteCmdFlags := promote.Flags{Flags: persistentFlags}
+	migratePromoteCmdFlags := promote.Flags{Flags: cmdFlags}
 	migratePromoteCmd := &cobra.Command{
 		Use:   "promote APP_NAME TARGET_INSTANCE_NAME",
 		Short: "Promote the migrated instance to the new primary instance",
@@ -112,7 +110,7 @@ func postgres() *cobra.Command {
 	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
 	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.NoWait, "no-wait", false, "Do not wait for the job to complete")
 
-	migrateFinalizeCmdFlags := finalize.Flags{Flags: persistentFlags}
+	migrateFinalizeCmdFlags := finalize.Flags{Flags: cmdFlags}
 	migrateFinalizeCmd := &cobra.Command{
 		Use:   "finalize APP_NAME TARGET_INSTANCE_NAME",
 		Short: "Finalize the migration",
@@ -127,7 +125,7 @@ func postgres() *cobra.Command {
 	}
 	migrateFinalizeCmd.Flags().BoolVar(&migrateFinalizeCmdFlags.DryRun, "dry-run", false, "Perform a dry run")
 
-	migrateRollbackCmdFlags := rollback.Flags{Flags: persistentFlags}
+	migrateRollbackCmdFlags := rollback.Flags{Flags: cmdFlags}
 	migrateRollbackCmd := &cobra.Command{
 		Use:   "rollback APP_NAME TARGET_INSTANCE_NAME",
 		Short: "Roll back the migration",
@@ -160,7 +158,7 @@ func postgres() *cobra.Command {
 		Long:  "The rotation is both done in GCP and in the Kubernetes secret",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return rotate.Run(cmd.Context(), args[0], persistentFlags)
+			return rotate.Run(cmd.Context(), args[0], cmdFlags)
 		},
 	}
 
@@ -172,7 +170,7 @@ func postgres() *cobra.Command {
 		Long:  "Command used for listing and adding users to database",
 	}
 
-	usersAddCmdFlags := add.Flags{Flags: persistentFlags}
+	usersAddCmdFlags := add.Flags{Flags: cmdFlags}
 	usersAddCmd := &cobra.Command{
 		Use:   "add app username password",
 		Short: "Add user to a Postgres database",
@@ -197,7 +195,7 @@ func postgres() *cobra.Command {
 		Short: "List users in a Postgres database",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return list.Run(cmd.Context(), args[0], persistentFlags)
+			return list.Run(cmd.Context(), args[0], cmdFlags)
 		},
 	}
 	usersCmd.AddCommand(
@@ -211,7 +209,7 @@ func postgres() *cobra.Command {
 		Long:  "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return audit.Run(cmd.Context(), args[0], persistentFlags)
+			return audit.Run(cmd.Context(), args[0], cmdFlags)
 		},
 	}
 
@@ -221,11 +219,11 @@ func postgres() *cobra.Command {
 		Long:  "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return grant.Run(cmd.Context(), args[0], persistentFlags)
+			return grant.Run(cmd.Context(), args[0], cmdFlags)
 		},
 	}
 
-	prepareCmdFlags := prepare.Flags{Flags: persistentFlags}
+	prepareCmdFlags := prepare.Flags{Flags: cmdFlags}
 	prepareCmd := &cobra.Command{
 		Use:   "prepare app",
 		Short: "Prepare your postgres instance for use with personal accounts",
@@ -242,7 +240,7 @@ func postgres() *cobra.Command {
 	prepareCmd.Flags().BoolVar(&prepareCmdFlags.AllPrivileges, "all-privs", false, "Gives all privileges to users")
 	prepareCmd.Flags().StringVar(&prepareCmdFlags.Schema, "schema", "public", "Schema to grant access to")
 
-	proxyCmdFlags := proxy.Flags{Flags: persistentFlags}
+	proxyCmdFlags := proxy.Flags{Flags: cmdFlags}
 	proxyCmd := &cobra.Command{
 		Use:   "proxy app",
 		Short: "Create a proxy to a Postgres instance",
@@ -261,11 +259,11 @@ func postgres() *cobra.Command {
 		Long:  "Create a shell to the postgres instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return psql.Run(cmd.Context(), args[0], persistentFlags)
+			return psql.Run(cmd.Context(), args[0], cmdFlags)
 		},
 	}
 
-	revokeCmdFlags := revoke.Flags{Flags: persistentFlags}
+	revokeCmdFlags := revoke.Flags{Flags: cmdFlags}
 	revokeCmd := &cobra.Command{
 		Use:   "revoke app",
 		Short: "Revoke access to your postgres instance for the role 'cloudsqliamuser'",

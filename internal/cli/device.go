@@ -77,28 +77,26 @@ func device() *cobra.Command {
 		},
 	}
 
-	statusFlags := status.Flags{Flags: &root.Flags{}}
+	statusCmdFlags := status.Flags{Flags: &root.Flags{}}
 	statusCmd := &cobra.Command{
 		Use:   "status",
 		Short: "Shows the status of your naisdevice",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if !slices.Contains([]string{"", "yaml", "json"}, statusFlags.Output) {
-				// metrics.AddOne(cmd.Context(), "status_file_format_error_total")
-				return fmt.Errorf("%v is not an implemented format", statusFlags.Output)
+			if !slices.Contains([]string{"", "yaml", "json"}, statusCmdFlags.Output) {
+				return fmt.Errorf("%v is not an implemented format", statusCmdFlags.Output)
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := parseRootFlags(cmd, statusFlags.Flags)
-			if err != nil {
+			if err := parseRootFlags(cmd, statusCmdFlags.Flags); err != nil {
 				return err
 			}
 
-			return status.Run(cmd.Context(), statusFlags)
+			return status.Run(cmd.Context(), statusCmdFlags)
 		},
 	}
-	statusCmd.Flags().StringVarP(&statusFlags.Output, "output", "o", "", "Output format (yaml or json)")
-	statusCmd.Flags().BoolVarP(&statusFlags.Quiet, "quiet", "q", false, "Quiet output")
+	statusCmd.Flags().StringVarP(&statusCmdFlags.Output, "output", "o", "", "Output format (yaml or json)")
+	statusCmd.Flags().BoolVarP(&statusCmdFlags.Quiet, "quiet", "q", false, "Quiet output")
 
 	cmd.AddCommand(
 		configCmd,
