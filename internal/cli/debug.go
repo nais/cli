@@ -35,7 +35,7 @@ You can only reconnect to the debug session if the pod is running.`,
 	tidyCmd := &cobra.Command{
 		Use:   "tidy app",
 		Short: "Clean up debug containers and debug pods.",
-		Long: `Remove debug containers created by the "debug" command.
+		Long: `Remove debug containers created by the "debug" command
 
 To delete copy pods set the "--copy" flag.`,
 		RunE: func(_ *cobra.Command, args []string) error {

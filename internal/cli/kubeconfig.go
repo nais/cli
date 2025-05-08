@@ -17,7 +17,7 @@ func kubeconfig(root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "kubeconfig",
 		Short: "Create a kubeconfig file for connecting to available clusters.",
-		Long: `Create a kubeconfig file for connecting to available clusters.
+		Long: `Create a kubeconfig file for connecting to available clusters
 
 This requires that you have the gcloud command line tool installed, configured and logged in using:
 "nais login"`,

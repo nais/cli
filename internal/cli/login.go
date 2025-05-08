@@ -10,7 +10,7 @@ func login(root.Flags) *cobra.Command {
 	return &cobra.Command{
 		Use:   "login",
 		Short: "Login using Google Auth.",
-		Long:  "This is a wrapper around gcloud auth login --update-adc.",
+		Long:  "This is a wrapper around gcloud auth login --update-adc",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return gcp.Run(cmd.Context())
 		},
