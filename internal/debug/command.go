@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/root"
 	"k8s.io/client-go/kubernetes"
 )
 
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
 type Flags struct {
+	root.Flags
 	Context   string
 	Namespace string
 	Copy      bool

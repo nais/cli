@@ -2,10 +2,12 @@ package validate
 
 import (
 	"fmt"
+
+	"github.com/nais/cli/internal/root"
 )
 
 type Flags struct {
-	Verbose      bool
+	root.Flags
 	VarsFilePath string
 	Vars         []string
 }
@@ -20,7 +22,7 @@ func Run(files []string, flags Flags) error {
 			return fmt.Errorf("load template variables: %v", err)
 		}
 		for key, val := range templateVars {
-			if flags.Verbose {
+			if flags.IsVerbose() {
 				fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			}
 			templateVars[key] = val
@@ -30,7 +32,7 @@ func Run(files []string, flags Flags) error {
 	if len(flags.Vars) > 0 {
 		overrides := TemplateVariablesFromSlice(flags.Vars)
 		for key, val := range overrides {
-			if flags.Verbose {
+			if flags.IsVerbose() {
 				if oldval, ok := templateVars[key]; ok {
 					fmt.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
 				}
@@ -42,6 +44,6 @@ func Run(files []string, flags Flags) error {
 
 	v := New(files)
 	v.Variables = templateVars
-	v.Verbose = flags.Verbose
+	v.Verbose = flags.IsVerbose()
 	return v.Validate()
 }

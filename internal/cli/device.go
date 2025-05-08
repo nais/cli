@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func device() *cobra.Command {
+func device(rootFlags root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "device",
 		Short: "Command used for management of naisdevice",
@@ -77,7 +77,7 @@ func device() *cobra.Command {
 		},
 	}
 
-	statusCmdFlags := status.Flags{Flags: &root.Flags{}}
+	statusCmdFlags := status.Flags{Flags: rootFlags}
 	statusCmd := &cobra.Command{
 		Use:   "status",
 		Short: "Shows the status of your naisdevice",
@@ -88,10 +88,6 @@ func device() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := parseRootFlags(cmd, statusCmdFlags.Flags); err != nil {
-				return err
-			}
-
 			return status.Run(cmd.Context(), statusCmdFlags)
 		},
 	}

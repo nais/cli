@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/debug"
+	"github.com/nais/cli/internal/root"
 )
 
 type Flags struct {
+	root.Flags
 	Context   string
 	Namespace string
 	Copy      bool

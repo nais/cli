@@ -9,10 +9,9 @@ import (
 )
 
 type Flags struct {
+	root.Flags
 	Quiet  bool
 	Output string
-
-	*root.Flags
 }
 
 func Run(ctx context.Context, flags Flags) error {
@@ -32,7 +31,7 @@ func Run(ctx context.Context, flags Flags) error {
 		return naisdevice.PrintFormattedStatus(flags.Output, status)
 	}
 
-	if flags.Verbose {
+	if flags.IsVerbose() {
 		naisdevice.PrintVerboseStatus(status)
 		return nil
 	}

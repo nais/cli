@@ -1,5 +1,17 @@
 package root
 
 type Flags struct {
-	Verbose bool
+	VerboseLevel int
+}
+
+func (f Flags) IsVerbose() bool {
+	return f.VerboseLevel > 0
+}
+
+func (f Flags) IsVeryVerbose() bool {
+	return f.VerboseLevel > 1
+}
+
+func (f Flags) IsDebug() bool {
+	return f.VerboseLevel > 2
 }

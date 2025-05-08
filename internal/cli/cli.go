@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
@@ -14,33 +13,24 @@ var (
 )
 
 func Run(ctx context.Context) error {
-	app := &cobra.Command{
-		Use:     "nais",
-		Short:   "A Nais cli",
-		Long:    "Nais platform utility cli, respects consoledonottrack.com",
-		Version: version + "-" + commit,
+	cmdFlags := root.Flags{}
+	cmd := &cobra.Command{
+		Use:          "nais",
+		Long:         "Nais CLI",
+		Version:      version + "-" + commit,
+		SilenceUsage: true,
 	}
-	app.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
+	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", "Verbose output.")
 
-	app.AddCommand(
-		login(),
-		kubeconfig(),
-		validate(),
-		debug(),
-		aiven(),
-		device(),
-		postgres(),
+	cmd.AddCommand(
+		login(cmdFlags),
+		kubeconfig(cmdFlags),
+		validate(cmdFlags),
+		debug(cmdFlags),
+		aiven(cmdFlags),
+		device(cmdFlags),
+		postgres(cmdFlags),
 	)
 
-	return app.ExecuteContext(ctx)
-}
-
-func parseRootFlags(cmd *cobra.Command, flags *root.Flags) error {
-	if verbose, err := strconv.ParseBool(cmd.Flag("verbose").Value.String()); err != nil {
-		return err
-	} else {
-		flags.Verbose = verbose
-	}
-
-	return nil
+	return cmd.ExecuteContext(ctx)
 }

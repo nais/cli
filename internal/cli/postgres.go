@@ -21,10 +21,11 @@ import (
 	"github.com/nais/cli/internal/postgres/revoke"
 	"github.com/nais/cli/internal/postgres/users/add"
 	"github.com/nais/cli/internal/postgres/users/list"
+	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func postgres() *cobra.Command {
+func postgres(root.Flags) *cobra.Command {
 	cmdFlags := postgrescmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "postgres",

@@ -13,5 +13,5 @@ type Flags struct {
 }
 
 func Run(ctx context.Context, applicationName string, flags Flags) error {
-	return postgres.RunProxy(ctx, applicationName, flags.Context, flags.Namespace, flags.Host, flags.Port, flags.Verbose)
+	return postgres.RunProxy(ctx, applicationName, flags.Context, flags.Namespace, flags.Host, flags.Port, flags.IsVerbose())
 }

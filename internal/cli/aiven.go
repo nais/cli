@@ -10,10 +10,11 @@ import (
 	aivencreateopensearch "github.com/nais/cli/internal/aiven/create/opensearch"
 	"github.com/nais/cli/internal/aiven/get"
 	"github.com/nais/cli/internal/aiven/tidy"
+	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func aiven() *cobra.Command {
+func aiven(root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aiven",
 		Short: "Command used for management of AivenApplication",

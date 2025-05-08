@@ -5,43 +5,40 @@ import (
 	"os"
 	"strings"
 
+	"github.com/nais/cli/internal/gcp"
 	kubeconfigcmd "github.com/nais/cli/internal/kubeconfig"
+	"github.com/nais/cli/internal/naisdevice"
+	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func kubeconfig() *cobra.Command {
+func kubeconfig(root.Flags) *cobra.Command {
 	cmdFlags := kubeconfigcmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "kubeconfig",
-		Short: "Create a kubeconfig file for connecting to available clusters",
+		Short: "Create a kubeconfig file for connecting to available clusters.",
 		Long: `Create a kubeconfig file for connecting to available clusters.
-This requires that you have the gcloud command line tool installed, configured and logged
-in using:
-gcloud auth login --update-adc`,
+
+This requires that you have the gcloud command line tool installed, configured and logged in using:
+"nais login"`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			/*
-				TODO: add validation
+			if _, err := gcp.ValidateAndGetUserLogin(cmd.Context(), false); err != nil {
+				return err
+			}
 
-				if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {
-					return ctx, err
+			if mightBeWSL() {
+				fmt.Println("Skipping naisdevice check in WSL. Assuming it's connected and ready to go.")
+			} else {
+				status, err := naisdevice.GetStatus(cmd.Context())
+				if err != nil {
+					return err
 				}
 
-				if mightBeWSL() {
-					fmt.Println("Skipping naisdevice check in WSL. Assuming it's connected and ready to go.")
-				} else {
-					status, err := naisdevice.GetStatus(ctx)
-					if err != nil {
-						return ctx, err
-					}
-
-					if !naisdevice.IsConnected(status) {
-						metrics.AddOne(ctx, "kubeconfig_connect_error_total")
-						return ctx, fmt.Errorf("you need to be connected with naisdevice before using this command")
-					}
+				if !naisdevice.IsConnected(status) {
+					return fmt.Errorf("you need to be connected with naisdevice before using this command")
 				}
+			}
 
-				return ctx, nil
-			*/
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -49,9 +46,9 @@ gcloud auth login --update-adc`,
 			return kubeconfigcmd.Run(cmd.Context(), cmdFlags)
 		},
 	}
-	cmd.Flags().StringSliceVarP(&cmdFlags.Exclude, "exclude", "e", nil, "Exclude clusters from cmd. Can be specified as a comma separated list")
-	cmd.Flags().BoolVarP(&cmdFlags.Overwrite, "overwrite", "o", false, "Overwrite existing kubeconfig data if conflicts are found")
-	cmd.Flags().BoolVarP(&cmdFlags.Clear, "clear", "c", false, "Clear existing kubeconfig before writing new data")
+	cmd.Flags().StringSliceVarP(&cmdFlags.Exclude, "exclude", "e", nil, "Exclude `CLUSTER` from kubeconfig. Can be repeated.")
+	cmd.Flags().BoolVarP(&cmdFlags.Overwrite, "overwrite", "o", false, "Overwrite existing kubeconfig entries if conflicts are found.")
+	cmd.Flags().BoolVarP(&cmdFlags.Clear, "clear", "c", false, "Clear existing kubeconfig.")
 
 	return cmd
 }
