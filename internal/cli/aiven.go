@@ -17,14 +17,13 @@ import (
 func aiven(root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aiven",
-		Short: "Command used for management of AivenApplication",
+		Short: "Manage Aiven services.",
 	}
 
 	createCmdFlags := aivencreate.Flags{}
 	createCmd := &cobra.Command{
 		Use:   "create",
-		Short: "Creates a protected and time-limited AivenApplication",
-		Args:  cobra.ExactArgs(3),
+		Short: "Create a protected and time-limited Aiven service.",
 		PersistentPreRunE: func(*cobra.Command, []string) error {
 			if createCmdFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
@@ -33,8 +32,8 @@ func aiven(root.Flags) *cobra.Command {
 			return nil
 		},
 	}
-	createCmd.PersistentFlags().UintVarP(&createCmdFlags.Expire, "expire", "e", 1, "Days until credential expires")
-	createCmd.PersistentFlags().StringVarP(&createCmdFlags.Secret, "secret", "s", "", "Secret name to store credentials. Will be generated if not provided")
+	createCmd.PersistentFlags().UintVarP(&createCmdFlags.Expire, "expire", "e", 1, "Number of `DAYS` until the generated credentials expire.")
+	createCmd.PersistentFlags().StringVarP(&createCmdFlags.Secret, "secret", "s", "", "`NAME` of the Kubernetes secret to store the credentials in. Will be generated if not provided.")
 
 	createArgs := func(args []string) aivencreate.Arguments {
 		return aivencreate.Arguments{
@@ -45,8 +44,8 @@ func aiven(root.Flags) *cobra.Command {
 
 	var createKafkaPool string
 	createKafkaCmd := &cobra.Command{
-		Use:   "kafka username namespace",
-		Short: "Creates a protected and time-limited AivenApplication",
+		Use:   "kafka USERNAME NAMESPACE",
+		Short: "Create a Kafka instance.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaPool)
@@ -64,13 +63,13 @@ func aiven(root.Flags) *cobra.Command {
 			)
 		},
 	}
-	createKafkaCmd.Flags().StringVarP(&createKafkaPool, "pool", "p", "nav-dev", "Kafka pool")
+	createKafkaCmd.Flags().StringVarP(&createKafkaPool, "pool", "p", "nav-dev", "The `NAME` of the pool to create the Kafka instance in.")
 	_ = createKafkaCmd.MarkFlagRequired("pool")
 
 	var createOpenSearchAccess, createOpenSearchInstance string
 	createOpenSearchCmd := &cobra.Command{
-		Use:   "opensearch username namespace",
-		Short: "Creates a protected and time-limited AivenApplication",
+		Use:   "opensearch USERNAME NAMESPACE",
+		Short: "Create an OpenSearch instance.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchAccess)
@@ -91,8 +90,9 @@ func aiven(root.Flags) *cobra.Command {
 			)
 		},
 	}
-	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchAccess, "access", "a", "", "Access name")
-	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchInstance, "instance", "i", "", "Instance name")
+	// TODO: autocomplete valid access levels
+	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchAccess, "access", "a", "", "The access `LEVEL`.")
+	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchInstance, "instance", "i", "", "The name of the OpenSearch `INSTANCE`.")
 	_ = createOpenSearchCmd.MarkFlagRequired("access")
 
 	createCmd.AddCommand(
@@ -103,12 +103,16 @@ func aiven(root.Flags) *cobra.Command {
 	cmd.AddCommand(
 		createCmd,
 		&cobra.Command{
-			Use:   "get service username namespace",
-			Short: "Generate preferred config format to '/tmp' folder",
+			Use:   "get SERVICE USERNAME NAMESPACE",
+			Short: "Generate preferred config format to '/tmp' folder.",
 			Args:  cobra.ExactArgs(3),
-			ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-				// TODO: audocomplete service name (kafka / opensearch)
-				return []string{}, cobra.ShellCompDirectiveNoFileComp
+			ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]cobra.Completion, cobra.ShellCompDirective) {
+				comps := make([]cobra.Completion, 0)
+				if len(args) == 0 {
+					comps = append(comps, "kafka", "opensearch")
+					comps = cobra.AppendActiveHelp(comps, "Choose the service you want to get.")
+				}
+				return comps, cobra.ShellCompDirectiveNoFileComp
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				service, err := aiven_services.FromString(args[0])
@@ -124,9 +128,10 @@ func aiven(root.Flags) *cobra.Command {
 		},
 		&cobra.Command{
 			Use:   "tidy",
-			Short: "Clean up /tmp/aiven-secret-* made by nais-cli",
-			Long: `Remove '/tmp' folder '$TMPDIR' and files created by the aiven command
-	Caution - This will delete all files in '/tmp' folder starting with 'aiven-secret-'`,
+			Short: "Clean up /tmp/aiven-secret-* files made by the Nais CLI.",
+			Long: `Clean up /tmp/aiven-secret-* files made by the Nais CLI
+
+Caution - This command will delete all files in "/tmp" folder starting with "aiven-secret-".`,
 			RunE: func(*cobra.Command, []string) error {
 				return tidy.Run()
 			},
