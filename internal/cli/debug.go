@@ -33,11 +33,11 @@ You can only reconnect to the debug session if the pod is running.`,
 
 	tidyCmdFlags := tidycmd.Flags{Flags: rootFlags}
 	tidyCmd := &cobra.Command{
-		Use:   "tidy app",
+		Use:   "tidy APP",
 		Short: "Clean up debug containers and debug pods.",
-		Long: `Remove debug containers created by the "debug" command
+		Long: `Remove debug containers created by the "nais debug" command
 
-To delete copy pods set the "--copy" flag.`,
+Set the "--copy" flag to delete copy pods.`,
 		RunE: func(_ *cobra.Command, args []string) error {
 			return tidycmd.Run(args[0], tidyCmdFlags)
 		},
