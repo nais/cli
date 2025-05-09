@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func postgres(root.Flags) *cobra.Command {
+func postgres(*root.Flags) *cobra.Command {
 	cmdFlags := postgrescmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "postgres",

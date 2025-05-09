@@ -11,7 +11,7 @@ import (
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
 type Flags struct {
-	root.Flags
+	*root.Flags
 	Context   string
 	Namespace string
 	Copy      bool

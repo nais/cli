@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func validate(rootFlags root.Flags) *cobra.Command {
+func validate(rootFlags *root.Flags) *cobra.Command {
 	cmdFlags := validatecmd.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "validate FILE...",

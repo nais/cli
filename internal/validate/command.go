@@ -7,7 +7,7 @@ import (
 )
 
 type Flags struct {
-	root.Flags
+	*root.Flags
 	VarsFilePath string
 	Vars         []string
 }

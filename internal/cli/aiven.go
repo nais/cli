@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func aiven(root.Flags) *cobra.Command {
+func aiven(*root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "aiven",
 		Short: "Manage Aiven services.",

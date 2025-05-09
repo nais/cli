@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func debug(rootFlags root.Flags) *cobra.Command {
+func debug(rootFlags *root.Flags) *cobra.Command {
 	cmdFlags := debugcmd.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "debug APP",

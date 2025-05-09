@@ -23,13 +23,13 @@ func Run(ctx context.Context) error {
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", "Verbose output.")
 
 	cmd.AddCommand(
-		login(cmdFlags),
-		kubeconfig(cmdFlags),
-		validate(cmdFlags),
-		debug(cmdFlags),
-		aiven(cmdFlags),
-		device(cmdFlags),
-		postgres(cmdFlags),
+		login(&cmdFlags),
+		kubeconfig(&cmdFlags),
+		validate(&cmdFlags),
+		debug(&cmdFlags),
+		aiven(&cmdFlags),
+		device(&cmdFlags),
+		postgres(&cmdFlags),
 	)
 
 	return cmd.ExecuteContext(ctx)

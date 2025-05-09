@@ -8,7 +8,7 @@ import (
 )
 
 type Flags struct {
-	root.Flags
+	*root.Flags
 	Context   string
 	Namespace string
 	Copy      bool

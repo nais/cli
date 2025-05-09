@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func device(rootFlags root.Flags) *cobra.Command {
+func device(rootFlags *root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "device",
 		Short: "Command used for management of naisdevice",

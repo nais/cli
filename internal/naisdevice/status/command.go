@@ -9,7 +9,7 @@ import (
 )
 
 type Flags struct {
-	root.Flags
+	*root.Flags
 	Quiet  bool
 	Output string
 }

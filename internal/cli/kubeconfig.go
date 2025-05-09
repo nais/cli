@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func kubeconfig(root.Flags) *cobra.Command {
+func kubeconfig(*root.Flags) *cobra.Command {
 	cmdFlags := kubeconfigcmd.Flags{}
 	cmd := &cobra.Command{
 		Use:   "kubeconfig",

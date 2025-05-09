@@ -7,11 +7,3 @@ type Flags struct {
 func (f Flags) IsVerbose() bool {
 	return f.VerboseLevel > 0
 }
-
-func (f Flags) IsVeryVerbose() bool {
-	return f.VerboseLevel > 1
-}
-
-func (f Flags) IsDebug() bool {
-	return f.VerboseLevel > 2
-}
