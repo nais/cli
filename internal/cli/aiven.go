@@ -23,7 +23,7 @@ func aiven(*root.Flags) *cobra.Command {
 	createCmdFlags := aivencreate.Flags{}
 	createCmd := &cobra.Command{
 		Use:   "create",
-		Short: "Create a protected and time-limited Aiven service.",
+		Short: "Grant a user access to an Aiven service.",
 		PersistentPreRunE: func(*cobra.Command, []string) error {
 			if createCmdFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
@@ -45,7 +45,7 @@ func aiven(*root.Flags) *cobra.Command {
 	var createKafkaPool string
 	createKafkaCmd := &cobra.Command{
 		Use:   "kafka USERNAME NAMESPACE",
-		Short: "Create a Kafka instance.",
+		Short: "Grant a user access to a Kafka topic.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaPool)
@@ -69,7 +69,7 @@ func aiven(*root.Flags) *cobra.Command {
 	var createOpenSearchAccess, createOpenSearchInstance string
 	createOpenSearchCmd := &cobra.Command{
 		Use:   "opensearch USERNAME NAMESPACE",
-		Short: "Create an OpenSearch instance.",
+		Short: "Grant a user access to an OpenSearch instance.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchAccess)
@@ -90,10 +90,12 @@ func aiven(*root.Flags) *cobra.Command {
 			)
 		},
 	}
-	// TODO: autocomplete valid access levels
-	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchAccess, "access", "a", "", "The access `LEVEL`.")
+	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchAccess, "access", "a", "read", fmt.Sprintf("The access `LEVEL`. Available levels: %s", strings.Join(aiven_services.OpenSearchAccesses, ", ")))
 	createOpenSearchCmd.Flags().StringVarP(&createOpenSearchInstance, "instance", "i", "", "The name of the OpenSearch `INSTANCE`.")
-	_ = createOpenSearchCmd.MarkFlagRequired("access")
+	_ = createOpenSearchCmd.MarkFlagRequired("instance")
+	_ = createOpenSearchCmd.RegisterFlagCompletionFunc("access", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return aiven_services.OpenSearchAccesses, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	createCmd.AddCommand(
 		createKafkaCmd,
