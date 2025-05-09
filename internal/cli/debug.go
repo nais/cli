@@ -10,7 +10,7 @@ import (
 func debug(rootFlags *root.Flags) *cobra.Command {
 	cmdFlags := debugcmd.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
-		Use:   "debug APP",
+		Use:   "debug APP_NAME",
 		Short: "Create and attach to a debug container.",
 		Long: `Create and attach to a debug container
 
@@ -33,7 +33,7 @@ You can only reconnect to the debug session if the pod is running.`,
 
 	tidyCmdFlags := tidycmd.Flags{Flags: rootFlags}
 	tidyCmd := &cobra.Command{
-		Use:   "tidy APP",
+		Use:   "tidy APP_NAME",
 		Short: "Clean up debug containers and debug pods.",
 		Long: `Remove debug containers created by the "nais debug" command
 

@@ -21,7 +21,6 @@ func Run(ctx context.Context) error {
 		SilenceUsage: true,
 	}
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", "Verbose output.")
-
 	cmd.AddCommand(
 		login(&cmdFlags),
 		kubeconfig(&cmdFlags),
