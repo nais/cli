@@ -1,18 +1,6 @@
 package metrics
 
-import (
-	"context"
-	"os"
-	"time"
-
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
-	m "go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
-)
-
+/*
 var (
 	version           = "local"
 	naisCliPrefixName = "nais_cli"
@@ -45,7 +33,7 @@ func newMeterProvider(ctx context.Context, res *resource.Resource) *metric.Meter
 	return meterProvider
 }
 
-/*
+
 func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, allCommands []string, mainCommands []*cli.Command) {
 	commandHistogram, _ := provider.Meter(naisCliPrefixName).Int64Histogram(
 		naisCliPrefixName+"_command_usage",
@@ -67,7 +55,7 @@ func recordCommandUsage(ctx context.Context, provider *metric.MeterProvider, all
 	commandHistogram.Record(ctx, 1, m.WithAttributes(attributes...))
 }
 
-*/
+
 
 // intersection
 // Just a list intersection, used to create the intersection
@@ -92,7 +80,6 @@ func intersection(list1, list2 []string) []string {
 	return result
 }
 
-/*
 func CollectCommandHistogram(ctx context.Context, commands []*cli.Command) {
 	doNotTrack := os.Getenv("DO_NOT_TRACK")
 	if doNotTrack == "1" {
@@ -120,7 +107,7 @@ func gatherCommands(command *cli.Command, validSubcommands *[]string) {
 		gatherCommands(subcommand, validSubcommands) // Recursively handle subcommands
 	}
 }
-*/
+
 
 // AddOne
 // This calls NewMeterProvider(), creating a whole new MeterProvider on every invocation.
@@ -146,3 +133,4 @@ func AddOne(ctx context.Context, metricName string) {
 		_ = meter.Shutdown(ctx)
 	}()
 }
+*/
