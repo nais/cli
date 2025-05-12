@@ -39,6 +39,10 @@ func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 
+	if status.ConnectionState != pb.AgentState_Connected {
+		return nil, fmt.Errorf("agent not connected")
+	}
+
 	gateways := make([]string, 0)
 	for _, gateway := range status.Gateways {
 		if !gateway.Healthy && gateway.RequiresPrivilegedAccess {

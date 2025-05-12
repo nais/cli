@@ -111,15 +111,16 @@ func device(rootFlags *root.Flags) *cobra.Command {
 			Args:  cobra.MinimumNArgs(1),
 			ValidArgsFunction: func(cmd *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
 				gateways, err := jita.Gateways(cmd.Context())
+				if err != nil {
+					msg := fmt.Sprintf("error listing gateways: %v - is it running?", err)
+					return cobra.AppendActiveHelp(nil, msg), cobra.ShellCompDirectiveNoFileComp
+				}
 
 				// don't suggest gateways already present in args
 				gateways = slices.DeleteFunc(gateways, func(gateway string) bool {
 					return slices.Contains(args, gateway)
 				})
 
-				if err != nil {
-					return cobra.AppendActiveHelp(nil, "not connected to naisdevice - is it running?"), cobra.ShellCompDirectiveNoFileComp
-				}
 				return gateways, cobra.ShellCompDirectiveNoFileComp
 			},
 			RunE: func(cmd *cobra.Command, args []string) error {
