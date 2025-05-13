@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/root"
@@ -29,14 +30,16 @@ func Run(ctx context.Context) error {
 		postgres(&cmdFlags),
 	)
 
+	fmt.Printf("OnInitialize, verbose: %v\n", cmdFlags.VerboseLevel)
+	flushMetrics := metric.Initialize()
+
 	executedCommand, err := cmd.ExecuteContextC(ctx)
 	if executedCommand != nil {
-		metrics.CollectCommandHistogram(ctx, cmd, err)
+		collectCommandHistogram(ctx, cmd, err)
 	}
 
-	if err != nil {
-		return err
-	}
+	// This has to be called _after_ cmd.ExecuteContextC, as we don't know the verbosity level before that
+	flushMetrics(cmdFlags.IsDebug())
 
-	return nil
+	return err
 }

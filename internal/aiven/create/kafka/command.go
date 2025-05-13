@@ -8,6 +8,7 @@ import (
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	"github.com/nais/cli/internal/aiven/create"
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/metric"
 )
 
 type Flags struct {
@@ -28,7 +29,9 @@ func Run(ctx context.Context, args create.Arguments, flags Flags) error {
 	)
 	aivenApp, err := aivenConfig.GenerateApplication()
 	if err != nil {
+		metric.CreateAndIncreaseCounter(ctx, "aiven_create_generating_aivenapplication_error_total")
 		return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
+
 	}
 
 	fmt.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
