@@ -3,22 +3,20 @@ package cli
 import (
 	"context"
 
+	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
-)
-
-var (
-	version = "local"
-	commit  = "uncommited"
 )
 
 func Run(ctx context.Context) error {
 	cmdFlags := root.Flags{}
 	cmd := &cobra.Command{
-		Use:          "nais",
-		Long:         "Nais CLI",
-		Version:      version + "-" + commit,
-		SilenceUsage: true,
+		Use:                "nais",
+		Long:               "Nais CLI",
+		Version:            version.Version + "-" + version.Commit,
+		SilenceUsage:       true,
+		DisableSuggestions: true,
 	}
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", "Verbose output.")
 	cmd.AddCommand(
@@ -31,5 +29,14 @@ func Run(ctx context.Context) error {
 		postgres(&cmdFlags),
 	)
 
-	return cmd.ExecuteContext(ctx)
+	executedCommand, err := cmd.ExecuteContextC(ctx)
+	if executedCommand != nil {
+		metrics.CollectCommandHistogram(ctx, cmd, err)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
