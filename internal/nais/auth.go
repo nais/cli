@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwt"
@@ -17,12 +20,22 @@ const zitadelDomain = "https://auth.nais.io"
 const zitadelClientID = "320114319427740585"
 
 func Login(ctx context.Context) error {
+	issuer := os.Getenv("NAIS_ZITADEL_DOMAIN")
+	if issuer == "" {
+		issuer = zitadelDomain
+	}
+
+	clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID")
+	if clientID == "" {
+		clientID = zitadelClientID
+	}
+
 	conf := &oauth2.Config{
-		ClientID: zitadelClientID,
+		ClientID: clientID,
 		Scopes:   []string{"openid", "profile", "email", "urn:zitadel:iam:user:resourceowner"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  zitadelDomain + "/oauth/v2/authorize",
-			TokenURL: zitadelDomain + "/oauth/v2/token",
+			AuthURL:  issuer + "/oauth/v2/authorize",
+			TokenURL: issuer + "/oauth/v2/token",
 		},
 		RedirectURL: "http://localhost:8865/callback",
 	}
@@ -90,6 +103,26 @@ func Login(ctx context.Context) error {
 	}
 
 	fmt.Printf("Tenant data: %s\n", tenantData.ConsoleURL)
+
+	body := `{"query":"query Teams {\n  me {\n    ... on User {\n      id\n      email\n    }\n  }\n}","operationName":"Teams"}`
+	req, err := http.NewRequest("POST", "http://localhost:3000/graphql", strings.NewReader(body))
+	if err != nil {
+		panic(err)
+	}
+	tok.SetAuthHeader(req)
+	req.Header.Set("Accept-content", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err = http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to call API: %w", err)
+	}
+	defer res.Body.Close()
+	fmt.Println("----")
+	fmt.Println(tok.AccessToken)
+	fmt.Println("----")
+	io.Copy(os.Stdout, res.Body)
+	fmt.Println("----")
 
 	// TODO:
 	// - store tokens in keyring
