@@ -65,10 +65,12 @@ func fakeClient(t *testing.T, objects ...ctrl.Object) ctrl.Client {
 
 func TestConfig(t *testing.T) {
 	ctx := context.Background()
+
 	t.Run("instance config", func(t *testing.T) {
 		t.Run("resolve when app is not found", func(t *testing.T) {
 			iCfg := &config.InstanceConfig{}
 			client := fakeClient(t)
+
 			t.Run("it returns an error", func(t *testing.T) {
 				err := iCfg.Resolve(ctx, client, appName, namespace)
 				if err == nil {
@@ -76,6 +78,7 @@ func TestConfig(t *testing.T) {
 				}
 			})
 		})
+
 		t.Run("resolve when app is found", func(t *testing.T) {
 			t.Run("without sqlinstances", func(t *testing.T) {
 				client := fakeClient(t, &nais_io_v1alpha1.Application{
@@ -91,6 +94,7 @@ func TestConfig(t *testing.T) {
 						Image: "myimage",
 					},
 				})
+
 				t.Run("returns correct error", func(t *testing.T) {
 					iCfg := &config.InstanceConfig{}
 					err := iCfg.Resolve(ctx, client, appName, namespace)
@@ -99,6 +103,7 @@ func TestConfig(t *testing.T) {
 					}
 				})
 			})
+
 			t.Run("with sqlinstances", func(t *testing.T) {
 				client := fakeClient(t, &nais_io_v1alpha1.Application{
 					TypeMeta: metav1.TypeMeta{
@@ -171,6 +176,7 @@ func TestConfig(t *testing.T) {
 					})
 				}
 			})
+
 			t.Run("with sqlinstance without optional values", func(t *testing.T) {
 				client := fakeClient(t, &nais_io_v1alpha1.Application{
 					TypeMeta: metav1.TypeMeta{
@@ -240,8 +246,8 @@ func TestConfig(t *testing.T) {
 				}
 			})
 		})
+
 		t.Run("populate from config map", func(t *testing.T) {
-			const prefix = "PREFIX"
 			t.Run("it populates the instance config", func(t *testing.T) {
 				iCfg := &config.InstanceConfig{}
 				configMap := &corev1.ConfigMap{
@@ -253,7 +259,7 @@ func TestConfig(t *testing.T) {
 						"PREFIX_INSTANCE_TYPE":            string(initialInstanceType),
 					},
 				}
-				iCfg.PopulateFromConfigMap(configMap, prefix)
+				iCfg.PopulateFromConfigMap(configMap, "PREFIX")
 				if iCfg.InstanceName != option.Some(initialInstanceName) {
 					t.Errorf("expected InstanceName %v, got %v", initialInstanceName, iCfg.InstanceName)
 				}
@@ -272,6 +278,7 @@ func TestConfig(t *testing.T) {
 			})
 		})
 	})
+
 	t.Run("test Config", func(t *testing.T) {
 		t.Run("migration name", func(t *testing.T) {
 			getConfig := func() config.Config {
@@ -283,6 +290,7 @@ func TestConfig(t *testing.T) {
 					},
 				}
 			}
+
 			t.Run("generates valid mgiration name", func(t *testing.T) {
 				verify := func(t *testing.T, cfg config.Config, expected string) {
 					t.Helper()
@@ -294,15 +302,18 @@ func TestConfig(t *testing.T) {
 						t.Errorf("expected %s, got %s", expected, actual)
 					}
 				}
+
 				t.Run("happy path with reasonable lengths for app and instance", func(t *testing.T) {
 					cfg := getConfig()
 					verify(t, cfg, "migration-some-app-target-instance")
 				})
+
 				t.Run("very long app name", func(t *testing.T) {
 					cfg := getConfig()
 					cfg.AppName = "some-unnecessarily-long-app-name-that-should-be-truncated"
 					verify(t, cfg, "migration-some-unnecessarily-long-app-name-that-should-377bba1c")
 				})
+
 				t.Run("very long instance name", func(t *testing.T) {
 					cfg := getConfig()
 					cfg.Target.InstanceName = option.Some("some-unnecessarily-long-instance-name-that-should-be-truncated")
