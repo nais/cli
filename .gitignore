@@ -24,7 +24,8 @@ report.xml
 
 .config/
 
-nais
+bin/
+/nais
 dist/
 
 # Signing certificates on GHA
