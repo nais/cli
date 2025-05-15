@@ -6,14 +6,12 @@ import (
 
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/option"
-	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
 type Flags struct {
-	postgres.Flags
-	DryRun bool
+	migrate.Flags
 	NoWait bool
 }
 

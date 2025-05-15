@@ -6,18 +6,16 @@ import (
 
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/option"
-	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
 type Flags struct {
-	postgres.Flags
+	migrate.Flags
 	Tier           string
 	DiskAutoResize bool
 	DiskSize       int
 	InstanceType   string
-	DryRun         bool
 	NoWait         bool
 }
 

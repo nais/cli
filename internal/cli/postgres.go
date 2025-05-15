@@ -53,12 +53,14 @@ func postgres(*root.Flags) *cobra.Command {
 			TargetInstanceName: args[1],
 		}
 	}
+	migrateCmdFlags := migrate.Flags{Flags: cmdFlags}
 	migrateCmd := &cobra.Command{
 		Use:   "migrate",
 		Short: "Migrate to a new SQL instance.",
 	}
+	migrateCmd.PersistentFlags().BoolVar(&migrateCmdFlags.DryRun, "dry-run", false, "Perform a dry run.")
 
-	migrateSetupCmdFlags := setup.Flags{Flags: cmdFlags}
+	migrateSetupCmdFlags := setup.Flags{Flags: migrateCmdFlags}
 	migrateSetupCmd := &cobra.Command{
 		Use:   "setup APP_NAME TARGET_SQL_INSTANCE_NAME",
 		Short: "Make necessary setup for a new SQL instance migration.",
@@ -94,8 +96,6 @@ func postgres(*root.Flags) *cobra.Command {
 		diskAutoResize = v
 	}
 
-	// TODO: Move dry-run flag to migrate command as a persistent flag
-	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.DryRun, "dry-run", false, "Perform a dry run.")
 	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.NoWait, "no-wait", false, "Do not wait for the job to complete.")
 	migrateSetupCmd.Flags().StringVar(&migrateSetupCmdFlags.Tier, "tier", os.Getenv("TARGET_INSTANCE_TIER"), "The `TIER` of the new instance.")
 	migrateSetupCmd.Flags().BoolVar(&migrateSetupCmdFlags.DiskAutoResize, "disk-autoresize", diskAutoResize, "Enable disk autoresize for the new instance.")
@@ -107,7 +107,7 @@ func postgres(*root.Flags) *cobra.Command {
 	_ = migrateSetupCmd.MarkFlagRequired("disk-size")
 	_ = migrateSetupCmd.MarkFlagRequired("type")
 
-	migratePromoteCmdFlags := promote.Flags{Flags: cmdFlags}
+	migratePromoteCmdFlags := promote.Flags{Flags: migrateCmdFlags}
 	migratePromoteCmd := &cobra.Command{
 		Use:   "promote APP_NAME TARGET_SQL_INSTANCE_NAME",
 		Short: "Promote the migrated instance to the new primary instance.",
@@ -120,10 +120,9 @@ func postgres(*root.Flags) *cobra.Command {
 				migratePromoteCmdFlags)
 		},
 	}
-	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.DryRun, "dry-run", false, "Perform a dry run.")
 	migratePromoteCmd.Flags().BoolVar(&migratePromoteCmdFlags.NoWait, "no-wait", false, "Do not wait for the job to complete.")
 
-	migrateFinalizeCmdFlags := finalize.Flags{Flags: cmdFlags}
+	migrateFinalizeCmdFlags := finalize.Flags{Flags: migrateCmdFlags}
 	migrateFinalizeCmd := &cobra.Command{
 		Use:   "finalize APP_NAME TARGET_SQL_INSTANCE_NAME",
 		Short: "Finalize the migration.",
@@ -136,9 +135,8 @@ func postgres(*root.Flags) *cobra.Command {
 				migrateFinalizeCmdFlags)
 		},
 	}
-	migrateFinalizeCmd.Flags().BoolVar(&migrateFinalizeCmdFlags.DryRun, "dry-run", false, "Perform a dry run.")
 
-	migrateRollbackCmdFlags := rollback.Flags{Flags: cmdFlags}
+	migrateRollbackCmdFlags := rollback.Flags{Flags: migrateCmdFlags}
 	migrateRollbackCmd := &cobra.Command{
 		Use:   "rollback APP_NAME TARGET_SQL_INSTANCE_NAME",
 		Short: "Roll back the migration.",
@@ -151,7 +149,6 @@ func postgres(*root.Flags) *cobra.Command {
 				migrateRollbackCmdFlags)
 		},
 	}
-	migrateRollbackCmd.Flags().BoolVar(&migrateRollbackCmdFlags.DryRun, "dry-run", false, "Perform a dry run.")
 
 	migrateCmd.AddCommand(
 		migrateSetupCmd,
