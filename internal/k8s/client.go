@@ -97,3 +97,21 @@ func SetupClientGo(context string) (kubernetes.Interface, error) {
 
 	return k8sClient, err
 }
+
+func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace string) {
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		nil,
+	)
+	rawConfig, err := kubeConfig.RawConfig()
+	if err != nil {
+		return
+	}
+
+	defaultContext = rawConfig.CurrentContext
+	if context, exists := rawConfig.Contexts[defaultContext]; exists {
+		defaultNamespace = context.Namespace
+	}
+
+	return
+}

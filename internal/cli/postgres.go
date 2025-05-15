@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/k8s"
 	postgrescmd "github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/audit"
 	"github.com/nais/cli/internal/postgres/grant"
@@ -30,10 +32,18 @@ func postgres(*root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "postgres",
 		Short: "Manage SQL instances.",
+		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			_, err := gcp.ValidateAndGetUserLogin(cmd.Context(), false)
+			return err
+		},
 	}
-	// TODO autocomplete namespace and context
-	cmd.PersistentFlags().StringVarP(&cmdFlags.Namespace, "namespace", "n", "", "The kubernetes `NAMESPACE` to use.")
-	cmd.PersistentFlags().StringVarP(&cmdFlags.Context, "context", "c", "", "The kubeconfig `CONTEXT` to use.")
+
+	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
+
+	cmd.PersistentFlags().StringVarP(&cmdFlags.Namespace, "namespace", "n", defaultNamespace, "The kubernetes `NAMESPACE` to use.")
+	cmd.PersistentFlags().StringVarP(&cmdFlags.Context, "context", "c", defaultContext, "The kubeconfig `CONTEXT` to use.")
+
+	// TODO: Remove required flags and check in the run function instead?
 	_ = cmd.MarkFlagRequired("namespace")
 	_ = cmd.MarkFlagRequired("context")
 
