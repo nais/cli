@@ -30,7 +30,6 @@ func Run(ctx context.Context) error {
 		postgres(&cmdFlags),
 	)
 
-	fmt.Printf("OnInitialize, verbose: %v\n", cmdFlags.VerboseLevel)
 	flushMetrics := metric.Initialize()
 
 	executedCommand, err := cmd.ExecuteContextC(ctx)
