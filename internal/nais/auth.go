@@ -3,21 +3,30 @@ package nais
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/lestrrat-go/jwx/v2/jwt"
+	"github.com/lestrrat-go/jwx/v3/jwk"
+	"github.com/lestrrat-go/jwx/v3/jwt"
 	"github.com/nais/cli/internal/urlopen"
+	"github.com/zitadel/oidc/v3/pkg/client"
 	"golang.org/x/oauth2"
 )
 
-// FIXME: should be overridable by env vars
-const zitadelDomain = "https://auth.nais.io"
-const zitadelClientID = "320114319427740585"
+const (
+	zitadelDomain   = "https://auth.nais.io"
+	zitadelClientID = "320114319427740585"
+)
+
+type secret struct {
+	oauth2.Token
+	IDToken     string `json:"id_token"`
+	ConsoleHost string `json:"console_host"`
+}
 
 func Login(ctx context.Context) error {
 	issuer := os.Getenv("NAIS_ZITADEL_DOMAIN")
@@ -30,12 +39,17 @@ func Login(ctx context.Context) error {
 		clientID = zitadelClientID
 	}
 
+	oidcClient, err := client.Discover(ctx, issuer, http.DefaultClient)
+	if err != nil {
+		return fmt.Errorf("discover oidc configuration from %q: %w", issuer, err)
+	}
+
 	conf := &oauth2.Config{
 		ClientID: clientID,
 		Scopes:   []string{"openid", "profile", "email", "urn:zitadel:iam:user:resourceowner"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  issuer + "/oauth/v2/authorize",
-			TokenURL: issuer + "/oauth/v2/token",
+			AuthURL:  oidcClient.AuthorizationEndpoint,
+			TokenURL: oidcClient.TokenEndpoint,
 		},
 		RedirectURL: "http://localhost:8865/callback",
 	}
@@ -62,25 +76,35 @@ func Login(ctx context.Context) error {
 	case <-ctx.Done():
 		return nil
 	case tok = <-ch:
-		fmt.Printf("Token: %v\n", tok)
 	}
 
 	idToken := tok.Extra("id_token").(string)
 
+	set, err := jwk.Fetch(ctx, oidcClient.JwksURI)
+	if err != nil {
+		return fmt.Errorf("fetching jwks from %q: %w", oidcClient.JwksURI, err)
+	}
+
 	// FIXME: verify the token's signature and validate its standard claims, check `email_verified` claim
-	j, err := jwt.ParseString(idToken, jwt.WithVerify(false))
+	j, err := jwt.ParseString(idToken, jwt.WithKeySet(set))
 	if err != nil {
 		return fmt.Errorf("parse jwt: %w", err)
 	}
 
-	domainClaim, ok := j.Get("urn:zitadel:iam:user:resourceowner:primary_domain")
-	if !ok {
-		return fmt.Errorf("missing claim 'urn:zitadel:iam:user:resourceowner:primary_domain' in jwt")
+	err = jwt.Validate(
+		j,
+		jwt.WithIssuer(issuer),
+		jwt.WithAudience(clientID),
+		jwt.WithClaimValue("email_verified", true),
+	)
+	if err != nil {
+		return fmt.Errorf("validating jwt: %w", err)
 	}
 
-	domain, ok := domainClaim.(string)
-	if !ok {
-		return fmt.Errorf("claim 'urn:zitadel:iam:user:resourceowner:primary_domain' is not a string")
+	var domain string
+	err = j.Get("urn:zitadel:iam:user:resourceowner:primary_domain", &domain)
+	if err != nil {
+		return fmt.Errorf("getting primary_domain claim: %w", err)
 	}
 
 	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
@@ -102,10 +126,26 @@ func Login(ctx context.Context) error {
 		return fmt.Errorf("decode tenant data: %w", err)
 	}
 
-	fmt.Printf("Tenant data: %s\n", tenantData.ConsoleURL)
+	secret, err := json.Marshal(secret{
+		Token:       *tok,
+		IDToken:     idToken,
+		ConsoleHost: tenantData.ConsoleURL,
+	})
+	if err != nil {
+		return fmt.Errorf("marshalling token: %w", err)
+	}
+
+	err = setSecret("nais-user", string(secret))
+	if err != nil {
+		return fmt.Errorf("setting secret: %w", err)
+	}
+
+	// use the access token to call the API, should be moved to appropriate package
+	consoleURL := fmt.Sprintf("https://%s/graphql", tenantData.ConsoleURL)
+	fmt.Printf("Querying %q\n", consoleURL)
 
 	body := `{"query":"query Teams {\n  me {\n    ... on User {\n      id\n      email\n    }\n  }\n}","operationName":"Teams"}`
-	req, err := http.NewRequest("POST", "http://localhost:3000/graphql", strings.NewReader(body))
+	req, err := http.NewRequest("POST", consoleURL, strings.NewReader(body))
 	if err != nil {
 		panic(err)
 	}
@@ -119,16 +159,21 @@ func Login(ctx context.Context) error {
 	}
 	defer res.Body.Close()
 	fmt.Println("----")
-	fmt.Println(tok.AccessToken)
-	fmt.Println("----")
-	io.Copy(os.Stdout, res.Body)
+	data := make(map[string]any)
+	err = json.NewDecoder(res.Body).Decode(&data)
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(data)
+	fmt.Println()
 	fmt.Println("----")
 
-	// TODO:
-	// - store tokens in keyring
-	// - use the access token to call the API
-	// - use the refresh token to get a new access token as necessary
 	return nil
+}
+
+// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
+// Fetch and refresh tokens from as necessary.
+func AuthenticatedHTTPClient() (*http.Client, error) {
+	panic("not implemented")
 }
 
 func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) {
@@ -157,5 +202,8 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 		srv.Shutdown(context.Background())
 	}()
 
-	srv.ListenAndServe()
+	err := srv.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
+	}
 }
