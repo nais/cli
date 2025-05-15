@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/root"
@@ -19,7 +18,8 @@ func Run(ctx context.Context) error {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
-	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", "Verbose output.")
+	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", `Verbose output.
+Use -v for info, -vv for debug, -vvv for trace.`)
 	cmd.AddCommand(
 		login(&cmdFlags),
 		kubeconfig(&cmdFlags),
@@ -31,14 +31,17 @@ func Run(ctx context.Context) error {
 	)
 
 	flushMetrics := metric.Initialize()
+	defer func() {
+		if err := recover(); err != nil {
+			handlePanic(err)
+		}
+		flushMetrics(cmdFlags.IsDebug())
+	}()
 
 	executedCommand, err := cmd.ExecuteContextC(ctx)
 	if executedCommand != nil {
-		collectCommandHistogram(ctx, cmd, err)
+		collectCommandHistogram(ctx, executedCommand, err)
 	}
-
-	// This has to be called _after_ cmd.ExecuteContextC, as we don't know the verbosity level before that
-	flushMetrics(cmdFlags.IsDebug())
 
 	return err
 }

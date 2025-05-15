@@ -11,3 +11,7 @@ func (f Flags) IsVerbose() bool {
 func (f Flags) IsDebug() bool {
 	return f.VerboseLevel > 1
 }
+
+func (f Flags) IsTrace() bool {
+	return f.VerboseLevel > 2
+}
