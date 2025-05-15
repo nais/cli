@@ -11,7 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: set version
+        id: set-version
+        run: |
+          echo Faking a Semantic Version
+          echo "version=2.0.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
+
   test:
+    needs:
+      - set-version
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -35,8 +49,9 @@ jobs:
             report.xml
 
   release:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
+      - set-version
       - test
     runs-on: ubuntu-latest
     steps:
@@ -46,6 +61,10 @@ jobs:
           fetch-depth: 0
 
       - uses: jdx/mise-action@v2
+
+      - name: Create tag
+        run: |
+          git tag ${{ needs.set-version.outputs.version }}
 
       - name: Prepare for signing windows binaries
         run: |
@@ -72,7 +91,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: '~> v2'
+          version: v2.3.2
           args: release --config .goreleaser.yml --clean --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -80,7 +99,9 @@ jobs:
           SCOOP_PUSH_TOKEN: ${{ steps.get-scoop-token.outputs.token }}
 
   upload-gar:
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
+      - set-version
       - release
     runs-on: ubuntu-latest
     permissions:
@@ -89,7 +110,7 @@ jobs:
     steps:
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v2.1.8"
         with:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: "gh-cli@nais-io.iam.gserviceaccount.com"
@@ -102,8 +123,7 @@ jobs:
 
       - name: "Upload new deb file to Google repository"
         env:
-          VERSION: ${{ github.ref_name }}
-
+          VERSION: ${{ needs.set-version.outputs.version }}
         run: |
           echo "Version ${VERSION} was released, adding to PPA"
 
