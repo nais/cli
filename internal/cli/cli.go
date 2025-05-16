@@ -10,6 +10,8 @@ import (
 )
 
 func Run(ctx context.Context) error {
+	cobra.EnableTraverseRunHooks = true
+
 	cmdFlags := root.Flags{}
 	cmd := &cobra.Command{
 		Use:                "nais",
