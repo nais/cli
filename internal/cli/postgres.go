@@ -43,10 +43,6 @@ func postgres(*root.Flags) *cobra.Command {
 	cmd.PersistentFlags().StringVarP(&cmdFlags.Namespace, "namespace", "n", defaultNamespace, "The kubernetes `NAMESPACE` to use.")
 	cmd.PersistentFlags().StringVarP(&cmdFlags.Context, "context", "c", defaultContext, "The kubeconfig `CONTEXT` to use.")
 
-	// TODO: Remove required flags and check in the run function instead?
-	_ = cmd.MarkFlagRequired("namespace")
-	_ = cmd.MarkFlagRequired("context")
-
 	migrateArguments := func(args []string) migrate.Arguments {
 		return migrate.Arguments{
 			ApplicationName:    args[0],
