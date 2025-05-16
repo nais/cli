@@ -28,6 +28,12 @@ mise run test
 ./bin/nais --version
 ```
 
+### Setup shell completion for local builds
+
+```
+source <(./bin/nais completion zsh|bash|fish|powershell)
+```
+
 ## Instrumentation
 
 We use [otel](https://opentelemetry.io) for instrumentation and record the user interaction with the CLI to see if we can
