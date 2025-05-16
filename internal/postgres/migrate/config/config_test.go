@@ -291,7 +291,7 @@ func TestConfig(t *testing.T) {
 				}
 			}
 
-			t.Run("generates valid mgiration name", func(t *testing.T) {
+			t.Run("generates valid migration name", func(t *testing.T) {
 				verify := func(t *testing.T, cfg config.Config, expected string) {
 					t.Helper()
 					actual := cfg.MigrationName()
