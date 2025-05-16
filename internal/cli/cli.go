@@ -30,6 +30,7 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 		aiven(&cmdFlags),
 		device(&cmdFlags),
 		postgres(&cmdFlags),
+		apiProxy(&cmdFlags),
 	)
 
 	flushMetrics := metric.Initialize()

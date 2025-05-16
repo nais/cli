@@ -14,6 +14,7 @@ import (
 	"github.com/lestrrat-go/jwx/v3/jwt"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/zitadel/oidc/v3/pkg/client"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"golang.org/x/oauth2"
 )
 
@@ -29,29 +30,9 @@ type secret struct {
 }
 
 func Login(ctx context.Context) error {
-	issuer := os.Getenv("NAIS_ZITADEL_DOMAIN")
-	if issuer == "" {
-		issuer = zitadelDomain
-	}
-
-	clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID")
-	if clientID == "" {
-		clientID = zitadelClientID
-	}
-
-	oidcClient, err := client.Discover(ctx, issuer, http.DefaultClient)
+	conf, oidcClient, err := oauthConfig(ctx)
 	if err != nil {
-		return fmt.Errorf("discover oidc configuration from %q: %w", issuer, err)
-	}
-
-	conf := &oauth2.Config{
-		ClientID: clientID,
-		Scopes:   []string{"openid", "profile", "email", "urn:zitadel:iam:user:resourceowner"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  oidcClient.AuthorizationEndpoint,
-			TokenURL: oidcClient.TokenEndpoint,
-		},
-		RedirectURL: "http://localhost:8865/callback",
+		return err
 	}
 
 	state := uuid.New().String()
@@ -93,8 +74,8 @@ func Login(ctx context.Context) error {
 
 	err = jwt.Validate(
 		j,
-		jwt.WithIssuer(issuer),
-		jwt.WithAudience(clientID),
+		jwt.WithIssuer(oauthIssuer()),
+		jwt.WithAudience(oauthClientID()),
 		jwt.WithClaimValue("email_verified", true),
 	)
 	if err != nil {
@@ -126,18 +107,8 @@ func Login(ctx context.Context) error {
 		return fmt.Errorf("decode tenant data: %w", err)
 	}
 
-	secret, err := json.Marshal(secret{
-		Token:       *tok,
-		IDToken:     idToken,
-		ConsoleHost: tenantData.ConsoleURL,
-	})
-	if err != nil {
-		return fmt.Errorf("marshalling token: %w", err)
-	}
-
-	err = setSecret("nais-user", string(secret))
-	if err != nil {
-		return fmt.Errorf("setting secret: %w", err)
+	if _, err := saveToken(tok, tenantData.ConsoleURL); err != nil {
+		return fmt.Errorf("saving token: %w", err)
 	}
 
 	// use the access token to call the API, should be moved to appropriate package
@@ -168,6 +139,58 @@ func Login(ctx context.Context) error {
 	fmt.Println("----")
 
 	return nil
+}
+
+func saveToken(tok *oauth2.Token, consoleURL string) (*secret, error) {
+	sec := &secret{
+		Token:       *tok,
+		IDToken:     tok.Extra("id_token").(string),
+		ConsoleHost: consoleURL,
+	}
+	secret, err := json.Marshal(sec)
+	if err != nil {
+		return nil, fmt.Errorf("marshalling token: %w", err)
+	}
+
+	err = setSecret("nais-user", string(secret))
+	if err != nil {
+		return nil, fmt.Errorf("setting secret: %w", err)
+	}
+	return sec, nil
+}
+
+func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfiguration, error) {
+	oidcClient, err := client.Discover(ctx, oauthIssuer(), http.DefaultClient)
+	if err != nil {
+		return nil, nil, fmt.Errorf("discover oidc configuration from %q: %w", oauthIssuer(), err)
+	}
+
+	conf := &oauth2.Config{
+		ClientID: oauthClientID(),
+		Scopes:   []string{"openid", "profile", "email", "urn:zitadel:iam:user:resourceowner"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  oidcClient.AuthorizationEndpoint,
+			TokenURL: oidcClient.TokenEndpoint,
+		},
+		RedirectURL: "http://localhost:8865/callback",
+	}
+	return conf, oidcClient, nil
+}
+
+func oauthIssuer() string {
+	issuer := os.Getenv("NAIS_ZITADEL_DOMAIN")
+	if issuer == "" {
+		return zitadelDomain
+	}
+	return issuer
+}
+
+func oauthClientID() string {
+	clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID")
+	if clientID == "" {
+		return zitadelClientID
+	}
+	return clientID
 }
 
 // AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
@@ -206,4 +229,36 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
 	}
+}
+
+func getUserToken(ctx context.Context) (*secret, error) {
+	secretData, err := getSecret("nais-user")
+	if err != nil {
+		return nil, fmt.Errorf("getting secret: %w", err)
+	}
+	var s secret
+	err = json.Unmarshal([]byte(secretData), &s)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshalling data from keyring")
+	}
+
+	if !s.Valid() {
+		// Try to refresh the token
+		return refreshToken(ctx, s)
+	}
+
+	return &s, nil
+}
+
+func refreshToken(ctx context.Context, s secret) (*secret, error) {
+	cfg, _, err := oauthConfig(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting oauth config: %w", err)
+	}
+	tok, err := cfg.TokenSource(ctx, &s.Token).Token()
+	if err != nil {
+		return nil, fmt.Errorf("refreshing token: %w", err)
+	}
+
+	return saveToken(tok, s.ConsoleHost)
 }
