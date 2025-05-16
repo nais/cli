@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"os"
+	"slices"
 
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/root"
@@ -32,16 +34,20 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 		postgres(&cmdFlags),
 	)
 
-	flushMetrics := metric.Initialize()
-	defer func() {
-		if err := recover(); err != nil {
-			handlePanic(err)
-		}
-		flushMetrics(cmdFlags.IsDebug())
-	}()
+	autoComplete := slices.Contains(os.Args[1:], "__complete")
+
+	if !autoComplete {
+		flushMetrics := metric.Initialize()
+		defer func() {
+			if err := recover(); err != nil {
+				handlePanic(err)
+			}
+			flushMetrics(cmdFlags.IsDebug())
+		}()
+	}
 
 	executedCommand, err := cmd.ExecuteContextC(ctx)
-	if executedCommand != nil {
+	if !autoComplete && executedCommand != nil {
 		collectCommandHistogram(ctx, executedCommand, err)
 	}
 
