@@ -1,6 +1,6 @@
 [tasks.check]
 description = "Run all static analysis tools"
-depends = ['staticcheck','vulncheck','deadcode','vet']
+depends = ['staticcheck', 'vulncheck', 'deadcode', 'vet']
 
 [tasks.staticcheck]
 description = "Run staticcheck"
@@ -41,9 +41,13 @@ description = "Build the Nais CLI binary"
 wait_for = ['fmt']
 run = "go build -installsuffix cgo -o bin/nais ./"
 
+[tasks.generate]
+description = "Generate graphql client code"
+run = "go tool github.com/Khan/genqlient"
+
 [tasks.all]
 description = "Run all tasks"
-depends = ['fmt', 'check', 'test', 'build']
+depends = ['generate', 'fmt', 'check', 'test', 'build']
 
 [settings]
 pin = true
