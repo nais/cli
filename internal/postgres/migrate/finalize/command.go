@@ -22,9 +22,6 @@ func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
 		},
 	}
 
-	// TODO
-	// pterm.Println(cmd.Description)
-
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(flags.Context))
 	cfg.Namespace = client.CurrentNamespace
 

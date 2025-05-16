@@ -34,9 +34,6 @@ func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
 	instanceType := flags.InstanceType
 	namespace := flags.Namespace
 
-	// TODO
-	// pterm.Println(cmd.Description)
-
 	cfg.Target.Tier = isSet(tier)
 	cfg.Target.DiskAutoresize = isSetBool(diskAutoresize)
 	cfg.Target.DiskSize = isSetInt(diskSize)

@@ -18,9 +18,6 @@ type Flags struct {
 }
 
 func Run(ctx context.Context, applicationName string, flags Flags) error {
-	// TODO
-	// fmt.Println(cmd.Description)
-
 	fmt.Print("\nAre you sure you want to continue (y/N): ")
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
