@@ -5,9 +5,16 @@ project_name: nais-cli
 before:
   hooks:
     - go mod tidy
+    - ./script/completions.sh
+
+archives:
+  - files:
+      - README.md
+      - LICENSE.md
+      - completions/*
 
 builds:
-  - env: [ CGO_ENABLED=0 ]
+  - env: [CGO_ENABLED=0]
     targets:
       - linux_amd64
       - linux_arm64
@@ -19,7 +26,7 @@ builds:
     binary: nais
     ldflags:
       - -s -w -X github.com/nais/cli/internal/version.Version={{.Version}} -X github.com/nais/cli/internal/version.Commit={{.Commit}}
-  - env: [ CGO_ENABLED=0 ]
+  - env: [CGO_ENABLED=0]
     targets:
       - windows_amd64
     id: nais-windows
@@ -34,14 +41,14 @@ builds:
         - mv "{{ .Path }}-signed" "{{ .Path }}"
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
 
 release:
   github:
@@ -59,8 +66,11 @@ brews:
     homepage: "https://github.com/nais/cli"
     description: "Command-line interface for NAIS"
     directory: Formula
-    install: |
+    install: |-
       bin.install "nais"
+      bash_completion.install "completions/nais.bash" => "nais"
+      zsh_completion.install "completions/nais.zsh" => "_nais"
+      fish_completion.install "completions/nais.fish"
     test: |
       assert_match version, shell_output("#{bin}/nais version")
 
@@ -75,6 +85,19 @@ nfpms:
     formats:
       - deb
     version_metadata: git
+    contents:
+      - src: ./completions/nais.bash
+        dst: /usr/share/bash-completion/completions/nais
+        file_info:
+          mode: 0644
+      - src: ./completions/nais.fish
+        dst: /usr/share/fish/vendor_completions.d/nais.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/nais.zsh
+        dst: /usr/share/zsh/vendor-completions/_nais
+        file_info:
+          mode: 0644
 
 scoops:
   - repository:
