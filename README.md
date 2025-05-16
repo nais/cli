@@ -1,37 +1,37 @@
-# nais-cli - A NAIS command-line interface
+# nais-cli - A Nais command-line interface
 
-See NAIS doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
+See Nais doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
 
 ## Local Development
 
-- Be sure to run your local cluster, recommend: [minkube](https://minikube.sigs.k8s.io/docs/start/).
+### Install the required go version:
 
-Start minikube with a version < 1.22,
-reason: [Feature removals](https://kubernetes.io/blog/2021/07/14/upcoming-changes-in-kubernetes-1-22/).
-
-- Create a `test` cluster.
-
-```
-minikube start --kubernetes-version=v1.21.4
+```bash
+mise install
 ```
 
-- Apply liberator CRDs.
+### Build nais cli
 
 ```
-kubectl apply -f path/to/liberator/crd/bases
+mise run build
 ```
 
-- Create a `test` ns.
+### Run tests
 
 ```
-kubectl create namespace test
+mise run test
 ```
 
-- Generate executable program and test your changes.
+### Verify nais cli
 
 ```
-make nais-cli
-bin/nais --version
+./bin/nais --version
+```
+
+### Setup shell completion for local builds
+
+```
+source <(./bin/nais completion zsh|bash|fish|powershell)
 ```
 
 ## Instrumentation
