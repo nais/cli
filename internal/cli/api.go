@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/nais"
+	"github.com/nais/cli/internal/nais/gql"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
@@ -49,12 +50,12 @@ func api(*root.Flags) *cobra.Command {
 				return err
 			}
 
-			if len(teams.Me.(*nais.UserTeamsMeUser).Teams.Nodes) == 0 {
+			if len(teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes) == 0 {
 				fmt.Fprintln(cmd.OutOrStdout(), "No teams found.")
 				return nil
 			}
 
-			for _, team := range teams.Me.(*nais.UserTeamsMeUser).Teams.Nodes {
+			for _, team := range teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes {
 				fmt.Fprintln(cmd.OutOrStdout(), team.Team.Slug, "-", team.Team.Purpose)
 			}
 

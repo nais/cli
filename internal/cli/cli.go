@@ -2,8 +2,10 @@ package cli
 
 import (
 	"context"
+	"errors"
 
 	"github.com/nais/cli/internal/metric"
+	"github.com/nais/cli/internal/nais"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
@@ -44,6 +46,15 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 	executedCommand, err := cmd.ExecuteContextC(ctx)
 	if executedCommand != nil {
 		collectCommandHistogram(ctx, executedCommand, err)
+	}
+
+	if err != nil {
+		if errors.Is(err, nais.ErrNotAuthenticated) {
+			// TODO(thokra): Auto login process of some kind
+			// Check if interactive
+			// fmt.Println("Please try to log in again. Press enter to start the login process, or Ctrl+C to cancel.")
+			// Start login process, if successful, rerun the command
+		}
 	}
 
 	return err

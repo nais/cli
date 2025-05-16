@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
@@ -66,7 +66,6 @@ func Login(ctx context.Context) error {
 		return fmt.Errorf("fetching jwks from %q: %w", oidcClient.JwksURI, err)
 	}
 
-	// FIXME: verify the token's signature and validate its standard claims, check `email_verified` claim
 	j, err := jwt.ParseString(idToken, jwt.WithKeySet(set))
 	if err != nil {
 		return fmt.Errorf("parse jwt: %w", err)
@@ -110,35 +109,30 @@ func Login(ctx context.Context) error {
 	if _, err := saveToken(tok, tenantData.ConsoleURL); err != nil {
 		return fmt.Errorf("saving token: %w", err)
 	}
-
-	// use the access token to call the API, should be moved to appropriate package
-	consoleURL := fmt.Sprintf("https://%s/graphql", tenantData.ConsoleURL)
-	fmt.Printf("Querying %q\n", consoleURL)
-
-	body := `{"query":"query Teams {\n  me {\n    ... on User {\n      id\n      email\n    }\n  }\n}","operationName":"Teams"}`
-	req, err := http.NewRequest("POST", consoleURL, strings.NewReader(body))
-	if err != nil {
-		panic(err)
-	}
-	tok.SetAuthHeader(req)
-	req.Header.Set("Accept-content", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-
-	res, err = http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to call API: %w", err)
-	}
-	defer res.Body.Close()
-	fmt.Println("----")
-	data := make(map[string]any)
-	err = json.NewDecoder(res.Body).Decode(&data)
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	enc.Encode(data)
-	fmt.Println()
-	fmt.Println("----")
-
 	return nil
+}
+
+// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
+// Fetches and refreshes tokens as necessary.
+func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
+	secret, err := getUserToken(ctx)
+	if err != nil {
+		return nil, "", fmt.Errorf("getting user token: %w", err)
+	}
+
+	cfg, _, err := oauthConfig(ctx)
+	if err != nil {
+		return nil, "", fmt.Errorf("getting oauth config: %w", err)
+	}
+
+	tokenSource := oauth2.StaticTokenSource(&secret.Token)
+	tok, err := tokenSource.Token()
+	if err != nil {
+		return nil, "", fmt.Errorf("getting token: %w", err)
+	}
+
+	client := cfg.Client(ctx, tok)
+	return client, secret.ConsoleHost, nil
 }
 
 func saveToken(tok *oauth2.Token, consoleURL string) (*secret, error) {
@@ -159,6 +153,39 @@ func saveToken(tok *oauth2.Token, consoleURL string) (*secret, error) {
 	return sec, nil
 }
 
+func getUserToken(ctx context.Context) (*secret, error) {
+	secretData, err := getSecret("nais-user")
+	if err != nil {
+		return nil, fmt.Errorf("getting secret: %w", err)
+	}
+	var s secret
+	err = json.Unmarshal([]byte(secretData), &s)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshalling data from keyring")
+	}
+
+	s.Expiry = time.Now().Add(-time.Minute)
+
+	if !s.Valid() {
+		return refreshToken(ctx, s)
+	}
+
+	return &s, nil
+}
+
+func refreshToken(ctx context.Context, s secret) (*secret, error) {
+	cfg, _, err := oauthConfig(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting oauth config: %w", err)
+	}
+	tok, err := cfg.TokenSource(ctx, &s.Token).Token()
+	if err != nil {
+		return nil, ErrNotAuthenticated
+	}
+
+	return saveToken(tok, s.ConsoleHost)
+}
+
 func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfiguration, error) {
 	oidcClient, err := client.Discover(ctx, oauthIssuer(), http.DefaultClient)
 	if err != nil {
@@ -167,7 +194,7 @@ func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfigurat
 
 	conf := &oauth2.Config{
 		ClientID: oauthClientID(),
-		Scopes:   []string{"openid", "profile", "email", "urn:zitadel:iam:user:resourceowner"},
+		Scopes:   []string{"openid", "profile", "email", "offline_access", "urn:zitadel:iam:user:resourceowner"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  oidcClient.AuthorizationEndpoint,
 			TokenURL: oidcClient.TokenEndpoint,
@@ -191,28 +218,6 @@ func oauthClientID() string {
 		return zitadelClientID
 	}
 	return clientID
-}
-
-// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
-// Fetch and refresh tokens from as necessary.
-func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
-	secret, err := getUserToken(ctx)
-	if err != nil {
-		return nil, "", fmt.Errorf("getting user token: %w", err)
-	}
-
-	cfg, _, err := oauthConfig(ctx)
-	if err != nil {
-		return nil, "", fmt.Errorf("getting oauth config: %w", err)
-	}
-
-	tok, err := cfg.TokenSource(ctx, &secret.Token).Token()
-	if err != nil {
-		return nil, "", fmt.Errorf("getting token: %w", err)
-	}
-
-	client := cfg.Client(ctx, tok)
-	return client, secret.ConsoleHost, nil
 }
 
 func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) {
@@ -245,36 +250,4 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
 	}
-}
-
-func getUserToken(ctx context.Context) (*secret, error) {
-	secretData, err := getSecret("nais-user")
-	if err != nil {
-		return nil, fmt.Errorf("getting secret: %w", err)
-	}
-	var s secret
-	err = json.Unmarshal([]byte(secretData), &s)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshalling data from keyring")
-	}
-
-	if !s.Valid() {
-		// Try to refresh the token
-		return refreshToken(ctx, s)
-	}
-
-	return &s, nil
-}
-
-func refreshToken(ctx context.Context, s secret) (*secret, error) {
-	cfg, _, err := oauthConfig(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("getting oauth config: %w", err)
-	}
-	tok, err := cfg.TokenSource(ctx, &s.Token).Token()
-	if err != nil {
-		return nil, fmt.Errorf("refreshing token: %w", err)
-	}
-
-	return saveToken(tok, s.ConsoleHost)
 }
