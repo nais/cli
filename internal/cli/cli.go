@@ -32,7 +32,7 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 		aiven(&cmdFlags),
 		device(&cmdFlags),
 		postgres(&cmdFlags),
-		apiProxy(&cmdFlags),
+		api(&cmdFlags),
 	)
 
 	autoComplete := slices.Contains(os.Args[1:], "__complete")

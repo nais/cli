@@ -1,0 +1,13 @@
+schema: schema.graphql
+operations:
+  - internal/nais/**/*.go
+bindings:
+  Slug:
+    type: string
+  Cursor:
+    type: string
+  Time:
+    type: time.Time
+  Date:
+    type: time.Time
+generated: internal/nais/generated.go

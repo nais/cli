@@ -195,8 +195,24 @@ func oauthClientID() string {
 
 // AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
 // Fetch and refresh tokens from as necessary.
-func AuthenticatedHTTPClient() (*http.Client, error) {
-	panic("not implemented")
+func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
+	secret, err := getUserToken(ctx)
+	if err != nil {
+		return nil, "", fmt.Errorf("getting user token: %w", err)
+	}
+
+	cfg, _, err := oauthConfig(ctx)
+	if err != nil {
+		return nil, "", fmt.Errorf("getting oauth config: %w", err)
+	}
+
+	tok, err := cfg.TokenSource(ctx, &secret.Token).Token()
+	if err != nil {
+		return nil, "", fmt.Errorf("getting token: %w", err)
+	}
+
+	client := cfg.Client(ctx, tok)
+	return client, secret.ConsoleHost, nil
 }
 
 func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) {

@@ -1,0 +1,4994 @@
+"""Directs the executor to defer this fragment when the `if` argument is true or undefined."""
+directive @defer(
+"""Deferred when true or undefined."""
+	if: Boolean
+"""Unique name"""
+	label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""Marks an element of a GraphQL schema as no longer supported."""
+directive @deprecated(
+"""Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https://commonmark.org/)."""
+	reason: String
+) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | ENUM_VALUE
+
+"""Directs the executor to include this field or fragment only when the `if` argument is true."""
+directive @include(
+"""Included when true."""
+	if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""Indicates exactly one field must be supplied and this field must not be `null`."""
+directive @oneOf on INPUT_OBJECT
+
+"""Directs the executor to skip this field or fragment when the `if` argument is true."""
+directive @skip(
+"""Skipped when true."""
+	if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""Exposes a URL that specifies the behavior of this scalar."""
+directive @specifiedBy(
+"""The URL that specifies the behavior of this scalar."""
+	url: String!
+) on SCALAR
+
+"""Interface for activity log entries."""
+interface ActivityLogEntry {
+"""Interface for activity log entries."""
+	id: ID!
+"""Interface for activity log entries."""
+	actor: String!
+"""Interface for activity log entries."""
+	createdAt: Time!
+"""Interface for activity log entries."""
+	message: String!
+"""Interface for activity log entries."""
+	resourceType: ActivityLogEntryResourceType!
+"""Interface for activity log entries."""
+	resourceName: String!
+"""Interface for activity log entries."""
+	teamSlug: Slug
+"""Interface for activity log entries."""
+	environmentName: String
+}
+
+"""Activity log connection."""
+type ActivityLogEntryConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [ActivityLogEntry!]!
+"""List of edges."""
+	edges: [ActivityLogEntryEdge!]!
+}
+
+"""Activity log edge."""
+type ActivityLogEntryEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The log entry."""
+	node: ActivityLogEntry!
+}
+
+"""The type of the resource that was affected by the activity."""
+enum ActivityLogEntryResourceType {
+"""Unknown type."""
+	UNKNOWN
+"""All activity log entries related to applications will use this resource type."""
+	APP
+"""All activity log entries related to deploy keys will use this resource type."""
+	DEPLOY_KEY
+"""All activity log entries related to jobs will use this resource type."""
+	JOB
+"""All activity log entries related to reconcilers will use this resource type."""
+	RECONCILER
+"""All activity log entries related to repositories will use this resource type."""
+	REPOSITORY
+"""All activity log entries related to secrets will use this resource type."""
+	SECRET
+	SERVICE_ACCOUNT
+"""All activity log entries related to teams will use this resource type."""
+	TEAM
+"""All activity log entries related to unleash will use this resource type."""
+	UNLEASH
+"""All activity log entries related to vulnerabilities will use this resource type."""
+	VULNERABILITY
+}
+
+input AddRepositoryToTeamInput {
+	teamSlug: Slug!
+	repositoryName: String!
+}
+
+type AddRepositoryToTeamPayload {
+"""Repository that was added to the team."""
+	repository: Repository
+}
+
+input AddSecretValueInput {
+	name: String!
+	environment: String!
+	team: Slug!
+	value: SecretValueInput!
+}
+
+type AddSecretValuePayload {
+"""The updated secret."""
+	secret: Secret
+}
+
+input AddTeamMemberInput {
+	teamSlug: Slug!
+	userEmail: String!
+	role: TeamMemberRole!
+}
+
+type AddTeamMemberPayload {
+"""The added team member."""
+	member: TeamMember
+}
+
+input AllowTeamAccessToUnleashInput {
+	teamSlug: Slug!
+	allowedTeamSlug: Slug!
+}
+
+type AllowTeamAccessToUnleashPayload {
+	unleash: UnleashInstance
+}
+
+"""An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+
+Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/)."""
+type Application implements Node & Workload{
+"""The globally unique ID of the application."""
+	id: ID!
+"""The name of the application."""
+	name: String!
+"""The team that owns the application."""
+	team: Team!
+"""The environment the application is deployed in."""
+	environment: TeamEnvironment!
+"""The team environment for the application."""
+	teamEnvironment: TeamEnvironment!
+"""The container image of the application."""
+	image: ContainerImage!
+"""Resources for the application."""
+	resources: ApplicationResources!
+"""List of ingresses for the application."""
+	ingresses: [Ingress!]!
+"""List of authentication and authorization for the application."""
+	authIntegrations: [ApplicationAuthIntegrations!]!
+"""The application manifest."""
+	manifest: ApplicationManifest!
+"""The application instances."""
+	instances(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ApplicationInstanceConnection!
+"""If set, when the application was marked for deletion."""
+	deletionStartedAt: Time
+"""BigQuery datasets referenced by the application. This does not currently support pagination, but will return all available datasets."""
+	bigQueryDatasets(
+"""Ordering options for items returned from the connection."""
+		orderBy: BigQueryDatasetOrder
+	): BigQueryDatasetConnection!
+"""Google Cloud Storage referenced by the application. This does not currently support pagination, but will return all available buckets."""
+	buckets(
+"""Ordering options for items returned from the connection."""
+		orderBy: BucketOrder
+	): BucketConnection!
+"""The cost for the application."""
+	cost: WorkloadCost!
+"""List of deployments for the application."""
+	deployments(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): DeploymentConnection!
+"""Kafka topics the application has access to. This does not currently support pagination, but will return all available Kafka topics."""
+	kafkaTopicAcls(
+"""Ordering options for items returned from the connection."""
+		orderBy: KafkaTopicAclOrder
+	): KafkaTopicAclConnection!
+"""List of log destinations for the application."""
+	logDestinations: [LogDestination!]!
+"""Network policies for the application."""
+	networkPolicy: NetworkPolicy!
+"""OpenSearch instance referenced by the workload."""
+	openSearch: OpenSearch
+"""Secrets used by the application."""
+	secrets(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): SecretConnection!
+"""SQL instances referenced by the application. This does not currently support pagination, but will return all available SQL instances."""
+	sqlInstances(
+"""Ordering options for items returned from the connection."""
+		orderBy: SqlInstanceOrder
+	): SqlInstanceConnection!
+"""Status of the application"""
+	status: WorkloadStatus!
+	utilization: WorkloadUtilization!
+"""Valkey instances referenced by the application. This does not currently support pagination, but will return all available Valkey instances."""
+	valkeyInstances(
+"""Ordering options for items returned from the connection."""
+		orderBy: ValkeyInstanceOrder
+	): ValkeyInstanceConnection!
+}
+
+"""Authentication integrations for the application."""
+union ApplicationAuthIntegrations =EntraIDAuthIntegration | IDPortenAuthIntegration | MaskinportenAuthIntegration | TokenXAuthIntegration
+
+"""Application connection."""
+type ApplicationConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Application!]!
+"""List of edges."""
+	edges: [ApplicationEdge!]!
+}
+
+type ApplicationDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+"""Application edge."""
+type ApplicationEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The application."""
+	node: Application!
+}
+
+type ApplicationInstance implements Node{
+	id: ID!
+	name: String!
+	image: ContainerImage!
+	restarts: Int!
+	created: Time!
+	status: ApplicationInstanceStatus!
+	instanceUtilization(
+		resourceType: UtilizationResourceType!
+	): ApplicationInstanceUtilization!
+}
+
+type ApplicationInstanceConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [ApplicationInstance!]!
+"""List of edges."""
+	edges: [ApplicationInstanceEdge!]!
+}
+
+type ApplicationInstanceEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The instance."""
+	node: ApplicationInstance!
+}
+
+enum ApplicationInstanceState {
+	RUNNING
+	FAILING
+	UNKNOWN
+}
+
+type ApplicationInstanceStatus {
+	state: ApplicationInstanceState!
+	message: String!
+}
+
+type ApplicationInstanceUtilization {
+"""Get the current usage for the requested resource type."""
+	current: Float!
+}
+
+"""The manifest that describes the application."""
+type ApplicationManifest implements WorkloadManifest{
+"""The manifest content, serialized as a YAML document."""
+	content: String!
+}
+
+"""Ordering options when fetching applications."""
+input ApplicationOrder {
+"""Ordering options when fetching applications."""
+	field: ApplicationOrderField!
+"""Ordering options when fetching applications."""
+	direction: OrderDirection!
+}
+
+"""Fields to order applications by."""
+enum ApplicationOrderField {
+"""Order applications by name."""
+	NAME
+"""Order applications by the name of the environment."""
+	ENVIRONMENT
+"""Order applications by the deployment time."""
+	DEPLOYMENT_TIME
+"""Order applications by status."""
+	STATUS
+}
+
+type ApplicationResources implements WorkloadResources{
+"""Instances using resources above this threshold will be killed."""
+	limits: WorkloadResourceQuantity!
+"""How many resources are allocated to each instance."""
+	requests: WorkloadResourceQuantity!
+"""Scaling strategies for the application."""
+	scaling: ApplicationScaling!
+}
+
+type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+"""The scaling configuration of an application."""
+type ApplicationScaling {
+"""The minimum number of application instances."""
+	minInstances: Int!
+"""The maximum number of application instances."""
+	maxInstances: Int!
+"""Scaling strategies for the application."""
+	strategies: [ScalingStrategy!]!
+}
+
+input AssignRoleToServiceAccountInput {
+	serviceAccountID: ID!
+	roleName: String!
+}
+
+type AssignRoleToServiceAccountPayload {
+"""The service account that had a role assigned."""
+	serviceAccount: ServiceAccount
+}
+
+"""Interface for authentication and authorization integrations.
+
+Read more about this topic in the [Nais documentation](https://docs.nais.io/auth/)."""
+interface AuthIntegration {
+"""Interface for authentication and authorization integrations.
+
+Read more about this topic in the [Nais documentation](https://docs.nais.io/auth/)."""
+	name: String!
+}
+
+"""Authenticated user type."""
+union AuthenticatedUser =User | ServiceAccount
+
+type BigQueryDataset implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	cascadingDelete: Boolean!
+	description: String
+	access(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		orderBy: BigQueryDatasetAccessOrder
+	): BigQueryDatasetAccessConnection!
+	status: BigQueryDatasetStatus!
+	workload: Workload
+	cost: BigQueryDatasetCost!
+}
+
+type BigQueryDatasetAccess {
+	role: String!
+	email: String!
+}
+
+type BigQueryDatasetAccessConnection {
+	pageInfo: PageInfo!
+	nodes: [BigQueryDatasetAccess!]!
+	edges: [BigQueryDatasetAccessEdge!]!
+}
+
+type BigQueryDatasetAccessEdge {
+	cursor: Cursor!
+	node: BigQueryDatasetAccess!
+}
+
+input BigQueryDatasetAccessOrder {
+	field: BigQueryDatasetAccessOrderField!
+	direction: OrderDirection!
+}
+
+enum BigQueryDatasetAccessOrderField {
+	ROLE
+	EMAIL
+}
+
+type BigQueryDatasetConnection {
+	pageInfo: PageInfo!
+	nodes: [BigQueryDataset!]!
+	edges: [BigQueryDatasetEdge!]!
+}
+
+type BigQueryDatasetCost {
+	sum: Float!
+}
+
+type BigQueryDatasetEdge {
+	cursor: Cursor!
+	node: BigQueryDataset!
+}
+
+input BigQueryDatasetOrder {
+	field: BigQueryDatasetOrderField!
+	direction: OrderDirection!
+}
+
+enum BigQueryDatasetOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+type BigQueryDatasetStatus {
+	creationTime: Time!
+	lastModifiedTime: Time
+}
+
+"""The `Boolean` scalar type represents `true` or `false`."""
+scalar Boolean
+
+type Bucket implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	cascadingDelete: Boolean!
+	publicAccessPrevention: String!
+	uniformBucketLevelAccess: Boolean!
+	workload: Workload
+	status: BucketStatus!
+}
+
+type BucketConnection {
+	pageInfo: PageInfo!
+	nodes: [Bucket!]!
+	edges: [BucketEdge!]!
+}
+
+type BucketEdge {
+	cursor: Cursor!
+	node: Bucket!
+}
+
+type BucketError {
+	message: String!
+	details: String
+}
+
+input BucketOrder {
+	field: BucketOrderField!
+	direction: OrderDirection!
+}
+
+enum BucketOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+enum BucketState {
+	HEALTHY
+	ERROR
+	UNKNOWN
+}
+
+type BucketStatus {
+	state: BucketState!
+	errors: [BucketError!]!
+}
+
+"""A scaling strategy based on CPU usage
+
+Read more: https://docs.nais.io/workloads/application/reference/automatic-scaling/#cpu-based-scaling"""
+type CPUScalingStrategy {
+"""The threshold that must be met for the scaling to trigger."""
+	threshold: Int!
+}
+
+input ChangeDeploymentKeyInput {
+	teamSlug: Slug!
+}
+
+type ChangeDeploymentKeyPayload {
+"""The updated deploy key."""
+	deploymentKey: DeploymentKey
+}
+
+input ConfigureReconcilerInput {
+	name: String!
+	config: [ReconcilerConfigInput!]!
+}
+
+input ConfirmTeamDeletionInput {
+	slug: Slug!
+	key: String!
+}
+
+type ConfirmTeamDeletionPayload {
+"""Whether or not the asynchronous deletion process was started."""
+	deletionStarted: Boolean
+}
+
+"""Container image."""
+type ContainerImage implements Node{
+"""The globally unique ID of the container image node."""
+	id: ID!
+"""Name of the container image."""
+	name: String!
+"""Tag of the container image."""
+	tag: String!
+"""Whether the image has a software bill of materials (SBOM) attached to it."""
+	hasSBOM: Boolean!
+"""Get the vulnerabilities of the image."""
+	vulnerabilities(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: ImageVulnerabilityOrder
+	): ImageVulnerabilityConnection!
+"""Get the summary of the vulnerabilities of the image."""
+	vulnerabilitySummary: ImageVulnerabilitySummary
+"""Workloads using this container image."""
+	workloadReferences(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ContainerImageWorkloadReferenceConnection!
+}
+
+type ContainerImageWorkloadReference {
+"""The workload using the container image."""
+	workload: Workload!
+}
+
+type ContainerImageWorkloadReferenceConnection {
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+"""List of edges."""
+	edges: [ContainerImageWorkloadReferenceEdge!]!
+"""List of nodes."""
+	nodes: [ContainerImageWorkloadReference!]!
+}
+
+type ContainerImageWorkloadReferenceEdge {
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+"""The workload reference."""
+	node: ContainerImageWorkloadReference!
+}
+
+input CreateSecretInput {
+	name: String!
+	environment: String!
+	team: Slug!
+}
+
+type CreateSecretPayload {
+"""The created secret."""
+	secret: Secret
+}
+
+input CreateServiceAccountInput {
+	name: String!
+	description: String!
+	teamSlug: Slug
+}
+
+type CreateServiceAccountPayload {
+"""The created service account."""
+	serviceAccount: ServiceAccount
+}
+
+input CreateServiceAccountTokenInput {
+	serviceAccountID: ID!
+	name: String!
+	description: String!
+	expiresAt: Date
+}
+
+type CreateServiceAccountTokenPayload {
+"""The service account that the token belongs to."""
+	serviceAccount: ServiceAccount
+"""The created service account token."""
+	serviceAccountToken: ServiceAccountToken
+"""The secret of the service account token.
+
+This value is only returned once, and can not be retrieved at a later stage. If the secret is lost, a new token must be created.
+
+Once obtained, the secret can be used to authenticate as the service account using the HTTP `Authorization` request header:
+
+```
+Authorization: Bearer <secret>
+```"""
+	secret: String
+}
+
+input CreateTeamInput {
+	slug: Slug!
+	purpose: String!
+	slackChannel: String!
+}
+
+type CreateTeamPayload {
+"""The newly created team."""
+	team: Team
+}
+
+input CreateUnleashForTeamInput {
+	teamSlug: Slug!
+}
+
+type CreateUnleashForTeamPayload {
+	unleash: UnleashInstance
+}
+
+"""Get current unit prices."""
+type CurrentUnitPrices {
+"""Current price for one CPU hour."""
+	cpu: Price!
+"""Current price for one GB hour of memory."""
+	memory: Price!
+}
+
+"""A cursor for use in pagination
+
+Cursors are opaque strings that are returned by the server for paginated results, and used when performing backwards / forwards pagination."""
+scalar Cursor
+
+"""Date type in YYYY-MM-DD format."""
+scalar Date
+
+input DeleteApplicationInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+}
+
+type DeleteApplicationPayload {
+"""The team that owned the deleted application."""
+	team: Team
+"""Whether or not the application was deleted."""
+	success: Boolean
+}
+
+input DeleteJobInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+}
+
+type DeleteJobPayload {
+"""The team that owned the deleted job."""
+	team: Team
+"""Whether or not the application was deleted."""
+	success: Boolean
+}
+
+input DeleteSecretInput {
+	name: String!
+	environment: String!
+	team: Slug!
+}
+
+type DeleteSecretPayload {
+"""The deleted secret."""
+	secretDeleted: Boolean
+}
+
+input DeleteServiceAccountInput {
+	serviceAccountID: ID!
+}
+
+type DeleteServiceAccountPayload {
+"""Whether or not the service account was deleted."""
+	serviceAccountDeleted: Boolean
+}
+
+input DeleteServiceAccountTokenInput {
+	serviceAccountTokenID: ID!
+}
+
+type DeleteServiceAccountTokenPayload {
+"""The service account that the token belonged to."""
+	serviceAccount: ServiceAccount
+"""Whether or not the service account token was deleted."""
+	serviceAccountTokenDeleted: Boolean
+}
+
+"""Description of a deployment."""
+type Deployment implements Node{
+"""ID of the deployment."""
+	id: ID!
+"""Creation timestamp of the deployment."""
+	createdAt: Time!
+"""Team slug that the deployment belongs to."""
+	teamSlug: Slug!
+"""Name of the environment that the deployment belongs to."""
+	environmentName: String!
+"""The repository that triggered the deployment."""
+	repository: String
+"""Username of the actor who initiated the deployment."""
+	deployerUsername: String
+"""The git commit SHA that was deployed."""
+	commitSha: String
+"""The URL of the workflow that triggered the deployment."""
+	triggerUrl: String
+"""Resources that were deployed."""
+	resources(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): DeploymentResourceConnection!
+"""Statuses of the deployment."""
+	statuses(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): DeploymentStatusConnection!
+}
+
+type DeploymentConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Deployment!]!
+"""List of edges."""
+	edges: [DeploymentEdge!]!
+}
+
+type DeploymentEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The deployment."""
+	node: Deployment!
+}
+
+"""Deployment key type."""
+type DeploymentKey implements Node{
+"""The unique identifier of the deployment key."""
+	id: ID!
+"""The actual key."""
+	key: String!
+"""The date the deployment key was created."""
+	created: Time!
+"""The date the deployment key expires."""
+	expires: Time!
+}
+
+"""Resource connected to a deployment."""
+type DeploymentResource implements Node{
+"""Globally unique ID of the deployment resource."""
+	id: ID!
+"""Deployment resource kind."""
+	kind: String!
+"""The name of the resource."""
+	name: String!
+}
+
+type DeploymentResourceConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [DeploymentResource!]!
+"""List of edges."""
+	edges: [DeploymentResourceEdge!]!
+}
+
+type DeploymentResourceEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The deployment resource."""
+	node: DeploymentResource!
+}
+
+"""Resource connected to a deployment."""
+type DeploymentStatus implements Node{
+"""Globally unique ID of the deployment resource."""
+	id: ID!
+"""Creation timestamp of the deployment status."""
+	createdAt: Time!
+"""State of the deployment."""
+	state: DeploymentStatusState!
+"""Message describing the deployment status."""
+	message: String!
+}
+
+type DeploymentStatusConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [DeploymentStatus!]!
+"""List of edges."""
+	edges: [DeploymentStatusEdge!]!
+}
+
+type DeploymentStatusEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The deployment status."""
+	node: DeploymentStatus!
+}
+
+"""Possible states of a deployment status."""
+enum DeploymentStatusState {
+	SUCCESS
+	ERROR
+	FAILURE
+	INACTIVE
+	IN_PROGRESS
+	QUEUED
+	PENDING
+}
+
+input DisableReconcilerInput {
+	name: String!
+}
+
+input EnableReconcilerInput {
+	name: String!
+}
+
+"""Entra ID (f.k.a. Azure AD) authentication.
+
+Read more: https://docs.nais.io/auth/entra-id/"""
+type EntraIDAuthIntegration implements AuthIntegration{
+"""The name of the integration."""
+	name: String!
+}
+
+"""An environment represents a runtime environment for workloads.
+
+Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/)."""
+type Environment implements Node{
+"""The globally unique ID of the team."""
+	id: ID!
+"""Unique name of the environment."""
+	name: String!
+"""Nais workloads in the environment."""
+	workloads(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: EnvironmentWorkloadOrder
+	): WorkloadConnection!
+}
+
+"""Environment connection."""
+type EnvironmentConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Environment!]!
+"""List of edges."""
+	edges: [EnvironmentEdge!]!
+}
+
+"""Environment edge."""
+type EnvironmentEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The Environment."""
+	node: Environment!
+}
+
+"""Ordering options when fetching environments."""
+input EnvironmentOrder {
+"""Ordering options when fetching environments."""
+	field: EnvironmentOrderField!
+"""Ordering options when fetching environments."""
+	direction: OrderDirection!
+}
+
+"""Fields to order environments by."""
+enum EnvironmentOrderField {
+"""Order by name."""
+	NAME
+}
+
+"""Ordering options when fetching workloads in an environment."""
+input EnvironmentWorkloadOrder {
+"""Ordering options when fetching workloads in an environment."""
+	field: EnvironmentWorkloadOrderField!
+"""Ordering options when fetching workloads in an environment."""
+	direction: OrderDirection!
+}
+
+"""Fields to order workloads in an environment by."""
+enum EnvironmentWorkloadOrderField {
+"""Order by name."""
+	NAME
+"""Order by team slug."""
+	TEAM_SLUG
+"""Order by status."""
+	STATUS
+"""Order by the deployment time."""
+	DEPLOYMENT_TIME
+}
+
+type ExternalNetworkPolicyHost implements ExternalNetworkPolicyTarget{
+	target: String!
+	ports: [Int!]!
+}
+
+type ExternalNetworkPolicyIpv4 implements ExternalNetworkPolicyTarget{
+	target: String!
+	ports: [Int!]!
+}
+
+interface ExternalNetworkPolicyTarget {
+	target: String!
+	ports: [Int!]!
+}
+
+type FeatureKafka implements Node{
+"""Unique identifier for the feature."""
+	id: ID!
+"""Wether Kafka is enabled or not."""
+	enabled: Boolean!
+}
+
+type FeatureOpenSearch implements Node{
+"""Unique identifier for the feature."""
+	id: ID!
+"""Wether OpenSearch is enabled or not."""
+	enabled: Boolean!
+}
+
+type FeatureUnleash implements Node{
+"""Unique identifier for the feature."""
+	id: ID!
+"""Wether Unleash is enabled or not."""
+	enabled: Boolean!
+}
+
+type FeatureValkey implements Node{
+"""Unique identifier for the feature."""
+	id: ID!
+"""Wether Valkey is enabled or not."""
+	enabled: Boolean!
+}
+
+type Features implements Node{
+"""Unique identifier for the feature container."""
+	id: ID!
+"""Information about Unleash feature."""
+	unleash: FeatureUnleash!
+"""Information about Valkey feature."""
+	valkey: FeatureValkey!
+"""Information about Kafka feature."""
+	kafka: FeatureKafka!
+"""Information about OpenSearch feature."""
+	openSearch: FeatureOpenSearch!
+}
+
+"""The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point)."""
+scalar Float
+
+"""The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as "4") or integer (such as 4) input value will be accepted as an ID."""
+scalar ID
+
+"""ID-porten authentication.
+
+Read more: https://docs.nais.io/auth/idporten/"""
+type IDPortenAuthIntegration implements AuthIntegration{
+"""The name of the integration."""
+	name: String!
+}
+
+type ImageVulnerability implements Node{
+"""The globally unique ID of the image vulnerability node."""
+	id: ID!
+"""The unique identifier of the vulnerability. E.g. CVE-****-****."""
+	identifier: String!
+"""Severity of the vulnerability."""
+	severity: ImageVulnerabilitySeverity!
+"""Description of the vulnerability."""
+	description: String!
+"""Package name of the vulnerability."""
+	package: String!
+"""State of the vulnerability."""
+	state: ImageVulnerabilityState!
+"""Analysis trail of the vulnerability."""
+	analysisTrail: ImageVulnerabilityAnalysisTrail!
+}
+
+type ImageVulnerabilityAnalysisComment {
+"""The comment provided."""
+	comment: String!
+"""Was the vulnerability suppressed."""
+	suppressed: Boolean!
+"""State of the vulnerability."""
+	state: ImageVulnerabilityAnalysisState!
+"""Timestamp of the comment."""
+	timestamp: Time!
+"""User who commented."""
+	onBehalfOf: String!
+}
+
+type ImageVulnerabilityAnalysisCommentConnection {
+	pageInfo: PageInfo!
+	edges: [ImageVulnerabilityAnalysisCommentEdge!]!
+	nodes: [ImageVulnerabilityAnalysisComment!]!
+}
+
+type ImageVulnerabilityAnalysisCommentEdge {
+	cursor: Cursor!
+	node: ImageVulnerabilityAnalysisComment!
+}
+
+enum ImageVulnerabilityAnalysisState {
+"""Vulnerability is triaged."""
+	IN_TRIAGE
+"""Vulnerability is resolved."""
+	RESOLVED
+"""Vulnerability is marked as false positive."""
+	FALSE_POSITIVE
+"""Vulnerability is marked as not affected."""
+	NOT_AFFECTED
+}
+
+type ImageVulnerabilityAnalysisTrail {
+	state: ImageVulnerabilityAnalysisState!
+	comments(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ImageVulnerabilityAnalysisCommentConnection!
+	suppressed: Boolean!
+}
+
+type ImageVulnerabilityConnection {
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+"""List of edges."""
+	edges: [ImageVulnerabilityEdge!]!
+"""List of nodes."""
+	nodes: [ImageVulnerability!]!
+}
+
+type ImageVulnerabilityEdge {
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+"""The image vulnerability."""
+	node: ImageVulnerability!
+}
+
+"""Ordering options when fetching teams."""
+input ImageVulnerabilityOrder {
+"""Ordering options when fetching teams."""
+	field: ImageVulnerabilityOrderField!
+"""Ordering options when fetching teams."""
+	direction: OrderDirection!
+}
+
+enum ImageVulnerabilityOrderField {
+	IDENTIFIER
+	SEVERITY
+	PACKAGE
+	STATE
+	SUPPRESSED
+}
+
+enum ImageVulnerabilitySeverity {
+	LOW
+	MEDIUM
+	HIGH
+	CRITICAL
+	UNASSIGNED
+}
+
+enum ImageVulnerabilityState {
+	TRIAGE
+	RESOLVED
+	FALSE_POSITIVE
+	NOT_AFFECTED
+}
+
+type ImageVulnerabilitySummary {
+"""Total number of vulnerabilities."""
+	total: Int!
+"""Risk score of the image."""
+	riskScore: Int!
+"""Number of vulnerabilities with severity LOW."""
+	low: Int!
+"""Number of vulnerabilities with severity MEDIUM."""
+	medium: Int!
+"""Number of vulnerabilities with severity HIGH."""
+	high: Int!
+"""Number of vulnerabilities with severity CRITICAL."""
+	critical: Int!
+"""Number of vulnerabilities with severity UNASSIGNED."""
+	unassigned: Int!
+}
+
+type InboundNetworkPolicy {
+	rules: [NetworkPolicyRule!]!
+}
+
+type Ingress {
+"""URL for the ingress."""
+	url: String!
+"""Type of ingress."""
+	type: IngressType!
+}
+
+enum IngressType {
+	UNKNOWN
+	EXTERNAL
+	INTERNAL
+	AUTHENTICATED
+}
+
+"""The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."""
+scalar Int
+
+type Job implements Node & Workload{
+"""The globally unique ID of the job."""
+	id: ID!
+"""The name of the job."""
+	name: String!
+"""The team that owns the job."""
+	team: Team!
+"""The environment the job is deployed in."""
+	environment: TeamEnvironment!
+"""The team environment for the job."""
+	teamEnvironment: TeamEnvironment!
+"""The container image of the job."""
+	image: ContainerImage!
+"""Resources for the job."""
+	resources: JobResources!
+"""List of authentication and authorization for the job."""
+	authIntegrations: [JobAuthIntegrations!]!
+"""Optional schedule for the job. Jobs with no schedule are run once."""
+	schedule: JobSchedule
+"""The job runs."""
+	runs(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): JobRunConnection!
+"""The job manifest."""
+	manifest: JobManifest!
+"""If set, when the job was marked for deletion."""
+	deletionStartedAt: Time
+"""BigQuery datasets referenced by the job. This does not currently support pagination, but will return all available datasets."""
+	bigQueryDatasets(
+"""Ordering options for items returned from the connection."""
+		orderBy: BigQueryDatasetOrder
+	): BigQueryDatasetConnection!
+"""Google Cloud Storage referenced by the job. This does not currently support pagination, but will return all available buckets."""
+	buckets(
+"""Ordering options for items returned from the connection."""
+		orderBy: BucketOrder
+	): BucketConnection!
+"""The cost for the job."""
+	cost: WorkloadCost!
+"""List of deployments for the job."""
+	deployments(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): DeploymentConnection!
+"""Kafka topics the job has access to. This does not currently support pagination, but will return all available Kafka topics."""
+	kafkaTopicAcls(
+"""Ordering options for items returned from the connection."""
+		orderBy: KafkaTopicAclOrder
+	): KafkaTopicAclConnection!
+"""List of log destinations for the job."""
+	logDestinations: [LogDestination!]!
+"""Network policies for the job."""
+	networkPolicy: NetworkPolicy!
+"""OpenSearch instance referenced by the workload."""
+	openSearch: OpenSearch
+"""Secrets used by the job."""
+	secrets(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): SecretConnection!
+"""SQL instances referenced by the job. This does not currently support pagination, but will return all available SQL instances."""
+	sqlInstances(
+"""Ordering options for items returned from the connection."""
+		orderBy: SqlInstanceOrder
+	): SqlInstanceConnection!
+"""Status of the job"""
+	status: WorkloadStatus!
+"""Valkey instances referenced by the job. This does not currently support pagination, but will return all available Valkey instances."""
+	valkeyInstances(
+"""Ordering options for items returned from the connection."""
+		orderBy: ValkeyInstanceOrder
+	): ValkeyInstanceConnection!
+}
+
+union JobAuthIntegrations =EntraIDAuthIntegration | MaskinportenAuthIntegration
+
+type JobConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Job!]!
+"""List of edges."""
+	edges: [JobEdge!]!
+}
+
+type JobDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type JobEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The job."""
+	node: Job!
+}
+
+type JobManifest implements WorkloadManifest{
+"""The manifest content, serialized as a YAML document."""
+	content: String!
+}
+
+input JobOrder {
+	field: JobOrderField!
+	direction: OrderDirection!
+}
+
+enum JobOrderField {
+"""Order jobs by name."""
+	NAME
+"""Order jobs by the name of the environment."""
+	ENVIRONMENT
+"""Order applications by the deployment time."""
+	DEPLOYMENT_TIME
+"""Order jobs by status."""
+	STATUS
+}
+
+type JobResources implements WorkloadResources{
+	limits: WorkloadResourceQuantity!
+	requests: WorkloadResourceQuantity!
+}
+
+type JobRun implements Node{
+"""The globally unique ID of the job run."""
+	id: ID!
+"""The name of the job run."""
+	name: String!
+"""The start time of the job."""
+	startTime: Time
+"""The completion time of the job."""
+	completionTime: Time
+"""The status of the job run."""
+	status: JobRunStatus!
+"""The container image of the job run."""
+	image: ContainerImage!
+"""Duration of the job in seconds."""
+	duration: Int!
+"""Job run instances."""
+	instances(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): JobRunInstanceConnection!
+	trigger: JobRunTrigger!
+}
+
+type JobRunConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [JobRun!]!
+"""List of edges."""
+	edges: [JobRunEdge!]!
+}
+
+type JobRunEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The job run."""
+	node: JobRun!
+}
+
+type JobRunInstance implements Node{
+"""The globally unique ID of the job run instance."""
+	id: ID!
+"""The name of the job run instance."""
+	name: String!
+}
+
+type JobRunInstanceConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [JobRunInstance!]!
+"""List of edges."""
+	edges: [JobRunInstanceEdge!]!
+}
+
+type JobRunInstanceEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The instance."""
+	node: JobRunInstance!
+}
+
+enum JobRunState {
+"""Job run is pending."""
+	PENDING
+"""Job run is running."""
+	RUNNING
+"""Job run is succeeded."""
+	SUCCEEDED
+"""Job run is failed."""
+	FAILED
+"""Job run is unknown."""
+	UNKNOWN
+}
+
+type JobRunStatus {
+"""The state of the job run."""
+	state: JobRunState!
+"""Human readable job run status."""
+	message: String!
+}
+
+type JobRunTrigger {
+"""The type of trigger that started the job."""
+	type: JobRunTriggerType!
+"""The actor/user who triggered the job run manually, if applicable."""
+	actor: String
+}
+
+enum JobRunTriggerType {
+	AUTOMATIC
+	MANUAL
+}
+
+type JobSchedule {
+"""The cron expression for the job."""
+	expression: String!
+"""The time zone for the job. Defaults to UTC."""
+	timeZone: String!
+}
+
+type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type KafkaLagScalingStrategy {
+"""The threshold that must be met for the scaling to trigger."""
+	threshold: Int!
+"""The consumer group of the topic."""
+	consumerGroup: String!
+"""The name of the Kafka topic."""
+	topicName: String!
+}
+
+type KafkaTopic implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	acl(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		filter: KafkaTopicAclFilter
+		orderBy: KafkaTopicAclOrder
+	): KafkaTopicAclConnection!
+	configuration: KafkaTopicConfiguration
+	pool: String!
+}
+
+type KafkaTopicAcl {
+	access: String!
+	workloadName: String!
+	teamName: String!
+	team: Team
+	workload: Workload
+	topic: KafkaTopic!
+}
+
+type KafkaTopicAclConnection {
+	pageInfo: PageInfo!
+	nodes: [KafkaTopicAcl!]!
+	edges: [KafkaTopicAclEdge!]!
+}
+
+type KafkaTopicAclEdge {
+	cursor: Cursor!
+	node: KafkaTopicAcl!
+}
+
+input KafkaTopicAclFilter {
+	team: Slug
+	workload: String
+	validWorkloads: Boolean
+}
+
+input KafkaTopicAclOrder {
+	field: KafkaTopicAclOrderField!
+	direction: OrderDirection!
+}
+
+enum KafkaTopicAclOrderField {
+	TOPIC_NAME
+	TEAM_SLUG
+	CONSUMER
+	ACCESS
+}
+
+type KafkaTopicConfiguration {
+	cleanupPolicy: String
+	maxMessageBytes: Int
+	minimumInSyncReplicas: Int
+	partitions: Int
+	replication: Int
+	retentionBytes: Int
+	retentionHours: Int
+	segmentHours: Int
+}
+
+type KafkaTopicConnection {
+	pageInfo: PageInfo!
+	nodes: [KafkaTopic!]!
+	edges: [KafkaTopicEdge!]!
+}
+
+type KafkaTopicEdge {
+	cursor: Cursor!
+	node: KafkaTopic!
+}
+
+input KafkaTopicOrder {
+	field: KafkaTopicOrderField!
+	direction: OrderDirection!
+}
+
+enum KafkaTopicOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+interface LogDestination {
+	id: ID!
+}
+
+type LogDestinationLoki implements LogDestination & Node{
+"""The globally unique ID of the log destination."""
+	id: ID!
+"""Grafana URL to view the logs."""
+	grafanaURL: String!
+}
+
+type LogDestinationSecureLogs implements LogDestination & Node{
+"""The globally unique ID of the log destination."""
+	id: ID!
+}
+
+"""Maskinporten authentication.
+
+Read more: https://docs.nais.io/auth/maskinporten/"""
+type MaskinportenAuthIntegration implements AuthIntegration{
+"""The name of the integration."""
+	name: String!
+}
+
+"""The mutation root for the Nais GraphQL API."""
+type Mutation {
+"""Delete an application."""
+	deleteApplication(
+"""Input for deleting an application."""
+		input: DeleteApplicationInput!
+	): DeleteApplicationPayload!
+"""Restart an application."""
+	restartApplication(
+"""Input for restarting an application."""
+		input: RestartApplicationInput!
+	): RestartApplicationPayload!
+"""Update the deploy key of a team. Returns the updated deploy key."""
+	changeDeploymentKey(
+		input: ChangeDeploymentKeyInput!
+	): ChangeDeploymentKeyPayload!
+"""Delete a job."""
+	deleteJob(
+		input: DeleteJobInput!
+	): DeleteJobPayload!
+"""Trigger a job"""
+	triggerJob(
+		input: TriggerJobInput!
+	): TriggerJobPayload!
+"""Enable a reconciler
+
+A reconciler must be fully configured before it can be enabled."""
+	enableReconciler(
+		input: EnableReconcilerInput!
+	): Reconciler!
+"""Disable a reconciler
+
+The reconciler configuration will be left intact."""
+	disableReconciler(
+		input: DisableReconcilerInput!
+	): Reconciler!
+"""Configure a reconciler."""
+	configureReconciler(
+		input: ConfigureReconcilerInput!
+	): Reconciler!
+"""Add a team repository."""
+	addRepositoryToTeam(
+		input: AddRepositoryToTeamInput!
+	): AddRepositoryToTeamPayload!
+"""Remove a team repository."""
+	removeRepositoryFromTeam(
+		input: RemoveRepositoryFromTeamInput!
+	): RemoveRepositoryFromTeamPayload!
+"""Create a new secret."""
+	createSecret(
+		input: CreateSecretInput!
+	): CreateSecretPayload!
+"""Add a secret value to a secret."""
+	addSecretValue(
+		input: AddSecretValueInput!
+	): AddSecretValuePayload!
+"""Update a secret value within a secret."""
+	updateSecretValue(
+		input: UpdateSecretValueInput!
+	): UpdateSecretValuePayload!
+"""Remove a secret value from a secret."""
+	removeSecretValue(
+		input: RemoveSecretValueInput!
+	): RemoveSecretValuePayload!
+"""Delete a secret, and the values it contains."""
+	deleteSecret(
+		input: DeleteSecretInput!
+	): DeleteSecretPayload!
+"""Create a service account."""
+	createServiceAccount(
+		input: CreateServiceAccountInput!
+	): CreateServiceAccountPayload!
+"""Update a service account."""
+	updateServiceAccount(
+		input: UpdateServiceAccountInput!
+	): UpdateServiceAccountPayload!
+"""Delete a service account."""
+	deleteServiceAccount(
+		input: DeleteServiceAccountInput!
+	): DeleteServiceAccountPayload!
+"""Assign a role to a service account."""
+	assignRoleToServiceAccount(
+		input: AssignRoleToServiceAccountInput!
+	): AssignRoleToServiceAccountPayload!
+"""Revoke a role from a service account."""
+	revokeRoleFromServiceAccount(
+		input: RevokeRoleFromServiceAccountInput!
+	): RevokeRoleFromServiceAccountPayload!
+"""Create a service account token.
+
+The secret is automatically generated, and is returned as a part of the payload for this mutation. The secret can
+not be retrieved at a later stage.
+
+A service account can have multiple active tokens at the same time."""
+	createServiceAccountToken(
+		input: CreateServiceAccountTokenInput!
+	): CreateServiceAccountTokenPayload!
+"""Update a service account token.
+
+Note that the secret itself can not be updated, only the metadata."""
+	updateServiceAccountToken(
+		input: UpdateServiceAccountTokenInput!
+	): UpdateServiceAccountTokenPayload!
+"""Delete a service account token."""
+	deleteServiceAccountToken(
+		input: DeleteServiceAccountTokenInput!
+	): DeleteServiceAccountTokenPayload!
+"""Create a new Nais team
+
+The user creating the team will be granted team ownership, unless the user is a service account, in which case the
+team will not get an initial owner. To add one or more owners to the team, refer to the `addTeamOwners` mutation.
+
+Creation of a team will also create external resources for the team, which will be managed by the Nais API
+reconcilers. This will be done asynchronously.
+
+Refer to the [official Nais documentation](https://docs.nais.io/explanations/team/) for more information regarding
+Nais teams."""
+	createTeam(
+		input: CreateTeamInput!
+	): CreateTeamPayload!
+"""Update an existing Nais team
+
+This mutation can be used to update the team purpose and the main Slack channel. It is not possible to update the
+team slug."""
+	updateTeam(
+		input: UpdateTeamInput!
+	): UpdateTeamPayload!
+"""Update an environment for a team"""
+	updateTeamEnvironment(
+		input: UpdateTeamEnvironmentInput!
+	): UpdateTeamEnvironmentPayload!
+"""Request a key that can be used to trigger a team deletion process
+
+Deleting a team is a two step process. First an owner of the team (or an admin) must request a team deletion key,
+and then a second owner of the team (or an admin) must confirm the deletion using the confirmTeamDeletion mutation.
+
+The returned delete key is valid for an hour, and can only be used once.
+
+Note: Service accounts are not allowed to request team delete keys."""
+	requestTeamDeletion(
+		input: RequestTeamDeletionInput!
+	): RequestTeamDeletionPayload!
+"""Confirm a team deletion
+
+This will start the actual team deletion process, which will be done in an asynchronous manner. All external
+entities controlled by Nais will also be deleted.
+
+WARNING: There is no going back after starting this process.
+
+Note: Service accounts are not allowed to confirm a team deletion."""
+	confirmTeamDeletion(
+		input: ConfirmTeamDeletionInput!
+	): ConfirmTeamDeletionPayload!
+"""Add a team member
+
+If the user is already a member or an owner of the team, the mutation will result in an error."""
+	addTeamMember(
+		input: AddTeamMemberInput!
+	): AddTeamMemberPayload!
+"""Remove a team member
+
+If the user is not already a member or an owner of the team, the mutation will result in an error."""
+	removeTeamMember(
+		input: RemoveTeamMemberInput!
+	): RemoveTeamMemberPayload!
+"""Assign a role to a team member
+
+The user must already be a member of the team for this mutation to succeed."""
+	setTeamMemberRole(
+		input: SetTeamMemberRoleInput!
+	): SetTeamMemberRolePayload!
+"""Create a new Unleash instance.
+
+This mutation will create a new Unleash instance for the given team. The team
+will be set as owner of the Unleash instance and will be able to manage it."""
+	createUnleashForTeam(
+		input: CreateUnleashForTeamInput!
+	): CreateUnleashForTeamPayload!
+"""Add team to the list of teams that can access the Unleash instance."""
+	allowTeamAccessToUnleash(
+		input: AllowTeamAccessToUnleashInput!
+	): AllowTeamAccessToUnleashPayload!
+"""Remove team from the list of teams that can access the Unleash instance."""
+	revokeTeamAccessToUnleash(
+		input: RevokeTeamAccessToUnleashInput!
+	): RevokeTeamAccessToUnleashPayload!
+"""Updates a vulnerability
+This mutation is currently unstable and may change in the future."""
+	updateImageVulnerability(
+		input: UpdateImageVulnerabilityInput!
+	): UpdateImageVulnerabilityPayload!
+}
+
+type NetworkPolicy {
+	inbound: InboundNetworkPolicy!
+	outbound: OutboundNetworkPolicy!
+}
+
+type NetworkPolicyRule {
+	targetWorkloadName: String!
+	targetWorkload: Workload
+	targetTeamSlug: Slug!
+	targetTeam: Team
+	mutual: Boolean!
+}
+
+"""This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/)."""
+interface Node {
+"""This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/)."""
+	id: ID!
+}
+
+type OpenSearch implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	terminationProtection: Boolean!
+	status: OpenSearchStatus!
+	workload: Workload
+	access(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		orderBy: OpenSearchAccessOrder
+	): OpenSearchAccessConnection!
+	cost: OpenSearchCost!
+}
+
+type OpenSearchAccess {
+	workload: Workload!
+	access: String!
+}
+
+type OpenSearchAccessConnection {
+	pageInfo: PageInfo!
+	nodes: [OpenSearchAccess!]!
+	edges: [OpenSearchAccessEdge!]!
+}
+
+type OpenSearchAccessEdge {
+	cursor: Cursor!
+	node: OpenSearchAccess!
+}
+
+input OpenSearchAccessOrder {
+	field: OpenSearchAccessOrderField!
+	direction: OrderDirection!
+}
+
+enum OpenSearchAccessOrderField {
+	ACCESS
+	WORKLOAD
+}
+
+type OpenSearchConnection {
+	pageInfo: PageInfo!
+	nodes: [OpenSearch!]!
+	edges: [OpenSearchEdge!]!
+}
+
+type OpenSearchCost {
+	sum: Float!
+}
+
+type OpenSearchEdge {
+	cursor: Cursor!
+	node: OpenSearch!
+}
+
+input OpenSearchOrder {
+	field: OpenSearchOrderField!
+	direction: OrderDirection!
+}
+
+enum OpenSearchOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+type OpenSearchStatus {
+	state: String!
+}
+
+"""Possible directions in which to order a list of items."""
+enum OrderDirection {
+"""Ascending sort order."""
+	ASC
+"""Descending sort order."""
+	DESC
+}
+
+type OutboundNetworkPolicy {
+	rules: [NetworkPolicyRule!]!
+	external: [ExternalNetworkPolicyTarget!]!
+}
+
+"""This type is used for paginating the connection
+
+Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/)."""
+type PageInfo {
+"""Whether or not there exists a next page in the connection."""
+	hasNextPage: Boolean!
+"""The cursor for the last item in the edges. This cursor is used when paginating forwards."""
+	endCursor: Cursor
+"""Whether or not there exists a previous page in the connection."""
+	hasPreviousPage: Boolean!
+"""The cursor for the first item in the edges. This cursor is used when paginating backwards."""
+	startCursor: Cursor
+"""The total amount of items in the connection."""
+	totalCount: Int!
+"""The offset of the first item in the connection."""
+	pageStart: Int!
+"""The offset of the last item in the connection."""
+	pageEnd: Int!
+}
+
+interface Persistence {
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+}
+
+type Price {
+	value: Float!
+}
+
+"""The query root for the Nais GraphQL API."""
+type Query {
+"""Fetch an object using its globally unique ID."""
+	node(
+"""The ID of the object to fetch."""
+		id: ID!
+	): Node
+	roles(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): RoleConnection!
+"""Get a list of environments."""
+	environments(
+"""Ordering options for environments."""
+		orderBy: EnvironmentOrder
+	): EnvironmentConnection!
+"""Get a single environment."""
+	environment(
+"""The name of the environment to get."""
+		name: String!
+	): Environment!
+"""Feature flags."""
+	features: Features!
+"""Get current prices for resources."""
+	currentUnitPrices: CurrentUnitPrices!
+"""Get a collection of reconcilers."""
+	reconcilers(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ReconcilerConnection!
+"""Search for entities."""
+	search(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Filter the search results."""
+		filter: SearchFilter!
+	): SearchNodeConnection!
+"""Get a list of service accounts."""
+	serviceAccounts(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ServiceAccountConnection!
+"""Returns a service account by its ID."""
+	serviceAccount(
+"""ID of the service account."""
+		id: ID!
+	): ServiceAccount!
+"""Get a list of teams."""
+	teams(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: TeamOrder
+	): TeamConnection!
+"""Get a team by its slug."""
+	team(
+		slug: Slug!
+	): Team!
+"""Get a list of users."""
+	users(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: UserOrder
+	): UserConnection!
+"""Get a user by an identifier."""
+	user(
+		email: String
+	): User!
+"""The currently authenticated user."""
+	me: AuthenticatedUser!
+"""Log entries from the user sync process."""
+	userSyncLog(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): UserSyncLogEntryConnection!
+	teamsUtilization(
+		resourceType: UtilizationResourceType!
+	): [TeamUtilizationData!]!
+}
+
+"""Reconciler type."""
+type Reconciler implements Node{
+"""Unique identifier for the reconciler."""
+	id: ID!
+"""The name of the reconciler."""
+	name: String!
+"""The human-friendly name of the reconciler."""
+	displayName: String!
+"""Description of what the reconciler is responsible for."""
+	description: String!
+"""Whether or not the reconciler is enabled."""
+	enabled: Boolean!
+"""Reconciler configuration keys and descriptions."""
+	config: [ReconcilerConfig!]!
+"""Whether or not the reconciler is fully configured and ready to be enabled."""
+	configured: Boolean!
+"""Potential errors that have occurred during the reconciler's operation."""
+	errors(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ReconcilerErrorConnection!
+"""Activity log associated with the reconciler."""
+	activityLog(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ActivityLogEntryConnection!
+}
+
+"""Reconciler configuration type."""
+type ReconcilerConfig {
+"""Configuration key."""
+	key: String!
+"""The human-friendly name of the configuration key."""
+	displayName: String!
+"""Configuration description."""
+	description: String!
+"""Whether or not the configuration key has a value."""
+	configured: Boolean!
+"""Whether or not the configuration value is considered a secret. Secret values will not be exposed through the API."""
+	secret: Boolean!
+"""Configuration value. This will be set to null if the value is considered a secret."""
+	value: String
+}
+
+"""Reconciler configuration input."""
+input ReconcilerConfigInput {
+"""Reconciler configuration input."""
+	key: String!
+"""Reconciler configuration input."""
+	value: String!
+}
+
+type ReconcilerConfiguredActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the update."""
+	data: ReconcilerConfiguredActivityLogEntryData!
+}
+
+type ReconcilerConfiguredActivityLogEntryData {
+"""Keys that were updated."""
+	updatedKeys: [String!]!
+}
+
+type ReconcilerConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Reconciler!]!
+"""List of edges."""
+	edges: [ReconcilerEdge!]!
+}
+
+type ReconcilerDisabledActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type ReconcilerEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The reconciler."""
+	node: Reconciler!
+}
+
+type ReconcilerEnabledActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type ReconcilerError implements Node{
+"""Unique identifier for the reconciler error."""
+	id: ID!
+"""The correlation ID for the reconciler error."""
+	correlationID: String!
+"""Creation timestamp of the reconciler error."""
+	createdAt: Time!
+"""The error message itself."""
+	message: String!
+"""The team that the error belongs to."""
+	team: Team!
+}
+
+type ReconcilerErrorConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [ReconcilerError!]!
+"""List of edges."""
+	edges: [ReconcilerErrorEdge!]!
+}
+
+type ReconcilerErrorEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The reconcilerError."""
+	node: ReconcilerError!
+}
+
+input RemoveRepositoryFromTeamInput {
+	teamSlug: Slug!
+	repositoryName: String!
+}
+
+type RemoveRepositoryFromTeamPayload {
+"""Whether or not the repository was removed from the team."""
+	success: Boolean
+}
+
+input RemoveSecretValueInput {
+	secretName: String!
+	environment: String!
+	team: Slug!
+	valueName: String!
+}
+
+type RemoveSecretValuePayload {
+"""The updated secret."""
+	secret: Secret
+}
+
+input RemoveTeamMemberInput {
+	teamSlug: Slug!
+	userEmail: String!
+}
+
+type RemoveTeamMemberPayload {
+"""The user that was removed from the team."""
+	user: User
+"""The team that the member was removed from."""
+	team: Team
+}
+
+type Repository implements Node{
+"""ID of the repository."""
+	id: ID!
+"""Name of the repository, with the organization prefix."""
+	name: String!
+"""Team this repository is connected to."""
+	team: Team!
+}
+
+type RepositoryAddedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type RepositoryConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Repository!]!
+"""List of edges."""
+	edges: [RepositoryEdge!]!
+}
+
+type RepositoryEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The GitHub repository."""
+	node: Repository!
+}
+
+"""Ordering options when fetching repositories."""
+input RepositoryOrder {
+"""Ordering options when fetching repositories."""
+	field: RepositoryOrderField!
+"""Ordering options when fetching repositories."""
+	direction: OrderDirection!
+}
+
+enum RepositoryOrderField {
+"""Order repositories by name."""
+	NAME
+}
+
+type RepositoryRemovedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+input RequestTeamDeletionInput {
+	slug: Slug!
+}
+
+type RequestTeamDeletionPayload {
+"""The delete key for the team. This can be used to confirm the deletion of the team."""
+	key: TeamDeleteKey
+}
+
+input RestartApplicationInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+}
+
+type RestartApplicationPayload {
+"""The application that was restarted."""
+	application: Application
+}
+
+input RevokeRoleFromServiceAccountInput {
+	serviceAccountID: ID!
+	roleName: String!
+}
+
+type RevokeRoleFromServiceAccountPayload {
+"""The service account that had a role revoked."""
+	serviceAccount: ServiceAccount
+}
+
+input RevokeTeamAccessToUnleashInput {
+	teamSlug: Slug!
+	revokedTeamSlug: Slug!
+}
+
+type RevokeTeamAccessToUnleashPayload {
+	unleash: UnleashInstance
+}
+
+type Role implements Node{
+"""The globally unique ID of the role."""
+	id: ID!
+"""Name of the role."""
+	name: String!
+"""Description of the role."""
+	description: String!
+}
+
+type RoleAssignedToServiceAccountActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: RoleAssignedToServiceAccountActivityLogEntryData!
+}
+
+type RoleAssignedToServiceAccountActivityLogEntryData {
+"""The added role."""
+	roleName: String!
+}
+
+"""Assigned role to user log entry."""
+type RoleAssignedUserSyncLogEntry implements UserSyncLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the log entry."""
+	message: String!
+"""The ID of the user that was assigned a role."""
+	userID: ID!
+"""The name of the user that was assigned a role."""
+	userName: String!
+"""The email address of the user that was assigned a role."""
+	userEmail: String!
+"""The name of the assigned role."""
+	roleName: String!
+}
+
+type RoleConnection {
+"""A list of roles."""
+	nodes: [Role!]!
+"""A list of role edges."""
+	edges: [RoleEdge!]!
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+}
+
+type RoleEdge {
+"""The role."""
+	node: Role!
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+}
+
+type RoleRevokedFromServiceAccountActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: RoleRevokedFromServiceAccountActivityLogEntryData!
+}
+
+type RoleRevokedFromServiceAccountActivityLogEntryData {
+"""The removed role."""
+	roleName: String!
+}
+
+"""Revoked role from user log entry."""
+type RoleRevokedUserSyncLogEntry implements UserSyncLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the log entry."""
+	message: String!
+"""The ID of the user that got a role revoked."""
+	userID: ID!
+"""The name of the user that got a role revoked."""
+	userName: String!
+"""The email address of the user that got a role revoked."""
+	userEmail: String!
+"""The name of the revoked role."""
+	roleName: String!
+}
+
+"""Types of scaling strategies."""
+union ScalingStrategy =CPUScalingStrategy | KafkaLagScalingStrategy
+
+"""Search filter for filtering search results."""
+input SearchFilter {
+"""Search filter for filtering search results."""
+	query: String!
+"""Search filter for filtering search results."""
+	type: SearchType
+}
+
+"""Types that can be searched for."""
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | ValkeyInstance
+
+"""Search node connection."""
+type SearchNodeConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [SearchNode!]!
+"""List of edges."""
+	edges: [SearchNodeEdge!]!
+}
+
+"""Search node edge."""
+type SearchNodeEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The SearchNode."""
+	node: SearchNode!
+}
+
+"""A list of possible search types."""
+enum SearchType {
+"""Search for teams."""
+	TEAM
+"""Search for applications."""
+	APPLICATION
+	BIGQUERY_DATASET
+	BUCKET
+	JOB
+	KAFKA_TOPIC
+	OPENSEARCH
+	SQL_INSTANCE
+	VALKEY_INSTANCE
+}
+
+"""A secret is a collection of secret values."""
+type Secret implements Node{
+"""The globally unique ID of the secret."""
+	id: ID!
+"""The name of the secret."""
+	name: String!
+"""The environment the secret exists in."""
+	environment: TeamEnvironment!
+"""The environment the secret exists in."""
+	teamEnvironment: TeamEnvironment!
+"""The team that owns the secret."""
+	team: Team!
+"""The secret values contained within the secret."""
+	values: [SecretValue!]!
+"""Applications that use the secret."""
+	applications(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ApplicationConnection!
+"""Jobs that use the secret."""
+	jobs(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): JobConnection!
+"""Workloads that use the secret."""
+	workloads(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): WorkloadConnection!
+"""Last time the secret was modified."""
+	lastModifiedAt: Time
+"""User who last modified the secret."""
+	lastModifiedBy: User
+}
+
+type SecretConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Secret!]!
+"""List of edges."""
+	edges: [SecretEdge!]!
+}
+
+type SecretCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type SecretDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type SecretEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The Secret."""
+	node: Secret!
+}
+
+"""Input for filtering the secrets of a team."""
+input SecretFilter {
+"""Input for filtering the secrets of a team."""
+	inUse: Boolean
+}
+
+input SecretOrder {
+	field: SecretOrderField!
+	direction: OrderDirection!
+}
+
+enum SecretOrderField {
+"""Order secrets by name."""
+	NAME
+"""Order secrets by the name of the environment."""
+	ENVIRONMENT
+"""Order secrets by the last time it was modified."""
+	LAST_MODIFIED_AT
+}
+
+type SecretValue {
+"""The name of the secret value."""
+	name: String!
+"""The secret value itself."""
+	value: String!
+}
+
+type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: SecretValueAddedActivityLogEntryData!
+}
+
+type SecretValueAddedActivityLogEntryData {
+"""The name of the added value."""
+	valueName: String!
+}
+
+input SecretValueInput {
+	name: String!
+	value: String!
+}
+
+type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: SecretValueRemovedActivityLogEntryData!
+}
+
+type SecretValueRemovedActivityLogEntryData {
+"""The name of the removed value."""
+	valueName: String!
+}
+
+type SecretValueUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: SecretValueUpdatedActivityLogEntryData!
+}
+
+type SecretValueUpdatedActivityLogEntryData {
+"""The name of the updated value."""
+	valueName: String!
+}
+
+"""The service account type represents machine-users of the Nais API.
+
+These types of users can be used to automate certain parts of the API, for instance team creation and managing team members.
+
+Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation."""
+type ServiceAccount implements Node{
+"""The globally unique ID of the service account."""
+	id: ID!
+"""The name of the service account."""
+	name: String!
+"""The description of the service account."""
+	description: String!
+"""Creation time of the service account."""
+	createdAt: Time!
+"""When the service account was last updated."""
+	updatedAt: Time!
+"""When the service account was last used for authentication."""
+	lastUsedAt: Time
+"""The team that the service account belongs to."""
+	team: Team
+"""The roles that are assigned to the service account."""
+	roles(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): RoleConnection!
+"""The service account tokens."""
+	tokens(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ServiceAccountTokenConnection!
+}
+
+type ServiceAccountConnection {
+"""A list of service accounts."""
+	nodes: [ServiceAccount!]!
+"""A list of edges."""
+	edges: [ServiceAccountEdge!]!
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+}
+
+type ServiceAccountCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type ServiceAccountDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type ServiceAccountEdge {
+"""The service account."""
+	node: ServiceAccount!
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+}
+
+type ServiceAccountToken implements Node{
+"""The globally unique ID of the service account token."""
+	id: ID!
+"""The name of the service account token."""
+	name: String!
+"""The description of the service account token."""
+	description: String!
+"""When the service account token was created."""
+	createdAt: Time!
+"""When the service account token was last updated."""
+	updatedAt: Time!
+"""When the service account token was last used for authentication."""
+	lastUsedAt: Time
+"""Expiry date of the token. If this value is empty the token never expires."""
+	expiresAt: Date
+}
+
+type ServiceAccountTokenConnection {
+"""A list of service accounts tokens."""
+	nodes: [ServiceAccountToken!]!
+"""A list of edges."""
+	edges: [ServiceAccountTokenEdge!]!
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+}
+
+type ServiceAccountTokenCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: ServiceAccountTokenCreatedActivityLogEntryData!
+}
+
+type ServiceAccountTokenCreatedActivityLogEntryData {
+"""The name of the service account token."""
+	tokenName: String!
+}
+
+type ServiceAccountTokenDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: ServiceAccountTokenDeletedActivityLogEntryData!
+}
+
+type ServiceAccountTokenDeletedActivityLogEntryData {
+"""The name of the service account token."""
+	tokenName: String!
+}
+
+type ServiceAccountTokenEdge {
+"""The service account token."""
+	node: ServiceAccountToken!
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: ServiceAccountTokenUpdatedActivityLogEntryData!
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntryData {
+"""Fields that were updated."""
+	updatedFields: [ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField {
+"""The name of the field."""
+	field: String!
+"""The old value of the field."""
+	oldValue: String
+"""The new value of the field."""
+	newValue: String
+}
+
+type ServiceAccountUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the entry."""
+	data: ServiceAccountUpdatedActivityLogEntryData!
+}
+
+type ServiceAccountUpdatedActivityLogEntryData {
+"""Fields that were updated."""
+	updatedFields: [ServiceAccountUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type ServiceAccountUpdatedActivityLogEntryDataUpdatedField {
+"""The name of the field."""
+	field: String!
+"""The old value of the field."""
+	oldValue: String
+"""The new value of the field."""
+	newValue: String
+}
+
+type ServiceCostSample {
+"""The name of the service."""
+	service: String!
+"""The cost in euros."""
+	cost: Float!
+}
+
+type ServiceCostSeries {
+"""The date for the cost. When calculating the cost for a monthly period, the date will be the last day of the month that has cost data."""
+	date: Date!
+"""The sum of the cost across all services."""
+	sum: Float!
+"""The cost for the services used by the workload."""
+	services: [ServiceCostSample!]!
+}
+
+input SetTeamMemberRoleInput {
+	teamSlug: Slug!
+	userEmail: String!
+	role: TeamMemberRole!
+}
+
+type SetTeamMemberRolePayload {
+"""The updated team member."""
+	member: TeamMember
+}
+
+"""The slug must:
+
+- contain only lowercase alphanumeric characters or hyphens
+- contain at least 3 characters and at most 30 characters
+- start with an alphabetic character
+- end with an alphanumeric character
+- not contain two hyphens in a row
+
+Examples of valid slugs:
+
+- `some-value`
+- `someothervalue`
+- `my-team-123`"""
+scalar Slug
+
+type SqlDatabase implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	charset: String
+	collation: String
+	deletionPolicy: String
+	healthy: Boolean!
+}
+
+type SqlInstance implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	workload: Workload
+	cascadingDelete: Boolean!
+	connectionName: String
+	diskAutoresize: Boolean
+	diskAutoresizeLimit: Int
+	highAvailability: Boolean!
+	healthy: Boolean!
+	maintenanceVersion: String
+	maintenanceWindow: SqlInstanceMaintenanceWindow
+	backupConfiguration: SqlInstanceBackupConfiguration
+	projectID: String!
+	tier: String!
+	version: String
+	status: SqlInstanceStatus!
+	database: SqlDatabase
+	flags(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+	): SqlInstanceFlagConnection!
+	users(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		orderBy: SqlInstanceUserOrder
+	): SqlInstanceUserConnection!
+	metrics: SqlInstanceMetrics!
+	state: SqlInstanceState!
+	cost: SqlInstanceCost!
+}
+
+type SqlInstanceBackupConfiguration {
+	enabled: Boolean
+	startTime: String
+	retainedBackups: Int
+	pointInTimeRecovery: Boolean
+	transactionLogRetentionDays: Int
+}
+
+type SqlInstanceConnection {
+	pageInfo: PageInfo!
+	nodes: [SqlInstance!]!
+	edges: [SqlInstanceEdge!]!
+}
+
+type SqlInstanceCost {
+	sum: Float!
+}
+
+type SqlInstanceCpu {
+	cores: Float!
+	utilization: Float!
+}
+
+type SqlInstanceDisk {
+	quotaBytes: Int!
+	utilization: Float!
+}
+
+type SqlInstanceEdge {
+	cursor: Cursor!
+	node: SqlInstance!
+}
+
+type SqlInstanceFlag {
+	name: String!
+	value: String!
+}
+
+type SqlInstanceFlagConnection {
+	pageInfo: PageInfo!
+	nodes: [SqlInstanceFlag!]!
+	edges: [SqlInstanceFlagEdge!]!
+}
+
+type SqlInstanceFlagEdge {
+	cursor: Cursor!
+	node: SqlInstanceFlag!
+}
+
+type SqlInstanceMaintenanceWindow {
+	day: Int!
+	hour: Int!
+}
+
+type SqlInstanceMemory {
+	quotaBytes: Int!
+	utilization: Float!
+}
+
+type SqlInstanceMetrics {
+	cpu: SqlInstanceCpu!
+	memory: SqlInstanceMemory!
+	disk: SqlInstanceDisk!
+}
+
+input SqlInstanceOrder {
+	field: SqlInstanceOrderField!
+	direction: OrderDirection!
+}
+
+enum SqlInstanceOrderField {
+	NAME
+	VERSION
+	ENVIRONMENT
+	STATUS
+	COST
+	CPU_UTILIZATION
+	MEMORY_UTILIZATION
+	DISK_UTILIZATION
+}
+
+enum SqlInstanceState {
+	UNSPECIFIED
+	RUNNABLE
+	SUSPENDED
+	PENDING_DELETE
+	PENDING_CREATE
+	MAINTENANCE
+	FAILED
+}
+
+type SqlInstanceStatus {
+	publicIpAddress: String
+	privateIpAddress: String
+}
+
+type SqlInstanceUser {
+	name: String!
+	authentication: String!
+}
+
+type SqlInstanceUserConnection {
+	pageInfo: PageInfo!
+	nodes: [SqlInstanceUser!]!
+	edges: [SqlInstanceUserEdge!]!
+}
+
+type SqlInstanceUserEdge {
+	cursor: Cursor!
+	node: SqlInstanceUser!
+}
+
+input SqlInstanceUserOrder {
+	field: SqlInstanceUserOrderField!
+	direction: OrderDirection!
+}
+
+enum SqlInstanceUserOrderField {
+	NAME
+	AUTHENTICATION
+}
+
+"""The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."""
+scalar String
+
+type Subscription {
+"""Subscribe to workload logs
+
+This subscription is used to stream logs from a specific workload. When filtering logs you must either specify an
+application or a job owned by a team that is running in a specific environment. You can also filter logs on instance
+name(s)."""
+	workloadLog(
+		filter: WorkloadLogSubscriptionFilter!
+	): WorkloadLogLine!
+}
+
+"""The team type represents a team on the [Nais platform](https://nais.io/).
+
+Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+
+External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers)."""
+type Team implements Node{
+"""The globally unique ID of the team."""
+	id: ID!
+"""Unique slug of the team."""
+	slug: Slug!
+"""Main Slack channel for the team."""
+	slackChannel: String!
+"""Purpose of the team."""
+	purpose: String!
+"""External resources for the team."""
+	externalResources: TeamExternalResources!
+"""Get a specific member of the team."""
+	member(
+		email: String!
+	): TeamMember!
+"""Team members."""
+	members(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: TeamMemberOrder
+	): TeamMemberConnection!
+"""Timestamp of the last successful synchronization of the team."""
+	lastSuccessfulSync: Time
+"""Whether or not the team is currently being deleted."""
+	deletionInProgress: Boolean!
+"""Whether or not the viewer is an owner of the team."""
+	viewerIsOwner: Boolean!
+"""Whether or not the viewer is a member of the team."""
+	viewerIsMember: Boolean!
+"""Environments for the team."""
+	environments: [TeamEnvironment!]!
+"""Get a specific environment for the team."""
+	environment(
+		name: String!
+	): TeamEnvironment!
+"""Get a delete key for the team."""
+	deleteKey(
+		key: String!
+	): TeamDeleteKey!
+"""Overall inventory of resources for the team."""
+	inventoryCounts: TeamInventoryCounts!
+"""Activity log associated with the team."""
+	activityLog(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): ActivityLogEntryConnection!
+"""Nais applications owned by the team."""
+	applications(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: ApplicationOrder
+"""Filtering options for items returned from the connection."""
+		filter: TeamApplicationsFilter
+	): ApplicationConnection!
+"""BigQuery datasets owned by the team."""
+	bigQueryDatasets(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: BigQueryDatasetOrder
+	): BigQueryDatasetConnection!
+"""Google Cloud Storage buckets owned by the team."""
+	buckets(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: BucketOrder
+	): BucketConnection!
+"""The cost for the team."""
+	cost: TeamCost!
+"""Deployment key for the team."""
+	deploymentKey: DeploymentKey
+"""List deployments for a team."""
+	deployments(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): DeploymentConnection!
+"""Nais jobs owned by the team."""
+	jobs(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: JobOrder
+"""Filtering options for items returned from the connection."""
+		filter: TeamJobsFilter
+	): JobConnection!
+"""Kafka topics owned by the team."""
+	kafkaTopics(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: KafkaTopicOrder
+	): KafkaTopicConnection!
+"""OpenSearch instances owned by the team."""
+	openSearchInstances(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: OpenSearchOrder
+	): OpenSearchConnection!
+	repositories(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: RepositoryOrder
+		filter: TeamRepositoryFilter
+	): RepositoryConnection!
+"""Secrets owned by the team."""
+	secrets(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: SecretOrder
+"""Filtering options for items returned from the connection."""
+		filter: SecretFilter
+	): SecretConnection!
+"""SQL instances owned by the team."""
+	sqlInstances(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: SqlInstanceOrder
+	): SqlInstanceConnection!
+	unleash: UnleashInstance
+	workloadUtilization(
+		resourceType: UtilizationResourceType!
+	): [WorkloadUtilizationData]!
+	serviceUtilization: TeamServiceUtilization!
+"""Valkey instances owned by the team."""
+	valkeyInstances(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: ValkeyInstanceOrder
+	): ValkeyInstanceConnection!
+	vulnerabilitySummary(
+		filter: TeamVulnerabilitySummaryFilter
+	): TeamVulnerabilitySummary!
+"""Fetch vulnerability summaries for workloads in the team."""
+	vulnerabilitySummaries(
+"""Filter the workloads by named environments."""
+		filter: TeamVulnerabilitySummaryFilter
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: VulnerabilitySummaryOrder
+	): WorkloadVulnerabilitySummaryConnection!
+"""Nais workloads owned by the team."""
+	workloads(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: WorkloadOrder
+"""Filter the returned objects"""
+		filter: TeamWorkloadsFilter
+	): WorkloadConnection!
+}
+
+"""Input for filtering the applications of a team."""
+input TeamApplicationsFilter {
+"""Input for filtering the applications of a team."""
+	name: String
+"""Input for filtering the applications of a team."""
+	environments: [String!]
+}
+
+type TeamCDN {
+"""The CDN bucket for the team."""
+	bucket: String!
+}
+
+type TeamConfirmDeleteKeyActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type TeamConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Team!]!
+"""List of edges."""
+	edges: [TeamEdge!]!
+}
+
+type TeamCost {
+	daily(
+"""Start date of the period, inclusive."""
+		from: Date!
+"""End date of the period, inclusive."""
+		to: Date!
+"""Filter the results."""
+		filter: TeamCostDailyFilter
+	): TeamCostPeriod!
+	monthlySummary: TeamCostMonthlySummary!
+}
+
+input TeamCostDailyFilter {
+	services: [String!]
+}
+
+type TeamCostMonthlySample {
+"""The last date with cost data in the month."""
+	date: Date!
+"""The total cost for the month."""
+	cost: Float!
+}
+
+type TeamCostMonthlySummary {
+"""The total cost for the last 12 months."""
+	sum: Float!
+"""The cost series."""
+	series: [TeamCostMonthlySample!]!
+}
+
+type TeamCostPeriod {
+"""The total cost for the period."""
+	sum: Float!
+"""The cost series."""
+	series: [ServiceCostSeries!]!
+}
+
+type TeamCreateDeleteKeyActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type TeamCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type TeamDeleteKey {
+"""The unique key used to confirm the deletion of a team."""
+	key: String!
+"""The creation timestamp of the key."""
+	createdAt: Time!
+"""Expiration timestamp of the key."""
+	expires: Time!
+"""The user who created the key."""
+	createdBy: User!
+"""The team the delete key is for."""
+	team: Team!
+}
+
+type TeamDeployKeyUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type TeamEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The team."""
+	node: Team!
+}
+
+type TeamEntraIDGroup {
+"""The ID of the Entra ID (f.k.a. Azure AD) group for the team."""
+	groupID: String!
+}
+
+type TeamEnvironment implements Node{
+"""The globally unique ID of the team environment."""
+	id: ID!
+"""Name of the team environment."""
+	name: String!
+"""The GCP project ID for the team environment."""
+	gcpProjectID: String
+"""The Slack alerts channel for the team environment."""
+	slackAlertsChannel: String!
+"""The connected team."""
+	team: Team!
+"""Nais application in the team environment."""
+	application(
+"""The name of the application."""
+		name: String!
+	): Application!
+"""BigQuery datasets in the team environment."""
+	bigQueryDataset(
+		name: String!
+	): BigQueryDataset!
+"""Storage bucket in the team environment."""
+	bucket(
+		name: String!
+	): Bucket!
+"""The cost for the team environment."""
+	cost: TeamEnvironmentCost!
+"""Get the environment."""
+	environment: Environment!
+"""Nais job in the team environment."""
+	job(
+		name: String!
+	): Job!
+"""Kafka topic in the team environment."""
+	kafkaTopic(
+		name: String!
+	): KafkaTopic!
+"""OpenSearch instance in the team environment."""
+	openSearchInstance(
+		name: String!
+	): OpenSearch!
+"""Get a secret by name."""
+	secret(
+		name: String!
+	): Secret!
+"""SQL instance in the team environment."""
+	sqlInstance(
+		name: String!
+	): SqlInstance!
+"""Valkey instance in the team environment."""
+	valkeyInstance(
+		name: String!
+	): ValkeyInstance!
+"""Workload in the team environment."""
+	workload(
+"""The name of the workload to get."""
+		name: String!
+	): Workload!
+}
+
+type TeamEnvironmentCost {
+	daily(
+"""Start date of the period, inclusive."""
+		from: Date!
+"""End date of the period, inclusive."""
+		to: Date!
+	): TeamEnvironmentCostPeriod!
+}
+
+type TeamEnvironmentCostPeriod {
+"""The total cost for the period."""
+	sum: Float!
+"""The cost series."""
+	series: [WorkloadCostSeries!]!
+}
+
+type TeamEnvironmentUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the action."""
+	data: TeamEnvironmentUpdatedActivityLogEntryData!
+}
+
+type TeamEnvironmentUpdatedActivityLogEntryData {
+"""Fields that were updated."""
+	updatedFields: [TeamEnvironmentUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type TeamEnvironmentUpdatedActivityLogEntryDataUpdatedField {
+"""The name of the field."""
+	field: String!
+"""The old value of the field."""
+	oldValue: String
+"""The new value of the field."""
+	newValue: String
+}
+
+type TeamExternalResources {
+"""The Entra ID (f.k.a. Azure AD) group for the team."""
+	entraIDGroup: TeamEntraIDGroup
+"""The teams GitHub team."""
+	gitHubTeam: TeamGitHubTeam
+"""The Google group for the team."""
+	googleGroup: TeamGoogleGroup
+"""Google Artifact Registry."""
+	googleArtifactRegistry: TeamGoogleArtifactRegistry
+"""CDN bucket."""
+	cdn: TeamCDN
+}
+
+type TeamGitHubTeam {
+"""The slug of the GitHub team."""
+	slug: String!
+}
+
+type TeamGoogleArtifactRegistry {
+"""The Google Artifact Registry for the team."""
+	repository: String!
+}
+
+type TeamGoogleGroup {
+"""The email address of the Google Workspace group for the team."""
+	email: String!
+}
+
+"""Application inventory count for a team."""
+type TeamInventoryCountApplications {
+"""Total number of applications."""
+	total: Int!
+"""Number of applications considered "not nais". When an application is considered "not nais", it means that the
+application might not be working as expected, or that it is not following the Nais guidelines."""
+	notNais: Int!
+}
+
+type TeamInventoryCountBigQueryDatasets {
+"""Total number of BigQuery datasets."""
+	total: Int!
+}
+
+type TeamInventoryCountBuckets {
+"""Total number of Google Cloud Storage buckets."""
+	total: Int!
+}
+
+type TeamInventoryCountJobs {
+"""Total number of jobs."""
+	total: Int!
+"""Number of jobs considered not nais."""
+	notNais: Int!
+}
+
+type TeamInventoryCountKafkaTopics {
+"""Total number of Kafka topics."""
+	total: Int!
+}
+
+type TeamInventoryCountOpenSearchInstances {
+"""Total number of OpenSearch instances."""
+	total: Int!
+}
+
+type TeamInventoryCountSqlInstances {
+"""Total number of SQL instances."""
+	total: Int!
+}
+
+type TeamInventoryCountValkeyInstances {
+"""Total number of Valkey instances."""
+	total: Int!
+}
+
+type TeamInventoryCounts {
+"""Application inventory count for a team."""
+	applications: TeamInventoryCountApplications!
+	bigQueryDatasets: TeamInventoryCountBigQueryDatasets!
+	buckets: TeamInventoryCountBuckets!
+	jobs: TeamInventoryCountJobs!
+	kafkaTopics: TeamInventoryCountKafkaTopics!
+	openSearchInstances: TeamInventoryCountOpenSearchInstances!
+	sqlInstances: TeamInventoryCountSqlInstances!
+	valkeyInstances: TeamInventoryCountValkeyInstances!
+}
+
+input TeamJobsFilter {
+	name: String!
+	environments: [String!]
+}
+
+type TeamMember {
+"""Team instance."""
+	team: Team!
+"""User instance."""
+	user: User!
+"""The role that the user has in the team."""
+	role: TeamMemberRole!
+}
+
+type TeamMemberAddedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the action."""
+	data: TeamMemberAddedActivityLogEntryData!
+}
+
+type TeamMemberAddedActivityLogEntryData {
+"""The role that the user was added with."""
+	role: TeamMemberRole!
+"""The ID of the user that was added."""
+	userID: ID!
+"""The email address of the user that was added."""
+	userEmail: String!
+}
+
+type TeamMemberConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [TeamMember!]!
+"""List of edges."""
+	edges: [TeamMemberEdge!]!
+}
+
+type TeamMemberEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The team member."""
+	node: TeamMember!
+}
+
+"""Ordering options for team members."""
+input TeamMemberOrder {
+"""Ordering options for team members."""
+	field: TeamMemberOrderField!
+"""Ordering options for team members."""
+	direction: OrderDirection!
+}
+
+"""Possible fields to order team members by."""
+enum TeamMemberOrderField {
+"""The name of user."""
+	NAME
+"""The email address of the user."""
+	EMAIL
+"""The role the user has in the team."""
+	ROLE
+}
+
+type TeamMemberRemovedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the action."""
+	data: TeamMemberRemovedActivityLogEntryData!
+}
+
+type TeamMemberRemovedActivityLogEntryData {
+"""The ID of the user that was removed."""
+	userID: ID!
+"""The email address of the user that was removed."""
+	userEmail: String!
+}
+
+"""Team member roles."""
+enum TeamMemberRole {
+"""Regular member, read only access."""
+	MEMBER
+"""Team owner, full access to the team."""
+	OWNER
+}
+
+type TeamMemberSetRoleActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the action."""
+	data: TeamMemberSetRoleActivityLogEntryData!
+}
+
+type TeamMemberSetRoleActivityLogEntryData {
+"""The role that the user was assigned."""
+	role: TeamMemberRole!
+"""The ID of the user that was added."""
+	userID: ID!
+"""The email address of the user that was added."""
+	userEmail: String!
+}
+
+"""Ordering options when fetching teams."""
+input TeamOrder {
+"""Ordering options when fetching teams."""
+	field: TeamOrderField!
+"""Ordering options when fetching teams."""
+	direction: OrderDirection!
+}
+
+"""Possible fields to order teams by."""
+enum TeamOrderField {
+"""The unique slug of the team."""
+	TEAM_SLUG
+}
+
+input TeamRepositoryFilter {
+	name: String
+}
+
+type TeamServiceUtilization {
+	sqlInstances: TeamServiceUtilizationSqlInstances!
+}
+
+type TeamServiceUtilizationSqlInstances {
+	cpu: TeamServiceUtilizationSqlInstancesCPU!
+	memory: TeamServiceUtilizationSqlInstancesMemory!
+	disk: TeamServiceUtilizationSqlInstancesDisk!
+}
+
+type TeamServiceUtilizationSqlInstancesCPU {
+	used: Float!
+	requested: Float!
+	utilization: Float!
+}
+
+type TeamServiceUtilizationSqlInstancesDisk {
+	used: Int!
+	requested: Int!
+	utilization: Float!
+}
+
+type TeamServiceUtilizationSqlInstancesMemory {
+	used: Int!
+	requested: Int!
+	utilization: Float!
+}
+
+type TeamUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the update."""
+	data: TeamUpdatedActivityLogEntryData!
+}
+
+type TeamUpdatedActivityLogEntryData {
+"""Fields that were updated."""
+	updatedFields: [TeamUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type TeamUpdatedActivityLogEntryDataUpdatedField {
+"""The name of the field."""
+	field: String!
+"""The old value of the field."""
+	oldValue: String
+"""The new value of the field."""
+	newValue: String
+}
+
+type TeamUtilizationData {
+"""The team."""
+	team: Team!
+"""The requested amount of resources"""
+	requested: Float!
+"""The current resource usage."""
+	used: Float!
+"""The environment for the utilization data."""
+	environment: TeamEnvironment!
+"""The environment for the utilization data."""
+	teamEnvironment: TeamEnvironment!
+}
+
+enum TeamVulnerabilityRanking {
+"""Top third most vulnerable teams."""
+	MOST_VULNERABLE
+"""Middle third most vulnerable teams."""
+	MIDDLE
+"""Bottom third most vulnerable teams."""
+	LEAST_VULNERABLE
+"""Unknown ranking."""
+	UNKNOWN
+}
+
+enum TeamVulnerabilityRiskScoreTrend {
+"""Risk score is increasing."""
+	UP
+"""Risk score is decreasing."""
+	DOWN
+"""Risk score is not changing."""
+	FLAT
+}
+
+enum TeamVulnerabilityState {
+	OK
+	TOO_MANY_VULNERABLE_WORKLOADS
+	COVERAGE_TOO_LOW
+	VULNERABLE
+	MISSING_SBOM
+}
+
+type TeamVulnerabilityStatus {
+	state: TeamVulnerabilityState!
+	title: String!
+	description: String!
+}
+
+type TeamVulnerabilitySummary {
+"""Risk score of the team."""
+	riskScore: Int!
+"""Number of vulnerabilities with severity CRITICAL."""
+	critical: Int!
+"""Number of vulnerabilities with severity HIGH."""
+	high: Int!
+"""Number of vulnerabilities with severity MEDIUM."""
+	medium: Int!
+"""Number of vulnerabilities with severity LOW."""
+	low: Int!
+"""Number of vulnerabilities with severity UNASSIGNED."""
+	unassigned: Int!
+"""Number of workloads with a software bill of materials (SBOM) attached."""
+	bomCount: Int!
+"""Coverage of the team."""
+	coverage: Float!
+"""Ranking of the team based on vulnerability severity."""
+	ranking: TeamVulnerabilityRanking!
+"""Trend of vulnerability status for the team."""
+	riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
+"""Aggregated status of the vulnerabilities for the team."""
+	status: [TeamVulnerabilityStatus!]!
+}
+
+"""Input for filtering team workloads."""
+input TeamVulnerabilitySummaryFilter {
+"""Input for filtering team workloads."""
+	environments: [String!]
+}
+
+"""Input for filtering team workloads."""
+input TeamWorkloadsFilter {
+"""Input for filtering team workloads."""
+	environments: [String!]
+}
+
+"""Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present."""
+scalar Time
+
+"""TokenX authentication.
+
+Read more: https://docs.nais.io/auth/tokenx/"""
+type TokenXAuthIntegration implements AuthIntegration{
+"""The name of the integration."""
+	name: String!
+}
+
+input TriggerJobInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+	runName: String!
+}
+
+type TriggerJobPayload {
+"""The job that was triggered."""
+	job: Job
+"""The new job run."""
+	jobRun: JobRun
+}
+
+type UnleashInstance implements Node{
+	id: ID!
+	name: String!
+	version: String!
+	allowedTeams(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+	): TeamConnection!
+	webIngress: String!
+	apiIngress: String!
+	metrics: UnleashInstanceMetrics!
+	ready: Boolean!
+}
+
+type UnleashInstanceCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+type UnleashInstanceMetrics {
+	toggles: Int!
+	apiTokens: Int!
+	cpuUtilization: Float!
+	cpuRequests: Float!
+	memoryUtilization: Float!
+	memoryRequests: Float!
+}
+
+type UnleashInstanceUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+"""Data associated with the update."""
+	data: UnleashInstanceUpdatedActivityLogEntryData!
+}
+
+type UnleashInstanceUpdatedActivityLogEntryData {
+"""Revoked team slug."""
+	revokedTeamSlug: Slug
+"""Allowed team slug."""
+	allowedTeamSlug: Slug
+}
+
+input UpdateImageVulnerabilityInput {
+	vulnerabilityID: ID!
+	analysisState: ImageVulnerabilityAnalysisState!
+	comment: String!
+	suppress: Boolean!
+}
+
+type UpdateImageVulnerabilityPayload {
+"""The vulnerability updated."""
+	vulnerability: ImageVulnerability
+}
+
+input UpdateSecretValueInput {
+	name: String!
+	environment: String!
+	team: Slug!
+	value: SecretValueInput!
+}
+
+type UpdateSecretValuePayload {
+"""The updated secret."""
+	secret: Secret
+}
+
+input UpdateServiceAccountInput {
+	serviceAccountID: ID!
+	description: String
+}
+
+type UpdateServiceAccountPayload {
+"""The updated service account."""
+	serviceAccount: ServiceAccount
+}
+
+input UpdateServiceAccountTokenInput {
+	serviceAccountTokenID: ID!
+	name: String
+	description: String
+}
+
+type UpdateServiceAccountTokenPayload {
+"""The service account that the token belongs to."""
+	serviceAccount: ServiceAccount
+"""The updated service account token."""
+	serviceAccountToken: ServiceAccountToken
+}
+
+input UpdateTeamEnvironmentInput {
+	slug: Slug!
+	environmentName: String!
+	slackAlertsChannel: String
+}
+
+type UpdateTeamEnvironmentPayload {
+"""The updated team environment."""
+	environment: TeamEnvironment
+"""The updated team environment."""
+	teamEnvironment: TeamEnvironment
+}
+
+input UpdateTeamInput {
+	slug: Slug!
+	purpose: String
+	slackChannel: String
+}
+
+type UpdateTeamPayload {
+"""The updated team."""
+	team: Team
+}
+
+"""The user type represents a user of the Nais platform and the Nais GraphQL API."""
+type User implements Node{
+"""The globally unique ID of the user."""
+	id: ID!
+"""The email address of the user."""
+	email: String!
+"""The full name of the user."""
+	name: String!
+"""The external ID of the user. This value is managed by the Nais API user synchronization."""
+	externalID: String!
+"""List of teams the user is connected to."""
+	teams(
+"""Get the first n items in the connection. This can be used in combination with the after parameter."""
+		first: Int
+"""Get items after this cursor."""
+		after: Cursor
+"""Get the last n items in the connection. This can be used in combination with the before parameter."""
+		last: Int
+"""Get items before this cursor."""
+		before: Cursor
+"""Ordering options for items returned from the connection."""
+		orderBy: UserTeamOrder
+	): TeamMemberConnection!
+"""True if the user is global admin."""
+	isAdmin: Boolean!
+}
+
+"""User connection."""
+type UserConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [User!]!
+"""List of edges."""
+	edges: [UserEdge!]!
+}
+
+"""User created log entry."""
+type UserCreatedUserSyncLogEntry implements UserSyncLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the log entry."""
+	message: String!
+"""The ID of the created user."""
+	userID: ID!
+"""The name of the created user."""
+	userName: String!
+"""The email address of the created user."""
+	userEmail: String!
+}
+
+"""User deleted log entry."""
+type UserDeletedUserSyncLogEntry implements UserSyncLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the log entry."""
+	message: String!
+"""The ID of the deleted user."""
+	userID: ID!
+"""The name of the deleted user."""
+	userName: String!
+"""The email address of the deleted user."""
+	userEmail: String!
+}
+
+"""User edge."""
+type UserEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The user."""
+	node: User!
+}
+
+"""Ordering options when fetching users."""
+input UserOrder {
+"""Ordering options when fetching users."""
+	field: UserOrderField!
+"""Ordering options when fetching users."""
+	direction: OrderDirection!
+}
+
+"""Possible fields to order users by."""
+enum UserOrderField {
+"""The name of the user."""
+	NAME
+"""The email address of the user."""
+	EMAIL
+}
+
+"""Interface for user sync log entries."""
+interface UserSyncLogEntry {
+"""Interface for user sync log entries."""
+	id: ID!
+"""Interface for user sync log entries."""
+	createdAt: Time!
+"""Interface for user sync log entries."""
+	message: String!
+"""Interface for user sync log entries."""
+	userID: ID!
+"""Interface for user sync log entries."""
+	userName: String!
+"""Interface for user sync log entries."""
+	userEmail: String!
+}
+
+"""User sync log entry connection."""
+type UserSyncLogEntryConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [UserSyncLogEntry!]!
+"""List of edges."""
+	edges: [UserSyncLogEntryEdge!]!
+}
+
+"""User sync log edge."""
+type UserSyncLogEntryEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The log entry."""
+	node: UserSyncLogEntry!
+}
+
+"""Ordering options when fetching the teams a user is connected to."""
+input UserTeamOrder {
+"""Ordering options when fetching the teams a user is connected to."""
+	field: UserTeamOrderField!
+"""Ordering options when fetching the teams a user is connected to."""
+	direction: OrderDirection!
+}
+
+"""Possible fields to order user teams by."""
+enum UserTeamOrderField {
+"""The unique slug of the team."""
+	TEAM_SLUG
+}
+
+"""User updated log entry."""
+type UserUpdatedUserSyncLogEntry implements UserSyncLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the log entry."""
+	message: String!
+"""The ID of the updated user."""
+	userID: ID!
+"""The name of the updated user."""
+	userName: String!
+"""The email address of the updated user."""
+	userEmail: String!
+"""The old name of the user."""
+	oldUserName: String!
+"""The old email address of the user."""
+	oldUserEmail: String!
+}
+
+"""Resource type."""
+enum UtilizationResourceType {
+	CPU
+	MEMORY
+}
+
+"""Resource utilization type."""
+type UtilizationSample {
+"""Timestamp of the value."""
+	timestamp: Time!
+"""Value of the used resource at the given timestamp."""
+	value: Float!
+"""The instance for the utilization data."""
+	instance: String!
+}
+
+type ValkeyInstance implements Persistence & Node{
+	id: ID!
+	name: String!
+	terminationProtection: Boolean!
+	team: Team!
+	environment: TeamEnvironment!
+	teamEnvironment: TeamEnvironment!
+	access(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		orderBy: ValkeyInstanceAccessOrder
+	): ValkeyInstanceAccessConnection!
+	workload: Workload
+	status: ValkeyInstanceStatus!
+	cost: ValkeyInstanceCost!
+}
+
+type ValkeyInstanceAccess {
+	workload: Workload!
+	access: String!
+}
+
+type ValkeyInstanceAccessConnection {
+	pageInfo: PageInfo!
+	nodes: [ValkeyInstanceAccess!]!
+	edges: [ValkeyInstanceAccessEdge!]!
+}
+
+type ValkeyInstanceAccessEdge {
+	cursor: Cursor!
+	node: ValkeyInstanceAccess!
+}
+
+input ValkeyInstanceAccessOrder {
+	field: ValkeyInstanceAccessOrderField!
+	direction: OrderDirection!
+}
+
+enum ValkeyInstanceAccessOrderField {
+	ACCESS
+	WORKLOAD
+}
+
+type ValkeyInstanceConnection {
+	pageInfo: PageInfo!
+	nodes: [ValkeyInstance!]!
+	edges: [ValkeyInstanceEdge!]!
+}
+
+type ValkeyInstanceCost {
+	sum: Float!
+}
+
+type ValkeyInstanceEdge {
+	cursor: Cursor!
+	node: ValkeyInstance!
+}
+
+input ValkeyInstanceOrder {
+	field: ValkeyInstanceOrderField!
+	direction: OrderDirection!
+}
+
+enum ValkeyInstanceOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+type ValkeyInstanceStatus {
+	state: String!
+}
+
+"""Ordering options when fetching vulnerability summaries for workloads."""
+input VulnerabilitySummaryOrder {
+"""Ordering options when fetching vulnerability summaries for workloads."""
+	field: VulnerabilitySummaryOrderByField!
+"""Ordering options when fetching vulnerability summaries for workloads."""
+	direction: OrderDirection!
+}
+
+enum VulnerabilitySummaryOrderByField {
+"""Order by name."""
+	NAME
+"""Order by the name of the environment the workload is deployed in."""
+	ENVIRONMENT
+"""Order by risk score"""
+	VULNERABILITY_RISK_SCORE
+"""Order by vulnerability severity critical"""
+	VULNERABILITY_SEVERITY_CRITICAL
+"""Order by vulnerability severity high"""
+	VULNERABILITY_SEVERITY_HIGH
+"""Order by vulnerability severity medium"""
+	VULNERABILITY_SEVERITY_MEDIUM
+"""Order by vulnerability severity low"""
+	VULNERABILITY_SEVERITY_LOW
+"""Order by vulnerability severity unassigned"""
+	VULNERABILITY_SEVERITY_UNASSIGNED
+}
+
+type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""ID of the entry."""
+	id: ID!
+"""The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user."""
+	actor: String!
+"""Creation time of the entry."""
+	createdAt: Time!
+"""Message that summarizes the entry."""
+	message: String!
+"""Type of the resource that was affected by the action."""
+	resourceType: ActivityLogEntryResourceType!
+"""Name of the resource that was affected by the action."""
+	resourceName: String!
+"""The team slug that the entry belongs to."""
+	teamSlug: Slug!
+"""The environment name that the entry belongs to."""
+	environmentName: String
+}
+
+"""Interface for workloads."""
+interface Workload {
+"""Interface for workloads."""
+	id: ID!
+"""Interface for workloads."""
+	name: String!
+"""Interface for workloads."""
+	team: Team!
+"""Interface for workloads."""
+	environment: TeamEnvironment!
+"""Interface for workloads."""
+	teamEnvironment: TeamEnvironment!
+"""Interface for workloads."""
+	image: ContainerImage!
+"""Interface for workloads."""
+	resources: WorkloadResources!
+"""Interface for workloads."""
+	manifest: WorkloadManifest!
+"""Interface for workloads."""
+	deletionStartedAt: Time
+"""Interface for workloads."""
+	bigQueryDatasets: BigQueryDatasetConnection!
+"""Interface for workloads."""
+	buckets: BucketConnection!
+"""Interface for workloads."""
+	cost: WorkloadCost!
+"""Interface for workloads."""
+	deployments: DeploymentConnection!
+"""Interface for workloads."""
+	kafkaTopicAcls: KafkaTopicAclConnection!
+"""Interface for workloads."""
+	logDestinations: [LogDestination!]!
+"""Interface for workloads."""
+	networkPolicy: NetworkPolicy!
+"""Interface for workloads."""
+	openSearch: OpenSearch
+"""Interface for workloads."""
+	secrets: SecretConnection!
+"""Interface for workloads."""
+	sqlInstances: SqlInstanceConnection!
+"""Interface for workloads."""
+	status: WorkloadStatus!
+"""Interface for workloads."""
+	valkeyInstances: ValkeyInstanceConnection!
+}
+
+"""Workload connection."""
+type WorkloadConnection {
+"""Pagination information."""
+	pageInfo: PageInfo!
+"""List of nodes."""
+	nodes: [Workload!]!
+"""List of edges."""
+	edges: [WorkloadEdge!]!
+}
+
+type WorkloadCost {
+"""Get the cost for a workload within a time period."""
+	daily(
+"""Start date of the period, inclusive."""
+		from: Date!
+"""End date of the period, inclusive."""
+		to: Date!
+	): WorkloadCostPeriod!
+"""The cost for the last 12 months."""
+	monthly: WorkloadCostPeriod!
+}
+
+type WorkloadCostPeriod {
+"""The total cost for the period."""
+	sum: Float!
+"""The cost series."""
+	series: [ServiceCostSeries!]!
+}
+
+type WorkloadCostSample {
+"""The workload."""
+	workload: Workload
+"""The name of the workload."""
+	workloadName: String!
+"""The cost in euros."""
+	cost: Float!
+}
+
+type WorkloadCostSeries {
+"""The date for the cost. When calculating the cost for a monthly period, the date will be the last day of the month that has cost data."""
+	date: Date!
+"""The sum of the cost across all workloads."""
+	sum: Float!
+"""The cost for the workloads in the environment."""
+	workloads: [WorkloadCostSample!]!
+}
+
+"""Workload edge."""
+type WorkloadEdge {
+"""Cursor for this edge that can be used for pagination."""
+	cursor: Cursor!
+"""The Workload."""
+	node: Workload!
+}
+
+type WorkloadLogLine {
+"""The timestamp of the log line."""
+	time: Time!
+"""The log message."""
+	message: String!
+"""The name of the instance that generated the log line."""
+	instance: String!
+}
+
+input WorkloadLogSubscriptionFilter {
+	team: Slug!
+	environment: String!
+	application: String
+	job: String
+	instances: [String!]
+}
+
+"""Interface for workload manifests."""
+interface WorkloadManifest {
+"""Interface for workload manifests."""
+	content: String!
+}
+
+"""Ordering options when fetching workloads."""
+input WorkloadOrder {
+"""Ordering options when fetching workloads."""
+	field: WorkloadOrderField!
+"""Ordering options when fetching workloads."""
+	direction: OrderDirection!
+}
+
+"""Fields to order workloads by."""
+enum WorkloadOrderField {
+"""Order by name."""
+	NAME
+"""Order by status."""
+	STATUS
+"""Order by the name of the environment the workload is deployed in."""
+	ENVIRONMENT
+"""Order by the deployment time."""
+	DEPLOYMENT_TIME
+"""Order by risk score"""
+	VULNERABILITY_RISK_SCORE
+"""Order apps by vulnerability severity critical"""
+	VULNERABILITY_SEVERITY_CRITICAL
+"""Order apps by vulnerability severity high"""
+	VULNERABILITY_SEVERITY_HIGH
+"""Order apps by vulnerability severity medium"""
+	VULNERABILITY_SEVERITY_MEDIUM
+"""Order apps by vulnerability severity low"""
+	VULNERABILITY_SEVERITY_LOW
+"""Order apps by vulnerability severity unassigned"""
+	VULNERABILITY_SEVERITY_UNASSIGNED
+}
+
+"""Resource quantities for a workload."""
+type WorkloadResourceQuantity {
+"""The number of CPU cores."""
+	cpu: Float
+"""The amount of memory in bytes."""
+	memory: Int
+}
+
+"""Interface for resources allocated to workloads."""
+interface WorkloadResources {
+"""Interface for resources allocated to workloads."""
+	limits: WorkloadResourceQuantity!
+"""Interface for resources allocated to workloads."""
+	requests: WorkloadResourceQuantity!
+}
+
+"""State of the workload"""
+enum WorkloadState {
+"""Everything is nais"""
+	NAIS
+"""Something is not nais"""
+	NOT_NAIS
+"""Something is failing"""
+	FAILING
+"""Unknown state"""
+	UNKNOWN
+}
+
+type WorkloadStatus {
+"""State of the workload"""
+	state: WorkloadState!
+"""Errors related to the workload"""
+	errors: [WorkloadStatusError!]!
+}
+
+"""Error describing usage of a deprecated ingress"""
+type WorkloadStatusDeprecatedIngress implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Deprecated ingress"""
+	ingress: String!
+}
+
+"""Error describing usage of a deprecated registry"""
+type WorkloadStatusDeprecatedRegistry implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Image registry"""
+	registry: String!
+"""Image repository"""
+	repository: String!
+"""Image name"""
+	name: String!
+"""Image tag"""
+	tag: String!
+}
+
+"""An error for a workload"""
+interface WorkloadStatusError {
+"""An error for a workload"""
+	level: WorkloadStatusErrorLevel!
+}
+
+"""Workload status error level"""
+enum WorkloadStatusErrorLevel {
+"""TODO are errors that should be fixed when possible"""
+	TODO
+"""WARNING are errors that should be fixed, but are not critical"""
+	WARNING
+"""ERROR are errors that must be fixed"""
+	ERROR
+}
+
+"""Error describing that the workload is failing to run"""
+type WorkloadStatusFailedRun implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Error message"""
+	detail: String!
+"""Name of the run"""
+	name: String!
+}
+
+"""The last deployed YAML is invalid"""
+type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Error message"""
+	detail: String!
+}
+
+"""Error describing that the workload is missing SBOM"""
+type WorkloadStatusMissingSBOM implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+}
+
+"""A workload does not have any active instances, but is requested to have some"""
+type WorkloadStatusNoRunningInstances implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+}
+
+"""Error describing that the workload is failing to synchronize"""
+type WorkloadStatusSynchronizationFailing implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Error message"""
+	detail: String!
+}
+
+"""Error describing that the workload is missing SBOM"""
+type WorkloadStatusVulnerable implements WorkloadStatusError{
+"""Error level"""
+	level: WorkloadStatusErrorLevel!
+"""Vulnerabilities"""
+	summary: ImageVulnerabilitySummary!
+}
+
+type WorkloadUtilization {
+"""Get the current usage for the requested resource type."""
+	current(
+		resourceType: UtilizationResourceType!
+	): Float!
+"""Gets the requested amount of resources for the requested resource type."""
+	requested(
+		resourceType: UtilizationResourceType!
+	): Float!
+"""Gets the requested amount of resources between start and end with step size for given resource type."""
+	requestedSeries(
+		input: WorkloadUtilizationSeriesInput!
+	): [UtilizationSample!]!
+"""Gets the limit of the resources for the requested resource type."""
+	limit(
+		resourceType: UtilizationResourceType!
+	): Float
+"""Gets the limit of the resources between start and end with step size for given resource type."""
+	limitSeries(
+		input: WorkloadUtilizationSeriesInput!
+	): [UtilizationSample!]!
+"""Usage between start and end with step size for given resource type."""
+	series(
+		input: WorkloadUtilizationSeriesInput!
+	): [UtilizationSample!]!
+"""Gets the recommended amount of resources for the workload."""
+	recommendations: WorkloadUtilizationRecommendations!
+}
+
+type WorkloadUtilizationData {
+"""The workload."""
+	workload: Workload!
+"""The requested amount of resources"""
+	requested: Float!
+"""The current resource usage."""
+	used: Float!
+}
+
+type WorkloadUtilizationRecommendations {
+	cpuRequestCores: Float!
+	memoryRequestBytes: Int!
+	memoryLimitBytes: Int!
+}
+
+input WorkloadUtilizationSeriesInput {
+	start: Time!
+	end: Time!
+	resourceType: UtilizationResourceType!
+}
+
+type WorkloadVulnerabilitySummary implements Node{
+"""The globally unique ID of the workload vulnerability summary node."""
+	id: ID!
+"""The workload"""
+	workload: Workload!
+"""True if the workload has a software bill of materials (SBOM) attached."""
+	hasSBOM: Boolean!
+"""The vulnerability summary for the workload."""
+	summary: ImageVulnerabilitySummary!
+}
+
+type WorkloadVulnerabilitySummaryConnection {
+"""Information to aid in pagination."""
+	pageInfo: PageInfo!
+"""List of edges."""
+	edges: [WorkloadVulnerabilitySummaryEdge!]!
+"""List of nodes."""
+	nodes: [WorkloadVulnerabilitySummary!]!
+}
+
+type WorkloadVulnerabilitySummaryEdge {
+"""A cursor for use in pagination."""
+	cursor: Cursor!
+"""The workload vulnerability summary."""
+	node: WorkloadVulnerabilitySummary!
+}
+
+
