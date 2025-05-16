@@ -109,25 +109,20 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 
 	go func() {
 		<-ctx.Done()
-		// TODO: Make this not panic listener.Accept()
 		if err := listener.Close(); err != nil {
 			fmt.Println("error closing listener", err)
 		}
 	}()
 
 	wg := sync.WaitGroup{}
-OUTER:
-	for {
+	for ctx.Err() == nil {
 		conn, err := listener.Accept()
 		if err != nil {
-			select {
-			case <-ctx.Done():
-				break OUTER
-			default:
-			}
 			fmt.Println("error accepting connection", err)
+			time.Sleep(100 * time.Millisecond)
 			continue
 		}
+
 		fmt.Println("New connection", conn.RemoteAddr())
 		wg.Add(1)
 		go func() {
