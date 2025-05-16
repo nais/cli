@@ -1,8 +1,12 @@
 package nais
 
-import "context"
+import (
+	"context"
 
-func GetUserTeams(ctx context.Context) (*UserTeamsResponse, error) {
+	"github.com/nais/cli/internal/nais/gql"
+)
+
+func GetUserTeams(ctx context.Context) (*gql.UserTeamsResponse, error) {
 	_ = `# @genqlient
 		query UserTeams {
 			me {
@@ -25,5 +29,5 @@ func GetUserTeams(ctx context.Context) (*UserTeamsResponse, error) {
 		return nil, err
 	}
 
-	return UserTeams(ctx, client)
+	return gql.UserTeams(ctx, client)
 }
