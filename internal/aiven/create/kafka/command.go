@@ -12,11 +12,11 @@ import (
 )
 
 type Flags struct {
-	create.Flags
+	*create.Flags
 	Pool aiven_services.KafkaPool
 }
 
-func Run(ctx context.Context, args create.Arguments, flags Flags) error {
+func Run(ctx context.Context, args create.Arguments, flags *Flags) error {
 	service := &aiven_services.Kafka{}
 	aivenConfig := aiven.Setup(
 		ctx,

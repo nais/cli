@@ -11,7 +11,7 @@ import (
 )
 
 type Flags struct {
-	migrate.Flags
+	*migrate.Flags
 	Tier           string
 	DiskAutoResize bool
 	DiskSize       int
@@ -19,7 +19,7 @@ type Flags struct {
 	NoWait         bool
 }
 
-func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
+func Run(ctx context.Context, args migrate.Arguments, flags *Flags) error {
 	cfg := config.Config{
 		AppName: args.ApplicationName,
 		Target: config.InstanceConfig{

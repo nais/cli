@@ -10,6 +10,6 @@ type Arguments struct {
 }
 
 type Flags struct {
-	postgres.Flags
+	*postgres.Flags
 	DryRun bool
 }

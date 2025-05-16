@@ -11,12 +11,12 @@ import (
 )
 
 type Flags struct {
-	create.Flags
+	*create.Flags
 	Instance string
 	Access   aiven_services.OpenSearchAccess
 }
 
-func Run(ctx context.Context, args create.Arguments, flags Flags) error {
+func Run(ctx context.Context, args create.Arguments, flags *Flags) error {
 	service := &aiven_services.OpenSearch{}
 	aivenConfig := aiven.Setup(
 		ctx,

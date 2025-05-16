@@ -10,7 +10,7 @@ type Arguments struct {
 }
 
 type Flags struct {
-	aiven.Flags
+	*aiven.Flags
 	Expire uint
 	Secret string
 }

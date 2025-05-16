@@ -5,7 +5,7 @@ import (
 )
 
 type Flags struct {
-	root.Flags
+	*root.Flags
 	Namespace string
 	Context   string
 }

@@ -11,10 +11,10 @@ import (
 )
 
 type Flags struct {
-	migrate.Flags
+	*migrate.Flags
 }
 
-func Run(ctx context.Context, args migrate.Arguments, flags Flags) error {
+func Run(ctx context.Context, args migrate.Arguments, flags *Flags) error {
 	cfg := config.Config{
 		AppName: args.ApplicationName,
 		Target: config.InstanceConfig{

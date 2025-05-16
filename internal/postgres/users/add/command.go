@@ -13,10 +13,10 @@ type Arguments struct {
 }
 
 type Flags struct {
-	postgres.Flags
+	*postgres.Flags
 	Privilege string
 }
 
-func Run(ctx context.Context, args Arguments, flags Flags) error {
+func Run(ctx context.Context, args Arguments, flags *Flags) error {
 	return postgres.AddUser(ctx, args.ApplicationName, args.Username, args.Username, flags.Context, flags.Namespace, flags.Privilege)
 }

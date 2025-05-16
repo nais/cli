@@ -12,12 +12,12 @@ import (
 )
 
 type Flags struct {
-	postgres.Flags
+	*postgres.Flags
 	AllPrivileges bool
 	Schema        string
 }
 
-func Run(ctx context.Context, applicationName string, flags Flags) error {
+func Run(ctx context.Context, applicationName string, flags *Flags) error {
 	fmt.Print("\nAre you sure you want to continue (y/N): ")
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()

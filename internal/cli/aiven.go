@@ -20,7 +20,7 @@ func aiven(*root.Flags) *cobra.Command {
 		Short: "Manage Aiven services.",
 	}
 
-	createCmdFlags := aivencreate.Flags{}
+	createCmdFlags := &aivencreate.Flags{}
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "Grant a user access to an Aiven service.",
@@ -56,7 +56,7 @@ func aiven(*root.Flags) *cobra.Command {
 			return aivencreatekafka.Run(
 				cmd.Context(),
 				createArgs(args),
-				aivencreatekafka.Flags{
+				&aivencreatekafka.Flags{
 					Flags: createCmdFlags,
 					Pool:  pool,
 				},
@@ -83,7 +83,7 @@ func aiven(*root.Flags) *cobra.Command {
 			return aivencreateopensearch.Run(
 				cmd.Context(),
 				createArgs(args),
-				aivencreateopensearch.Flags{
+				&aivencreateopensearch.Flags{
 					Flags:  createCmdFlags,
 					Access: access,
 				},
