@@ -10,7 +10,7 @@ before:
 archives:
   - files:
       - README.md
-      - LICENSE.md
+      - LICENSE
       - completions/*
 
 builds:
