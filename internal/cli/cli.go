@@ -28,6 +28,7 @@ func Run(ctx context.Context) error {
 Use -v for info, -vv for debug, -vvv for trace.`)
 	cmd.AddCommand(
 		login(&cmdFlags),
+		logout(&cmdFlags),
 		kubeconfig(&cmdFlags),
 		validate(&cmdFlags),
 		debug(&cmdFlags),

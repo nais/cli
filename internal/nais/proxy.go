@@ -10,7 +10,7 @@ import (
 )
 
 func RunAPIProxy(ctx context.Context, addr string) error {
-	tok, err := getUserToken(ctx)
+	secret, err := getUserSecret(ctx)
 	if err != nil {
 		return err
 	}
@@ -18,13 +18,13 @@ func RunAPIProxy(ctx context.Context, addr string) error {
 	// Setup reverse proxy to forward requests to the target server, but using a custom transport that authenticates the request
 	target := &url.URL{
 		Scheme: "https",
-		Host:   tok.ConsoleHost,
+		Host:   secret.ConsoleHost,
 	}
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(req *httputil.ProxyRequest) {
 			req.SetURL(target)
-			req.Out.Header.Set("Host", tok.ConsoleHost)
-			req.Out.Header.Set("Authorization", "Bearer "+tok.AccessToken)
+			req.Out.Header.Set("Host", secret.ConsoleHost)
+			req.Out.Header.Set("Authorization", "Bearer "+secret.AccessToken)
 			req.Out.Header.Set("user-agent", req.In.Header.Get("user-agent")+" (nais-api)")
 		},
 		Transport: &http.Transport{

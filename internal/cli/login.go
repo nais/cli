@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func login(*root.Flags) *cobra.Command {
+func login(_ *root.Flags) *cobra.Command {
 	cmdFlagNais := false
 
 	cmd := &cobra.Command{

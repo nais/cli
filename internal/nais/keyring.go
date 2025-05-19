@@ -9,7 +9,10 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-const serviceName = "cli.nais.io"
+const (
+	serviceName = "cli.nais.io"
+	user        = "nais-user"
+)
 
 var errSecretNotFound = errors.New("secret not found in keyring")
 
@@ -21,8 +24,8 @@ func (e *timeoutError) Error() string {
 	return e.message
 }
 
-// Set secret in keyring for user.
-func setSecret(user, secret string) error {
+// Set secret in keyring.
+func setSecret(secret string) error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
@@ -36,8 +39,8 @@ func setSecret(user, secret string) error {
 	}
 }
 
-// Get secret from keyring given user name.
-func getSecret(user string) (string, error) {
+// Get secret from keyring.
+func getSecret() (string, error) {
 	ch := make(chan struct {
 		val string
 		err error
@@ -62,7 +65,7 @@ func getSecret(user string) (string, error) {
 }
 
 // Delete secret from keyring.
-func deleteSecret(user string) error {
+func deleteSecret() error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
@@ -70,6 +73,9 @@ func deleteSecret(user string) error {
 	}()
 	select {
 	case err := <-ch:
+		if errors.Is(err, keyring.ErrNotFound) {
+			return errSecretNotFound
+		}
 		return err
 	case <-time.After(3 * time.Second):
 		return &timeoutError{"timeout while trying to delete secret from keyring"}

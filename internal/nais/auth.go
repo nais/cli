@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
@@ -23,14 +22,43 @@ const (
 	zitadelClientID = "320114319427740585"
 )
 
-type secret struct {
+type userSecret struct {
 	oauth2.Token
 	IDToken     string `json:"id_token"`
 	ConsoleHost string `json:"console_host"`
 }
 
+type tenantData struct {
+	ConsoleURL string `json:"consoleUrl"`
+}
+
+type tokenSource struct {
+	ctx context.Context
+}
+
+func (k *tokenSource) Token() (*oauth2.Token, error) {
+	secret, err := getUserSecret(k.ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting user secret: %w", err)
+	}
+
+	return &secret.Token, nil
+}
+
+// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
+// Fetches and refreshes tokens as necessary.
+func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
+	secret, err := getUserSecret(ctx)
+	if err != nil {
+		return nil, "", fmt.Errorf("getting user token: %w", err)
+	}
+
+	ts := oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx})
+	return oauth2.NewClient(ctx, ts), secret.ConsoleHost, nil
+}
+
 func Login(ctx context.Context) error {
-	conf, oidcClient, err := oauthConfig(ctx)
+	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
 	}
@@ -41,16 +69,15 @@ func Login(ctx context.Context) error {
 
 	go listenServer(ctx, conf, verifier, state, ch)
 
-	// Redirect user to consent page to ask for permission
-	// for the scopes specified above.
 	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
+
+	_ = urlopen.Open(url)
+
 	fmt.Println("Your browser has been opened to visit:")
 	fmt.Println()
 	fmt.Println(url)
 	fmt.Println()
-	fmt.Println("If your browser doesn't open, please visit the URL above")
-
-	_ = urlopen.Open(url)
+	fmt.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
 
 	var tok *oauth2.Token
 	select {
@@ -59,26 +86,21 @@ func Login(ctx context.Context) error {
 	case tok = <-ch:
 	}
 
+	jwkSet, err := jwk.Fetch(ctx, oidcConfig.JwksURI)
+	if err != nil {
+		return fmt.Errorf("fetching jwks from %q: %w", oidcConfig.JwksURI, err)
+	}
+
 	idToken := tok.Extra("id_token").(string)
-
-	set, err := jwk.Fetch(ctx, oidcClient.JwksURI)
-	if err != nil {
-		return fmt.Errorf("fetching jwks from %q: %w", oidcClient.JwksURI, err)
-	}
-
-	j, err := jwt.ParseString(idToken, jwt.WithKeySet(set))
-	if err != nil {
-		return fmt.Errorf("parse jwt: %w", err)
-	}
-
-	err = jwt.Validate(
-		j,
+	j, err := jwt.ParseString(idToken,
+		jwt.WithKeySet(jwkSet),
+		jwt.WithValidate(true),
 		jwt.WithIssuer(oauthIssuer()),
 		jwt.WithAudience(oauthClientID()),
 		jwt.WithClaimValue("email_verified", true),
 	)
 	if err != nil {
-		return fmt.Errorf("validating jwt: %w", err)
+		return fmt.Errorf("parse jwt: %w", err)
 	}
 
 	var domain string
@@ -87,56 +109,67 @@ func Login(ctx context.Context) error {
 		return fmt.Errorf("getting primary_domain claim: %w", err)
 	}
 
-	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-	res, err := http.Get(u)
+	tenantData, err := getTenantData(domain)
 	if err != nil {
-		return fmt.Errorf("failed to get tenant data at %q: %w", u, err)
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to get tenant data at %q: %v", u, res.Status)
+		return fmt.Errorf("getting tenant data: %w", err)
 	}
 
-	var tenantData struct {
-		ConsoleURL string `json:"consoleUrl"`
-	}
-	err = json.NewDecoder(res.Body).Decode(&tenantData)
+	_, err = saveUserSecret(tok, tenantData.ConsoleURL)
 	if err != nil {
-		return fmt.Errorf("decode tenant data: %w", err)
-	}
-
-	if _, err := saveToken(tok, tenantData.ConsoleURL); err != nil {
 		return fmt.Errorf("saving token: %w", err)
 	}
 	return nil
 }
 
-// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
-// Fetches and refreshes tokens as necessary.
-func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
-	secret, err := getUserToken(ctx)
-	if err != nil {
-		return nil, "", fmt.Errorf("getting user token: %w", err)
+func Logout(ctx context.Context) error {
+	err := deleteSecret()
+	if err != nil && !errors.Is(err, errSecretNotFound) {
+		return fmt.Errorf("deleting user secret: %w", err)
 	}
 
-	cfg, _, err := oauthConfig(ctx)
+	_, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
-		return nil, "", fmt.Errorf("getting oauth config: %w", err)
+		return fmt.Errorf("getting oauth config: %w", err)
 	}
 
-	tokenSource := oauth2.StaticTokenSource(&secret.Token)
-	tok, err := tokenSource.Token()
-	if err != nil {
-		return nil, "", fmt.Errorf("getting token: %w", err)
-	}
+	url := oidcConfig.EndSessionEndpoint
 
-	client := cfg.Client(ctx, tok)
-	return client, secret.ConsoleHost, nil
+	_ = urlopen.Open(url)
+
+	fmt.Println("To complete logout, your browser has been opened to visit:")
+	fmt.Println()
+	fmt.Println(url)
+	fmt.Println()
+	fmt.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar.")
+	fmt.Println()
+
+	return nil
 }
 
-func saveToken(tok *oauth2.Token, consoleURL string) (*secret, error) {
-	sec := &secret{
+func getUserSecret(ctx context.Context) (*userSecret, error) {
+	secretData, err := getSecret()
+	if err != nil {
+		if errors.Is(err, errSecretNotFound) {
+			return nil, ErrNotAuthenticated
+		}
+		return nil, fmt.Errorf("getting user secret: %w", err)
+	}
+
+	var sec userSecret
+	err = json.Unmarshal([]byte(secretData), &sec)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshalling data from keyring")
+	}
+
+	if !sec.Valid() {
+		return refreshUserToken(ctx, &sec)
+	}
+
+	return &sec, nil
+}
+
+func saveUserSecret(tok *oauth2.Token, consoleURL string) (*userSecret, error) {
+	sec := &userSecret{
 		Token:       *tok,
 		IDToken:     tok.Extra("id_token").(string),
 		ConsoleHost: consoleURL,
@@ -146,48 +179,50 @@ func saveToken(tok *oauth2.Token, consoleURL string) (*secret, error) {
 		return nil, fmt.Errorf("marshalling token: %w", err)
 	}
 
-	err = setSecret("nais-user", string(secret))
+	err = setSecret(string(secret))
 	if err != nil {
-		return nil, fmt.Errorf("setting secret: %w", err)
+		return nil, fmt.Errorf("setting user secret: %w", err)
 	}
 	return sec, nil
 }
 
-func getUserToken(ctx context.Context) (*secret, error) {
-	secretData, err := getSecret("nais-user")
-	if err != nil {
-		return nil, fmt.Errorf("getting secret: %w", err)
-	}
-	var s secret
-	err = json.Unmarshal([]byte(secretData), &s)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshalling data from keyring")
-	}
-
-	s.Expiry = time.Now().Add(-time.Minute)
-
-	if !s.Valid() {
-		return refreshToken(ctx, s)
-	}
-
-	return &s, nil
-}
-
-func refreshToken(ctx context.Context, s secret) (*secret, error) {
+func refreshUserToken(ctx context.Context, sec *userSecret) (*userSecret, error) {
 	cfg, _, err := oauthConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting oauth config: %w", err)
 	}
-	tok, err := cfg.TokenSource(ctx, &s.Token).Token()
+
+	tok, err := cfg.TokenSource(ctx, &sec.Token).Token()
 	if err != nil {
 		return nil, ErrNotAuthenticated
 	}
 
-	return saveToken(tok, s.ConsoleHost)
+	return saveUserSecret(tok, sec.ConsoleHost)
+}
+
+func getTenantData(domain string) (*tenantData, error) {
+	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
+	res, err := http.Get(u)
+	if err != nil {
+		return nil, fmt.Errorf("getting %q: %w", u, err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("getting %q: %v", u, res.Status)
+	}
+
+	var data tenantData
+	err = json.NewDecoder(res.Body).Decode(&data)
+	if err != nil {
+		return nil, fmt.Errorf("decoding: %w", err)
+	}
+
+	return &data, nil
 }
 
 func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfiguration, error) {
-	oidcClient, err := client.Discover(ctx, oauthIssuer(), http.DefaultClient)
+	oidcConfig, err := client.Discover(ctx, oauthIssuer(), http.DefaultClient)
 	if err != nil {
 		return nil, nil, fmt.Errorf("discover oidc configuration from %q: %w", oauthIssuer(), err)
 	}
@@ -196,12 +231,12 @@ func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfigurat
 		ClientID: oauthClientID(),
 		Scopes:   []string{"openid", "profile", "email", "offline_access", "urn:zitadel:iam:user:resourceowner"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  oidcClient.AuthorizationEndpoint,
-			TokenURL: oidcClient.TokenEndpoint,
+			AuthURL:  oidcConfig.AuthorizationEndpoint,
+			TokenURL: oidcConfig.TokenEndpoint,
 		},
 		RedirectURL: "http://localhost:8865/callback",
 	}
-	return conf, oidcClient, nil
+	return conf, oidcConfig, nil
 }
 
 func oauthIssuer() string {
