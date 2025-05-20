@@ -206,7 +206,9 @@ func getTenantData(domain string) (*tenantData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("getting %q: %w", u, err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		_ = res.Body.Close()
+	}()
 
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("getting %q: %v", u, res.Status)
@@ -271,18 +273,18 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 			return
 		}
 
-		fmt.Fprintln(w, "Success! You can now close this window.")
+		_, _ = fmt.Fprintln(w, "Success! You can now close this window.")
 
 		ch <- tok
 	})
 
 	go func() {
 		<-ctx.Done()
-		srv.Shutdown(context.Background())
+		_ = srv.Shutdown(context.Background())
 	}()
 
 	err := srv.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
+		_, _ = fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
 	}
 }

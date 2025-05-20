@@ -28,7 +28,7 @@ func handlePanic(recoveredFrom any) {
 	fmt.Print("Would you like to open a browser with a pre-filled issue? (check for sensitive information) [y/N] ")
 
 	var response string
-	fmt.Scanln(&response)
+	_, _ = fmt.Scanln(&response)
 	if strings.EqualFold(response, "y") {
 		body := fmt.Sprintf(`Command ran: %s
 
@@ -39,14 +39,14 @@ Stack trace:
 			fmtCode(recoveredString),
 			fmtMultilineCode(string(godebug.Stack())))
 
-		url, _ := url.Parse("https://github.com/nais/cli/issues/new")
-		values := url.Query()
+		u, _ := url.Parse("https://github.com/nais/cli/issues/new")
+		values := u.Query()
 		values.Add("title", fmt.Sprintf("Unexpected error in version %v", version.Version))
 		values.Add("body", body)
-		url.RawQuery = values.Encode()
+		u.RawQuery = values.Encode()
 
-		if err := urlopen.Open(url.String()); err != nil {
-			fmt.Printf("Unable to open your browser, please open this manually: %s\n", url.String())
+		if err := urlopen.Open(u.String()); err != nil {
+			fmt.Printf("Unable to open your browser, please open this manually: %s\n", u.String())
 		}
 	} else {
 		fmt.Println("Skipping issue creation.")

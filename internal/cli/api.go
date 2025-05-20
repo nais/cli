@@ -36,7 +36,7 @@ func api(*root.Flags) *cobra.Command {
 				return err
 			}
 
-			fmt.Fprintln(cmd.OutOrStdout(), schema)
+			_, _ = fmt.Fprintln(cmd.OutOrStdout(), schema)
 			return nil
 		},
 	}
@@ -51,12 +51,12 @@ func api(*root.Flags) *cobra.Command {
 			}
 
 			if len(teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes) == 0 {
-				fmt.Fprintln(cmd.OutOrStdout(), "No teams found.")
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), "No teams found.")
 				return nil
 			}
 
 			for _, team := range teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes {
-				fmt.Fprintln(cmd.OutOrStdout(), team.Team.Slug, "-", team.Team.Purpose)
+				_, _ = fmt.Fprintln(cmd.OutOrStdout(), team.Team.Slug, "-", team.Team.Purpose)
 			}
 
 			return nil
