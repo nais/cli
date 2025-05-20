@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func logout(rootFlags *root.Flags) *cobra.Command {
+func logoutCommand(rootFlags *root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
 		GroupID: authGroup.ID,
 		Use:     "logout",

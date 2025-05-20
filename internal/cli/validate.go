@@ -2,12 +2,12 @@ package cli
 
 import (
 	"github.com/nais/cli/internal/root"
-	validatecmd "github.com/nais/cli/internal/validate"
+	"github.com/nais/cli/internal/validate"
 	"github.com/spf13/cobra"
 )
 
-func validate(rootFlags *root.Flags) *cobra.Command {
-	cmdFlags := validatecmd.Flags{Flags: rootFlags}
+func validateCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &validate.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "validate FILE...",
 		Short: "Validate one or more Nais manifest files.",
@@ -18,7 +18,7 @@ func validate(rootFlags *root.Flags) *cobra.Command {
 			return comps, cobra.ShellCompDirectiveFilterFileExt
 		},
 		RunE: func(_ *cobra.Command, args []string) error {
-			return validatecmd.Run(args, cmdFlags)
+			return validate.Run(args, cmdFlags)
 		},
 	}
 	cmd.Flags().StringVarP(&cmdFlags.VarsFilePath, "vars", "f", "", "Path to the `FILE` containing template variables in JSON or YAML format.")

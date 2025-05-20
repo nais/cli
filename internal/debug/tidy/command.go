@@ -14,8 +14,8 @@ type Flags struct {
 	Copy      bool
 }
 
-func Run(workloadName string, flags Flags) error {
-	cfg := debug.MakeConfig(workloadName, debug.Flags{
+func Run(workloadName string, flags *Flags) error {
+	cfg := debug.MakeConfig(workloadName, &debug.Flags{
 		Context:   flags.Context,
 		Namespace: flags.Namespace,
 		Copy:      flags.Copy,

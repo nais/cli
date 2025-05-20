@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/naisdevice/config/get"
 	"github.com/nais/cli/internal/naisdevice/config/set"
 	"github.com/nais/cli/internal/naisdevice/connect"
@@ -16,7 +17,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func device(rootFlags *root.Flags) *cobra.Command {
+func deviceCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &naisdevice.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "device",
 		Short: "Interact with naisdevice.",
@@ -77,7 +79,7 @@ func device(rootFlags *root.Flags) *cobra.Command {
 		},
 	}
 
-	statusCmdFlags := status.Flags{Flags: rootFlags}
+	statusCmdFlags := &status.Flags{Flags: cmdFlags}
 	statusCmd := &cobra.Command{
 		Use:   "status",
 		Short: "Show the status of your naisdevice.",

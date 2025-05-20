@@ -12,10 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func api(rootFlags *root.Flags) *cobra.Command {
-	cmdFlags := &naisapi.Flags{
-		Flags: rootFlags,
-	}
+func naisApiCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &naisapi.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "api",
 		Short: "Interact with Nais API.",
@@ -35,9 +33,7 @@ func api(rootFlags *root.Flags) *cobra.Command {
 	}
 	proxyCmd.Flags().StringVarP(&proxyCmdFlags.ListenAddr, "listen", "l", proxyCmdFlags.ListenAddr, "Address the proxy will listen on.")
 
-	schemaCmdFlags := &naisapischema.Flags{
-		Flags: cmdFlags,
-	}
+	schemaCmdFlags := &naisapischema.Flags{Flags: cmdFlags}
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Outputs the Nais API GraphQL schema to stdout.",
@@ -52,9 +48,7 @@ func api(rootFlags *root.Flags) *cobra.Command {
 		},
 	}
 
-	teamsCmdFlags := &naisapiteams.Flags{
-		Flags: cmdFlags,
-	}
+	teamsCmdFlags := &naisapiteams.Flags{Flags: cmdFlags}
 	teamsCmd := &cobra.Command{
 		Use:   "teams",
 		Short: "Get a list of your teams.",

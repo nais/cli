@@ -5,16 +5,15 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/root"
 )
 
 type Flags struct {
-	*root.Flags
+	*naisdevice.Flags
 	Quiet  bool
 	Output string
 }
 
-func Run(ctx context.Context, flags Flags) error {
+func Run(ctx context.Context, flags *Flags) error {
 	status, err := naisdevice.GetStatus(ctx)
 	if err != nil {
 		return err

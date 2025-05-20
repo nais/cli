@@ -18,7 +18,7 @@ type Flags struct {
 	ByPod     bool
 }
 
-func Run(workloadName string, flags Flags) error {
+func Run(workloadName string, flags *Flags) error {
 	cfg := MakeConfig(workloadName, flags)
 	clientSet, err := SetupClient(cfg, flags.Context)
 	if err != nil {
@@ -52,7 +52,7 @@ func SetupClient(cfg *Config, cluster string) (kubernetes.Interface, error) {
 	return clientSet, nil
 }
 
-func MakeConfig(workloadName string, flags Flags) *Config {
+func MakeConfig(workloadName string, flags *Flags) *Config {
 	return &Config{
 		WorkloadName: workloadName,
 		Namespace:    flags.Namespace,

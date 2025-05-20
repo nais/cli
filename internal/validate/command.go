@@ -12,7 +12,7 @@ type Flags struct {
 	Vars         []string
 }
 
-func Run(files []string, flags Flags) error {
+func Run(files []string, flags *Flags) error {
 	templateVars := make(TemplateVariables)
 
 	if flags.VarsFilePath != "" {

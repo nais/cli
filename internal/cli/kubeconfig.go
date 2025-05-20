@@ -6,14 +6,14 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/gcp"
-	kubeconfigcmd "github.com/nais/cli/internal/kubeconfig"
+	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func kubeconfig(*root.Flags) *cobra.Command {
-	cmdFlags := kubeconfigcmd.Flags{}
+func kubeconfigCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &kubeconfig.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "kubeconfig",
 		Short: "Create a kubeconfig file for connecting to available clusters.",
@@ -43,7 +43,7 @@ This requires that you have the gcloud command line tool installed, configured a
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			cmdFlags.Verbose, _ = cmd.Flags().GetBool("verbose")
-			return kubeconfigcmd.Run(cmd.Context(), cmdFlags)
+			return kubeconfig.Run(cmd.Context(), cmdFlags)
 		},
 	}
 	cmd.Flags().StringSliceVarP(&cmdFlags.Exclude, "exclude", "e", nil, "Exclude `CLUSTER` from kubeconfig. Can be repeated.")

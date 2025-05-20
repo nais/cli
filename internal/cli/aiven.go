@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	aivencreate "github.com/nais/cli/internal/aiven/create"
 	aivencreatekafka "github.com/nais/cli/internal/aiven/create/kafka"
@@ -14,13 +15,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func aiven(*root.Flags) *cobra.Command {
+func aivenCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &aiven.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "aiven",
 		Short: "Manage Aiven services.",
 	}
 
-	createCmdFlags := &aivencreate.Flags{}
+	createCmdFlags := &aivencreate.Flags{Flags: cmdFlags}
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "Grant a user access to an Aiven service.",

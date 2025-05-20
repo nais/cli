@@ -8,7 +8,7 @@ import (
 
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/k8s"
-	postgrescmd "github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/audit"
 	"github.com/nais/cli/internal/postgres/grant"
 	"github.com/nais/cli/internal/postgres/migrate"
@@ -27,8 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func postgres(*root.Flags) *cobra.Command {
-	cmdFlags := &postgrescmd.Flags{}
+func postgresCommand(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &postgres.Flags{Flags: rootFlags}
 	cmd := &cobra.Command{
 		Use:   "postgres",
 		Short: "Manage SQL instances.",

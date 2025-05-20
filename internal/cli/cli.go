@@ -24,19 +24,19 @@ func Run(ctx context.Context) error {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
-	cmd.AddGroup(authGroup)
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", `Verbose output.
 Use -v for info, -vv for debug, -vvv for trace.`)
+	cmd.AddGroup(authGroup)
 	cmd.AddCommand(
-		login(cmdFlags),
-		logout(cmdFlags),
-		kubeconfig(cmdFlags),
-		validate(cmdFlags),
-		debug(cmdFlags),
-		aiven(cmdFlags),
-		device(cmdFlags),
-		postgres(cmdFlags),
-		api(cmdFlags),
+		loginCommand(cmdFlags),
+		logoutCommand(cmdFlags),
+		kubeconfigCommand(cmdFlags),
+		validateCommand(cmdFlags),
+		debugCommand(cmdFlags),
+		aivenCommand(cmdFlags),
+		deviceCommand(cmdFlags),
+		postgresCommand(cmdFlags),
+		naisApiCommand(cmdFlags),
 	)
 
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
