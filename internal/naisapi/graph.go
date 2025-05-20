@@ -7,7 +7,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
-func graphqlClient(ctx context.Context) (graphql.Client, error) {
+func GraphqlClient(ctx context.Context) (graphql.Client, error) {
 	client, consoleHost, err := AuthenticatedHTTPClient(ctx)
 	if err != nil {
 		return nil, err

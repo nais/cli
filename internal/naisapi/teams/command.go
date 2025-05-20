@@ -1,12 +1,17 @@
-package naisapi
+package teams
 
 import (
 	"context"
 
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func GetUserTeams(ctx context.Context) (*gql.UserTeamsResponse, error) {
+type Flags struct {
+	*naisapi.Flags
+}
+
+func GetUserTeams(ctx context.Context, _ *Flags) (*gql.UserTeamsResponse, error) {
 	_ = `# @genqlient
 		query UserTeams {
 			me {
@@ -24,7 +29,7 @@ func GetUserTeams(ctx context.Context) (*gql.UserTeamsResponse, error) {
 		}
 	`
 
-	client, err := graphqlClient(ctx)
+	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err
 	}

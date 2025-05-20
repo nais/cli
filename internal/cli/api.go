@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	naisapiproxy "github.com/nais/cli/internal/naisapi/proxy"
 	naisapischema "github.com/nais/cli/internal/naisapi/schema"
+	naisapiteams "github.com/nais/cli/internal/naisapi/teams"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
@@ -51,11 +52,14 @@ func api(rootFlags *root.Flags) *cobra.Command {
 		},
 	}
 
+	teamsCmdFlags := &naisapiteams.Flags{
+		Flags: cmdFlags,
+	}
 	teamsCmd := &cobra.Command{
 		Use:   "teams",
 		Short: "Get a list of your teams.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			teams, err := naisapi.GetUserTeams(cmd.Context())
+			teams, err := naisapiteams.GetUserTeams(cmd.Context(), teamsCmdFlags)
 			if err != nil {
 				return err
 			}
