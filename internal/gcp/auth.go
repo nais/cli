@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/nais/cli/internal/root"
 )
 
 func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, error) {
@@ -89,7 +91,7 @@ func GetActiveUserEmail(ctx context.Context) (string, error) {
 	return user, nil
 }
 
-func Login(ctx context.Context) error {
+func Login(ctx context.Context, _ *root.Flags) error {
 	args := []string{
 		"auth",
 		"login",

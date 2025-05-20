@@ -7,22 +7,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func login(_ *root.Flags) *cobra.Command {
+func login(rootFlags *root.Flags) *cobra.Command {
 	cmdFlagNais := false
 
 	cmd := &cobra.Command{
-		Use:   "login",
-		Short: "Login using Google Auth.",
-		Long:  `This is a wrapper around "gcloud auth login --update-adc"`,
+		GroupID: authGroup.ID,
+		Use:     "login",
+		Short:   "Login to the Nais platform.",
+		Long:    `Login to the Nais platform, uses "gcloud auth login --update-adc" by default.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if cmdFlagNais {
-				return naisapi.Login(cmd.Context())
+				return naisapi.Login(cmd.Context(), rootFlags)
 			}
 
-			return gcp.Run(cmd.Context())
+			return gcp.Run(cmd.Context(), rootFlags)
 		},
 	}
 
-	cmd.Flags().BoolVarP(&cmdFlagNais, "nais", "n", cmdFlagNais, "Very good description.")
+	cmd.Flags().BoolVarP(&cmdFlagNais, "nais", "n", cmdFlagNais, "Login using login.nais.io instead of gcloud.")
 	return cmd
 }

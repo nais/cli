@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -57,7 +58,7 @@ func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) 
 	return oauth2.NewClient(ctx, ts), secret.ConsoleHost, nil
 }
 
-func Login(ctx context.Context) error {
+func Login(ctx context.Context, _ *root.Flags) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
@@ -121,7 +122,7 @@ func Login(ctx context.Context) error {
 	return nil
 }
 
-func Logout(ctx context.Context) error {
+func Logout(ctx context.Context, _ *root.Flags) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
 		return fmt.Errorf("deleting user secret: %w", err)

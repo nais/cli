@@ -6,13 +6,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func logout(_ *root.Flags) *cobra.Command {
+func logout(rootFlags *root.Flags) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "logout",
-		Short: "Log out and remove credentials.",
-		Long:  `This logs you out of Nais and removes credentials from your local machine."`,
+		GroupID: authGroup.ID,
+		Use:     "logout",
+		Short:   "Log out and remove credentials.",
+		Long:    "This logs you out of Nais and removes credentials from your local machine.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return naisapi.Logout(cmd.Context())
+			return naisapi.Logout(cmd.Context(), rootFlags)
 		},
 	}
 

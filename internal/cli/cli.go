@@ -16,7 +16,7 @@ import (
 func Run(ctx context.Context) error {
 	cobra.EnableTraverseRunHooks = true
 
-	cmdFlags := root.Flags{}
+	cmdFlags := &root.Flags{}
 	cmd := &cobra.Command{
 		Use:                "nais",
 		Long:               "Nais CLI",
@@ -24,18 +24,19 @@ func Run(ctx context.Context) error {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
+	cmd.AddGroup(authGroup)
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", `Verbose output.
 Use -v for info, -vv for debug, -vvv for trace.`)
 	cmd.AddCommand(
-		login(&cmdFlags),
-		logout(&cmdFlags),
-		kubeconfig(&cmdFlags),
-		validate(&cmdFlags),
-		debug(&cmdFlags),
-		aiven(&cmdFlags),
-		device(&cmdFlags),
-		postgres(&cmdFlags),
-		api(&cmdFlags),
+		login(cmdFlags),
+		logout(cmdFlags),
+		kubeconfig(cmdFlags),
+		validate(cmdFlags),
+		debug(cmdFlags),
+		aiven(cmdFlags),
+		device(cmdFlags),
+		postgres(cmdFlags),
+		api(cmdFlags),
 	)
 
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
