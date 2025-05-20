@@ -1,6 +1,6 @@
 // Package keyring is a simple wrapper that adds timeouts to the zalando/go-keyring package
 // "Borrowed" with ❤️ from https://github.com/cli/cli/blob/17af24e147629aa1aed2546e87e9323aeabf4c8c/internal/keyring/keyring.go
-package nais
+package naisapi
 
 import (
 	"errors"

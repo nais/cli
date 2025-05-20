@@ -1,9 +1,9 @@
-package nais
+package naisapi
 
 import (
 	"context"
 
-	"github.com/nais/cli/internal/nais/gql"
+	"github.com/nais/cli/internal/naisapi/gql"
 )
 
 func GetUserTeams(ctx context.Context) (*gql.UserTeamsResponse, error) {

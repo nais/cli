@@ -7,7 +7,7 @@ import (
 	"slices"
 
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/nais"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
@@ -56,7 +56,7 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 	}
 
 	if err != nil {
-		if errors.Is(err, nais.ErrNotAuthenticated) {
+		if errors.Is(err, naisapi.ErrNotAuthenticated) {
 			// TODO(thokra): Auto login process of some kind
 			// Check if interactive
 			// fmt.Println("Please try to log in again. Press enter to start the login process, or Ctrl+C to cancel.")

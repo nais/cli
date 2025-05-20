@@ -1,6 +1,6 @@
 schema: schema.graphql
 operations:
-  - internal/nais/**/*.go
+  - internal/naisapi/**/*.go
 bindings:
   Slug:
     type: string
@@ -10,4 +10,4 @@ bindings:
     type: time.Time
   Date:
     type: time.Time
-generated: internal/nais/gql/generated.go
+generated: internal/naisapi/gql/generated.go

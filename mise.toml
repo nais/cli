@@ -42,7 +42,7 @@ wait_for = ['fmt']
 run = "go build -installsuffix cgo -o bin/nais ./"
 
 [tasks.generate]
-description = "Generate graphql client code"
+description = "Generate GraphQL client code"
 run = "go tool github.com/Khan/genqlient"
 
 [tasks.all]

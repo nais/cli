@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/nais"
-	"github.com/nais/cli/internal/nais/gql"
+	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +22,7 @@ func api(*root.Flags) *cobra.Command {
 		Short: "Authenticated proxy to do GraphQL requests to Nais API.",
 		Long:  `Starts a proxy server that authenticates requests to the Nais API using your account token.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return nais.RunAPIProxy(cmd.Context(), listenAddr)
+			return naisapi.RunAPIProxy(cmd.Context(), listenAddr)
 		},
 	}
 	proxyCmd.Flags().StringVarP(&listenAddr, "listen", "l", listenAddr, "Very good description.")
@@ -31,7 +31,7 @@ func api(*root.Flags) *cobra.Command {
 		Use:   "schema",
 		Short: "Outputs the Nais API GraphQL schema to stdout.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			schema, err := nais.PullSchema(cmd.Context())
+			schema, err := naisapi.PullSchema(cmd.Context())
 			if err != nil {
 				return err
 			}
@@ -45,7 +45,7 @@ func api(*root.Flags) *cobra.Command {
 		Use:   "teams",
 		Short: "Get a list of your teams.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			teams, err := nais.GetUserTeams(cmd.Context())
+			teams, err := naisapi.GetUserTeams(cmd.Context())
 			if err != nil {
 				return err
 			}

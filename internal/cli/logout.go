@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/nais/cli/internal/nais"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ func logout(_ *root.Flags) *cobra.Command {
 		Short: "Log out and remove credentials.",
 		Long:  `This logs you out of Nais and removes credentials from your local machine."`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return nais.Logout(cmd.Context())
+			return naisapi.Logout(cmd.Context())
 		},
 	}
 
