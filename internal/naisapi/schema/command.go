@@ -1,4 +1,4 @@
-package naisapi
+package schema
 
 import (
 	"context"
@@ -7,11 +7,16 @@ import (
 	"os"
 	"strings"
 
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/suessflorian/gqlfetch"
 )
 
-func PullSchema(ctx context.Context) (string, error) {
-	secret, err := GetUserSecret(ctx)
+type Flags struct {
+	*naisapi.Flags
+}
+
+func Pull(ctx context.Context, _ *Flags) (string, error) {
+	secret, err := naisapi.GetUserSecret(ctx)
 	if err != nil {
 		return "", err
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	naisapiproxy "github.com/nais/cli/internal/naisapi/proxy"
+	naisapischema "github.com/nais/cli/internal/naisapi/schema"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
@@ -33,11 +34,14 @@ func api(rootFlags *root.Flags) *cobra.Command {
 	}
 	proxyCmd.Flags().StringVarP(&proxyCmdFlags.ListenAddr, "listen", "l", proxyCmdFlags.ListenAddr, "Address the proxy will listen on.")
 
+	schemaCmdFlags := &naisapischema.Flags{
+		Flags: cmdFlags,
+	}
 	schemaCmd := &cobra.Command{
 		Use:   "schema",
 		Short: "Outputs the Nais API GraphQL schema to stdout.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			schema, err := naisapi.PullSchema(cmd.Context())
+			schema, err := naisapischema.Pull(cmd.Context(), schemaCmdFlags)
 			if err != nil {
 				return err
 			}
