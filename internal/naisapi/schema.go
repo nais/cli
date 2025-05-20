@@ -11,7 +11,7 @@ import (
 )
 
 func PullSchema(ctx context.Context) (string, error) {
-	secret, err := getUserSecret(ctx)
+	secret, err := GetUserSecret(ctx)
 	if err != nil {
 		return "", err
 	}

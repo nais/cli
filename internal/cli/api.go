@@ -5,27 +5,33 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	naisapiproxy "github.com/nais/cli/internal/naisapi/proxy"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func api(*root.Flags) *cobra.Command {
+func api(rootFlags *root.Flags) *cobra.Command {
+	cmdFlags := &naisapi.Flags{
+		Flags: rootFlags,
+	}
 	cmd := &cobra.Command{
 		Use:   "api",
-		Short: "Manage SQL instances.",
+		Short: "Interact with Nais API.",
 	}
 
-	listenAddr := "localhost:4242"
-
+	proxyCmdFlags := &naisapiproxy.Flags{
+		Flags:      cmdFlags,
+		ListenAddr: "localhost:4242",
+	}
 	proxyCmd := &cobra.Command{
 		Use:   "proxy",
-		Short: "Authenticated proxy to do GraphQL requests to Nais API.",
+		Short: "Authenticated proxy to do GraphQL requests against the Nais API.",
 		Long:  `Starts a proxy server that authenticates requests to the Nais API using your account token.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return naisapi.RunAPIProxy(cmd.Context(), listenAddr)
+			return naisapiproxy.Run(cmd.Context(), proxyCmdFlags)
 		},
 	}
-	proxyCmd.Flags().StringVarP(&listenAddr, "listen", "l", listenAddr, "Very good description.")
+	proxyCmd.Flags().StringVarP(&proxyCmdFlags.ListenAddr, "listen", "l", proxyCmdFlags.ListenAddr, "Address the proxy will listen on.")
 
 	schemaCmd := &cobra.Command{
 		Use:   "schema",

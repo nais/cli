@@ -22,7 +22,7 @@ const (
 	zitadelClientID = "320114319427740585"
 )
 
-type userSecret struct {
+type UserSecret struct {
 	oauth2.Token
 	IDToken     string `json:"id_token"`
 	ConsoleHost string `json:"console_host"`
@@ -37,7 +37,7 @@ type tokenSource struct {
 }
 
 func (k *tokenSource) Token() (*oauth2.Token, error) {
-	secret, err := getUserSecret(k.ctx)
+	secret, err := GetUserSecret(k.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting user secret: %w", err)
 	}
@@ -48,7 +48,7 @@ func (k *tokenSource) Token() (*oauth2.Token, error) {
 // AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
 // Fetches and refreshes tokens as necessary.
 func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
-	secret, err := getUserSecret(ctx)
+	secret, err := GetUserSecret(ctx)
 	if err != nil {
 		return nil, "", fmt.Errorf("getting user token: %w", err)
 	}
@@ -146,7 +146,7 @@ func Logout(ctx context.Context) error {
 	return nil
 }
 
-func getUserSecret(ctx context.Context) (*userSecret, error) {
+func GetUserSecret(ctx context.Context) (*UserSecret, error) {
 	secretData, err := getSecret()
 	if err != nil {
 		if errors.Is(err, errSecretNotFound) {
@@ -155,7 +155,7 @@ func getUserSecret(ctx context.Context) (*userSecret, error) {
 		return nil, fmt.Errorf("getting user secret: %w", err)
 	}
 
-	var sec userSecret
+	var sec UserSecret
 	err = json.Unmarshal([]byte(secretData), &sec)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshalling data from keyring")
@@ -168,8 +168,8 @@ func getUserSecret(ctx context.Context) (*userSecret, error) {
 	return &sec, nil
 }
 
-func saveUserSecret(tok *oauth2.Token, consoleURL string) (*userSecret, error) {
-	sec := &userSecret{
+func saveUserSecret(tok *oauth2.Token, consoleURL string) (*UserSecret, error) {
+	sec := &UserSecret{
 		Token:       *tok,
 		IDToken:     tok.Extra("id_token").(string),
 		ConsoleHost: consoleURL,
@@ -186,7 +186,7 @@ func saveUserSecret(tok *oauth2.Token, consoleURL string) (*userSecret, error) {
 	return sec, nil
 }
 
-func refreshUserToken(ctx context.Context, sec *userSecret) (*userSecret, error) {
+func refreshUserToken(ctx context.Context, sec *UserSecret) (*UserSecret, error) {
 	cfg, _, err := oauthConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting oauth config: %w", err)

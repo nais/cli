@@ -1,4 +1,4 @@
-package naisapi
+package proxy
 
 import (
 	"context"
@@ -7,10 +7,17 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/nais/cli/internal/naisapi"
 )
 
-func RunAPIProxy(ctx context.Context, addr string) error {
-	secret, err := getUserSecret(ctx)
+type Flags struct {
+	*naisapi.Flags
+	ListenAddr string
+}
+
+func Run(ctx context.Context, flags *Flags) error {
+	secret, err := naisapi.GetUserSecret(ctx)
 	if err != nil {
 		return err
 	}
@@ -32,10 +39,10 @@ func RunAPIProxy(ctx context.Context, addr string) error {
 		},
 	}
 
-	fmt.Println("Forwarding requests from", addr, "to", target.String())
+	fmt.Println("Forwarding requests from", flags.ListenAddr, "to", target.String())
 	// Start the server
 	http.Handle("/", proxy)
-	if err := http.ListenAndServe(addr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := http.ListenAndServe(flags.ListenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 	return nil
