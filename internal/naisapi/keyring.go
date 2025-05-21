@@ -11,7 +11,7 @@ import (
 
 const (
 	serviceName = "cli.nais.io"
-	user        = "nais-user"
+	keyringUser = "nais-user"
 )
 
 var errSecretNotFound = errors.New("secret not found in keyring")
@@ -29,7 +29,7 @@ func setSecret(secret string) error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
-		ch <- keyring.Set(serviceName, user, secret)
+		ch <- keyring.Set(serviceName, keyringUser, secret)
 	}()
 	select {
 	case err := <-ch:
@@ -47,7 +47,7 @@ func getSecret() (string, error) {
 	}, 1)
 	go func() {
 		defer close(ch)
-		val, err := keyring.Get(serviceName, user)
+		val, err := keyring.Get(serviceName, keyringUser)
 		ch <- struct {
 			val string
 			err error
@@ -69,7 +69,7 @@ func deleteSecret() error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
-		ch <- keyring.Delete(serviceName, user)
+		ch <- keyring.Delete(serviceName, keyringUser)
 	}()
 	select {
 	case err := <-ch:

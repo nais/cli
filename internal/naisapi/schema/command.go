@@ -16,15 +16,18 @@ type Flags struct {
 }
 
 func Pull(ctx context.Context, _ *Flags) (string, error) {
-	secret, err := naisapi.GetUserSecret(ctx)
+	user, err := naisapi.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return "", err
 	}
 
 	headers := http.Header{}
-	headers.Set("Authorization", "Bearer "+secret.AccessToken)
+	err = user.SetAuthorizationHeader(headers)
+	if err != nil {
+		return "", err
+	}
 
-	schema, err := gqlfetch.BuildClientSchemaWithHeaders(ctx, fmt.Sprintf("https://%s/graphql", secret.ConsoleHost), headers, false)
+	schema, err := gqlfetch.BuildClientSchemaWithHeaders(ctx, fmt.Sprintf("https://%s/graphql", user.ConsoleHost), headers, false)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

@@ -8,11 +8,11 @@ import (
 )
 
 func GraphqlClient(ctx context.Context) (graphql.Client, error) {
-	client, consoleHost, err := AuthenticatedHTTPClient(ctx)
+	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	gqlClient := graphql.NewClient(fmt.Sprintf("https://%s/graphql", consoleHost), client)
+	gqlClient := graphql.NewClient(fmt.Sprintf("https://%s/graphql", user.ConsoleHost), user.HTTPClient(ctx))
 	return gqlClient, nil
 }

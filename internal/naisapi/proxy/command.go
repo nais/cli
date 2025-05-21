@@ -17,7 +17,7 @@ type Flags struct {
 }
 
 func Run(ctx context.Context, flags *Flags) error {
-	secret, err := naisapi.GetUserSecret(ctx)
+	user, err := naisapi.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err
 	}
@@ -25,18 +25,16 @@ func Run(ctx context.Context, flags *Flags) error {
 	// Setup reverse proxy to forward requests to the target server, but using a custom transport that authenticates the request
 	target := &url.URL{
 		Scheme: "https",
-		Host:   secret.ConsoleHost,
+		Host:   user.ConsoleHost,
 	}
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(req *httputil.ProxyRequest) {
 			req.SetURL(target)
-			req.Out.Header.Set("Host", secret.ConsoleHost)
-			req.Out.Header.Set("Authorization", "Bearer "+secret.AccessToken)
-			req.Out.Header.Set("user-agent", req.In.Header.Get("user-agent")+" (nais-api)")
+			req.Out.Header.Set("user-agent", req.In.Header.Get("user-agent")+" (nais-cli)")
 		},
-		Transport: &http.Transport{
+		Transport: user.RoundTripper(&http.Transport{
 			Proxy: http.ProxyFromEnvironment,
-		},
+		}),
 	}
 
 	fmt.Println("Forwarding requests from", flags.ListenAddr, "to", target.String())

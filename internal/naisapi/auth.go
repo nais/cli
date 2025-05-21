@@ -18,46 +18,58 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	zitadelDomain   = "https://auth.nais.io"
-	zitadelClientID = "320114319427740585"
-)
+var ErrNotAuthenticated = errors.New("not authenticated")
 
-type UserSecret struct {
-	oauth2.Token
-	IDToken     string `json:"id_token"`
-	ConsoleHost string `json:"console_host"`
+// AuthenticatedUser represents the authenticated user.
+// It provides primitives for interacting with the Nais API on behalf of the user.
+// The primitives may return an [ErrNotAuthenticated] if the user has invalid or
+// expired credentials, in which case the user must reauthenticate through [Login].
+type AuthenticatedUser struct {
+	oauth2.TokenSource
+	ConsoleHost string
 }
 
-type tenantData struct {
-	ConsoleURL string `json:"consoleUrl"`
-}
-
-type tokenSource struct {
-	ctx context.Context
-}
-
-func (k *tokenSource) Token() (*oauth2.Token, error) {
-	secret, err := GetUserSecret(k.ctx)
+// GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or
+// expired credentials, in which case the user must reauthenticate through [Login].
+func GetAuthenticatedUser(ctx context.Context) (*AuthenticatedUser, error) {
+	secret, err := getUserSecret(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("getting user secret: %w", err)
+		return nil, err
 	}
 
-	return &secret.Token, nil
+	return &AuthenticatedUser{
+		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx}),
+		ConsoleHost: secret.ConsoleHost,
+	}, nil
 }
 
-// AuthenticatedHTTPClient returns a HTTP client configured with the user's access token.
-// Fetches and refreshes tokens as necessary.
-func AuthenticatedHTTPClient(ctx context.Context) (*http.Client, string, error) {
-	secret, err := GetUserSecret(ctx)
+// HTTPClient returns a [http.Client] configured with the user's access token.
+func (a *AuthenticatedUser) HTTPClient(ctx context.Context) *http.Client {
+	return oauth2.NewClient(ctx, a.TokenSource)
+}
+
+// RoundTripper returns a [http.RoundTripper] configured with the user's access token.
+func (a *AuthenticatedUser) RoundTripper(base http.RoundTripper) http.RoundTripper {
+	return &oauth2.Transport{
+		Base:   base,
+		Source: a.TokenSource,
+	}
+}
+
+// SetAuthorizationHeader sets the "Authorization" header with the user's access token.
+func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
+	tok, err := a.TokenSource.Token()
 	if err != nil {
-		return nil, "", fmt.Errorf("getting user token: %w", err)
+		return err
 	}
 
-	ts := oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx})
-	return oauth2.NewClient(ctx, ts), secret.ConsoleHost, nil
+	headers.Set("Authorization", "Bearer "+tok.AccessToken)
+	return nil
 }
 
+// Login initiates the OAuth2 authorization code flow to authenticate the user.
+// The user's secret is saved in the system keyring.
+// See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func Login(ctx context.Context, _ *root.Flags) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
@@ -122,6 +134,7 @@ func Login(ctx context.Context, _ *root.Flags) error {
 	return nil
 }
 
+// Logout deletes the user's secret from the system keyring and triggers logout at the identity provider.
 func Logout(ctx context.Context, _ *root.Flags) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
@@ -147,7 +160,31 @@ func Logout(ctx context.Context, _ *root.Flags) error {
 	return nil
 }
 
-func GetUserSecret(ctx context.Context) (*UserSecret, error) {
+// userSecret defines the data to marshal to and from the system keyring.
+type userSecret struct {
+	oauth2.Token
+	IDToken     string `json:"id_token"`
+	ConsoleHost string `json:"console_host"`
+}
+
+type tenantData struct {
+	ConsoleURL string `json:"consoleUrl"`
+}
+
+type tokenSource struct {
+	ctx context.Context
+}
+
+func (k *tokenSource) Token() (*oauth2.Token, error) {
+	secret, err := getUserSecret(k.ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting user secret: %w", err)
+	}
+
+	return &secret.Token, nil
+}
+
+func getUserSecret(ctx context.Context) (*userSecret, error) {
 	secretData, err := getSecret()
 	if err != nil {
 		if errors.Is(err, errSecretNotFound) {
@@ -156,7 +193,7 @@ func GetUserSecret(ctx context.Context) (*UserSecret, error) {
 		return nil, fmt.Errorf("getting user secret: %w", err)
 	}
 
-	var sec UserSecret
+	var sec userSecret
 	err = json.Unmarshal([]byte(secretData), &sec)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshalling data from keyring")
@@ -169,8 +206,8 @@ func GetUserSecret(ctx context.Context) (*UserSecret, error) {
 	return &sec, nil
 }
 
-func saveUserSecret(tok *oauth2.Token, consoleURL string) (*UserSecret, error) {
-	sec := &UserSecret{
+func saveUserSecret(tok *oauth2.Token, consoleURL string) (*userSecret, error) {
+	sec := &userSecret{
 		Token:       *tok,
 		IDToken:     tok.Extra("id_token").(string),
 		ConsoleHost: consoleURL,
@@ -187,7 +224,7 @@ func saveUserSecret(tok *oauth2.Token, consoleURL string) (*UserSecret, error) {
 	return sec, nil
 }
 
-func refreshUserToken(ctx context.Context, sec *UserSecret) (*UserSecret, error) {
+func refreshUserToken(ctx context.Context, sec *userSecret) (*userSecret, error) {
 	cfg, _, err := oauthConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting oauth config: %w", err)
@@ -243,19 +280,17 @@ func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfigurat
 }
 
 func oauthIssuer() string {
-	issuer := os.Getenv("NAIS_ZITADEL_DOMAIN")
-	if issuer == "" {
-		return zitadelDomain
+	if issuer := os.Getenv("NAIS_ZITADEL_DOMAIN"); issuer != "" {
+		return issuer
 	}
-	return issuer
+	return "https://auth.nais.io"
 }
 
 func oauthClientID() string {
-	clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID")
-	if clientID == "" {
-		return zitadelClientID
+	if clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID"); clientID != "" {
+		return clientID
 	}
-	return clientID
+	return "320114319427740585"
 }
 
 func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) {
