@@ -20,7 +20,7 @@ func loginCommand(rootFlags *root.Flags) *cobra.Command {
 				return naisapi.Login(cmd.Context(), rootFlags)
 			}
 
-			return gcp.Run(cmd.Context(), rootFlags)
+			return gcp.Login(cmd.Context(), rootFlags)
 		},
 	}
 

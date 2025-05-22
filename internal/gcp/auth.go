@@ -10,8 +10,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-
-	"github.com/nais/cli/internal/root"
 )
 
 func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, error) {
@@ -89,23 +87,4 @@ func GetActiveUserEmail(ctx context.Context) (string, error) {
 	}
 
 	return user, nil
-}
-
-func Login(ctx context.Context, _ *root.Flags) error {
-	args := []string{
-		"auth",
-		"login",
-		"--update-adc",
-	}
-
-	buf := &bytes.Buffer{}
-	cmd := exec.CommandContext(ctx, "gcloud", args...)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("%v\nerror running '%v' command: %w", buf.String(), cmd.String(), err)
-	}
-
-	return nil
 }

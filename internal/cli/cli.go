@@ -36,7 +36,9 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 		aivenCommand(cmdFlags),
 		deviceCommand(cmdFlags),
 		postgresCommand(cmdFlags),
-		naisApiCommand(cmdFlags),
+		alphaCommand(
+			naisApiCommand(cmdFlags),
+		),
 	)
 
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
