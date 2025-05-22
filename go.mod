@@ -15,6 +15,7 @@ tool (
 require (
 	cloud.google.com/go/cloudsqlconn v1.16.1
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7
+	github.com/Khan/genqlient v0.8.0
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.17.1
 	github.com/google/uuid v1.6.0
@@ -32,6 +33,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/suessflorian/gqlfetch v0.6.0
 	github.com/xeipuuv/gojsonschema v1.2.0
+	github.com/zalando/go-keyring v0.2.6
 	github.com/zitadel/oidc/v3 v3.38.1
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.35.0
@@ -62,7 +64,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	cloud.google.com/go/longrunning v0.5.7 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
-	github.com/Khan/genqlient v0.8.0
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/alexflint/go-arg v1.4.2 // indirect
 	github.com/alexflint/go-scalar v1.0.0 // indirect
@@ -138,7 +139,6 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	github.com/zalando/go-keyring v0.2.6
 	github.com/zitadel/logging v0.6.2 // indirect
 	github.com/zitadel/schema v1.3.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
