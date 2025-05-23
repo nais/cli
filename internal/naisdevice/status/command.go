@@ -3,6 +3,7 @@ package status
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/root"
@@ -21,11 +22,21 @@ func Status(rootFlags *root.Flags) *cli.Command {
 		cli.WithFlag("output", "Output format, can be json or yaml", "o", &flags.Output),
 		cli.WithFlag("quiet", "Suppress output if not connected", "q", &flags.Quiet),
 		cli.WithHandler(run(flags)),
+		cli.WithPreRun(prerun(flags)),
 	)
 }
 
+func prerun(flags *Flags) cli.HandlerFunc {
+	return func(ctx context.Context, _ []string) error {
+		if !slices.Contains([]string{"", "yaml", "json"}, flags.Output) {
+			return fmt.Errorf("%v is not an implemented format", flags.Output)
+		}
+		return nil
+	}
+}
+
 func run(flags *Flags) cli.HandlerFunc {
-	return func(ctx context.Context) error {
+	return func(ctx context.Context, _ []string) error {
 		status, err := GetStatus(ctx)
 		if err != nil {
 			return err

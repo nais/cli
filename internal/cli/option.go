@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -43,8 +44,40 @@ func WithStickyFlag[T flagTypes](name, usage, short string, value *T) CommandOpt
 func WithHandler(handler HandlerFunc) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.RunE = func(co *cobra.Command, args []string) error {
-			return handler(co.Context())
+			return handler(co.Context(), args)
 		}
+	}
+}
+
+func WithPreRun(prerun HandlerFunc) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.PreRunE = func(co *cobra.Command, args []string) error {
+			return prerun(co.Context(), args)
+		}
+	}
+}
+
+func WithAutoComplete(autocomplete func(ctx context.Context, args []string) ([]string, string)) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.ValidArgsFunction = func(co *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+			suggestions, help := autocomplete(co.Context(), args)
+			if help != "" {
+				suggestions = cobra.AppendActiveHelp(suggestions, help)
+			}
+			return suggestions, cobra.ShellCompDirectiveNoFileComp
+		}
+	}
+}
+
+func WithMinArgs(n int) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.Args = cobra.MinimumNArgs(n)
+	}
+}
+
+func WithExactArgs(n int) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.Args = cobra.ExactArgs(n)
 	}
 }
 

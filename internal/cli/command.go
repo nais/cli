@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type HandlerFunc func(context.Context) error
+type HandlerFunc func(context.Context, []string) error
 
 type Application struct {
 	cobraCmd *cobra.Command
