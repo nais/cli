@@ -3,11 +3,12 @@ package cli
 import (
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func loginCommand(rootFlags *root.Flags) *cobra.Command {
+func loginCommand(w output.Output, rootFlags *root.Flags) *cobra.Command {
 	cmdFlagNais := false
 
 	cmd := &cobra.Command{
@@ -17,10 +18,10 @@ func loginCommand(rootFlags *root.Flags) *cobra.Command {
 		Long:    `Login to the Nais platform, uses "gcloud auth login --update-adc" by default.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if cmdFlagNais {
-				return naisapi.Login(cmd.Context(), rootFlags)
+				return naisapi.Login(cmd.Context(), w)
 			}
 
-			return gcp.Login(cmd.Context(), rootFlags)
+			return gcp.Login(cmd.Context(), w)
 		},
 	}
 

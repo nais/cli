@@ -8,6 +8,7 @@ import (
 
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
@@ -27,9 +28,12 @@ func Run(ctx context.Context) error {
 	cmd.PersistentFlags().CountVarP(&cmdFlags.VerboseLevel, "verbose", "v", `Verbose output.
 Use -v for info, -vv for debug, -vvv for trace.`)
 	cmd.AddGroup(authGroup)
+
+	w := output.NewWriter(cmd.OutOrStdout())
+
 	cmd.AddCommand(
-		loginCommand(cmdFlags),
-		logoutCommand(cmdFlags),
+		loginCommand(w, cmdFlags),
+		logoutCommand(w, cmdFlags),
 		kubeconfigCommand(cmdFlags),
 		validateCommand(cmdFlags),
 		debugCommand(cmdFlags),
