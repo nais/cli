@@ -11,62 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Connect(ctx context.Context) error {
-	connection, err := naisdevicegrpc.AgentConnection()
-	if err != nil {
-		return err
-	}
-
-	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
-
-	_, err = client.Login(ctx, &pb.LoginRequest{})
-	if err != nil {
-		return naisdevicegrpc.FormatGrpcError(err)
-	}
-
-	return waitForConnectionState(ctx, client, pb.AgentState_Connected)
-}
-
-func Disconnect(ctx context.Context) error {
-	connection, err := naisdevicegrpc.AgentConnection()
-	if err != nil {
-		return err
-	}
-
-	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
-
-	_, err = client.Logout(ctx, &pb.LogoutRequest{})
-	if err != nil {
-		return naisdevicegrpc.FormatGrpcError(err)
-	}
-
-	return waitForConnectionState(ctx, client, pb.AgentState_Disconnected)
-}
-
-func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wantedAgentState pb.AgentState) error {
-	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
-		KeepConnectionOnComplete: true,
-	})
-	if err != nil {
-		return naisdevicegrpc.FormatGrpcError(err)
-	}
-
-	for stream.Context().Err() == nil {
-		status, err := stream.Recv()
-		if err != nil {
-			return fmt.Errorf("error while receiving status: %w", err)
-		}
-		fmt.Printf("State: %s\n", status.ConnectionState)
-		if status.ConnectionState == wantedAgentState {
-			return nil
-		}
-	}
-
-	return stream.Context().Err()
-}
-
 func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 	connection, err := naisdevicegrpc.AgentConnection()
 	if err != nil {

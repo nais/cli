@@ -5,7 +5,19 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+
+	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/root"
 )
+
+func Jita(rootFlags *root.Flags) *cli.Command {
+	return cli.NewCommand("jita", "Connect to a JITA gateway.",
+		cli.WithPositionalArgs("gateway"),
+		cli.WithHandler(run),
+		cli.WithMinArgs(1),
+		cli.WithAutoComplete(autocomplete),
+	)
+}
 
 type Arguments struct {
 	Gateways []string
@@ -20,19 +32,34 @@ func Gateways(ctx context.Context) ([]string, error) {
 	return privilegedGateways, nil
 }
 
-func Run(ctx context.Context, args Arguments) error {
+func autocomplete(ctx context.Context, args []string) ([]string, string) {
+	gateways, err := Gateways(ctx)
+	if err != nil {
+		msg := fmt.Sprintf("error listing gateways: %v - is it running?", err)
+		return nil, msg
+	}
+
+	// don't suggest gateways already present in args
+	gateways = slices.DeleteFunc(gateways, func(gateway string) bool {
+		return slices.Contains(args, gateway)
+	})
+
+	return gateways, ""
+}
+
+func run(ctx context.Context, args []string) error {
 	privilegedGateways, err := GetPrivilegedGateways(ctx)
 	if err != nil {
 		return err
 	}
 
-	for _, gateway := range args.Gateways {
+	for _, gateway := range args {
 		if !slices.Contains(privilegedGateways, gateway) {
 			return fmt.Errorf("%v is not one of the privileged gateways: %v", gateway, strings.Join(privilegedGateways, ", "))
 		}
 	}
 
-	for _, gateway := range args.Gateways {
+	for _, gateway := range args {
 		if err := AccessPrivilegedGateway(gateway); err != nil {
 			return fmt.Errorf("access JITA gateway: %w", err)
 		}

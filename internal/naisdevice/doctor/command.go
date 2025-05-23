@@ -5,10 +5,18 @@ import (
 	"fmt"
 
 	"github.com/mitchellh/go-ps"
+	"github.com/nais/cli/internal/cli"
 	doc "github.com/nais/cli/internal/doctor"
+	"github.com/nais/cli/internal/root"
 )
 
-func Run(ctx context.Context) error {
+func Doctor(rootFlags *root.Flags) *cli.Command {
+	return cli.NewCommand("doctor", "Check the health of your naisdevice.",
+		cli.WithHandler(run),
+	)
+}
+
+func run(ctx context.Context, _ []string) error {
 	results := examination().Run()
 	for key, value := range results {
 		fmt.Printf("%s ", key)
