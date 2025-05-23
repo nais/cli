@@ -30,6 +30,7 @@ require (
 	github.com/pterm/pterm v0.12.80
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/spf13/cobra v1.9.1
+	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	github.com/suessflorian/gqlfetch v0.6.0
 	github.com/xeipuuv/gojsonschema v1.2.0
@@ -130,7 +131,6 @@ require (
 	github.com/securego/gosec/v2 v2.22.3 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/vektah/gqlparser v1.3.1 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.27 // indirect

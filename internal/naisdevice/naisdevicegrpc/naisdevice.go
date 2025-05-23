@@ -1,4 +1,4 @@
-package naisdevice
+package naisdevicegrpc
 
 import (
 	"fmt"
