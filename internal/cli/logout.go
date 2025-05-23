@@ -3,11 +3,12 @@ package cli
 import (
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/spf13/cobra"
 )
 
-func logoutCommand(rootFlags *root.Flags) *cobra.Command {
+func logoutCommand(w output.Output, rootFlags *root.Flags) *cobra.Command {
 	cmdFlagNais := false
 	cmd := &cobra.Command{
 		GroupID: authGroup.ID,
@@ -16,10 +17,10 @@ func logoutCommand(rootFlags *root.Flags) *cobra.Command {
 		Long:    "This logs you out of Nais and removes credentials from your local machine.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if cmdFlagNais {
-				return naisapi.Logout(cmd.Context(), rootFlags)
+				return naisapi.Logout(cmd.Context(), w)
 			}
 
-			return gcp.Logout(cmd.Context(), rootFlags)
+			return gcp.Logout(cmd.Context(), w)
 		},
 	}
 

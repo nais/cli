@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -70,7 +70,7 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 // Login initiates the OAuth2 authorization code flow to authenticate the user.
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
-func Login(ctx context.Context, _ *root.Flags) error {
+func Login(ctx context.Context, w output.Output) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
@@ -80,17 +80,22 @@ func Login(ctx context.Context, _ *root.Flags) error {
 	verifier := oauth2.GenerateVerifier()
 	ch := make(chan *oauth2.Token)
 
-	go listenServer(ctx, conf, verifier, state, ch)
+	go func() {
+		if err := listenServer(ctx, conf, verifier, state, ch); err != nil {
+			w.Println("Error starting server:", err)
+			return
+		}
+	}()
 
 	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
 
 	_ = urlopen.Open(url)
 
-	fmt.Println("Your browser has been opened to visit:")
-	fmt.Println()
-	fmt.Println(url)
-	fmt.Println()
-	fmt.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
+	w.Println("Your browser has been opened to visit:")
+	w.Println()
+	w.Println(url)
+	w.Println()
+	w.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
 
 	var tok *oauth2.Token
 	select {
@@ -135,7 +140,7 @@ func Login(ctx context.Context, _ *root.Flags) error {
 }
 
 // Logout deletes the user's secret from the system keyring and triggers logout at the identity provider.
-func Logout(ctx context.Context, _ *root.Flags) error {
+func Logout(ctx context.Context, w output.Output) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
 		return fmt.Errorf("deleting user secret: %w", err)
@@ -150,12 +155,12 @@ func Logout(ctx context.Context, _ *root.Flags) error {
 
 	_ = urlopen.Open(url)
 
-	fmt.Println("To complete logout, your browser has been opened to visit:")
-	fmt.Println()
-	fmt.Println(url)
-	fmt.Println()
-	fmt.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar.")
-	fmt.Println()
+	w.Println("To complete logout, your browser has been opened to visit:")
+	w.Println()
+	w.Println(url)
+	w.Println()
+	w.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar.")
+	w.Println()
 
 	return nil
 }
@@ -293,7 +298,7 @@ func oauthClientID() string {
 	return "320114319427740585"
 }
 
-func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) {
+func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) error {
 	srv := &http.Server{Addr: ":8865"}
 	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("state") != state {
@@ -319,8 +324,9 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 		_ = srv.Shutdown(context.Background())
 	}()
 
-	err := srv.ListenAndServe()
-	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		_, _ = fmt.Fprint(os.Stderr, "Errored while starting server: ", err)
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return err
 	}
+
+	return nil
 }

@@ -1,36 +1,33 @@
 package gcp
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/output"
 )
 
-func Login(ctx context.Context, _ *root.Flags) error {
-	return executeCommand(ctx, "auth", "login", "--update-adc")
+func Login(ctx context.Context, w output.Output) error {
+	return executeCommand(ctx, w, "auth", "login", "--update-adc")
 }
 
-func Logout(ctx context.Context, _ *root.Flags) error {
-	if err := executeCommand(ctx, "auth", "application-default", "revoke", "--quiet"); err != nil {
+func Logout(ctx context.Context, w output.Output) error {
+	if err := executeCommand(ctx, w, "auth", "application-default", "revoke", "--quiet"); err != nil {
 		return err
 	}
 
-	return executeCommand(ctx, "auth", "revoke")
+	return executeCommand(ctx, w, "auth", "revoke")
 }
 
-func executeCommand(ctx context.Context, arg ...string) error {
-	buf := &bytes.Buffer{}
+func executeCommand(ctx context.Context, w output.Output, arg ...string) error {
 	cmd := exec.CommandContext(ctx, "gcloud", arg...)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("%v\nerror running %q command: %w", buf.String(), cmd.String(), err)
+	o, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%v\nerror running %q command: %w", string(o), cmd.String(), err)
 	}
+
+	w.Println(string(o))
 
 	return nil
 }
