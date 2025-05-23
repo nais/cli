@@ -1,4 +1,4 @@
-package naisdevice
+package status
 
 import (
 	"context"
@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/nais/cli/internal/naisdevice/naisdevicegrpc"
 	"github.com/nais/device/pkg/pb"
 	"gopkg.in/yaml.v3"
 )
 
 func Connect(ctx context.Context) error {
-	connection, err := AgentConnection()
+	connection, err := naisdevicegrpc.AgentConnection()
 	if err != nil {
 		return err
 	}
@@ -21,14 +22,14 @@ func Connect(ctx context.Context) error {
 
 	_, err = client.Login(ctx, &pb.LoginRequest{})
 	if err != nil {
-		return FormatGrpcError(err)
+		return naisdevicegrpc.FormatGrpcError(err)
 	}
 
 	return waitForConnectionState(ctx, client, pb.AgentState_Connected)
 }
 
 func Disconnect(ctx context.Context) error {
-	connection, err := AgentConnection()
+	connection, err := naisdevicegrpc.AgentConnection()
 	if err != nil {
 		return err
 	}
@@ -38,7 +39,7 @@ func Disconnect(ctx context.Context) error {
 
 	_, err = client.Logout(ctx, &pb.LogoutRequest{})
 	if err != nil {
-		return FormatGrpcError(err)
+		return naisdevicegrpc.FormatGrpcError(err)
 	}
 
 	return waitForConnectionState(ctx, client, pb.AgentState_Disconnected)
@@ -49,7 +50,7 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 		KeepConnectionOnComplete: true,
 	})
 	if err != nil {
-		return FormatGrpcError(err)
+		return naisdevicegrpc.FormatGrpcError(err)
 	}
 
 	for stream.Context().Err() == nil {
@@ -67,7 +68,7 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 }
 
 func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
-	connection, err := AgentConnection()
+	connection, err := naisdevicegrpc.AgentConnection()
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 		KeepConnectionOnComplete: true,
 	})
 	if err != nil {
-		return nil, FormatGrpcError(err)
+		return nil, naisdevicegrpc.FormatGrpcError(err)
 	}
 
 	return stream.Recv()

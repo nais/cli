@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-
-	"github.com/nais/cli/internal/naisdevice"
 )
 
 type Arguments struct {
@@ -14,7 +12,7 @@ type Arguments struct {
 }
 
 func Gateways(ctx context.Context) ([]string, error) {
-	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
+	privilegedGateways, err := GetPrivilegedGateways(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +21,7 @@ func Gateways(ctx context.Context) ([]string, error) {
 }
 
 func Run(ctx context.Context, args Arguments) error {
-	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
+	privilegedGateways, err := GetPrivilegedGateways(ctx)
 	if err != nil {
 		return err
 	}
@@ -35,7 +33,7 @@ func Run(ctx context.Context, args Arguments) error {
 	}
 
 	for _, gateway := range args.Gateways {
-		if err := naisdevice.AccessPrivilegedGateway(gateway); err != nil {
+		if err := AccessPrivilegedGateway(gateway); err != nil {
 			return fmt.Errorf("access JITA gateway: %w", err)
 		}
 	}
