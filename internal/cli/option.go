@@ -33,7 +33,7 @@ func WithLong(long string) CommandOption {
 	}
 }
 
-func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...flagOption) CommandOption {
+func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, short, usage, value, c.cobraCmd.Flags())
 		for _, opt := range opts {
@@ -42,7 +42,7 @@ func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...flagOpti
 	}
 }
 
-func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...flagOption) CommandOption {
+func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, short, usage, value, c.cobraCmd.PersistentFlags())
 		for _, opt := range opts {

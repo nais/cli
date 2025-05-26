@@ -11,14 +11,6 @@ type count int
 
 type flagTypes interface{ int | bool | string | count }
 
-type flag[T flagTypes] struct {
-	name   string
-	usage  string
-	short  string
-	sticky bool
-	value  *T
-}
-
 func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	if len(short) > 1 {
 		panic("short flag must be a single character")
@@ -48,10 +40,12 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	}
 }
 
-type flagOption func(*cobra.Command, string)
+type FlagOption func(*cobra.Command, string)
 
-func FlagRequired() flagOption {
+func FlagRequired() FlagOption {
 	return func(cmd *cobra.Command, name string) {
-		cmd.MarkFlagRequired(name)
+		if err := cmd.MarkFlagRequired(name); err != nil {
+			panic("failed to mark flag as required: " + err.Error())
+		}
 	}
 }

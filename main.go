@@ -2,23 +2,24 @@ package main
 
 import (
 	"context"
+	"os"
 
+	"github.com/nais/cli/internal/auth/login"
+	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
 )
 
 func main() {
-	ctx := context.Background()
-	applicationFlags := root.Flags{}
-
-	(&cli.Application{
-		Commands: []*cli.Command{
-			naisdevice.Command(&applicationFlags),
-		},
-	}).Run(ctx)
-
-	// if err := cli.Run(context.Background()); err != nil {
-	// 	os.Exit(1)
-	// }
+	flags := &root.Flags{}
+	app := cli.NewApplication(
+		login.Command(flags),
+		logout.Command(flags),
+		naisdevice.Command(flags),
+	)
+	if err := app.Run(context.Background()); err != nil {
+		// TODO: output error
+		os.Exit(1)
+	}
 }

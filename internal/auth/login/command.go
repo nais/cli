@@ -1,0 +1,26 @@
+package login
+
+import (
+	"context"
+
+	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/root"
+)
+
+func Command(_ *root.Flags) *cli.Command {
+	cmdFlagNais := false
+	return cli.NewCommand("login", "Log in to the Nais platform.",
+		cli.WithLong(`Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`),
+		cli.WithRun(func(ctx context.Context, w output.Output, _ []string) error {
+			if cmdFlagNais {
+				return naisapi.Login(ctx, w)
+			}
+
+			return gcp.Login(ctx, w)
+		}),
+		cli.WithFlag("nais", "n", "Login using login.nais.io instead of gcloud.", &cmdFlagNais),
+	)
+}
