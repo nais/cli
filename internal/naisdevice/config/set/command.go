@@ -26,7 +26,7 @@ func validate(_ context.Context, args []string) error {
 	return nil
 }
 
-func autocomplete(ctx context.Context, args []string) ([]string, string) {
+func autocomplete(ctx context.Context, args []string, _ string) ([]string, string) {
 	if len(args) == 0 {
 		return GetAllowedSettings(false, false), ""
 	} else if len(args) == 1 {

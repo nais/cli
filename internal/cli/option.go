@@ -64,13 +64,14 @@ func WithValidate(validate ValidateFunc) CommandOption {
 	}
 }
 
-func WithAutoComplete(autocomplete func(ctx context.Context, args []string) ([]string, string)) CommandOption {
+func WithAutoComplete(autocomplete func(ctx context.Context, args []string, toComplete string) ([]string, string)) CommandOption {
 	return func(c *Command) {
-		c.cobraCmd.ValidArgsFunction = func(co *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
-			suggestions, help := autocomplete(co.Context(), args)
+		c.cobraCmd.ValidArgsFunction = func(co *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			suggestions, help := autocomplete(co.Context(), args, toComplete)
 			if help != "" {
 				suggestions = cobra.AppendActiveHelp(suggestions, help)
 			}
+
 			return suggestions, cobra.ShellCompDirectiveNoFileComp
 		}
 	}

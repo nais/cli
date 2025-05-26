@@ -32,7 +32,7 @@ func Gateways(ctx context.Context) ([]string, error) {
 	return privilegedGateways, nil
 }
 
-func autocomplete(ctx context.Context, args []string) ([]string, string) {
+func autocomplete(ctx context.Context, args []string, _ string) ([]string, string) {
 	gateways, err := Gateways(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("error listing gateways: %v - is it running?", err)
