@@ -20,6 +20,10 @@ type flag[T flagTypes] struct {
 }
 
 func setupFlag(name, usage, short string, value any, flags *pflag.FlagSet) {
+	if len(short) > 1 {
+		panic("short flag must be a single character")
+	}
+
 	switch ptr := value.(type) {
 	case *string:
 		if short == "" {
