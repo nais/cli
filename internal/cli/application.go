@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +13,7 @@ type Application struct {
 	cobraCmd *cobra.Command
 }
 
-func NewApplication(cmd ...*Command) *Application {
+func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
 	cc := &cobra.Command{
 		Use:                "nais",
 		Long:               "Nais CLI",
@@ -20,6 +21,8 @@ func NewApplication(cmd ...*Command) *Application {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
+	cc.PersistentFlags().CountVarP(&flags.VerboseLevel, "verbose", "v", `Verbose output.
+Use -v for info, -vv for debug, -vvv for trace.`)
 
 	w := output.NewWriter(cc.OutOrStdout())
 

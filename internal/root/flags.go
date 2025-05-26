@@ -14,3 +14,8 @@ func (f *Flags) IsVerbose() bool {
 func (f *Flags) IsDebug() bool {
 	return f != nil && f.VerboseLevel > 1
 }
+
+// IsTrace checks if Nais CLI is running in trace mode (-vvv).
+func (f *Flags) IsTrace() bool {
+	return f != nil && f.VerboseLevel > 2
+}

@@ -13,7 +13,7 @@ import (
 
 func main() {
 	flags := &root.Flags{}
-	app := cli.NewApplication(
+	app := cli.NewApplication(flags,
 		login.Command(flags),
 		logout.Command(flags),
 		naisdevice.Command(flags),
