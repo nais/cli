@@ -7,10 +7,11 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
-func Command(rootFlags *root.Flags) *cli.Command {
+func Command(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("jita", "Connect to a JITA gateway.",
 		cli.WithArgs("gateway"),
 		cli.WithRun(run),
@@ -47,7 +48,7 @@ func autocomplete(ctx context.Context, args []string, _ string) ([]string, strin
 	return gateways, ""
 }
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context, _ output.Output, args []string) error {
 	privilegedGateways, err := GetPrivilegedGateways(ctx)
 	if err != nil {
 		return err

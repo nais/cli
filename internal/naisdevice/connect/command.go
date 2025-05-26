@@ -5,15 +5,14 @@ import (
 
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice/naisdevicegrpc"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
-func Command(rootFlags *root.Flags) *cli.Command {
+func Command(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("connect", "Connect your naisdevice.",
-		cli.WithRun(run),
+		cli.WithRun(func(ctx context.Context, _ output.Output, _ []string) error {
+			return naisdevicegrpc.Connect(ctx)
+		}),
 	)
-}
-
-func run(ctx context.Context, _ []string) error {
-	return naisdevicegrpc.Connect(ctx)
 }

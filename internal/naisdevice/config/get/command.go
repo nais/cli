@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
-func Get(rootFlags *root.Flags) *cli.Command {
+func Get(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("get", "Get a naisdevice setting.",
 		cli.WithArgs("setting"),
 		cli.WithRun(run),
@@ -17,7 +18,7 @@ func Get(rootFlags *root.Flags) *cli.Command {
 	)
 }
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context, w output.Output, args []string) error {
 	setting := args[0]
 
 	values, err := get(ctx)
@@ -26,9 +27,9 @@ func run(ctx context.Context, args []string) error {
 	}
 
 	if strings.EqualFold(setting, "autoconnect") {
-		fmt.Printf("%v:\t%v\n", setting, values.AutoConnect)
+		w.Printf("%v:\t%v\n", setting, values.AutoConnect)
 	} else if strings.EqualFold(setting, "iloveninetiesboybands") {
-		fmt.Printf("%v:\t%v\n", setting, values.ILoveNinetiesBoybands)
+		w.Printf("%v:\t%v\n", setting, values.ILoveNinetiesBoybands)
 	} else {
 		return fmt.Errorf("unknown setting: %v", setting)
 	}

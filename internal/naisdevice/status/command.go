@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -26,7 +27,7 @@ func Command(rootFlags *root.Flags) *cli.Command {
 	)
 }
 
-func (h *handler) Validate(ctx context.Context, _ []string) error {
+func (h *handler) Validate(_ context.Context, _ []string) error {
 	if !slices.Contains([]string{"", "yaml", "json"}, h.Output) {
 		return fmt.Errorf("%v is not an implemented format", h.Output)
 	}
@@ -34,7 +35,7 @@ func (h *handler) Validate(ctx context.Context, _ []string) error {
 	return nil
 }
 
-func (h *handler) Run(ctx context.Context, _ []string) error {
+func (h *handler) Run(ctx context.Context, w output.Output, _ []string) error {
 	status, err := GetStatus(ctx)
 	if err != nil {
 		return err
@@ -56,7 +57,7 @@ func (h *handler) Run(ctx context.Context, _ []string) error {
 		return nil
 	}
 
-	fmt.Println(status.ConnectionState.String())
+	w.Println(status.ConnectionState.String())
 
 	return nil
 }

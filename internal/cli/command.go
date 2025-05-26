@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
 )
@@ -17,6 +18,7 @@ type Application struct {
 
 type Command struct {
 	cobraCmd *cobra.Command
+	output   output.Output
 
 	validateFuncs []ValidateFunc
 	subCommands   []*Command
@@ -36,8 +38,10 @@ func (a *Application) setup() {
 		DisableSuggestions: true,
 	}
 
+	w := output.NewWriter(a.cobraCmd.OutOrStdout())
+
 	for _, cmd := range a.Commands {
-		cmd.setup()
+		cmd.setup(w)
 		a.cobraCmd.AddCommand(cmd.cobraCmd)
 	}
 }
@@ -72,9 +76,10 @@ func NewCommand(name, short string, opts ...CommandOption) *Command {
 	return cmd
 }
 
-func (c *Command) setup() {
+func (c *Command) setup(w output.Output) {
+	c.output = w
 	for _, sub := range c.subCommands {
-		sub.setup()
+		sub.setup(w)
 		c.cobraCmd.AddCommand(sub.cobraCmd)
 	}
 }

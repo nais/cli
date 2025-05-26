@@ -6,10 +6,11 @@ import (
 	"strconv"
 
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
-func Set(rootFlags *root.Flags) *cli.Command {
+func Set(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("set", "Set a configuration value.",
 		cli.WithArgs("setting", "value"),
 		cli.WithAutoComplete(autocomplete),
@@ -26,7 +27,7 @@ func validate(_ context.Context, args []string) error {
 	return nil
 }
 
-func autocomplete(ctx context.Context, args []string, _ string) ([]string, string) {
+func autocomplete(_ context.Context, args []string, _ string) ([]string, string) {
 	if len(args) == 0 {
 		return GetAllowedSettings(false, false), ""
 	} else if len(args) == 1 {
@@ -40,7 +41,7 @@ func autocomplete(ctx context.Context, args []string, _ string) ([]string, strin
 	return nil, "no more inputs expected, press enter"
 }
 
-func run(ctx context.Context, args []string) error {
+func run(ctx context.Context, w output.Output, args []string) error {
 	setting := args[0]
 	value, err := strconv.ParseBool(args[1])
 	if err != nil {
@@ -51,7 +52,7 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	fmt.Printf("%v has been set to %v\n", setting, value)
+	w.Printf("%v has been set to %v\n", setting, value)
 
 	return nil
 }

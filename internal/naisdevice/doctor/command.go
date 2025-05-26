@@ -2,54 +2,54 @@ package doctor
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mitchellh/go-ps"
 	"github.com/nais/cli/internal/cli"
 	doc "github.com/nais/cli/internal/doctor"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
-func Command(rootFlags *root.Flags) *cli.Command {
+func Command(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("doctor", "Check the health of your naisdevice.",
 		cli.WithRun(run),
 	)
 }
 
-func run(ctx context.Context, _ []string) error {
-	results := examination().Run()
+func run(_ context.Context, w output.Output, _ []string) error {
+	results := examination(w).Run()
 	for key, value := range results {
-		fmt.Printf("%s ", key)
+		w.Printf("%s ", key)
 		if value.Result == doc.OK {
-			println("✅")
+			w.Println("✅")
 		} else {
-			fmt.Printf("❌ (%s)\n", value.ErrMsg)
+			w.Printf("❌ (%s)\n", value.ErrMsg)
 		}
 	}
-	println()
+	w.Println()
 	return nil
 }
 
-func examination() doc.Examination {
+func examination(w output.Output) doc.Examination {
 	checkName := "Is Kolide and Osquery running?"
 	return doc.Examination{
 		Name: "Device checks",
 		Checks: []doc.Check{
 			{
 				Name:   checkName,
-				Worker: kolideWorker(checkName),
+				Worker: kolideWorker(checkName, w),
 			},
 		},
 	}
 }
 
-func kolideWorker(checkName string) doc.Worker {
+func kolideWorker(checkName string, w output.Output) doc.Worker {
 	return func() doc.CheckReport {
-		kolideRunning, err := isRunning("launcher")
+		kolideRunning, err := isRunning("launcher", w)
 		if err != nil || !kolideRunning {
 			return errorReport(checkName, "Kolide is not running")
 		}
-		osQueryRunning, err := isRunning("osqueryd")
+		osQueryRunning, err := isRunning("osqueryd", w)
 		if err != nil || !osQueryRunning {
 			return errorReport(checkName, "Osquery is not running")
 		}
@@ -57,10 +57,10 @@ func kolideWorker(checkName string) doc.Worker {
 	}
 }
 
-func isRunning(desiredProc string) (bool, error) {
+func isRunning(desiredProc string, w output.Output) (bool, error) {
 	runningProcs, err := ps.Processes()
 	if err != nil {
-		fmt.Printf("Process listing failed: %v\n", err)
+		w.Printf("Process listing failed: %v\n", err)
 		return false, err
 	}
 	for _, runningProc := range runningProcs {

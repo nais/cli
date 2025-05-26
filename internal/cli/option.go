@@ -4,11 +4,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/nais/cli/internal/output"
 	"github.com/spf13/cobra"
 )
 
 type (
-	RunFunc      func(context.Context, []string) error
+	RunFunc      func(context.Context, output.Output, []string) error
 	ValidateFunc func(context.Context, []string) error
 )
 
@@ -53,7 +54,7 @@ func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...fl
 func WithRun(run RunFunc) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.RunE = func(co *cobra.Command, args []string) error {
-			return run(co.Context(), args)
+			return run(co.Context(), c.output, args)
 		}
 	}
 }

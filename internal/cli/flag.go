@@ -19,7 +19,7 @@ type flag[T flagTypes] struct {
 	value  *T
 }
 
-func setupFlag(name, usage, short string, value any, flags *pflag.FlagSet) {
+func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	if len(short) > 1 {
 		panic("short flag must be a single character")
 	}
