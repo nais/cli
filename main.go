@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	aivencommand "github.com/nais/cli/internal/aiven/command"
 	"github.com/nais/cli/internal/auth/login"
 	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
@@ -17,6 +18,7 @@ func main() {
 		login.Command(flags),
 		logout.Command(flags),
 		naisdevice.Command(flags),
+		aivencommand.Command(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error
