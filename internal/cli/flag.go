@@ -9,7 +9,9 @@ import (
 
 type count int
 
-type flagTypes interface{ int | bool | string | count }
+type flagTypes interface {
+	uint | int | bool | string | count | []string
+}
 
 func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	if len(short) > 1 {
@@ -29,11 +31,25 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		} else {
 			flags.BoolVarP(ptr, name, short, false, usage)
 		}
+	case *uint:
+		if short == "" {
+			flags.UintVar(ptr, name, 0, usage)
+		} else {
+			flags.UintVarP(ptr, name, short, 0, usage)
+		}
 	case *int:
 		if short == "" {
-			flags.CountVar(ptr, name, usage)
+			flags.IntVar(ptr, name, 0, usage)
 		} else {
-			flags.CountVarP(ptr, name, short, usage)
+			flags.IntVarP(ptr, name, short, 0, usage)
+		}
+	case *count:
+		intPtr := (*int)(ptr)
+
+		if short == "" {
+			flags.CountVar(intPtr, name, usage)
+		} else {
+			flags.CountVarP(intPtr, name, short, usage)
 		}
 	default:
 		panic(fmt.Sprintf("unknown flag type: %T", value))
