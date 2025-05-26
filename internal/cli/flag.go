@@ -1,10 +1,17 @@
 package cli
 
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+)
+
 type count int
 
 type flagTypes interface{ int | bool | string | count }
 
-type Flag[T flagTypes] struct {
+type flag[T flagTypes] struct {
 	name   string
 	usage  string
 	short  string
@@ -12,22 +19,35 @@ type Flag[T flagTypes] struct {
 	value  *T
 }
 
-func NewFlag[T flagTypes](name, usage, short string, value *T) Flag[T] {
-	return Flag[T]{
-		name:   name,
-		usage:  usage,
-		value:  value,
-		short:  short,
-		sticky: false,
+func setupFlag(name, usage, short string, value any, flags *pflag.FlagSet) {
+	switch ptr := value.(type) {
+	case *string:
+		if short == "" {
+			flags.StringVar(ptr, name, "", usage)
+		} else {
+			flags.StringVarP(ptr, name, short, "", usage)
+		}
+	case *bool:
+		if short == "" {
+			flags.BoolVar(ptr, name, false, usage)
+		} else {
+			flags.BoolVarP(ptr, name, short, false, usage)
+		}
+	case *int:
+		if short == "" {
+			flags.CountVar(ptr, name, usage)
+		} else {
+			flags.CountVarP(ptr, name, short, usage)
+		}
+	default:
+		panic(fmt.Sprintf("unknown flag type: %T", value))
 	}
 }
 
-func NewStickyFlag[T flagTypes](name, usage, short string, value *T) Flag[T] {
-	return Flag[T]{
-		name:   name,
-		usage:  usage,
-		value:  value,
-		short:  short,
-		sticky: true,
+type flagOption func(*cobra.Command, string)
+
+func FlagRequired() flagOption {
+	return func(cmd *cobra.Command, name string) {
+		cmd.MarkFlagRequired(name)
 	}
 }

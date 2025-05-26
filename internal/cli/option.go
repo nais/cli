@@ -2,11 +2,14 @@ package cli
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+)
+
+type (
+	RunFunc      func(context.Context, []string) error
+	ValidateFunc func(context.Context, []string) error
 )
 
 type CommandOption func(*Command)
@@ -17,7 +20,7 @@ func WithSubCommands(subCommands ...*Command) CommandOption {
 	}
 }
 
-func WithPositionalArgs(args ...string) CommandOption {
+func WithArgs(args ...string) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.Use += " " + strings.ToUpper(strings.Join(args, " "))
 	}
@@ -29,31 +32,35 @@ func WithLong(long string) CommandOption {
 	}
 }
 
-func WithFlag[T flagTypes](name, usage, short string, value *T) CommandOption {
+func WithFlag[T flagTypes](name, usage, short string, value *T, opts ...flagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, usage, short, value, c.cobraCmd.Flags())
+		for _, opt := range opts {
+			opt(c.cobraCmd, name)
+		}
 	}
 }
 
-func WithStickyFlag[T flagTypes](name, usage, short string, value *T) CommandOption {
+func WithStickyFlag[T flagTypes](name, usage, short string, value *T, opts ...flagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, usage, short, value, c.cobraCmd.PersistentFlags())
+		for _, opt := range opts {
+			opt(c.cobraCmd, name)
+		}
 	}
 }
 
-func WithHandler(handler HandlerFunc) CommandOption {
+func WithRun(run RunFunc) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.RunE = func(co *cobra.Command, args []string) error {
-			return handler(co.Context(), args)
+			return run(co.Context(), args)
 		}
 	}
 }
 
-func WithPreRun(prerun HandlerFunc) CommandOption {
+func WithValidate(validate ValidateFunc) CommandOption {
 	return func(c *Command) {
-		c.cobraCmd.PreRunE = func(co *cobra.Command, args []string) error {
-			return prerun(co.Context(), args)
-		}
+		c.validateFuncs = append(c.validateFuncs, validate)
 	}
 }
 
@@ -66,42 +73,5 @@ func WithAutoComplete(autocomplete func(ctx context.Context, args []string) ([]s
 			}
 			return suggestions, cobra.ShellCompDirectiveNoFileComp
 		}
-	}
-}
-
-func WithMinArgs(n int) CommandOption {
-	return func(c *Command) {
-		c.cobraCmd.Args = cobra.MinimumNArgs(n)
-	}
-}
-
-func WithExactArgs(n int) CommandOption {
-	return func(c *Command) {
-		c.cobraCmd.Args = cobra.ExactArgs(n)
-	}
-}
-
-func setupFlag(name, usage, short string, value any, flags *pflag.FlagSet) {
-	switch ptr := value.(type) {
-	case *string:
-		if short == "" {
-			flags.StringVar(ptr, name, "", usage)
-		} else {
-			flags.StringVarP(ptr, name, short, "", usage)
-		}
-	case *bool:
-		if short == "" {
-			flags.BoolVar(ptr, name, false, usage)
-		} else {
-			flags.BoolVarP(ptr, name, short, false, usage)
-		}
-	case *int:
-		if short == "" {
-			flags.CountVar(ptr, name, usage)
-		} else {
-			flags.CountVarP(ptr, name, short, usage)
-		}
-	default:
-		panic(fmt.Sprintf("unknown flag type: %T", value))
 	}
 }

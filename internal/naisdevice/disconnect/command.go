@@ -8,9 +8,9 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Disconnect(rootFlags *root.Flags) *cli.Command {
+func Command(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("disconnect", "Disconnect your naisdevice.",
-		cli.WithHandler(run),
+		cli.WithRun(run),
 	)
 }
 

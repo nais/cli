@@ -11,13 +11,13 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Device(rootFlags *root.Flags) *cli.Command {
+func Command(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("device", "Interact with naisdevice.", cli.WithSubCommands(
-		status.Status(rootFlags),
-		jita.Jita(rootFlags),
-		doctor.Doctor(rootFlags),
-		disconnect.Disconnect(rootFlags),
-		connect.Connect(rootFlags),
-		config.Config(rootFlags),
+		status.Command(rootFlags),
+		jita.Command(rootFlags),
+		doctor.Command(rootFlags),
+		disconnect.Command(rootFlags),
+		connect.Command(rootFlags),
+		config.Command(rootFlags),
 	))
 }

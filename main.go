@@ -14,7 +14,7 @@ func main() {
 
 	(&cli.Application{
 		Commands: []*cli.Command{
-			naisdevice.Device(&applicationFlags),
+			naisdevice.Command(&applicationFlags),
 		},
 	}).Run(ctx)
 

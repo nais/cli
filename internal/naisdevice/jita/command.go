@@ -10,11 +10,11 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Jita(rootFlags *root.Flags) *cli.Command {
+func Command(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("jita", "Connect to a JITA gateway.",
-		cli.WithPositionalArgs("gateway"),
-		cli.WithHandler(run),
-		cli.WithMinArgs(1),
+		cli.WithArgs("gateway"),
+		cli.WithRun(run),
+		cli.WithValidate(cli.ValidateMinArgs(1)),
 		cli.WithAutoComplete(autocomplete),
 	)
 }

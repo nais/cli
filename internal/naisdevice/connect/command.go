@@ -8,9 +8,9 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Connect(rootFlags *root.Flags) *cli.Command {
+func Command(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("connect", "Connect your naisdevice.",
-		cli.WithHandler(run),
+		cli.WithRun(run),
 	)
 }
 

@@ -11,11 +11,19 @@ import (
 
 func Set(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("set", "Set a configuration value.",
-		cli.WithPositionalArgs("setting", "value"),
+		cli.WithArgs("setting", "value"),
 		cli.WithAutoComplete(autocomplete),
-		cli.WithHandler(run),
-		cli.WithExactArgs(2),
+		cli.WithRun(run),
+		cli.WithValidate(validate),
 	)
+}
+
+func validate(_ context.Context, args []string) error {
+	if len(args) != 2 {
+		return fmt.Errorf("expected exactly 2 arguments, got %d", len(args))
+	}
+
+	return nil
 }
 
 func autocomplete(ctx context.Context, args []string) ([]string, string) {

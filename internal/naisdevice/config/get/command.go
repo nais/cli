@@ -11,9 +11,9 @@ import (
 
 func Get(rootFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("get", "Get a naisdevice setting.",
-		cli.WithPositionalArgs("setting"),
-		cli.WithHandler(run),
-		cli.WithExactArgs(1),
+		cli.WithArgs("setting"),
+		cli.WithRun(run),
+		cli.WithValidate(cli.ValidateExactArgs(1)),
 	)
 }
 

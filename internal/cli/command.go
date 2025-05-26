@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type HandlerFunc func(context.Context, []string) error
-
 type Application struct {
 	cobraCmd *cobra.Command
 
@@ -20,7 +18,8 @@ type Application struct {
 type Command struct {
 	cobraCmd *cobra.Command
 
-	subCommands []*Command
+	validateFuncs []ValidateFunc
+	subCommands   []*Command
 }
 
 func (a *Application) Run(ctx context.Context) error {
@@ -48,10 +47,21 @@ func NewCommand(name, short string, opts ...CommandOption) *Command {
 		panic(fmt.Sprintf("command name cannot contain spaces: %v", name))
 	}
 
-	cmd := &Command{
-		cobraCmd: &cobra.Command{
-			Use:   name,
-			Short: short,
+	cmd := &Command{}
+
+	cmd.cobraCmd = &cobra.Command{
+		Use:   name,
+		Short: short,
+		ValidArgsFunction: func(_ *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
+		PreRunE: func(co *cobra.Command, args []string) error {
+			for _, validate := range cmd.validateFuncs {
+				if err := validate(co.Context(), args); err != nil {
+					return fmt.Errorf("validation failed: %w", err)
+				}
+			}
+			return nil
 		},
 	}
 
