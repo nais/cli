@@ -14,6 +14,7 @@ import (
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	"github.com/nais/cli/internal/root"
+	validate "github.com/nais/cli/internal/validate/command"
 )
 
 func main() {
@@ -27,6 +28,7 @@ func main() {
 		postgres.Postgres(flags),
 		debug.Debug(flags),
 		kubeconfig.Kubeconfig(flags),
+		validate.Validate(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error

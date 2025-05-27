@@ -3,16 +3,10 @@ package validate
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/validate/command/flag"
 )
 
-type Flags struct {
-	*root.Flags
-	VarsFilePath string
-	Vars         []string
-}
-
-func Run(files []string, flags *Flags) error {
+func Run(files []string, flags *flag.Validate) error {
 	templateVars := make(TemplateVariables)
 
 	if flags.VarsFilePath != "" {

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/nais/cli/internal/output"
@@ -91,6 +92,25 @@ func WithAutoComplete(autocomplete func(ctx context.Context, args []string, toCo
 			}
 
 			return suggestions, cobra.ShellCompDirectiveNoFileComp
+		}
+	}
+}
+
+// WithAutoCompleteFiles sets up the command to suggest file completions with specific extensions.
+func WithAutoCompleteFiles(ext ...string) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.ValidArgsFunction = func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+			helpSuffix := ""
+			if num := len(ext); num > 0 {
+				formatted := make([]string, num)
+				for i, e := range ext {
+					formatted[i] = "*." + e
+				}
+				helpSuffix = " (" + strings.Join(formatted[:num-1], ", ") + " or " + formatted[num-1] + ")"
+			}
+
+			ext = cobra.AppendActiveHelp(ext, fmt.Sprintf("Please choose one or more files%s.", helpSuffix))
+			return ext, cobra.ShellCompDirectiveFilterFileExt
 		}
 	}
 }
