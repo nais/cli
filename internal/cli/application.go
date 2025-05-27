@@ -2,7 +2,12 @@ package cli
 
 import (
 	"context"
+	"errors"
+	"os"
+	"slices"
 
+	"github.com/nais/cli/internal/metric"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
@@ -38,6 +43,33 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 	}
 }
 
-func (a *Application) Run(ctx context.Context) error {
-	return a.cobraCmd.ExecuteContext(ctx)
+func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
+	autoComplete := slices.Contains(os.Args[1:], "__complete")
+
+	if !autoComplete {
+		flushMetrics := metric.Initialize()
+		defer func() {
+			if err := recover(); err != nil {
+				handlePanic(err)
+			}
+			flushMetrics(flags.IsDebug())
+		}()
+	}
+
+	executedCommand, err := a.cobraCmd.ExecuteContextC(ctx)
+	if !autoComplete && executedCommand != nil {
+		collectCommandHistogram(ctx, executedCommand, err)
+	}
+
+	if err != nil {
+		if errors.Is(err, naisapi.ErrNotAuthenticated) {
+			// TODO(thokra): Auto login process of some kind
+			// Check if interactive
+			// fmt.Println("Please try to log in again. Press enter to start the login process, or Ctrl+C to cancel.")
+			// Start login process, if successful, rerun the command
+		}
+		return err
+	}
+
+	return nil
 }

@@ -30,7 +30,7 @@ func main() {
 		kubeconfig.Kubeconfig(flags),
 		validate.Validate(flags),
 	)
-	if err := app.Run(context.Background()); err != nil {
+	if err := app.Run(context.Background(), flags); err != nil {
 		// TODO: output error
 		os.Exit(1)
 	}
