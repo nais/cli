@@ -1,4 +1,4 @@
-package commands
+package create
 
 import (
 	"context"
@@ -6,22 +6,19 @@ import (
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/aiven/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/output"
 )
 
-type createKafkaFlags struct {
-	*createFlags
-	Pool string
-}
-
-func createKafka(parentFlags *createFlags) *cli.Command {
-	createKafkaFlags := &createKafkaFlags{createFlags: parentFlags, Pool: "nav-dev"}
+func createKafka(parentFlags *flag.Create) *cli.Command {
+	createKafkaFlags := &flag.CreateKafka{Create: parentFlags, Pool: "nav-dev"}
 
 	return cli.NewCommand("kafka", "Grant a user access to a Kafka topic.",
 		cli.WithFlag("pool", "p", "The `NAME` of the pool to create the Kafka instance in.", &createKafkaFlags.Pool),
+		cli.WithFlag("test", "t", "Create a test Kafka topic with the given `NAME`.", &createKafkaFlags.Test),
 		cli.WithArgs("username", "namespace"),
 		cli.WithValidate(cli.ValidateExactArgs(2)),
 		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
@@ -36,7 +33,10 @@ func createKafka(parentFlags *createFlags) *cli.Command {
 				ctx,
 				k8s.SetupControllerRuntimeClient(),
 				service,
-				args[0], args[1], createKafkaFlags.Secret, createKafkaFlags.Expire,
+				args[0],
+				args[1],
+				createKafkaFlags.Secret,
+				createKafkaFlags.Expire,
 				&aiven_services.ServiceSetup{
 					Pool: pool,
 				},

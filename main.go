@@ -18,7 +18,7 @@ func main() {
 		login.Command(flags),
 		logout.Command(flags),
 		naisdevice.Command(flags),
-		aivencommand.Command(flags),
+		aivencommand.Aiven(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error

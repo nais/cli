@@ -6,12 +6,13 @@ import (
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/aiven/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/output"
 )
 
-func get(_ *aivenFlags) *cli.Command {
+func get(_ *flag.Aiven) *cli.Command {
 	return cli.NewCommand("get", "Generate preferred config format to '/tmp' folder.",
 		cli.WithValidate(cli.ValidateExactArgs(3)),
 		cli.WithArgs("service", "username", "namespace"),

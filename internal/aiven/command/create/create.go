@@ -1,20 +1,15 @@
-package commands
+package create
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/aiven/flag"
 	"github.com/nais/cli/internal/cli"
 )
 
-type createFlags struct {
-	*aivenFlags
-	Expire uint
-	Secret string
-}
-
-func create(parentFlags *aivenFlags) *cli.Command {
-	createFlags := &createFlags{aivenFlags: parentFlags, Expire: 1}
+func Create(parentFlags *flag.Aiven) *cli.Command {
+	createFlags := &flag.Create{Aiven: parentFlags, Expire: 1}
 
 	return cli.NewCommand("create", "Grant a user access to an Aiven service.",
 		cli.WithValidate(func(_ context.Context, args []string) error {

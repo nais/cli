@@ -1,4 +1,4 @@
-package commands
+package create
 
 import (
 	"context"
@@ -7,19 +7,14 @@ import (
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/aiven/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/output"
 )
 
-type createOpenSearchFlags struct {
-	*createFlags
-	Instance string
-	Access   string
-}
-
-func createOpenSearch(parentFlags *createFlags) *cli.Command {
-	createOpenSearchFlags := &createOpenSearchFlags{createFlags: parentFlags}
+func createOpenSearch(parentFlags *flag.Create) *cli.Command {
+	createOpenSearchFlags := &flag.CreateOpenSearch{Create: parentFlags}
 
 	return cli.NewCommand("opensearch", "Grant a user access to an OpenSearch instance.",
 		cli.WithValidate(cli.ValidateExactArgs(2)),
