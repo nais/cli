@@ -14,8 +14,6 @@ type Command struct {
 
 	validateFuncs []ValidateFunc
 	subCommands   []*Command
-
-	args []string
 }
 
 func NewCommand(name, short string, opts ...CommandOption) *Command {
