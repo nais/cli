@@ -1,23 +1,17 @@
 package command
 
 import (
+	"context"
+
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/root"
 )
 
 func Postgres(parentFlags *root.Flags) *cli.Command {
-	/*
-		TODO: Enable support for this
-
-		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			_, err := gcp.ValidateAndGetUserLogin(cmd.Context(), false)
-			return err
-		},
-	*/
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
-
 	flags := &flag.Postgres{
 		Flags:     parentFlags,
 		Namespace: defaultNamespace,
@@ -38,5 +32,9 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 			psqlCommand(flags),
 			revokeCommand(flags),
 		),
+		cli.WithValidate(func(ctx context.Context, _ []string) error {
+			_, err := gcp.ValidateAndGetUserLogin(ctx, false)
+			return err
+		}),
 	)
 }
