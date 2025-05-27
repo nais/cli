@@ -21,27 +21,27 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	switch ptr := value.(type) {
 	case *string:
 		if short == "" {
-			flags.StringVar(ptr, name, "", usage)
+			flags.StringVar(ptr, name, *ptr, usage)
 		} else {
-			flags.StringVarP(ptr, name, short, "", usage)
+			flags.StringVarP(ptr, name, short, *ptr, usage)
 		}
 	case *bool:
 		if short == "" {
-			flags.BoolVar(ptr, name, false, usage)
+			flags.BoolVar(ptr, name, *ptr, usage)
 		} else {
-			flags.BoolVarP(ptr, name, short, false, usage)
+			flags.BoolVarP(ptr, name, short, *ptr, usage)
 		}
 	case *uint:
 		if short == "" {
-			flags.UintVar(ptr, name, 0, usage)
+			flags.UintVar(ptr, name, *ptr, usage)
 		} else {
-			flags.UintVarP(ptr, name, short, 0, usage)
+			flags.UintVarP(ptr, name, short, *ptr, usage)
 		}
 	case *int:
 		if short == "" {
-			flags.IntVar(ptr, name, 0, usage)
+			flags.IntVar(ptr, name, *ptr, usage)
 		} else {
-			flags.IntVarP(ptr, name, short, 0, usage)
+			flags.IntVarP(ptr, name, short, *ptr, usage)
 		}
 	case *count:
 		intPtr := (*int)(ptr)
