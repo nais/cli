@@ -14,8 +14,8 @@ func tidy(_ *flag.Aiven) *cli.Command {
 		cli.WithLong(`Clean up /tmp/aiven-secret-* files made by the Nais CLI
 
 Caution - This command will delete all files in "/tmp" folder starting with "aiven-secret-".`),
-		cli.WithRun(func(ctx context.Context, _ output.Output, _ []string) error {
-			return aiven.TidyLocalSecrets()
+		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
+			return aiven.TidyLocalSecrets(out)
 		}),
 	)
 }

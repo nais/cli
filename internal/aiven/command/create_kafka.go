@@ -41,14 +41,14 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 					Pool: pool,
 				},
 			)
-			aivenApp, err := aivenConfig.GenerateApplication()
+			aivenApp, err := aivenConfig.GenerateApplication(out)
 			if err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_create_generating_aivenapplication_error_total")
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 
 			}
 
-			fmt.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			out.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 
 			return nil
 		}),

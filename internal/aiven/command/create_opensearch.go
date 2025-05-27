@@ -47,7 +47,7 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 					Access:   access,
 				},
 			)
-			aivenApp, err := aivenConfig.GenerateApplication()
+			aivenApp, err := aivenConfig.GenerateApplication(out)
 			if err != nil {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 			}

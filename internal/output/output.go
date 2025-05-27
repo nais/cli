@@ -3,6 +3,7 @@ package output
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
 type Output interface {
@@ -24,4 +25,9 @@ func (w *writer) Printf(format string, a ...any) {
 
 func NewWriter(w io.Writer) Output {
 	return &writer{w: w}
+}
+
+// Stdout returns an Output that writes to standard output.
+func Stdout() Output {
+	return NewWriter(os.Stdout)
 }

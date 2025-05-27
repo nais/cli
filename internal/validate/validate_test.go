@@ -2,7 +2,6 @@ package validate
 
 import (
 	_ "embed"
-	"os"
 	"testing"
 
 	"github.com/nais/cli/internal/output"
@@ -95,7 +94,7 @@ func TestValidate(t *testing.T) {
 			v.SchemaLoader = schemaLoader
 			v.Variables = test.vars
 
-			err := v.Validate(output.NewWriter(os.Stdout))
+			err := v.Validate(output.Stdout())
 			if test.wantErr {
 				assert.Error(t, err)
 			} else {

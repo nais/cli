@@ -28,7 +28,7 @@ func get(_ *flag.Aiven) *cli.Command {
 				return err
 			}
 
-			if err := aiven.ExtractAndGenerateConfig(ctx, service, args[1], args[2]); err != nil {
+			if err := aiven.ExtractAndGenerateConfig(ctx, service, args[1], args[2], out); err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_get_secret_and_config_error_total")
 				return fmt.Errorf("retrieve secret and generating config: %w", err)
 			}
