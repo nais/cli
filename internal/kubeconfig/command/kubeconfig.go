@@ -31,17 +31,13 @@ This requires that you have the gcloud command line tool installed, configured a
 				return err
 			}
 
-			if mightBeWSL() {
-				fmt.Println("Skipping naisdevice check in WSL. Assuming it's connected and ready to go.")
-			} else {
-				if !naisdevice.IsConnected(ctx) {
-					return fmt.Errorf("you need to be connected with naisdevice before using this command")
-				}
+			if !mightBeWSL() && !naisdevice.IsConnected(ctx) {
+				return fmt.Errorf("you need to be connected with naisdevice before using this command")
 			}
 
 			return nil
 		}),
-		cli.WithRun(func(ctx context.Context, _ output.Output, _ []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
 			email, err := gcp.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err
@@ -50,6 +46,7 @@ This requires that you have the gcloud command line tool installed, configured a
 			return kubeconfig.CreateKubeconfig(
 				ctx,
 				email,
+				out,
 				kubeconfig.WithOverwriteData(flags.Overwrite),
 				kubeconfig.WithFromScratch(flags.Clear),
 				kubeconfig.WithExcludeClusters(flags.Exclude),
@@ -60,24 +57,19 @@ This requires that you have the gcloud command line tool installed, configured a
 	)
 }
 
+// mightBeWSL checks if the current environment is likely to be WSL (Windows Subsystem for Linux).
+// https://superuser.com/a/1749811
 func mightBeWSL() bool {
-	// https://superuser.com/a/1749811
-	env := os.Getenv("WSL_DISTRO_NAME")
-	if env != "" {
-		fmt.Printf("WSL detected: WSL_DISTRO_NAME=%v\n", env)
+	if env := os.Getenv("WSL_DISTRO_NAME"); env != "" {
 		return true
 	}
 
-	wslInteropPath := "/proc/sys/fs/binfmt_misc/WSLInterop"
-	if _, err := os.Stat(wslInteropPath); err == nil {
-		fmt.Printf("WSL detected: %q exists\n", wslInteropPath)
+	if _, err := os.Stat("/proc/sys/fs/binfmt_misc/WSLInterop"); err == nil {
 		return true
 	}
 
-	procVersionPath := "/proc/version"
-	if b, err := os.ReadFile(procVersionPath); err == nil {
+	if b, err := os.ReadFile("/proc/version"); err == nil {
 		if strings.Contains(string(b), "Microsoft") {
-			fmt.Printf("WSL detected: %q contains 'Microsoft'\n", procVersionPath)
 			return true
 		}
 	}

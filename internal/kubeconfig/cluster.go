@@ -2,15 +2,15 @@ package kubeconfig
 
 import (
 	"encoding/base64"
-	"fmt"
 
+	"github.com/nais/cli/internal/output"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, options filterOptions) error {
+func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, options filterOptions, out output.Output) error {
 	if _, ok := config.Clusters[cluster.Name]; ok && !options.overwrite {
 		if options.verbose {
-			fmt.Printf("Cluster %q already exists in kubeconfig, skipping\n", cluster.Name)
+			out.Printf("Cluster %q already exists in kubeconfig, skipping\n", cluster.Name)
 		}
 		return nil
 	}
@@ -39,7 +39,7 @@ func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, optio
 
 	config.Clusters[cluster.Name] = kubeconfigCluster
 
-	fmt.Printf("Added cluster %v to config\n", cluster.Name)
+	out.Printf("Added cluster %v to config\n", cluster.Name)
 
 	return nil
 }

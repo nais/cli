@@ -2,18 +2,18 @@ package kubeconfig
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"slices"
 
 	"github.com/go-logr/logr"
+	"github.com/nais/cli/internal/output"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email string, opts ...FilterOption) error {
+func CreateKubeconfig(ctx context.Context, email string, out output.Output, opts ...FilterOption) error {
 	var options filterOptions
 	for _, opt := range DefaultFilterOptions {
 		opt(&options)
@@ -39,19 +39,19 @@ func CreateKubeconfig(ctx context.Context, email string, opts ...FilterOption) e
 		config.Clusters = map[string]*api.Cluster{}
 	}
 
-	fmt.Println("Retreiving clusters")
-	clusters, err := getClustersFromGCP(ctx, options)
+	out.Println("Retreiving clusters")
+	clusters, err := getClustersFromGCP(ctx, options, out)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Found %v clusters\n", len(clusters))
+	out.Printf("Found %v clusters\n", len(clusters))
 
-	err = addUsers(config, clusters, email, options)
+	err = addUsers(config, clusters, email, options, out)
 	if err != nil {
 		return err
 	}
 
-	err = populateKubeconfig(config, clusters, email, options)
+	err = populateKubeconfig(config, clusters, email, options, out)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func CreateKubeconfig(ctx context.Context, email string, opts ...FilterOption) e
 		return err
 	}
 
-	fmt.Println("Kubeconfig written to", configLoad.GetDefaultFilename())
+	out.Println("Kubeconfig written to", configLoad.GetDefaultFilename())
 
 	for _, user := range config.AuthInfos {
 		if user == nil || user.Exec == nil {
@@ -69,28 +69,28 @@ func CreateKubeconfig(ctx context.Context, email string, opts ...FilterOption) e
 		}
 		_, err = exec.LookPath(user.Exec.Command)
 		if err != nil {
-			fmt.Printf("%v\nWARNING: %v not found in PATH.\n", os.Stderr, user.Exec.Command)
-			fmt.Printf("%v\n%v\n", os.Stderr, user.Exec.InstallHint)
+			out.Printf("%v\nWARNING: %v not found in PATH.\n", os.Stderr, user.Exec.Command)
+			out.Printf("%v\n%v\n", os.Stderr, user.Exec.InstallHint)
 		}
 	}
 	return nil
 }
 
-func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions) error {
+func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions, out output.Output) error {
 	for _, cluster := range clusters {
 		if slices.Contains(options.excludeClusters, cluster.Name) {
 			if options.verbose {
-				fmt.Printf("Cluster %q is excluded, skipping\n", cluster.Name)
+				out.Printf("Cluster %q is excluded, skipping\n", cluster.Name)
 			}
 			continue
 		}
 
-		err := populateWithClusters(config, cluster, options)
+		err := populateWithClusters(config, cluster, options, out)
 		if err != nil {
 			return err
 		}
 
-		populateWithContexts(config, cluster, email, options)
+		populateWithContexts(config, cluster, email, options, out)
 	}
 
 	return nil

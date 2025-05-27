@@ -1,28 +1,27 @@
 package kubeconfig
 
 import (
-	"fmt"
-
+	"github.com/nais/cli/internal/output"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions) error {
-	addGCPUser(config, email, options)
+func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions, out output.Output) error {
+	addGCPUser(config, email, options, out)
 
 	if !options.includeOnprem {
 		return nil
 	}
 
-	return addOnpremUser(config, clusters, options)
+	return addOnpremUser(config, clusters, options, out)
 }
 
-func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions) error {
+func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions, out output.Output) error {
 	for _, cluster := range clusters {
 		if cluster.Kind == kindOnprem {
 			user := cluster.User
 			if _, ok := config.AuthInfos[user.UserName]; ok && !options.overwrite {
 				if options.verbose {
-					fmt.Printf("User %q already exists in kubeconfig, skipping\n", user.UserName)
+					out.Printf("User %q already exists in kubeconfig, skipping\n", user.UserName)
 				}
 				continue
 			}
@@ -48,7 +47,7 @@ func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options f
 				},
 			}
 
-			fmt.Printf("Added user %v to config\n", user.UserName)
+			out.Printf("Added user %v to config\n", user.UserName)
 
 			return nil
 		}
@@ -56,10 +55,10 @@ func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options f
 	return nil
 }
 
-func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions) {
+func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions, out output.Output) {
 	if _, ok := config.AuthInfos[email]; ok && !options.overwrite {
 		if options.verbose {
-			fmt.Printf("User %q already exists in kubeconfig, skipping\n", email)
+			out.Printf("User %q already exists in kubeconfig, skipping\n", email)
 		}
 		return
 	}
@@ -81,5 +80,5 @@ func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions
 		},
 	}
 
-	fmt.Printf("Added user %v to config\n", email)
+	out.Printf("Added user %v to config\n", email)
 }

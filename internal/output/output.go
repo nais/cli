@@ -6,8 +6,8 @@ import (
 )
 
 type Output interface {
-	Println(...any)
-	Printf(string, ...any)
+	Println(a ...any)
+	Printf(format string, a ...any)
 }
 
 type writer struct {

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/nais/cli/internal/output"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
 	"google.golang.org/api/googleapi"
@@ -30,13 +31,13 @@ type onpremUser struct {
 	UserName string `json:"userName"`
 }
 
-func getClustersFromGCP(ctx context.Context, options filterOptions) ([]k8sCluster, error) {
-	projects, err := getProjects(ctx, options)
+func getClustersFromGCP(ctx context.Context, options filterOptions, out output.Output) ([]k8sCluster, error) {
+	projects, err := getProjects(ctx, options, out)
 	if err != nil {
 		return nil, err
 	}
 
-	clusters, err := getClusters(ctx, projects, options)
+	clusters, err := getClusters(ctx, projects, options, out)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +45,11 @@ func getClustersFromGCP(ctx context.Context, options filterOptions) ([]k8sCluste
 	return clusters, nil
 }
 
-func getClusters(ctx context.Context, projects []project, options filterOptions) ([]k8sCluster, error) {
+func getClusters(ctx context.Context, projects []project, options filterOptions, out output.Output) ([]k8sCluster, error) {
 	var allClusters []k8sCluster
 	for _, project := range projects {
 		if options.verbose {
-			fmt.Printf("Getting clusters for %s (%s, %s)\n", project.Name, project.ID, project.Tenant)
+			out.Printf("Getting clusters for %s (%s, %s)\n", project.Name, project.ID, project.Tenant)
 		}
 		var projectClusters []k8sCluster
 		var err error
@@ -57,7 +58,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions)
 		case kindOnprem:
 			projectClusters, err = getOnpremClusters(ctx, project)
 		default:
-			projectClusters, err = getGCPClusters(ctx, project, options)
+			projectClusters, err = getGCPClusters(ctx, project, options, out)
 		}
 
 		if err != nil {
@@ -69,7 +70,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions)
 	return allClusters, nil
 }
 
-func getGCPClusters(ctx context.Context, project project, options filterOptions) ([]k8sCluster, error) {
+func getGCPClusters(ctx context.Context, project project, options filterOptions, out output.Output) ([]k8sCluster, error) {
 	svc, err := container.NewService(ctx)
 	if err != nil {
 		return nil, err
@@ -84,7 +85,7 @@ func getGCPClusters(ctx context.Context, project project, options filterOptions)
 		if errors.As(err, &googleErr) {
 			if googleErr.Code == http.StatusForbidden {
 				if options.verbose {
-					fmt.Printf("No access to project %s, skipping\n", project.ID)
+					out.Printf("No access to project %s, skipping\n", project.ID)
 				}
 				return clusters, nil
 			}
