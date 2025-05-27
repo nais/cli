@@ -1,4 +1,4 @@
-package create
+package command
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/cli"
 )
 
-func Create(parentFlags *flag.Aiven) *cli.Command {
+func create(parentFlags *flag.Aiven) *cli.Command {
 	createFlags := &flag.Create{Aiven: parentFlags, Expire: 1}
 
 	return cli.NewCommand("create", "Grant a user access to an Aiven service.",

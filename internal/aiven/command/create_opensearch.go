@@ -1,4 +1,4 @@
-package create
+package command
 
 import (
 	"context"
