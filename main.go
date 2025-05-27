@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
+	postgres "github.com/nais/cli/internal/postgres/command"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -21,6 +22,7 @@ func main() {
 		naisdevice.Naisdevice(flags),
 		aiven.Aiven(flags),
 		alpha.Alpha(flags),
+		postgres.Postgres(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error

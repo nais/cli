@@ -9,15 +9,10 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
-type Flags struct {
-	*postgres.Flags
-	AllPrivileges bool
-	Schema        string
-}
-
-func Run(ctx context.Context, applicationName string, flags *Flags) error {
+func Run(ctx context.Context, applicationName string, flags *flag.Prepare) error {
 	fmt.Print("\nAre you sure you want to continue (y/N): ")
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()

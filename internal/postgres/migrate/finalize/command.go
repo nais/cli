@@ -6,15 +6,12 @@ import (
 
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-type Flags struct {
-	*migrate.Flags
-}
-
-func Run(ctx context.Context, args migrate.Arguments, flags *Flags) error {
+func Run(ctx context.Context, args migrate.Arguments, flags *flag.MigrateFinalize) error {
 	cfg := config.Config{
 		AppName: args.ApplicationName,
 		Target: config.InstanceConfig{

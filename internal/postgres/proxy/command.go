@@ -4,14 +4,9 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
-type Flags struct {
-	*postgres.Flags
-	Port uint
-	Host string
-}
-
-func Run(ctx context.Context, applicationName string, flags *Flags) error {
+func Run(ctx context.Context, applicationName string, flags *flag.Proxy) error {
 	return postgres.RunProxy(ctx, applicationName, flags.Context, flags.Namespace, flags.Host, flags.Port, flags.IsVerbose())
 }

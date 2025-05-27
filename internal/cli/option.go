@@ -23,6 +23,7 @@ func WithSubCommands(subCommands ...*Command) CommandOption {
 
 func WithArgs(args ...string) CommandOption {
 	return func(c *Command) {
+		c.args = args
 		c.cobraCmd.Use += " " + strings.ToUpper(strings.Join(args, " "))
 	}
 }
@@ -59,9 +60,25 @@ func WithRun(run RunFunc) CommandOption {
 	}
 }
 
-func WithValidate(validate ValidateFunc) CommandOption {
+/*
+TODO: Switch to this
+
+func WithRun(run RunNamedArgsFunc) CommandOption {
 	return func(c *Command) {
-		c.validateFuncs = append(c.validateFuncs, validate)
+		c.cobraCmd.RunE = func(co *cobra.Command, args []string) error {
+			named := make(map[string]string)
+			for i, name := range c.args {
+				named[name] = args[i]
+			}
+			return run(co.Context(), c.output, named)
+		}
+	}
+}
+*/
+
+func WithValidate(validate ...ValidateFunc) CommandOption {
+	return func(c *Command) {
+		c.validateFuncs = append(c.validateFuncs, validate...)
 	}
 }
 
