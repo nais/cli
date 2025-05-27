@@ -6,8 +6,8 @@ import (
 
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
-	"github.com/nais/cli/internal/auth/login"
-	"github.com/nais/cli/internal/auth/logout"
+	login "github.com/nais/cli/internal/auth/login"
+	logout "github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
 	debug "github.com/nais/cli/internal/debug/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
@@ -20,8 +20,8 @@ import (
 func main() {
 	flags := &root.Flags{}
 	app := cli.NewApplication(flags,
-		login.Command(flags),
-		logout.Command(flags),
+		login.Login(flags),
+		logout.Logout(flags),
 		naisdevice.Naisdevice(flags),
 		aiven.Aiven(flags),
 		alpha.Alpha(flags),

@@ -1,4 +1,4 @@
-package login
+package command
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Command(_ *root.Flags) *cli.Command {
+func Login(_ *root.Flags) *cli.Command {
 	cmdFlagNais := false
 	return cli.NewCommand("login", "Log in to the Nais platform.",
 		cli.WithLong(`Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`),

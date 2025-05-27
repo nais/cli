@@ -1,4 +1,4 @@
-package logout
+package command
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Command(_ *root.Flags) *cli.Command {
+func Logout(_ *root.Flags) *cli.Command {
 	cmdFlagNais := false
 	return cli.NewCommand("logout", "Log out and remove credentials.",
 		cli.WithLong("Log out of the Nais platform and remove credentials from your local machine."),
