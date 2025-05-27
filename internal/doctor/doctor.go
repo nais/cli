@@ -1,6 +1,8 @@
 package doctor
 
-import "fmt"
+import (
+	"github.com/nais/cli/internal/output"
+)
 
 type Result int
 
@@ -27,8 +29,8 @@ type Examination struct {
 	Checks []Check
 }
 
-func (e Examination) Run() map[string]CheckReport {
-	fmt.Printf("Running %d check(s)\n", len(e.Checks))
+func (e Examination) Run(out output.Output) map[string]CheckReport {
+	out.Printf("Running %d check(s)\n", len(e.Checks))
 	resultQueue := make(chan CheckReport, len(e.Checks))
 	results := make(map[string]CheckReport)
 	for _, check := range e.Checks {

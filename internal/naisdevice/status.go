@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/device/pkg/pb"
 	"gopkg.in/yaml.v3"
 )
@@ -17,7 +18,7 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 	}
 
 	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
+	defer func() { _ = connection.Close() }()
 
 	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
 		KeepConnectionOnComplete: true,
@@ -48,14 +49,14 @@ func gatewayPrivileged(gw *pb.Gateway) string {
 	}
 }
 
-func PrintVerboseStatus(status *pb.AgentStatus) {
-	fmt.Printf("Naisdevice status: %s\n", status.ConnectionStateString())
+func PrintVerboseStatus(status *pb.AgentStatus, out output.Output) {
+	out.Printf("Naisdevice status: %s\n", status.ConnectionStateString())
 	if status.NewVersionAvailable {
-		fmt.Printf("\nNew version of naisdevice available!\nSee https://doc.nais.io/device/update for upgrade instructions.\n")
+		out.Printf("\nNew version of naisdevice available!\nSee https://doc.nais.io/device/update for upgrade instructions.\n")
 	}
 
 	if len(status.Gateways) > 0 {
-		fmt.Printf("\n%-30s\t%-15s\t%-15s\n", "GATEWAY", "STATE", "JITA")
+		out.Printf("\n%-30s\t%-15s\t%-15s\n", "GATEWAY", "STATE", "JITA")
 	}
 
 	sort.Slice(status.Gateways, func(i, j int) bool {
@@ -63,24 +64,24 @@ func PrintVerboseStatus(status *pb.AgentStatus) {
 	})
 
 	for _, gw := range status.Gateways {
-		fmt.Printf("%-30s\t%-15s\t%-15s\n", gw.Name, gatewayHealthy(gw), gatewayPrivileged(gw))
+		out.Printf("%-30s\t%-15s\t%-15s\n", gw.Name, gatewayHealthy(gw), gatewayPrivileged(gw))
 	}
 }
 
-func PrintFormattedStatus(format string, status *pb.AgentStatus) error {
+func PrintFormattedStatus(format string, status *pb.AgentStatus, out output.Output) error {
 	switch format {
 	case "yaml":
-		out, err := yaml.Marshal(status)
+		o, err := yaml.Marshal(status)
 		if err != nil {
 			return fmt.Errorf("marshaling status: %v", err)
 		}
-		fmt.Println(string(out))
+		out.Println(string(o))
 	case "json":
-		out, err := json.Marshal(status)
+		o, err := json.Marshal(status)
 		if err != nil {
 			return fmt.Errorf("marshaling status: %v", err)
 		}
-		fmt.Println(string(out))
+		out.Println(string(o))
 	}
 
 	return nil

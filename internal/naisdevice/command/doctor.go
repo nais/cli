@@ -13,7 +13,7 @@ import (
 func doctorcmd(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("doctor", "Check the health of your naisdevice.",
 		cli.WithRun(func(_ context.Context, out output.Output, _ []string) error {
-			results := examination(out).Run()
+			results := examination(out).Run(out)
 			for key, value := range results {
 				out.Printf("%s ", key)
 				if value.Result == doc.OK {

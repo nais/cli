@@ -1,13 +1,16 @@
 package doctor
 
 import (
+	"os"
 	"testing"
 	"time"
+
+	"github.com/nais/cli/internal/output"
 )
 
 func TestAllChecksAreRun(t *testing.T) {
 	examination := okExaminationWith2SecondWorkers()
-	res := examination.Run()
+	res := examination.Run(output.NewWriter(os.Stdout))
 	if len(res) != len(examination.Checks) {
 		t.Fatalf("nr of results should not differ from the nr of checks")
 	}
@@ -15,7 +18,7 @@ func TestAllChecksAreRun(t *testing.T) {
 
 func TestChecksAreRunConcurrently(t *testing.T) {
 	start := time.Now()
-	_ = okExaminationWith2SecondWorkers().Run()
+	_ = okExaminationWith2SecondWorkers().Run(output.NewWriter(os.Stdout))
 	elapsed := time.Since(start)
 	if elapsed >= time.Second*3 {
 		t.Fatalf("checks took to long, they are probably not run concurrently")

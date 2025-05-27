@@ -50,11 +50,11 @@ func (h *handler) Run(ctx context.Context, out output.Output, _ []string) error 
 	}
 
 	if h.flags.Output != "" {
-		return naisdevice.PrintFormattedStatus(h.flags.Output, agentStatus)
+		return naisdevice.PrintFormattedStatus(h.flags.Output, agentStatus, out)
 	}
 
 	if h.flags.IsVerbose() {
-		naisdevice.PrintVerboseStatus(agentStatus)
+		naisdevice.PrintVerboseStatus(agentStatus, out)
 		return nil
 	}
 

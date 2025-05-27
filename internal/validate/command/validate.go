@@ -17,7 +17,7 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 		cli.WithValidate(cli.ValidateMinArgs(1)),
 		cli.WithAutoCompleteFiles("yaml", "yml", "json"),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
-			return validate.Run(args, flags)
+			return validate.Run(args, flags, out)
 		}),
 		cli.WithFlag("vars", "f", "Path to the `FILE` containing template variables in JSON or YAML format.", &flags.VarsFilePath),
 		cli.WithFlag("var", "", "Template variable in `KEY=VALUE` form. Can be repeated.", &flags.Vars),
