@@ -1,4 +1,4 @@
-package naisdevicegrpc
+package naisdevice
 
 import (
 	"context"

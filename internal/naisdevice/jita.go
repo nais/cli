@@ -1,4 +1,4 @@
-package jita
+package naisdevice
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/nais/device/pkg/pb"
 
-	"github.com/nais/cli/internal/naisdevice/naisdevicegrpc"
 	"github.com/nais/cli/internal/urlopen"
 )
 
@@ -20,7 +19,7 @@ func AccessPrivilegedGateway(gatewayName string) error {
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
-	connection, err := naisdevicegrpc.AgentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return nil, err
 	}

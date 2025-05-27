@@ -1,4 +1,4 @@
-package status
+package naisdevice
 
 import (
 	"context"
@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/nais/cli/internal/naisdevice/naisdevicegrpc"
 	"github.com/nais/device/pkg/pb"
 	"gopkg.in/yaml.v3"
 )
 
 func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
-	connection, err := naisdevicegrpc.AgentConnection()
+	connection, err := AgentConnection()
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +23,7 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 		KeepConnectionOnComplete: true,
 	})
 	if err != nil {
-		return nil, naisdevicegrpc.FormatGrpcError(err)
+		return nil, FormatGrpcError(err)
 	}
 
 	return stream.Recv()
@@ -87,6 +86,10 @@ func PrintFormattedStatus(format string, status *pb.AgentStatus) error {
 	return nil
 }
 
-func IsConnected(status *pb.AgentStatus) bool {
-	return status.GetConnectionState() == pb.AgentState_Connected
+func IsConnected(ctx context.Context) bool {
+	agentStatus, err := GetStatus(ctx)
+	if err != nil {
+		return false
+	}
+	return agentStatus.GetConnectionState() == pb.AgentState_Connected
 }
