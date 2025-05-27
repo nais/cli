@@ -30,7 +30,7 @@ func NewCommand(name, short string, opts ...CommandOption) *Command {
 		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
-		PreRunE: func(co *cobra.Command, args []string) error {
+		PersistentPreRunE: func(co *cobra.Command, args []string) error {
 			for _, validate := range cmd.validateFuncs {
 				if err := validate(co.Context(), args); err != nil {
 					return fmt.Errorf("validation failed: %w", err)

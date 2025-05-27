@@ -14,6 +14,8 @@ type Application struct {
 }
 
 func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
+	cobra.EnableTraverseRunHooks = true
+
 	cc := &cobra.Command{
 		Use:                "nais",
 		Long:               "Nais CLI",
