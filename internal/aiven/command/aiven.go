@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/nais/cli/internal/aiven/flag"
+	"github.com/nais/cli/internal/aiven/command/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/root"
 )
