@@ -4,11 +4,11 @@ import (
 	"context"
 	"os"
 
-	aivencommand "github.com/nais/cli/internal/aiven/command"
+	aiven "github.com/nais/cli/internal/aiven/command"
 	"github.com/nais/cli/internal/auth/login"
 	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/naisdevice"
+	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -17,8 +17,8 @@ func main() {
 	app := cli.NewApplication(flags,
 		login.Command(flags),
 		logout.Command(flags),
-		naisdevice.Command(flags),
-		aivencommand.Aiven(flags),
+		naisdevice.Naisdevice(flags),
+		aiven.Aiven(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error
