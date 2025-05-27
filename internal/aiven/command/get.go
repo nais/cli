@@ -22,7 +22,7 @@ func get(_ *flag.Aiven) *cli.Command {
 			}
 			return nil, ""
 		}),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			service, err := aiven_services.FromString(args[0])
 			if err != nil {
 				return err

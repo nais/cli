@@ -24,7 +24,7 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 		cli.WithAutoComplete(func(ctx context.Context, args []string, toComplete string) ([]string, string) {
 			return aiven_services.OpenSearchAccesses, ""
 		}),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchFlags.Access)
 			if err != nil {
 				return fmt.Errorf(
@@ -52,7 +52,8 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
 			}
 
-			fmt.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			out.Println("Use the following command to generate configuration secrets:")
+			out.Printf("\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 
 			return nil
 		}),

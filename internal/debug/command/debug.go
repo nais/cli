@@ -30,7 +30,7 @@ To debug a live pod, run the command without the "--copy" flag.
 You can only reconnect to the debug session if the pod is running.`),
 		cli.WithArgs("app_name"),
 		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			return debug.Run(args[0], flags)
 		}),
 		cli.WithStickyFlag("context", "c", "The kubeconfig `CONTEXT` to use. Defaults to current context.", &flags.Context),
@@ -48,7 +48,7 @@ func tidyCommand(parentFlags *flag.Debug) *cli.Command {
 Set the "--copy" flag to delete copy pods.`),
 		cli.WithArgs("app_name"),
 		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			return tidy.Run(args[0], &flag.DebugTidy{Debug: parentFlags})
 		}),
 	)

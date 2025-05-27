@@ -36,7 +36,7 @@ func (h *handler) Validate(_ context.Context, _ []string) error {
 	return nil
 }
 
-func (h *handler) Run(ctx context.Context, output output.Output, _ []string) error {
+func (h *handler) Run(ctx context.Context, out output.Output, _ []string) error {
 	agentStatus, err := naisdevice.GetStatus(ctx)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func (h *handler) Run(ctx context.Context, output output.Output, _ []string) err
 		return nil
 	}
 
-	output.Println(agentStatus.ConnectionState.String())
+	out.Println(agentStatus.ConnectionState.String())
 
 	return nil
 }

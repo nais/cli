@@ -11,11 +11,11 @@ import (
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-func Run(ctx context.Context, args migrate.Arguments, flags *flag.MigrateSetup) error {
+func Run(ctx context.Context, applicationName, targetInstanceName string, flags *flag.MigrateSetup) error {
 	cfg := config.Config{
-		AppName: args.ApplicationName,
+		AppName: applicationName,
 		Target: config.InstanceConfig{
-			InstanceName: option.Some(args.TargetInstanceName),
+			InstanceName: option.Some(targetInstanceName),
 		},
 	}
 

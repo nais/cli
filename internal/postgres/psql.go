@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/nais/cli/internal/output"
 )
 
-func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bool) error {
+func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bool, out output.Output) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err
@@ -43,19 +45,19 @@ func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bo
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go func() {
-		err := runProxy(ctx, projectID, connectionName, "localhost:0", portCh, verbose)
+		err := runProxy(ctx, projectID, connectionName, "localhost:0", portCh, verbose, out)
 		if err != nil {
 			if errors.Is(err, context.Canceled) {
 				return
 			}
 
-			fmt.Printf("ERROR: %v", err)
+			out.Printf("ERROR: %v", err)
 			cancel()
 		}
 	}()
 	port := <-portCh
 
-	fmt.Printf("Running proxy on localhost:%v\n", port)
+	out.Printf("Running proxy on localhost:%v\n", port)
 
 	arguments := []string{
 		"--host", "localhost",

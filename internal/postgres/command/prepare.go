@@ -1,12 +1,17 @@
 package command
 
 import (
+	"bufio"
 	"context"
+	"fmt"
+	"os"
+	"strings"
 
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/internal/postgres/prepare"
 )
 
 func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
@@ -23,8 +28,15 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 		 This operation is only required to run once for each SQL instance.`),
 		cli.WithArgs("app_name"),
 		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
-			return prepare.Run(ctx, args[0], flags)
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+			out.Println("", "Are you sure you want to continue (y/N): ")
+			input := bufio.NewScanner(os.Stdin)
+			input.Scan()
+			if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+				return fmt.Errorf("cancelled by user")
+			}
+
+			return postgres.PrepareAccess(ctx, args[0], flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges)
 		}),
 		cli.WithFlag("all-privs", "", "Gives all privileges to users.", &flags.AllPrivileges),
 		cli.WithFlag("schema", "", "Schema to grant access to.", &flags.Schema),

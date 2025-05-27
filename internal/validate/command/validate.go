@@ -16,7 +16,7 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 		cli.WithArgs("file..."),
 		cli.WithValidate(cli.ValidateMinArgs(1)),
 		cli.WithAutoCompleteFiles("yaml", "yml", "json"),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			return validate.Run(args, flags)
 		}),
 		cli.WithFlag("vars", "f", "Path to the `FILE` containing template variables in JSON or YAML format.", &flags.VarsFilePath),

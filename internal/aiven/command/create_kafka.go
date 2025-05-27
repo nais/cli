@@ -21,7 +21,7 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 		cli.WithFlag("test", "t", "Create a test Kafka topic with the given `NAME`.", &createKafkaFlags.Test),
 		cli.WithArgs("username", "namespace"),
 		cli.WithValidate(cli.ValidateExactArgs(2)),
-		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
