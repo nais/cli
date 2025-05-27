@@ -4,22 +4,11 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/debug"
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/debug/command/flag"
 )
 
-type Flags struct {
-	*root.Flags
-	Context   string
-	Namespace string
-	Copy      bool
-}
-
-func Run(workloadName string, flags *Flags) error {
-	cfg := debug.MakeConfig(workloadName, &debug.Flags{
-		Context:   flags.Context,
-		Namespace: flags.Namespace,
-		Copy:      flags.Copy,
-	})
+func Run(workloadName string, flags *flag.DebugTidy) error {
+	cfg := debug.MakeConfig(workloadName, flags.Debug)
 	clientSet, err := debug.SetupClient(cfg, flags.Context)
 	if err != nil {
 		return err

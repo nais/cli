@@ -3,22 +3,14 @@ package debug
 import (
 	"fmt"
 
+	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/root"
 	"k8s.io/client-go/kubernetes"
 )
 
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
-type Flags struct {
-	*root.Flags
-	Context   string
-	Namespace string
-	Copy      bool
-	ByPod     bool
-}
-
-func Run(workloadName string, flags *Flags) error {
+func Run(workloadName string, flags *flag.Debug) error {
 	cfg := MakeConfig(workloadName, flags)
 	clientSet, err := SetupClient(cfg, flags.Context)
 	if err != nil {
@@ -52,7 +44,7 @@ func SetupClient(cfg *Config, cluster string) (kubernetes.Interface, error) {
 	return clientSet, nil
 }
 
-func MakeConfig(workloadName string, flags *Flags) *Config {
+func MakeConfig(workloadName string, flags *flag.Debug) *Config {
 	return &Config{
 		WorkloadName: workloadName,
 		Namespace:    flags.Namespace,
