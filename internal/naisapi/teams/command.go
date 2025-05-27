@@ -4,14 +4,11 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-type Flags struct {
-	*naisapi.Flags
-}
-
-func GetUserTeams(ctx context.Context, _ *Flags) (*gql.UserTeamsResponse, error) {
+func GetUserTeams(ctx context.Context, _ *flag.Teams) (*gql.UserTeamsResponse, error) {
 	_ = `# @genqlient
 		query UserTeams {
 			me {

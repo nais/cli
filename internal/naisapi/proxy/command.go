@@ -9,14 +9,11 @@ import (
 	"net/url"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/command/flag"
+	"github.com/nais/cli/internal/output"
 )
 
-type Flags struct {
-	*naisapi.Flags
-	ListenAddr string
-}
-
-func Run(ctx context.Context, flags *Flags) error {
+func Run(ctx context.Context, _ output.Output, flags *flag.Proxy) error {
 	user, err := naisapi.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err

@@ -8,14 +8,11 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/suessflorian/gqlfetch"
 )
 
-type Flags struct {
-	*naisapi.Flags
-}
-
-func Pull(ctx context.Context, _ *Flags) (string, error) {
+func Pull(ctx context.Context, _ *flag.Schema) (string, error) {
 	user, err := naisapi.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return "", err

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	aiven "github.com/nais/cli/internal/aiven/command"
+	alpha "github.com/nais/cli/internal/alpha/command"
 	"github.com/nais/cli/internal/auth/login"
 	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
@@ -19,6 +20,7 @@ func main() {
 		logout.Command(flags),
 		naisdevice.Naisdevice(flags),
 		aiven.Aiven(flags),
+		alpha.Alpha(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error
