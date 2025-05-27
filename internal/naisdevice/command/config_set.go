@@ -22,7 +22,7 @@ func set(_ *root.Flags) *cli.Command {
 
 			return nil
 		}),
-		cli.WithRun(func(ctx context.Context, w output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])
 			if err != nil {
@@ -33,7 +33,7 @@ func set(_ *root.Flags) *cli.Command {
 				return err
 			}
 
-			w.Printf("%v has been set to %v\n", setting, value)
+			output.Printf("%v has been set to %v\n", setting, value)
 
 			return nil
 		}),

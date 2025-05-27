@@ -45,10 +45,10 @@ func NewCommand(name, short string, opts ...CommandOption) *Command {
 	return cmd
 }
 
-func (c *Command) setup(w output.Output) {
-	c.output = w
+func (c *Command) setup(output output.Output) {
+	c.output = output
 	for _, sub := range c.subCommands {
-		sub.setup(w)
+		sub.setup(output)
 		c.cobraCmd.AddCommand(sub.cobraCmd)
 	}
 }

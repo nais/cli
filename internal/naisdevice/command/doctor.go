@@ -12,42 +12,42 @@ import (
 
 func doctorcmd(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("doctor", "Check the health of your naisdevice.",
-		cli.WithRun(func(_ context.Context, w output.Output, _ []string) error {
-			results := examination(w).Run()
+		cli.WithRun(func(_ context.Context, output output.Output, _ []string) error {
+			results := examination(output).Run()
 			for key, value := range results {
-				w.Printf("%s ", key)
+				output.Printf("%s ", key)
 				if value.Result == doc.OK {
-					w.Println("✅")
+					output.Println("✅")
 				} else {
-					w.Printf("❌ (%s)\n", value.ErrMsg)
+					output.Printf("❌ (%s)\n", value.ErrMsg)
 				}
 			}
-			w.Println()
+			output.Println()
 			return nil
 		}),
 	)
 }
 
-func examination(w output.Output) doc.Examination {
+func examination(output output.Output) doc.Examination {
 	checkName := "Is Kolide and Osquery running?"
 	return doc.Examination{
 		Name: "Device checks",
 		Checks: []doc.Check{
 			{
 				Name:   checkName,
-				Worker: kolideWorker(checkName, w),
+				Worker: kolideWorker(checkName, output),
 			},
 		},
 	}
 }
 
-func kolideWorker(checkName string, w output.Output) doc.Worker {
+func kolideWorker(checkName string, output output.Output) doc.Worker {
 	return func() doc.CheckReport {
-		kolideRunning, err := isRunning("launcher", w)
+		kolideRunning, err := isRunning("launcher", output)
 		if err != nil || !kolideRunning {
 			return errorReport(checkName, "Kolide is not running")
 		}
-		osQueryRunning, err := isRunning("osqueryd", w)
+		osQueryRunning, err := isRunning("osqueryd", output)
 		if err != nil || !osQueryRunning {
 			return errorReport(checkName, "Osquery is not running")
 		}
@@ -55,10 +55,10 @@ func kolideWorker(checkName string, w output.Output) doc.Worker {
 	}
 }
 
-func isRunning(desiredProc string, w output.Output) (bool, error) {
+func isRunning(desiredProc string, output output.Output) (bool, error) {
 	runningProcs, err := ps.Processes()
 	if err != nil {
-		w.Printf("Process listing failed: %v\n", err)
+		output.Printf("Process listing failed: %v\n", err)
 		return false, err
 	}
 	for _, runningProc := range runningProcs {

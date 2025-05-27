@@ -70,7 +70,7 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 // Login initiates the OAuth2 authorization code flow to authenticate the user.
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
-func Login(ctx context.Context, w output.Output) error {
+func Login(ctx context.Context, output output.Output) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func Login(ctx context.Context, w output.Output) error {
 
 	go func() {
 		if err := listenServer(ctx, conf, verifier, state, ch); err != nil {
-			w.Println("Error starting server:", err)
+			output.Println("Error starting server:", err)
 			return
 		}
 	}()
@@ -91,11 +91,11 @@ func Login(ctx context.Context, w output.Output) error {
 
 	_ = urlopen.Open(url)
 
-	w.Println("Your browser has been opened to visit:")
-	w.Println()
-	w.Println(url)
-	w.Println()
-	w.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
+	output.Println("Your browser has been opened to visit:")
+	output.Println()
+	output.Println(url)
+	output.Println()
+	output.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
 
 	var tok *oauth2.Token
 	select {
@@ -140,7 +140,7 @@ func Login(ctx context.Context, w output.Output) error {
 }
 
 // Logout deletes the user's secret from the system keyring and triggers logout at the identity provider.
-func Logout(ctx context.Context, w output.Output) error {
+func Logout(ctx context.Context, output output.Output) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
 		return fmt.Errorf("deleting user secret: %w", err)
@@ -155,12 +155,12 @@ func Logout(ctx context.Context, w output.Output) error {
 
 	_ = urlopen.Open(url)
 
-	w.Println("To complete logout, your browser has been opened to visit:")
-	w.Println()
-	w.Println(url)
-	w.Println()
-	w.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar.")
-	w.Println()
+	output.Println("To complete logout, your browser has been opened to visit:")
+	output.Println()
+	output.Println(url)
+	output.Println()
+	output.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar.")
+	output.Println()
 
 	return nil
 }

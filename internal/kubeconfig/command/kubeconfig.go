@@ -41,7 +41,7 @@ This requires that you have the gcloud command line tool installed, configured a
 
 			return nil
 		}),
-		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
+		cli.WithRun(func(ctx context.Context, _ output.Output, _ []string) error {
 			email, err := gcp.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err

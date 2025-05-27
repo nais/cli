@@ -13,7 +13,9 @@ func GetConfig(ctx context.Context) (*pb.AgentConfiguration, error) {
 	}
 
 	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
+	defer func() {
+		_ = connection.Close()
+	}()
 
 	configResponse, err := client.GetAgentConfiguration(ctx, &pb.GetAgentConfigurationRequest{})
 	if err != nil {

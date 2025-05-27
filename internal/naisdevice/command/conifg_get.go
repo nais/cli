@@ -15,7 +15,7 @@ func get(_ *root.Flags) *cli.Command {
 	return cli.NewCommand("get", "Get a naisdevice setting.",
 		cli.WithArgs("setting"),
 		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, w output.Output, args []string) error {
+		cli.WithRun(func(ctx context.Context, output output.Output, args []string) error {
 			setting := args[0]
 
 			values, err := naisdevice.GetConfig(ctx)
@@ -24,9 +24,9 @@ func get(_ *root.Flags) *cli.Command {
 			}
 
 			if strings.EqualFold(setting, "autoconnect") {
-				w.Printf("%v:\t%v\n", setting, values.AutoConnect)
+				output.Printf("%v:\t%v\n", setting, values.AutoConnect)
 			} else if strings.EqualFold(setting, "iloveninetiesboybands") {
-				w.Printf("%v:\t%v\n", setting, values.ILoveNinetiesBoybands)
+				output.Printf("%v:\t%v\n", setting, values.ILoveNinetiesBoybands)
 			} else {
 				return fmt.Errorf("unknown setting: %v", setting)
 			}

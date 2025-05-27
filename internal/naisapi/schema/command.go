@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -26,8 +25,7 @@ func Pull(ctx context.Context, _ *flag.Schema) (string, error) {
 
 	schema, err := gqlfetch.BuildClientSchemaWithHeaders(ctx, fmt.Sprintf("https://%s/graphql", user.ConsoleHost), headers, false)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return "", err
 	}
 
 	// There's a bug that causes quadruple quotes, so we replace them with three:
