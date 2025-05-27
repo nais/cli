@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
 	debug "github.com/nais/cli/internal/debug/command"
+	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	"github.com/nais/cli/internal/root"
@@ -25,6 +26,7 @@ func main() {
 		alpha.Alpha(flags),
 		postgres.Postgres(flags),
 		debug.Debug(flags),
+		kubeconfig.Kubeconfig(flags),
 	)
 	if err := app.Run(context.Background()); err != nil {
 		// TODO: output error

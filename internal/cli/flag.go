@@ -37,6 +37,12 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		} else {
 			flags.UintVarP(ptr, name, short, *ptr, usage)
 		}
+	case *[]string:
+		if short == "" {
+			flags.StringSliceVar(ptr, name, *ptr, usage)
+		} else {
+			flags.StringSliceVarP(ptr, name, short, *ptr, usage)
+		}
 	case *int:
 		if short == "" {
 			flags.IntVar(ptr, name, *ptr, usage)
