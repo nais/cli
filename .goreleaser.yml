@@ -109,9 +109,7 @@ scoops:
     license: MIT
 
 nix:
-  - ids:
-      - nais-other
-    url_template: "https://github.com/nais/cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  - url_template: "https://github.com/nais/cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
