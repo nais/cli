@@ -18,7 +18,7 @@ import (
 func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 	flags := &flag.Kubeconfig{Flags: rootFlags}
 	return cli.NewCommand("kubeconfig", "Create a kubeconfig file for connecting to available clusters.",
-		cli.WithLong(`Create a kubeconfig file for connecting to available clusters
+		cli.WithLongDescription(`Create a kubeconfig file for connecting to available clusters
 
 This requires that you have the gcloud command line tool installed, configured and logged in using:
 "nais login"`),

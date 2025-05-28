@@ -17,7 +17,7 @@ func proxyCommand(parentFlags *flag.Postgres) *cli.Command {
 	}
 
 	return cli.NewCommand("proxy", "Create a proxy to a SQL instance.",
-		cli.WithLong("Allows your user to connect to databases and starts a proxy."),
+		cli.WithLongDescription("Allows your user to connect to databases and starts a proxy."),
 		cli.WithArgs("app_name"),
 		cli.WithValidate(cli.ValidateExactArgs(1)),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {

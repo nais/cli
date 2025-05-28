@@ -25,7 +25,7 @@ func addCommand(parentFlags *flag.User) *cli.Command {
 		Privilege: "select",
 	}
 	return cli.NewCommand("add", "Add a user to a SQL instance.",
-		cli.WithLong("Will grant a user access to tables in public schema."),
+		cli.WithLongDescription("Will grant a user access to tables in public schema."),
 		cli.WithArgs("app_name", "username", "password"),
 		cli.WithFlag("privilege", "", "The privilege to grant to the user.", &userAddFlags.Privilege),
 		cli.WithValidate(cli.ValidateExactArgs(3)),

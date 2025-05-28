@@ -11,7 +11,7 @@ import (
 
 func tidy(_ *flag.Aiven) *cli.Command {
 	return cli.NewCommand("tidy", "Clean up /tmp/aiven-secret-* files made by the Nais CLI.",
-		cli.WithLong(`Clean up /tmp/aiven-secret-* files made by the Nais CLI
+		cli.WithLongDescription(`Clean up /tmp/aiven-secret-* files made by the Nais CLI
 
 Caution - This command will delete all files in "/tmp" folder starting with "aiven-secret-".`),
 		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {

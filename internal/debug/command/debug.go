@@ -21,7 +21,7 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 	}
 
 	return cli.NewCommand("debug", "Create and attach to a debug container.",
-		cli.WithLong(`Create and attach to a debug container
+		cli.WithLongDescription(`Create and attach to a debug container
 
 When flag "--copy" is set, the command can be used to debug a copy of the original pod, allowing you to troubleshoot without affecting the live pod.
 
@@ -43,7 +43,7 @@ You can only reconnect to the debug session if the pod is running.`),
 
 func tidyCommand(parentFlags *flag.Debug) *cli.Command {
 	return cli.NewCommand("tidy", "Clean up debug containers and debug pods.",
-		cli.WithLong(`Remove debug containers created by the "nais debug" command
+		cli.WithLongDescription(`Remove debug containers created by the "nais debug" command
 
 Set the "--copy" flag to delete copy pods.`),
 		cli.WithArgs("app_name"),

@@ -21,7 +21,7 @@ func revokeCommand(parentFlags *flag.Postgres) *cli.Command {
 	}
 
 	return cli.NewCommand("revoke", "Revoke access to your SQL instance for the role 'cloudsqliamuser'.",
-		cli.WithLong(`Revoke will revoke the role 'cloudsqliamuser' access to the tables in the SQL instance.
+		cli.WithLongDescription(`Revoke will revoke the role 'cloudsqliamuser' access to the tables in the SQL instance.
 
 This is done by connecting using the application credentials and modify the permissions on the public schema.
 

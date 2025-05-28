@@ -14,7 +14,7 @@ func passwordCommand(parentFlags *flag.Postgres) *cli.Command {
 	return cli.NewCommand("password", "Manage SQL instance passwords.",
 		cli.WithSubCommands(
 			cli.NewCommand("rotate", "Rotate the SQL instance password.",
-				cli.WithLong("The rotation is done in GCP and in the Kubernetes secret."),
+				cli.WithLongDescription("The rotation is done in GCP and in the Kubernetes secret."),
 				cli.WithArgs("app_name"),
 				cli.WithValidate(cli.ValidateExactArgs(1)),
 				cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {

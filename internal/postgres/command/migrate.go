@@ -44,7 +44,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 	}
 
 	return cli.NewCommand("setup", "Make necessary setup for a new SQL instance migration.",
-		cli.WithLong("Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance."),
+		cli.WithLongDescription("Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance."),
 		cli.WithArgs("app_name", "target_sql_instance_name"),
 		cli.WithValidate(
 			cli.ValidateExactArgs(2),
@@ -74,7 +74,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 func migratePromoteCommand(parentFlags *flag.Migrate) *cli.Command {
 	flags := &flag.MigratePromote{Migrate: parentFlags}
 	return cli.NewCommand("promote", "Promote the migrated instance to the new primary instance.",
-		cli.WithLong("Promote will promote the target instance to the new primary instance, and update the application to use the new instance."),
+		cli.WithLongDescription("Promote will promote the target instance to the new primary instance, and update the application to use the new instance."),
 		cli.WithArgs("app_name", "target_sql_instance_name"),
 		cli.WithValidate(cli.ValidateExactArgs(2)),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
@@ -87,7 +87,7 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *cli.Command {
 func migrateFinalizeCommand(parentFlags *flag.Migrate) *cli.Command {
 	flags := &flag.MigrateFinalize{Migrate: parentFlags}
 	return cli.NewCommand("finalize", "Finalize the migration.",
-		cli.WithLong("Finalize will remove the source instance and associated resources after a successful migration."),
+		cli.WithLongDescription("Finalize will remove the source instance and associated resources after a successful migration."),
 		cli.WithArgs("app_name", "target_sql_instance_name"),
 		cli.WithValidate(cli.ValidateExactArgs(2)),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
@@ -99,7 +99,7 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *cli.Command {
 func migrateRollbackCommand(parentFlags *flag.Migrate) *cli.Command {
 	flags := &flag.MigrateRollback{Migrate: parentFlags}
 	return cli.NewCommand("rollback", "Roll back the migration.",
-		cli.WithLong("Rollback will roll back the migration, and restore the application to use the original instance."),
+		cli.WithLongDescription("Rollback will roll back the migration, and restore the application to use the original instance."),
 		cli.WithArgs("app_name", "target_sql_instance_name"),
 		cli.WithValidate(cli.ValidateExactArgs(2)),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {

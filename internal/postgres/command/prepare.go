@@ -21,7 +21,7 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 	}
 
 	return cli.NewCommand("prepare", "Prepare your SQL instance for use with personal accounts.",
-		cli.WithLong(`Prepare will prepare the SQL instance by connecting using the
+		cli.WithLongDescription(`Prepare will prepare the SQL instance by connecting using the
 		 application credentials and modify the permissions on the public schema.
 		 All IAM users in your GCP project will be able to connect to the instance.
 		

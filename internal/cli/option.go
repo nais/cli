@@ -10,30 +10,52 @@ import (
 )
 
 type (
-	RunFunc      func(context.Context, output.Output, []string) error
-	ValidateFunc func(context.Context, []string) error
+	// RunFunc is a function that will be executed when the command is run.
+	//
+	// The args passed to this function is the arguments added to the command using the WithArgs option, in the same
+	// order.
+	RunFunc func(ctx context.Context, out output.Output, args []string) error
+
+	// ValidateFunc is a function that will be executed before the command's RunFunc is executed.
+	//
+	// The args passed to this function is the arguments added to the command using the WithArgs option, in the same
+	// order.
+	ValidateFunc func(ctx context.Context, args []string) error
+
+	// AutoCompleteFunc is a function that will be executed to provide auto-completion suggestions for the command.
+	//
+	// The args passed to this function is the arguments added to the command using the WithArgs option, in the same
+	// order. toComplete is the current input that the user is typing, and it can be used to filter the suggestions.
+	// The first return value is a slice of strings that will be used as suggestions, and the second return value is a
+	// string that will be used as active help text in the shell while performing auto-complete.
+	AutoCompleteFunc func(ctx context.Context, args []string, toComplete string) (completions []string, activeHelp string)
 )
 
+// CommandOption defines a function that modifies a Command instance.
 type CommandOption func(*Command)
 
+// WithSubCommands adds subcommands to the command.
 func WithSubCommands(subCommands ...*Command) CommandOption {
 	return func(c *Command) {
 		c.subCommands = subCommands
 	}
 }
 
+// WithArgs adds positional arguments to the command. The arguments will be injected into the commands RunFunc.
 func WithArgs(args ...string) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.Use += " " + strings.ToUpper(strings.Join(args, " "))
 	}
 }
 
-func WithLong(long string) CommandOption {
+// WithLongDescription adds a long description to the command used for help output.
+func WithLongDescription(desc string) CommandOption {
 	return func(c *Command) {
-		c.cobraCmd.Long = long
+		c.cobraCmd.Long = desc
 	}
 }
 
+// WithFlag sets up a flag for the command. Use FlagOption to customize the flag further.
 func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, short, usage, value, c.cobraCmd.Flags())
@@ -43,12 +65,8 @@ func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOpti
 	}
 }
 
-func InCommandGroup(group string) CommandOption {
-	return func(c *Command) {
-		c.cobraCmd.GroupID = group
-	}
-}
-
+// WithStickyFlag sets up a flag that is persistent across all subcommands. Use FlagOption to customize the flag
+// further.
 func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, short, usage, value, c.cobraCmd.PersistentFlags())
@@ -58,24 +76,35 @@ func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...Fl
 	}
 }
 
-func WithRun(run RunFunc) CommandOption {
+// InCommandGroup places the command in a specific group. This is mainly used for grouping of commands in the help text.
+func InCommandGroup(group string) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.GroupID = group
+	}
+}
+
+// WithRun sets up the command handler function that will be executed when the command is run.
+func WithRun(f RunFunc) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.RunE = func(co *cobra.Command, args []string) error {
-			return run(co.Context(), c.output, args)
+			return f(co.Context(), c.output, args)
 		}
 	}
 }
 
-func WithValidate(validate ...ValidateFunc) CommandOption {
+// WithValidate adds validation functions that will be executed before the command's RunFunc is executed. The validation
+// functions will be executed in the added order, and if one of them returns an error the RunFunc will not be executed.
+func WithValidate(f ...ValidateFunc) CommandOption {
 	return func(c *Command) {
-		c.validateFuncs = append(c.validateFuncs, validate...)
+		c.validateFuncs = append(c.validateFuncs, f...)
 	}
 }
 
-func WithAutoComplete(autocomplete func(ctx context.Context, args []string, toComplete string) ([]string, string)) CommandOption {
+// WithAutoComplete sets up a function that will be used to provide auto-completion suggestions for the command.
+func WithAutoComplete(f AutoCompleteFunc) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.ValidArgsFunction = func(co *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			suggestions, help := autocomplete(co.Context(), args, toComplete)
+			suggestions, help := f(co.Context(), args, toComplete)
 			if help != "" {
 				suggestions = cobra.AppendActiveHelp(suggestions, help)
 			}

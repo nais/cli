@@ -7,10 +7,20 @@ import (
 	"github.com/spf13/pflag"
 )
 
+type FlagOption func(*cobra.Command, string)
+
 type count int
 
 type flagTypes interface {
 	uint | int | bool | string | count | []string
+}
+
+func FlagRequired() FlagOption {
+	return func(cmd *cobra.Command, name string) {
+		if err := cmd.MarkFlagRequired(name); err != nil {
+			panic("failed to mark flag as required: " + err.Error())
+		}
+	}
 }
 
 func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
@@ -59,15 +69,5 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		}
 	default:
 		panic(fmt.Sprintf("unknown flag type: %T", value))
-	}
-}
-
-type FlagOption func(*cobra.Command, string)
-
-func FlagRequired() FlagOption {
-	return func(cmd *cobra.Command, name string) {
-		if err := cmd.MarkFlagRequired(name); err != nil {
-			panic("failed to mark flag as required: " + err.Error())
-		}
 	}
 }
