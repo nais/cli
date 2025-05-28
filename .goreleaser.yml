@@ -107,3 +107,26 @@ scoops:
     homepage: "https://github.com/nais/cli"
     description: "Command-line interface for NAIS"
     license: MIT
+
+nix:
+  - ids:
+      - nais-other
+    url_template: "https://github.com/nais/cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "{{ .ProjectName }}: {{ .Tag }}"
+
+    path: pkgs/nais-cli/default.nix
+    #TODO
+    skip_upload: true
+    install: |
+      mkdir -p $out/bin
+      cp -vr ./bin/nais $out/bin/nais
+    post_install: |
+      installShellCompletion ./completions/*
+    repository:
+      owner: nais
+      name: nur
+      branch: main
+      token: "{{ .Env.NAIS_NUR_PUSH_TOKEN }}"
