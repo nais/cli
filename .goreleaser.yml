@@ -129,4 +129,4 @@ nix:
       owner: nais
       name: nur
       branch: main
-      token: "{{ .Env.NAIS_NUR_PUSH_TOKEN }}"
+      token: "{{ .Env.NUR_PUSH_TOKEN }}"

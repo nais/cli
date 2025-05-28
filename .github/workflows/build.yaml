@@ -87,6 +87,13 @@ jobs:
           app-id: "${{ secrets.NAIS_APP_ID }}"
           repo: nais/scoop-bucket
 
+      - uses: navikt/github-app-token-generator@v1
+        id: get-nur-token
+        with:
+          private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
+          app-id: "${{ secrets.NAIS_APP_ID }}"
+          repo: nais/nur
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -97,6 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_PUSH_TOKEN: ${{ steps.get-homebrew-token.outputs.token }}
           SCOOP_PUSH_TOKEN: ${{ steps.get-scoop-token.outputs.token }}
+          NUR_PUSH_TOKEN: ${{ steps.get-nur-token.outputs.token }}
 
   upload-gar:
     if: ${{ github.ref == 'refs/heads/main' }}
