@@ -4,11 +4,34 @@ import (
 	"context"
 	"os"
 
+	aiven "github.com/nais/cli/internal/aiven/command"
+	alpha "github.com/nais/cli/internal/alpha/command"
+	login "github.com/nais/cli/internal/auth/login"
+	logout "github.com/nais/cli/internal/auth/logout"
 	"github.com/nais/cli/internal/cli"
+	debug "github.com/nais/cli/internal/debug/command"
+	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
+	naisdevice "github.com/nais/cli/internal/naisdevice/command"
+	postgres "github.com/nais/cli/internal/postgres/command"
+	"github.com/nais/cli/internal/root"
+	validate "github.com/nais/cli/internal/validate/command"
 )
 
 func main() {
-	if err := cli.Run(context.Background()); err != nil {
+	flags := &root.Flags{}
+	app := cli.NewApplication(flags,
+		login.Login(flags),
+		logout.Logout(flags),
+		naisdevice.Naisdevice(flags),
+		aiven.Aiven(flags),
+		alpha.Alpha(flags),
+		postgres.Postgres(flags),
+		debug.Debug(flags),
+		kubeconfig.Kubeconfig(flags),
+		validate.Validate(flags),
+	)
+	if err := app.Run(context.Background(), flags); err != nil {
+		// TODO: output error
 		os.Exit(1)
 	}
 }

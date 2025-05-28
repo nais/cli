@@ -1,28 +1,28 @@
 package cli
 
 import (
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/internal/validate"
-	"github.com/spf13/cobra"
+	"context"
+	"fmt"
 )
 
-func validateCommand(rootFlags *root.Flags) *cobra.Command {
-	cmdFlags := &validate.Flags{Flags: rootFlags}
-	cmd := &cobra.Command{
-		Use:   "validate FILE...",
-		Short: "Validate one or more Nais manifest files.",
-		Args:  cobra.MinimumNArgs(1),
-		ValidArgsFunction: func(*cobra.Command, []string, string) ([]cobra.Completion, cobra.ShellCompDirective) {
-			comps := []cobra.Completion{"yaml", "yml", "json"}
-			comps = cobra.AppendActiveHelp(comps, "Choose one or more manifest files to validate (*.yaml, *.yml and *.json).")
-			return comps, cobra.ShellCompDirectiveFilterFileExt
-		},
-		RunE: func(_ *cobra.Command, args []string) error {
-			return validate.Run(args, cmdFlags)
-		},
-	}
-	cmd.Flags().StringVarP(&cmdFlags.VarsFilePath, "vars", "f", "", "Path to the `FILE` containing template variables in JSON or YAML format.")
-	cmd.Flags().StringSliceVar(&cmdFlags.Vars, "var", nil, "Template variable in `KEY=VALUE` form. Can be repeated.")
+// ValidateExactArgs checks that the user has provided an exact amount of arguments to the command.
+func ValidateExactArgs(n int) ValidateFunc {
+	return func(_ context.Context, args []string) error {
+		if len(args) != n {
+			return fmt.Errorf("expected exactly %d arguments, got %d", n, len(args))
+		}
 
-	return cmd
+		return nil
+	}
+}
+
+// ValidateMinArgs checks that the user has provided a minimum amount of arguments to the command.
+func ValidateMinArgs(n int) ValidateFunc {
+	return func(_ context.Context, args []string) error {
+		if len(args) < n {
+			return fmt.Errorf("expected at least %d arguments, got %d", n, len(args))
+		}
+
+		return nil
+	}
 }

@@ -12,9 +12,11 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/nais/cli/internal/output"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace string) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -30,13 +32,13 @@ func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace stri
 		return err
 	}
 
-	fmt.Println("Grant user access")
-	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute)
+	out.Println("Grant user access")
+	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute, out)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Create sql user")
+	out.Println("Create sql user")
 	err = createSQLUser(ctx, projectID, connectionName)
 	if err != nil {
 		return fmt.Errorf("error creating SQL user. One might already exist: %v", err)
@@ -81,7 +83,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration) error {
+func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out output.Output) error {
 	email, err := currentEmail(ctx)
 	if err != nil {
 		return err
@@ -93,7 +95,7 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 	}
 
 	if exists {
-		fmt.Println("User already has permanent access to database, will not grant temporary access")
+		out.Println("User already has permanent access to database, will not grant temporary access")
 		return nil
 	}
 
@@ -203,7 +205,7 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName, cluster, namespace string) error {
+func ListUsers(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -227,7 +229,7 @@ func ListUsers(ctx context.Context, appName, cluster, namespace string) error {
 		_ = rows.Close()
 	}()
 
-	fmt.Println("Users in database:")
+	out.Println("Users in database:")
 	for rows.Next() {
 		var d struct {
 			User string `field:"usename"`
@@ -236,13 +238,13 @@ func ListUsers(ctx context.Context, appName, cluster, namespace string) error {
 			return err
 		}
 
-		fmt.Println(d.User)
+		out.Println(d.User)
 	}
 
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password, cluster, namespace, privilege string) error {
+func AddUser(ctx context.Context, appName, username, password, cluster, namespace, privilege string, out output.Output) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err
@@ -267,7 +269,7 @@ func AddUser(ctx context.Context, appName, username, password, cluster, namespac
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
-	fmt.Printf("Created user: %v", username)
+	out.Printf("Created user: %v", username)
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to %q;", privilege, username))
 	if err != nil {

@@ -11,12 +11,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/liberator/pkg/keygen"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName, cluster, namespace string) error {
+func RotatePassword(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -32,13 +33,13 @@ func RotatePassword(ctx context.Context, appName, cluster, namespace string) err
 		return err
 	}
 
-	fmt.Println("Grant user cloudsql.admin access for 5 minutes")
-	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute)
+	out.Println("Grant user cloudsql.admin access for 5 minutes")
+	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute, out)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Generating new password")
+	out.Println("Generating new password")
 	newPassword, err := generatePassword()
 	if err != nil {
 		return err
@@ -46,19 +47,19 @@ func RotatePassword(ctx context.Context, appName, cluster, namespace string) err
 
 	dbConnectionInfo.SetPassword(newPassword)
 
-	fmt.Printf("Rotating password for user %v in database %v\n", dbConnectionInfo.username, dbConnectionInfo.dbName)
+	out.Printf("Rotating password for user %v in database %v\n", dbConnectionInfo.username, dbConnectionInfo.dbName)
 	err = rotatePasswordForDatabaseUser(ctx, projectID, dbConnectionInfo.instance, dbConnectionInfo.username, dbConnectionInfo.password)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
+	out.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
 	err = updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Password rotated")
+	out.Println("Password rotated")
 	return nil
 }
 

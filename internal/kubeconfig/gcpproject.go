@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/internal/output"
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
@@ -15,7 +16,7 @@ type project struct {
 	Kind   Kind
 }
 
-func getProjects(ctx context.Context, options filterOptions) ([]project, error) {
+func getProjects(ctx context.Context, options filterOptions, out output.Output) ([]project, error) {
 	var projects []project
 
 	svc, err := cloudresourcemanager.NewService(ctx)
@@ -39,7 +40,7 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 	}
 
 	if options.verbose {
-		fmt.Printf("Filter: %s\n", filter)
+		out.Printf("Filter: %s\n", filter)
 	}
 
 	call := svc.Projects.Search().Query(filter)
@@ -74,9 +75,9 @@ func getProjects(ctx context.Context, options filterOptions) ([]project, error) 
 		call.PageToken(response.NextPageToken)
 	}
 	if options.verbose {
-		fmt.Printf("Projects:\n")
+		out.Printf("Projects:\n")
 		for _, p := range projects {
-			fmt.Printf("%s\t%s\t%s\t%v\n", p.ID, p.Tenant, p.Name, p.Kind)
+			out.Printf("%s\t%s\t%s\t%v\n", p.ID, p.Tenant, p.Name, p.Kind)
 		}
 	}
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/output"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
 	v1 "k8s.io/api/core/v1"
@@ -54,16 +55,16 @@ func Setup(
 	return &aiven
 }
 
-func (a Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error) {
+func (a Aiven) GenerateApplication(out output.Output) (*aiven_nais_io_v1.AivenApplication, error) {
 	properties := a.Properties
 
-	err := validateNamespace(a.Ctx, a.Client, properties.Namespace)
-	if err != nil {
+	if err := validateNamespace(a.Ctx, a.Client, properties.Namespace); err != nil {
 		return nil, err
 	}
 	secretName := properties.SecretName
 
 	if secretName == "" {
+		var err error
 		secretName, err = createSecretName(properties.Username, properties.Namespace)
 		if err != nil {
 			return nil, err
@@ -71,8 +72,7 @@ func (a Aiven) GenerateApplication() (*aiven_nais_io_v1.AivenApplication, error)
 	}
 
 	aivenApp := *a.aivenApplication(secretName)
-	err = a.createOrUpdate(&aivenApp)
-	if err != nil {
+	if err := a.createOrUpdate(&aivenApp, out); err != nil {
 		return nil, fmt.Errorf("create/update: %v", err)
 	}
 	return &aivenApp, nil
@@ -102,7 +102,7 @@ func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) 
 	}, existingAivenApp)
 }
 
-func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error {
+func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out output.Output) error {
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
 	err := a.getExisting(&existingAivenApp)
 	if err != nil {
@@ -111,7 +111,7 @@ func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 			if err != nil {
 				return err
 			}
-			fmt.Printf("AivenApplication: '%v' created.", aivenApp.Name)
+			out.Printf("AivenApplication: '%v' created.", aivenApp.Name)
 		}
 	} else {
 		if len(existingAivenApp.GetObjectMeta().GetOwnerReferences()) > 0 {
@@ -123,7 +123,7 @@ func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication) error
 		if err != nil {
 			return err
 		}
-		fmt.Printf("AivenApplication: '%v' updated.", aivenApp.Name)
+		out.Printf("AivenApplication: '%v' updated.", aivenApp.Name)
 	}
 	return nil
 }

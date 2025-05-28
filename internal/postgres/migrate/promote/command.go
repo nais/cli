@@ -6,20 +6,16 @@ import (
 
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-type Flags struct {
-	*migrate.Flags
-	NoWait bool
-}
-
-func Run(ctx context.Context, args migrate.Arguments, flags *Flags) error {
+func Run(ctx context.Context, applicationName, targetInstanceName string, flags *flag.MigratePromote) error {
 	cfg := config.Config{
-		AppName: args.ApplicationName,
+		AppName: applicationName,
 		Target: config.InstanceConfig{
-			InstanceName: option.Some(args.TargetInstanceName),
+			InstanceName: option.Some(targetInstanceName),
 		},
 	}
 

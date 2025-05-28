@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/goccy/go-yaml"
+	"github.com/nais/cli/internal/output"
+
 	// We use a fork of aymerick/raymond because the original library does not detect/handle missing template variables.
 	"github.com/mailgun/raymond/v2"
 )
@@ -49,7 +51,7 @@ func TemplateVariablesFromSlice(vars []string) TemplateVariables {
 }
 
 // ExecTemplate evaluates a template with the given context.
-func ExecTemplate(data []byte, ctx TemplateVariables) ([]byte, error) {
+func ExecTemplate(data []byte, ctx TemplateVariables, out output.Output) ([]byte, error) {
 	if ctx == nil {
 		ctx = make(TemplateVariables)
 	}
@@ -82,22 +84,22 @@ func ExecTemplate(data []byte, ctx TemplateVariables) ([]byte, error) {
 				val = string(b)
 			}
 
-			fmt.Printf("[⚠️] Missing template variable for {{%s}}; using placeholder value '%s'\n", key, val)
+			out.Printf("[⚠️] Missing template variable for {{%s}}; using placeholder value '%s'\n", key, val)
 		}
 	}
 	if missing {
-		fmt.Printf("[⚠️] Placeholder values may be invalid. Provide the missing variables to remove these warnings.\n")
+		out.Printf("[⚠️] Placeholder values may be invalid. Provide the missing variables to remove these warnings.\n")
 	}
 
 	// override expected variables with values from context
 	maps.Copy(templateVars, ctx)
 
-	output, err := template.Exec(templateVars)
+	o, err := template.Exec(templateVars)
 	if err != nil {
 		return nil, fmt.Errorf("execute template: %s", err)
 	}
 
-	return []byte(output), nil
+	return []byte(o), nil
 }
 
 // YAMLToJSONMessages converts raw multi-document YAML bytes to a slice of JSON messages.

@@ -3,16 +3,11 @@ package validate
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/validate/command/flag"
 )
 
-type Flags struct {
-	*root.Flags
-	VarsFilePath string
-	Vars         []string
-}
-
-func Run(files []string, flags *Flags) error {
+func Run(files []string, flags *flag.Validate, out output.Output) error {
 	templateVars := make(TemplateVariables)
 
 	if flags.VarsFilePath != "" {
@@ -23,7 +18,7 @@ func Run(files []string, flags *Flags) error {
 		}
 		for key, val := range templateVars {
 			if flags.IsVerbose() {
-				fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
+				out.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			}
 			templateVars[key] = val
 		}
@@ -34,9 +29,9 @@ func Run(files []string, flags *Flags) error {
 		for key, val := range overrides {
 			if flags.IsVerbose() {
 				if oldval, ok := templateVars[key]; ok {
-					fmt.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
+					out.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
 				}
-				fmt.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
+				out.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			}
 			templateVars[key] = val
 		}
@@ -45,5 +40,5 @@ func Run(files []string, flags *Flags) error {
 	v := New(files)
 	v.Variables = templateVars
 	v.Verbose = flags.IsVerbose()
-	return v.Validate()
+	return v.Validate(out)
 }

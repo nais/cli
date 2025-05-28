@@ -15,9 +15,10 @@ import (
 
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
+	"github.com/nais/cli/internal/output"
 )
 
-func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool) error {
+func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool, out output.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -45,16 +46,16 @@ func RunProxy(ctx context.Context, appName, cluster, namespace, host string, por
 
 	address := fmt.Sprintf("%v:%v", host, port)
 
-	fmt.Printf("Starting proxy on %v\n", address)
-	fmt.Println("If you are using psql, you can connect to the database by running:")
-	fmt.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
-	fmt.Println()
-	fmt.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
-	fmt.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
-	fmt.Println()
-	fmt.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
+	out.Printf("Starting proxy on %v\n", address)
+	out.Println("If you are using psql, you can connect to the database by running:")
+	out.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
+	out.Println()
+	out.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
+	out.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
+	out.Println()
+	out.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
 
-	err = runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose)
+	err = runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose, out)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil
@@ -66,8 +67,8 @@ func RunProxy(ctx context.Context, appName, cluster, namespace, host string, por
 	return nil
 }
 
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool) error {
-	err := checkPostgresqlPassword()
+func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out output.Output) error {
+	err := checkPostgresqlPassword(out)
 	if err != nil {
 		return err
 	}
@@ -76,7 +77,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		logging.DisableLogging()
 	}
 
-	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour); err != nil {
+	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour, out); err != nil {
 		return err
 	}
 
@@ -103,14 +104,14 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		return fmt.Errorf("failed to listen on TCP address: %w", err)
 	}
 
-	fmt.Println("Listening on", listener.Addr().String())
+	out.Println("Listening on", listener.Addr().String())
 
 	port <- listener.Addr().(*net.TCPAddr).Port
 
 	go func() {
 		<-ctx.Done()
 		if err := listener.Close(); err != nil {
-			fmt.Println("error closing listener", err)
+			out.Println("error closing listener", err)
 		}
 	}()
 
@@ -118,12 +119,12 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 	for ctx.Err() == nil {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("error accepting connection", err)
+			out.Println("error accepting connection", err)
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 
-		fmt.Println("New connection", conn.RemoteAddr())
+		out.Println("New connection", conn.RemoteAddr())
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -134,13 +135,13 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 			go func() {
 				<-ctx.Done()
 				if err := conn.Close(); err != nil {
-					fmt.Println("error closing connection", err)
+					out.Println("error closing connection", err)
 				}
 			}()
 
 			conn2, err := d.Dial(ctx, connectionName)
 			if err != nil {
-				fmt.Println("error dialing connection", err)
+				out.Println("error dialing connection", err)
 				return
 			}
 			defer conn2.Close()
@@ -149,11 +150,11 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 			go copy(closer, conn2, conn)
 			go copy(closer, conn, conn2)
 			<-closer
-			fmt.Println("Connection complete", conn.RemoteAddr())
+			out.Println("Connection complete", conn.RemoteAddr())
 		}()
 	}
 
-	fmt.Println("Waiting for connections to close")
+	out.Println("Waiting for connections to close")
 	wg.Wait()
 
 	return nil
@@ -164,14 +165,14 @@ func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
 	closer <- struct{}{} // connection is closed, send signal to stop proxy
 }
 
-func checkPostgresqlPassword() error {
+func checkPostgresqlPassword(out output.Output) error {
 	if _, ok := os.LookupEnv("PGPASSWORD"); ok {
 		return fmt.Errorf("PGPASSWORD is set, please unset it before running this command")
 	}
 
 	dirname, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("could not get home directory, can not check for .pgpass file")
+		out.Println("could not get home directory, can not check for .pgpass file")
 		return nil
 	}
 
