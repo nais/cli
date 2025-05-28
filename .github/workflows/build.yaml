@@ -73,6 +73,9 @@ jobs:
           echo "${{ secrets.SIGN_CERT }}" > nais.crt
           echo "${{ secrets.SIGN_KEY }}" > nais.key
 
+      - name: Prepare for releasing to NUR
+        uses: DeterminateSystems/nix-installer-action@v17
+
       - uses: navikt/github-app-token-generator@v1
         id: get-homebrew-token
         with:
@@ -98,7 +101,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: '~> v2'
+          version: "~> v2"
           args: release --config .goreleaser.yml --clean --verbose
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
