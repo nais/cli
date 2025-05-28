@@ -118,8 +118,6 @@ nix:
     commit_msg_template: "{{ .ProjectName }}: {{ .Tag }}"
 
     path: pkgs/nais-cli/default.nix
-    #TODO
-    skip_upload: true
     install: |
       mkdir -p $out/bin
       cp -vr ./bin/nais $out/bin/nais
