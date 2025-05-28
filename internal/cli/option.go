@@ -76,8 +76,8 @@ func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...Fl
 	}
 }
 
-// InCommandGroup places the command in a specific group. This is mainly used for grouping of commands in the help text.
-func InCommandGroup(group string) CommandOption {
+// InGroup places the command in a specific group. This is mainly used for grouping of commands in the help text.
+func InGroup(group string) CommandOption {
 	return func(c *Command) {
 		c.cobraCmd.GroupID = group
 	}
