@@ -14,6 +14,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	GroupAuthentication = "Authentication"
+)
+
 type Application struct {
 	cobraCmd *cobra.Command
 }
@@ -30,6 +34,11 @@ func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
 	}
 	cc.PersistentFlags().CountVarP(&flags.VerboseLevel, "verbose", "v", `Verbose output.
 Use -v for info, -vv for debug, -vvv for trace.`)
+
+	cc.AddGroup(&cobra.Group{
+		ID:    GroupAuthentication,
+		Title: GroupAuthentication,
+	})
 
 	w := output.NewWriter(cc.OutOrStdout())
 

@@ -43,6 +43,12 @@ func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOpti
 	}
 }
 
+func InCommandGroup(group string) CommandOption {
+	return func(c *Command) {
+		c.cobraCmd.GroupID = group
+	}
+}
+
 func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
 	return func(c *Command) {
 		setupFlag(name, short, usage, value, c.cobraCmd.PersistentFlags())

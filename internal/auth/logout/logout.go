@@ -13,6 +13,7 @@ import (
 func Logout(_ *root.Flags) *cli.Command {
 	cmdFlagNais := false
 	return cli.NewCommand("logout", "Log out and remove credentials.",
+		cli.InCommandGroup(cli.GroupAuthentication),
 		cli.WithLong("Log out of the Nais platform and remove credentials from your local machine."),
 		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
 			if cmdFlagNais {
