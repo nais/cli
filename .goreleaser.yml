@@ -118,7 +118,7 @@ nix:
     path: pkgs/nais-cli/default.nix
     install: |
       mkdir -p $out/bin
-      cp -vr ./bin/nais $out/bin/nais
+      cp -vr ./nais $out/bin/nais
     post_install: |
       installShellCompletion ./completions/*
     repository:
