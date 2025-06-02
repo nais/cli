@@ -14,12 +14,10 @@ var ErrWriteOnce = errors.New("table can only be written to once")
 type tableOption func(*Table)
 
 type Table struct {
-	o             io.Writer
-	columns       []string
-	ignoreHeaders bool
-	written       bool
-
-	data any
+	o       io.Writer
+	columns []string
+	written bool
+	data    any
 }
 
 func NewTable(o io.Writer, opts ...tableOption) *Table {
