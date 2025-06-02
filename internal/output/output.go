@@ -7,6 +7,8 @@ import (
 )
 
 type Output interface {
+	io.Writer
+
 	Println(a ...any)
 	Printf(format string, a ...any)
 }
@@ -21,6 +23,10 @@ func (w *writer) Println(a ...any) {
 
 func (w *writer) Printf(format string, a ...any) {
 	_, _ = fmt.Fprintf(w.w, format, a...)
+}
+
+func (w *writer) Write(p []byte) (n int, err error) {
+	return w.w.Write(p)
 }
 
 func NewWriter(w io.Writer) Output {

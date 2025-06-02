@@ -19,7 +19,8 @@ type Proxy struct {
 type Teams struct {
 	*Api
 
-	All bool
+	All    bool
+	Output string
 }
 
 type Schema struct {
