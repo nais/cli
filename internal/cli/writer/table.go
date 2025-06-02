@@ -1,68 +1,129 @@
 package writer
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
 
-	"github.com/pterm/pterm"
+	"github.com/charmbracelet/lipgloss/table"
 )
 
-type tableColumn struct {
-	name string
-	path string
-}
+var ErrWriteOnce = errors.New("table can only be written to once")
+
+type tableOption func(*Table)
 
 type Table struct {
 	o             io.Writer
-	columns       []tableColumn
+	columns       []string
 	ignoreHeaders bool
+	written       bool
+
+	data any
 }
 
-func NewTable(o io.Writer) *Table {
-	return &Table{
+func NewTable(o io.Writer, opts ...tableOption) *Table {
+	t := &Table{
 		o: o,
 	}
-}
 
-func (t *Table) AddColumn(name, path string) {
-	t.columns = append(t.columns, tableColumn{name: name, path: path})
-}
-
-func (t *Table) SetIgnoreHeaders(ignore bool) {
-	t.ignoreHeaders = ignore
-}
-
-func (t *Table) Write(v any) error {
-	w := pterm.DefaultTable.WithWriter(t.o)
-
-	val := reflect.ValueOf(v)
-	if val.Kind() != reflect.Slice && val.Kind() != reflect.Array {
-		panic("expected a slice or array")
+	for _, opt := range opts {
+		opt(t)
 	}
-	data := make(pterm.TableData, 0, val.Len()+1)
 
-	if !t.ignoreHeaders {
-		w = w.WithHasHeader()
-		headers := make([]string, len(t.columns))
-		for i, col := range t.columns {
-			headers[i] = col.name
+	return t
+}
+
+func (t *Table) Write(data any) error {
+	if !t.written {
+		t.written = true
+	} else {
+		return ErrWriteOnce
+	}
+
+	t.data = data
+	tbl := table.New().
+		Headers(t.columns...).
+		Data(t)
+
+	fmt.Fprint(t.o, tbl.Render())
+
+	return nil
+}
+
+func WithColumns(names ...string) tableOption {
+	return func(t *Table) {
+		t.columns = append(t.columns, names...)
+	}
+}
+
+func (t *Table) At(row, column int) string {
+	if reflect.TypeOf(t.data).Kind() != reflect.Slice {
+		panic("data must be a slice")
+	}
+
+	slice := reflect.ValueOf(t.data)
+	if row < 0 || row >= slice.Len() || column < 0 {
+		return "1"
+	}
+
+	value := slice.Index(row)
+	switch value.Type().Kind() {
+	case reflect.Slice:
+		return atSlice(value, column)
+	case reflect.Struct:
+		return atStruct(value, column)
+	default:
+		panic(fmt.Sprintf("unsupported data type: %v", value))
+	}
+}
+
+func atSlice(v reflect.Value, column int) string {
+	if column >= v.Len() {
+		return "2"
+	}
+
+	return fmt.Sprintf("%v", v.Index(column).Interface())
+}
+
+func atStruct(v reflect.Value, column int) string {
+	exportedIndex := -1
+	fields := reflect.TypeOf(v.Interface())
+	values := reflect.ValueOf(v.Interface())
+
+	for i := range fields.NumField() {
+		field := fields.Field(i)
+		if !field.IsExported() {
+			continue
 		}
-		data = append(data, headers)
-	}
 
-	for i := range val.Len() {
-		row := make([]string, len(t.columns))
-		for j, col := range t.columns {
-			field := val.Index(i).FieldByName(col.path)
-			if !field.IsValid() {
-				row[j] = ""
-				continue
-			}
-			row[j] = fmt.Sprint(field.Interface())
+		exportedIndex++
+		if exportedIndex == column {
+			return fmt.Sprintf("%v", values.Field(i).Interface())
 		}
-		data = append(data, row)
+	}
+	return "3"
+}
+
+func (t *Table) Rows() int {
+	if reflect.TypeOf(t.data).Kind() != reflect.Slice {
+		panic("data must be a slice")
 	}
 
-	return w.WithData(data).Render()
+	return reflect.ValueOf(t.data).Len()
+}
+
+func (t *Table) Columns() int {
+	if reflect.TypeOf(t.data).Kind() != reflect.Slice {
+		panic("data must be a slice")
+	}
+
+	slice := reflect.ValueOf(t.data)
+	if t.columns != nil {
+		return len(t.columns)
+	} else if slice.Len() == 0 {
+		return 0
+	}
+
+	return slice.Index(0).Len()
 }

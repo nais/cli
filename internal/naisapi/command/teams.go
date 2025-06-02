@@ -64,9 +64,7 @@ func teams(parentFlags *flag.Api) *cli.Command {
 			if flags.Output == "json" {
 				w = writer.NewJSON(out, true)
 			} else {
-				tbl := writer.NewTable(out)
-				tbl.AddColumn("Slug", "Slug")
-				tbl.AddColumn("Description", "Description")
+				tbl := writer.NewTable(out, writer.WithColumns("Slug", "Description"))
 				w = tbl
 			}
 
