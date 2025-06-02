@@ -21,8 +21,7 @@ func statuscmd(rootFlags *root.Flags) *cli.Command {
 	h := &handler{flags: &flag.Status{Flags: rootFlags}}
 
 	return cli.NewCommand("status", "Show the status of your naisdevice.",
-		cli.WithFlag("output", "o", "Output format, can be json or yaml", &h.flags.Output),
-		cli.WithFlag("quiet", "q", "Suppress output if not connected", &h.flags.Quiet),
+		cli.WithFlags(h.flags),
 		cli.WithRun(h.Run),
 		cli.WithValidate(h.Validate),
 	)

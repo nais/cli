@@ -12,7 +12,7 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func jitacmd(_ *root.Flags) *cli.Command {
+func jitacmd(parentFlags *root.Flags) *cli.Command {
 	return cli.NewCommand("jita", "Connect to a JITA gateway.",
 		cli.WithArgs("gateway"),
 		cli.WithRun(run),

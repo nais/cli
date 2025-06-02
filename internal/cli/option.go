@@ -65,6 +65,14 @@ func WithFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOpti
 	}
 }
 
+// WithFlags sets up the entire flags struct for this command.
+func WithFlags(flags any) CommandOption {
+	return func(c *Command) {
+		c.setupFlags(flags, 0)
+		// c.setupFlags(c.StickyFlags, true)
+	}
+}
+
 // WithStickyFlag sets up a flag that is persistent across all subcommands. Use FlagOption to customize the flag
 // further.
 func WithStickyFlag[T flagTypes](name, short, usage string, value *T, opts ...FlagOption) CommandOption {
