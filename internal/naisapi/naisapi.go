@@ -93,3 +93,23 @@ func GetUserTeams(ctx context.Context, _ *flag.Teams) (*gql.UserTeamsResponse, e
 
 	return gql.UserTeams(ctx, client)
 }
+
+func GetAllTeams(ctx context.Context) (*gql.TeamsResponse, error) {
+	_ = `# @genqlient
+		query Teams {
+	    teams(first:1000) {
+				nodes {
+					slug
+					purpose
+				}
+			}
+		}
+	`
+
+	client, err := GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return gql.Teams(ctx, client)
+}

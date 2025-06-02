@@ -10,6 +10,45 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// TeamsResponse is returned by Teams on success.
+type TeamsResponse struct {
+	// Get a list of teams.
+	Teams TeamsTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns TeamsResponse.Teams, and is useful for accessing the field via an interface.
+func (v *TeamsResponse) GetTeams() TeamsTeamsTeamConnection { return v.Teams }
+
+// TeamsTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type TeamsTeamsTeamConnection struct {
+	// List of nodes.
+	Nodes []TeamsTeamsTeamConnectionNodesTeam `json:"nodes"`
+}
+
+// GetNodes returns TeamsTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *TeamsTeamsTeamConnection) GetNodes() []TeamsTeamsTeamConnectionNodesTeam { return v.Nodes }
+
+// TeamsTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type TeamsTeamsTeamConnectionNodesTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+	// Purpose of the team.
+	Purpose string `json:"purpose"`
+}
+
+// GetSlug returns TeamsTeamsTeamConnectionNodesTeam.Slug, and is useful for accessing the field via an interface.
+func (v *TeamsTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
+
+// GetPurpose returns TeamsTeamsTeamConnectionNodesTeam.Purpose, and is useful for accessing the field via an interface.
+func (v *TeamsTeamsTeamConnectionNodesTeam) GetPurpose() string { return v.Purpose }
+
 // UserTeamsMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // UserTeamsMeAuthenticatedUser is implemented by the following types:
@@ -230,6 +269,39 @@ func (v *UserTeamsResponse) __premarshalJSON() (*__premarshalUserTeamsResponse, 
 		}
 	}
 	return &retval, nil
+}
+
+// The query executed by Teams.
+const Teams_Operation = `
+query Teams {
+	teams(first: 1000) {
+		nodes {
+			slug
+			purpose
+		}
+	}
+}
+`
+
+func Teams(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *TeamsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "Teams",
+		Query:  Teams_Operation,
+	}
+
+	data_ = &TeamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
 }
 
 // The query executed by UserTeams.

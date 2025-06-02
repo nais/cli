@@ -18,6 +18,8 @@ type Proxy struct {
 
 type Teams struct {
 	*Api
+
+	All bool
 }
 
 type Schema struct {
