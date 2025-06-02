@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/internal/cli/writer"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -11,43 +12,65 @@ import (
 )
 
 func teams(parentFlags *flag.Api) *cli.Command {
-	flags := &flag.Teams{Api: parentFlags}
+	flags := &flag.Teams{
+		Api:    parentFlags,
+		Output: "table",
+	}
 
 	return &cli.Command{
 		Name:  "teams",
 		Short: "Get a list of your teams.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+			type team struct {
+				Slug        string `json:"slug"`
+				Description string `json:"description"`
+			}
+
+			var teams []team
+
 			if flags.All {
-				teams, err := naisapi.GetAllTeams(ctx)
+				ret, err := naisapi.GetAllTeams(ctx)
 				if err != nil {
 					return err
 				}
 
-				if len(teams.Teams.Nodes) == 0 {
-					out.Println("No teams found.")
-					return nil
-				}
-
-				for _, team := range teams.Teams.Nodes {
-					out.Println(team.Slug, "-", team.Purpose)
+				for _, t := range ret.Teams.Nodes {
+					teams = append(teams, team{
+						Slug:        t.Slug,
+						Description: t.Purpose,
+					})
 				}
 			} else {
-				teams, err := naisapi.GetUserTeams(ctx, flags)
+				ret, err := naisapi.GetUserTeams(ctx, flags)
 				if err != nil {
 					return err
 				}
-				if len(teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes) == 0 {
-					out.Println("No teams found.")
-					return nil
-				}
 
-				for _, team := range teams.Me.(*gql.UserTeamsMeUser).Teams.Nodes {
-					out.Println(team.Team.Slug, "-", team.Team.Purpose)
+				for _, t := range ret.Me.(*gql.UserTeamsMeUser).Teams.Nodes {
+					teams = append(teams, team{
+						Slug:        t.Team.Slug,
+						Description: t.Team.Purpose,
+					})
 				}
 			}
 
-			return nil
+			if len(teams) == 0 {
+				out.Println("No teams found.")
+				return nil
+			}
+
+			var w writer.Writer
+			if flags.Output == "json" {
+				w = writer.NewJSON(out, true)
+			} else {
+				tbl := writer.NewTable(out)
+				tbl.AddColumn("Slug", "Slug")
+				tbl.AddColumn("Description", "Description")
+				w = tbl
+			}
+
+			return w.Write(teams)
 		},
 	}
 }

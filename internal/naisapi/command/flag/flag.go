@@ -19,7 +19,8 @@ type Proxy struct {
 type Teams struct {
 	*Api
 
-	All bool `name:"all" short:"a" usage:"List all teams, not just the ones you are a member of"`
+	All    bool   `name:"all" short:"a" usage:"List all teams, not just the ones you are a member of"`
+	Output string `name:"output" short:"o" usage:"Format output (table|json)"`
 }
 
 type Schema struct {
