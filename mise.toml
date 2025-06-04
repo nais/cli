@@ -10,7 +10,7 @@ run = "go tool honnef.co/go/tools/cmd/staticcheck ./..."
 [tasks.vulncheck]
 description = "Run govulncheck"
 wait_for = ['fmt']
-run = "go tool golang.org/x/vuln/cmd/govulncheck ./..."
+run = "go tool golang.org/x/vuln/cmd/govulncheck -show verbose ./..."
 
 [tasks.deadcode]
 description = "Run deadcode"
