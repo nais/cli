@@ -2,14 +2,11 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"os"
 	"slices"
 
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/output"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +19,7 @@ type Application struct {
 	cobraCmd *cobra.Command
 }
 
-func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
+func NewApplication(flags any, cmd ...*Command) *Application {
 	cobra.EnableTraverseRunHooks = true
 
 	cc := &cobra.Command{
@@ -52,7 +49,11 @@ func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
 	}
 }
 
-func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
+type LogLevelFlags interface {
+	IsVerbose() bool
+}
+
+func (a *Application) Run(ctx context.Context, flags LogLevelFlags) error {
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {
@@ -61,7 +62,7 @@ func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
 			if err := recover(); err != nil {
 				handlePanic(err)
 			}
-			flushMetrics(flags.IsDebug())
+			flushMetrics(flags.IsVerbose())
 		}()
 	}
 
@@ -71,12 +72,6 @@ func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
 	}
 
 	if err != nil {
-		if errors.Is(err, naisapi.ErrNotAuthenticated) {
-			// TODO(thokra): Auto login process of some kind
-			// Check if interactive
-			// fmt.Println("Please try to log in again. Press enter to start the login process, or Ctrl+C to cancel.")
-			// Start login process, if successful, rerun the command
-		}
 		return err
 	}
 
