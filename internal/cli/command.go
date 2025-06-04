@@ -72,9 +72,9 @@ func use(args []Argument) string {
 			suffix = "..."
 		}
 
-		format := "%s%s"
+		format := " %s%s"
 		if !arg.Required {
-			format = "[%s%s]"
+			format = " [%s%s]"
 		}
 
 		use += fmt.Sprintf(format, strings.ToUpper(arg.Name), suffix)
