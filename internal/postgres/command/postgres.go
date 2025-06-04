@@ -18,10 +18,11 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 		Context:   defaultContext,
 	}
 
-	return cli.NewCommand("postgres", "Manage SQL instances.",
-		cli.WithStickyFlag("namespace", "n", "The kubernetes `NAMESPACE` to use.", &flags.Namespace),
-		cli.WithStickyFlag("context", "c", "The kubeconfig `CONTEXT` to use.", &flags.Context),
-		cli.WithSubCommands(
+	return &cli.Command{
+		Name:        "postgres",
+		Short:       "Manage SQL instances.",
+		StickyFlags: flags,
+		SubCommands: []*cli.Command{
 			migrateCommand(flags),
 			passwordCommand(flags),
 			usersCommand(flags),
@@ -31,10 +32,10 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 			proxyCommand(flags),
 			psqlCommand(flags),
 			revokeCommand(flags),
-		),
-		cli.WithValidate(func(ctx context.Context, _ []string) error {
+		},
+		ValidateFunc: func(ctx context.Context, _ []string) error {
 			_, err := gcp.ValidateAndGetUserLogin(ctx, false)
 			return err
-		}),
-	)
+		},
+	}
 }

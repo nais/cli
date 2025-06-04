@@ -11,16 +11,22 @@ import (
 
 func passwordCommand(parentFlags *flag.Postgres) *cli.Command {
 	flags := &flag.Password{Postgres: parentFlags}
-	return cli.NewCommand("password", "Manage SQL instance passwords.",
-		cli.WithSubCommands(
-			cli.NewCommand("rotate", "Rotate the SQL instance password.",
-				cli.WithLongDescription("The rotation is done in GCP and in the Kubernetes secret."),
-				cli.WithArgs("app_name"),
-				cli.WithValidate(cli.ValidateExactArgs(1)),
-				cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+	return &cli.Command{
+		Name:  "password",
+		Short: "Manage SQL instance passwords.",
+		SubCommands: []*cli.Command{
+			{
+				Name:  "rotate",
+				Short: "Rotate the SQL instance password.",
+				Long:  "The rotation is done in GCP and in the Kubernetes secret.",
+				Args: []cli.Argument{
+					{Name: "app_name", Required: true},
+				},
+				ValidateFunc: cli.ValidateExactArgs(1),
+				RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 					return postgres.RotatePassword(ctx, args[0], flags.Context, flags.Namespace, out)
-				}),
-			),
-		),
-	)
+				},
+			},
+		},
+	}
 }

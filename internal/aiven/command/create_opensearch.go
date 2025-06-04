@@ -16,15 +16,19 @@ import (
 func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 	createOpenSearchFlags := &flag.CreateOpenSearch{Create: parentFlags}
 
-	return cli.NewCommand("opensearch", "Grant a user access to an OpenSearch instance.",
-		cli.WithValidate(cli.ValidateExactArgs(2)),
-		cli.WithArgs("username", "namespace"),
-		cli.WithFlag("instance", "i", "The name of the OpenSearch `INSTANCE`.", &createOpenSearchFlags.Instance),
-		cli.WithFlag("access", "a", "The access `LEVEL`. Available levels: "+strings.Join(aiven_services.OpenSearchAccesses, ", "), &createOpenSearchFlags.Access),
-		cli.WithAutoComplete(func(ctx context.Context, args []string, toComplete string) ([]string, string) {
+	return &cli.Command{
+		Name:         "opensearch",
+		Short:        "Grant a user access to an OpenSearch instance.",
+		ValidateFunc: cli.ValidateExactArgs(2),
+		Args: []cli.Argument{
+			{Name: "username", Required: true},
+			{Name: "namespace", Required: true},
+		},
+		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
 			return aiven_services.OpenSearchAccesses, ""
-		}),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+		},
+		Flags: createOpenSearchFlags,
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchFlags.Access)
 			if err != nil {
 				return fmt.Errorf(
@@ -56,6 +60,6 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 			out.Printf("\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 
 			return nil
-		}),
-	)
+		},
+	}
 }

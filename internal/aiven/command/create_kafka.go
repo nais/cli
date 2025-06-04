@@ -16,12 +16,16 @@ import (
 func createKafka(parentFlags *flag.Create) *cli.Command {
 	createKafkaFlags := &flag.CreateKafka{Create: parentFlags, Pool: "nav-dev"}
 
-	return cli.NewCommand("kafka", "Grant a user access to a Kafka topic.",
-		cli.WithFlag("pool", "p", "The `NAME` of the pool to create the Kafka instance in.", &createKafkaFlags.Pool),
-		cli.WithFlag("test", "t", "Create a test Kafka topic with the given `NAME`.", &createKafkaFlags.Test),
-		cli.WithArgs("username", "namespace"),
-		cli.WithValidate(cli.ValidateExactArgs(2)),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+	return &cli.Command{
+		Name:  "kafka",
+		Short: "Grant a user access to a Kafka topic.",
+		Flags: createKafkaFlags,
+		Args: []cli.Argument{
+			{Name: "username", Required: true},
+			{Name: "namespace", Required: true},
+		},
+		ValidateFunc: cli.ValidateExactArgs(2),
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
@@ -51,6 +55,6 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 			out.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
 
 			return nil
-		}),
-	)
+		},
+	}
 }

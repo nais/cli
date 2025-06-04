@@ -20,15 +20,20 @@ func revokeCommand(parentFlags *flag.Postgres) *cli.Command {
 		Schema:   "public",
 	}
 
-	return cli.NewCommand("revoke", "Revoke access to your SQL instance for the role 'cloudsqliamuser'.",
-		cli.WithLongDescription(`Revoke will revoke the role 'cloudsqliamuser' access to the tables in the SQL instance.
+	return &cli.Command{
+		Name:  "revoke",
+		Short: "Revoke access to your SQL instance for the role 'cloudsqliamuser'.",
+		Long: `Revoke will revoke the role 'cloudsqliamuser' access to the tables in the SQL instance.
 
 This is done by connecting using the application credentials and modify the permissions on the public schema.
 
- This operation is only required to run once for each SQL instance.`),
-		cli.WithArgs("app_name"),
-		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+ This operation is only required to run once for each SQL instance.`,
+		Args: []cli.Argument{
+			{Name: "app_name", Required: true},
+		},
+		ValidateFunc: cli.ValidateExactArgs(1),
+		Flags:        flags,
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			input := bufio.NewScanner(os.Stdin)
 			input.Scan()
@@ -37,7 +42,6 @@ This is done by connecting using the application credentials and modify the perm
 			}
 
 			return postgres.RevokeAccess(ctx, args[0], flags.Namespace, flags.Context, flags.Schema)
-		}),
-		cli.WithFlag("schema", "", "Schema to revoke access from.", &flags.Schema),
-	)
+		},
+	}
 }

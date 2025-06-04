@@ -32,8 +32,8 @@ func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
-	cc.PersistentFlags().CountVarP(&flags.VerboseLevel, "verbose", "v", `Verbose output.
-Use -v for info, -vv for debug, -vvv for trace.`)
+
+	setupFlags(flags, cc.PersistentFlags())
 
 	cc.AddGroup(&cobra.Group{
 		ID:    GroupAuthentication,
@@ -43,7 +43,7 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 	w := output.NewWriter(cc.OutOrStdout())
 
 	for _, c := range cmd {
-		c.setup(w)
+		c.init(w)
 		cc.AddCommand(c.cobraCmd)
 	}
 

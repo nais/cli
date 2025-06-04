@@ -7,11 +7,13 @@ import (
 
 func Api(parentFlags *flag.Alpha) *cli.Command {
 	flags := &flag.Api{Alpha: parentFlags}
-	return cli.NewCommand("api", "Interact with Nais API.",
-		cli.WithSubCommands(
+	return &cli.Command{
+		Name:  "api",
+		Short: "Interact with Nais API.",
+		SubCommands: []*cli.Command{
 			proxy(flags),
 			schema(flags),
 			teams(flags),
-		),
-	)
+		},
+	}
 }

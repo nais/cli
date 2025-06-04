@@ -27,16 +27,16 @@ func (d *Debug) Tidy() error {
 
 	for _, pod := range pods.Items {
 		podName := pod.Name
-		if d.cfg.CopyPod {
+		if d.flags.Copy {
 			podName = debuggerContainerName(pod.Name)
 		}
 
-		if !d.cfg.CopyPod && len(pod.Spec.EphemeralContainers) == 0 {
+		if !d.flags.Copy && len(pod.Spec.EphemeralContainers) == 0 {
 			pterm.Info.Printf("No debug container found for: %s\n", pod.Name)
 			continue
 		}
 
-		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
+		_, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
 		if err != nil {
 			if k8serrors.IsNotFound(err) {
 				pterm.Info.Printf("No debug pod found for: %s\n", pod.Name)
@@ -56,7 +56,7 @@ func (d *Debug) Tidy() error {
 		}
 
 		// Delete pod if user confirms
-		if err := d.client.CoreV1().Pods(d.cfg.Namespace).Delete(d.ctx, podName, metav1.DeleteOptions{}); err != nil {
+		if err := d.client.CoreV1().Pods(d.flags.Namespace).Delete(d.ctx, podName, metav1.DeleteOptions{}); err != nil {
 			pterm.Error.Printf("Failed to delete pod %s: %v\n", podName, err)
 		} else {
 			pterm.Success.Printf("Deleted pod: %s\n", podName)

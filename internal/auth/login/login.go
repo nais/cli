@@ -10,18 +10,25 @@ import (
 	"github.com/nais/cli/internal/root"
 )
 
-func Login(_ *root.Flags) *cli.Command {
-	cmdFlagNais := false
-	return cli.NewCommand("login", "Log in to the Nais platform.",
-		cli.InGroup(cli.GroupAuthentication),
-		cli.WithLongDescription(`Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`),
-		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
-			if cmdFlagNais {
+type flags struct {
+	*root.Flags
+	Nais bool `name:"nais" short:"n" usage:"Login using login.nais.io instead of gcloud."`
+}
+
+func Login(rootFlags *root.Flags) *cli.Command {
+	flags := &flags{Flags: rootFlags}
+	return &cli.Command{
+		Name:  "login",
+		Short: "Log in to the Nais platform.",
+		Long:  `Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`,
+		Group: cli.GroupAuthentication,
+		Flags: flags,
+		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+			if flags.Nais {
 				return naisapi.Login(ctx, out)
 			}
 
 			return gcp.Login(ctx, out)
-		}),
-		cli.WithFlag("nais", "n", "Login using login.nais.io instead of gcloud.", &cmdFlagNais),
-	)
+		},
+	}
 }

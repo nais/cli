@@ -13,14 +13,16 @@ import (
 func teams(parentFlags *flag.Api) *cli.Command {
 	flags := &flag.Teams{Api: parentFlags}
 
-	return cli.NewCommand("teams", "Get a list of your teams.",
-		cli.WithFlag("all", "a", "List all teams, not just the ones you are a member of", &flags.All),
-		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
+	return &cli.Command{
+		Name:  "teams",
+		Short: "Get a list of your teams.",
+		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
 			if flags.All {
 				teams, err := naisapi.GetAllTeams(ctx)
 				if err != nil {
 					return err
 				}
+
 				if len(teams.Teams.Nodes) == 0 {
 					out.Println("No teams found.")
 					return nil
@@ -45,6 +47,6 @@ func teams(parentFlags *flag.Api) *cli.Command {
 			}
 
 			return nil
-		}),
-	)
+		},
+	}
 }

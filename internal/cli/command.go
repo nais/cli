@@ -2,100 +2,117 @@ package cli
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/nais/cli/internal/output"
 	"github.com/spf13/cobra"
 )
 
+type Argument struct {
+	Name       string // Name of the argument, used for help output
+	Required   bool   // Whether the argument is required
+	Repeatable bool   // Whether the argument can be repeated multiple times, this can only be set for the last argument in the command
+}
+
 type Command struct {
+	// The name of the command, this is used to invoke the command in the CLI.
+	Name string
+
+	// The shorthand version of the command.
+	Short string
+
+	// Long adds a long description to the command used for help output.
+	Long string
+
+	// RunFunc will be executed when the command is run.
+	RunFunc RunFunc
+
+	// ValidateFuncs will be executed before the command's RunFunc is executed.
+	// The validation functions will be executed in the specified order, and if
+	// one of them returns an error the RunFunc will not be executed.
+	ValidateFunc ValidateFunc
+
+	// AutoCompleteFunc sets up a function that will be used to provide auto-completion suggestions for the command.
+	AutoCompleteFunc AutoCompleteFunc
+
+	// AutoCompleteExtensions specifies which file extensions to list in autocompletion. This overrides AutoCompleteFunc.
+	AutoCompleteExtensions []string
+
+	// Group places the command in a specific group. This is mainly used for grouping of commands in the help text.
+	Group string
+
+	// SubCommands adds subcommands to the command.
+	SubCommands []*Command
+
+	// Args are the positional arguments to the command. The arguments will be injected into the commands RunFunc.
+	Args []Argument
+
+	// Flags sets up flags for the command.
+	Flags any
+
+	// StickyFlags sets up flags that is persistent across all subcommands.
+	StickyFlags any
+
+	// internal state
 	cobraCmd *cobra.Command
-	output   output.Output
-
-	validateFuncs []ValidateFunc
-	subCommands   []*Command
 }
 
-func (c *Command) setupFlags(flags any, level int) {
-	fields := reflect.TypeOf(flags).Elem()
-	values := reflect.ValueOf(flags).Elem()
-
-	for i := range fields.NumField() {
-		field := fields.Field(i)
-		value := values.Field(i)
-
-		if !field.IsExported() {
-			fmt.Printf("skipping: unexported field %v %v\n", field.Name, value.String())
-			continue
-		} else {
-			fmt.Printf("processing field: %v %v\n", field.Name, value.String())
+func use(args []Argument) string {
+	use := ""
+	for i, arg := range args {
+		if arg.Name == "" {
+			panic(fmt.Sprintf("argument name (%+v) cannot be empty", arg))
 		}
 
-		// or is it just optional?
-		if value.Kind() == reflect.Pointer && value.Elem().Kind() == reflect.Struct {
-			c.setupFlags(value.Interface(), level+1)
-		} else {
-			flagName, ok := field.Tag.Lookup("name")
-			if !ok {
-				flagName = strings.ToLower(field.Name)
+		suffix := ""
+		if arg.Repeatable {
+			if i != len(args)-1 {
+				panic(fmt.Sprintf("repeatable argument (%+v) must be the last argument in the command", arg))
 			}
-
-			flagUsage, ok := field.Tag.Lookup("usage")
-			if !ok {
-				flagUsage = field.Name
-			}
-			flagShort, ok := field.Tag.Lookup("short")
-			if !ok {
-				flagShort = ""
-			}
-
-			if !value.CanAddr() {
-				panic(fmt.Sprintf("field %v is not addressable, cannot set up flag", field.Name))
-			}
-
-			if level == 0 {
-				setupFlag(flagName, flagShort, flagUsage, value.Addr().Interface(), c.cobraCmd.Flags())
-			} else {
-				setupFlag(flagName, flagShort, flagUsage, value.Addr().Interface(), c.cobraCmd.PersistentFlags())
-			}
+			suffix = "..."
 		}
+
+		format := "%s%s"
+		if !arg.Required {
+			format = "[%s%s]"
+		}
+
+		use += fmt.Sprintf(format, strings.ToUpper(arg.Name), suffix)
 	}
+
+	return use
 }
 
-func NewCommand(name, short string, opts ...CommandOption) *Command {
-	if strings.Contains(name, " ") {
-		panic(fmt.Sprintf("command name cannot contain spaces: %v", name))
+func run(f RunFunc, out output.Output) func(*cobra.Command, []string) error {
+	if f != nil {
+		return func(co *cobra.Command, args []string) error {
+			return f(co.Context(), out, args)
+		}
+	}
+	return nil
+}
+
+func (c *Command) init(out output.Output) {
+	if strings.Contains(c.Name, " ") {
+		panic(fmt.Sprintf("command name cannot contain spaces: %v", c.Name))
 	}
 
-	cmd := &Command{}
-	cmd.cobraCmd = &cobra.Command{
-		Use:   name,
-		Short: short,
-		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return nil, cobra.ShellCompDirectiveNoFileComp
-		},
+	c.cobraCmd = &cobra.Command{
+		Use:               c.Name + use(c.Args),
+		Short:             c.Short,
+		Long:              c.Long,
+		RunE:              run(c.RunFunc, out),
+		ValidArgsFunction: autocomplete(c.AutoCompleteFunc, c.AutoCompleteExtensions),
 		PersistentPreRunE: func(co *cobra.Command, args []string) error {
-			for _, validate := range cmd.validateFuncs {
-				if err := validate(co.Context(), args); err != nil {
-					return fmt.Errorf("validation failed: %w", err)
-				}
+			if err := c.ValidateFunc(co.Context(), args); err != nil {
+				return fmt.Errorf("validation failed: %w", err)
 			}
 			return nil
 		},
 	}
 
-	for _, opt := range opts {
-		opt(cmd)
-	}
-
-	return cmd
-}
-
-func (c *Command) setup(out output.Output) {
-	c.output = out
-	for _, sub := range c.subCommands {
-		sub.setup(out)
+	for _, sub := range c.SubCommands {
+		sub.init(out)
 		c.cobraCmd.AddCommand(sub.cobraCmd)
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/pterm/pterm"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 
@@ -22,25 +23,22 @@ const (
 )
 
 type Debug struct {
-	ctx    context.Context
-	client kubernetes.Interface
-	cfg    *Config
+	ctx          context.Context
+	client       kubernetes.Interface
+	flags        *flag.DebugSticky
+	workloadName string
+	debugImage   string
+	byPod        bool
 }
 
-type Config struct {
-	Namespace    string
-	Context      string
-	WorkloadName string
-	DebugImage   string
-	CopyPod      bool
-	ByPod        bool
-}
-
-func Setup(client kubernetes.Interface, cfg *Config) *Debug {
+func Setup(client kubernetes.Interface, flags *flag.DebugSticky, workloadName, debugImage string, byPod bool) *Debug {
 	return &Debug{
-		ctx:    context.Background(),
-		client: client,
-		cfg:    cfg,
+		ctx:          context.Background(),
+		client:       client,
+		flags:        flags,
+		workloadName: workloadName,
+		debugImage:   debugImage,
+		byPod:        byPod,
 	}
 }
 
@@ -48,12 +46,12 @@ func (d *Debug) getPodsForWorkload() (*core_v1.PodList, error) {
 	pterm.Info.Println("Fetching workload...")
 	var podList *core_v1.PodList
 	var err error
-	podList, err = d.client.CoreV1().Pods(d.cfg.Namespace).List(d.ctx, metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("app.kubernetes.io/name=%s", d.cfg.WorkloadName),
+	podList, err = d.client.CoreV1().Pods(d.flags.Namespace).List(d.ctx, metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("app.kubernetes.io/name=%s", d.workloadName),
 	})
 	if len(podList.Items) == 0 {
-		podList, err = d.client.CoreV1().Pods(d.cfg.Namespace).List(d.ctx, metav1.ListOptions{
-			LabelSelector: fmt.Sprintf("app=%s", d.cfg.WorkloadName),
+		podList, err = d.client.CoreV1().Pods(d.flags.Namespace).List(d.ctx, metav1.ListOptions{
+			LabelSelector: fmt.Sprintf("app=%s", d.workloadName),
 		})
 	}
 	if err != nil {
@@ -70,16 +68,16 @@ func (d *Debug) debugPod(podName string) error {
 	const maxRetries = 6
 	const pollInterval = 5
 
-	if d.cfg.CopyPod {
+	if d.flags.Copy {
 		pN := debuggerContainerName(podName)
-		_, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
+		_, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
 		if err == nil {
 			pterm.Info.Printf("%s already exists, trying to attach...\n", pN)
 
 			// Polling loop to check if the debugger container is running
 			for i := 0; i < maxRetries; i++ {
 				pterm.Info.Printf("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
-				pod, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
+				pod, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
 				if err != nil {
 					return fmt.Errorf("failed to get debug pod copy %s: %v", pN, err)
 				}
@@ -99,14 +97,14 @@ func (d *Debug) debugPod(podName string) error {
 			return fmt.Errorf("failed to check for existing debug pod copy %s: %v", pN, err)
 		}
 	} else {
-		pod, err := d.client.CoreV1().Pods(d.cfg.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
+		pod, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to get pod %s: %v", podName, err)
 		}
 
 		if len(pod.Spec.EphemeralContainers) > 0 {
 			pterm.Warning.Printf("The container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
-			pterm.Info.Printf("Please consider using 'nais debug tidy %s' to clean up\n", d.cfg.WorkloadName)
+			pterm.Info.Printf("Please consider using 'nais debug tidy %s' to clean up\n", d.workloadName)
 		}
 	}
 
@@ -117,15 +115,15 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	cmd := exec.Command(
 		"kubectl",
 		"attach",
-		"-n", d.cfg.Namespace,
+		"-n", d.flags.Namespace,
 		fmt.Sprintf("pod/%s", podName),
 		"-c", debuggerContainerDefaultName,
 		"-i",
 		"-t",
 	)
 
-	if d.cfg.Context != "" {
-		cmd.Args = append(cmd.Args, "--context", d.cfg.Context)
+	if d.flags.Context != "" {
+		cmd.Args = append(cmd.Args, "--context", d.flags.Context)
 	}
 
 	cmd.Stdin = os.Stdin
@@ -147,28 +145,28 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 func (d *Debug) createDebugPod(podName string) error {
 	args := []string{
 		"debug",
-		"-n", d.cfg.Namespace,
+		"-n", d.flags.Namespace,
 		fmt.Sprintf("pod/%s", podName),
 		"-it",
 		"--stdin",
 		"--tty",
 		"--profile=restricted",
 		"-q",
-		"--image", d.cfg.DebugImage,
+		"--image", d.debugImage,
 	}
 
-	if d.cfg.Context != "" {
-		args = append(args, "--context", d.cfg.Context)
+	if d.flags.Context != "" {
+		args = append(args, "--context", d.flags.Context)
 	}
 
-	if d.cfg.CopyPod {
+	if d.flags.Copy {
 		args = append(args,
 			"--copy-to", debuggerContainerName(podName),
 			"-c", "debugger",
 		)
 	} else {
 		args = append(args,
-			"--target", d.cfg.WorkloadName)
+			"--target", d.workloadName)
 	}
 
 	cmd := exec.Command("kubectl", args...)
@@ -180,12 +178,12 @@ func (d *Debug) createDebugPod(podName string) error {
 		return fmt.Errorf("failed to start debug command: %v", err)
 	}
 
-	if d.cfg.CopyPod {
+	if d.flags.Copy {
 		pterm.Info.Printf("Debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
 	} else {
 		pterm.Info.Println("Debugging container created...")
 	}
-	pterm.Info.Printf("Using debugger image %s\n", d.cfg.DebugImage)
+	pterm.Info.Printf("Using debugger image %s\n", d.debugImage)
 
 	if err := cmd.Wait(); err != nil {
 		if strings.Contains(err.Error(), "exit status 1") {
@@ -195,8 +193,8 @@ func (d *Debug) createDebugPod(podName string) error {
 		return fmt.Errorf("debug command failed: %v", err)
 	}
 
-	if d.cfg.CopyPod {
-		pterm.Info.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.cfg.WorkloadName)
+	if d.flags.Copy {
+		pterm.Info.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.workloadName)
 	}
 
 	return nil
@@ -219,7 +217,7 @@ func (d *Debug) Debug() error {
 	}
 
 	podName := podNames[0]
-	if d.cfg.ByPod {
+	if d.byPod {
 		result, err := pterm.DefaultInteractiveSelect.WithOptions(podNames).Show()
 		if err != nil {
 			pterm.Error.Printf("Prompt failed: %v\n", err)

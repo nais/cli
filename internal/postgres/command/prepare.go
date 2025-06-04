@@ -20,15 +20,19 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 		Schema:   "public",
 	}
 
-	return cli.NewCommand("prepare", "Prepare your SQL instance for use with personal accounts.",
-		cli.WithLongDescription(`Prepare will prepare the SQL instance by connecting using the
+	return &cli.Command{
+		Name:  "prepare",
+		Short: "Prepare your SQL instance for use with personal accounts.",
+		Long: `Prepare will prepare the SQL instance by connecting using the
 		 application credentials and modify the permissions on the public schema.
 		 All IAM users in your GCP project will be able to connect to the instance.
 		
-		 This operation is only required to run once for each SQL instance.`),
-		cli.WithArgs("app_name"),
-		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+		 This operation is only required to run once for each SQL instance.`,
+		Args: []cli.Argument{
+			{Name: "app_name", Required: true},
+		},
+		ValidateFunc: cli.ValidateExactArgs(1),
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			i, err := bufio.NewReader(os.Stdin).ReadString('\n')
 			if err != nil {
@@ -40,8 +44,6 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 			}
 
 			return postgres.PrepareAccess(ctx, args[0], flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges)
-		}),
-		cli.WithFlag("all-privs", "", "Gives all privileges to users.", &flags.AllPrivileges),
-		cli.WithFlag("schema", "", "Schema to grant access to.", &flags.Schema),
-	)
+		},
+	}
 }
