@@ -11,10 +11,10 @@ import (
 
 type FlagOption func(*cobra.Command, string)
 
-type count int
+type Count int
 
 type flagTypes interface {
-	uint | int | bool | string | count | []string
+	uint | int | bool | string | Count | []string
 }
 
 func FlagRequired() FlagOption {
@@ -61,7 +61,7 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		} else {
 			flags.IntVarP(ptr, name, short, *ptr, usage)
 		}
-	case *count:
+	case *Count:
 		intPtr := (*int)(ptr)
 
 		if short == "" {
@@ -83,10 +83,7 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 		value := values.Field(i)
 
 		if !field.IsExported() {
-			fmt.Printf("skipping: unexported field %v %v\n", field.Name, value.String())
 			continue
-		} else {
-			fmt.Printf("processing field: %v %v\n", field.Name, value.String())
 		}
 
 		// or is it just optional?
