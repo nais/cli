@@ -30,9 +30,12 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 		cli.WithValidate(cli.ValidateExactArgs(1)),
 		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
-			input := bufio.NewScanner(os.Stdin)
-			input.Scan()
-			if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+			i, err := bufio.NewReader(os.Stdin).ReadString('\n')
+			if err != nil {
+				return fmt.Errorf("failed to read input: %w", err)
+			}
+
+			if !strings.EqualFold(strings.TrimSpace(i), "y") {
 				return fmt.Errorf("cancelled by user")
 			}
 
