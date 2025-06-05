@@ -101,6 +101,7 @@ func (c *Command) init(out output.Output) {
 		Use:               c.Name + use(c.Args),
 		Short:             c.Short,
 		Long:              c.Long,
+		GroupID:           c.Group,
 		RunE:              run(c.RunFunc, out),
 		ValidArgsFunction: autocomplete(c.AutoCompleteFunc, c.AutoCompleteExtensions),
 		PersistentPreRunE: func(co *cobra.Command, args []string) error {

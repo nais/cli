@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"iter"
+	"maps"
 	"os"
 	"slices"
 
@@ -32,12 +34,14 @@ func NewApplication(flags any, cmd ...*Command) *Application {
 
 	setupFlags(flags, cc.PersistentFlags())
 
-	cc.AddGroup(&cobra.Group{
-		ID:    GroupAuthentication,
-		Title: GroupAuthentication,
-	})
-
 	w := output.NewWriter(cc.OutOrStdout())
+
+	for group := range allGroups(cmd) {
+		cc.AddGroup(&cobra.Group{
+			ID:    group,
+			Title: group,
+		})
+	}
 
 	for _, c := range cmd {
 		c.init(w)
@@ -76,4 +80,21 @@ func (a *Application) Run(ctx context.Context, flags LogLevelFlags) error {
 	}
 
 	return nil
+}
+
+func allGroups(cmds []*Command) iter.Seq[string] {
+	var rec func(cmds []*Command, groups map[string]struct{})
+	rec = func(cmds []*Command, groups map[string]struct{}) {
+		for _, cmd := range cmds {
+			if cmd.Group != "" {
+				groups[cmd.Group] = struct{}{}
+			}
+			rec(cmd.SubCommands, groups)
+		}
+	}
+
+	groups := make(map[string]struct{})
+	rec(cmds, groups)
+
+	return maps.Keys(groups)
 }
