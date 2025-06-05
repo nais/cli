@@ -60,6 +60,10 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 }
 
 func setupFlags(flags any, flagSet *pflag.FlagSet) {
+	if flags == nil {
+		return
+	}
+
 	fields := reflect.TypeOf(flags).Elem()
 	values := reflect.ValueOf(flags).Elem()
 
@@ -68,6 +72,10 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 		value := values.Field(i)
 
 		if !field.IsExported() {
+			continue
+		}
+
+		if value.Kind() == reflect.Pointer && value.Elem().Kind() == reflect.Struct {
 			continue
 		}
 
@@ -80,10 +88,7 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 		if !ok {
 			flagUsage = field.Name
 		}
-		flagShort, ok := field.Tag.Lookup("short")
-		if !ok {
-			flagShort = ""
-		}
+		flagShort, _ := field.Tag.Lookup("short")
 
 		if !value.CanAddr() {
 			panic(fmt.Sprintf("field %v is not addressable, cannot set up flag", field.Name))

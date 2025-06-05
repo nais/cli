@@ -16,6 +16,7 @@ func teams(parentFlags *flag.Api) *cli.Command {
 	return &cli.Command{
 		Name:  "teams",
 		Short: "Get a list of your teams.",
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
 			if flags.All {
 				teams, err := naisapi.GetAllTeams(ctx)

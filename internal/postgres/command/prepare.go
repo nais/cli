@@ -32,6 +32,7 @@ This operation is only required to run once for each SQL instance.`,
 			{Name: "app_name", Required: true},
 		},
 		ValidateFunc: cli.ValidateExactArgs(1),
+		Flags:        flags,
 		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			i, err := bufio.NewReader(os.Stdin).ReadString('\n')

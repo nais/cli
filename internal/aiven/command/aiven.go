@@ -9,8 +9,9 @@ import (
 func Aiven(parentFlags *root.Flags) *cli.Command {
 	aivenFlags := &flag.Aiven{Flags: parentFlags}
 	return &cli.Command{
-		Name:  "aiven",
-		Short: "Manage Aiven services.",
+		Name:        "aiven",
+		Short:       "Manage Aiven services.",
+		StickyFlags: aivenFlags,
 		SubCommands: []*cli.Command{
 			create(aivenFlags),
 			get(aivenFlags),

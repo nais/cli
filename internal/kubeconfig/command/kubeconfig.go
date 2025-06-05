@@ -24,6 +24,7 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 
 This requires that you have the gcloud command line tool installed, configured and logged in using:
 "nais login"`,
+		Flags: flags,
 		ValidateFunc: func(ctx context.Context, args []string) error {
 			if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
