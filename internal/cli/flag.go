@@ -71,7 +71,6 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 			continue
 		}
 
-		// or is it just optional?
 		flagName, ok := field.Tag.Lookup("name")
 		if !ok {
 			flagName = strings.ToLower(field.Name)
