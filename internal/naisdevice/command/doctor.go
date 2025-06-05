@@ -11,8 +11,10 @@ import (
 )
 
 func doctorcmd(_ *root.Flags) *cli.Command {
-	return cli.NewCommand("doctor", "Check the health of your naisdevice.",
-		cli.WithRun(func(_ context.Context, out output.Output, _ []string) error {
+	return &cli.Command{
+		Name:  "doctor",
+		Short: "Check the health of your naisdevice.",
+		RunFunc: func(_ context.Context, out output.Output, _ []string) error {
 			results := examination(out).Run(out)
 			for key, value := range results {
 				out.Printf("%s ", key)
@@ -24,8 +26,8 @@ func doctorcmd(_ *root.Flags) *cli.Command {
 			}
 			out.Println()
 			return nil
-		}),
-	)
+		},
+	}
 }
 
 func examination(out output.Output) doc.Examination {

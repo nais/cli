@@ -6,27 +6,27 @@ import (
 
 type Postgres struct {
 	*root.Flags
-	Namespace string
-	Context   string
+	Namespace string "name:\"namespace\" short:\"n\" usage:\"The kubernetes `NAMESPACE` to use. Defaults to current namespace.\""
+	Context   string "name:\"context\" short:\"c\" usage:\"The kubeconfig `CONTEXT` to use. Defaults to current context.\""
 }
 
 type Migrate struct {
 	*Postgres
-	DryRun bool
+	DryRun bool `name:"dry-run" usage:"Perform a dry run of the migration without applying changes."`
 }
 
 type MigrateSetup struct {
 	*Migrate
-	Tier           string
-	DiskAutoResize bool
-	DiskSize       int
-	InstanceType   string
-	NoWait         bool
+	Tier           string "name:\"tier\" usage:\"The `TIER` of the new instance.\""
+	DiskAutoResize bool   `name:"disk-auto-resize" usage:"Enable automatic disk resizing for the new instance."`
+	DiskSize       int    "name:\"disk-size\" usage:\"The `DISK_SIZE` of the new instance.\""
+	InstanceType   string "name:\"instance-type\" usage:\"The `TYPE` of the new instance.\""
+	NoWait         bool   `name:"no-wait" usage:"Do not wait for the job to complete."`
 }
 
 type MigratePromote struct {
 	*Migrate
-	NoWait bool
+	NoWait bool `name:"no-wait" usage:"Do not wait for the job to complete."`
 }
 
 type MigrateFinalize struct {
@@ -51,7 +51,7 @@ type User struct {
 
 type UserAdd struct {
 	*User
-	Privilege string
+	Privilege string `name:"privilege" usage:"The privilege to grant to the user."`
 }
 
 type UserList struct {
@@ -68,14 +68,14 @@ type Grant struct {
 
 type Prepare struct {
 	*Postgres
-	AllPrivileges bool
-	Schema        string
+	AllPrivileges bool   `name:"all-privileges" usage:"Grant all privileges on the schema to the current user."`
+	Schema        string `name:"schema" usage:"Schema to grant access to."`
 }
 
 type Proxy struct {
 	*Postgres
-	Port uint
-	Host string
+	Port uint   `name:"port" short:"p" usage:"Port to use for the proxy. Defaults to 5432."`
+	Host string `name:"host" short:"H" usage:"Host to proxy to. Defaults to localhost."`
 }
 
 type Psql struct {
@@ -84,5 +84,5 @@ type Psql struct {
 
 type Revoke struct {
 	*Postgres
-	Schema string
+	Schema string `name:"schema" usage:"The schema to revoke privileges from."`
 }

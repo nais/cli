@@ -11,13 +11,12 @@ import (
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
 func Run(workloadName string, flags *flag.Debug) error {
-	cfg := MakeConfig(workloadName, flags)
-	clientSet, err := SetupClient(cfg, flags.Context)
+	clientSet, err := SetupClient(flags.DebugSticky, flags.Context)
 	if err != nil {
 		return err
 	}
 
-	dg := Setup(clientSet, cfg)
+	dg := Setup(clientSet, flags.DebugSticky, workloadName, debugImageDefault, flags.ByPod)
 	if err := dg.Debug(); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
@@ -25,15 +24,15 @@ func Run(workloadName string, flags *flag.Debug) error {
 	return nil
 }
 
-func SetupClient(cfg *Config, cluster string) (kubernetes.Interface, error) {
+func SetupClient(flags *flag.DebugSticky, cluster string) (kubernetes.Interface, error) {
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 
-	if cfg.Namespace == "" {
-		cfg.Namespace = client.CurrentNamespace
+	if flags.Namespace == "" {
+		flags.Namespace = client.CurrentNamespace
 	}
 
 	if cluster != "" {
-		cfg.Context = cluster
+		flags.Context = cluster
 	}
 
 	clientSet, err := k8s.SetupClientGo(cluster)
@@ -42,14 +41,4 @@ func SetupClient(cfg *Config, cluster string) (kubernetes.Interface, error) {
 	}
 
 	return clientSet, nil
-}
-
-func MakeConfig(workloadName string, flags *flag.Debug) *Config {
-	return &Config{
-		WorkloadName: workloadName,
-		Namespace:    flags.Namespace,
-		DebugImage:   debugImageDefault,
-		CopyPod:      flags.Copy,
-		ByPod:        flags.ByPod,
-	}
 }

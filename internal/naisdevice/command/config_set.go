@@ -12,17 +12,22 @@ import (
 )
 
 func set(_ *root.Flags) *cli.Command {
-	return cli.NewCommand("set", "Set a configuration value.",
-		cli.WithArgs("setting", "value"),
-		cli.WithAutoComplete(naisdevice.AutocompleteSet),
-		cli.WithValidate(func(_ context.Context, args []string) error {
+	return &cli.Command{
+		Name:  "set",
+		Short: "Set a configuration value.",
+		Args: []cli.Argument{
+			{Name: "setting", Required: true},
+			{Name: "value", Required: true},
+		},
+		AutoCompleteFunc: naisdevice.AutocompleteSet,
+		ValidateFunc: func(_ context.Context, args []string) error {
 			if len(args) != 2 {
 				return fmt.Errorf("expected exactly 2 arguments, got %d", len(args))
 			}
 
 			return nil
-		}),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+		},
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])
 			if err != nil {
@@ -36,6 +41,6 @@ func set(_ *root.Flags) *cli.Command {
 			out.Printf("%v has been set to %v\n", setting, value)
 
 			return nil
-		}),
-	)
+		},
+	}
 }

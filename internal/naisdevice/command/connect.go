@@ -10,9 +10,11 @@ import (
 )
 
 func connectcmd(_ *root.Flags) *cli.Command {
-	return cli.NewCommand("connect", "Connect your naisdevice.",
-		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
+	return &cli.Command{
+		Name:  "connect",
+		Short: "Connect your naisdevice.",
+		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
 			return naisdevice.Connect(ctx, out)
-		}),
-	)
+		},
+	}
 }

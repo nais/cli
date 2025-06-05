@@ -6,8 +6,12 @@ import (
 )
 
 func configcmd(rootFlags *root.Flags) *cli.Command {
-	return cli.NewCommand("config", "Adjust or view the naisdevice configuration.", cli.WithSubCommands(
-		set(rootFlags),
-		get(rootFlags),
-	))
+	return &cli.Command{
+		Name:  "config",
+		Short: "Adjust or view the naisdevice configuration.",
+		SubCommands: []*cli.Command{
+			set(rootFlags),
+			get(rootFlags),
+		},
+	}
 }

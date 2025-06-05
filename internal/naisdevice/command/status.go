@@ -20,12 +20,13 @@ type handler struct {
 func statuscmd(rootFlags *root.Flags) *cli.Command {
 	h := &handler{flags: &flag.Status{Flags: rootFlags}}
 
-	return cli.NewCommand("status", "Show the status of your naisdevice.",
-		cli.WithFlag("output", "o", "Output format, can be json or yaml", &h.flags.Output),
-		cli.WithFlag("quiet", "q", "Suppress output if not connected", &h.flags.Quiet),
-		cli.WithRun(h.Run),
-		cli.WithValidate(h.Validate),
-	)
+	return &cli.Command{
+		Name:         "status",
+		Short:        "Show the status of your naisdevice.",
+		Flags:        h.flags,
+		RunFunc:      h.Run,
+		ValidateFunc: h.Validate,
+	}
 }
 
 func (h *handler) Validate(_ context.Context, _ []string) error {

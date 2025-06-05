@@ -12,14 +12,17 @@ import (
 
 func Validate(parentFlags *root.Flags) *cli.Command {
 	flags := &flag.Validate{Flags: parentFlags}
-	return cli.NewCommand("validate", "Validate one or more Nais manifest files.",
-		cli.WithArgs("file..."),
-		cli.WithValidate(cli.ValidateMinArgs(1)),
-		cli.WithAutoCompleteFiles("yaml", "yml", "json"),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+	return &cli.Command{
+		Name:  "validate",
+		Short: "Validate one or more Nais manifest files.",
+		Args: []cli.Argument{
+			{Name: "file", Repeatable: true},
+		},
+		ValidateFunc:           cli.ValidateMinArgs(1),
+		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
+		Flags:                  flags,
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			return validate.Run(args, flags, out)
-		}),
-		cli.WithFlag("vars", "f", "Path to the `FILE` containing template variables in JSON or YAML format.", &flags.VarsFilePath),
-		cli.WithFlag("var", "", "Template variable in `KEY=VALUE` form. Can be repeated.", &flags.Vars),
-	)
+		},
+	}
 }

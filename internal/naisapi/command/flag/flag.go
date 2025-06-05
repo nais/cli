@@ -13,13 +13,13 @@ type Api struct {
 type Proxy struct {
 	*Api
 
-	ListenAddr string
+	ListenAddr string `name:"listen" short:"l" usage:"Address the proxy will listen on."`
 }
 
 type Teams struct {
 	*Api
 
-	All bool
+	All bool `name:"all" short:"a" usage:"List all teams, not just the ones you are a member of"`
 }
 
 type Schema struct {

@@ -12,10 +12,14 @@ import (
 )
 
 func get(_ *root.Flags) *cli.Command {
-	return cli.NewCommand("get", "Get a naisdevice setting.",
-		cli.WithArgs("setting"),
-		cli.WithValidate(cli.ValidateExactArgs(1)),
-		cli.WithRun(func(ctx context.Context, out output.Output, args []string) error {
+	return &cli.Command{
+		Name:  "get",
+		Short: "Get a naisdevice setting.",
+		Args: []cli.Argument{
+			{Name: "setting"},
+		},
+		ValidateFunc: cli.ValidateExactArgs(1),
+		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
 			setting := args[0]
 
 			values, err := naisdevice.GetConfig(ctx)
@@ -32,6 +36,6 @@ func get(_ *root.Flags) *cli.Command {
 			}
 
 			return nil
-		}),
-	)
+		},
+	}
 }

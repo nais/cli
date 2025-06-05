@@ -13,12 +13,16 @@ import (
 )
 
 func jitacmd(_ *root.Flags) *cli.Command {
-	return cli.NewCommand("jita", "Connect to a JITA gateway.",
-		cli.WithArgs("gateway"),
-		cli.WithRun(run),
-		cli.WithValidate(cli.ValidateMinArgs(1)),
-		cli.WithAutoComplete(autocomplete),
-	)
+	return &cli.Command{
+		Name:  "jita",
+		Short: "Connect to a JITA gateway.",
+		Args: []cli.Argument{
+			{Name: "gateway", Required: true, Repeatable: true},
+		},
+		RunFunc:          run,
+		ValidateFunc:     cli.ValidateMinArgs(1),
+		AutoCompleteFunc: autocomplete,
+	}
 }
 
 type Arguments struct {

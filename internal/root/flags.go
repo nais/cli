@@ -1,8 +1,10 @@
 package root
 
+import "github.com/nais/cli/internal/cli"
+
 type Flags struct {
 	// VerboseLevel indicates the verbosity level of Nais CLI.
-	VerboseLevel int
+	VerboseLevel cli.Count `name:"verbose" short:"v" usage:"Set verbosity level. Use -v for verbose, -vv for debug."`
 }
 
 // IsVerbose checks if Nais CLI is running in verbose mode (-v).

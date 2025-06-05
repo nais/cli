@@ -17,16 +17,15 @@ import (
 
 func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 	flags := &flag.Kubeconfig{Flags: rootFlags}
-	return cli.NewCommand("kubeconfig", "Create a kubeconfig file for connecting to available clusters.",
-		cli.WithLongDescription(`Create a kubeconfig file for connecting to available clusters
+	return &cli.Command{
+		Name:  "kubeconfig",
+		Short: "Create a kubeconfig file for connecting to available clusters.",
+		Long: `Create a kubeconfig file for connecting to available clusters
 
 This requires that you have the gcloud command line tool installed, configured and logged in using:
-"nais login"`),
-		cli.WithFlag("exclude", "e", "Exclude `CLUSTER` from kubeconfig. Can be repeated.", &flags.Exclude),
-		cli.WithFlag("overwrite", "o", "Overwrite existing kubeconfig entries if conflicts are found.", &flags.Overwrite),
-		cli.WithFlag("clear", "c", "Clear existing kubeconfig.", &flags.Clear),
-
-		cli.WithValidate(func(ctx context.Context, args []string) error {
+"nais login"`,
+		Flags: flags,
+		ValidateFunc: func(ctx context.Context, args []string) error {
 			if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
 			}
@@ -36,8 +35,8 @@ This requires that you have the gcloud command line tool installed, configured a
 			}
 
 			return nil
-		}),
-		cli.WithRun(func(ctx context.Context, out output.Output, _ []string) error {
+		},
+		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
 			email, err := gcp.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err
@@ -53,8 +52,8 @@ This requires that you have the gcloud command line tool installed, configured a
 				kubeconfig.WithOnpremClusters(true),
 				kubeconfig.WithVerboseLogging(flags.IsVerbose()),
 			)
-		}),
-	)
+		},
+	}
 }
 
 // mightBeWSL checks if the current environment is likely to be WSL (Windows Subsystem for Linux).

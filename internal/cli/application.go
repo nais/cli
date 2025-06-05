@@ -2,14 +2,13 @@ package cli
 
 import (
 	"context"
-	"errors"
+	"iter"
+	"maps"
 	"os"
 	"slices"
 
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/output"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +21,7 @@ type Application struct {
 	cobraCmd *cobra.Command
 }
 
-func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
+func NewApplication(flags any, cmd ...*Command) *Application {
 	cobra.EnableTraverseRunHooks = true
 
 	cc := &cobra.Command{
@@ -32,18 +31,20 @@ func NewApplication(flags *root.Flags, cmd ...*Command) *Application {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
-	cc.PersistentFlags().CountVarP(&flags.VerboseLevel, "verbose", "v", `Verbose output.
-Use -v for info, -vv for debug, -vvv for trace.`)
 
-	cc.AddGroup(&cobra.Group{
-		ID:    GroupAuthentication,
-		Title: GroupAuthentication,
-	})
+	setupFlags(flags, cc.PersistentFlags())
 
 	w := output.NewWriter(cc.OutOrStdout())
 
+	for group := range allGroups(cmd) {
+		cc.AddGroup(&cobra.Group{
+			ID:    group,
+			Title: group,
+		})
+	}
+
 	for _, c := range cmd {
-		c.setup(w)
+		c.init(w)
 		cc.AddCommand(c.cobraCmd)
 	}
 
@@ -52,7 +53,11 @@ Use -v for info, -vv for debug, -vvv for trace.`)
 	}
 }
 
-func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
+type LogLevelFlags interface {
+	IsVerbose() bool
+}
+
+func (a *Application) Run(ctx context.Context, flags LogLevelFlags) error {
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {
@@ -61,7 +66,7 @@ func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
 			if err := recover(); err != nil {
 				handlePanic(err)
 			}
-			flushMetrics(flags.IsDebug())
+			flushMetrics(flags.IsVerbose())
 		}()
 	}
 
@@ -71,14 +76,25 @@ func (a *Application) Run(ctx context.Context, flags *root.Flags) error {
 	}
 
 	if err != nil {
-		if errors.Is(err, naisapi.ErrNotAuthenticated) {
-			// TODO(thokra): Auto login process of some kind
-			// Check if interactive
-			// fmt.Println("Please try to log in again. Press enter to start the login process, or Ctrl+C to cancel.")
-			// Start login process, if successful, rerun the command
-		}
 		return err
 	}
 
 	return nil
+}
+
+func allGroups(cmds []*Command) iter.Seq[string] {
+	var rec func(cmds []*Command, groups map[string]struct{})
+	rec = func(cmds []*Command, groups map[string]struct{}) {
+		for _, cmd := range cmds {
+			if cmd.Group != "" {
+				groups[cmd.Group] = struct{}{}
+			}
+			rec(cmd.SubCommands, groups)
+		}
+	}
+
+	groups := make(map[string]struct{})
+	rec(cmds, groups)
+
+	return maps.Keys(groups)
 }

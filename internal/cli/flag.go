@@ -2,26 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 
-	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
-type FlagOption func(*cobra.Command, string)
-
-type count int
-
-type flagTypes interface {
-	uint | int | bool | string | count | []string
-}
-
-func FlagRequired() FlagOption {
-	return func(cmd *cobra.Command, name string) {
-		if err := cmd.MarkFlagRequired(name); err != nil {
-			panic("failed to mark flag as required: " + err.Error())
-		}
-	}
-}
+type Count int
 
 func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 	if len(short) > 1 {
@@ -59,7 +46,7 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		} else {
 			flags.IntVarP(ptr, name, short, *ptr, usage)
 		}
-	case *count:
+	case *Count:
 		intPtr := (*int)(ptr)
 
 		if short == "" {
@@ -69,5 +56,44 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 		}
 	default:
 		panic(fmt.Sprintf("unknown flag type: %T", value))
+	}
+}
+
+func setupFlags(flags any, flagSet *pflag.FlagSet) {
+	if flags == nil {
+		return
+	}
+
+	fields := reflect.TypeOf(flags).Elem()
+	values := reflect.ValueOf(flags).Elem()
+
+	for i := range fields.NumField() {
+		field := fields.Field(i)
+		value := values.Field(i)
+
+		if !field.IsExported() {
+			continue
+		}
+
+		if value.Kind() == reflect.Pointer && value.Elem().Kind() == reflect.Struct {
+			continue
+		}
+
+		flagName, ok := field.Tag.Lookup("name")
+		if !ok {
+			flagName = strings.ToLower(field.Name)
+		}
+
+		flagUsage, ok := field.Tag.Lookup("usage")
+		if !ok {
+			flagUsage = field.Name
+		}
+		flagShort, _ := field.Tag.Lookup("short")
+
+		if !value.CanAddr() {
+			panic(fmt.Sprintf("field %v is not addressable, cannot set up flag", field.Name))
+		}
+
+		setupFlag(flagName, flagShort, flagUsage, value.Addr().Interface(), flagSet)
 	}
 }

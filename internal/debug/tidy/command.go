@@ -8,13 +8,12 @@ import (
 )
 
 func Run(workloadName string, flags *flag.DebugTidy) error {
-	cfg := debug.MakeConfig(workloadName, flags.Debug)
-	clientSet, err := debug.SetupClient(cfg, flags.Context)
+	clientSet, err := debug.SetupClient(flags.DebugSticky, flags.Context)
 	if err != nil {
 		return err
 	}
 
-	dg := debug.Setup(clientSet, cfg)
+	dg := debug.Setup(clientSet, flags.DebugSticky, workloadName, "", false)
 	if err := dg.Tidy(); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
