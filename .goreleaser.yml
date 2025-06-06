@@ -29,6 +29,7 @@ builds:
   - env: [CGO_ENABLED=0]
     targets:
       - windows_amd64
+      - windows_arm64
     id: nais-windows
     dir: .
     main: ./
