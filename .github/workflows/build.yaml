@@ -24,6 +24,15 @@ jobs:
           echo "version=2.0.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
 
   test:
+    strategy:
+      matrix:
+        mise_target:
+          - deadcode
+          - vulscheck
+          - ci-fmt
+          - staticcheck
+          - test
+          - vet
     needs:
       - set-version
     runs-on: ubuntu-latest
@@ -36,14 +45,13 @@ jobs:
 
       - uses: jdx/mise-action@v2
 
-      - name: Test Go
+      - name: mise run ${{ matrix.mise_target }}
         run: |
-          go mod tidy -v
-          mise run test ::: staticcheck ::: vulncheck ::: vet
+          mise run ${{ matrix.mise_target }}
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: always() && matrix.mise_target == 'test'
         with:
           files: |
             report.xml
