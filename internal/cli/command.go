@@ -105,6 +105,10 @@ func (c *Command) init(out output.Output) {
 		RunE:              run(c.RunFunc, out),
 		ValidArgsFunction: autocomplete(c.AutoCompleteFunc, c.AutoCompleteExtensions),
 		PersistentPreRunE: func(co *cobra.Command, args []string) error {
+			if c.ValidateFunc == nil {
+				return nil
+			}
+
 			if err := c.ValidateFunc(co.Context(), args); err != nil {
 				return fmt.Errorf("validation failed: %w", err)
 			}
