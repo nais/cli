@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/pflag"
@@ -64,9 +65,16 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 		return
 	}
 
+	re := regexp.MustCompile(`\|([^|]+)\|`)
+	normalizeUsage := func(usage string) string {
+		return re.ReplaceAllStringFunc(usage, func(s string) string {
+			trimmed := strings.Trim(s, "|")
+			return "`" + strings.ToUpper(trimmed) + "`"
+		})
+	}
+
 	fields := reflect.TypeOf(flags).Elem()
 	values := reflect.ValueOf(flags).Elem()
-
 	for i := range fields.NumField() {
 		field := fields.Field(i)
 		value := values.Field(i)
@@ -94,6 +102,6 @@ func setupFlags(flags any, flagSet *pflag.FlagSet) {
 			panic(fmt.Sprintf("field %v is not addressable, cannot set up flag", field.Name))
 		}
 
-		setupFlag(flagName, flagShort, flagUsage, value.Addr().Interface(), flagSet)
+		setupFlag(flagName, flagShort, normalizeUsage(flagUsage), value.Addr().Interface(), flagSet)
 	}
 }
