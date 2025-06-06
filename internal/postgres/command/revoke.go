@@ -9,7 +9,6 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 )
@@ -33,7 +32,7 @@ This is done by connecting using the application credentials and modify the perm
 		},
 		ValidateFunc: cli.ValidateExactArgs(1),
 		Flags:        flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			input := bufio.NewScanner(os.Stdin)
 			input.Scan()

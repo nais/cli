@@ -11,13 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/liberator/pkg/keygen"
-
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
+func RotatePassword(ctx context.Context, appName, cluster, namespace string, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err

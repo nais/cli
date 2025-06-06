@@ -7,10 +7,10 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 )
 
-func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bool, out output.Output) error {
+func RunPSQL(ctx context.Context, appName, cluster, namespace string, verbose bool, out cli.Output) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err

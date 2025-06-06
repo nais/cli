@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 )
 
-func TidyLocalSecrets(out output.Output) error {
+func TidyLocalSecrets(out cli.Output) error {
 	aivenSecretFolders, err := findFoldersToRemove()
 	if err != nil {
 		return err
@@ -18,7 +18,7 @@ func TidyLocalSecrets(out output.Output) error {
 	return tidy(aivenSecretFolders, out)
 }
 
-func tidy(folders []string, out output.Output) error {
+func tidy(folders []string, out cli.Output) error {
 	if len(folders) > 0 {
 		for _, folder := range folders {
 			out.Printf("Deleting: %s\n", folder)

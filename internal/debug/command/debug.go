@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/debug/tidy"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -40,7 +39,7 @@ You can only reconnect to the debug session if the pod is running.`,
 		Flags:        debugFlags,
 		StickyFlags:  stickyFlags,
 		ValidateFunc: cli.ValidateMinArgs(1),
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return debug.Run(args[0], debugFlags)
 		},
 		SubCommands: []*cli.Command{
@@ -65,7 +64,7 @@ Set the "--copy" flag to delete copy pods.`,
 		},
 		ValidateFunc: cli.ValidateExactArgs(1),
 		Flags:        flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return tidy.Run(args[0], flags)
 		},
 	}

@@ -10,7 +10,6 @@ import (
 	"github.com/nais/cli/internal/aiven/command/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/output"
 )
 
 func createOpenSearch(parentFlags *flag.Create) *cli.Command {
@@ -28,7 +27,7 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 			return aiven_services.OpenSearchAccesses, ""
 		},
 		Flags: createOpenSearchFlags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchFlags.Access)
 			if err != nil {
 				return fmt.Errorf(

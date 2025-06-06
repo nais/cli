@@ -7,8 +7,8 @@ import (
 
 	"github.com/nais/cli/internal/aiven/aiven_config"
 	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/output"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -25,7 +25,7 @@ type Secret struct {
 	Service         aiven_services.Service
 }
 
-func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out output.Output) error {
+func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out cli.Output) error {
 	aivenClient := k8s.SetupControllerRuntimeClient()
 
 	if err := validateNamespace(ctx, aivenClient, namespaceName); err != nil {
@@ -110,7 +110,7 @@ func (s *Secret) CreateOpenSearchConfigs() error {
 	return aiven_config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
 }
 
-func (s *Secret) generateConfig(out output.Output) error {
+func (s *Secret) generateConfig(out cli.Output) error {
 	out.Printf("Generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
 	return s.Service.Generate(s)
 }

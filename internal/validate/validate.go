@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -34,7 +34,7 @@ func New(resourcePaths []string) Validate {
 	}
 }
 
-func (v Validate) Validate(out output.Output) error {
+func (v Validate) Validate(out cli.Output) error {
 	invalid := make([]string, 0)
 
 	for _, file := range v.ResourcePaths {
@@ -72,7 +72,7 @@ func (v Validate) Validate(out output.Output) error {
 	return nil
 }
 
-func (v Validate) loadFile(name string, out output.Output) ([]json.RawMessage, error) {
+func (v Validate) loadFile(name string, out cli.Output) ([]json.RawMessage, error) {
 	_, err := os.Stat(name)
 	if err != nil {
 		return nil, fmt.Errorf("file %s does not exist", name)
@@ -95,7 +95,7 @@ func (v Validate) loadFile(name string, out output.Output) ([]json.RawMessage, e
 	return YAMLToJSONMessages(templated)
 }
 
-func printErrors(errors []gojsonschema.ResultError, out output.Output) {
+func printErrors(errors []gojsonschema.ResultError, out cli.Output) {
 	for _, err := range errors {
 		// skip noisy root error ("Must validate one and only one schema (oneOf)")
 		if err.Field() == gojsonschema.STRING_ROOT_SCHEMA_PROPERTY && err.Type() == "number_one_of" {

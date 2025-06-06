@@ -7,7 +7,6 @@ import (
 
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -27,7 +26,7 @@ func set(_ *root.Flags) *cli.Command {
 
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])
 			if err != nil {

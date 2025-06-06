@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName, cluster, namespace string, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out output.Output) error {
+func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out cli.Output) error {
 	email, err := currentEmail(ctx)
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName, cluster, namespace string, out output.Output) error {
+func ListUsers(ctx context.Context, appName, cluster, namespace string, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func ListUsers(ctx context.Context, appName, cluster, namespace string, out outp
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password, cluster, namespace, privilege string, out output.Output) error {
+func AddUser(ctx context.Context, appName, username, password, cluster, namespace, privilege string, out cli.Output) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err

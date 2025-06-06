@@ -6,7 +6,6 @@ import (
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
-	"github.com/nais/cli/internal/output"
 )
 
 func schema(parentFlags *flag.Api) *cli.Command {
@@ -15,7 +14,7 @@ func schema(parentFlags *flag.Api) *cli.Command {
 		Name:  "schema",
 		Short: "Outputs the Nais API GraphQL schema to stdout.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			s, err := naisapi.PullSchema(ctx, flags)
 			if err != nil {
 				return err

@@ -7,7 +7,6 @@ import (
 
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -19,7 +18,7 @@ func get(_ *root.Flags) *cli.Command {
 			{Name: "setting"},
 		},
 		ValidateFunc: cli.ValidateExactArgs(1),
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			setting := args[0]
 
 			values, err := naisdevice.GetConfig(ctx)

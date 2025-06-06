@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
 	"google.golang.org/api/googleapi"
@@ -31,7 +31,7 @@ type onpremUser struct {
 	UserName string `json:"userName"`
 }
 
-func getClustersFromGCP(ctx context.Context, options filterOptions, out output.Output) ([]k8sCluster, error) {
+func getClustersFromGCP(ctx context.Context, options filterOptions, out cli.Output) ([]k8sCluster, error) {
 	projects, err := getProjects(ctx, options, out)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func getClustersFromGCP(ctx context.Context, options filterOptions, out output.O
 	return clusters, nil
 }
 
-func getClusters(ctx context.Context, projects []project, options filterOptions, out output.Output) ([]k8sCluster, error) {
+func getClusters(ctx context.Context, projects []project, options filterOptions, out cli.Output) ([]k8sCluster, error) {
 	var allClusters []k8sCluster
 	for _, project := range projects {
 		if options.verbose {
@@ -70,7 +70,7 @@ func getClusters(ctx context.Context, projects []project, options filterOptions,
 	return allClusters, nil
 }
 
-func getGCPClusters(ctx context.Context, project project, options filterOptions, out output.Output) ([]k8sCluster, error) {
+func getGCPClusters(ctx context.Context, project project, options filterOptions, out cli.Output) ([]k8sCluster, error) {
 	svc, err := container.NewService(ctx)
 	if err != nil {
 		return nil, err

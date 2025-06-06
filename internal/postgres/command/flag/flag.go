@@ -6,8 +6,8 @@ import (
 
 type Postgres struct {
 	*root.Flags
-	Namespace string "name:\"namespace\" short:\"n\" usage:\"The kubernetes `NAMESPACE` to use. Defaults to current namespace.\""
-	Context   string "name:\"context\" short:\"c\" usage:\"The kubeconfig `CONTEXT` to use. Defaults to current context.\""
+	Namespace string `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
+	Context   string `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
 }
 
 type Migrate struct {
@@ -17,10 +17,10 @@ type Migrate struct {
 
 type MigrateSetup struct {
 	*Migrate
-	Tier           string "name:\"tier\" usage:\"The `TIER` of the new instance.\""
+	Tier           string `name:"tier" usage:"The |TIER| of the new instance."`
 	DiskAutoResize bool   `name:"disk-auto-resize" usage:"Enable automatic disk resizing for the new instance."`
-	DiskSize       int    "name:\"disk-size\" usage:\"The `DISK_SIZE` of the new instance.\""
-	InstanceType   string "name:\"instance-type\" usage:\"The `TYPE` of the new instance.\""
+	DiskSize       int    `name:"disk-size" usage:"The |DISK_SIZE| of the new instance."`
+	InstanceType   string `name:"instance-type" usage:"The |TYPE| of the new instance."`
 	NoWait         bool   `name:"no-wait" usage:"Do not wait for the job to complete."`
 }
 

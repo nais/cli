@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/aiven/aiven_services"
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
 	v1 "k8s.io/api/core/v1"
@@ -55,7 +55,7 @@ func Setup(
 	return &aiven
 }
 
-func (a Aiven) GenerateApplication(out output.Output) (*aiven_nais_io_v1.AivenApplication, error) {
+func (a Aiven) GenerateApplication(out cli.Output) (*aiven_nais_io_v1.AivenApplication, error) {
 	properties := a.Properties
 
 	if err := validateNamespace(a.Ctx, a.Client, properties.Namespace); err != nil {
@@ -102,7 +102,7 @@ func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) 
 	}, existingAivenApp)
 }
 
-func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out output.Output) error {
+func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out cli.Output) error {
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
 	err := a.getExisting(&existingAivenApp)
 	if err != nil {

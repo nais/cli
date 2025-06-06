@@ -3,10 +3,10 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/naisapi"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -21,9 +21,9 @@ func Login(rootFlags *root.Flags) *cli.Command {
 		Name:  "login",
 		Short: "Log in to the Nais platform.",
 		Long:  `Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`,
-		Group: cli.GroupAuthentication,
+		Group: auth.GroupName,
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			if flags.Nais {
 				return naisapi.Login(ctx, out)
 			}
