@@ -36,6 +36,20 @@ run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --rand
 description = "Format all go code using gofumpt"
 run = "go tool mvdan.cc/gofumpt -w ./"
 
+[tasks.ci-fmt]
+description = "Format all go code using gofumpt"
+run = """
+if ! go tool mvdan.cc/gofumpt -w ./; then
+  echo 'Failed to run `mise fmt`.'
+	exit 1
+fi
+
+if ! git diff --exit-code --name-only; then
+  echo 'The file(s) listed above are not formatted correctly. Please run `mise fmt` and commit the changes.'
+  exit 1
+fi
+"""
+
 [tasks.build]
 description = "Build the Nais CLI binary"
 wait_for = ['fmt']
