@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-
-	"github.com/nais/cli/internal/output"
 )
 
 type (
@@ -11,7 +9,7 @@ type (
 	//
 	// The args passed to this function is the arguments added to the command using the WithArgs option, in the same
 	// order.
-	RunFunc func(ctx context.Context, out output.Output, args []string) error
+	RunFunc func(ctx context.Context, out Output, args []string) error
 
 	// ValidateFunc is a function that will be executed before the command's RunFunc is executed.
 	//

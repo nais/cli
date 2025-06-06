@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/postgres/migrate/finalize"
 	"github.com/nais/cli/internal/postgres/migrate/promote"
@@ -68,7 +67,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 			return nil
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return setup.Run(ctx, args[0], args[1], flags)
 		},
 	}
@@ -86,7 +85,7 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *cli.Command {
 			{Name: "target_sql_instance_name", Required: true},
 		},
 		ValidateFunc: cli.ValidateExactArgs(2),
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return promote.Run(ctx, args[0], args[1], flags)
 		},
 	}
@@ -104,7 +103,7 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *cli.Command {
 		},
 		ValidateFunc: cli.ValidateExactArgs(2),
 		Flags:        flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return finalize.Run(ctx, args[0], args[1], flags)
 		},
 	}
@@ -122,7 +121,7 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *cli.Command {
 		},
 		ValidateFunc: cli.ValidateExactArgs(2),
 		Flags:        flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return rollback.Run(ctx, args[0], args[1], flags)
 		},
 	}

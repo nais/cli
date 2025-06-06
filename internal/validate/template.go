@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/goccy/go-yaml"
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 
 	// We use a fork of aymerick/raymond because the original library does not detect/handle missing template variables.
 	"github.com/mailgun/raymond/v2"
@@ -51,7 +51,7 @@ func TemplateVariablesFromSlice(vars []string) TemplateVariables {
 }
 
 // ExecTemplate evaluates a template with the given context.
-func ExecTemplate(data []byte, ctx TemplateVariables, out output.Output) ([]byte, error) {
+func ExecTemplate(data []byte, ctx TemplateVariables, out cli.Output) ([]byte, error) {
 	if ctx == nil {
 		ctx = make(TemplateVariables)
 	}

@@ -4,12 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 )
 
 func TestAllChecksAreRun(t *testing.T) {
 	examination := okExaminationWith2SecondWorkers()
-	res := examination.Run(output.Stdout())
+	res := examination.Run(cli.Stdout())
 	if len(res) != len(examination.Checks) {
 		t.Fatalf("nr of results should not differ from the nr of checks")
 	}
@@ -17,7 +17,7 @@ func TestAllChecksAreRun(t *testing.T) {
 
 func TestChecksAreRunConcurrently(t *testing.T) {
 	start := time.Now()
-	_ = okExaminationWith2SecondWorkers().Run(output.Stdout())
+	_ = okExaminationWith2SecondWorkers().Run(cli.Stdout())
 	elapsed := time.Since(start)
 	if elapsed >= time.Second*3 {
 		t.Fatalf("checks took to long, they are probably not run concurrently")

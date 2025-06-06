@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/output"
 
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
@@ -45,7 +45,7 @@ func TestGenerateAivenApplicationCreated(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, expiry, &aiven_services.ServiceSetup{Pool: pool})
-	currentAivenApp, err := aiven.GenerateApplication(output.Stdout())
+	currentAivenApp, err := aiven.GenerateApplication(cli.Stdout())
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
@@ -77,7 +77,7 @@ func TestGenerateAivenApplicationUpdated(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, expiry, &aiven_services.ServiceSetup{Pool: pool})
-	currentAivenApp, err := aiven.GenerateApplication(output.Stdout())
+	currentAivenApp, err := aiven.GenerateApplication(cli.Stdout())
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
@@ -117,7 +117,7 @@ func TestGenerateAivenApplicationUpdated_HasOwnerReference(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, secretName, expiry, &aiven_services.ServiceSetup{Pool: pool})
-	_, err := aiven.GenerateApplication(output.Stdout())
+	_, err := aiven.GenerateApplication(cli.Stdout())
 	assert.EqualError(t, err, "create/update: username 'user' is owned by another resource; overwrite is not allowed")
 }
 

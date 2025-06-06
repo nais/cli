@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/output"
 	"github.com/suessflorian/gqlfetch"
 )
 
@@ -38,7 +38,7 @@ func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
 	return schema, nil
 }
 
-func StartProxy(ctx context.Context, out output.Output, flags *flag.Proxy) error {
+func StartProxy(ctx context.Context, out cli.Output, flags *flag.Proxy) error {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err

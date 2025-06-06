@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/naisdevice/command/flag"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/device/pkg/pb"
 )
@@ -37,7 +36,7 @@ func (h *handler) Validate(_ context.Context, _ []string) error {
 	return nil
 }
 
-func (h *handler) Run(ctx context.Context, out output.Output, _ []string) error {
+func (h *handler) Run(ctx context.Context, out cli.Output, _ []string) error {
 	agentStatus, err := naisdevice.GetStatus(ctx)
 	if err != nil {
 		return err

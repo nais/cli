@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 )
@@ -38,7 +37,7 @@ func addCommand(parentFlags *flag.User) *cli.Command {
 		},
 		ValidateFunc: cli.ValidateExactArgs(3),
 		Flags:        userAddFlags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return postgres.AddUser(ctx, args[0], args[1], args[2], userAddFlags.Context, userAddFlags.Namespace, userAddFlags.Privilege, out)
 		},
 	}
@@ -54,7 +53,7 @@ func listCommand(parentFlags *flag.User) *cli.Command {
 		},
 		ValidateFunc: cli.ValidateExactArgs(1),
 		Flags:        flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return postgres.ListUsers(ctx, args[0], flags.Context, flags.Namespace, out)
 		},
 	}

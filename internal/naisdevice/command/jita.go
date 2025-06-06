@@ -8,7 +8,6 @@ import (
 
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -53,7 +52,7 @@ func autocomplete(ctx context.Context, args []string, _ string) ([]string, strin
 	return gateways, ""
 }
 
-func run(ctx context.Context, _ output.Output, args []string) error {
+func run(ctx context.Context, _ cli.Output, args []string) error {
 	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
 	if err != nil {
 		return err

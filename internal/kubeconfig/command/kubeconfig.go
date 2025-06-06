@@ -11,7 +11,6 @@ import (
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 )
 
@@ -36,7 +35,7 @@ This requires that you have the gcloud command line tool installed, configured a
 
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			email, err := gcp.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err

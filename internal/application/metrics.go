@@ -1,17 +1,16 @@
-package cli
+package application
 
 import (
 	"context"
 	"strings"
 
 	metrics "github.com/nais/cli/internal/metric"
-	"github.com/spf13/cobra"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
 
-func collectCommandHistogram(ctx context.Context, cmd *cobra.Command, err error) {
+func collectCommandHistogram(ctx context.Context, cmds []string, err error) {
 	meter := otel.GetMeterProvider().Meter(metrics.CliName)
 
 	commandHistogram, _ := meter.Int64Histogram(
@@ -21,16 +20,8 @@ func collectCommandHistogram(ctx context.Context, cmd *cobra.Command, err error)
 	)
 
 	attributes := []attribute.KeyValue{
-		attribute.String("command", strings.Join(commandNames(cmd), " ")),
+		attribute.String("command", strings.Join(cmds, " ")),
 		attribute.Bool("success", err == nil),
 	}
 	commandHistogram.Record(ctx, 1, metric.WithAttributes(attributes...))
-}
-
-func commandNames(cmd *cobra.Command) []string {
-	if cmd == nil {
-		return nil
-	}
-
-	return append(commandNames(cmd.Parent()), cmd.Name())
 }

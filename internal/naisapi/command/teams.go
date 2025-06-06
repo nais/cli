@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/output"
 )
 
 func teams(parentFlags *flag.Api) *cli.Command {
@@ -21,7 +20,7 @@ func teams(parentFlags *flag.Api) *cli.Command {
 		Name:  "teams",
 		Short: "Get a list of your teams.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out output.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			type team struct {
 				Slug        string `json:"slug"`
 				Description string `json:"description"`

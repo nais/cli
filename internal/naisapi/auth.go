@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -70,7 +70,7 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 // Login initiates the OAuth2 authorization code flow to authenticate the user.
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
-func Login(ctx context.Context, out output.Output) error {
+func Login(ctx context.Context, out cli.Output) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func Login(ctx context.Context, out output.Output) error {
 }
 
 // Logout deletes the user's secret from the system keyring and triggers logout at the identity provider.
-func Logout(ctx context.Context, out output.Output) error {
+func Logout(ctx context.Context, out cli.Output) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
 		return fmt.Errorf("deleting user secret: %w", err)

@@ -15,10 +15,10 @@ import (
 
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
-	"github.com/nais/cli/internal/output"
+	"github.com/nais/cli/internal/cli"
 )
 
-func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool, out output.Output) error {
+func RunProxy(ctx context.Context, appName, cluster, namespace, host string, port uint, verbose bool, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func RunProxy(ctx context.Context, appName, cluster, namespace, host string, por
 	return nil
 }
 
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out output.Output) error {
+func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out cli.Output) error {
 	err := checkPostgresqlPassword(out)
 	if err != nil {
 		return err
@@ -165,7 +165,7 @@ func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
 	closer <- struct{}{} // connection is closed, send signal to stop proxy
 }
 
-func checkPostgresqlPassword(out output.Output) error {
+func checkPostgresqlPassword(out cli.Output) error {
 	if _, ok := os.LookupEnv("PGPASSWORD"); ok {
 		return fmt.Errorf("PGPASSWORD is set, please unset it before running this command")
 	}

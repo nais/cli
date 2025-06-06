@@ -10,7 +10,6 @@ import (
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/output"
 )
 
 func createKafka(parentFlags *flag.Create) *cli.Command {
@@ -25,7 +24,7 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 			{Name: "namespace", Required: true},
 		},
 		ValidateFunc: cli.ValidateExactArgs(2),
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)

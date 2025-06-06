@@ -4,82 +4,46 @@ import (
 	"context"
 	"iter"
 	"maps"
-	"os"
-	"slices"
 
-	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/output"
-	"github.com/nais/cli/internal/version"
 	"github.com/spf13/cobra"
 )
 
-const (
-	GroupAuthentication = "Authentication"
-)
-
 type Application struct {
-	cobraCmd *cobra.Command
+	Name        string
+	Long        string
+	Version     string
+	StickyFlags any
+	SubCommands []*Command
+	cobraCmd    *cobra.Command
 }
 
-func NewApplication(flags any, cmd ...*Command) *Application {
+func (a *Application) Run(ctx context.Context, out Output) ([]string, error) {
 	cobra.EnableTraverseRunHooks = true
 
-	cc := &cobra.Command{
-		Use:                "nais",
-		Long:               "Nais CLI",
-		Version:            version.Version + "-" + version.Commit,
+	a.cobraCmd = &cobra.Command{
+		Use:                a.Name,
+		Long:               a.Long,
+		Version:            a.Version,
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
 
-	setupFlags(flags, cc.PersistentFlags())
+	setupFlags(a.StickyFlags, a.cobraCmd.PersistentFlags())
 
-	w := output.NewWriter(cc.OutOrStdout())
-
-	for group := range allGroups(cmd) {
-		cc.AddGroup(&cobra.Group{
+	for group := range allGroups(a.SubCommands) {
+		a.cobraCmd.AddGroup(&cobra.Group{
 			ID:    group,
 			Title: group,
 		})
 	}
 
-	for _, c := range cmd {
-		c.init(w)
-		cc.AddCommand(c.cobraCmd)
-	}
-
-	return &Application{
-		cobraCmd: cc,
-	}
-}
-
-type LogLevelFlags interface {
-	IsVerbose() bool
-}
-
-func (a *Application) Run(ctx context.Context, flags LogLevelFlags) error {
-	autoComplete := slices.Contains(os.Args[1:], "__complete")
-
-	if !autoComplete {
-		flushMetrics := metric.Initialize()
-		defer func() {
-			if err := recover(); err != nil {
-				handlePanic(err)
-			}
-			flushMetrics(flags.IsVerbose())
-		}()
+	for _, c := range a.SubCommands {
+		c.init(out)
+		a.cobraCmd.AddCommand(c.cobraCmd)
 	}
 
 	executedCommand, err := a.cobraCmd.ExecuteContextC(ctx)
-	if !autoComplete && executedCommand != nil {
-		collectCommandHistogram(ctx, executedCommand, err)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return commandNames(executedCommand), err
 }
 
 func allGroups(cmds []*Command) iter.Seq[string] {
@@ -97,4 +61,12 @@ func allGroups(cmds []*Command) iter.Seq[string] {
 	rec(cmds, groups)
 
 	return maps.Keys(groups)
+}
+
+func commandNames(cmd *cobra.Command) []string {
+	if cmd == nil {
+		return nil
+	}
+
+	return append(commandNames(cmd.Parent()), cmd.Name())
 }

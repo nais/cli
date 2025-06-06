@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/output"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/validate"
 	"github.com/nais/cli/internal/validate/command/flag"
@@ -21,7 +20,7 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 		ValidateFunc:           cli.ValidateMinArgs(1),
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return validate.Run(args, flags, out)
 		},
 	}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/internal/output"
 	"github.com/spf13/cobra"
 )
 
@@ -86,7 +85,7 @@ func use(cmd string, args []Argument) string {
 	return cmd
 }
 
-func run(f RunFunc, out output.Output) func(*cobra.Command, []string) error {
+func run(f RunFunc, out Output) func(*cobra.Command, []string) error {
 	if f != nil {
 		return func(co *cobra.Command, args []string) error {
 			return f(co.Context(), out, args)
@@ -95,7 +94,7 @@ func run(f RunFunc, out output.Output) func(*cobra.Command, []string) error {
 	return nil
 }
 
-func (c *Command) init(out output.Output) {
+func (c *Command) init(out Output) {
 	if strings.Contains(c.Name, " ") {
 		panic(fmt.Sprintf("command name cannot contain spaces: %v", c.Name))
 	}

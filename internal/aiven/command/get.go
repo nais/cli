@@ -9,7 +9,6 @@ import (
 	"github.com/nais/cli/internal/aiven/command/flag"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/output"
 )
 
 func get(_ *flag.Aiven) *cli.Command {
@@ -28,7 +27,7 @@ func get(_ *flag.Aiven) *cli.Command {
 			}
 			return nil, ""
 		},
-		RunFunc: func(ctx context.Context, out output.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			service, err := aiven_services.FromString(args[0])
 			if err != nil {
 				return err
