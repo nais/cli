@@ -53,5 +53,5 @@ depends = ['generate', 'fmt', 'check', 'test', 'build']
 pin = true
 
 [tools]
-go = "1.24.3"
+go = "1.24.4"
 goreleaser = "2.9.0"
