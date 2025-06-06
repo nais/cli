@@ -28,7 +28,7 @@ jobs:
       matrix:
         mise_target:
           - deadcode
-          - vulscheck
+          - vulncheck
           - ci-fmt
           - staticcheck
           - test
