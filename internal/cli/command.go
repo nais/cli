@@ -9,33 +9,37 @@ import (
 )
 
 type Argument struct {
-	Name       string // Name of the argument, used for help output
-	Required   bool   // Whether the argument is required
-	Repeatable bool   // Whether the argument can be repeated multiple times, this can only be set for the last argument in the command
+	// Name is the name of the argument, used for help output.
+	Name string
+
+	// Required can be set if the argument is required.
+	Required bool
+
+	// Repeatable can be used for repeatable arguments, this can only be set for the last argument in the command.
+	Repeatable bool
 }
 
 type Command struct {
-	// The name of the command, this is used to invoke the command in the CLI.
+	// Name is the name of the command, this is used to invoke the command in the CLI. This field is required.
 	Name string
 
-	// The shorthand version of the command.
+	// Short is the short description for the command, shown in the help output. This field is required.
 	Short string
 
-	// Long adds a long description to the command used for help output.
+	// Long is the long description for the command, shown in the help output.
 	Long string
 
 	// RunFunc will be executed when the command is run.
 	RunFunc RunFunc
 
-	// ValidateFuncs will be executed before the command's RunFunc is executed.
-	// The validation functions will be executed in the specified order, and if
-	// one of them returns an error the RunFunc will not be executed.
+	// ValidateFunc will be executed before the command's RunFunc is executed.
 	ValidateFunc ValidateFunc
 
 	// AutoCompleteFunc sets up a function that will be used to provide auto-completion suggestions for the command.
 	AutoCompleteFunc AutoCompleteFunc
 
-	// AutoCompleteExtensions specifies which file extensions to list in autocompletion. This overrides AutoCompleteFunc.
+	// AutoCompleteExtensions specifies which file extensions to list in autocompletion. This overrides
+	// AutoCompleteFunc.
 	AutoCompleteExtensions []string
 
 	// Group places the command in a specific group. This is mainly used for grouping of commands in the help text.
@@ -53,12 +57,11 @@ type Command struct {
 	// StickyFlags sets up flags that is persistent across all subcommands.
 	StickyFlags any
 
-	// internal state
 	cobraCmd *cobra.Command
 }
 
-func use(args []Argument) string {
-	use := ""
+// use generates a normalized use string for the internal Cobra command.
+func use(cmd string, args []Argument) string {
 	for i, arg := range args {
 		if arg.Name == "" {
 			panic(fmt.Sprintf("argument name (%+v) cannot be empty", arg))
@@ -77,10 +80,10 @@ func use(args []Argument) string {
 			format = " [%s%s]"
 		}
 
-		use += fmt.Sprintf(format, strings.ToUpper(arg.Name), suffix)
+		cmd += fmt.Sprintf(format, strings.ToUpper(arg.Name), suffix)
 	}
 
-	return use
+	return cmd
 }
 
 func run(f RunFunc, out output.Output) func(*cobra.Command, []string) error {
@@ -98,7 +101,7 @@ func (c *Command) init(out output.Output) {
 	}
 
 	c.cobraCmd = &cobra.Command{
-		Use:               c.Name + use(c.Args),
+		Use:               use(c.Name, c.Args),
 		Short:             c.Short,
 		Long:              c.Long,
 		GroupID:           c.Group,
