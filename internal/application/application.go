@@ -21,9 +21,8 @@ import (
 	"github.com/nais/cli/internal/version"
 )
 
-func Run(ctx context.Context, w io.Writer) error {
-	flags := &root.Flags{}
-	app := &cli.Application{
+func newApplication(flags *root.Flags) *cli.Application {
+	return &cli.Application{
 		Name:    "nais",
 		Long:    "Nais CLI",
 		Version: version.Version + "-" + version.Commit,
@@ -40,7 +39,12 @@ func Run(ctx context.Context, w io.Writer) error {
 		},
 		StickyFlags: flags,
 	}
-	executedCommand, err := app.Run(ctx, cli.NewWriter(w))
+}
+
+func Run(ctx context.Context, w io.Writer) error {
+	flags := &root.Flags{}
+	app := newApplication(flags)
+	executedCommand, err := app.Run(ctx, cli.NewWriter(w), os.Args[1:])
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {

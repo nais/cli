@@ -17,7 +17,7 @@ type Application struct {
 	cobraCmd    *cobra.Command
 }
 
-func (a *Application) Run(ctx context.Context, out Output) ([]string, error) {
+func (a *Application) Run(ctx context.Context, out Output, args []string) ([]string, error) {
 	cobra.EnableTraverseRunHooks = true
 
 	a.cobraCmd = &cobra.Command{
@@ -27,6 +27,8 @@ func (a *Application) Run(ctx context.Context, out Output) ([]string, error) {
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}
+	a.cobraCmd.SetArgs(args)
+	a.cobraCmd.SetOut(out)
 
 	setupFlags(a.StickyFlags, a.cobraCmd.PersistentFlags())
 
