@@ -14,7 +14,7 @@ import (
 type Count int
 
 type AutoCompleter interface {
-	AutoComplete(ctx context.Context, args []string, toComplete string) (completions []string, activeHelp string)
+	AutoComplete(ctx context.Context, args []string, toComplete string, flags any) (completions []string, activeHelp string)
 }
 
 func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
@@ -112,7 +112,14 @@ func setupFlags(cmd *cobra.Command, flags any, flagSet *pflag.FlagSet) {
 		setupFlag(flagName, flagShort, normalizeUsage(flagUsage), unwrap(actualValue), flagSet)
 
 		if v, ok := actualValue.(AutoCompleter); ok {
-			_ = cmd.RegisterFlagCompletionFunc(flagName, autocomplete(v.AutoComplete, nil))
+			_ = cmd.RegisterFlagCompletionFunc(flagName,
+				func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+					completions, activeHelp := v.AutoComplete(cmd.Context(), args, toComplete, flags)
+					if activeHelp != "" {
+						completions = cobra.AppendActiveHelp(completions, activeHelp)
+					}
+					return completions, cobra.ShellCompDirectiveNoFileComp
+				})
 		} else {
 			// TODO: add metric for flags that do not support autocomplete
 			_ = cmd.RegisterFlagCompletionFunc(flagName, noAutocomplete())

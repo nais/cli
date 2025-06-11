@@ -15,7 +15,7 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	stickyFlags := &flag.DebugSticky{
 		Flags:     parentFlags,
-		Context:   k8s.Context(defaultContext),
+		Context:   flag.Context(defaultContext),
 		Namespace: defaultNamespace,
 	}
 

@@ -14,8 +14,8 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	flags := &flag.Postgres{
 		Flags:     parentFlags,
-		Namespace: defaultNamespace,
-		Context:   k8s.Context(defaultContext),
+		Namespace: flag.Namespace(defaultNamespace),
+		Context:   flag.Context(defaultContext),
 	}
 
 	return &cli.Command{

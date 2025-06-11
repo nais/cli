@@ -147,7 +147,7 @@ func (m *Migrator) deleteMigrationConfig(ctx context.Context, cfgMap *corev1.Con
 
 func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	ns := &corev1.Namespace{}
-	err := m.client.Get(ctx, ctrl.ObjectKey{Name: m.cfg.Namespace}, ns)
+	err := m.client.Get(ctx, ctrl.ObjectKey{Name: string(m.cfg.Namespace)}, ns)
 	if err != nil {
 		return "", fmt.Errorf("failed to get namespace: %w", err)
 	}
@@ -205,7 +205,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 			continue
 		}
 
-		logs, err := m.clientset.CoreV1().Pods(m.cfg.Namespace).GetLogs(pod.Name, &corev1.PodLogOptions{
+		logs, err := m.clientset.CoreV1().Pods(string(m.cfg.Namespace)).GetLogs(pod.Name, &corev1.PodLogOptions{
 			Container: jobName,
 			Follow:    true,
 		}).Stream(ctx)
@@ -235,7 +235,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 
 // findLatestPod returns the latest pod for the given command. If no pods are found, nil is returned.
 func (m *Migrator) findLatestPod(ctx context.Context, command Command) (*corev1.Pod, error) {
-	pods, err := m.clientset.CoreV1().Pods(m.cfg.Namespace).List(ctx, metav1.ListOptions{
+	pods, err := m.clientset.CoreV1().Pods(string(m.cfg.Namespace)).List(ctx, metav1.ListOptions{
 		LabelSelector: m.kubectlLabelSelector(command),
 	})
 	if err != nil {
@@ -431,7 +431,7 @@ func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 	return &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cfg.MigrationName(),
-			Namespace: cfg.Namespace,
+			Namespace: string(cfg.Namespace),
 		},
 		Subjects: []rbacv1.Subject{
 			{
@@ -463,7 +463,7 @@ func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      command.JobName(cfg),
-			Namespace: cfg.Namespace,
+			Namespace: string(cfg.Namespace),
 			Labels: map[string]string{
 				"apiserver-access": "enabled",
 			},

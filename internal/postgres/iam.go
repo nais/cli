@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster k8s.Context, namespace string, out cli.Output) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -206,7 +206,7 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName string, cluster k8s.Context, namespace string, out cli.Output) error {
+func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -245,7 +245,7 @@ func ListUsers(ctx context.Context, appName string, cluster k8s.Context, namespa
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password string, cluster k8s.Context, namespace, privilege string, out cli.Output) error {
+func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out cli.Output) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err

@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/liberator/pkg/keygen"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName string, cluster k8s.Context, namespace string, out cli.Output) error {
+func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func RotatePassword(ctx context.Context, appName string, cluster k8s.Context, na
 }
 
 func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInfo *ConnectionInfo) error {
-	secret, err := dbInfo.k8sClient.CoreV1().Secrets(dbInfo.namespace).Get(ctx, "google-sql-"+dbInfo.appName, v1.GetOptions{})
+	secret, err := dbInfo.k8sClient.CoreV1().Secrets(string(dbInfo.namespace)).Get(ctx, "google-sql-"+dbInfo.appName, v1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("unable to the k8s secret %q in %q: %w", "google-sql-"+dbInfo.appName, dbInfo.namespace, err)
 	}
@@ -91,7 +91,7 @@ func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInf
 		secret.Data[key] = []byte(dbConnectionInfo.jdbcUrl.String())
 	}
 
-	_, err = dbInfo.k8sClient.CoreV1().Secrets(dbInfo.namespace).Update(ctx, secret, v1.UpdateOptions{})
+	_, err = dbInfo.k8sClient.CoreV1().Secrets(string(dbInfo.namespace)).Update(ctx, secret, v1.UpdateOptions{})
 	if err != nil {
 		return fmt.Errorf("failed updating k8s secret %q in %q with new password: %w", "google-sql-"+dbInfo.appName, dbInfo.namespace, err)
 	}

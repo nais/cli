@@ -16,10 +16,10 @@ import (
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
-func RunProxy(ctx context.Context, appName string, cluster k8s.Context, namespace, host string, port uint, verbose bool, out cli.Output) error {
+func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out cli.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err

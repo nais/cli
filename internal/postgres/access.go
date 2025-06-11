@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
 var grantAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TABLES TO cloudsqliamuser;
@@ -27,7 +27,7 @@ var revokeAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema REVOKE ALL ON T
 	REVOKE ALL ON ALL SEQUENCES IN SCHEMA $schema FROM cloudsqliamuser;
 	REVOKE CREATE ON SCHEMA $schema FROM cloudsqliamuser;`
 
-func PrepareAccess(ctx context.Context, appName, namespace string, cluster k8s.Context, schema string, allPrivs bool) error {
+func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, allPrivs bool) error {
 	if allPrivs {
 		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, grantAllPrivs)
 	} else {
@@ -35,11 +35,11 @@ func PrepareAccess(ctx context.Context, appName, namespace string, cluster k8s.C
 	}
 }
 
-func RevokeAccess(ctx context.Context, appName, namespace string, cluster k8s.Context, schema string) error {
+func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string) error {
 	return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, revokeAllPrivs)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName, namespace string, cluster k8s.Context, schema, statement string) error {
+func sqlExecAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema, statement string) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err

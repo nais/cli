@@ -31,13 +31,13 @@ func Run(ctx context.Context, applicationName, targetInstanceName string, flags 
 	cfg.Target.DiskSize = isSetInt(diskSize)
 	cfg.Target.Type = isSet(instanceType)
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
-	cfg.Namespace = client.CurrentNamespace
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(cluster)))
+	cfg.Namespace = flag.Namespace(client.CurrentNamespace)
 	if namespace != "" {
 		cfg.Namespace = namespace
 	}
 
-	clientSet, err := k8s.SetupClientGo(cluster)
+	clientSet, err := k8s.SetupClientGo(string(cluster))
 	if err != nil {
 		return err
 	}

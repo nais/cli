@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"golang.org/x/oauth2"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,13 +22,13 @@ type DBInfo struct {
 	k8sClient      kubernetes.Interface
 	dynamicClient  dynamic.Interface
 	config         clientcmd.ClientConfig
-	namespace      string
+	namespace      flag.Namespace
 	appName        string
 	projectID      string
 	connectionName string
 }
 
-func NewDBInfo(appName, namespace string, context k8s.Context) (*DBInfo, error) {
+func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (*DBInfo, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),
@@ -40,10 +40,11 @@ func NewDBInfo(appName, namespace string, context k8s.Context) (*DBInfo, error) 
 	}
 
 	if namespace == "" {
-		namespace, _, err = kubeConfig.Namespace()
+		ns, _, err := kubeConfig.Namespace()
 		if err != nil {
 			return nil, fmt.Errorf("NewDBInfo: unable to get namespace: %w", err)
 		}
+		namespace = flag.Namespace(ns)
 	}
 
 	k8sClient, err := kubernetes.NewForConfig(config)
@@ -86,7 +87,7 @@ func (i *DBInfo) ConnectionName(ctx context.Context) (string, error) {
 }
 
 func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
-	secret, err := i.k8sClient.CoreV1().Secrets(i.namespace).Get(ctx, "google-sql-"+i.appName, v1.GetOptions{})
+	secret, err := i.k8sClient.CoreV1().Secrets(string(i.namespace)).Get(ctx, "google-sql-"+i.appName, v1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("unable to get database password from %q in %q: %w", "google-sql-"+i.appName, i.namespace, err)
 	}
@@ -134,7 +135,7 @@ func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
 		Group:    "sql.cnrm.cloud.google.com",
 		Version:  "v1beta1",
 		Resource: "sqlinstances",
-	}).Namespace(i.namespace).List(ctx, v1.ListOptions{
+	}).Namespace(string(i.namespace)).List(ctx, v1.ListOptions{
 		LabelSelector: "app=" + i.appName,
 	})
 	if err != nil {

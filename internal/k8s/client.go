@@ -11,10 +11,12 @@ import (
 
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 
@@ -57,7 +59,7 @@ func InitScheme(scheme *runtime.Scheme) {
 
 type ClientOverride func(*clientcmd.ConfigOverrides)
 
-func WithKubeContext(kubeCtx Context) ClientOverride {
+func WithKubeContext(kubeCtx string) ClientOverride {
 	return func(overrides *clientcmd.ConfigOverrides) {
 		overrides.CurrentContext = string(kubeCtx)
 	}
@@ -82,7 +84,7 @@ func SetupControllerRuntimeClient(overrides ...ClientOverride) *Client {
 	return &Client{client, namespace}
 }
 
-func SetupClientGo(context Context) (kubernetes.Interface, error) {
+func SetupClientGo(context string) (kubernetes.Interface, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),
@@ -119,7 +121,7 @@ func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace st
 	return
 }
 
-func getAllContexts() ([]string, error) {
+func GetAllContexts() ([]string, error) {
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		clientcmd.NewDefaultClientConfigLoadingRules(),
 		nil,
@@ -132,13 +134,39 @@ func getAllContexts() ([]string, error) {
 	return slices.Collect(maps.Keys(rawConfig.Contexts)), nil
 }
 
-type Context string
+func GetNamespaceForContext(context string) (namespace string, err error) {
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		nil,
+	)
 
-func (c *Context) AutoComplete(ctx context.Context, args []string, toComplete string) ([]string, string) {
-	contexts, err := getAllContexts()
+	rawConfig, err := kubeConfig.RawConfig()
 	if err != nil {
-		return nil, fmt.Sprintf("Error fetching contexts: %v", err)
+		return
 	}
 
-	return contexts, "Available contexts"
+	if context, exists := rawConfig.Contexts[context]; exists {
+		namespace = context.Namespace
+	}
+
+	return
+}
+
+func GetNamespacesForContext(ctx context.Context, kubeCtx string) ([]string, error) {
+	client, err := SetupClientGo(kubeCtx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set up Kubernetes client: %w", err)
+	}
+
+	namespaces, err := client.CoreV1().Namespaces().List(ctx, v1.ListOptions{TimeoutSeconds: ptr.To(int64(10))})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list namespaces: %w", err)
+	}
+
+	namespaceNames := make([]string, 0, len(namespaces.Items))
+	for _, ns := range namespaces.Items {
+		namespaceNames = append(namespaceNames, ns.Name)
+	}
+
+	return namespaceNames, nil
 }

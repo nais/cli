@@ -5,16 +5,16 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func EnableAuditLogging(ctx context.Context, appName string, cluster k8s.Context, namespace string) error {
+func EnableAuditLogging(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace) error {
 	return enableAuditAsAppUser(ctx, appName, namespace, cluster)
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster k8s.Context) error {
+func enableAuditAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func getDBFlags(ctx context.Context, info *DBInfo) (map[string]string, error) {
 		Group:    "sql.cnrm.cloud.google.com",
 		Version:  "v1beta1",
 		Resource: "sqlinstances",
-	}).Namespace(info.namespace).List(ctx, v1.ListOptions{
+	}).Namespace(string(info.namespace)).List(ctx, v1.ListOptions{
 		LabelSelector: "app=" + info.appName,
 	})
 	if err != nil {

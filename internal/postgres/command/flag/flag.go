@@ -1,14 +1,13 @@
 package flag
 
 import (
-	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/root"
 )
 
 type Postgres struct {
 	*root.Flags
-	Namespace string      `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
-	Context   k8s.Context `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
+	Namespace Namespace `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
+	Context   Context   `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
 }
 
 type Migrate struct {

@@ -7,7 +7,8 @@ import (
 	"strconv"
 
 	"github.com/nais/cli/internal/option"
-	"github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
+	"github.com/nais/cli/internal/postgres/command/flag"
+	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"github.com/nais/liberator/pkg/namegen"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,7 +18,7 @@ import (
 
 type Config struct {
 	AppName   string
-	Namespace string
+	Namespace flag.Namespace
 	Target    InstanceConfig
 	Source    InstanceConfig
 	cfgMap    *corev1.ConfigMap
@@ -37,9 +38,9 @@ func (ic *InstanceConfig) String() string {
 	return fmt.Sprintf("Name: %v\nTier: %v\nDiskSize: %v\nType: %v\n", ic.InstanceName, ic.Tier, ic.DiskSize, ic.Type)
 }
 
-func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appName, namespace string) error {
+func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appName string, namespace flag.Namespace) error {
 	app := &nais_io_v1alpha1.Application{}
-	err := client.Get(ctx, ctrl.ObjectKey{Namespace: namespace, Name: appName}, app)
+	err := client.Get(ctx, ctrl.ObjectKey{Namespace: string(namespace), Name: appName}, app)
 	if err != nil {
 		return err
 	}
@@ -155,7 +156,7 @@ func (c *Config) MigrationName() string {
 func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 	data := map[string]string{
 		"APP_NAME":  c.AppName,
-		"NAMESPACE": c.Namespace,
+		"NAMESPACE": string(c.Namespace),
 	}
 
 	c.Target.InstanceName.Do(dataBuilder[string](data, "TARGET_INSTANCE_NAME"))
@@ -173,7 +174,7 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 	c.cfgMap = &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      c.MigrationName(),
-			Namespace: c.Namespace,
+			Namespace: string(c.Namespace),
 			Labels: map[string]string{
 				"migrator.nais.io/migration-name":       c.MigrationName(),
 				"migrator.nais.io/app-name":             c.AppName,
@@ -190,7 +191,7 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 
 func (c *Config) PopulateFromConfigMap(ctx context.Context, client ctrl.Client) (*corev1.ConfigMap, error) {
 	configMap := &corev1.ConfigMap{}
-	err := client.Get(ctx, ctrl.ObjectKey{Namespace: c.Namespace, Name: c.MigrationName()}, configMap)
+	err := client.Get(ctx, ctrl.ObjectKey{Namespace: string(c.Namespace), Name: c.MigrationName()}, configMap)
 	if err != nil {
 		return nil, err
 	}

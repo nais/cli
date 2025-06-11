@@ -8,10 +8,10 @@ import (
 	"os/exec"
 
 	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster k8s.Context, namespace string, verbose bool, out cli.Output) error {
+func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out cli.Output) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err
