@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/nais/cli/internal/k8s"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func EnableAuditLogging(ctx context.Context, appName, cluster, namespace string) error {
+func EnableAuditLogging(ctx context.Context, appName string, cluster k8s.Context, namespace string) error {
 	return enableAuditAsAppUser(ctx, appName, namespace, cluster)
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName, namespace, cluster string) error {
+func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster k8s.Context) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err

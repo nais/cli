@@ -1,10 +1,13 @@
 package k8s
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
+	"maps"
 	"os"
+	"slices"
 
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
@@ -54,9 +57,9 @@ func InitScheme(scheme *runtime.Scheme) {
 
 type ClientOverride func(*clientcmd.ConfigOverrides)
 
-func WithKubeContext(kubeCtx string) ClientOverride {
+func WithKubeContext(kubeCtx Context) ClientOverride {
 	return func(overrides *clientcmd.ConfigOverrides) {
-		overrides.CurrentContext = kubeCtx
+		overrides.CurrentContext = string(kubeCtx)
 	}
 }
 
@@ -79,10 +82,10 @@ func SetupControllerRuntimeClient(overrides ...ClientOverride) *Client {
 	return &Client{client, namespace}
 }
 
-func SetupClientGo(context string) (kubernetes.Interface, error) {
+func SetupClientGo(context Context) (kubernetes.Interface, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
-		CurrentContext: context,
+		CurrentContext: string(context),
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
@@ -114,4 +117,28 @@ func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace st
 	}
 
 	return
+}
+
+func getAllContexts() ([]string, error) {
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		nil,
+	)
+	rawConfig, err := kubeConfig.RawConfig()
+	if err != nil {
+		return nil, fmt.Errorf("unable to get kubeconfig: %w", err)
+	}
+
+	return slices.Collect(maps.Keys(rawConfig.Contexts)), nil
+}
+
+type Context string
+
+func (c *Context) AutoComplete(ctx context.Context, args []string, toComplete string) ([]string, string) {
+	contexts, err := getAllContexts()
+	if err != nil {
+		return nil, fmt.Sprintf("Error fetching contexts: %v", err)
+	}
+
+	return contexts, "Available contexts"
 }

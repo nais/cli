@@ -9,7 +9,7 @@ import (
 
 func noAutocomplete() cobra.CompletionFunc {
 	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return nil, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 
@@ -27,7 +27,7 @@ func autocomplete(autoCompleteFunc AutoCompleteFunc, autoCompleteFilesExtensions
 		if activeHelp != "" {
 			completions = cobra.AppendActiveHelp(completions, activeHelp)
 		}
-		return completions, cobra.ShellCompDirectiveDefault
+		return completions, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 

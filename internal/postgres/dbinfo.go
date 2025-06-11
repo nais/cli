@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/nais/cli/internal/k8s"
 	"golang.org/x/oauth2"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,10 +28,10 @@ type DBInfo struct {
 	connectionName string
 }
 
-func NewDBInfo(appName, namespace, context string) (*DBInfo, error) {
+func NewDBInfo(appName, namespace string, context k8s.Context) (*DBInfo, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
-		CurrentContext: context,
+		CurrentContext: string(context),
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()

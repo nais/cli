@@ -123,7 +123,7 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	)
 
 	if d.flags.Context != "" {
-		cmd.Args = append(cmd.Args, "--context", d.flags.Context)
+		cmd.Args = append(cmd.Args, "--context", string(d.flags.Context))
 	}
 
 	cmd.Stdin = os.Stdin
@@ -156,7 +156,7 @@ func (d *Debug) createDebugPod(podName string) error {
 	}
 
 	if d.flags.Context != "" {
-		args = append(args, "--context", d.flags.Context)
+		args = append(args, "--context", string(d.flags.Context))
 	}
 
 	if d.flags.Copy {

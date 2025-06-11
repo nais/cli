@@ -24,7 +24,7 @@ func Run(workloadName string, flags *flag.Debug) error {
 	return nil
 }
 
-func SetupClient(flags *flag.DebugSticky, cluster string) (kubernetes.Interface, error) {
+func SetupClient(flags *flag.DebugSticky, cluster k8s.Context) (kubernetes.Interface, error) {
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(cluster))
 
 	if flags.Namespace == "" {
@@ -35,7 +35,7 @@ func SetupClient(flags *flag.DebugSticky, cluster string) (kubernetes.Interface,
 		flags.Context = cluster
 	}
 
-	clientSet, err := k8s.SetupClientGo(cluster)
+	clientSet, err := k8s.SetupClientGo(k8s.Context(cluster))
 	if err != nil {
 		return nil, err
 	}
