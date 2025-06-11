@@ -30,7 +30,7 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 	a.cobraCmd.SetArgs(args)
 	a.cobraCmd.SetOut(out)
 
-	setupFlags(a.StickyFlags, a.cobraCmd.PersistentFlags())
+	setupFlags(a.cobraCmd, a.StickyFlags, a.cobraCmd.PersistentFlags())
 
 	for group := range allGroups(a.SubCommands) {
 		a.cobraCmd.AddGroup(&cobra.Group{

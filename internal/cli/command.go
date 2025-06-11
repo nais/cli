@@ -118,8 +118,8 @@ func (c *Command) init(out Output) {
 		},
 	}
 
-	setupFlags(c.Flags, c.cobraCmd.Flags())
-	setupFlags(c.StickyFlags, c.cobraCmd.PersistentFlags())
+	setupFlags(c.cobraCmd, c.Flags, c.cobraCmd.Flags())
+	setupFlags(c.cobraCmd, c.StickyFlags, c.cobraCmd.PersistentFlags())
 
 	for _, sub := range c.SubCommands {
 		sub.init(out)

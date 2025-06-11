@@ -7,23 +7,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func noAutocomplete() cobra.CompletionFunc {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return nil, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+	}
+}
+
 func autocomplete(autoCompleteFunc AutoCompleteFunc, autoCompleteFilesExtensions []string) cobra.CompletionFunc {
 	if len(autoCompleteFilesExtensions) > 0 {
 		return autocompleteFiles(autoCompleteFilesExtensions)
 	}
 
-	if autoCompleteFunc != nil {
-		return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			completions, activeHelp := autoCompleteFunc(cmd.Context(), args, toComplete)
-			if activeHelp != "" {
-				completions = cobra.AppendActiveHelp(completions, activeHelp)
-			}
-			return completions, cobra.ShellCompDirectiveDefault
-		}
+	if autoCompleteFunc == nil {
+		return noAutocomplete()
 	}
 
 	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return nil, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveNoSpace
+		completions, activeHelp := autoCompleteFunc(cmd.Context(), args, toComplete)
+		if activeHelp != "" {
+			completions = cobra.AppendActiveHelp(completions, activeHelp)
+		}
+		return completions, cobra.ShellCompDirectiveDefault
 	}
 }
 
