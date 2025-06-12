@@ -9,7 +9,7 @@ import (
 
 type Namespace string
 
-func (c *Namespace) AutoComplete(ctx context.Context, args []string, toComplete string, flags any) ([]string, string) {
+func (c *Namespace) AutoComplete(ctx context.Context, _ []string, _ string, flags any) ([]string, string) {
 	f, ok := flags.(*Postgres)
 	if !ok {
 		return nil, "Invalid flags type"
@@ -21,10 +21,10 @@ func (c *Namespace) AutoComplete(ctx context.Context, args []string, toComplete 
 	}
 	f.Namespace = Namespace(namespaceForContext)
 
-	contexts, err := k8s.GetNamespacesForContext(ctx, string(f.Context))
+	namespaces, err := k8s.GetNamespacesForContext(ctx, string(f.Context))
 	if err != nil {
 		return nil, fmt.Sprintf("Error fetching namespaces: %v", err)
 	}
 
-	return contexts, fmt.Sprintf("Available namespaces. %v", namespaceForContext)
+	return namespaces, "Available namespaces."
 }
