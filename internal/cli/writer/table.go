@@ -6,6 +6,7 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 )
 
@@ -41,10 +42,13 @@ func (t *Table) Write(data any) error {
 
 	t.data = data
 	tbl := table.New().
+		StyleFunc(func(_, _ int) lipgloss.Style {
+			return lipgloss.NewStyle().Padding(0, 1)
+		}).
 		Headers(t.columns...).
 		Data(t)
 
-	fmt.Fprint(t.o, tbl.Render())
+	_, _ = fmt.Fprintln(t.o, tbl.Render())
 
 	return nil
 }
