@@ -8,7 +8,6 @@ import (
 
 	"github.com/nais/cli/internal/version"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/metric"
@@ -27,7 +26,7 @@ func Initialize() func(verbose bool) {
 	if os.Getenv("DO_NOT_TRACK") == "1" || initialized {
 		return func(verbose bool) {
 			if verbose {
-				fmt.Printf("Shutdown: skipping metrics upload as DO_NOT_TRACK is 1..\n")
+				fmt.Println("Shutdown: skipping metrics upload as DO_NOT_TRACK is 1.")
 			}
 		}
 	}
@@ -39,7 +38,7 @@ func Initialize() func(verbose bool) {
 
 	return func(verbose bool) {
 		if verbose {
-			fmt.Printf("Shutdown: uploading metrics...\n")
+			fmt.Println("Shutdown: uploading metrics...")
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
@@ -50,15 +49,15 @@ func Initialize() func(verbose bool) {
 	}
 }
 
-func CreateCounter(metricName string, attributes ...attribute.KeyValue) m.Int64Counter {
+func CreateCounter(metricName string) m.Int64Counter {
 	meter := otel.GetMeterProvider().Meter(CliName)
 	counter, _ := meter.Int64Counter(CliName+"_"+metricName, m.WithUnit("1"))
 
 	return counter
 }
 
-func CreateAndIncreaseCounter(ctx context.Context, metricName string, attributes ...attribute.KeyValue) {
-	counter := CreateCounter(metricName, attributes...)
+func CreateAndIncreaseCounter(ctx context.Context, metricName string) {
+	counter := CreateCounter(metricName)
 	counter.Add(ctx, 1)
 }
 
