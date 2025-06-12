@@ -53,7 +53,7 @@ func Run(ctx context.Context, w io.Writer) error {
 			if err := recover(); err != nil {
 				handlePanic(err)
 			}
-			flushMetrics(flags.IsVerbose())
+			flushMetrics(flags.IsTrace())
 		}()
 	}
 
