@@ -14,6 +14,7 @@ tool (
 
 require (
 	cloud.google.com/go/cloudsqlconn v1.17.1
+	github.com/99designs/gqlgen v0.17.57
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7
 	github.com/Khan/genqlient v0.8.1
 	github.com/charmbracelet/lipgloss v1.1.0
