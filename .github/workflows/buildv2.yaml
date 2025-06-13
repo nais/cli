@@ -72,7 +72,6 @@ jobs:
         os: [windows, linux, macos]
     needs:
       - set-version
-      - checks
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
@@ -101,6 +100,7 @@ jobs:
     needs:
       - set-version
       - build
+      - checks
     steps:
       - name: Create tag
         run: |
