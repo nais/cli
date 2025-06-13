@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/suessflorian/gqlfetch"
