@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         arch: [amd64, arm64]
-        os: [windows, linux, macos]
+        os: [windows, linux, darwin]
     needs:
       - set-version
     steps:
