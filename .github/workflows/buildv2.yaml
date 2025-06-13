@@ -56,7 +56,7 @@ jobs:
             report.xml
 
   # Used by GitHub to determine if all checks have passed
-  checks_passed:
+  tell_github_checks_passed:
     runs-on: ubuntu-latest
     needs:
       - checks
