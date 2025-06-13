@@ -1,0 +1,225 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - goreleaseless
+    paths-ignore:
+      - "**.md"
+      - "doc/**"
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: set version
+        id: set-version
+        run: |
+          echo Faking a Semantic Version
+          echo "version=2.0.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
+
+  checks:
+    strategy:
+      matrix:
+        mise_target:
+          - deadcode
+          - vulncheck
+          - ci-fmt
+          - staticcheck
+          - test
+          - vet
+    needs:
+      - set-version
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - name: mise run ${{ matrix.mise_target }}
+        run: |
+          mise run ${{ matrix.mise_target }}
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && matrix.mise_target == 'test'
+        with:
+          files: |
+            report.xml
+
+  # Used by GitHub to determine if all checks have passed
+  checks_passed:
+    runs-on: ubuntu-latest
+    needs:
+      - checks
+    steps:
+      - run: echo Checks passed
+
+  build:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+        os: [windows, linux, macos]
+    needs:
+      - set-version
+      - checks
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v2
+
+      - name: build
+        run: |
+          GOOS="${{ matrix.os }}" GOARCH="${ matrix.arch }}" mise run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nais-${{ matrix.os }}-${{ matrix.arch }}
+
+  release-github:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create tag
+        run: |
+          git tag ${{ needs.set-version.outputs.version }}
+
+      - name: Prepare for signing windows binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes osslsigncode
+          echo "${{ secrets.SIGN_CERT }}" > nais.crt
+          echo "${{ secrets.SIGN_KEY }}" > nais.key
+
+  release-gar:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    needs:
+      - set-version
+      - release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: "gh-cli@nais-io.iam.gserviceaccount.com"
+          token_format: "access_token"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+        with:
+          install_components: beta
+
+      - name: "Upload new deb file to Google repository"
+        env:
+          VERSION: ${{ needs.set-version.outputs.version }}
+        run: |
+          echo "Version ${VERSION} was released, adding to PPA"
+
+          # Fetch latest deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}_arm64.deb
+          wget https://github.com/${{ github.repository }}/releases/download/${VERSION}/nais_${VERSION}_amd64.deb
+
+          # Upload to GAR
+          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}_arm64.deb --location europe-north1
+          gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais_${VERSION}_amd64.deb --location europe-north1
+          sleep 10
+
+  release-scoop:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    needs:
+      - set-version
+      - release-github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: navikt/github-app-token-generator@v1
+        id: get-scoop-token
+        with:
+          private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
+          app-id: "${{ secrets.NAIS_APP_ID }}"
+          repo: nais/scoop-bucket
+
+      - name: "Generate scoop manifest"
+        run: |
+          echo 'git clone github.com/nais/scoop-bucket.git"
+          echo 'generate scoop manifest'
+          echo 'git commit -am "Bump version to ${{ needs.set-version.outputs.version }}"'
+          echo 'git push'
+          sleep 10
+
+  release-homebrew:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    needs:
+      - set-version
+      - release-github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: navikt/github-app-token-generator@v1
+        id: get-homebrew-token
+        with:
+          private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
+          app-id: "${{ secrets.NAIS_APP_ID }}"
+          repo: nais/homebrew-tap
+
+      - name: "Generate homebrew manifest"
+        run: |
+          echo 'git clone github.com/nais/homebrew-tap.git"
+          echo 'generate homebrew manifest'
+          echo 'git commit -am "Bump version to ${{ needs.set-version.outputs.version }}"'
+          echo 'git push'
+          sleep 10
+
+  release-nur:
+    if: ${{ github.ref == 'refs/heads/goreleaseless' }}
+    needs:
+      - set-version
+      - release-github
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: navikt/github-app-token-generator@v1
+        id: get-nur-token
+        with:
+          private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
+          app-id: "${{ secrets.NAIS_APP_ID }}"
+          repo: nais/nur
+
+      - name: Prepare for releasing to NUR
+        uses: DeterminateSystems/nix-installer-action@v17
+
+      - name: "Generate nur manifest"
+        run: |
+          echo 'git clone github.com/nais/nur.git"
+          echo 'generate nur manifest'
+          echo 'git commit -am "Bump version to ${{ needs.set-version.outputs.version }}"'
+          echo 'git push'
+          sleep 10
