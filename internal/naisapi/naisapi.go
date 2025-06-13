@@ -63,7 +63,7 @@ func StartProxy(ctx context.Context, out cli.Output, flags *flag.Proxy) error {
 	out.Println("Forwarding requests from", flags.ListenAddr, "to", target.String())
 	// Start the server
 	http.Handle("/graphql", proxy)
-	http.Handle("/", playground.Handler("Nais playground", "/graphql"))
+	http.Handle("/", playground.Handler("Nais API playground", "/graphql"))
 	if err := http.ListenAndServe(flags.ListenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
