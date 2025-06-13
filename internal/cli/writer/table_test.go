@@ -24,12 +24,13 @@ func TestTable_SingleLevel(t *testing.T) {
 	}
 
 	expected := `
-╭──────────┬───╮
-│First name│Age│
-├──────────┼───┤
-│Alice     │30 │
-│Bob       │25 │
-╰──────────┴───╯`
+╭────────────┬─────╮
+│ First name │ Age │
+├────────────┼─────┤
+│ Alice      │ 30  │
+│ Bob        │ 25  │
+╰────────────┴─────╯
+`
 	if diff := cmp.Diff(buf.String(), expected[1:]); diff != "" {
 		t.Errorf("unexpected output (-got +want):\n%s", diff)
 	}
