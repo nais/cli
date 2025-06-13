@@ -15,10 +15,11 @@ var ErrWriteOnce = errors.New("table can only be written to once")
 type tableOption func(*Table)
 
 type Table struct {
-	o       io.Writer
-	columns []string
-	written bool
-	data    any
+	o         io.Writer
+	columns   []string
+	written   bool
+	data      any
+	formatter func(row, column int, value any) string
 }
 
 func NewTable(o io.Writer, opts ...tableOption) *Table {
@@ -59,6 +60,12 @@ func WithColumns(names ...string) tableOption {
 	}
 }
 
+func WithFormatter(fn func(row, column int, value any) string) tableOption {
+	return func(t *Table) {
+		t.formatter = fn
+	}
+}
+
 func (t *Table) At(row, column int) string {
 	if reflect.TypeOf(t.data).Kind() != reflect.Slice {
 		panic("data must be a slice")
@@ -72,23 +79,27 @@ func (t *Table) At(row, column int) string {
 	value := slice.Index(row)
 	switch value.Type().Kind() {
 	case reflect.Slice:
-		return atSlice(value, column)
+		return t.atSlice(value, row, column)
 	case reflect.Struct:
-		return atStruct(value, column)
+		return t.atStruct(value, row, column)
 	default:
 		panic(fmt.Sprintf("unsupported data type: %v", value))
 	}
 }
 
-func atSlice(v reflect.Value, column int) string {
+func (t *Table) atSlice(v reflect.Value, row, column int) string {
 	if column >= v.Len() {
 		return "2"
 	}
 
-	return fmt.Sprintf("%v", v.Index(column).Interface())
+	if t.formatter != nil {
+		return t.formatter(row, column, v.Index(column).Interface())
+	}
+
+	return fmt.Sprint(v.Index(column).Interface())
 }
 
-func atStruct(v reflect.Value, column int) string {
+func (t *Table) atStruct(v reflect.Value, row, column int) string {
 	exportedIndex := -1
 	fields := reflect.TypeOf(v.Interface())
 	values := reflect.ValueOf(v.Interface())
@@ -101,7 +112,10 @@ func atStruct(v reflect.Value, column int) string {
 
 		exportedIndex++
 		if exportedIndex == column {
-			return fmt.Sprintf("%v", values.Field(i).Interface())
+			if t.formatter != nil {
+				return t.formatter(row, column, values.Field(i).Interface())
+			}
+			return fmt.Sprint(values.Field(i).Interface())
 		}
 	}
 	return "3"
