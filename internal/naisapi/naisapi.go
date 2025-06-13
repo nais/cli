@@ -96,6 +96,67 @@ func GetUserTeams(ctx context.Context, _ *flag.Teams) (*gql.UserTeamsResponse, e
 	return gql.UserTeams(ctx, client)
 }
 
+func GetStatus(ctx context.Context, _ *flag.Status) (*gql.TeamStatusResponse, error) {
+	_ = `# @genqlient
+		query TeamStatus {
+		  me {
+		    ... on User {
+		      teams {
+		        nodes {
+		          team {
+		            slug
+		            total: workloads(first: 1) {
+		              pageInfo {
+		                totalCount
+		              }
+		            }
+		            notNice: workloads(first: 1, filter: {states: [NOT_NAIS]}) {
+		              pageInfo {
+		                totalCount
+		              }
+		            }
+		            failing: workloads(
+		              filter: { states: [FAILING] }
+		              orderBy: { field: STATUS, direction: DESC }
+		            ) {
+		              pageInfo {
+		                totalCount
+		              }
+		              nodes {
+		                name
+		                teamEnvironment {
+		                  environment {
+		                    name
+		                  }
+		                }
+		                status {
+		                  state
+		                  errors {
+		                    level
+		                    ... on WorkloadStatusFailedRun {
+		                      detail
+		                      name
+		                    }
+		                  }
+		                }
+		              }
+		            }
+		          }
+		        }
+		      }
+		    }
+		  }
+		}
+	`
+
+	client, err := GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return gql.TeamStatus(ctx, client)
+}
+
 func GetAllTeams(ctx context.Context) (*gql.TeamsResponse, error) {
 	_ = `# @genqlient
 		query Teams {
