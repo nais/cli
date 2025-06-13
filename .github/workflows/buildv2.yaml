@@ -76,6 +76,7 @@ jobs:
       - name: build
         run: |
           GOOS="${{ matrix.os }}" GOARCH="${{ matrix.arch }}" mise run build
+          tar -zcf nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz -C bin/ nais
       - name: Sign Windows binary
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -88,6 +89,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nais-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
 
   release-github:
     if: ${{ github.ref == 'refs/heads/goreleaseless' }}
