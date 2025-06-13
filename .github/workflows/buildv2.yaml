@@ -99,7 +99,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/goreleaseless' }}
     needs:
       - set-version
-      - release
+      - release-github
     runs-on: ubuntu-latest
     permissions:
       contents: read
