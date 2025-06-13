@@ -74,7 +74,7 @@ jobs:
       - uses: jdx/mise-action@v2
       - name: build
         run: |
-          GOOS="${{ matrix.os }}" GOARCH="${ matrix.arch }}" mise run build
+          GOOS="${{ matrix.os }}" GOARCH="${{ matrix.arch }}" mise run build
       - name: Sign Windows binary
         if: ${{ matrix.os == 'windows' }}
         run: |
