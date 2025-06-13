@@ -2,6 +2,8 @@ name: Publish release
 
 on:
   push:
+    branches:
+      - "!goreleaseless"
     paths-ignore:
       - "**.md"
       - "doc/**"
