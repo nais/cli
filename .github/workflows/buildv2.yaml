@@ -154,16 +154,14 @@ jobs:
             for os in linux darwin windows; do
               file="nais-cli_${{ needs.set-version.outputs.version }}_$os_$arch.tar.gz"
               hash16="$(nix-hash --type sha256 --flat "./archive-$os-$arch/$file")"
+              hash32="$(nix-hash --type sha256 --flat --base32 "./archive-$os-$arch/$file")"
               echo "$hash16  $file" >> checksums.txt
 
-              hash32=$(nix-hash --type sha256 --flat --base32 "$file")
               # This is used by the external release jobs (nur, homebrew, scoop)
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base16" --arg hash "$hash16" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base32" --arg hash "$hash32" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
             done
           done
-
-          hash16=$(nix-hash --type sha256 --flat "$file")
 
       - name: Upload hashes
         uses: actions/upload-artifact@v4
