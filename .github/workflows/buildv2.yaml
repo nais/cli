@@ -141,7 +141,7 @@ jobs:
         run: |
           # debug
           ls *
-
+          echo '{}' > hashes.json
           version="${{ needs.set-version.outputs.version }}"
 
           for arch in amd64 arm64; do
@@ -197,8 +197,7 @@ jobs:
   release-gar:
     needs:
       - set-version
-      - release-github
-      - package-deb
+      - release-github # this also waits for package-debs for us
     runs-on: ubuntu-latest
     permissions:
       contents: read
