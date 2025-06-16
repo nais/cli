@@ -251,8 +251,8 @@ jobs:
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/scoop.json \
             > nais-cli.json
 
@@ -289,10 +289,10 @@ jobs:
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/homebrew.rb \
             > Formula/nais.rb
 
@@ -331,10 +331,10 @@ jobs:
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base32' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base32' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base32' hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base32' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base32' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base32' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base32' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base32' ../hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/nur.nix \
             > pkgs/nais-cli/default.nix
 
