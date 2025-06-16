@@ -80,8 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: archive-${{ matrix.os }}-${{ matrix.arch }}
-          path: |
-            nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
+          path: nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
 
   package-deb:
     runs-on: ubuntu-latest
@@ -104,6 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.arch }}
+          path: nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.arch }}.deb
 
   # Used by GitHub to determine if all checks have passed
   tell_github_checks_passed:
