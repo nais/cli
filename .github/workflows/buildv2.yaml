@@ -134,6 +134,8 @@ jobs:
           git tag ${{ needs.set-version.outputs.version }}
       - name: semver release script generate changelog
         run: echo TODO
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
       - name: Generate hashes
         id: hashes
         run: |
@@ -153,8 +155,6 @@ jobs:
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base32" --arg hash "$hash32" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
             done
           done
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
       - name: Upload hashes
         uses: actions/upload-artifact@v4
         with:
