@@ -27,6 +27,7 @@ report.xml
 bin/
 /nais
 dist/
+*.deb
 
 # Signing certificates on GHA
 nais.key
