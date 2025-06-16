@@ -30,7 +30,7 @@ run = "go vet ./..."
 [tasks.test]
 wait_for = ['fmt']
 description = "Run tests"
-run = "go tool github.com/onsi/ginkgo/v2/ginkgo -r --race --randomize-all --randomize-suites --fail-on-pending --fail-on-empty --keep-going --cover --coverprofile=cover.out --trace --junit-report=report.xml --github-output"
+run = "go test -v --race --cover --coverprofile=cover.out ./..."
 
 [tasks.fmt]
 description = "Format all go code using gofumpt"
