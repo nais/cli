@@ -140,8 +140,6 @@ jobs:
       - name: Generate hashes
         id: hashes
         run: |
-          # debug
-          ls *
           echo '{}' > hashes.json
           version="${{ needs.set-version.outputs.version }}"
 
@@ -169,14 +167,6 @@ jobs:
         with:
           name: hashes-json
           path: hashes.json
-      - name: Debug
-        run: |
-          echo "Hashes:"
-          cat hashes.json
-          echo "Checksums:"
-          cat checksums.txt
-          ls
-          tree
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -217,8 +207,6 @@ jobs:
           token_format: "access_token"
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
-        with:
-          install_components: beta
       - name: "Download arm64 deb artifacts"
         uses: actions/download-artifact@v4
         with:
@@ -231,7 +219,6 @@ jobs:
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
-          ls
           echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-arm64/nais-cli_${VERSION}_arm64.deb --location europe-north1
           echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-amd64/nais-cli_${VERSION}_amd64.deb --location europe-north1
 
