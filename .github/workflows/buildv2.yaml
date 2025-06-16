@@ -142,19 +142,18 @@ jobs:
         id: hashes
         run: |
           # debug
-          ls
-          find .
+          ls *
 
           for arch in amd64 arm64; do
-            # Generate hashes for deb
+            # Generate hashes for debs
             file="nais-cli_${{ needs.set-version.outputs.version }}_$arch.deb"
-            hash="$(nix-hash --type sha256 --flat "$file")"
+            hash="$(nix-hash --type sha256 --flat "./deb-$arch/$file")"
             echo "$hash  $file" >> checksums.txt
 
             # Generate hashes for archives
             for os in linux darwin windows; do
               file="nais-cli_${{ needs.set-version.outputs.version }}_$os_$arch.tar.gz"
-              hash16="$(nix-hash --type sha256 --flat "$file")"
+              hash16="$(nix-hash --type sha256 --flat "./archive-$os-$arch/$file")"
               echo "$hash16  $file" >> checksums.txt
 
               hash32=$(nix-hash --type sha256 --flat --base32 "$file")
@@ -186,14 +185,14 @@ jobs:
           generate_release_notes: true
           prerelease: true
           files: |
-            nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_linux_arm64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_darwin_amd64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_darwin_arm64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_windows_amd64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_windows_arm64.tar.gz
-            nais-cli_${{ needs.set-version.outputs.version }}_amd64.deb
-            nais-cli_${{ needs.set-version.outputs.version }}_arm64.deb
+            archive-linux-amd64/nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
+            archive-linux-arm64/nais-cli_${{ needs.set-version.outputs.version }}_linux_arm64.tar.gz
+            archive-darwin-amd64/nais-cli_${{ needs.set-version.outputs.version }}_darwin_amd64.tar.gz
+            archive-darwin-arm64/nais-cli_${{ needs.set-version.outputs.version }}_darwin_arm64.tar.gz
+            archive-windows-amd64/nais-cli_${{ needs.set-version.outputs.version }}_windows_amd64.tar.gz
+            archive-windows-arm64/nais-cli_${{ needs.set-version.outputs.version }}_windows_arm64.tar.gz
+            deb-amd64/nais-cli_${{ needs.set-version.outputs.version }}_amd64.deb
+            deb-arm64/nais-cli_${{ needs.set-version.outputs.version }}_arm64.deb
             checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
