@@ -219,8 +219,8 @@ jobs:
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
-          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-arm64/nais-cli_${VERSION}_arm64.deb --location europe-north1
-          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-amd64/nais-cli_${VERSION}_amd64.deb --location europe-north1
+          echo gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source deb-arm64/nais-cli_${VERSION}_arm64.deb --location europe-north1
+          echo gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source deb-amd64/nais-cli_${VERSION}_amd64.deb --location europe-north1
 
   release-scoop:
     needs:
