@@ -134,8 +134,6 @@ jobs:
       - name: Create tag
         run: |
           git tag ${{ needs.set-version.outputs.version }}
-      - name: semver release script generate changelog
-        run: echo TODO
       - name: Download artifacts
         uses: actions/download-artifact@v4
       - name: Generate hashes
