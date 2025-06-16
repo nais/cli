@@ -137,6 +137,9 @@ jobs:
       - name: Generate hashes
         id: hashes
         run: |
+          # debug
+          ls
+          find .
           for os in linux darwin windows; do
             for arch in amd64 arm64; do
               file=nais-cli_${{ needs.set-version.outputs.version }}_$os_$arch.tar.gz
