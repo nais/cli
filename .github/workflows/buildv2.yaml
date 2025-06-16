@@ -168,7 +168,7 @@ jobs:
       - name: Upload hashes
         uses: actions/upload-artifact@v4
         with:
-          name: hashes.json
+          name: hashes-json
           path: hashes.json
       - name: Debug
         run: |
@@ -234,8 +234,8 @@ jobs:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
           ls
-          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_arm64.deb --location europe-north1
-          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_amd64.deb --location europe-north1
+          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-arm64/nais-cli_${VERSION}_arm64.deb --location europe-north1
+          echo gcloud --project nais-io beta artifacts apt upload nais-ppa --quiet --source deb-amd64/nais-cli_${VERSION}_amd64.deb --location europe-north1
 
   release-scoop:
     needs:
@@ -259,15 +259,15 @@ jobs:
       - name: Download hashes
         uses: actions/download-artifact@v4
         with:
-          name: hashes.json
+          name: hashes-json
       - name: "Generate scoop manifest"
         run: |
           git clone "https://git:${{ steps.token.outputs.token }}@github.com/nais/scoop-bucket.git" repo
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_WINDOWS_ARM64__/$(jq '.windows.arm64.base16' hashes.json)/g" \
-            -e "s/__SHA_WINDOWS_AMD64__/$(jq '.windows.amd64.base16' hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_ARM64__/$(jq '.windows.arm64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_AMD64__/$(jq '.windows.amd64.base16' hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/scoop.json \
             > nais-cli.json
 
@@ -294,16 +294,20 @@ jobs:
           private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
           app-id: "${{ secrets.NAIS_APP_ID }}"
           repo: nais/homebrew-tap
+      - name: Download hashes
+        uses: actions/download-artifact@v4
+        with:
+          name: hashes-json
       - name: "Generate homebrew manifest"
         run: |
           git clone "https://git:${{ steps.token.outputs.token }}@github.com/nais/homebrew-tap.git" repo
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq '.linux.arm64.base16' hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq '.linux.amd64.base16' hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq '.darwin.arm64.base16' hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq '.darwin.amd64.base16' hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq '.linux.arm64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq '.linux.amd64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq '.darwin.arm64.base16' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq '.darwin.amd64.base16' hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/homebrew.rb \
             > Formula/nais.rb
 
@@ -332,16 +336,20 @@ jobs:
           repo: nais/nur
       - name: Prepare for releasing to NUR
         uses: DeterminateSystems/nix-installer-action@v17
+      - name: Download hashes
+        uses: actions/download-artifact@v4
+        with:
+          name: hashes-json
       - name: "Generate nur manifest"
         run: |
           git clone "https://git:${{ steps.token.outputs.token }}@github.com/nais/nur.git" repo
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq '.linux.arm64.base32' hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq '.linux.amd64.base32' hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq '.darwin.arm64.base32' hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq '.darwin.amd64.base32' hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq '.linux.arm64.base32' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq '.linux.amd64.base32' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq '.darwin.arm64.base32' hashes-json/hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq '.darwin.amd64.base32' hashes-json/hashes.json)/g" \
             ../.github/workflows/templates/nur.nix \
             > pkgs/nais-cli/default.nix
 
