@@ -3,7 +3,11 @@ package command
 import (
 	"context"
 	"fmt"
+	"maps"
+	"slices"
+	"strings"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/cli/writer"
 	"github.com/nais/cli/internal/naisapi"
@@ -80,13 +84,17 @@ func status(parentFlags *flag.Api) *cli.Command {
 						if len(failing) == 0 {
 							return "No failing workloads"
 						}
-						var failingStr string
+						style := lipgloss.NewStyle().Foreground(lipgloss.Color("9")).UnsetPadding()
+						failingStr := style.Render(fmt.Sprintf("%v failing workloads", len(failing))) + "\n"
 						for _, f := range failing {
 							failingStr += fmt.Sprintf("%s (%s): %s\n", f.Kind, f.Environment, f.Name)
 							if len(f.ErrorTypes) > 0 {
-								failingStr += fmt.Sprint(f.ErrorTypes) + "\n"
+								failingStr += formatErrorTypes(f.ErrorTypes)
+							} else {
+								failingStr += "Unknown failure\n"
 							}
 						}
+						return failingStr
 					}
 					return fmt.Sprint(value)
 				}))
@@ -96,4 +104,22 @@ func status(parentFlags *flag.Api) *cli.Command {
 			return w.Write(teams)
 		},
 	}
+}
+
+func formatErrorTypes(errorTypes []string) string {
+	texts := map[string]string{}
+	for _, et := range errorTypes {
+		switch et {
+		case "WorkloadStatusNoRunningInstances":
+			texts[et] = "No running instances"
+		default:
+			texts[et] = et
+		}
+	}
+
+	vals := maps.Values(texts)
+	ret := slices.Collect(vals)
+	slices.Sort(ret)
+
+	return strings.Join(ret, "\n")
 }
