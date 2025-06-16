@@ -63,7 +63,7 @@ go build \
 [tasks.package-deb]
 description = "Package the Nais CLI binary as a Debian package"
 wait_for = ['build']
-run = "export ARCH=$GOARCH; GOARCH= go tool github.com/goreleaser/nfpm/v2/cmd/nfpm package --packager deb --config .nfpm.yaml --target nais_${VERSION:-'local'}_${ARCH:-'amd64'}.deb"
+run = "export ARCH=$GOARCH; GOARCH= go tool github.com/goreleaser/nfpm/v2/cmd/nfpm package --packager deb --config .nfpm.yaml --target nais-cli_${VERSION:-'local'}_${ARCH:-'amd64'}.deb"
 
 [tasks.generate]
 description = "Generate GraphQL client code"
