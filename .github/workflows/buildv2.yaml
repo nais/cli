@@ -98,7 +98,7 @@ jobs:
       - uses: jdx/mise-action@v2
       - name: package deb
         run: |
-          ./script/completion.sh
+          ./script/completions.sh
           GOARCH="${{ matrix.arch }}" mise run package-deb
       - name: Upload deb
         uses: actions/upload-artifact@v4
