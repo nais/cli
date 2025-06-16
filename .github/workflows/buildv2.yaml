@@ -142,19 +142,28 @@ jobs:
           # debug
           ls
           find .
-          for os in linux darwin windows; do
-            for arch in amd64 arm64; do
-              file=nais-cli_${{ needs.set-version.outputs.version }}_$os_$arch.tar.gz
 
-              hash16=$(nix-hash --type sha256 --flat "$file")
-              hash32=$(nix-hash --type sha256 --flat --base32 "$file")
+          for arch in amd64 arm64; do
+            # Generate hashes for deb
+            file="nais-cli_${{ needs.set-version.outputs.version }}_$arch.deb"
+            hash="$(nix-hash --type sha256 --flat "$file")"
+            echo "$hash  $file" >> checksums.txt
 
+            # Generate hashes for archives
+            for os in linux darwin windows; do
+              file="nais-cli_${{ needs.set-version.outputs.version }}_$os_$arch.tar.gz"
+              hash16="$(nix-hash --type sha256 --flat "$file")"
               echo "$hash16  $file" >> checksums.txt
 
+              hash32=$(nix-hash --type sha256 --flat --base32 "$file")
+              # This is used by the external release jobs (nur, homebrew, scoop)
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base16" --arg hash "$hash16" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base32" --arg hash "$hash32" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
             done
           done
+
+          hash16=$(nix-hash --type sha256 --flat "$file")
+
       - name: Upload hashes
         uses: actions/upload-artifact@v4
         with:
@@ -183,6 +192,7 @@ jobs:
             nais-cli_${{ needs.set-version.outputs.version }}_windows_arm64.tar.gz
             nais-cli_${{ needs.set-version.outputs.version }}_amd64.deb
             nais-cli_${{ needs.set-version.outputs.version }}_arm64.deb
+            checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release-gar:
