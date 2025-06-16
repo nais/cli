@@ -65,7 +65,10 @@ jobs:
       - uses: jdx/mise-action@v2
       - name: build
         run: |
-          GOOS="${{ matrix.os }}" GOARCH="${{ matrix.arch }}" mise run build
+          export VERSION="${{ needs.set-version.outputs.version }}"
+          export GOOS="${{ matrix.os }}"
+          export GOARCH="${{ matrix.arch }}"
+          mise run build
           ./script/completions.sh
           tar -zcf nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz ./completions -C bin/ nais
       - name: Sign Windows binary
@@ -97,8 +100,10 @@ jobs:
       - uses: jdx/mise-action@v2
       - name: package deb
         run: |
+          export VERSION="${{ needs.set-version.outputs.version }}"
+          export GOARCH="${{ matrix.arch }}"
           ./script/completions.sh
-          GOARCH="${{ matrix.arch }}" mise run package-deb
+          mise run package-deb
       - name: Upload deb
         uses: actions/upload-artifact@v4
         with:
