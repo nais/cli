@@ -51,13 +51,6 @@ jobs:
         run: |
           mise run ${{ matrix.mise_target }}
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always() && matrix.mise_target == 'test'
-        with:
-          files: |
-            report.xml
-
   # Used by GitHub to determine if all checks have passed
   checks_passed:
     runs-on: ubuntu-latest
