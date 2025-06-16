@@ -269,7 +269,7 @@ jobs:
             ../.github/workflows/templates/scoop.json \
             > nais-cli.json
 
-          git commit -c user.name='naisbot' -c user.email='bot@nais.io' -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
+          git -c user.name='naisbot' -c user.email='bot@nais.io' commit -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
           echo git push
           cat nais-cli.json
 
@@ -309,7 +309,7 @@ jobs:
             ../.github/workflows/templates/homebrew.rb \
             > Formula/nais.rb
 
-          git commit -c user.name='naisbot' -c user.email='bot@nais.io' -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
+          git -c user.name='naisbot' -c user.email='bot@nais.io' commit -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
           echo git push
           cat Formula/nais.rb
 
@@ -351,6 +351,6 @@ jobs:
             ../.github/workflows/templates/nur.nix \
             > pkgs/nais-cli/default.nix
 
-          git commit -c user.name='naisbot' -c user.email='bot@nais.io' -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
+          git -c user.name='naisbot' -c user.email='bot@nais.io' commit -am "Bump nais-cli to ${{ needs.set-version.outputs.version }}"
           echo git push
           cat pkgs/nais-cli/default.nix
