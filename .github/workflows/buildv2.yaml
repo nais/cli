@@ -66,7 +66,7 @@ jobs:
       - name: build
         run: |
           GOOS="${{ matrix.os }}" GOARCH="${{ matrix.arch }}" mise run build
-          ./script/completion.sh
+          ./script/completions.sh
           tar -zcf nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz ./completions -C bin/ nais
       - name: Sign Windows binary
         if: ${{ matrix.os == 'windows' }}
