@@ -139,7 +139,7 @@ jobs:
               hash16=$(nix-hash --type sha256 --flat "$file")
               hash32=$(nix-hash --type sha256 --flat --base32 "$file")
 
-              echo "$hash16: $file" >> checksum.txt
+              echo "$hash16  $file" >> checksums.txt
 
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base16" --arg hash "$hash16" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
               jq --arg os "$os" --arg arch "$arch" --arg encoding "base32" --arg hash "$hash32" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
@@ -157,7 +157,7 @@ jobs:
           echo "Hashes:"
           cat hashes.json
           echo "Checksums:"
-          cat checksum.txt
+          cat checksums.txt
           ls
           tree
       - name: Create release
