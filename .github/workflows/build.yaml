@@ -44,6 +44,8 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: jdx/mise-action@v2
+        env:
+          MISE_ENV: ${{ matrix.mise_target }}
 
       - name: mise run ${{ matrix.mise_target }}
         run: |
