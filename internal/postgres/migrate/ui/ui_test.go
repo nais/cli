@@ -1,10 +1,12 @@
 package ui_test
 
 import (
-	"github.com/nais/cli/internal/option"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"slices"
+	"strings"
+	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/nais/cli/internal/option"
 	"github.com/nais/cli/internal/postgres/migrate/ui"
 )
 
@@ -17,6 +19,7 @@ func (f *fakeTextInput) Show(_ ...string) (string, error) {
 }
 
 type fakeTextSelector struct {
+	t        *testing.T
 	selected string
 	options  []string
 }
@@ -26,93 +29,192 @@ func (f *fakeTextSelector) Show(_ ...string) (string, error) {
 }
 
 func (f *fakeTextSelector) WithOptions(options []string) ui.Selector {
-	Expect(options).To(ContainElement(ContainSubstring(f.selected)))
+	if !slices.ContainsFunc(options, func(e string) bool { return strings.Contains(e, f.selected) }) {
+		f.t.Helper()
+		f.t.Fatalf("selected value not in options, got %q, options: %#v", f.selected, options)
+	}
 	f.options = options
 	return f
 }
 
-var _ = Describe("Ui", func() {
-	Context("AskForDiskSize", func() {
-		DescribeTable("when source has", func(source option.Option[int], enteredValue string, expected option.Option[int]) {
-			ui.TextInput = &fakeTextInput{text: enteredValue}
-			result := ui.AskForDiskSize(source)()
-			Expect(result).To(Equal(expected))
+func TestUIAskForDiskSize(t *testing.T) {
+	tests := map[string]struct {
+		source       option.Option[int]
+		enteredValue string
+		expected     option.Option[int]
+	}{
+		"source has value and user presses Enter": {
+			source:       option.Some(100),
+			enteredValue: "",
+			expected:     option.None[int](),
 		},
-			Entry("a value and user presses Enter", option.Some(100), "", option.None[int]()),
-			Entry("a value and user types in 200", option.Some(100), "200", option.Some(200)),
-			Entry("no value and user presses Enter", option.None[int](), "", option.None[int]()),
-			Entry("no value and user types in 200", option.None[int](), "200", option.Some(200)),
-		)
-	})
-
-	Context("AskForDiskAutoresize", func() {
-		DescribeTable("when source has", func(source option.Option[bool], selectedValue string, expected option.Option[bool]) {
-			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
-			result := ui.AskForDiskAutoresize(source)()
-			Expect(result).To(Equal(expected))
+		"source has value and user types in 200": {
+			source:       option.Some(100),
+			enteredValue: "200",
+			expected:     option.Some(200),
 		},
-			Entry("true and user presses Enter", option.Some(true), "Same as source (true)", option.Some(true)),
-			Entry("true and user selects false", option.Some(true), "false", option.Some(false)),
-			Entry("false and user presses Enter", option.Some(false), "Same as source (false)", option.Some(false)),
-			Entry("false and user selects true", option.Some(false), "true", option.Some(true)),
-			Entry("unset and user presses Enter", option.None[bool](), "Same as source (false)", option.Some(false)),
-			Entry("unset and user selects true", option.None[bool](), "true", option.Some(true)),
-		)
-	})
+		"source has no value and user presses Enter": {
+			source:       option.None[int](),
+			enteredValue: "",
+			expected:     option.None[int](),
+		},
+		"source has no value and user types in 200": {
+			source:       option.None[int](),
+			enteredValue: "200",
+			expected:     option.Some(200),
+		},
+	}
 
-	Context("AskForTier", func() {
-		DescribeTable("when source has a value and", func(selectedValue string, expected option.Option[string]) {
-			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ui.TextInput = &fakeTextInput{text: test.enteredValue}
+			result := ui.AskForDiskSize(test.source)()
+			if result != test.expected {
+				t.Errorf("expected %v, got %v", test.expected, result)
+			}
+		})
+	}
+}
+
+func TestUIAskForDiskAutoresize(t *testing.T) {
+	tests := map[string]struct {
+		source        option.Option[bool]
+		selectedValue string
+		expected      option.Option[bool]
+	}{
+		"source true and user presses Enter": {
+			source:        option.Some(true),
+			selectedValue: "Same as source (true)",
+			expected:      option.Some(true),
+		},
+		"source true and user selects false": {
+			source:        option.Some(true),
+			selectedValue: "false",
+			expected:      option.Some(false),
+		},
+		"source false and user presses Enter": {
+			source:        option.Some(false),
+			selectedValue: "Same as source (false)",
+			expected:      option.Some(false),
+		},
+		"source false and user selects true": {
+			source:        option.Some(false),
+			selectedValue: "true",
+			expected:      option.Some(true),
+		},
+		"source unset and user presses Enter": {
+			source:        option.None[bool](),
+			selectedValue: "Same as source (false)",
+			expected:      option.Some(false),
+		},
+		"source unset and user selects true": {
+			source:        option.None[bool](),
+			selectedValue: "true",
+			expected:      option.Some(true),
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ui.TextSelector = &fakeTextSelector{t: t, selected: test.selectedValue}
+			result := ui.AskForDiskAutoresize(test.source)()
+			if result != test.expected {
+				t.Errorf("expected %v, got %v", test.expected, result)
+			}
+		})
+	}
+}
+
+func TestUIAskForTier_when_source_has_a_value_and(t *testing.T) {
+	tests := map[string]struct {
+		selectedValue string
+		expected      option.Option[string]
+	}{
+		"user presses Enter": {
+			selectedValue: "Same as source (db-f1-micro)",
+			expected:      option.None[string](),
+		},
+		"user selects db-custom-2-5120": {
+			selectedValue: "db-custom-2-5120",
+			expected:      option.Some("db-custom-2-5120"),
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ui.TextSelector = &fakeTextSelector{t: t, selected: test.selectedValue}
 			result := ui.AskForTier("db-f1-micro")()
-			Expect(result).To(Equal(expected))
+			if result != test.expected {
+				t.Errorf("expected %v, got %v", test.expected, result)
+			}
+		})
+	}
+}
+
+func TestUIAskForTier_user_selects_Other_and_enters_a_value_it_returns_the_entered_value(t *testing.T) {
+	ui.TextSelector = &fakeTextSelector{t: t, selected: "Other"}
+	ui.TextInput = &fakeTextInput{text: "db-custom-16-8192"}
+	result := ui.AskForTier("db-f1-micro")()
+	expected := option.Some("db-custom-16-8192")
+
+	if result != expected {
+		t.Errorf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestUIAskForTier_source_value_is_in_preset_list_of_options_it_is_only_listed_once(t *testing.T) {
+	f := &fakeTextSelector{t: t, selected: "db-custom-2-5120"}
+	ui.TextSelector = f
+	ui.AskForTier("db-custom-2-5120")()
+	if !slices.Contains(f.options, "Same as source (db-custom-2-5120)") {
+		t.Errorf("expected options to contain 'Same as source (db-custom-2-5120)', got %v", f.options)
+	}
+	if slices.Contains(f.options, "db-custom-2-5120") {
+		t.Errorf("expected options to not contain 'db-custom-2-5120', got %v", f.options)
+	}
+}
+
+func TestUIAskForType(t *testing.T) {
+	tests := map[string]struct {
+		source        string
+		selectedValue string
+		expected      option.Option[string]
+	}{
+		"same as source": {
+			source:        "POSTGRES_13",
+			selectedValue: "Same as source (POSTGRES_13)",
+			expected:      option.None[string](),
 		},
-			Entry("user presses Enter", "Same as source (db-f1-micro)", option.None[string]()),
-			Entry("user selects db-custom-2-5120", "db-custom-2-5120", option.Some("db-custom-2-5120")),
-		)
-
-		When("user selects Other and enters a value", func() {
-			It("returns the entered value", func() {
-				ui.TextSelector = &fakeTextSelector{selected: "Other"}
-				ui.TextInput = &fakeTextInput{text: "db-custom-16-8192"}
-				result := ui.AskForTier("db-f1-micro")()
-				Expect(result).To(Equal(option.Some("db-custom-16-8192")))
-			})
-		})
-
-		When("source value is in preset list of options", func() {
-			It("is only listed once", func() {
-				f := &fakeTextSelector{selected: "db-custom-2-5120"}
-				ui.TextSelector = f
-				ui.AskForTier("db-custom-2-5120")()
-				Expect(f.options).To(ContainElement("Same as source (db-custom-2-5120)"))
-				Expect(f.options).ToNot(ContainElement("db-custom-2-5120"))
-			})
-		})
-	})
-
-	Context("AskForType", func() {
-		DescribeTable("", func(source string, selectedValue string, expected option.Option[string]) {
-			ui.TextSelector = &fakeTextSelector{selected: selectedValue}
-			result := ui.AskForType(source)()
-			Expect(result).To(Equal(expected))
+		"selects POSTGRES_14": {
+			source:        "POSTGRES_13",
+			selectedValue: "POSTGRES_14",
+			expected:      option.Some("POSTGRES_14"),
 		},
-			EntryDescription("source: %s, selected: %s => %v"),
-			Entry(nil, "POSTGRES_13", "Same as source (POSTGRES_13)", option.None[string]()),
-			Entry(nil, "POSTGRES_13", "POSTGRES_14", option.Some("POSTGRES_14")),
-		)
+	}
 
-		When("source version is POSTGRES_14", func() {
-			It("only lists versions 15 and 16 and 17", func() {
-				f := &fakeTextSelector{selected: "POSTGRES_15"}
-				ui.TextSelector = f
-				ui.AskForType("POSTGRES_14")()
-				Expect(f.options).To(ContainElement("Same as source (POSTGRES_14)"))
-				Expect(f.options).To(ContainElement("POSTGRES_15"))
-				Expect(f.options).To(ContainElement("POSTGRES_16"))
-				Expect(f.options).To(ContainElement("POSTGRES_17"))
-				Expect(f.options).To(HaveLen(4))
-				Expect(f.options).ToNot(ContainElement("POSTGRES_13"))
-			})
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			ui.TextSelector = &fakeTextSelector{t: t, selected: test.selectedValue}
+			result := ui.AskForType(test.source)()
+			if result != test.expected {
+				t.Errorf("expected %v, got %v", test.expected, result)
+			}
 		})
-	})
-})
+	}
+}
+
+func TestUIAskForType_source_is_POSTGRES_14_only_list_newer_versions(t *testing.T) {
+	f := &fakeTextSelector{selected: "POSTGRES_15"}
+	ui.TextSelector = f
+	ui.AskForType("POSTGRES_14")()
+
+	expected := []string{
+		"Same as source (POSTGRES_14)",
+		"POSTGRES_17",
+		"POSTGRES_16",
+		"POSTGRES_15",
+	}
+	if diff := cmp.Diff(f.options, expected); diff != "" {
+		t.Errorf("options mismatch (-got +want):\n%s", diff)
+	}
+}

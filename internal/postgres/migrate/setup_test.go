@@ -3,22 +3,20 @@ package migrate_test
 import (
 	"context"
 	"fmt"
+	"strings"
+	"testing"
 
 	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 	"github.com/nais/cli/internal/postgres/migrate/ui"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/fake"
 	ctrl_fake "sigs.k8s.io/controller-runtime/pkg/client/fake"
-
-	"github.com/nais/cli/internal/postgres/migrate"
 )
 
 const namespace = "test-namespace"
@@ -35,41 +33,40 @@ const (
 	targetTier     = "target-tier"
 )
 
-var _ = Describe("Migrator", func() {
-	var err error
-	var scheme *runtime.Scheme
-	var clientBuilder *ctrl_fake.ClientBuilder
-	var clientset *fake.Clientset
+func TestMigrator_Setup(t *testing.T) {
+	test := map[string]struct {
+		appName     string
+		errContains string
+	}{
+		"return an error if application is not found": {
+			appName:     "no-such-app",
+			errContains: "not found in namespace",
+		},
+		"return an error if application has no sql instance": {
+			appName:     "no-instance",
+			errContains: "no sql instances found in app spec",
+		},
+		"return an error if migration config already exists": {
+			appName:     "already-migrating",
+			errContains: "migration config already exists for this application",
+		},
+	}
 
-	var cfg config.Config
-	var source config.InstanceConfig
-	var target config.InstanceConfig
-	var migratorBuilder func() *migrate.Migrator
-	var m *migrate.Migrator
+	for name, tc := range test {
+		t.Run(name, func(t *testing.T) {
+			scheme, err := liberatorscheme.All()
+			if err != nil {
+				t.Fatalf("failed to create scheme: %v", err)
+			}
+			clientBuilder := ctrl_fake.NewClientBuilder().WithScheme(scheme)
+			clientset := fake.NewClientset()
 
-	BeforeEach(func() {
-		scheme, err = liberatorscheme.All()
-		Expect(err).ToNot(HaveOccurred())
-		clientBuilder = ctrl_fake.NewClientBuilder().WithScheme(scheme)
-		clientset = fake.NewClientset()
-
-		source = config.InstanceConfig{}
-		target = config.InstanceConfig{InstanceName: option.Some(targetName)}
-
-		cfg = config.Config{
-			Namespace: namespace,
-			Source:    source,
-			Target:    target,
-		}
-
-		migratorBuilder = func() *migrate.Migrator {
-			client := clientBuilder.Build()
-			return migrate.NewMigrator(client, clientset, cfg, true, true)
-		}
-	})
-
-	Context("Setup", func() {
-		BeforeEach(func() {
+			cfg := config.Config{
+				Namespace: namespace,
+				Source:    config.InstanceConfig{},
+				Target:    config.InstanceConfig{InstanceName: option.Some(targetName)},
+				AppName:   tc.appName,
+			}
 			noInstanceApp := &nais_io_v1alpha1.Application{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "no-instance",
@@ -112,185 +109,214 @@ var _ = Describe("Migrator", func() {
 			}
 
 			clientBuilder.WithObjects(noInstanceApp, alreadyMigratingApp, app, cfgMap)
-		})
 
-		It("should return an error if application is not found", func() {
-			cfg.AppName = "no-such-app"
-			m = migratorBuilder()
-			err := m.Setup(context.Background())
-			Expect(err).To(HaveOccurred())
-		})
+			migrator := migrate.NewMigrator(clientBuilder.Build(), clientset, cfg, true, true)
 
-		It("should return an error if application has no sql instance", func() {
-			cfg.AppName = "no-instance"
-			m = migratorBuilder()
-			err := m.Setup(context.Background())
-			Expect(err).To(HaveOccurred())
-		})
-
-		It("should return an error if migration config already exists", func() {
-			cfg.AppName = "already-migrating"
-			m = migratorBuilder()
-			err := m.Setup(context.Background())
-			Expect(err).To(HaveOccurred())
-		})
-	})
-
-	Context("ConfigureTarget", func() {
-		DescribeTableSubtree("when source config has", func(source config.InstanceConfig) {
-			BeforeEach(func() {
-				cfg.Source = source
-
-				ui.AskForDiskAutoresize = func(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
-					return func() option.Option[bool] {
-						return sourceDiskAutoresize
-					}
+			err = migrator.Setup(context.Background())
+			if tc.errContains != "" {
+				if err == nil {
+					t.Errorf("expected error containing %q, got nil", tc.errContains)
+				} else if !strings.Contains(err.Error(), tc.errContains) {
+					t.Errorf("expected error to contain %q, got %q", tc.errContains, err.Error())
 				}
-				ui.AskForDiskSize = func(sourceDiskSize option.Option[int]) func() option.Option[int] {
-					return func() option.Option[int] {
-						return sourceDiskSize
-					}
+			} else {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
 				}
-				ui.AskForTier = func(sourceTier string) func() option.Option[string] {
-					return func() option.Option[string] {
-						return option.Some(sourceTier)
-					}
-				}
-				ui.AskForType = func(sourceType string) func() option.Option[string] {
-					return func() option.Option[string] {
-						return option.Some(sourceType)
-					}
-				}
-			})
+			}
+		})
+	}
+}
 
-			When("instance type", func() {
-				It("target type is set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Type: option.Some(targetType)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.Type).To(Equal(option.Some(targetType)))
-				})
-				It("target type is not set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.Type).To(Equal(option.None[string]()))
-				})
-			})
-
-			When("instance tier", func() {
-				It("target tier is set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Tier: option.Some(targetTier)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.Tier.String()).To(Equal(targetTier))
-				})
-				It("target tier is not set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.Tier).To(Equal(option.None[string]()))
-				})
-			})
-
-			When("instance disk size", func() {
-				It("target disk size is set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskSize.String()).To(Equal(fmt.Sprintf("%v", targetDiskSize)))
-				})
-				It("target disk size is not set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
-				})
-			})
-
-			When("instance disk autoresize", func() {
-				It("target disk autoresize is set to false and target disk size is set", func() {
-					cfg.Target = config.InstanceConfig{
-						InstanceName:   option.Some(targetName),
-						DiskAutoresize: option.Some(false),
-						DiskSize:       option.Some(targetDiskSize),
-					}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("false"))
-					Expect(cfg.Target.DiskSize).To(Equal(option.Some(targetDiskSize)))
-				})
-
-				It("target disk autoresize is set to false and target disk size is not set", func() {
-					cfg.Target = config.InstanceConfig{
-						InstanceName:   option.Some(targetName),
-						DiskAutoresize: option.Some(false),
-					}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("false"))
-					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
-				})
-
-				It("target disk autoresize is set to true and target disk size is set", func() {
-					cfg.Target = config.InstanceConfig{
-						InstanceName:   option.Some(targetName),
-						DiskAutoresize: option.Some(true),
-						DiskSize:       option.Some(targetDiskSize),
-					}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("true"))
-				})
-
-				It("target disk autoresize is set to true and target disk size is not set", func() {
-					cfg.Target = config.InstanceConfig{
-						InstanceName:   option.Some(targetName),
-						DiskAutoresize: option.Some(true),
-					}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize.String()).To(Equal("true"))
-				})
-
-				It("target disk autoresize is not set and target disk size is set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize).To(Equal(option.None[bool]()))
-					Expect(cfg.Target.DiskSize).To(Equal(option.Some(targetDiskSize)))
-				})
-				It("target disk autoresize is not set and target disk size is not set", func() {
-					cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
-					m = migratorBuilder()
-					m.ConfigureTarget()
-					Expect(cfg.Target.DiskAutoresize).To(Equal(option.None[bool]()))
-					Expect(cfg.Target.DiskSize).To(Equal(option.None[int]()))
-				})
-			})
+func TestConfigureTarget_instance_type(t *testing.T) {
+	tests := map[string]struct {
+		instance config.InstanceConfig
+	}{
+		"only default values": {
+			instance: config.InstanceConfig{InstanceName: option.Some(sourceName)},
 		},
-			Entry("only default values", config.InstanceConfig{InstanceName: option.Some(sourceName)}),
-			Entry("all values", config.InstanceConfig{
-				InstanceName:   option.Some(sourceName),
-				Tier:           option.Some(sourceTier),
-				DiskAutoresize: option.Some(true),
-				DiskSize:       option.Some(sourceDiskSize),
-				Type:           option.Some(sourceType),
-			}),
-			Entry("all values, no autoresize", config.InstanceConfig{
+		"all values, no autoresize": {
+			instance: config.InstanceConfig{
 				InstanceName:   option.Some(sourceName),
 				Tier:           option.Some(sourceTier),
 				DiskAutoresize: option.None[bool](),
 				DiskSize:       option.Some(sourceDiskSize),
 				Type:           option.Some(sourceType),
-			}),
-			Entry("autoresize, no disk size", config.InstanceConfig{
+			},
+		},
+		"autoresize, no disk size": {
+			instance: config.InstanceConfig{
 				InstanceName:   option.Some(sourceName),
 				Tier:           option.Some(sourceTier),
 				DiskAutoresize: option.Some(true),
 				DiskSize:       option.None[int](),
 				Type:           option.Some(sourceType),
-			}),
-		)
-	})
-})
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			cfg := config.Config{
+				Namespace: namespace,
+				Source:    tc.instance,
+			}
+			scheme, err := liberatorscheme.All()
+			if err != nil {
+				t.Fatalf("failed to create scheme: %v", err)
+			}
+			clientBuilder := ctrl_fake.NewClientBuilder().WithScheme(scheme)
+			clientset := fake.NewClientset()
+			migratorBuilder := func() *migrate.Migrator {
+				client := clientBuilder.Build()
+				return migrate.NewMigrator(client, clientset, cfg, true, true)
+			}
+
+			ui.AskForDiskAutoresize = func(sourceDiskAutoresize option.Option[bool]) func() option.Option[bool] {
+				return func() option.Option[bool] {
+					return sourceDiskAutoresize
+				}
+			}
+			ui.AskForDiskSize = func(sourceDiskSize option.Option[int]) func() option.Option[int] {
+				return func() option.Option[int] {
+					return sourceDiskSize
+				}
+			}
+			ui.AskForTier = func(sourceTier string) func() option.Option[string] {
+				return func() option.Option[string] {
+					return option.Some(sourceTier)
+				}
+			}
+			ui.AskForType = func(sourceType string) func() option.Option[string] {
+				return func() option.Option[string] {
+					return option.Some(sourceType)
+				}
+			}
+
+			t.Run("instance type target type is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Type: option.Some(targetType)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.Type.String() != targetType {
+					t.Errorf("expected target type %q, got %q", targetType, cfg.Target.Type.String())
+				}
+			})
+
+			t.Run("instance type target type is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.Type != option.None[string]() {
+					t.Errorf("expected target type to be None, got %q", cfg.Target.Type.String())
+				}
+			})
+
+			t.Run("instance tier target tier is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), Tier: option.Some(targetTier)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.Tier.String() != targetTier {
+					t.Errorf("expected target tier %q, got %q", targetTier, cfg.Target.Tier.String())
+				}
+			})
+			t.Run("instance tier target tier is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.Tier != option.None[string]() {
+					t.Errorf("expected target tier to be None, got %q", cfg.Target.Tier.String())
+				}
+			})
+			t.Run("instance disk size target disk size is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskSize.String() != fmt.Sprintf("%v", targetDiskSize) {
+					t.Errorf("expected target disk size %d, got %s", targetDiskSize, cfg.Target.DiskSize.String())
+				}
+			})
+			t.Run("instance disk size target disk size is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskSize != option.None[int]() {
+					t.Errorf("expected target disk size to be None, got %s", cfg.Target.DiskSize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is set to false and target disk size is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{
+					InstanceName:   option.Some(targetName),
+					DiskAutoresize: option.Some(false),
+					DiskSize:       option.Some(targetDiskSize),
+				}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize.String() != "false" {
+					t.Errorf("expected target disk autoresize to be false, got %s", cfg.Target.DiskAutoresize.String())
+				}
+				if cfg.Target.DiskSize.String() != fmt.Sprintf("%v", targetDiskSize) {
+					t.Errorf("expected target disk size %d, got %s", targetDiskSize, cfg.Target.DiskSize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is set to false and target disk size is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{
+					InstanceName:   option.Some(targetName),
+					DiskAutoresize: option.Some(false),
+				}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize.String() != "false" {
+					t.Errorf("expected target disk autoresize to be false, got %s", cfg.Target.DiskAutoresize.String())
+				}
+				if cfg.Target.DiskSize != option.None[int]() {
+					t.Errorf("expected target disk size to be None, got %s", cfg.Target.DiskSize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is set to true and target disk size is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{
+					InstanceName:   option.Some(targetName),
+					DiskAutoresize: option.Some(true),
+					DiskSize:       option.Some(targetDiskSize),
+				}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize.String() != "true" {
+					t.Errorf("expected target disk autoresize to be true, got %s", cfg.Target.DiskAutoresize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is set to true and target disk size is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{
+					InstanceName:   option.Some(targetName),
+					DiskAutoresize: option.Some(true),
+				}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize.String() != "true" {
+					t.Errorf("expected target disk autoresize to be true, got %s", cfg.Target.DiskAutoresize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is not set and target disk size is set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName), DiskSize: option.Some(targetDiskSize)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize != option.None[bool]() {
+					t.Errorf("expected target disk autoresize to be None, got %s", cfg.Target.DiskAutoresize.String())
+				}
+				if cfg.Target.DiskSize.String() != fmt.Sprintf("%v", targetDiskSize) {
+					t.Errorf("expected target disk size %d, got %s", targetDiskSize, cfg.Target.DiskSize.String())
+				}
+			})
+			t.Run("instance disk autoresize target disk autoresize is not set and target disk size is not set", func(t *testing.T) {
+				cfg.Target = config.InstanceConfig{InstanceName: option.Some(targetName)}
+				m := migratorBuilder()
+				m.ConfigureTarget()
+				if cfg.Target.DiskAutoresize != option.None[bool]() {
+					t.Errorf("expected target disk autoresize to be None, got %s", cfg.Target.DiskAutoresize.String())
+				}
+				if cfg.Target.DiskSize != option.None[int]() {
+					t.Errorf("expected target disk size to be None, got %s", cfg.Target.DiskSize.String())
+				}
+			})
+		})
+	}
+}
