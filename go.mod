@@ -33,7 +33,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
-	github.com/suessflorian/gqlfetch v0.6.0
+	github.com/suessflorian/gqlfetch v0.6.1-0.20250207011703-5b7aca875be9
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/zalando/go-keyring v0.2.6
 	github.com/zitadel/oidc/v3 v3.38.1
@@ -138,6 +138,7 @@ require (
 	github.com/prometheus/common v0.64.0 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/savioxavier/termlink v1.4.2 // indirect
 	github.com/securego/gosec/v2 v2.22.4 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
