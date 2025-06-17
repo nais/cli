@@ -8,10 +8,10 @@
   stdenvNoCC,
 }: let
   shaMap = {
-    x86_64-linux = "__SHA_LINUX_AMD64__";
-    aarch64-linux = "__SHA_LINUX_ARM64__";
-    x86_64-darwin = "__SHA_DARWIN_AMD64__";
-    aarch64-darwin = "__SHA_DARWIN_ARM64__";
+    x86_64-linux = "__SHA_LINUX_AMD64_BASE32__";
+    aarch64-linux = "__SHA_LINUX_ARM64_BASE32__";
+    x86_64-darwin = "__SHA_DARWIN_AMD64_BASE32__";
+    aarch64-darwin = "__SHA_DARWIN_ARM64_BASE32__";
   };
 
   urlMap = {
