@@ -266,7 +266,7 @@ jobs:
           name: hashes-json
       - name: "Generate manifest"
         run: |
-          git clone "https://git:${{ steps.token.outputs.token }}@github.com/nais/${{ matrix.target.repo }}" repo
+          git clone "https://git:${{ steps.token.outputs.token }}@github.com/${{ matrix.target.repo }}" repo
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
