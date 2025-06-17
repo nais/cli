@@ -225,13 +225,7 @@ jobs:
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
-          # debug
-          ls *
-
-          mv deb-arm64/nais-cli_${VERSION}_arm64.deb .
           gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_arm64.deb --location europe-north1
-
-          mv deb-amd64/nais-cli_${VERSION}_amd64.deb .
           gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_amd64.deb --location europe-north1
 
   release-external-repos:
@@ -276,16 +270,16 @@ jobs:
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64_BASE32__/$(jq -r '.darwin.amd64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64_BASE32__/$(jq -r '.darwin.arm64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64_BASE32__/$(jq -r '.linux.amd64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64_BASE32__/$(jq -r '.linux.arm64.base32' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64_BASE32__/$(jq -r '.darwin.amd64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64_BASE32__/$(jq -r '.darwin.arm64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64_BASE32__/$(jq -r '.linux.amd64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64_BASE32__/$(jq -r '.linux.arm64.base32' ../hashes.json)/g" \
             "../.github/workflows/templates/${{ matrix.target.template }}" \
             > "${{ matrix.target.file }}"
 
