@@ -225,6 +225,9 @@ jobs:
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
+          # debug
+          ls *
+
           mv deb-arm64/nais-cli_${VERSION}_arm64.deb .
           gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_arm64.deb --location europe-north1
 
