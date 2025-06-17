@@ -53,7 +53,17 @@ fi
 [tasks.build]
 description = "Build the Nais CLI binary"
 wait_for = ['fmt']
-run = "go build -installsuffix cgo -o bin/nais ./"
+run = """
+go build \
+  -installsuffix cgo \
+  -ldflags "-s -w -X github.com/nais/cli/internal/version.Version=${VERSION:-local} -X github.com/nais/cli/internal/version.Commit=$(git rev-parse --short HEAD)" \
+  -o bin/nais ./
+"""
+
+[tasks.package-deb]
+description = "Package the Nais CLI binary as a Debian package"
+depends = ['build']
+run = "export ARCH=$GOARCH; GOARCH= go tool github.com/goreleaser/nfpm/v2/cmd/nfpm package --packager deb --config .nfpm.yaml --target nais-cli_${VERSION:-'local'}_${ARCH:-'amd64'}.deb"
 
 [tasks.generate]
 description = "Generate GraphQL client code"

@@ -1,0 +1,38 @@
+# This is an example nfpm configuration file.
+# Make sure to check the documentation at https://nfpm.goreleaser.com
+#
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+name: "nais"
+arch: "${ARCH}"
+platform: "linux"
+version: "${VERSION}"
+section: "default"
+priority: "extra"
+
+maintainer: Nav / Nais team
+description: |
+  Command-line interface for Nais
+vendor: "Nav / Nais team"
+homepage: "https://github.com/nais/cli"
+license: "MIT"
+contents:
+  - src: ./completions/nais.bash
+    dst: /usr/share/bash-completion/completions/nais
+    file_info:
+      mode: 0644
+  - src: ./completions/nais.fish
+    dst: /usr/share/fish/vendor_completions.d/nais.fish
+    file_info:
+      mode: 0644
+  - src: ./completions/nais.zsh
+    dst: /usr/share/zsh/vendor-completions/_nais
+    file_info:
+      mode: 0644
+  - src: ./bin/nais
+    dst: /usr/bin/nais
+    file_info:
+      mode: 0755
