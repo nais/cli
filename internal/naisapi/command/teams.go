@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/cli/writer"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
-	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/savioxavier/termlink"
 )
 
@@ -43,12 +42,12 @@ func teams(parentFlags *flag.Api) *cli.Command {
 					})
 				}
 			} else {
-				ret, err := naisapi.GetUserTeams(ctx, flags)
+				userTeams, err := naisapi.GetUserTeams(ctx)
 				if err != nil {
 					return err
 				}
 
-				for _, t := range ret.Me.(*gql.UserTeamsMeUser).Teams.Nodes {
+				for _, t := range userTeams {
 					teams = append(teams, team{
 						Slug:        t.Team.Slug,
 						Description: t.Team.Purpose,

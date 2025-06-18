@@ -12,7 +12,6 @@ import (
 	"github.com/nais/cli/internal/cli/writer"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
-	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/savioxavier/termlink"
 )
 
@@ -44,7 +43,7 @@ func status(parentFlags *flag.Api) *cli.Command {
 				return err
 			}
 
-			for _, t := range ret.Me.(*gql.TeamStatusMeUser).Teams.Nodes {
+			for _, t := range ret {
 				n := team{
 					Slug:    t.Team.Slug,
 					Total:   t.Team.Total.PageInfo.TotalCount,
@@ -74,7 +73,7 @@ func status(parentFlags *flag.Api) *cli.Command {
 			if flags.Output == "json" {
 				w = writer.NewJSON(out, true)
 			} else {
-				tbl := writer.NewTable(out, writer.WithColumns("Slug", "Total", "Not Nais", "Failing"), writer.WithFormatter(func(row, column int, value any) string {
+				w = writer.NewTable(out, writer.WithColumns("Slug", "Total", "Not Nais", "Failing"), writer.WithFormatter(func(row, column int, value any) string {
 					switch column {
 					case 0:
 						slug := fmt.Sprint(value)
@@ -98,7 +97,6 @@ func status(parentFlags *flag.Api) *cli.Command {
 					}
 					return fmt.Sprint(value)
 				}))
-				w = tbl
 			}
 
 			return w.Write(teams)
