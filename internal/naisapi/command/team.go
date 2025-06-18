@@ -110,6 +110,16 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 		Title:        "Add a member to a team.",
 		Description:  "Only team owners can add team members.",
 		ValidateFunc: cli.ValidateExactArgs(2),
+		Examples: []cli.Example{
+			{
+				Description: "Add some-user@example.com to the my-team team as a regular member.",
+				Command:     "my-team some-user@example.com",
+			},
+			{
+				Description: "Add some-user@example.com to the my-team team as a team owner.",
+				Command:     "my-team some-user@example.com -o",
+			},
+		},
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
 			{Name: "member", Required: true},
@@ -193,6 +203,12 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 		Title:        "Remove a member from a team.",
 		Description:  "Only team owners can remove members from a team.",
 		ValidateFunc: cli.ValidateExactArgs(2),
+		Examples: []cli.Example{
+			{
+				Description: "Remove some-user@example.com from the my-team team.",
+				Command:     "my-team some-user@example.com",
+			},
+		},
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
 			{Name: "member", Required: true},

@@ -58,7 +58,24 @@ type Command struct {
 	// StickyFlags sets up flags that is persistent across all subcommands.
 	StickyFlags any
 
+	// Examples are examples of how to use the command. The examples are shown in the help output in the added order.
+	Examples []Example
+
 	cobraCmd *cobra.Command
+}
+
+type Example struct {
+	// Description is a description of the example, shown in the help output. It should be a short, concise description
+	// of what the example does.
+	//
+	// Example: "List all members of the team."
+	Description string
+
+	// Command is the command string to be used as an example. The command name itself will be automatically prepended
+	// to this string, and should not be included in the Command field.
+	//
+	// Example: "<arg> --flag value" will result in an example that looks like "nais command-name <arg> --flag value"
+	Command string
 }
 
 // use generates a normalized use string for the internal Cobra command.
@@ -124,17 +141,47 @@ func long(title, description string) string {
 	return strings.TrimRight(title, ".") + "\n\n" + description
 }
 
-func (c *Command) init(out Output) {
+func (c *Command) example(prefix string) (string, error) {
+	if len(c.Examples) == 0 {
+		return "", nil
+	}
+
+	const indent = "  "
+
+	var sb strings.Builder
+	for _, ex := range c.Examples {
+		desc := strings.TrimSpace(ex.Description)
+		if desc == "" {
+			return "", fmt.Errorf("example description cannot be empty: %+v", ex)
+		}
+
+		cmd := prefix + " " + strings.TrimSpace(ex.Command)
+		sb.WriteString(indent + "# " + desc + "\n")
+		sb.WriteString(indent + "$ " + cmd + "\n\n")
+	}
+
+	return indent + strings.TrimSpace(sb.String()), nil
+}
+
+func (c *Command) init(cmd string, out Output) {
 	if strings.Contains(c.Name, " ") {
 		panic(fmt.Sprintf("command name cannot contain spaces: %v", c.Name))
 	}
+
+	cmd = cmd + " " + c.Name
 
 	short, err := short(c.Title)
 	if err != nil {
 		panic(fmt.Sprintf("invalid title for command %q: %v", c.Name, err))
 	}
 
+	example, err := c.example(cmd)
+	if err != nil {
+		panic(fmt.Sprintf("invalid examples for command %q: %v", c.Name, err))
+	}
+
 	c.cobraCmd = &cobra.Command{
+		Example:           example,
 		Use:               use(c.Name, c.Args),
 		Short:             short,
 		Long:              long(short, c.Description),
@@ -157,7 +204,7 @@ func (c *Command) init(out Output) {
 	setupFlags(c.cobraCmd, c.StickyFlags, c.cobraCmd.PersistentFlags())
 
 	for _, sub := range c.SubCommands {
-		sub.init(out)
+		sub.init(cmd, out)
 		c.cobraCmd.AddCommand(sub.cobraCmd)
 	}
 }

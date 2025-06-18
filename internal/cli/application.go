@@ -51,7 +51,7 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 	}
 
 	for _, c := range a.SubCommands {
-		c.init(out)
+		c.init(a.Name, out)
 		a.cobraCmd.AddCommand(c.cobraCmd)
 	}
 
