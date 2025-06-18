@@ -71,16 +71,18 @@ jobs:
           binary="nais"
           if [[ "${{ matrix.os }}" == "windows" ]]; then
             binary="nais.exe"
+            mv "bin/nais" "bin/$binary"
 
-            sudo apt-get update; sudo apt-get install --yes osslsigncode
-            echo "${{ secrets.SIGN_CERT }}" > nais.crt
-            echo "${{ secrets.SIGN_KEY }}" > nais.key
-            osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "bin/nais" -out "bin/nais-signed"
-            mv "bin/nais-signed" "bin/$binary"
-            rm bin/nais
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              sudo apt-get update; sudo apt-get install --yes osslsigncode
+              echo "${{ secrets.SIGN_CERT }}" > nais.crt
+              echo "${{ secrets.SIGN_KEY }}" > nais.key
+              osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "bin/$binary" -out "bin/nais-signed"
+              mv "bin/nais-signed" "bin/$binary"
+            fi
           fi
 
-          tar -zcf nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz ./completions -C bin/ "$binary"
+          tar -zcf "nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz" ./completions -C bin/ "$binary"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
