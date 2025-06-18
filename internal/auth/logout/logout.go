@@ -18,11 +18,11 @@ type flags struct {
 func Logout(rootFlags *root.Flags) *cli.Command {
 	flags := &flags{Flags: rootFlags}
 	return &cli.Command{
-		Name:  "logout",
-		Short: "Log out and remove credentials.",
-		Long:  "Log out of the Nais platform and remove credentials from your local machine.",
-		Group: auth.GroupName,
-		Flags: flags,
+		Name:        "logout",
+		Title:       "Log out and remove credentials.",
+		Description: "Log out of the Nais platform and remove credentials from your local machine.",
+		Group:       auth.GroupName,
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			if flags.Nais {
 				return naisapi.Logout(ctx, out)

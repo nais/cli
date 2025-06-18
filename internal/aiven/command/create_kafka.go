@@ -17,7 +17,7 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 
 	return &cli.Command{
 		Name:  "kafka",
-		Short: "Grant a user access to a Kafka topic.",
+		Title: "Grant a user access to a Kafka topic.",
 		Flags: createKafkaFlags,
 		Args: []cli.Argument{
 			{Name: "username", Required: true},

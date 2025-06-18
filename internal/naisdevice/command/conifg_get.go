@@ -13,7 +13,7 @@ import (
 func get(_ *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "get",
-		Short: "Get a naisdevice setting.",
+		Title: "Get a naisdevice setting.",
 		Args: []cli.Argument{
 			{Name: "setting"},
 		},

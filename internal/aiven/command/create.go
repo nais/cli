@@ -13,7 +13,7 @@ func create(parentFlags *flag.Aiven) *cli.Command {
 
 	return &cli.Command{
 		Name:  "create",
-		Short: "Grant a user access to an Aiven service.",
+		Title: "Grant a user access to an Aiven service.",
 		ValidateFunc: func(_ context.Context, _ []string) error {
 			if createFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)

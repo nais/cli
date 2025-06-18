@@ -25,10 +25,8 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 
 	return &cli.Command{
 		Name:  "debug",
-		Short: "Create and attach to a debug container.",
-		Long: `Create and attach to a debug container
-
-When flag "--copy" is set, the command can be used to debug a copy of the original pod, allowing you to troubleshoot without affecting the live pod.
+		Title: "Create and attach to a debug container.",
+		Description: `When flag "--copy" is set, the command can be used to debug a copy of the original pod, allowing you to troubleshoot without affecting the live pod.
 
 To debug a live pod, run the command without the "--copy" flag.
 
@@ -54,9 +52,8 @@ func tidyCommand(parentFlags *flag.DebugSticky) *cli.Command {
 	}
 	return &cli.Command{
 		Name:  "tidy",
-		Short: "Clean up debug containers and debug pods.",
-
-		Long: `Remove debug containers created by the "nais debug" command
+		Title: "Clean up debug containers and debug pods.",
+		Description: `Remove debug containers created by the "nais debug" command.
 
 Set the "--copy" flag to delete copy pods.`,
 		Args: []cli.Argument{

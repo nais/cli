@@ -10,7 +10,7 @@ func Aiven(parentFlags *root.Flags) *cli.Command {
 	aivenFlags := &flag.Aiven{Flags: parentFlags}
 	return &cli.Command{
 		Name:        "aiven",
-		Short:       "Manage Aiven services.",
+		Title:       "Manage Aiven services.",
 		StickyFlags: aivenFlags,
 		SubCommands: []*cli.Command{
 			create(aivenFlags),

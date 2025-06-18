@@ -19,7 +19,7 @@ func team(parentFlags *flag.Api) *cli.Command {
 
 	return &cli.Command{
 		Name:  "team",
-		Short: "Operations on a team.",
+		Title: "Operations on a team.",
 		SubCommands: []*cli.Command{
 			listMembers(flags),
 			addMember(flags),
@@ -36,7 +36,7 @@ func listMembers(parentFlags *flag.Team) *cli.Command {
 
 	return &cli.Command{
 		Name:         "list-members",
-		Short:        "List members of a team.",
+		Title:        "List members of a team.",
 		ValidateFunc: cli.ValidateExactArgs(1),
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
@@ -107,8 +107,8 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 
 	return &cli.Command{
 		Name:         "add-member",
-		Short:        "Add a member to a team.",
-		Long:         "Add a member to a team.\n\nOnly team owners can add team members.",
+		Title:        "Add a member to a team.",
+		Description:  "Only team owners can add team members.",
 		ValidateFunc: cli.ValidateExactArgs(2),
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
@@ -190,8 +190,8 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 
 	return &cli.Command{
 		Name:         "remove-member",
-		Short:        "Remove a member from a team.",
-		Long:         "Remove a member from a team.\n\nOnly team owners can remove members from a team.",
+		Title:        "Remove a member from a team.",
+		Description:  "Only team owners can remove members from a team.",
 		ValidateFunc: cli.ValidateExactArgs(2),
 		Args: []cli.Argument{
 			{Name: "team", Required: true},

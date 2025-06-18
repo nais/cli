@@ -21,7 +21,7 @@ func statuscmd(rootFlags *root.Flags) *cli.Command {
 
 	return &cli.Command{
 		Name:         "status",
-		Short:        "Show the status of your naisdevice.",
+		Title:        "Show the status of your naisdevice.",
 		Flags:        h.flags,
 		RunFunc:      h.Run,
 		ValidateFunc: h.Validate,

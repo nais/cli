@@ -20,7 +20,7 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 
 	return &cli.Command{
 		Name:        "postgres",
-		Short:       "Manage SQL instances.",
+		Title:       "Manage SQL instances.",
 		StickyFlags: flags,
 		SubCommands: []*cli.Command{
 			migrateCommand(flags),

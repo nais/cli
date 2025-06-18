@@ -12,9 +12,9 @@ import (
 func enableAuditCommand(parentFlags *flag.Postgres) *cli.Command {
 	flags := &flag.EnableAudit{Postgres: parentFlags}
 	return &cli.Command{
-		Name:  "enable-audit",
-		Short: "Enable audit extension in SQL instance database.",
-		Long:  "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
+		Name:        "enable-audit",
+		Title:       "Enable audit extension in SQL instance database.",
+		Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},

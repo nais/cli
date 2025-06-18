@@ -11,7 +11,7 @@ func Alpha(parentFlags *root.Flags) *cli.Command {
 	flags := &flag.Alpha{Flags: parentFlags}
 	return &cli.Command{
 		Name:        "alpha",
-		Short:       "Alpha versions of Nais CLI commands.",
+		Title:       "Alpha versions of Nais CLI commands.",
 		StickyFlags: flags,
 		SubCommands: []*cli.Command{
 			naisapi.Api(flags),

@@ -9,12 +9,22 @@ import (
 )
 
 type Application struct {
-	Name        string
-	Long        string
-	Version     string
+	// Name is the name of the application, used as the root command in the CLI.
+	Name string
+
+	// Title is the title of the application, used as a short description for the help output.
+	Title string
+
+	// Version is the version of the application, used in the help output.
+	Version string
+
+	// StickyFlags are flags that should be available for all subcommands of the application.
 	StickyFlags any
+
+	// SubCommands are the commands that are part of the application.
 	SubCommands []*Command
-	cobraCmd    *cobra.Command
+
+	cobraCmd *cobra.Command
 }
 
 func (a *Application) Run(ctx context.Context, out Output, args []string) ([]string, error) {
@@ -22,7 +32,7 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 
 	a.cobraCmd = &cobra.Command{
 		Use:                a.Name,
-		Long:               a.Long,
+		Short:              a.Title,
 		Version:            a.Version,
 		SilenceErrors:      true,
 		SilenceUsage:       true,

@@ -13,7 +13,7 @@ import (
 func set(_ *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "set",
-		Short: "Set a configuration value.",
+		Title: "Set a configuration value.",
 		Args: []cli.Argument{
 			{Name: "setting", Required: true},
 			{Name: "value", Required: true},

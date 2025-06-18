@@ -18,11 +18,11 @@ type flags struct {
 func Login(rootFlags *root.Flags) *cli.Command {
 	flags := &flags{Flags: rootFlags}
 	return &cli.Command{
-		Name:  "login",
-		Short: "Log in to the Nais platform.",
-		Long:  `Log in to the Nais platform, uses "gcloud auth login --update-adc" by default.`,
-		Group: auth.GroupName,
-		Flags: flags,
+		Name:        "login",
+		Title:       "Log in to the Nais platform.",
+		Description: `Uses "gcloud auth login --update-adc" by default.`,
+		Group:       auth.GroupName,
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			if flags.Nais {
 				return naisapi.Login(ctx, out)

@@ -19,7 +19,7 @@ func status(parentFlags *flag.Api) *cli.Command {
 	flags := &flag.Status{Api: parentFlags}
 	return &cli.Command{
 		Name:  "status",
-		Short: "Get a quick overview of the status of your teams.",
+		Title: "Get a quick overview of the status of your teams.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			type failing struct {

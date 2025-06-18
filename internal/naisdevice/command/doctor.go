@@ -12,7 +12,7 @@ import (
 func doctorcmd(_ *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "doctor",
-		Short: "Check the health of your naisdevice.",
+		Title: "Check the health of your naisdevice.",
 		RunFunc: func(_ context.Context, out cli.Output, _ []string) error {
 			results := examination(out).Run(out)
 			for key, value := range results {

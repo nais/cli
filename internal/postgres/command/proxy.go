@@ -16,9 +16,9 @@ func proxyCommand(parentFlags *flag.Postgres) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:  "proxy",
-		Short: "Create a proxy to a SQL instance.",
-		Long:  "Allows your user to connect to databases and starts a proxy.",
+		Name:        "proxy",
+		Title:       "Create a proxy to a SQL instance.",
+		Description: "Allows your user to connect to databases and starts a proxy.",
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},

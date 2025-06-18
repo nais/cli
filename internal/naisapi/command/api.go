@@ -9,7 +9,7 @@ func Api(parentFlags *flag.Alpha) *cli.Command {
 	flags := &flag.Api{Alpha: parentFlags}
 	return &cli.Command{
 		Name:        "api",
-		Short:       "Interact with Nais API.",
+		Title:       "Interact with Nais API.",
 		StickyFlags: flags,
 		SubCommands: []*cli.Command{
 			proxy(flags),

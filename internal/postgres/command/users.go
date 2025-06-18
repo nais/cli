@@ -12,7 +12,7 @@ func usersCommand(parentFlags *flag.Postgres) *cli.Command {
 	flags := &flag.User{Postgres: parentFlags}
 	return &cli.Command{
 		Name:        "users",
-		Short:       "Manage users in your SQL instance.",
+		Title:       "Manage users in your SQL instance.",
 		StickyFlags: flags,
 		SubCommands: []*cli.Command{
 			addCommand(flags),
@@ -27,9 +27,9 @@ func addCommand(parentFlags *flag.User) *cli.Command {
 		Privilege: "select",
 	}
 	return &cli.Command{
-		Name:  "add",
-		Short: "Add a user to a SQL instance.",
-		Long:  "Will grant a user access to tables in public schema.",
+		Name:        "add",
+		Title:       "Add a user to a SQL instance.",
+		Description: "Will grant a user access to tables in public schema.",
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 			{Name: "username", Required: true},
@@ -47,7 +47,7 @@ func listCommand(parentFlags *flag.User) *cli.Command {
 	flags := &flag.UserList{User: parentFlags}
 	return &cli.Command{
 		Name:  "list",
-		Short: "List users in a SQL instance database.",
+		Title: "List users in a SQL instance database.",
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},

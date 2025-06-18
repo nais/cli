@@ -8,7 +8,7 @@ import (
 func Naisdevice(rootFlags *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "device",
-		Short: "Interact with naisdevice",
+		Title: "Interact with naisdevice",
 		SubCommands: []*cli.Command{
 			statuscmd(rootFlags),
 			jitacmd(rootFlags),

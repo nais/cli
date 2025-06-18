@@ -18,10 +18,8 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 	flags := &flag.Kubeconfig{Flags: rootFlags}
 	return &cli.Command{
 		Name:  "kubeconfig",
-		Short: "Create a kubeconfig file for connecting to available clusters.",
-		Long: `Create a kubeconfig file for connecting to available clusters
-
-This requires that you have the gcloud command line tool installed, configured and logged in using:
+		Title: "Create a kubeconfig file for connecting to available clusters.",
+		Description: `This requires that you have the gcloud command line tool installed, configured and logged in using:
 "nais login"`,
 		Flags: flags,
 		ValidateFunc: func(ctx context.Context, args []string) error {

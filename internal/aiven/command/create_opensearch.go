@@ -17,7 +17,7 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 
 	return &cli.Command{
 		Name:         "opensearch",
-		Short:        "Grant a user access to an OpenSearch instance.",
+		Title:        "Grant a user access to an OpenSearch instance.",
 		ValidateFunc: cli.ValidateExactArgs(2),
 		Args: []cli.Argument{
 			{Name: "username", Required: true},

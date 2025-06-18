@@ -22,11 +22,13 @@ type Command struct {
 	// Name is the name of the command, this is used to invoke the command in the CLI. This field is required.
 	Name string
 
-	// Short is the short description for the command, shown in the help output. This field is required.
-	Short string
+	// Title is the title of the command, used as a short description for the help output, as well as a header for the
+	// optional Description field, if set. This field is required.
+	Title string
 
-	// Long is the long description for the command, shown in the help output.
-	Long string
+	// Description is a detailed description of the command, shown in the help output. When set, it will be prefixed
+	// with the Title field.
+	Description string
 
 	// RunFunc will be executed when the command is run.
 	RunFunc RunFunc
@@ -94,15 +96,48 @@ func run(f RunFunc, out Output) func(*cobra.Command, []string) error {
 	return nil
 }
 
+func short(title string) (string, error) {
+	title = strings.TrimSpace(title)
+
+	if title == "" {
+		return "", fmt.Errorf("title cannot be empty")
+	}
+
+	if strings.Contains(title, "\n") {
+		return "", fmt.Errorf("title cannot contain newlines")
+	}
+
+	if !strings.HasSuffix(title, ".") {
+		title = title + "."
+	}
+
+	return title, nil
+}
+
+func long(title, description string) string {
+	description = strings.TrimSpace(description)
+
+	if description == "" {
+		return title
+	}
+
+	return strings.TrimRight(title, ".") + "\n\n" + description
+}
+
 func (c *Command) init(out Output) {
 	if strings.Contains(c.Name, " ") {
 		panic(fmt.Sprintf("command name cannot contain spaces: %v", c.Name))
 	}
 
+	short, err := short(c.Title)
+	if err != nil {
+		panic(fmt.Sprintf("invalid title for command %q: %v", c.Name, err))
+	}
+
 	c.cobraCmd = &cobra.Command{
 		Use:               use(c.Name, c.Args),
-		Short:             c.Short,
-		Long:              c.Long,
+		Short:             short,
+		Long:              long(short, c.Description),
 		GroupID:           c.Group,
 		RunE:              run(c.RunFunc, out),
 		ValidArgsFunction: autocomplete(c.AutoCompleteFunc, c.AutoCompleteExtensions),

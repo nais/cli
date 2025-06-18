@@ -10,7 +10,8 @@ import (
 
 func disconnectcmd(_ *root.Flags) *cli.Command {
 	return &cli.Command{
-		Name: "disconnect", Short: "Disconnect your naisdevice.",
+		Name:  "disconnect",
+		Title: "Disconnect your naisdevice.",
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			return naisdevice.Disconnect(ctx, out)
 		},

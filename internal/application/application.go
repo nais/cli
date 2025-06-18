@@ -24,7 +24,7 @@ import (
 func newApplication(flags *root.Flags) *cli.Application {
 	return &cli.Application{
 		Name:    "nais",
-		Long:    "Nais CLI",
+		Title:   "Nais CLI",
 		Version: version.Version + "-" + version.Commit,
 		SubCommands: []*cli.Command{
 			login.Login(flags),

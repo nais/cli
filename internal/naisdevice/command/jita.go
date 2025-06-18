@@ -14,7 +14,7 @@ import (
 func jitacmd(_ *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "jita",
-		Short: "Connect to a JITA gateway.",
+		Title: "Connect to a JITA gateway.",
 		Args: []cli.Argument{
 			{Name: "gateway", Required: true, Repeatable: true},
 		},

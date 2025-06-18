@@ -13,7 +13,7 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 	flags := &flag.Validate{Flags: parentFlags}
 	return &cli.Command{
 		Name:  "validate",
-		Short: "Validate one or more Nais manifest files.",
+		Title: "Validate one or more Nais manifest files.",
 		Args: []cli.Argument{
 			{Name: "file", Repeatable: true},
 		},

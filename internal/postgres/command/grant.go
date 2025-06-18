@@ -11,9 +11,9 @@ import (
 func grantCommand(parentFlags *flag.Postgres) *cli.Command {
 	flags := &flag.Grant{Postgres: parentFlags}
 	return &cli.Command{
-		Name:  "grant",
-		Short: "Grant yourself access to a SQL instance database.",
-		Long:  "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
+		Name:        "grant",
+		Title:       "Grant yourself access to a SQL instance database.",
+		Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},

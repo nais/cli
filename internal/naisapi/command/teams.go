@@ -19,7 +19,7 @@ func teams(parentFlags *flag.Api) *cli.Command {
 
 	return &cli.Command{
 		Name:  "teams",
-		Short: "Get a list of your teams.",
+		Title: "Get a list of your teams.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
 			type team struct {
