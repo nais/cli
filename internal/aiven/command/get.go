@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/nais/cli/internal/aiven"
@@ -33,9 +34,19 @@ func get(_ *flag.Aiven) *cli.Command {
 				return err
 			}
 
-			if err := aiven.ExtractAndGenerateConfig(ctx, service, args[1], args[2], out); err != nil {
+			username := args[1]
+			namespace := args[2]
+			if err := aiven.ExtractAndGenerateConfig(ctx, service, username, namespace, out); err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_get_secret_and_config_error_total")
-				return fmt.Errorf("retrieve secret and generating config: %w", err)
+
+				switch {
+				case errors.Is(err, aiven.ErrUnsuitableSecret):
+					return cli.Errorf(`The secret we found for username %q is not suitable for this command.
+Most likely it was not created by using %v, please refer to %v for instructions on how to create one.
+`, username, "`nais aiven create`", fmt.Sprintf("`nais aiven create %s --help`", service.Name()))
+				default:
+					return fmt.Errorf("retrieve secret and generating config: %w", err)
+				}
 			}
 			return nil
 		},

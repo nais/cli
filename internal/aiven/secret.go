@@ -2,6 +2,7 @@ package aiven
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -25,6 +26,8 @@ type Secret struct {
 	Service         aiven_services.Service
 }
 
+var ErrUnsuitableSecret = errors.New("unsuitable secret")
+
 func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out cli.Output) error {
 	aivenClient := k8s.SetupControllerRuntimeClient()
 
@@ -45,8 +48,8 @@ func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Servic
 	secret := setupSecretConfiguration(existingSecret, dest, service)
 
 	// check if annotations match with protected or time-limited otherwise you could use any existingSecret!
-	if !(hasAnnotation(existingSecret, AivenatorProtectedAnnotation) || hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation)) {
-		return fmt.Errorf("secret is must have at least one of these annotations: '%s', '%s'", AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
+	if !hasAnnotation(existingSecret, AivenatorProtectedAnnotation) && !hasAnnotation(existingSecret, AivenatorProtectedExpireAtAnnotation) {
+		return fmt.Errorf("secret is must have at least one of these annotations(%w): '%s', '%s'", ErrUnsuitableSecret, AivenatorProtectedAnnotation, AivenatorProtectedExpireAtAnnotation)
 	}
 
 	if err := secret.generateConfig(out); err != nil {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/pterm/pterm"
 )
 
 type Output interface {
@@ -11,6 +13,7 @@ type Output interface {
 
 	Println(a ...any)
 	Printf(format string, a ...any)
+	Errorf(format string, a ...any)
 }
 
 type writer struct {
@@ -23,6 +26,10 @@ func (w *writer) Println(a ...any) {
 
 func (w *writer) Printf(format string, a ...any) {
 	_, _ = fmt.Fprintf(w.w, format, a...)
+}
+
+func (w *writer) Errorf(format string, a ...any) {
+	_, _ = fmt.Fprint(w.w, pterm.Error.Sprintf(format, a...))
 }
 
 func (w *writer) Write(p []byte) (n int, err error) {
