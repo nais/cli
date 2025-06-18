@@ -25,6 +25,11 @@ func (o *Output) AutoComplete(context.Context, []string, string, any) ([]string,
 	return []string{"table", "json"}, "Available output formats."
 }
 
+type Team struct {
+	*Api
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
 type Teams struct {
 	*Api
 	All    bool   `name:"all" short:"a" usage:"List all teams, not just the ones you are a member of."`

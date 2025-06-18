@@ -71,16 +71,18 @@ jobs:
           binary="nais"
           if [[ "${{ matrix.os }}" == "windows" ]]; then
             binary="nais.exe"
+            mv "bin/nais" "bin/$binary"
 
-            sudo apt-get update; sudo apt-get install --yes osslsigncode
-            echo "${{ secrets.SIGN_CERT }}" > nais.crt
-            echo "${{ secrets.SIGN_KEY }}" > nais.key
-            osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "bin/nais" -out "bin/nais-signed"
-            mv "bin/nais-signed" "bin/$binary"
-            rm bin/nais
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              sudo apt-get update; sudo apt-get install --yes osslsigncode
+              echo "${{ secrets.SIGN_CERT }}" > nais.crt
+              echo "${{ secrets.SIGN_KEY }}" > nais.key
+              osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "bin/$binary" -out "bin/nais-signed"
+              mv "bin/nais-signed" "bin/$binary"
+            fi
           fi
 
-          tar -zcf nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz ./completions -C bin/ "$binary"
+          tar -zcf "nais-cli_${{ needs.set-version.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz" ./completions -C bin/ "$binary"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -176,7 +178,7 @@ jobs:
         with:
           tag_name: ${{ needs.set-version.outputs.version }}
           generate_release_notes: true
-          prerelease: true
+          prerelease: false
           files: |
             archive-linux-amd64/nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
             archive-linux-arm64/nais-cli_${{ needs.set-version.outputs.version }}_linux_arm64.tar.gz
@@ -225,8 +227,8 @@ jobs:
         env:
           VERSION: ${{ needs.set-version.outputs.version }}
         run: |
-          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source deb-arm64/nais-cli_${VERSION}_arm64.deb --location europe-north1
-          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source deb-amd64/nais-cli_${VERSION}_amd64.deb --location europe-north1
+          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_arm64.deb --location europe-north1
+          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_amd64.deb --location europe-north1
 
   release-external-repos:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -266,20 +268,20 @@ jobs:
           name: hashes-json
       - name: "Generate manifest"
         run: |
-          git clone "https://git:${{ steps.token.outputs.token }}@github.com/nais/${{ matrix.target.repo }}" repo
+          git clone "https://git:${{ steps.token.outputs.token }}@github.com/${{ matrix.target.repo }}" repo
           cd repo || exit 1
           sed \
             -e "s/__VERSION__/${{ needs.set-version.outputs.version }}/g" \
-            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64_BASE32__/$(jq -r '.darwin.amd64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64_BASE32__/$(jq -r '.darwin.arm64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64_BASE32__/$(jq -r '.linux.amd64.base32' ../hashes-json/hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64_BASE32__/$(jq -r '.linux.arm64.base32' ../hashes-json/hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_AMD64_BASE32__/$(jq -r '.darwin.amd64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_DARWIN_ARM64_BASE32__/$(jq -r '.darwin.arm64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_AMD64_BASE32__/$(jq -r '.linux.amd64.base32' ../hashes.json)/g" \
+            -e "s/__SHA_LINUX_ARM64_BASE32__/$(jq -r '.linux.arm64.base32' ../hashes.json)/g" \
             "../.github/workflows/templates/${{ matrix.target.template }}" \
             > "${{ matrix.target.file }}"
 

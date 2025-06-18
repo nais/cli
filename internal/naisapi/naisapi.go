@@ -160,7 +160,7 @@ func GetStatus(ctx context.Context, _ *flag.Status) (*gql.TeamStatusResponse, er
 func GetAllTeams(ctx context.Context) (*gql.TeamsResponse, error) {
 	_ = `# @genqlient
 		query Teams {
-	    teams(first:1000) {
+			teams(first: 1000) {
 				nodes {
 					slug
 					purpose
@@ -175,4 +175,29 @@ func GetAllTeams(ctx context.Context) (*gql.TeamsResponse, error) {
 	}
 
 	return gql.Teams(ctx, client)
+}
+
+func GetTeamMembers(ctx context.Context, teamSlug string) (*gql.TeamMembersResponse, error) {
+	_ = `# @genqlient
+		query TeamMembers($slug: Slug!) {
+			team(slug: $slug) {
+				members(first: 1000) {
+					nodes {
+						role
+						user {
+							name
+							email
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return gql.TeamMembers(ctx, client, teamSlug)
 }

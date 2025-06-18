@@ -24,6 +24,7 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 		Use:                a.Name,
 		Long:               a.Long,
 		Version:            a.Version,
+		SilenceErrors:      true,
 		SilenceUsage:       true,
 		DisableSuggestions: true,
 	}

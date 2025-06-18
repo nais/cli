@@ -14,6 +14,7 @@ func Api(parentFlags *flag.Alpha) *cli.Command {
 		SubCommands: []*cli.Command{
 			proxy(flags),
 			schema(flags),
+			team(flags),
 			teams(flags),
 			status(flags),
 		},

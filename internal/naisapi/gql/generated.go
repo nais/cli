@@ -10,6 +10,96 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// Team member roles.
+type TeamMemberRole string
+
+const (
+	// Regular member, read only access.
+	TeamMemberRoleMember TeamMemberRole = "MEMBER"
+	// Team owner, full access to the team.
+	TeamMemberRoleOwner TeamMemberRole = "OWNER"
+)
+
+var AllTeamMemberRole = []TeamMemberRole{
+	TeamMemberRoleMember,
+	TeamMemberRoleOwner,
+}
+
+// TeamMembersResponse is returned by TeamMembers on success.
+type TeamMembersResponse struct {
+	// Get a team by its slug.
+	Team TeamMembersTeam `json:"team"`
+}
+
+// GetTeam returns TeamMembersResponse.Team, and is useful for accessing the field via an interface.
+func (v *TeamMembersResponse) GetTeam() TeamMembersTeam { return v.Team }
+
+// TeamMembersTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type TeamMembersTeam struct {
+	// Team members.
+	Members TeamMembersTeamMembersTeamMemberConnection `json:"members"`
+}
+
+// GetMembers returns TeamMembersTeam.Members, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeam) GetMembers() TeamMembersTeamMembersTeamMemberConnection { return v.Members }
+
+// TeamMembersTeamMembersTeamMemberConnection includes the requested fields of the GraphQL type TeamMemberConnection.
+type TeamMembersTeamMembersTeamMemberConnection struct {
+	// List of nodes.
+	Nodes []TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember `json:"nodes"`
+}
+
+// GetNodes returns TeamMembersTeamMembersTeamMemberConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeamMembersTeamMemberConnection) GetNodes() []TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember {
+	return v.Nodes
+}
+
+// TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember includes the requested fields of the GraphQL type TeamMember.
+type TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember struct {
+	// The role that the user has in the team.
+	Role TeamMemberRole `json:"role"`
+	// User instance.
+	User TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser `json:"user"`
+}
+
+// GetRole returns TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember.Role, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember) GetRole() TeamMemberRole {
+	return v.Role
+}
+
+// GetUser returns TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember.User, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember) GetUser() TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser {
+	return v.User
+}
+
+// TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser struct {
+	// The full name of the user.
+	Name string `json:"name"`
+	// The email address of the user.
+	Email string `json:"email"`
+}
+
+// GetName returns TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser.Name, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetName() string {
+	return v.Name
+}
+
+// GetEmail returns TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser.Email, and is useful for accessing the field via an interface.
+func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetEmail() string {
+	return v.Email
+}
+
 // TeamStatusMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // TeamStatusMeAuthenticatedUser is implemented by the following types:
@@ -1375,6 +1465,56 @@ var AllWorkloadStatusErrorLevel = []WorkloadStatusErrorLevel{
 	WorkloadStatusErrorLevelTodo,
 	WorkloadStatusErrorLevelWarning,
 	WorkloadStatusErrorLevelError,
+}
+
+// __TeamMembersInput is used internally by genqlient
+type __TeamMembersInput struct {
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns __TeamMembersInput.Slug, and is useful for accessing the field via an interface.
+func (v *__TeamMembersInput) GetSlug() string { return v.Slug }
+
+// The query executed by TeamMembers.
+const TeamMembers_Operation = `
+query TeamMembers ($slug: Slug!) {
+	team(slug: $slug) {
+		members(first: 1000) {
+			nodes {
+				role
+				user {
+					name
+					email
+				}
+			}
+		}
+	}
+}
+`
+
+func TeamMembers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+) (data_ *TeamMembersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TeamMembers",
+		Query:  TeamMembers_Operation,
+		Variables: &__TeamMembersInput{
+			Slug: slug,
+		},
+	}
+
+	data_ = &TeamMembersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
 }
 
 // The query executed by TeamStatus.
