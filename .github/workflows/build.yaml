@@ -176,7 +176,7 @@ jobs:
         with:
           tag_name: ${{ needs.set-version.outputs.version }}
           generate_release_notes: true
-          prerelease: true
+          prerelease: false
           files: |
             archive-linux-amd64/nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
             archive-linux-arm64/nais-cli_${{ needs.set-version.outputs.version }}_linux_arm64.tar.gz
