@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
@@ -19,8 +20,11 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 	return &cli.Command{
 		Name:  "kubeconfig",
 		Title: "Create a kubeconfig file for connecting to available clusters.",
-		Description: `This requires that you have the gcloud command line tool installed, configured and logged in using:
-"nais login"`,
+		Description: heredoc.Doc(`
+			This requires that you have the gcloud command line tool installed, configured and logged in using:
+
+			"nais login"
+		`),
 		Flags: flags,
 		ValidateFunc: func(ctx context.Context, args []string) error {
 			if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {

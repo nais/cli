@@ -17,6 +17,7 @@ require (
 	github.com/99designs/gqlgen v0.17.57
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7
 	github.com/Khan/genqlient v0.8.1
+	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/go-logr/logr v1.4.2
 	github.com/goccy/go-yaml v1.17.1

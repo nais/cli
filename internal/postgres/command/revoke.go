@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/pkg/cli"
@@ -21,12 +22,14 @@ func revokeCommand(parentFlags *flag.Postgres) *cli.Command {
 
 	return &cli.Command{
 		Name:  "revoke",
-		Title: "Revoke access to your SQL instance for the role 'cloudsqliamuser'.",
-		Description: `Revoke will revoke the role 'cloudsqliamuser' access to the tables in the SQL instance.
+		Title: `Revoke access to your SQL instance for the role "cloudsqliamuser".`,
+		Description: heredoc.Doc(`
+			Revoke will revoke the role "cloudsqliamuser" access to the tables in the SQL instance.
 
-This is done by connecting using the application credentials and modify the permissions on the public schema.
+			This is done by connecting using the application credentials and modify the permissions on the public schema.
 
-This operation is only required to run once for each SQL instance.`,
+			This operation is only required to run once for each SQL instance.
+		`),
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},
