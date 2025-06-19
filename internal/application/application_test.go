@@ -33,7 +33,7 @@ func runCommand(t *testing.T, ctx context.Context, cmd *cli.Command, parentComma
 			t.Fatalf("failed to run command %q: %v", strings.Join(helpCmd, " "), err)
 		}
 	}()
-	_, err := newApplication(&root.Flags{}).Run(ctx, out, helpCmd)
+	err := newApplication(&root.Flags{}).Run(ctx, out, helpCmd)
 	if err != nil {
 		t.Fatalf("failed to run command %s: %v", strings.Join(helpCmd, " "), err)
 	}

@@ -5,6 +5,7 @@ import (
 	"iter"
 	"maps"
 
+	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +28,7 @@ type Application struct {
 	cobraCmd *cobra.Command
 }
 
-func (a *Application) Run(ctx context.Context, out Output, args []string) ([]string, error) {
+func (a *Application) Run(ctx context.Context, out Output, args []string) error {
 	cobra.EnableTraverseRunHooks = true
 
 	a.cobraCmd = &cobra.Command{
@@ -39,7 +40,7 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 		DisableSuggestions: true,
 	}
 	a.cobraCmd.SetArgs(args)
-	a.cobraCmd.SetOut(out)
+	// a.cobraCmd.SetOut(out)
 
 	setupFlags(a.cobraCmd, a.StickyFlags, a.cobraCmd.PersistentFlags())
 
@@ -55,8 +56,10 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 		a.cobraCmd.AddCommand(c.cobraCmd)
 	}
 
-	executedCommand, err := a.cobraCmd.ExecuteContextC(ctx)
-	return commandNames(executedCommand), err
+	return fang.Execute(ctx, a.cobraCmd)
+
+	// executedCommand, err := a.cobraCmd.ExecuteContextC(ctx)
+	// return commandNames(executedCommand), err
 }
 
 func allGroups(cmds []*Command) iter.Seq[string] {
