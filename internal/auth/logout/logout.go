@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/auth"
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 type flags struct {

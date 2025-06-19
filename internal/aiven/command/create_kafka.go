@@ -7,9 +7,9 @@ import (
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/metric"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func createKafka(parentFlags *flag.Create) *cli.Command {

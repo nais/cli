@@ -8,8 +8,8 @@ import (
 
 	"github.com/nais/cli/internal/aiven/aiven_config"
 	"github.com/nais/cli/internal/aiven/aiven_services"
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/pkg/cli"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )

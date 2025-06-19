@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/gcp"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func Kubeconfig(rootFlags *root.Flags) *cli.Command {

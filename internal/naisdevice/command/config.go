@@ -1,8 +1,8 @@
 package command
 
 import (
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func configcmd(rootFlags *root.Flags) *cli.Command {

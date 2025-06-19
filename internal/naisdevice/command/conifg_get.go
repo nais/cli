@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func get(_ *root.Flags) *cli.Command {
