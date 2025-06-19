@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 

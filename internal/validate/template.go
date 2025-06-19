@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/goccy/go-yaml"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 
 	// We use a fork of aymerick/raymond because the original library does not detect/handle missing template variables.
 	"github.com/mailgun/raymond/v2"

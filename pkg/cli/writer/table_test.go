@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/nais/cli/internal/cli/writer"
+	"github.com/nais/cli/pkg/cli/writer"
 )
 
 func TestTable_SingleLevel(t *testing.T) {

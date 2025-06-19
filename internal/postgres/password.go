@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/liberator/pkg/keygen"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"

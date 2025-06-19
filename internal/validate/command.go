@@ -3,7 +3,7 @@ package validate
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/validate/command/flag"
 )
 

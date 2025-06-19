@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mitchellh/go-ps"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	doc "github.com/nais/cli/internal/doctor"
 	"github.com/nais/cli/internal/root"
 )

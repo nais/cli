@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/root"
 )
 

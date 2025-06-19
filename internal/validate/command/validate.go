@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/validate"
 	"github.com/nais/cli/internal/validate/command/flag"

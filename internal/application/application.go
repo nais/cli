@@ -10,7 +10,7 @@ import (
 	alpha "github.com/nais/cli/internal/alpha/command"
 	login "github.com/nais/cli/internal/auth/login"
 	logout "github.com/nais/cli/internal/auth/logout"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	debug "github.com/nais/cli/internal/debug/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	"github.com/nais/cli/internal/metric"

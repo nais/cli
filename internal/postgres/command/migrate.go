@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/postgres/migrate/finalize"
 	"github.com/nais/cli/internal/postgres/migrate/promote"

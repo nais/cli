@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/device/pkg/config"
 	"github.com/nais/device/pkg/pb"
 	"google.golang.org/grpc"

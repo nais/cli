@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func create(parentFlags *flag.Aiven) *cli.Command {

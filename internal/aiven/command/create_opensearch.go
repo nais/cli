@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/internal/k8s"
 )
 

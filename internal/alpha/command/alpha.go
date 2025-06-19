@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/root"
