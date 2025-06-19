@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -52,6 +53,12 @@ func setupFlag(name, short, usage string, value any, flags *pflag.FlagSet) {
 			flags.IntVar(ptr, name, *ptr, usage)
 		} else {
 			flags.IntVarP(ptr, name, short, *ptr, usage)
+		}
+	case *time.Duration:
+		if short == "" {
+			flags.DurationVar(ptr, name, *ptr, usage)
+		} else {
+			flags.DurationVarP(ptr, name, short, *ptr, usage)
 		}
 	case *Count:
 		intPtr := (*int)(ptr)
