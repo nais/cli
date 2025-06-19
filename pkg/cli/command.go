@@ -22,6 +22,9 @@ type Command struct {
 	// Name is the name of the command, this is used to invoke the command in the CLI. This field is required.
 	Name string
 
+	// Aliases are alternative names for the command, used to invoke the command in the CLI. This field is optional.
+	Aliases []string
+
 	// Title is the title of the command, used as a short description for the help output, as well as a header for the
 	// optional Description field, if set. This field is required.
 	Title string
@@ -182,6 +185,7 @@ func (c *Command) init(cmd string, out Output) {
 
 	c.cobraCmd = &cobra.Command{
 		Example:           example,
+		Aliases:           c.Aliases,
 		Use:               use(c.Name, c.Args),
 		Short:             short,
 		Long:              long(short, c.Description),
