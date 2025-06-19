@@ -9,8 +9,7 @@ import (
 
 func noAutocomplete() cobra.CompletionFunc {
 	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		help := cobra.AppendActiveHelp(nil, "No completions available for this flag/command.")
-		return help, cobra.ShellCompDirectiveNoFileComp
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 }
 
