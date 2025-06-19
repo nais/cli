@@ -6,9 +6,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func jitacmd(_ *root.Flags) *cli.Command {

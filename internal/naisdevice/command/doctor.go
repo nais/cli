@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/mitchellh/go-ps"
-	"github.com/nais/cli/internal/cli"
 	doc "github.com/nais/cli/internal/doctor"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func doctorcmd(_ *root.Flags) *cli.Command {

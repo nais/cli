@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/postgres/migrate/finalize"
 	"github.com/nais/cli/internal/postgres/migrate/promote"
 	"github.com/nais/cli/internal/postgres/migrate/rollback"
 	"github.com/nais/cli/internal/postgres/migrate/setup"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func migrateCommand(parentFlags *flag.Postgres) *cli.Command {

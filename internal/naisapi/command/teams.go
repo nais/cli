@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/cli"
-	"github.com/nais/cli/internal/cli/writer"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
+	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/writer"
 	"github.com/savioxavier/termlink"
 )
 

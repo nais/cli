@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out cli.Output) error {

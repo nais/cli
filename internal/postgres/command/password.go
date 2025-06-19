@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func passwordCommand(parentFlags *flag.Postgres) *cli.Command {

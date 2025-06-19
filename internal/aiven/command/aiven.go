@@ -2,8 +2,8 @@ package command
 
 import (
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func Aiven(parentFlags *root.Flags) *cli.Command {

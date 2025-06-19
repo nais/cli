@@ -3,12 +3,12 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/cli"
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/debug/tidy"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func Debug(parentFlags *root.Flags) *cli.Command {

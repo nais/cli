@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/aiven/aiven_services"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
 	v1 "k8s.io/api/core/v1"

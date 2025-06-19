@@ -5,7 +5,7 @@ import (
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/internal/cli"
+	"github.com/nais/cli/pkg/cli"
 )
 
 func tidy(_ *flag.Aiven) *cli.Command {
