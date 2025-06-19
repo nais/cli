@@ -44,7 +44,7 @@ func newApplication(flags *root.Flags) *cli.Application {
 func Run(ctx context.Context, w io.Writer) error {
 	flags := &root.Flags{}
 	app := newApplication(flags)
-	executedCommand, err := app.Run(ctx, cli.NewWriter(w), os.Args[1:])
+	err := app.Run(ctx, cli.NewWriter(w), os.Args[1:])
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {
@@ -57,9 +57,9 @@ func Run(ctx context.Context, w io.Writer) error {
 		}()
 	}
 
-	if !autoComplete && executedCommand != nil {
-		collectCommandHistogram(ctx, executedCommand, err)
-	}
+	// if !autoComplete && executedCommand != nil {
+	// 	collectCommandHistogram(ctx, executedCommand, err)
+	// }
 
 	if err != nil {
 		return err
