@@ -6,6 +6,7 @@ class Nais < Formula
   desc "Command-line interface for NAIS"
   homepage "https://github.com/nais/cli"
   version "__VERSION__"
+  version_scheme 1
 
   on_macos do
     if Hardware::CPU.intel?
