@@ -70,7 +70,10 @@ func teams(parentFlags *flag.Api) *cli.Command {
 					}
 
 					slug := fmt.Sprint(value)
-					return termlink.ColorLink(slug, "https://console.nav.cloud.nais.io/team/"+slug, "underline")
+					if termlink.SupportsHyperlinks() {
+						return termlink.ColorLink(slug, "https://console.nav.cloud.nais.io/team/"+slug, "underline")
+					}
+					return slug
 				}))
 				w = tbl
 			}

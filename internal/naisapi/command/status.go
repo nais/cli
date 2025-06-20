@@ -77,7 +77,10 @@ func status(parentFlags *flag.Api) *cli.Command {
 					switch column {
 					case 0:
 						slug := fmt.Sprint(value)
-						return termlink.ColorLink(slug, "https://console.nav.cloud.nais.io/team/"+slug, "underline")
+						if termlink.SupportsHyperlinks() {
+							return termlink.ColorLink(slug, "https://console.nav.cloud.nais.io/team/"+slug, "underline")
+						}
+						return slug
 					case 3:
 						failing := value.([]failing)
 						if len(failing) == 0 {
