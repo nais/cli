@@ -25,7 +25,7 @@ func newApplication(flags *root.Flags) *cli.Application {
 	return &cli.Application{
 		Name:    "nais",
 		Title:   "Nais CLI",
-		Version: version.Version + "-" + version.Commit,
+		Version: version.Version,
 		SubCommands: []*cli.Command{
 			login.Login(flags),
 			logout.Logout(flags),

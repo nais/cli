@@ -20,8 +20,12 @@ jobs:
       - name: set version
         id: set-version
         run: |
-          echo Faking a Semantic Version
-          echo "version=2.0.0-$(date "+%Y%m%d%H%M")" >> ${GITHUB_OUTPUT}
+          TIMESTAMP=$(git show -s --format=%cd --date=format:%Y%m%d%H%M%S HEAD)
+          COMMIT_SHA=$(git rev-parse --short=12 HEAD)
+          VERSION="v2.0.0-${TIMESTAMP}-${COMMIT_SHA}"
+
+          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
+          echo "Pseudo semantic version: ${VERSION}"
 
   checks:
     strategy:
