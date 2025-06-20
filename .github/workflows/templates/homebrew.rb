@@ -46,4 +46,9 @@ class Nais < Formula
   test do
     assert_match version, shell_output("#{bin}/nais version")
   end
+
+  livecheck do
+    url "https://github.com/nais/cli.git"
+    regex(/^v(\d+\.\d+\.\d+-\d{14}-[a-f0-9]{12})$/i)
+  end
 end
