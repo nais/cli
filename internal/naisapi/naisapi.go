@@ -60,7 +60,7 @@ func StartProxy(ctx context.Context, out cli.Output, flags *flag.Proxy) error {
 		}),
 	}
 
-	out.Println("Forwarding requests from", flags.ListenAddr, "to", target.String())
+	out.Println("Forwarding requests from", "http://"+flags.ListenAddr, "to", target.String())
 	// Start the server
 	http.Handle("/graphql", proxy)
 	http.Handle("/", playground.Handler("Nais API playground", "/graphql"))
@@ -256,6 +256,36 @@ func GetTeamMembers(ctx context.Context, teamSlug string) ([]gql.TeamMembersTeam
 	}
 
 	return resp.Team.Members.Nodes, nil
+}
+
+func GetTeamWorkloads(ctx context.Context, teamSlug string) ([]gql.GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload, error) {
+	_ = `# @genqlient
+		query GetTeamWorkloads($slug: Slug!) {
+			team(slug: $slug) {
+				workloads(first: 1000) {
+					nodes {
+						__typename
+						name
+						status { state }
+						image { vulnerabilitySummary { total } }
+						teamEnvironment { environment { name } }
+					}
+				}
+			}
+		}
+	`
+
+	client, err := GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetTeamWorkloads(ctx, client, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Team.Workloads.Nodes, nil
 }
 
 func GetUserEmails(ctx context.Context) ([]string, error) {

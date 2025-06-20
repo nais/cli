@@ -45,6 +45,360 @@ func (v *AddTeamMemberResponse) GetAddTeamMember() AddTeamMemberAddTeamMemberAdd
 	return v.AddTeamMember
 }
 
+// GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
+type GetTeamWorkloadsResponse struct {
+	// Get a team by its slug.
+	Team GetTeamWorkloadsTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamWorkloadsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsResponse) GetTeam() GetTeamWorkloadsTeam { return v.Team }
+
+// GetTeamWorkloadsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamWorkloadsTeam struct {
+	// Nais workloads owned by the team.
+	Workloads GetTeamWorkloadsTeamWorkloadsWorkloadConnection `json:"workloads"`
+}
+
+// GetWorkloads returns GetTeamWorkloadsTeam.Workloads, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeam) GetWorkloads() GetTeamWorkloadsTeamWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns GetTeamWorkloadsTeamWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) GetNodes() []GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetTeamWorkloadsTeamWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetTeamWorkloadsTeamWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetTeamWorkloadsTeamWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetTeamWorkloadsTeamWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	Status GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	// Interface for workloads.
+	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetStatus returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Status, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus {
+	return v.Status
+}
+
+// GetImage returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Image, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetImage() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetTeamEnvironment returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetTeamEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	Status GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	// Interface for workloads.
+	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetName() string { return v.Name }
+
+// GetStatus returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Status, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus {
+	return v.Status
+}
+
+// GetImage returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Image, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetImage() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetTeamEnvironment returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetTeamEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetStatus returns the interface-field "status" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus
+	// GetImage returns the interface-field "image" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetImage() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
+}
+
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage struct {
+	// Get the summary of the vulnerabilities of the image.
+	VulnerabilitySummary GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+// GetVulnerabilitySummary returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetVulnerabilitySummary() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+}
+
+// GetTotal returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus includes the requested fields of the GraphQL type WorkloadStatus.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus struct {
+	// State of the workload
+	State WorkloadState `json:"state"`
+}
+
+// GetState returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus.State, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus) GetState() WorkloadState {
+	return v.State
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment) GetEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // IsAdminMeAuthenticatedUser is implemented by the following types:
@@ -1780,6 +2134,14 @@ func (v *__AddTeamMemberInput) GetEmail() string { return v.Email }
 // GetRole returns __AddTeamMemberInput.Role, and is useful for accessing the field via an interface.
 func (v *__AddTeamMemberInput) GetRole() TeamMemberRole { return v.Role }
 
+// __GetTeamWorkloadsInput is used internally by genqlient
+type __GetTeamWorkloadsInput struct {
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns __GetTeamWorkloadsInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetTeamWorkloadsInput) GetSlug() string { return v.Slug }
+
 // __RemoveTeamMemberInput is used internally by genqlient
 type __RemoveTeamMemberInput struct {
 	Slug  string `json:"slug"`
@@ -1829,6 +2191,58 @@ func AddTeamMember(
 	}
 
 	data_ = &AddTeamMemberResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTeamWorkloads.
+const GetTeamWorkloads_Operation = `
+query GetTeamWorkloads ($slug: Slug!) {
+	team(slug: $slug) {
+		workloads(first: 1000) {
+			nodes {
+				__typename
+				name
+				status {
+					state
+				}
+				image {
+					vulnerabilitySummary {
+						total
+					}
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetTeamWorkloads(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+) (data_ *GetTeamWorkloadsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamWorkloads",
+		Query:  GetTeamWorkloads_Operation,
+		Variables: &__GetTeamWorkloadsInput{
+			Slug: slug,
+		},
+	}
+
+	data_ = &GetTeamWorkloadsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

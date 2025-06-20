@@ -43,6 +43,11 @@ type ListMembers struct {
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
+type ListWorkloads struct {
+	*Team
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
 type Teams struct {
 	*Api
 	All    bool   `name:"all" short:"a" usage:"List all teams, not just the ones you are a member of."`

@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -9,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/pkg/cli"
 	"github.com/nais/cli/pkg/cli/writer"
+	"github.com/savioxavier/termlink"
 	"k8s.io/utils/strings/slices"
 )
 
@@ -24,6 +26,7 @@ func team(parentFlags *flag.Api) *cli.Command {
 			listMembers(flags),
 			addMember(flags),
 			removeMember(flags),
+			listWorkloads(flags),
 		},
 	}
 }
@@ -272,6 +275,96 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 			}
 
 			return emails, "Choose the email address of the user to remove from the team."
+		},
+	}
+}
+
+func listWorkloads(parentFlags *flag.Team) *cli.Command {
+	flags := &flag.ListWorkloads{
+		Team:   parentFlags,
+		Output: "table",
+	}
+
+	return &cli.Command{
+		Name:         "list-workloads",
+		Title:        "List workloads of a team.",
+		ValidateFunc: cli.ValidateExactArgs(1),
+		Args: []cli.Argument{
+			{Name: "team", Required: true},
+		},
+		Flags: flags,
+		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+			type workload struct {
+				Name            string            `json:"name"`
+				Environment     string            `json:"environment"`
+				Type            string            `json:"type"`
+				State           gql.WorkloadState `json:"state"`
+				Vulnerabilities int               `json:"vulnerabilities"`
+			}
+
+			teamSlug := args[0]
+			ret, err := naisapi.GetTeamWorkloads(ctx, teamSlug)
+			if err != nil {
+				return err
+			}
+
+			if len(ret) == 0 {
+				out.Println("Team has no workloads.")
+				return nil
+			}
+
+			workloads := make([]workload, len(ret))
+			for i, w := range ret {
+				workloads[i] = workload{
+					Name:            w.GetName(),
+					Environment:     w.GetTeamEnvironment().Environment.Name,
+					Type:            w.GetTypename(),
+					State:           w.GetStatus().State,
+					Vulnerabilities: w.GetImage().VulnerabilitySummary.Total,
+				}
+			}
+
+			var w writer.Writer
+			if flags.Output == "json" {
+				w = writer.NewJSON(out, true)
+			} else {
+				w = writer.NewTable(
+					out,
+					writer.WithColumns("Name", "Environment", "Type", "State", "Vulnerabilities"),
+					writer.WithFormatter(func(row, column int, value any) string {
+						if column == 0 {
+							workloadName := fmt.Sprint(value)
+							workloadType := "app"
+							envName := workloads[row].Environment
+
+							if workloads[row].Type == "Job" {
+								workloadType = "job"
+							}
+
+							url := fmt.Sprintf("https://console.nav.cloud.nais.io/team/%s/%s/%s/%s", teamSlug, envName, workloadType, workloadName)
+							return termlink.ColorLink(workloadName, url, "underline")
+						}
+
+						return fmt.Sprint(value)
+					}),
+				)
+			}
+
+			return w.Write(workloads)
+		},
+		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
+			if len(toComplete) < 2 {
+				return nil, "Provide at least 2 characters to auto-complete team slugs."
+			}
+
+			slugs, err := naisapi.GetAllTeamSlugs(ctx)
+			if err != nil {
+				return nil, "Unable to fetch team slugs."
+			}
+
+			return slices.Filter([]string{}, slugs, func(slug string) bool {
+				return strings.HasPrefix(slug, toComplete)
+			}), "Choose a team to list the workloads of."
 		},
 	}
 }
