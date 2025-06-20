@@ -1,4 +1,7 @@
-# nais-cli - A Nais command-line interface
+# Nais Command Line Interface
+
+This repository contains the source code for the [Nais](https://nais.io) command line interface (CLI), as well as the
+somewhat opinionated [Cobra](https://cobra.dev/) wrapper, which is split into a [separate module](./pkg/cli).
 
 See Nais doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
 
@@ -42,4 +45,4 @@ optimize the user experience.
 We respect your privacy and do not collect any data if you set the environment variable `DO_NOT_TRACK`
 according to the [Do Not Track](https://consoledonottrack.com).
 
-There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-cli?orgId=1&from=now-24h&to=now)
+There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-cli?orgId=1&from=now-24h&to=now).
