@@ -235,4 +235,8 @@ require (
 
 replace github.com/nais/cli/pkg/cli => ./pkg/cli
 
-retract [v0.0.2, v0.0.1]
+retract (
+	v0.1.0
+	v0.0.2
+	v0.0.1
+)
