@@ -56,7 +56,7 @@ wait_for = ['fmt']
 run = """
 go build \
   -installsuffix cgo \
-  -ldflags "-s -w -X github.com/nais/cli/internal/version.Version=${VERSION:-local} -X github.com/nais/cli/internal/version.Commit=$(git rev-parse --short HEAD)" \
+  -ldflags "-s -w -X github.com/nais/cli/internal/version.Version=${VERSION:-local}" \
   -o bin/nais ./
 """
 

@@ -1,6 +1,3 @@
 package version
 
-var (
-	Version = "local"
-	Commit  = "uncommited"
-)
+var Version = "local"
