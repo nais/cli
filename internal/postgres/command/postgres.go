@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/root"
@@ -34,7 +34,7 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 			revokeCommand(flags),
 		},
 		ValidateFunc: func(ctx context.Context, _ []string) error {
-			_, err := gcp.ValidateAndGetUserLogin(ctx, false)
+			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)
 			return err
 		},
 	}
