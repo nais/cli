@@ -114,7 +114,7 @@ func (c *Command) cobraExample(prefix string) string {
 	return indent + strings.TrimSpace(sb.String())
 }
 
-// cobraUse generates the command usage string for the underlying cobra command. This function will also validate the
+// cobraUse generates the command usage string for the underlying cobra.Command. This method will also validate the
 // positional arguments for the command.
 func (c *Command) cobraUse() string {
 	cmd := c.Name
@@ -155,6 +155,7 @@ func (c *Command) cobraUse() string {
 	return cmd
 }
 
+// cobraShort generates the short description for the cobra.Command.
 func (c *Command) cobraShort() string {
 	title := strings.TrimSpace(c.Title)
 
@@ -173,6 +174,7 @@ func (c *Command) cobraShort() string {
 	return title
 }
 
+// cobraLong generates the long description for the cobra.Command.
 func (c *Command) cobraLong(short string) string {
 	description := strings.TrimSpace(c.Description)
 	if description == "" {
@@ -182,6 +184,7 @@ func (c *Command) cobraLong(short string) string {
 	return strings.TrimRight(short, ".") + "\n\n" + description
 }
 
+// cobraRun wraps the RunFunc of the command into a function that can be used by the underlying cobra.Command.
 func (c *Command) cobraRun(out Output) func(*cobra.Command, []string) error {
 	if c.RunFunc == nil {
 		return nil
@@ -192,7 +195,7 @@ func (c *Command) cobraRun(out Output) func(*cobra.Command, []string) error {
 	}
 }
 
-// init validates and initializes the command.
+// init validates and initializes the cobra.Command.
 func (c *Command) init(cmd string, out Output) {
 	if strings.TrimSpace(c.Name) == "" {
 		panic("command name cannot be empty")

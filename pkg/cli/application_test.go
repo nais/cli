@@ -17,5 +17,5 @@ func TestApplication_Run(t *testing.T) {
 			t.Fatalf("expected panic message to contain %q, got: %q", contains, msg)
 		}
 	}()
-	_, _ = (&cli.Application{}).Run(context.Background(), cli.Stdout(), []string{})
+	_, _ = (&cli.Application{}).Run(context.Background(), discard, []string{})
 }

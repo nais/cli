@@ -3,63 +3,72 @@ package cli_test
 import (
 	"bytes"
 	"context"
+	"io"
 	"strings"
 	"testing"
 
 	"github.com/nais/cli/pkg/cli"
 )
 
-var emptyRun = func(context.Context, cli.Output, []string) error {
-	return nil
-}
+var discard = cli.NewWriter(io.Discard)
 
 func TestCommandValidation(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("command with no name", func(t *testing.T) {
-		app := &cli.Application{
-			Name: "app",
-			SubCommands: []*cli.Command{
-				{
-					Title:   "Test command",
-					RunFunc: emptyRun,
-				},
+	tests := []struct {
+		name          string
+		cmd           *cli.Command
+		panicContains string
+	}{
+		{
+			name: "command with no name",
+			cmd: &cli.Command{
+				Title: "Test command",
 			},
-		}
-
-		defer func() {
-			contains := "cannot be empty"
-			if r := recover(); r == nil {
-				t.Fatalf("expected panic for command with no name, but did not panic")
-			} else if msg := r.(string); !strings.Contains(msg, contains) {
-				t.Fatalf("expected panic message to contain %q, got: %q", contains, msg)
-			}
-		}()
-		_, _ = app.Run(ctx, cli.Stdout(), []string{"-h"})
-	})
-
-	t.Run("command with space in name", func(t *testing.T) {
-		app := &cli.Application{
-			Name: "app",
-			SubCommands: []*cli.Command{
-				{
-					Name:    "test command",
-					Title:   "Test command",
-					RunFunc: emptyRun,
-				},
+			panicContains: "cannot be empty",
+		},
+		{
+			name: "command with space in name",
+			cmd: &cli.Command{
+				Name:  "test command",
+				Title: "Test command",
 			},
-		}
-
-		defer func() {
-			contains := "cannot contain spaces: test command"
-			if r := recover(); r == nil {
-				t.Fatalf("expected panic for command with no name, but did not panic")
-			} else if msg := r.(string); !strings.Contains(msg, contains) {
-				t.Fatalf("expected panic message to contain %q, got: %q", contains, msg)
+			panicContains: "cannot contain spaces: test command",
+		},
+		{
+			name: "command with no title",
+			cmd: &cli.Command{
+				Name: "cmd",
+			},
+			panicContains: "missing a title",
+		},
+		{
+			name: "command with newline in title",
+			cmd: &cli.Command{
+				Name:  "test",
+				Title: "Test command\nwith newline",
+			},
+			panicContains: "contains newline",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := &cli.Application{
+				Name:        "app",
+				SubCommands: []*cli.Command{tt.cmd},
 			}
-		}()
-		_, _ = app.Run(ctx, cli.Stdout(), []string{"-h"})
-	})
+
+			defer func() {
+				if r := recover(); r == nil {
+					t.Fatalf("expected panic for command with no name, but did not panic")
+				} else if msg := r.(string); !strings.Contains(msg, tt.panicContains) {
+					t.Fatalf("expected panic message to contain %q, got: %q", tt.panicContains, msg)
+				}
+			}()
+
+			_, _ = app.Run(ctx, discard, []string{"-h"})
+		})
+	}
 }
 
 func TestUseString(t *testing.T) {
@@ -129,6 +138,62 @@ func TestUseString(t *testing.T) {
 			if helpText := buf.String(); !strings.Contains(helpText, expectedUsage) {
 				t.Fatalf("expected help text to contain %q, got %q", expectedUsage, helpText)
 			}
+		})
+	}
+}
+
+func TestCommandArgumentValidation(t *testing.T) {
+	ctx := context.Background()
+	out := cli.NewWriter(io.Discard)
+
+	tests := []struct {
+		name          string
+		args          []cli.Argument
+		panicContains string
+	}{
+		{
+			name: "missing argument name",
+			args: []cli.Argument{
+				{Required: true},
+			},
+			panicContains: "cannot be empty",
+		},
+		{
+			name: "repeatable argument must be last",
+			args: []cli.Argument{
+				{Name: "arg1", Repeatable: true},
+				{Name: "arg2"},
+			},
+			panicContains: "must be the last argument",
+		},
+		{
+			name: "required after optional",
+			args: []cli.Argument{
+				{Name: "arg1"},
+				{Name: "arg2", Required: true},
+			},
+			panicContains: "cannot follow a non-required argument",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				if msg, ok := recover().(string); ok && !strings.Contains(msg, tt.panicContains) {
+					t.Fatalf("expected panic message to contain %q, got: %q", tt.panicContains, msg)
+				}
+			}()
+			_, _ = (&cli.Application{
+				Name: "app",
+				SubCommands: []*cli.Command{
+					{
+						Name:  "test",
+						Title: "Test command",
+						Args:  tt.args,
+					},
+				},
+			}).Run(ctx, out, []string{"-h"})
+			t.Fatalf("expected panic")
 		})
 	}
 }
