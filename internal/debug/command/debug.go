@@ -37,9 +37,8 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},
-		Flags:        debugFlags,
-		StickyFlags:  stickyFlags,
-		ValidateFunc: cli.ValidateMinArgs(1),
+		Flags:       debugFlags,
+		StickyFlags: stickyFlags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return debug.Run(args[0], debugFlags)
 		},
@@ -64,8 +63,7 @@ func tidyCommand(parentFlags *flag.DebugSticky) *cli.Command {
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(1),
-		Flags:        flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return tidy.Run(args[0], flags)
 		},

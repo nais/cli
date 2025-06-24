@@ -23,7 +23,6 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 			{Name: "username", Required: true},
 			{Name: "namespace", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(2),
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {

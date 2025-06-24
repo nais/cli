@@ -14,9 +14,8 @@ import (
 
 func get(_ *flag.Aiven) *cli.Command {
 	return &cli.Command{
-		Name:         "get",
-		Title:        "Generate preferred config format to '/tmp' folder.",
-		ValidateFunc: cli.ValidateExactArgs(3),
+		Name:  "get",
+		Title: "Generate preferred config format to '/tmp' folder.",
 		Args: []cli.Argument{
 			{Name: "service", Required: true},
 			{Name: "username", Required: true},

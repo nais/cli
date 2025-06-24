@@ -33,8 +33,7 @@ func revokeCommand(parentFlags *flag.Postgres) *cli.Command {
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(1),
-		Flags:        flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			input := bufio.NewScanner(os.Stdin)

@@ -17,7 +17,6 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 		Args: []cli.Argument{
 			{Name: "file", Repeatable: true, Required: true},
 		},
-		ValidateFunc:           cli.ValidateMinArgs(1),
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

@@ -19,7 +19,6 @@ func set(_ *root.Flags) *cli.Command {
 			{Name: "value", Required: true},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
-		ValidateFunc:     cli.ValidateExactArgs(2),
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])

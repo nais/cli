@@ -19,7 +19,6 @@ func jitacmd(_ *root.Flags) *cli.Command {
 			{Name: "gateway", Required: true, Repeatable: true},
 		},
 		RunFunc:          run,
-		ValidateFunc:     cli.ValidateMinArgs(1),
 		AutoCompleteFunc: autocomplete,
 	}
 }

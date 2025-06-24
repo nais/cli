@@ -38,9 +38,8 @@ func listMembers(parentFlags *flag.Team) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:         "list-members",
-		Title:        "List members of a team.",
-		ValidateFunc: cli.ValidateExactArgs(1),
+		Name:  "list-members",
+		Title: "List members of a team.",
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
 		},
@@ -109,10 +108,9 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:         "add-member",
-		Title:        "Add a member to a team.",
-		Description:  "Only team owners can add team members.",
-		ValidateFunc: cli.ValidateExactArgs(2),
+		Name:        "add-member",
+		Title:       "Add a member to a team.",
+		Description: "Only team owners can add team members.",
 		Examples: []cli.Example{
 			{
 				Description: "Add some-user@example.com to the my-team team as a regular member.",
@@ -202,10 +200,9 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:         "remove-member",
-		Title:        "Remove a member from a team.",
-		Description:  "Only team owners can remove members from a team.",
-		ValidateFunc: cli.ValidateExactArgs(2),
+		Name:        "remove-member",
+		Title:       "Remove a member from a team.",
+		Description: "Only team owners can remove members from a team.",
 		Examples: []cli.Example{
 			{
 				Description: "Remove some-user@example.com from the my-team team.",
@@ -286,9 +283,8 @@ func listWorkloads(parentFlags *flag.Team) *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:         "list-workloads",
-		Title:        "List workloads of a team.",
-		ValidateFunc: cli.ValidateExactArgs(1),
+		Name:  "list-workloads",
+		Title: "List workloads of a team.",
 		Args: []cli.Argument{
 			{Name: "team", Required: true},
 		},

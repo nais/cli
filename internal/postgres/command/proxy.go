@@ -22,8 +22,7 @@ func proxyCommand(parentFlags *flag.Postgres) *cli.Command {
 		Args: []cli.Argument{
 			{Name: "app_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(1),
-		Flags:        flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return postgres.RunProxy(ctx, args[0], flags.Context, flags.Namespace, flags.Host, flags.Port, flags.IsVerbose(), out)
 		},

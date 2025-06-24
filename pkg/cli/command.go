@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -19,7 +20,7 @@ type Argument struct {
 	Required bool
 
 	// Repeatable can be used for repeatable arguments. Only the last argument for a command can be repeatable. If a
-	// repeatable argument is also Required, it will require at least one value.
+	// repeatable argument is also Required, it will require at least one value when the command is executed.
 	Repeatable bool
 }
 
@@ -60,7 +61,9 @@ type Command struct {
 	// SubCommands adds sub-commands to the command. The SubCommands and RunFunc fields are mutually exclusive.
 	SubCommands []*Command
 
-	// Args are the positional arguments to the command. The arguments will be injected into RunFunc.
+	// Args are the positional arguments to the command. The arguments will be injected into RunFunc. If one or more of
+	// the arguments are required, the command will be validated when executed to ensure that the correct amount of
+	// arguments is specified.
 	Args []Argument
 
 	// Flags sets up flags for the command.
@@ -114,29 +117,10 @@ func (c *Command) cobraExample(prefix string) string {
 	return indent + strings.TrimSpace(sb.String())
 }
 
-// cobraUse generates the command usage string for the underlying cobra.Command. This method will also validate the
-// positional arguments for the command.
+// cobraUse generates the command usage string for the underlying cobra.Command.
 func (c *Command) cobraUse() string {
 	cmd := c.Name
-	for i, arg := range c.Args {
-		if arg.Name == "" {
-			panic(fmt.Sprintf("argument name (%+v) cannot be empty", arg))
-		}
-
-		if arg.Repeatable {
-			if i != len(c.Args)-1 {
-				panic(fmt.Sprintf("a repeatable argument (%+v) must be the last argument for the command", arg))
-			}
-		}
-
-		if arg.Required && i > 0 {
-			for j := i; j > 0; j-- {
-				if !c.Args[j-1].Required {
-					panic(fmt.Sprintf("required argument %q cannot follow a non-required argument %q", arg.Name, c.Args[j-1].Name))
-				}
-			}
-		}
-
+	for _, arg := range c.Args {
 		var format string
 		switch {
 		case arg.Repeatable && arg.Required:
@@ -153,6 +137,60 @@ func (c *Command) cobraUse() string {
 	}
 
 	return cmd
+}
+
+// validateArgs validates the positional arguments for the command, and prepends a ValidateFunc to the command that will
+// make sure the correct amount of arguments is sent to the command when executed by the end user.
+func (c *Command) validateArgs() {
+	requiredArgs := 0
+	hasRepeatable := false
+
+	for i, arg := range c.Args {
+		if arg.Name == "" {
+			panic(fmt.Sprintf("argument name (%+v) cannot be empty", arg))
+		}
+
+		if arg.Repeatable {
+			hasRepeatable = true
+			if i != len(c.Args)-1 {
+				panic(fmt.Sprintf("a repeatable argument (%+v) must be the last argument for the command", arg))
+			}
+		}
+
+		if arg.Required {
+			requiredArgs++
+		}
+
+		if arg.Required && i > 0 {
+			for j := i; j > 0; j-- {
+				if !c.Args[j-1].Required {
+					panic(fmt.Sprintf("required argument %q cannot follow a non-required argument %q", arg.Name, c.Args[j-1].Name))
+				}
+			}
+		}
+	}
+
+	var validationFunc ValidateFunc
+	if requiredArgs > 0 && hasRepeatable {
+		validationFunc = ValidateMinArgs(requiredArgs)
+	} else if requiredArgs > 0 {
+		validationFunc = ValidateExactArgs(requiredArgs)
+	}
+
+	if validationFunc != nil {
+		existingValidateFunc := c.ValidateFunc
+		c.ValidateFunc = func(ctx context.Context, args []string) error {
+			if err := validationFunc(ctx, args); err != nil {
+				return err
+			}
+
+			if existingValidateFunc == nil {
+				return nil
+			}
+
+			return existingValidateFunc(ctx, args)
+		}
+	}
 }
 
 // cobraShort generates the short description for the cobra.Command.
@@ -204,6 +242,8 @@ func (c *Command) init(cmd string, out Output) {
 	if strings.Contains(c.Name, " ") {
 		panic(fmt.Sprintf("command name cannot contain spaces: %v", c.Name))
 	}
+
+	c.validateArgs()
 
 	cmd = cmd + " " + c.Name
 	short := c.cobraShort()

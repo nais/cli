@@ -53,9 +53,6 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 			{Name: "target_sql_instance_name", Required: true},
 		},
 		ValidateFunc: func(ctx context.Context, args []string) error {
-			if err := cli.ValidateExactArgs(2)(ctx, args); err != nil {
-				return err
-			}
 			if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
 				return fmt.Errorf("tier must start with `db-`")
 			}
@@ -84,7 +81,6 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *cli.Command {
 			{Name: "app_name", Required: true},
 			{Name: "target_sql_instance_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(2),
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return promote.Run(ctx, args[0], args[1], flags)
 		},
@@ -101,8 +97,7 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *cli.Command {
 			{Name: "app_name", Required: true},
 			{Name: "target_sql_instance_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(2),
-		Flags:        flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return finalize.Run(ctx, args[0], args[1], flags)
 		},
@@ -119,8 +114,7 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *cli.Command {
 			{Name: "app_name", Required: true},
 			{Name: "target_sql_instance_name", Required: true},
 		},
-		ValidateFunc: cli.ValidateExactArgs(2),
-		Flags:        flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return rollback.Run(ctx, args[0], args[1], flags)
 		},
