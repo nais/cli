@@ -32,7 +32,7 @@ func statuscmd(rootFlags *root.Flags) *cli.Command {
 			}
 
 			if flags.Output != "" {
-				return naisdevice.PrintFormattedStatus(flags.Output, agentStatus, out)
+				return naisdevice.PrintFormattedStatus(string(flags.Output), agentStatus, out)
 			}
 
 			if flags.IsVerbose() {
@@ -45,7 +45,7 @@ func statuscmd(rootFlags *root.Flags) *cli.Command {
 			return nil
 		},
 		ValidateFunc: func(context.Context, []string) error {
-			if !slices.Contains([]string{"", "yaml", "json"}, flags.Output) {
+			if !slices.Contains([]string{"", "yaml", "json"}, string(flags.Output)) {
 				return cli.Errorf("%v is not an implemented format", flags.Output)
 			}
 
