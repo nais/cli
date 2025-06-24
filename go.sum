@@ -449,8 +449,8 @@ github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sassoftware/go-rpmutils v0.4.0 h1:ojND82NYBxgwrV+mX1CWsd5QJvvEZTKddtCdFLPWhpg=
 github.com/sassoftware/go-rpmutils v0.4.0/go.mod h1:3goNWi7PGAT3/dlql2lv3+MSN5jNYPjT5mVcQcIsYzI=
-github.com/savioxavier/termlink v1.4.2 h1:PRlvcStluuSKA87KCIqzODknYeQ3XEcgJP6DvAAVl1c=
-github.com/savioxavier/termlink v1.4.2/go.mod h1:5T5ePUlWbxCHIwyF8/Ez1qufOoGM89RCg9NvG+3G3gc=
+github.com/sechmann/termlink v1.4.2-forked h1:N6uUMbq2dAdFfI8+MCERVjJ7bETIiatS4linSrfLYGE=
+github.com/sechmann/termlink v1.4.2-forked/go.mod h1:Ldlfzv19MeUmhPPehaFyNxL7eAKAR8lv555C6jSPx28=
 github.com/securego/gosec/v2 v2.22.4 h1:21VdNGcKicFSv6rUDBc0cEtEl7lWyCKZxKIm0iwvrIM=
 github.com/securego/gosec/v2 v2.22.4/go.mod h1:ww5Yie7KJ3AH8XZQTletkW5zOmIse6FACs/Ys8VR3qE=
 github.com/segmentio/asm v1.2.0 h1:9BQrFxC+YOHJlTlHGkTrFWf59nbL3XnCoFLTwDCI7ys=
