@@ -56,11 +56,11 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 			if err := cli.ValidateExactArgs(2)(ctx, args); err != nil {
 				return err
 			}
-			if !strings.HasPrefix(flags.Tier, "db-") {
+			if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
 				return fmt.Errorf("tier must start with `db-`")
 			}
 
-			if !strings.HasPrefix(flags.InstanceType, "POSTGRES_") {
+			if flags.InstanceType != "" && !strings.HasPrefix(flags.InstanceType, "POSTGRES_") {
 				return fmt.Errorf("instance type must start with `POSTGRES_`")
 			}
 
