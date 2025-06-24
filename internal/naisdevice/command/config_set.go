@@ -19,13 +19,7 @@ func set(_ *root.Flags) *cli.Command {
 			{Name: "value", Required: true},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
-		ValidateFunc: func(_ context.Context, args []string) error {
-			if len(args) != 2 {
-				return fmt.Errorf("expected exactly 2 arguments, got %d", len(args))
-			}
-
-			return nil
-		},
+		ValidateFunc:     cli.ValidateExactArgs(2),
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])
