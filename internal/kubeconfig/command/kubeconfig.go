@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
 	"github.com/nais/cli/internal/naisdevice"
@@ -27,7 +27,7 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 		`),
 		Flags: flags,
 		ValidateFunc: func(ctx context.Context, args []string) error {
-			if _, err := gcp.ValidateAndGetUserLogin(ctx, false); err != nil {
+			if _, err := gcloud.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
 			}
 
@@ -38,7 +38,7 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 			return nil
 		},
 		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
-			email, err := gcp.GetActiveUserEmail(ctx)
+			email, err := gcloud.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err
 			}

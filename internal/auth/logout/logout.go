@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/auth"
-	"github.com/nais/cli/internal/gcp"
+	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/pkg/cli"
@@ -28,7 +28,7 @@ func Logout(rootFlags *root.Flags) *cli.Command {
 				return naisapi.Logout(ctx, out)
 			}
 
-			return gcp.Logout(ctx, out)
+			return gcloud.Logout(ctx, out)
 		},
 	}
 }
