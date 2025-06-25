@@ -31,7 +31,7 @@ require (
 	github.com/nais/device v0.0.0-20250520070746-1f0410aa36fe
 	github.com/nais/liberator v0.0.0-20250512134324-dd5b39585158
 	github.com/pterm/pterm v0.12.81
-	github.com/savioxavier/termlink v1.4.2
+	github.com/savioxavier/termlink v0.0.0-00010101000000-000000000000
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.10.0
 	github.com/suessflorian/gqlfetch v0.6.1-0.20250207011703-5b7aca875be9
@@ -234,6 +234,8 @@ require (
 )
 
 replace github.com/nais/cli/pkg/cli => ./pkg/cli
+
+replace github.com/savioxavier/termlink => github.com/sechmann/termlink v1.4.2-forked
 
 retract (
 	v0.1.0
