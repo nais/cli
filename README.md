@@ -46,3 +46,7 @@ We respect your privacy and do not collect any data if you set the environment v
 according to the [Do Not Track](https://consoledonottrack.com).
 
 There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-cli?orgId=1&from=now-24h&to=now).
+
+## Contributing
+
+This repo uses [Conventional Commits](https://www.conventionalcommits.org/). Please read up on how to format your commit messages. Please see the [pre-commit hook](script/semantic-commits-hook.sh) to see which types we allow.
