@@ -16,7 +16,7 @@ func enableAuditCommand(parentFlags *flag.Postgres) *cli.Command {
 		Title:       "Enable audit extension in SQL instance database.",
 		Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

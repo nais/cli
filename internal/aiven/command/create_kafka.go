@@ -20,8 +20,8 @@ func createKafka(parentFlags *flag.Create) *cli.Command {
 		Title: "Grant a user access to a Kafka topic.",
 		Flags: createKafkaFlags,
 		Args: []cli.Argument{
-			{Name: "username", Required: true},
-			{Name: "namespace", Required: true},
+			{Name: "username"},
+			{Name: "namespace"},
 		},
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)

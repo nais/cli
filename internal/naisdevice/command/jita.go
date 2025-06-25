@@ -16,7 +16,7 @@ func jitacmd(_ *root.Flags) *cli.Command {
 		Name:  "jita",
 		Title: "Connect to a JITA gateway.",
 		Args: []cli.Argument{
-			{Name: "gateway", Required: true, Repeatable: true},
+			{Name: "gateway", Repeatable: true},
 		},
 		RunFunc:          run,
 		AutoCompleteFunc: autocomplete,

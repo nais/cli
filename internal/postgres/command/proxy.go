@@ -20,7 +20,7 @@ func proxyCommand(parentFlags *flag.Postgres) *cli.Command {
 		Title:       "Create a proxy to a SQL instance.",
 		Description: "Allows your user to connect to databases and starts a proxy.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

@@ -15,7 +15,7 @@ func grantCommand(parentFlags *flag.Postgres) *cli.Command {
 		Title:       "Grant yourself access to a SQL instance database.",
 		Description: "This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

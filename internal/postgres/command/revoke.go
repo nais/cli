@@ -31,7 +31,7 @@ func revokeCommand(parentFlags *flag.Postgres) *cli.Command {
 			This operation is only required to run once for each SQL instance.
 		`),
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

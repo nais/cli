@@ -41,7 +41,7 @@ func listMembers(parentFlags *flag.Team) *cli.Command {
 		Name:  "list-members",
 		Title: "List members of a team.",
 		Args: []cli.Argument{
-			{Name: "team", Required: true},
+			{Name: "team"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
@@ -122,8 +122,8 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 			},
 		},
 		Args: []cli.Argument{
-			{Name: "team", Required: true},
-			{Name: "member", Required: true},
+			{Name: "team"},
+			{Name: "member"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
@@ -210,8 +210,8 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 			},
 		},
 		Args: []cli.Argument{
-			{Name: "team", Required: true},
-			{Name: "member", Required: true},
+			{Name: "team"},
+			{Name: "member"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
@@ -286,7 +286,7 @@ func listWorkloads(parentFlags *flag.Team) *cli.Command {
 		Name:  "list-workloads",
 		Title: "List workloads of a team.",
 		Args: []cli.Argument{
-			{Name: "team", Required: true},
+			{Name: "team"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

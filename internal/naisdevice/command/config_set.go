@@ -15,8 +15,8 @@ func set(_ *root.Flags) *cli.Command {
 		Name:  "set",
 		Title: "Set a configuration value.",
 		Args: []cli.Argument{
-			{Name: "setting", Required: true},
-			{Name: "value", Required: true},
+			{Name: "setting"},
+			{Name: "value"},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

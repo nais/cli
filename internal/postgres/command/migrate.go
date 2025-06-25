@@ -49,8 +49,8 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *cli.Command {
 		Title:       "Make necessary setup for a new SQL instance migration.",
 		Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
-			{Name: "target_sql_instance_name", Required: true},
+			{Name: "app_name"},
+			{Name: "target_sql_instance_name"},
 		},
 		ValidateFunc: func(ctx context.Context, args []string) error {
 			if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
@@ -78,8 +78,8 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *cli.Command {
 		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
 		Flags:       flags,
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
-			{Name: "target_sql_instance_name", Required: true},
+			{Name: "app_name"},
+			{Name: "target_sql_instance_name"},
 		},
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			return promote.Run(ctx, args[0], args[1], flags)
@@ -94,8 +94,8 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *cli.Command {
 		Title:       "Finalize the migration.",
 		Description: "Finalize will remove the source instance and associated resources after a successful migration.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
-			{Name: "target_sql_instance_name", Required: true},
+			{Name: "app_name"},
+			{Name: "target_sql_instance_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
@@ -111,8 +111,8 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *cli.Command {
 		Title:       "Roll back the migration.",
 		Description: "Rollback will roll back the migration, and restore the application to use the original instance.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
-			{Name: "target_sql_instance_name", Required: true},
+			{Name: "app_name"},
+			{Name: "target_sql_instance_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

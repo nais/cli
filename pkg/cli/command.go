@@ -8,19 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Argument represents a positional argument for a command. All arguments for a command will be grouped together as a
-// string slices, and the arguments will be injected into the command's RunFunc (amongst others) in the order they are
+// Argument represents a positional argument for a command. All arguments for a command will be grouped together in a
+// string slice, and the arguments will be injected into the command's RunFunc (amongst others) in the order they are
 // defined.
 type Argument struct {
 	// Name is the name of the argument, used for help output. This field is required.
 	Name string
 
-	// Required can be set if the argument is required when invoking the command. If a command is required, all
-	// arguments before it must also be required.
-	Required bool
-
-	// Repeatable can be used for repeatable arguments. Only the last argument for a command can be repeatable. If a
-	// repeatable argument is also Required, it will require at least one value when the command is executed.
+	// Repeatable can be used for repeatable arguments. Only the last argument for a command can be repeatable.
 	Repeatable bool
 }
 
@@ -61,9 +56,8 @@ type Command struct {
 	// SubCommands adds sub-commands to the command. The SubCommands and RunFunc fields are mutually exclusive.
 	SubCommands []*Command
 
-	// Args are the positional arguments to the command. The arguments will be injected into RunFunc. If one or more of
-	// the arguments are required, the command will be validated when executed to ensure that the correct amount of
-	// arguments is specified.
+	// Args are the positional arguments to the command. The arguments will be injected into RunFunc. The command will
+	// be validated when executed to ensure that the correct amount of arguments is specified.
 	Args []Argument
 
 	// Flags sets up flags for the command.
@@ -121,19 +115,11 @@ func (c *Command) cobraExample(prefix string) string {
 func (c *Command) cobraUse() string {
 	cmd := c.Name
 	for _, arg := range c.Args {
-		var format string
-		switch {
-		case arg.Repeatable && arg.Required:
-			format = "%[1]s [%[1]s...]" // ARG [ARG...]
-		case arg.Repeatable && !arg.Required:
-			format = "[%[1]s...]" // [ARG...]
-		case !arg.Repeatable && arg.Required:
-			format = "%[1]s" // ARG
-		case !arg.Repeatable && !arg.Required:
-			format = "[%[1]s]" // [ARG]
+		format := " %[1]s" // ARG
+		if arg.Repeatable {
+			format += " [%[1]s...]" // ARG [ARG...]
 		}
-
-		cmd += fmt.Sprintf(" "+format, strings.ToUpper(arg.Name))
+		cmd += fmt.Sprintf(format, strings.ToUpper(arg.Name))
 	}
 
 	return cmd
@@ -142,7 +128,6 @@ func (c *Command) cobraUse() string {
 // validateArgs validates the positional arguments for the command, and prepends a ValidateFunc to the command that will
 // make sure the correct amount of arguments is sent to the command when executed by the end user.
 func (c *Command) validateArgs() {
-	requiredArgs := 0
 	hasRepeatable := false
 
 	for i, arg := range c.Args {
@@ -156,25 +141,14 @@ func (c *Command) validateArgs() {
 				panic(fmt.Sprintf("a repeatable argument (%+v) must be the last argument for the command", arg))
 			}
 		}
-
-		if arg.Required {
-			requiredArgs++
-		}
-
-		if arg.Required && i > 0 {
-			for j := i; j > 0; j-- {
-				if !c.Args[j-1].Required {
-					panic(fmt.Sprintf("required argument %q cannot follow a non-required argument %q", arg.Name, c.Args[j-1].Name))
-				}
-			}
-		}
 	}
 
+	numArgs := len(c.Args)
 	var validationFunc ValidateFunc
-	if requiredArgs > 0 && hasRepeatable {
-		validationFunc = ValidateMinArgs(requiredArgs)
-	} else if requiredArgs > 0 {
-		validationFunc = ValidateExactArgs(requiredArgs)
+	if numArgs > 0 && hasRepeatable {
+		validationFunc = ValidateMinArgs(numArgs)
+	} else if numArgs > 0 {
+		validationFunc = ValidateExactArgs(numArgs)
 	}
 
 	if validationFunc != nil {

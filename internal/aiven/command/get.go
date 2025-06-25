@@ -17,9 +17,9 @@ func get(_ *flag.Aiven) *cli.Command {
 		Name:  "get",
 		Title: "Generate preferred config format to '/tmp' folder.",
 		Args: []cli.Argument{
-			{Name: "service", Required: true},
-			{Name: "username", Required: true},
-			{Name: "namespace", Required: true},
+			{Name: "service"},
+			{Name: "username"},
+			{Name: "namespace"},
 		},
 		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
 			if len(args) == 0 {

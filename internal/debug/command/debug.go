@@ -35,7 +35,7 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 			You can only reconnect to the debug session if the pod is running.
 		`),
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags:       debugFlags,
 		StickyFlags: stickyFlags,
@@ -61,7 +61,7 @@ func tidyCommand(parentFlags *flag.DebugSticky) *cli.Command {
 			Set the "--copy" flag to delete copy pods.
 		`),
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

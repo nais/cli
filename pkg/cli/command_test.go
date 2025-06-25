@@ -84,31 +84,17 @@ func TestUseString(t *testing.T) {
 			expectedArgsString: "",
 		},
 		{
-			name:               "optional argument",
-			expectedArgsString: "[ARG]",
+			name:               "argument",
+			expectedArgsString: "ARG",
 			args: []cli.Argument{
 				{Name: "arg"},
 			},
 		},
 		{
-			name:               "required argument",
-			expectedArgsString: "ARG",
-			args: []cli.Argument{
-				{Name: "arg", Required: true},
-			},
-		},
-		{
-			name:               "optional repeatable argument",
-			expectedArgsString: "[ARG...]",
-			args: []cli.Argument{
-				{Name: "arg", Repeatable: true},
-			},
-		},
-		{
-			name:               "required repeatable argument",
+			name:               "repeatable argument",
 			expectedArgsString: "ARG [ARG...]",
 			args: []cli.Argument{
-				{Name: "arg", Required: true, Repeatable: true},
+				{Name: "arg", Repeatable: true},
 			},
 		},
 	}
@@ -154,7 +140,7 @@ func TestCommandArgumentValidation(t *testing.T) {
 		{
 			name: "missing argument name",
 			args: []cli.Argument{
-				{Required: true},
+				{Repeatable: true},
 			},
 			panicContains: "cannot be empty",
 		},
@@ -165,14 +151,6 @@ func TestCommandArgumentValidation(t *testing.T) {
 				{Name: "arg2"},
 			},
 			panicContains: "must be the last argument",
-		},
-		{
-			name: "required after optional",
-			args: []cli.Argument{
-				{Name: "arg1"},
-				{Name: "arg2", Required: true},
-			},
-			panicContains: "cannot follow a non-required argument",
 		},
 	}
 

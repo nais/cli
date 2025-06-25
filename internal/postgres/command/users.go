@@ -31,9 +31,9 @@ func addCommand(parentFlags *flag.User) *cli.Command {
 		Title:       "Add a user to a SQL instance.",
 		Description: "Will grant a user access to tables in public schema.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
-			{Name: "username", Required: true},
-			{Name: "password", Required: true},
+			{Name: "app_name"},
+			{Name: "username"},
+			{Name: "password"},
 		},
 		Flags: userAddFlags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
@@ -48,7 +48,7 @@ func listCommand(parentFlags *flag.User) *cli.Command {
 		Name:  "list",
 		Title: "List users in a SQL instance database.",
 		Args: []cli.Argument{
-			{Name: "app_name", Required: true},
+			{Name: "app_name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {

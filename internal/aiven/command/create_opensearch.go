@@ -19,8 +19,8 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 		Name:  "opensearch",
 		Title: "Grant a user access to an OpenSearch instance.",
 		Args: []cli.Argument{
-			{Name: "username", Required: true},
-			{Name: "namespace", Required: true},
+			{Name: "username"},
+			{Name: "namespace"},
 		},
 		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
 			return aiven_services.OpenSearchAccesses, ""

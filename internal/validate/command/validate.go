@@ -15,7 +15,7 @@ func Validate(parentFlags *root.Flags) *cli.Command {
 		Name:  "validate",
 		Title: "Validate one or more Nais manifest files.",
 		Args: []cli.Argument{
-			{Name: "file", Repeatable: true, Required: true},
+			{Name: "file", Repeatable: true},
 		},
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,

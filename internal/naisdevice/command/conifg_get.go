@@ -15,7 +15,7 @@ func get(_ *root.Flags) *cli.Command {
 		Name:  "get",
 		Title: "Get a naisdevice setting.",
 		Args: []cli.Argument{
-			{Name: "setting", Required: true},
+			{Name: "setting"},
 		},
 		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
 			setting := args[0]
