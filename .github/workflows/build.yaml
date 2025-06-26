@@ -33,15 +33,14 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - name: set version
+        with:
+          fetch-depth: 0
+      - name: semantic release
         id: set-version
-        run: |
-          TIMESTAMP=$(git show -s --format=%cd --date=format:%Y%m%d%H%M%S HEAD)
-          COMMIT_SHA=$(git rev-parse --short=12 HEAD)
-          VERSION="v2.0.0-${TIMESTAMP}-${COMMIT_SHA}"
-
-          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
-          echo "Pseudo semantic version: ${VERSION}"
+        uses: go-semantic-release/action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          changelog-generator-opt: "emojis=true"
 
   checks:
     strategy:
@@ -159,11 +158,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v17
-      - name: Create tag
-        run: |
-          git tag ${{ needs.set-version.outputs.version }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
       - name: Generate hashes
         id: hashes
         run: |
@@ -194,11 +189,10 @@ jobs:
         with:
           name: hashes-json
           path: hashes.json
-      - name: Create release
+      - name: Upload assets to release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.set-version.outputs.version }}
-          generate_release_notes: true
           prerelease: false
           files: |
             archive-linux-amd64/nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
