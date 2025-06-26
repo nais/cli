@@ -49,4 +49,4 @@ There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-c
 
 ## Contributing
 
-This repo uses [Conventional Commits](https://www.conventionalcommits.org/). Please read up on how to format your commit messages. Please see the [pre-commit hook](script/semantic-commits-hook.sh) to see which types we allow.
+This repo uses [Conventional Commits](https://www.conventionalcommits.org/). Please read up on how to format your commit messages. Please see the [pre-commit hook](script/semantic-commit-hook.sh) to see which types we allow.
