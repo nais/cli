@@ -71,7 +71,7 @@ func TestCommandValidation(t *testing.T) {
 	}
 }
 
-func TestUseString(t *testing.T) {
+func TestArgumentUseString(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {

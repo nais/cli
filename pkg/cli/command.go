@@ -245,8 +245,16 @@ func (c *Command) init(cmd string, out Output) {
 	setupFlags(c.cobraCmd, c.Flags, c.cobraCmd.Flags())
 	setupFlags(c.cobraCmd, c.StickyFlags, c.cobraCmd.PersistentFlags())
 
+	commandsAndAliases := make([]string, 0)
 	for _, sub := range c.SubCommands {
 		sub.init(cmd, out)
 		c.cobraCmd.AddCommand(sub.cobraCmd)
+
+		commandsAndAliases = append(commandsAndAliases, sub.Name)
+		commandsAndAliases = append(commandsAndAliases, sub.Aliases...)
+	}
+
+	if d := duplicate(commandsAndAliases); d != "" {
+		panic(fmt.Sprintf("command %q contains duplicate commands and/or aliases: %q", cmd, d))
 	}
 }

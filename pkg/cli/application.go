@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"fmt"
 	"iter"
 	"maps"
 
@@ -61,13 +62,34 @@ func (a *Application) Run(ctx context.Context, out Output, args []string) ([]str
 		})
 	}
 
-	for _, c := range a.SubCommands {
-		c.init(a.Name, out)
-		a.cobraCmd.AddCommand(c.cobraCmd)
+	commandsAndAliases := make([]string, 0)
+	for _, sub := range a.SubCommands {
+		sub.init(a.Name, out)
+		a.cobraCmd.AddCommand(sub.cobraCmd)
+
+		commandsAndAliases = append(commandsAndAliases, sub.Name)
+		commandsAndAliases = append(commandsAndAliases, sub.Aliases...)
+	}
+
+	if d := duplicate(commandsAndAliases); d != "" {
+		panic(fmt.Sprintf("the application contains duplicate commands and/or aliases: %q", d))
 	}
 
 	executedCommand, err := a.cobraCmd.ExecuteContextC(ctx)
 	return commandNames(executedCommand), err
+}
+
+// duplicate returns the first duplicate value found in the provided slice, or an empty string if no duplicates are
+// found.
+func duplicate(values []string) string {
+	seen := make(map[string]struct{})
+	for _, v := range values {
+		if _, exists := seen[v]; exists {
+			return v
+		}
+		seen[v] = struct{}{}
+	}
+	return ""
 }
 
 // allGroups returns a sequence of all unique command groups from the provided commands and their subcommands.
