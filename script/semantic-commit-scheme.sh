@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 function validate_title {
-	grep -qE '^(Merge|((feat|fix|ci|docs|refactor|perf|test|build|chore)(\([a-z0-9\s\-\_\,]+\))?!?:\s\w))' <<<"$1"
+	grep -qE '^(Merge|((feat|fix|ci|docs|refactor|perf|test|build|style)(\([a-z0-9\s\-\_\,]+\))?!?:\s\w))' <<<"$1"
 }
 
 function explain_scheme {
@@ -19,7 +19,7 @@ function explain_scheme {
 	echo "perf     | Improves performance (i.e. removes a time.Sleep)"
 	echo "test     | Adding / correcting tests"
 	echo "build    | Build system or external dependencies (i.e. go.mod, mise tasks)"
-	echo "chore    | Regular maintenance tasks (i.e. removing unused deps)"
+	echo "style    | Changes to output formatting / colors (i.e. changing wording in an error)"
 	echo ""
 	echo "Please see"
 	echo "- https://www.conventionalcommits.org/en/v1.0.0/#summary"
