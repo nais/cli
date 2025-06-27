@@ -17,7 +17,7 @@ done < <(git log --format="%s" "$(git merge-base "$base" HEAD)..HEAD")
 if [ -n "$bad_commits" ]; then
 	body="### :exclamation: Commits detected that don't follow the commit scheme:\n$bad_commits"
 	echo -e "Posting to GitHub PR:\n$body"
-	echo -e "$body" | gh pr comment "$GITHUB_PR_NUMBER" --edit-last --create-if-none --body-file=- --repo "$GITHUB_REPO" --
+	echo -e "$body" | gh pr comment "$GITHUB_PR_NUMBER" --edit-last --create-if-none --repo "$GITHUB_REPO" --body-file=-
 fi
 
 exit 0
