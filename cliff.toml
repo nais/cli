@@ -9,9 +9,6 @@ commit_parsers = [
     { message = "^feat", group = "Features"},
     { message = "^fix", group = "Bug Fixes"},
     { message = "^style", group = "Styling"},
+    { message = "", group = "Miscellaneous Changes"},
 ]
-tag_pattern = "v\d+\.\d+\.\d+"
-
-[remote.github]
-owner = "nais"
-repo = "cli"
+tag_pattern = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
