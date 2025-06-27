@@ -57,8 +57,8 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-        env:
-          MISE_ENV: ${{ matrix.mise_target }}
+        with:
+          cache: false
       - name: mise run ${{ matrix.mise_target }}
         run: |
           mise run ${{ matrix.mise_target }}
@@ -77,8 +77,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
-        env:
-          MISE_ENV: ${{ matrix.mise_target }}
+        with:
+          cache: false
       - name: build
         run: |
           ./script/completions.sh
@@ -122,8 +122,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
-        env:
-          MISE_ENV: ${{ matrix.mise_target }}
+        with:
+          cache: false
       - name: package deb
         run: |
           ./script/completions.sh
