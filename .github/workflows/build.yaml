@@ -29,7 +29,10 @@ jobs:
           echo "version=$version" >>"$GITHUB_OUTPUT"
 
           changelog="$(git-cliff --tag "$version" --unreleased --strip header)"
-          echo "changelog=$changelog" >>"$GITHUB_OUTPUT"
+          # Safely write multiline output
+          echo "changelog<<EOF" >>"$GITHUB_OUTPUT"
+          echo "$changelog" >>"$GITHUB_OUTPUT"
+          echo "EOF" >>"$GITHUB_OUTPUT"
 
           if [[ "${{ github.event_name }}" == "pull_request" && -n "$changelog" ]]; then
             echo -e "$changelog" | gh pr comment "${{ github.event.number }}" --edit-last --create-if-none --repo "${{ github.repository }}" --body-file=-
