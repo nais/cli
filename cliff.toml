@@ -1,0 +1,17 @@
+[bump]
+initial_tag = "v2.0.0"
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+filter_commits = false
+commit_parsers = [
+    { message = "^feat", group = "Features"},
+    { message = "^fix", group = "Bug Fixes"},
+    { message = "^style", group = "Styling"},
+]
+tag_pattern = "v\d+\.\d+\.\d+"
+
+[remote.github]
+owner = "nais"
+repo = "cli"
