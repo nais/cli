@@ -33,15 +33,13 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@v2
       - name: set version
         id: set-version
         run: |
-          TIMESTAMP=$(git show -s --format=%cd --date=format:%Y%m%d%H%M%S HEAD)
-          COMMIT_SHA=$(git rev-parse --short=12 HEAD)
-          VERSION="v2.0.0-${TIMESTAMP}-${COMMIT_SHA}"
-
-          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
-          echo "Pseudo semantic version: ${VERSION}"
+          echo "version=$(git-cliff --bumped-version)" >>"$GITHUB_OUTPUT"
 
   checks:
     strategy:
@@ -158,6 +156,7 @@ jobs:
       - check-commits
     steps:
       - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
       - uses: DeterminateSystems/nix-installer-action@v17
       - name: Create tag
         run: |
@@ -194,11 +193,14 @@ jobs:
         with:
           name: hashes-json
           path: hashes.json
+      - name: Generate changelog
+        id: changelog
+        run: echo "body=$(git-cliff --tag "${{ needs.set-version.outputs.version }}" --unreleased --strip header)" >>"$GITHUB_OUTPUT"
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.set-version.outputs.version }}
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.body }}
           prerelease: false
           files: |
             archive-linux-amd64/nais-cli_${{ needs.set-version.outputs.version }}_linux_amd64.tar.gz
