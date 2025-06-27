@@ -193,7 +193,13 @@ jobs:
           path: hashes.json
       - name: Generate changelog
         id: changelog
-        run: echo "body=$(git-cliff --tag "${{ needs.set-version.outputs.version }}" --unreleased --strip header)" >>"$GITHUB_OUTPUT"
+        run: |
+          body="$(git-cliff --tag "${{ needs.set-version.outputs.version }}" --unreleased --strip header)"
+          echo "body=$body" >>"$GITHUB_OUTPUT"
+
+          if [[  "${{ github.event_name }} == "pull_request" ]]; then
+            echo -e "$body" | gh pr comment "${{ github.event.number }}" --edit-last --create-if-none --repo "${{ github.repository }} --body-file=-"
+          fi
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
