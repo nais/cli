@@ -72,8 +72,6 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: jdx/mise-action@v2
         with:
           cache: false
@@ -117,8 +115,6 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: jdx/mise-action@v2
         with:
           cache: false
@@ -156,6 +152,8 @@ jobs:
       - check-commits
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: jdx/mise-action@v2
       - uses: DeterminateSystems/nix-installer-action@v17
       - name: Create tag
@@ -227,8 +225,6 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
@@ -277,8 +273,6 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: navikt/github-app-token-generator@v1
         id: token
         with:
