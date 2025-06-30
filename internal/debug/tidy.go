@@ -3,9 +3,8 @@ package debug
 import (
 	"fmt"
 
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-
 	"github.com/pterm/pterm"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

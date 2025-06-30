@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/device/pkg/pb"
 	"gopkg.in/yaml.v3"
 )

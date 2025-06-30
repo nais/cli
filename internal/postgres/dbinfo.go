@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 	"golang.org/x/oauth2"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"

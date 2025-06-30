@@ -3,10 +3,10 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/postgres"
-	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/metric"
+	"github.com/nais/cli/v2/internal/postgres"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 )
 
 func enableAuditCommand(parentFlags *flag.Postgres) *cli.Command {

@@ -3,7 +3,7 @@ package aiven
 import (
 	"testing"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/stretchr/testify/assert"
 )
 

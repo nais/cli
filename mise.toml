@@ -62,7 +62,7 @@ wait_for = ['fmt']
 run = """
 go build \
   -installsuffix cgo \
-  -ldflags "-s -w -X github.com/nais/cli/internal/version.Version=${VERSION:-local}" \
+  -ldflags "-s -w -X github.com/nais/cli/v2/internal/version.Version=${VERSION:-local}" \
   -o bin/nais ./
 """
 

@@ -15,8 +15,8 @@ import (
 
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
-	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 )
 
 func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out cli.Output) error {

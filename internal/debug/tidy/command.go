@@ -3,8 +3,8 @@ package tidy
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/debug"
-	"github.com/nais/cli/internal/debug/command/flag"
+	"github.com/nais/cli/v2/internal/debug"
+	"github.com/nais/cli/v2/internal/debug/command/flag"
 )
 
 func Run(workloadName string, flags *flag.DebugTidy) error {

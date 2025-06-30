@@ -1,4 +1,4 @@
-module github.com/nais/cli
+module github.com/nais/cli/v2
 
 go 1.24.4
 
@@ -27,7 +27,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/nais/cli/pkg/cli v0.0.0-00010101000000-000000000000
+	github.com/nais/cli/pkg/cli/v2 v2.0.1-00010101000000-000000000000
 	github.com/nais/device v0.0.0-20250520070746-1f0410aa36fe
 	github.com/nais/liberator v0.0.0-20250512134324-dd5b39585158
 	github.com/pterm/pterm v0.12.81
@@ -233,12 +233,6 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/nais/cli/pkg/cli => ./pkg/cli
+replace github.com/nais/cli/pkg/cli/v2 => ./pkg/cli
 
 replace github.com/savioxavier/termlink => github.com/sechmann/termlink v1.4.2-forked
-
-retract (
-	v0.1.0
-	v0.0.2
-	v0.0.1
-)

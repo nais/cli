@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/xeipuuv/gojsonschema"
 )
 

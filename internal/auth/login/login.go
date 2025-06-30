@@ -3,11 +3,11 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/auth"
-	"github.com/nais/cli/internal/gcloud"
-	"github.com/nais/cli/internal/naisapi"
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/auth"
+	"github.com/nais/cli/v2/internal/gcloud"
+	"github.com/nais/cli/v2/internal/naisapi"
+	"github.com/nais/cli/v2/internal/root"
 )
 
 type flags struct {

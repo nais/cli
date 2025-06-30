@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 )
 
 var discard = cli.NewWriter(io.Discard)

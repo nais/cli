@@ -1,4 +1,4 @@
-module github.com/nais/cli/pkg/cli
+module github.com/nais/cli/pkg/cli/v2
 
 go 1.24.4
 

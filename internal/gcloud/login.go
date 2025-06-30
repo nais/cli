@@ -3,7 +3,7 @@ package gcloud
 import (
 	"context"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 )
 
 func Login(ctx context.Context, out cli.Output) error {

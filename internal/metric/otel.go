@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/nais/cli/internal/version"
+	"github.com/nais/cli/v2/internal/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
 	m "go.opentelemetry.io/otel/metric"

@@ -9,9 +9,9 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/internal/postgres"
-	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/postgres"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 )
 
 func revokeCommand(parentFlags *flag.Postgres) *cli.Command {

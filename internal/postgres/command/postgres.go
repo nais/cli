@@ -3,11 +3,11 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/gcloud"
-	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/gcloud"
+	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/cli/v2/internal/root"
 )
 
 func Postgres(parentFlags *root.Flags) *cli.Command {
