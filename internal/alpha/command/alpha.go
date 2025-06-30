@@ -1,10 +1,10 @@
 package command
 
 import (
-	naisapi "github.com/nais/cli/internal/naisapi/command"
-	"github.com/nais/cli/internal/naisapi/command/flag"
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	naisapi "github.com/nais/cli/v2/internal/naisapi/command"
+	"github.com/nais/cli/v2/internal/naisapi/command/flag"
+	"github.com/nais/cli/v2/internal/root"
 )
 
 func Alpha(parentFlags *root.Flags) *cli.Command {

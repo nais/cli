@@ -5,10 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/pkg/cli"
-
-	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/aiven/aiven_services"
+	"github.com/nais/cli/v2/internal/k8s"
 	aivennaisiov1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 	"github.com/stretchr/testify/assert"
 	v1 "k8s.io/api/core/v1"

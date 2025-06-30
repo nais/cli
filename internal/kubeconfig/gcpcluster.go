@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
 	"google.golang.org/api/googleapi"

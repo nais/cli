@@ -1,6 +1,6 @@
 package root
 
-import "github.com/nais/cli/pkg/cli"
+import "github.com/nais/cli/pkg/cli/v2"
 
 type Flags struct {
 	// VerboseLevel indicates the verbosity level of Nais CLI.

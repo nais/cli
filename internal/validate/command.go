@@ -3,8 +3,8 @@ package validate
 import (
 	"fmt"
 
-	"github.com/nais/cli/internal/validate/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/validate/command/flag"
 )
 
 func Run(files []string, flags *flag.Validate, out cli.Output) error {

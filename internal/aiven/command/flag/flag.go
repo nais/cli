@@ -1,6 +1,6 @@
 package flag
 
-import "github.com/nais/cli/internal/root"
+import "github.com/nais/cli/v2/internal/root"
 
 type Aiven struct{ *root.Flags }
 

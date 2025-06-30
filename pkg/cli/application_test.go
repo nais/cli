@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 )
 
 func TestApplicationValidation(t *testing.T) {

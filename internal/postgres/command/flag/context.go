@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/v2/internal/k8s"
 )
 
 type Context string

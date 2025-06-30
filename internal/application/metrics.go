@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	metrics "github.com/nais/cli/internal/metric"
+	metrics "github.com/nais/cli/v2/internal/metric"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/naisdevice/command/flag"
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/naisdevice"
+	"github.com/nais/cli/v2/internal/naisdevice/command/flag"
+	"github.com/nais/cli/v2/internal/root"
 	"github.com/nais/device/pkg/pb"
 )
 

@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/aiven"
-	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/aiven"
+	"github.com/nais/cli/v2/internal/aiven/command/flag"
 )
 
 func tidy(_ *flag.Aiven) *cli.Command {

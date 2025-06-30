@@ -1,7 +1,7 @@
 package kubeconfig
 
 import (
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 

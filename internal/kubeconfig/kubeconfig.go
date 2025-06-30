@@ -7,7 +7,7 @@ import (
 	"slices"
 
 	"github.com/go-logr/logr"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog/v2"

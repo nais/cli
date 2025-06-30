@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/postgres/migrate/config"
+	"github.com/nais/cli/v2/internal/postgres/migrate/config"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	"github.com/nais/liberator/pkg/namegen"
 	"github.com/pterm/pterm"

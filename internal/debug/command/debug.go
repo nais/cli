@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/internal/debug"
-	"github.com/nais/cli/internal/debug/command/flag"
-	"github.com/nais/cli/internal/debug/tidy"
-	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/root"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/debug"
+	"github.com/nais/cli/v2/internal/debug/command/flag"
+	"github.com/nais/cli/v2/internal/debug/tidy"
+	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/cli/v2/internal/root"
 )
 
 func Debug(parentFlags *root.Flags) *cli.Command {

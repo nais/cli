@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	godebug "runtime/debug"
+	"runtime/debug"
 	"strings"
 
-	"github.com/nais/cli/internal/urlopen"
-	"github.com/nais/cli/internal/version"
+	"github.com/nais/cli/v2/internal/urlopen"
+	"github.com/nais/cli/v2/internal/version"
 )
 
 func fmtCode(c string) string {
@@ -22,7 +22,7 @@ func fmtMultilineCode(c string) string {
 func handlePanic(recoveredFrom any) {
 	recoveredString := fmt.Sprintf("%v", recoveredFrom)
 
-	fmt.Printf("Unexpected error occurred: %v\nstack:\n %s", recoveredString, godebug.Stack())
+	fmt.Printf("Unexpected error occurred: %v\nstack:\n %s", recoveredString, debug.Stack())
 	fmt.Println("")
 	fmt.Println("We would appreciate if you create an issue on GitHub.")
 	fmt.Print("Would you like to open a browser with a pre-filled issue? (check for sensitive information) [y/N] ")
@@ -37,7 +37,7 @@ Stack trace:
 %s`,
 			fmtCode(strings.Join(os.Args, " ")),
 			fmtCode(recoveredString),
-			fmtMultilineCode(string(godebug.Stack())))
+			fmtMultilineCode(string(debug.Stack())))
 
 		u, _ := url.Parse("https://github.com/nais/cli/issues/new")
 		values := u.Query()

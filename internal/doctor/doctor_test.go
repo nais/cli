@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 )
 
 func TestAllChecksAreRun(t *testing.T) {

@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/postgres"
-	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/cli/v2/internal/postgres"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 )
 
 func proxyCommand(parentFlags *flag.Postgres) *cli.Command {

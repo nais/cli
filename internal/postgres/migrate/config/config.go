@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nais/cli/internal/option"
-	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/v2/internal/option"
+	"github.com/nais/cli/v2/internal/postgres/command/flag"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"github.com/nais/liberator/pkg/namegen"
 	corev1 "k8s.io/api/core/v1"

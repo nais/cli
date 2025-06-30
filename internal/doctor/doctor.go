@@ -1,7 +1,7 @@
 package doctor
 
 import (
-	"github.com/nais/cli/pkg/cli"
+	"github.com/nais/cli/pkg/cli/v2"
 )
 
 type Result int
