@@ -27,15 +27,37 @@ jobs:
         run: |
           version="$(git-cliff --bumped-version)"
           echo "version=$version" >>"$GITHUB_OUTPUT"
-
-          changelog="$(git-cliff --tag "$version" --unreleased --strip header)"
-          # Safely write multiline output
+          echo "Bumped version: $version"
+          changelog="$(git-cliff \
+            --tag "$version" \
+            --github-repo "${{ github.repository }}" \
+            --github-token "${{ secrets.GITHUB_TOKEN }}" \
+            --unreleased \
+            --strip all \
+            -v)"
           echo "changelog<<EOF" >>"$GITHUB_OUTPUT"
           echo "$changelog" >>"$GITHUB_OUTPUT"
           echo "EOF" >>"$GITHUB_OUTPUT"
+          
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo -n "PR comment with release info: "
+            if [[ -n "$changelog" ]]; then
+              pr_comment="# :pencil: Changelog preview
+          Below is a preview of the Changelog that will be added to the next release. \
+          Only commit messages that follow the [Conventional Commits specification](https://www.conventionalcommits.org/) will be included in the Changelog.
+          
+          $changelog"
+            else
+              pr_comment="# :disappointed: No release for you
+          There are no commits in your branch that follow the [Conventional Commits specification](https://www.conventionalcommits.org/), so no release will be created.
 
-          if [[ "${{ github.event_name }}" == "pull_request" && -n "$changelog" ]]; then
-            echo -e "$changelog" | gh pr comment "${{ github.event.number }}" --edit-last --create-if-none --repo "${{ github.repository }}" --body-file=-
+          If you want to create a release from this pull request, please reword your commit messages to replace this message with a preview of a beautiful Changelog."
+            fi
+
+            echo -e "$pr_comment" | gh pr comment "${{ github.event.number }}" \
+              --edit-last --create-if-none \
+              --repo "${{ github.repository }}" \
+              --body-file=-
           fi
   checks:
     strategy:
@@ -138,7 +160,7 @@ jobs:
       - run: echo Checks and builds passed
 
   release-github:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.release-info.outputs.changelog != ''
     runs-on: ubuntu-latest
     needs:
       - release-info
@@ -203,6 +225,9 @@ jobs:
             checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          echo "## :rocket: Release ${{ needs.release-info.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "A new release is available over at https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-info.outputs.version }}." >> $GITHUB_STEP_SUMMARY
 
   release-gar:
     if: github.ref == 'refs/heads/main'
