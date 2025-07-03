@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nais/cli/v2/internal/application"
+	"github.com/nais/cli/internal/application"
 )
 
 func main() {

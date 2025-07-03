@@ -9,8 +9,8 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/v2/internal/postgres"
-	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 

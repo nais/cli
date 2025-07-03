@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/v2/internal/gcloud"
-	"github.com/nais/cli/v2/internal/kubeconfig"
-	"github.com/nais/cli/v2/internal/kubeconfig/command/flag"
-	"github.com/nais/cli/v2/internal/naisdevice"
-	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/cli/internal/gcloud"
+	"github.com/nais/cli/internal/kubeconfig"
+	"github.com/nais/cli/internal/kubeconfig/command/flag"
+	"github.com/nais/cli/internal/naisdevice"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 

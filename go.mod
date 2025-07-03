@@ -1,4 +1,4 @@
-module github.com/nais/cli/v2
+module github.com/nais/cli
 
 go 1.24.4
 

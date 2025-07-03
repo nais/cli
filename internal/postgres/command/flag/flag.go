@@ -1,7 +1,7 @@
 package flag
 
 import (
-	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/cli/internal/root"
 )
 
 type Postgres struct {

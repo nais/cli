@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/k8s"
-	"github.com/nais/cli/v2/internal/option"
-	"github.com/nais/cli/v2/internal/postgres/command/flag"
-	"github.com/nais/cli/v2/internal/postgres/migrate"
-	"github.com/nais/cli/v2/internal/postgres/migrate/config"
+	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres/migrate"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
 func Run(ctx context.Context, applicationName, targetInstanceName string, flags *flag.MigratePromote) error {

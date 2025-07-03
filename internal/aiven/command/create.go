@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/aiven/command/flag"
+	"github.com/nais/cli/internal/aiven/command/flag"
 	"github.com/nais/naistrix"
 )
 

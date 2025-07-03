@@ -15,7 +15,7 @@ import (
 
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
-	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 

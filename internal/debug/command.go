@@ -3,8 +3,8 @@ package debug
 import (
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/debug/command/flag"
-	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/cli/internal/debug/command/flag"
+	"github.com/nais/cli/internal/k8s"
 	"k8s.io/client-go/kubernetes"
 )
 

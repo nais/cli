@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/v2/internal/postgres"
-	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 

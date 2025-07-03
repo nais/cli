@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/mitchellh/go-ps"
-	doc "github.com/nais/cli/v2/internal/doctor"
-	"github.com/nais/cli/v2/internal/root"
+	doc "github.com/nais/cli/internal/doctor"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
