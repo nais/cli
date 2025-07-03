@@ -3,9 +3,9 @@ package migrate_test
 import (
 	"testing"
 
-	"github.com/nais/cli/v2/internal/option"
-	"github.com/nais/cli/v2/internal/postgres/migrate"
-	"github.com/nais/cli/v2/internal/postgres/migrate/config"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
 func TestCommand(t *testing.T) {

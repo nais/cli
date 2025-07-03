@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/nais/cli/v2/internal/option"
-	"github.com/nais/cli/v2/internal/postgres/migrate/ui"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate/ui"
 )
 
 type fakeTextInput struct {

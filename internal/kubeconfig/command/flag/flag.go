@@ -1,6 +1,6 @@
 package flag
 
-import "github.com/nais/cli/v2/internal/root"
+import "github.com/nais/cli/internal/root"
 
 type Kubeconfig struct {
 	*root.Flags

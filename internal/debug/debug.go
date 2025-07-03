@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/v2/internal/debug/command/flag"
+	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/pterm/pterm"
 	core_v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/v2/internal/naisapi"
-	"github.com/nais/cli/v2/internal/naisapi/command/flag"
+	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/writer"
 	"github.com/savioxavier/termlink"

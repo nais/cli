@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nais/cli/v2/internal/aiven/aiven_config"
-	"github.com/nais/cli/v2/internal/aiven/aiven_services"
-	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/cli/internal/aiven/aiven_config"
+	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"

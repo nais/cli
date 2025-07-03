@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/nais/cli/v2/internal/option"
-	"github.com/nais/cli/v2/internal/postgres/migrate/config"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate/config"
 	nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"

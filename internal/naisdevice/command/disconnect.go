@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/v2/internal/naisdevice"
-	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/cli/internal/naisdevice"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/urlopen"
+	"github.com/nais/cli/internal/urlopen"
 	"github.com/nais/device/pkg/pb"
 )
 

@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 

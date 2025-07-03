@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/postgres/migrate/ui"
+	"github.com/nais/cli/internal/postgres/migrate/ui"
 	"github.com/pterm/pterm"
 )
 

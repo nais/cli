@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/v2/internal/naisapi"
-	"github.com/nais/cli/v2/internal/naisapi/command/flag"
+	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/naistrix"
 )
 

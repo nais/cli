@@ -7,8 +7,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/nais/cli/v2/internal/urlopen"
-	"github.com/nais/cli/v2/internal/version"
+	"github.com/nais/cli/internal/urlopen"
+	"github.com/nais/cli/internal/version"
 )
 
 func fmtCode(c string) string {

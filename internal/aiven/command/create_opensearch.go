@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/v2/internal/aiven"
-	"github.com/nais/cli/v2/internal/aiven/aiven_services"
-	"github.com/nais/cli/v2/internal/aiven/command/flag"
-	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/cli/internal/aiven"
+	"github.com/nais/cli/internal/aiven/aiven_services"
+	"github.com/nais/cli/internal/aiven/command/flag"
+	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/naistrix"
 )
 

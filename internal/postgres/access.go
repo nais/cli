@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres/command/flag"
 )
 
 var grantAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TABLES TO cloudsqliamuser;

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/nais/cli/v2/internal/option"
-	"github.com/nais/cli/v2/internal/postgres/migrate/config"
-	"github.com/nais/cli/v2/internal/postgres/migrate/ui"
+	"github.com/nais/cli/internal/option"
+	"github.com/nais/cli/internal/postgres/migrate/config"
+	"github.com/nais/cli/internal/postgres/migrate/ui"
 	"github.com/nais/liberator/pkg/namegen"
 	"github.com/pterm/pterm"
 	v1 "k8s.io/api/core/v1"
