@@ -31,7 +31,7 @@ require (
 	github.com/nais/liberator v0.0.0-20250512134324-dd5b39585158
 	github.com/nais/naistrix v0.1.0
 	github.com/pterm/pterm v0.12.81
-	github.com/savioxavier/termlink v0.0.0-00010101000000-000000000000
+	github.com/savioxavier/termlink v1.4.3
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.10.0
 	github.com/suessflorian/gqlfetch v0.6.1-0.20250207011703-5b7aca875be9
@@ -232,5 +232,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.7.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
-
-replace github.com/savioxavier/termlink => github.com/sechmann/termlink v1.4.2-forked
