@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/naisapi/command/flag"
 	"github.com/nais/cli/v2/internal/naisapi/gql"
+	"github.com/nais/naistrix"
 	"github.com/suessflorian/gqlfetch"
 )
 
@@ -39,7 +39,7 @@ func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
 	return schema, nil
 }
 
-func StartProxy(ctx context.Context, out cli.Output, flags *flag.Proxy) error {
+func StartProxy(ctx context.Context, out naistrix.Output, flags *flag.Proxy) error {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err

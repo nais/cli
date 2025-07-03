@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
@@ -16,7 +16,7 @@ type project struct {
 	Kind   Kind
 }
 
-func getProjects(ctx context.Context, options filterOptions, out cli.Output) ([]project, error) {
+func getProjects(ctx context.Context, options filterOptions, out naistrix.Output) ([]project, error) {
 	var projects []project
 
 	svc, err := cloudresourcemanager.NewService(ctx)

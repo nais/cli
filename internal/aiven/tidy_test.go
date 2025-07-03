@@ -3,7 +3,7 @@ package aiven
 import (
 	"testing"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func TestAivenTidy(t *testing.T) {
 	assert.NoError(t, err, "Folders found")
 
 	// created folders id tidy
-	err = tidy(folders, cli.Stdout())
+	err = tidy(folders, naistrix.Stdout())
 	assert.NoError(t, err)
 	folders, err = findFoldersToRemove()
 	assert.NoError(t, err, "Folders found")

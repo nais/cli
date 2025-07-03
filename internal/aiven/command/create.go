@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func create(parentFlags *flag.Aiven) *cli.Command {
+func create(parentFlags *flag.Aiven) *naistrix.Command {
 	createFlags := &flag.Create{Aiven: parentFlags, Expire: 1}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "create",
 		Title: "Grant a user access to an Aiven service.",
 		ValidateFunc: func(_ context.Context, _ []string) error {
@@ -22,7 +22,7 @@ func create(parentFlags *flag.Aiven) *cli.Command {
 			return nil
 		},
 		StickyFlags: createFlags,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			createKafka(createFlags),
 			createOpenSearch(createFlags),
 		},

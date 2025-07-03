@@ -3,26 +3,26 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/postgres"
 	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func passwordCommand(parentFlags *flag.Postgres) *cli.Command {
+func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.Password{Postgres: parentFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "password",
 		Title:       "Manage SQL instance passwords.",
 		StickyFlags: flags,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			{
 				Name:        "rotate",
 				Title:       "Rotate the SQL instance password.",
 				Description: "The rotation is done in GCP and in the Kubernetes secret.",
-				Args: []cli.Argument{
+				Args: []naistrix.Argument{
 					{Name: "app_name"},
 				},
-				RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+				RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 					return postgres.RotatePassword(ctx, args[0], flags.Context, flags.Namespace, out)
 				},
 			},

@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven"
 	"github.com/nais/cli/v2/internal/aiven/aiven_services"
 	"github.com/nais/cli/v2/internal/aiven/command/flag"
 	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/naistrix"
 )
 
-func createOpenSearch(parentFlags *flag.Create) *cli.Command {
+func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 	createOpenSearchFlags := &flag.CreateOpenSearch{Create: parentFlags}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "opensearch",
 		Title: "Grant a user access to an OpenSearch instance.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "namespace"},
 		},
@@ -26,7 +26,7 @@ func createOpenSearch(parentFlags *flag.Create) *cli.Command {
 			return aiven_services.OpenSearchAccesses, ""
 		},
 		Flags: createOpenSearchFlags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchFlags.Access)
 			if err != nil {
 				return fmt.Errorf(

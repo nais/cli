@@ -3,11 +3,11 @@ package validate
 import (
 	"fmt"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/validate/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func Run(files []string, flags *flag.Validate, out cli.Output) error {
+func Run(files []string, flags *flag.Validate, out naistrix.Output) error {
 	templateVars := make(TemplateVariables)
 
 	if flags.VarsFilePath != "" {

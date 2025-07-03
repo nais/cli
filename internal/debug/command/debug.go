@@ -4,15 +4,15 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/debug"
 	"github.com/nais/cli/v2/internal/debug/command/flag"
 	"github.com/nais/cli/v2/internal/debug/tidy"
 	"github.com/nais/cli/v2/internal/k8s"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Debug(parentFlags *root.Flags) *cli.Command {
+func Debug(parentFlags *root.Flags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	stickyFlags := &flag.DebugSticky{
 		Flags:     parentFlags,
@@ -24,7 +24,7 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 		DebugSticky: stickyFlags,
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "debug",
 		Title: "Create and attach to a debug container.",
 		Description: heredoc.Doc(`
@@ -34,25 +34,25 @@ func Debug(parentFlags *root.Flags) *cli.Command {
 
 			You can only reconnect to the debug session if the pod is running.
 		`),
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
 		Flags:       debugFlags,
 		StickyFlags: stickyFlags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			return debug.Run(args[0], debugFlags)
 		},
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			tidyCommand(stickyFlags),
 		},
 	}
 }
 
-func tidyCommand(parentFlags *flag.DebugSticky) *cli.Command {
+func tidyCommand(parentFlags *flag.DebugSticky) *naistrix.Command {
 	flags := &flag.DebugTidy{
 		DebugSticky: parentFlags,
 	}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "tidy",
 		Title: "Clean up debug containers and debug pods.",
 		Description: heredoc.Doc(`
@@ -60,11 +60,11 @@ func tidyCommand(parentFlags *flag.DebugSticky) *cli.Command {
 
 			Set the "--copy" flag to delete copy pods.
 		`),
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			return tidy.Run(args[0], flags)
 		},
 	}

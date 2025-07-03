@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out cli.Output) error {
+func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out naistrix.Output) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err

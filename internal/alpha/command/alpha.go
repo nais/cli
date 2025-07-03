@@ -1,19 +1,19 @@
 package command
 
 import (
-	"github.com/nais/cli/pkg/cli/v2"
 	naisapi "github.com/nais/cli/v2/internal/naisapi/command"
 	"github.com/nais/cli/v2/internal/naisapi/command/flag"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Alpha(parentFlags *root.Flags) *cli.Command {
+func Alpha(parentFlags *root.Flags) *naistrix.Command {
 	flags := &flag.Alpha{Flags: parentFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "alpha",
 		Title:       "Alpha versions of Nais CLI commands.",
 		StickyFlags: flags,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			naisapi.Api(flags),
 		},
 	}

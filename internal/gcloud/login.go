@@ -3,9 +3,9 @@ package gcloud
 import (
 	"context"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 )
 
-func Login(ctx context.Context, out cli.Output) error {
+func Login(ctx context.Context, out naistrix.Output) error {
 	return executeGcloud(ctx, out, "auth", "login", "--update-adc")
 }

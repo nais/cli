@@ -1,7 +1,6 @@
 # Nais Command Line Interface
 
-This repository contains the source code for the [Nais](https://nais.io) command line interface (CLI), as well as the
-somewhat opinionated [Cobra](https://cobra.dev/) wrapper, which is split into a [separate module](./pkg/cli).
+This repository contains the source code for the [Nais](https://nais.io) command line interface (CLI).
 
 See Nais doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
 

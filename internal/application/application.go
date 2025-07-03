@@ -6,7 +6,6 @@ import (
 	"os"
 	"slices"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	aiven "github.com/nais/cli/v2/internal/aiven/command"
 	alpha "github.com/nais/cli/v2/internal/alpha/command"
 	login "github.com/nais/cli/v2/internal/auth/login"
@@ -19,14 +18,15 @@ import (
 	"github.com/nais/cli/v2/internal/root"
 	validate "github.com/nais/cli/v2/internal/validate/command"
 	"github.com/nais/cli/v2/internal/version"
+	"github.com/nais/naistrix"
 )
 
-func newApplication(flags *root.Flags) *cli.Application {
-	return &cli.Application{
+func newApplication(flags *root.Flags) *naistrix.Application {
+	return &naistrix.Application{
 		Name:    "nais",
 		Title:   "Nais CLI",
 		Version: version.Version,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			login.Login(flags),
 			logout.Logout(flags),
 			naisdevice.Naisdevice(flags),
@@ -44,7 +44,7 @@ func newApplication(flags *root.Flags) *cli.Application {
 func Run(ctx context.Context, w io.Writer) error {
 	flags := &root.Flags{}
 	app := newApplication(flags)
-	executedCommand, err := app.Run(ctx, cli.NewWriter(w), os.Args[1:])
+	executedCommand, err := app.Run(ctx, naistrix.NewWriter(w), os.Args[1:])
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {

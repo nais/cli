@@ -1,7 +1,7 @@
 package doctor
 
 import (
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 )
 
 type Result int
@@ -29,7 +29,7 @@ type Examination struct {
 	Checks []Check
 }
 
-func (e Examination) Run(out cli.Output) map[string]CheckReport {
+func (e Examination) Run(out naistrix.Output) map[string]CheckReport {
 	out.Printf("Running %d check(s)\n", len(e.Checks))
 	resultQueue := make(chan CheckReport, len(e.Checks))
 	results := make(map[string]CheckReport)

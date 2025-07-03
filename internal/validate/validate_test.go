@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"testing"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -94,7 +94,7 @@ func TestValidate(t *testing.T) {
 			v.SchemaLoader = schemaLoader
 			v.Variables = test.vars
 
-			err := v.Validate(cli.Stdout())
+			err := v.Validate(naistrix.Stdout())
 			if test.wantErr {
 				assert.Error(t, err)
 			} else {

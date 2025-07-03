@@ -1,13 +1,12 @@
 package application
 
 import (
-	"bytes"
 	"context"
 	"strings"
 	"testing"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
 func TestHelpForAllCommands(t *testing.T) {
@@ -20,12 +19,10 @@ func TestHelpForAllCommands(t *testing.T) {
 	}
 }
 
-func runCommand(t *testing.T, ctx context.Context, cmd *cli.Command, parentCommands []string) {
+func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parentCommands []string) {
 	t.Helper()
 
 	args := append(parentCommands, cmd.Name)
-
-	out := cli.NewWriter(&bytes.Buffer{})
 	helpCmd := append(args, "--help")
 
 	defer func() {
@@ -33,7 +30,7 @@ func runCommand(t *testing.T, ctx context.Context, cmd *cli.Command, parentComma
 			t.Fatalf("failed to run command %q: %v", strings.Join(helpCmd, " "), err)
 		}
 	}()
-	_, err := newApplication(&root.Flags{}).Run(ctx, out, helpCmd)
+	_, err := newApplication(&root.Flags{}).Run(ctx, naistrix.Discard(), helpCmd)
 	if err != nil {
 		t.Fatalf("failed to run command %s: %v", strings.Join(helpCmd, " "), err)
 	}

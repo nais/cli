@@ -5,24 +5,24 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli/v2"
-	"github.com/nais/cli/pkg/cli/v2/writer"
 	"github.com/nais/cli/v2/internal/naisapi"
 	"github.com/nais/cli/v2/internal/naisapi/command/flag"
 	"github.com/nais/cli/v2/internal/naisapi/gql"
+	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/writer"
 	"github.com/savioxavier/termlink"
 	"k8s.io/utils/strings/slices"
 )
 
-func team(parentFlags *flag.Api) *cli.Command {
+func team(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Team{
 		Api: parentFlags,
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "team",
 		Title: "Operations on a team.",
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			listMembers(flags),
 			addMember(flags),
 			removeMember(flags),
@@ -31,20 +31,20 @@ func team(parentFlags *flag.Api) *cli.Command {
 	}
 }
 
-func listMembers(parentFlags *flag.Team) *cli.Command {
+func listMembers(parentFlags *flag.Team) *naistrix.Command {
 	flags := &flag.ListMembers{
 		Team:   parentFlags,
 		Output: "table",
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "list-members",
 		Title: "List members of a team.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "team"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			type member struct {
 				Name  string `json:"name"`
 				Email string `json:"email"`
@@ -101,17 +101,17 @@ func listMembers(parentFlags *flag.Team) *cli.Command {
 	}
 }
 
-func addMember(parentFlags *flag.Team) *cli.Command {
+func addMember(parentFlags *flag.Team) *naistrix.Command {
 	flags := &flag.AddMember{
 		Team:  parentFlags,
 		Owner: false,
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "add-member",
 		Title:       "Add a member to a team.",
 		Description: "Only team owners can add team members.",
-		Examples: []cli.Example{
+		Examples: []naistrix.Example{
 			{
 				Description: "Add some-user@example.com to the my-team team as a regular member.",
 				Command:     "my-team some-user@example.com",
@@ -121,19 +121,19 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 				Command:     "my-team some-user@example.com -o",
 			},
 		},
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "team"},
 			{Name: "member"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			role := gql.TeamMemberRoleMember
 			if flags.Owner {
 				role = gql.TeamMemberRoleOwner
 			}
 
 			if err := naisapi.AddTeamMember(ctx, args[0], args[1], role); err != nil {
-				return cli.Errorf("Unable to add %q to team %q:\n\n%s", args[1], args[0], err)
+				return naistrix.Errorf("Unable to add %q to team %q:\n\n%s", args[1], args[0], err)
 			}
 
 			out.Printf("%q has been added to the %q team.\n", args[1], args[0])
@@ -194,29 +194,29 @@ func addMember(parentFlags *flag.Team) *cli.Command {
 	}
 }
 
-func removeMember(parentFlags *flag.Team) *cli.Command {
+func removeMember(parentFlags *flag.Team) *naistrix.Command {
 	flags := &flag.RemoveMember{
 		Team: parentFlags,
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "remove-member",
 		Title:       "Remove a member from a team.",
 		Description: "Only team owners can remove members from a team.",
-		Examples: []cli.Example{
+		Examples: []naistrix.Example{
 			{
 				Description: "Remove some-user@example.com from the my-team team.",
 				Command:     "my-team some-user@example.com",
 			},
 		},
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "team"},
 			{Name: "member"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			if err := naisapi.RemoveTeamMember(ctx, args[0], args[1]); err != nil {
-				return cli.Errorf("Unable to remove %q from team %q:\n\n%s", args[1], args[0], err)
+				return naistrix.Errorf("Unable to remove %q from team %q:\n\n%s", args[1], args[0], err)
 			}
 
 			out.Printf("%q has been removed from the %q team.\n", args[1], args[0])
@@ -276,20 +276,20 @@ func removeMember(parentFlags *flag.Team) *cli.Command {
 	}
 }
 
-func listWorkloads(parentFlags *flag.Team) *cli.Command {
+func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 	flags := &flag.ListWorkloads{
 		Team:   parentFlags,
 		Output: "table",
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "list-workloads",
 		Title: "List workloads of a team.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "team"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			type workload struct {
 				Name            string            `json:"name"`
 				Environment     string            `json:"environment"`

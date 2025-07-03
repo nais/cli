@@ -1,15 +1,15 @@
 package command
 
 import (
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Naisdevice(rootFlags *root.Flags) *cli.Command {
-	return &cli.Command{
+func Naisdevice(rootFlags *root.Flags) *naistrix.Command {
+	return &naistrix.Command{
 		Name:  "device",
 		Title: "Interact with naisdevice",
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			statuscmd(rootFlags),
 			jitacmd(rootFlags),
 			doctorcmd(rootFlags),

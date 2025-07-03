@@ -4,16 +4,16 @@ import (
 	"context"
 
 	"github.com/mitchellh/go-ps"
-	"github.com/nais/cli/pkg/cli/v2"
 	doc "github.com/nais/cli/v2/internal/doctor"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func doctorcmd(_ *root.Flags) *cli.Command {
-	return &cli.Command{
+func doctorcmd(_ *root.Flags) *naistrix.Command {
+	return &naistrix.Command{
 		Name:  "doctor",
 		Title: "Check the health of your naisdevice.",
-		RunFunc: func(_ context.Context, out cli.Output, _ []string) error {
+		RunFunc: func(_ context.Context, out naistrix.Output, _ []string) error {
 			results := examination(out).Run(out)
 			for key, value := range results {
 				out.Printf("%s ", key)
@@ -29,7 +29,7 @@ func doctorcmd(_ *root.Flags) *cli.Command {
 	}
 }
 
-func examination(out cli.Output) doc.Examination {
+func examination(out naistrix.Output) doc.Examination {
 	checkName := "Is Kolide and Osquery running?"
 	return doc.Examination{
 		Name: "Device checks",
@@ -42,7 +42,7 @@ func examination(out cli.Output) doc.Examination {
 	}
 }
 
-func kolideWorker(checkName string, out cli.Output) doc.Worker {
+func kolideWorker(checkName string, out naistrix.Output) doc.Worker {
 	return func() doc.CheckReport {
 		kolideRunning, err := isRunning("launcher", out)
 		if err != nil || !kolideRunning {
@@ -56,7 +56,7 @@ func kolideWorker(checkName string, out cli.Output) doc.Worker {
 	}
 }
 
-func isRunning(desiredProc string, out cli.Output) (bool, error) {
+func isRunning(desiredProc string, out naistrix.Output) (bool, error) {
 	runningProcs, err := ps.Processes()
 	if err != nil {
 		out.Printf("Process listing failed: %v\n", err)

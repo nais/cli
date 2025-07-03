@@ -3,11 +3,11 @@ package kubeconfig
 import (
 	"encoding/base64"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, options filterOptions, out cli.Output) error {
+func populateWithClusters(config *clientcmdapi.Config, cluster k8sCluster, options filterOptions, out naistrix.Output) error {
 	if _, ok := config.Clusters[cluster.Name]; ok && !options.overwrite {
 		if options.verbose {
 			out.Printf("Cluster %q already exists in kubeconfig, skipping\n", cluster.Name)

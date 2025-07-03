@@ -1,18 +1,18 @@
 package command
 
 import (
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven/command/flag"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Aiven(parentFlags *root.Flags) *cli.Command {
+func Aiven(parentFlags *root.Flags) *naistrix.Command {
 	aivenFlags := &flag.Aiven{Flags: parentFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "aiven",
 		Title:       "Manage Aiven services.",
 		StickyFlags: aivenFlags,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			create(aivenFlags),
 			get(aivenFlags),
 			tidy(aivenFlags),

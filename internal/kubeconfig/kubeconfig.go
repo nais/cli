@@ -7,13 +7,13 @@ import (
 	"slices"
 
 	"github.com/go-logr/logr"
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 	kubeClient "k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email string, out cli.Output, opts ...FilterOption) error {
+func CreateKubeconfig(ctx context.Context, email string, out naistrix.Output, opts ...FilterOption) error {
 	var options filterOptions
 	for _, opt := range DefaultFilterOptions {
 		opt(&options)
@@ -76,7 +76,7 @@ func CreateKubeconfig(ctx context.Context, email string, out cli.Output, opts ..
 	return nil
 }
 
-func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions, out cli.Output) error {
+func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions, out naistrix.Output) error {
 	for _, cluster := range clusters {
 		if slices.Contains(options.excludeClusters, cluster.Name) {
 			if options.verbose {

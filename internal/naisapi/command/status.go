@@ -8,20 +8,20 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/pkg/cli/v2"
-	"github.com/nais/cli/pkg/cli/v2/writer"
 	"github.com/nais/cli/v2/internal/naisapi"
 	"github.com/nais/cli/v2/internal/naisapi/command/flag"
+	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/writer"
 	"github.com/savioxavier/termlink"
 )
 
-func status(parentFlags *flag.Api) *cli.Command {
+func status(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Status{Api: parentFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "status",
 		Title: "Get a quick overview of the status of your teams.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
 			type failing struct {
 				Kind        string   `json:"kind"`
 				Name        string   `json:"name"`
