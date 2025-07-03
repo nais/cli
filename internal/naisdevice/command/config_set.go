@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/naisdevice"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func set(_ *root.Flags) *cli.Command {
-	return &cli.Command{
+func set(_ *root.Flags) *naistrix.Command {
+	return &naistrix.Command{
 		Name:  "set",
 		Title: "Set a configuration value.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "setting"},
 			{Name: "value"},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			setting := args[0]
 			value, err := strconv.ParseBool(args[1])
 			if err != nil {

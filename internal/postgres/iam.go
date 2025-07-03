@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out cli.Output) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out naistrix.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out cli.Output) error {
+func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out naistrix.Output) error {
 	email, err := currentEmail(ctx)
 	if err != nil {
 		return err
@@ -206,7 +206,7 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out cli.Output) error {
+func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out naistrix.Output) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -245,7 +245,7 @@ func ListUsers(ctx context.Context, appName string, cluster flag.Context, namesp
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out cli.Output) error {
+func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out naistrix.Output) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err

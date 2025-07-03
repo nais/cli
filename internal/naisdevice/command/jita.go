@@ -6,16 +6,16 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/naisdevice"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func jitacmd(_ *root.Flags) *cli.Command {
-	return &cli.Command{
+func jitacmd(_ *root.Flags) *naistrix.Command {
+	return &naistrix.Command{
 		Name:  "jita",
 		Title: "Connect to a JITA gateway.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "gateway", Repeatable: true},
 		},
 		RunFunc:          run,
@@ -51,7 +51,7 @@ func autocomplete(ctx context.Context, args []string, _ string) ([]string, strin
 	return gateways, ""
 }
 
-func run(ctx context.Context, _ cli.Output, args []string) error {
+func run(ctx context.Context, _ naistrix.Output, args []string) error {
 	privilegedGateways, err := naisdevice.GetPrivilegedGateways(ctx)
 	if err != nil {
 		return err

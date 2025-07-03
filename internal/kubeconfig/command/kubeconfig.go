@@ -7,17 +7,17 @@ import (
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/gcloud"
 	"github.com/nais/cli/v2/internal/kubeconfig"
 	"github.com/nais/cli/v2/internal/kubeconfig/command/flag"
 	"github.com/nais/cli/v2/internal/naisdevice"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Kubeconfig(rootFlags *root.Flags) *cli.Command {
+func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
 	flags := &flag.Kubeconfig{Flags: rootFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "kubeconfig",
 		Title: "Create a kubeconfig file for connecting to available clusters.",
 		Description: heredoc.Doc(`
@@ -37,7 +37,7 @@ func Kubeconfig(rootFlags *root.Flags) *cli.Command {
 
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
 			email, err := gcloud.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err

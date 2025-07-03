@@ -5,18 +5,18 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven"
 	"github.com/nais/cli/v2/internal/aiven/aiven_services"
 	"github.com/nais/cli/v2/internal/aiven/command/flag"
 	"github.com/nais/cli/v2/internal/metric"
+	"github.com/nais/naistrix"
 )
 
-func get(_ *flag.Aiven) *cli.Command {
-	return &cli.Command{
+func get(_ *flag.Aiven) *naistrix.Command {
+	return &naistrix.Command{
 		Name:  "get",
 		Title: "Generate preferred config format to '/tmp' folder.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "service"},
 			{Name: "username"},
 			{Name: "namespace"},
@@ -27,7 +27,7 @@ func get(_ *flag.Aiven) *cli.Command {
 			}
 			return nil, ""
 		},
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			service, err := aiven_services.FromString(args[0])
 			if err != nil {
 				return err
@@ -40,7 +40,7 @@ func get(_ *flag.Aiven) *cli.Command {
 
 				switch {
 				case errors.Is(err, aiven.ErrUnsuitableSecret):
-					return cli.Errorf(`The secret we found for username %q is not suitable for this command.
+					return naistrix.Errorf(`The secret we found for username %q is not suitable for this command.
 Most likely it was not created by using %v, please refer to %v for instructions on how to create one.
 `, username, "`nais aiven create`", fmt.Sprintf("`nais aiven create %s --help`", service.Name()))
 				default:

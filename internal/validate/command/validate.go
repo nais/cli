@@ -3,23 +3,23 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/root"
 	"github.com/nais/cli/v2/internal/validate"
 	"github.com/nais/cli/v2/internal/validate/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func Validate(parentFlags *root.Flags) *cli.Command {
+func Validate(parentFlags *root.Flags) *naistrix.Command {
 	flags := &flag.Validate{Flags: parentFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "validate",
 		Title: "Validate one or more Nais manifest files.",
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "file", Repeatable: true},
 		},
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			return validate.Run(args, flags, out)
 		},
 	}

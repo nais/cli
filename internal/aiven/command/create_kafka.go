@@ -4,26 +4,26 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven"
 	"github.com/nais/cli/v2/internal/aiven/aiven_services"
 	"github.com/nais/cli/v2/internal/aiven/command/flag"
 	"github.com/nais/cli/v2/internal/k8s"
 	"github.com/nais/cli/v2/internal/metric"
+	"github.com/nais/naistrix"
 )
 
-func createKafka(parentFlags *flag.Create) *cli.Command {
+func createKafka(parentFlags *flag.Create) *naistrix.Command {
 	createKafkaFlags := &flag.CreateKafka{Create: parentFlags, Pool: "nav-dev"}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "kafka",
 		Title: "Grant a user access to a Kafka topic.",
 		Flags: createKafkaFlags,
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "namespace"},
 		},
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)

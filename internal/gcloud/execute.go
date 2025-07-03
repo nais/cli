@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/nais/cli/pkg/cli/v2"
+	"github.com/nais/naistrix"
 )
 
-func executeGcloud(ctx context.Context, out cli.Output, arg ...string) error {
+func executeGcloud(ctx context.Context, out naistrix.Output, arg ...string) error {
 	cmd := exec.CommandContext(ctx, "gcloud", arg...)
 	o, err := cmd.CombinedOutput()
 	if err != nil {

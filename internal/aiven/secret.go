@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/aiven/aiven_config"
 	"github.com/nais/cli/v2/internal/aiven/aiven_services"
 	"github.com/nais/cli/v2/internal/k8s"
+	"github.com/nais/naistrix"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -28,7 +28,7 @@ type Secret struct {
 
 var ErrUnsuitableSecret = errors.New("unsuitable secret")
 
-func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out cli.Output) error {
+func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out naistrix.Output) error {
 	aivenClient := k8s.SetupControllerRuntimeClient()
 
 	if err := validateNamespace(ctx, aivenClient, namespaceName); err != nil {
@@ -113,7 +113,7 @@ func (s *Secret) CreateOpenSearchConfigs() error {
 	return aiven_config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
 }
 
-func (s *Secret) generateConfig(out cli.Output) error {
+func (s *Secret) generateConfig(out naistrix.Output) error {
 	out.Printf("Generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
 	return s.Service.Generate(s)
 }

@@ -9,18 +9,18 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/postgres"
 	"github.com/nais/cli/v2/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 )
 
-func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
+func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.Prepare{
 		Postgres: parentFlags,
 		Schema:   "public",
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "prepare",
 		Title: "Prepare your SQL instance for use with personal accounts.",
 		Description: heredoc.Doc(`
@@ -30,11 +30,11 @@ func prepareCommand(parentFlags *flag.Postgres) *cli.Command {
 
 			This operation is only required to run once for each SQL instance.
 		`),
-		Args: []cli.Argument{
+		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, args []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			i, err := bufio.NewReader(os.Stdin).ReadString('\n')
 			if err != nil {

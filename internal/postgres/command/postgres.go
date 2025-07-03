@@ -3,14 +3,14 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/gcloud"
 	"github.com/nais/cli/v2/internal/k8s"
 	"github.com/nais/cli/v2/internal/postgres/command/flag"
 	"github.com/nais/cli/v2/internal/root"
+	"github.com/nais/naistrix"
 )
 
-func Postgres(parentFlags *root.Flags) *cli.Command {
+func Postgres(parentFlags *root.Flags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	flags := &flag.Postgres{
 		Flags:     parentFlags,
@@ -18,11 +18,11 @@ func Postgres(parentFlags *root.Flags) *cli.Command {
 		Context:   flag.Context(defaultContext),
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:        "postgres",
 		Title:       "Manage SQL instances.",
 		StickyFlags: flags,
-		SubCommands: []*cli.Command{
+		SubCommands: []*naistrix.Command{
 			migrateCommand(flags),
 			passwordCommand(flags),
 			usersCommand(flags),

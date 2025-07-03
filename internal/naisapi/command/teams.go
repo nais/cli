@@ -4,24 +4,24 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/pkg/cli/v2"
-	"github.com/nais/cli/pkg/cli/v2/writer"
 	"github.com/nais/cli/v2/internal/naisapi"
 	"github.com/nais/cli/v2/internal/naisapi/command/flag"
+	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/writer"
 	"github.com/savioxavier/termlink"
 )
 
-func teams(parentFlags *flag.Api) *cli.Command {
+func teams(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Teams{
 		Api:    parentFlags,
 		Output: "table",
 	}
 
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "teams",
 		Title: "Get a list of your teams.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
 			type team struct {
 				Slug        string `json:"slug"`
 				Description string `json:"description"`

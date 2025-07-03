@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/nais/cli/pkg/cli/v2"
 	"github.com/nais/cli/v2/internal/naisdevice"
 	"github.com/nais/cli/v2/internal/naisdevice/command/flag"
 	"github.com/nais/cli/v2/internal/root"
 	"github.com/nais/device/pkg/pb"
+	"github.com/nais/naistrix"
 )
 
-func statuscmd(rootFlags *root.Flags) *cli.Command {
+func statuscmd(rootFlags *root.Flags) *naistrix.Command {
 	flags := &flag.Status{Flags: rootFlags}
-	return &cli.Command{
+	return &naistrix.Command{
 		Name:  "status",
 		Title: "Show the status of your naisdevice.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out cli.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
 			agentStatus, err := naisdevice.GetStatus(ctx)
 			if err != nil {
 				return err
@@ -46,7 +46,7 @@ func statuscmd(rootFlags *root.Flags) *cli.Command {
 		},
 		ValidateFunc: func(context.Context, []string) error {
 			if !slices.Contains([]string{"", "yaml", "json"}, string(flags.Output)) {
-				return cli.Errorf("%v is not an implemented format", flags.Output)
+				return naistrix.Errorf("%v is not an implemented format", flags.Output)
 			}
 
 			return nil
