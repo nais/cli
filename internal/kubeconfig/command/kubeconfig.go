@@ -2,15 +2,11 @@ package command
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
-	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
@@ -29,10 +25,6 @@ func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
 		ValidateFunc: func(ctx context.Context, args []string) error {
 			if _, err := gcloud.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
-			}
-
-			if !mightBeWSL() && !naisdevice.IsConnected(ctx) {
-				return fmt.Errorf("you need to be connected with naisdevice before using this command")
 			}
 
 			return nil
@@ -55,24 +47,4 @@ func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
 			)
 		},
 	}
-}
-
-// mightBeWSL checks if the current environment is likely to be WSL (Windows Subsystem for Linux).
-// https://superuser.com/a/1749811
-func mightBeWSL() bool {
-	if env := os.Getenv("WSL_DISTRO_NAME"); env != "" {
-		return true
-	}
-
-	if _, err := os.Stat("/proc/sys/fs/binfmt_misc/WSLInterop"); err == nil {
-		return true
-	}
-
-	if b, err := os.ReadFile("/proc/version"); err == nil {
-		if strings.Contains(string(b), "Microsoft") {
-			return true
-		}
-	}
-
-	return false
 }
