@@ -12,7 +12,10 @@ import (
 )
 
 func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
-	flags := &flag.Kubeconfig{Flags: rootFlags}
+	flags := &flag.Kubeconfig{
+		Flags:     rootFlags,
+		Overwrite: true,
+	}
 	return &naistrix.Command{
 		Name:  "kubeconfig",
 		Title: "Create a kubeconfig file for connecting to available clusters.",
