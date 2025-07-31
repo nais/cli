@@ -11,6 +11,7 @@ import (
 	login "github.com/nais/cli/internal/auth/login"
 	logout "github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
+	initcommand "github.com/nais/cli/internal/init/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	"github.com/nais/cli/internal/metric"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
@@ -36,6 +37,7 @@ func newApplication(flags *root.Flags) *naistrix.Application {
 			debug.Debug(flags),
 			kubeconfig.Kubeconfig(flags),
 			validate.Validate(flags),
+			initcommand.Init(flags),
 		},
 		StickyFlags: flags,
 	}
