@@ -15,15 +15,7 @@ var (
 	dot         = lipgloss.NewStyle().Foreground(lipgloss.Color("236")).Render(dotChar)
 )
 
-type Element interface {
-	Focus() tea.Cmd
-	Blur()
-	View() string
-}
-
 type metadataModel struct {
-	focusIndex int
-
 	name   textinput.Model
 	team   textinput.Model
 	submit button.Model

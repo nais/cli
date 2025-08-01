@@ -35,7 +35,7 @@ type model struct {
 func initialModel() model {
 	return model{
 		models: map[string]tea.Model{
-			"metadata": &metadataModel{},
+			"metadata": &metadataFlowModel{},
 		},
 		activeModel: "metadata",
 	}
