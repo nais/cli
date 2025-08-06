@@ -86,11 +86,3 @@ func PrintFormattedStatus(format string, status *pb.AgentStatus, out naistrix.Ou
 
 	return nil
 }
-
-func IsConnected(ctx context.Context) bool {
-	agentStatus, err := GetStatus(ctx)
-	if err != nil {
-		return false
-	}
-	return agentStatus.GetConnectionState() == pb.AgentState_Connected
-}
