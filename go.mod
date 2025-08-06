@@ -29,7 +29,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
 	github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae
-	github.com/nais/naistrix v0.1.0
+	github.com/nais/naistrix v0.2.0
 	github.com/pterm/pterm v0.12.81
 	github.com/savioxavier/termlink v1.4.3
 	github.com/sethvargo/go-retry v0.3.0

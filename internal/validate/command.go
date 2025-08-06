@@ -12,7 +12,7 @@ func Run(files []string, flags *flag.Validate, out naistrix.Output) error {
 
 	if flags.VarsFilePath != "" {
 		var err error
-		templateVars, err = TemplateVariablesFromFile(flags.VarsFilePath)
+		templateVars, err = TemplateVariablesFromFile(string(flags.VarsFilePath))
 		if err != nil {
 			return fmt.Errorf("load template variables: %v", err)
 		}
