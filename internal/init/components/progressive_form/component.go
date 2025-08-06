@@ -2,13 +2,11 @@
 package progressiveform
 
 import (
-	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/internal/init/components/button"
+	"github.com/nais/cli/internal/init/components"
 )
 
 const dotChar = " • "
@@ -20,7 +18,7 @@ var (
 
 type Model struct {
 	currentElement int
-	Elements       []Element
+	Elements       []components.Element
 }
 
 type Element interface {
@@ -37,7 +35,7 @@ func (m *Model) Init() tea.Cmd {
 func (m *Model) View() string {
 	out := &strings.Builder{}
 	for i, element := range m.Elements {
-		out.WriteString(element.View())
+		out.WriteString(strings.TrimSpace((element.View())))
 		if m.currentElement == i {
 			break
 		} else {
@@ -49,6 +47,7 @@ func (m *Model) View() string {
 		out.WriteString("✓ All elements completed!\n")
 	}
 
+	out.WriteRune('\n')
 	out.WriteRune('\n')
 	// out.WriteString(subtleStyle.Render("[shift] tab: move focus") + dot)
 	out.WriteString(subtleStyle.Render("enter: submit") + dot)
@@ -99,17 +98,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		return m, nil
 	}
 
-	switch element := m.activeElement().(type) {
-	case *textinput.Model:
-		updatedElement, cmd := element.Update(msg)
-		m.replaceActiveElement(&updatedElement)
-		return m, cmd
-	case *button.Model:
-		updatedElement, cmd := element.Update(msg)
-		m.replaceActiveElement(&updatedElement)
-		return m, cmd
-	default:
-		fmt.Printf("Unhandled element type: %T\n", element)
-		return m, nil
-	}
+	updatedElement, cmd := components.UpdateSubElement(m.activeElement(), msg)
+	m.replaceActiveElement(updatedElement)
+	return m, cmd
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/nais/cli/internal/init/components"
 	"github.com/nais/cli/internal/init/components/button"
 	"github.com/nais/cli/internal/init/components/grid"
 )
@@ -37,7 +38,7 @@ func (m *metadataModel) Init() tea.Cmd {
 	submit := button.New("Submit")
 
 	m.grid = grid.Model{
-		Elements: [][]grid.Element{
+		Elements: [][]components.Element{
 			{&name},
 			{&team},
 			{&submit},

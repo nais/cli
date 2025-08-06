@@ -2,13 +2,11 @@
 package grid
 
 import (
-	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/internal/init/components/button"
+	"github.com/nais/cli/internal/init/components"
 )
 
 const dotChar = " • "
@@ -20,13 +18,7 @@ var (
 
 type Model struct {
 	row, col int
-	Elements [][]Element
-}
-
-type Element interface {
-	Focus() tea.Cmd
-	Blur()
-	View() string
+	Elements [][]components.Element
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -77,11 +69,11 @@ func (m *Model) previousElement() tea.Cmd {
 	return m.activeElement().Focus()
 }
 
-func (m *Model) activeElement() Element {
+func (m *Model) activeElement() components.Element {
 	return m.Elements[m.row][m.col]
 }
 
-func (m *Model) replaceActiveElement(e Element) {
+func (m *Model) replaceActiveElement(e components.Element) {
 	m.Elements[m.row][m.col] = e
 }
 
@@ -100,17 +92,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 	}
 
-	switch element := m.activeElement().(type) {
-	case *textinput.Model:
-		updatedElement, cmd := element.Update(msg)
-		m.replaceActiveElement(&updatedElement)
-		return m, cmd
-	case *button.Model:
-		updatedElement, cmd := element.Update(msg)
-		m.replaceActiveElement(&updatedElement)
-		return m, cmd
-	default:
-		fmt.Printf("Unhandled element type: %T\n", element)
-		return m, nil
-	}
+	updatedElement, cmd := components.UpdateSubElement(m.activeElement(), msg)
+	m.replaceActiveElement(updatedElement)
+	return m, cmd
 }
