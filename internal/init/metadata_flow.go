@@ -3,6 +3,7 @@ package init
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/nais/cli/internal/init/command/flag"
 	"github.com/nais/cli/internal/init/components"
 	"github.com/nais/cli/internal/init/components/button"
 	"github.com/nais/cli/internal/init/components/confirm"
@@ -13,6 +14,7 @@ type metadataFlowModel struct {
 	name   textinput.Model
 	team   textinput.Model
 	submit button.Model
+	flags  *flag.Init
 
 	flow progressiveform.Model
 }
@@ -42,11 +44,19 @@ func (m *metadataFlowModel) Init() tea.Cmd {
 	name.CharLimit = 30
 	name.Width = 20
 
+	if m.flags.Application != "" {
+		name.SetValue(m.flags.Application)
+	}
+
 	team := textinput.New()
 	team.Prompt = "In which team should this app live? "
 	team.Placeholder = "team"
 	team.CharLimit = 30
 	team.Width = 20
+
+	if m.flags.Team != "" {
+		team.SetValue(m.flags.Team)
+	}
 
 	scaling := confirm.New("Should the app be automatically scaled?", true)
 

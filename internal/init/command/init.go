@@ -16,7 +16,7 @@ func Init(parentFlags *root.Flags) *naistrix.Command {
 		Title: "Generates template files for CI and Workload.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return initcmd.Run(out)
+			return initcmd.Run(flags, out)
 		},
 	}
 }
