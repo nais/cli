@@ -80,10 +80,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
 		case "enter":
+			if m.currentElement > len(m.Elements)-1 {
+				return m, tea.Quit
+			}
 			if m.activeElement().Valid() {
-				if m.currentElement > len(m.Elements)-1 {
-					return m, tea.Quit
-				}
 				return m, m.nextElement()
 			}
 		}
