@@ -1,5 +1,7 @@
 package create
 
+/*
+
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -57,3 +59,6 @@ func (m *metadataModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.grid, cmd = m.grid.Update(msg)
 	return m, cmd
 }
+
+
+*/

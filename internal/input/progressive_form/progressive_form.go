@@ -21,12 +21,6 @@ type Model struct {
 	Elements       []input.Element
 }
 
-type Element interface {
-	Focus() tea.Cmd
-	Blur()
-	View() string
-}
-
 func (m *Model) Init() tea.Cmd {
 	m.activeElement().Focus()
 	return nil
@@ -71,11 +65,11 @@ func (m *Model) nextElement() tea.Cmd {
 	return nil
 }
 
-func (m *Model) activeElement() Element {
+func (m *Model) activeElement() input.Element {
 	return m.Elements[m.currentElement]
 }
 
-func (m *Model) replaceActiveElement(e Element) {
+func (m *Model) replaceActiveElement(e input.Element) {
 	m.Elements[m.currentElement] = e
 }
 
@@ -86,10 +80,12 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
 		case "enter":
-			if m.currentElement > len(m.Elements)-1 {
-				return m, tea.Quit
+			if m.activeElement().Valid() {
+				if m.currentElement > len(m.Elements)-1 {
+					return m, tea.Quit
+				}
+				return m, m.nextElement()
 			}
-			return m, m.nextElement()
 		}
 	}
 
@@ -101,4 +97,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	updatedElement, cmd := input.UpdateSubElement(m.activeElement(), msg)
 	m.replaceActiveElement(updatedElement)
 	return m, cmd
+}
+
+func (Model) Valid() bool {
+	return true
 }

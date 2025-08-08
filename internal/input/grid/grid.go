@@ -96,3 +96,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	m.replaceActiveElement(updatedElement)
 	return m, cmd
 }
+
+func (Model) Valid() bool {
+	return true
+}

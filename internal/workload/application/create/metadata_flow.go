@@ -1,12 +1,16 @@
 package create
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/nais/cli/internal/input"
 	"github.com/nais/cli/internal/input/button"
 	"github.com/nais/cli/internal/input/confirm"
 	progressiveform "github.com/nais/cli/internal/input/progressive_form"
+	"github.com/nais/cli/internal/input/text"
 	"github.com/nais/cli/internal/workload/application/command/flag"
 )
 
@@ -38,21 +42,19 @@ Bruker den nais standarder? port: 8080, metrikker på /metrics, isalive på /isa
 +Hemmeligheter? +Miljøvariabler?
 */
 func (m *metadataFlowModel) Init() tea.Cmd {
-	name := textinput.New()
-	name.Prompt = "What should the app's name be? "
-	name.Placeholder = "name"
-	name.CharLimit = 30
-	name.Width = 20
+	name := text.New("Provide a name for the application:", "name", text.WithValidation(func(s string) error {
+		if strings.TrimSpace(s) == "" {
+			return fmt.Errorf("application name can not be empty")
+		}
+
+		return nil
+	}))
 
 	if m.flags.Name != "" {
 		name.SetValue(m.flags.Name)
 	}
 
-	team := textinput.New()
-	team.Prompt = "In which team should this app live? "
-	team.Placeholder = "team"
-	team.CharLimit = 30
-	team.Width = 20
+	team := text.New("Specify the team that owns the application:", "team")
 
 	if m.flags.Team != "" {
 		team.SetValue(m.flags.Team)

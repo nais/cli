@@ -78,3 +78,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	}
 	return m, nil
 }
+
+func (Model) Valid() bool {
+	return true
+}
