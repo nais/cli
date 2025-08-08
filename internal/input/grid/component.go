@@ -6,7 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/internal/init/components"
+	"github.com/nais/cli/internal/input"
 )
 
 const dotChar = " • "
@@ -18,7 +18,7 @@ var (
 
 type Model struct {
 	row, col int
-	Elements [][]components.Element
+	Elements [][]input.Element
 }
 
 func (m *Model) Init() tea.Cmd {
@@ -69,11 +69,11 @@ func (m *Model) previousElement() tea.Cmd {
 	return m.activeElement().Focus()
 }
 
-func (m *Model) activeElement() components.Element {
+func (m *Model) activeElement() input.Element {
 	return m.Elements[m.row][m.col]
 }
 
-func (m *Model) replaceActiveElement(e components.Element) {
+func (m *Model) replaceActiveElement(e input.Element) {
 	m.Elements[m.row][m.col] = e
 }
 
@@ -92,7 +92,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 	}
 
-	updatedElement, cmd := components.UpdateSubElement(m.activeElement(), msg)
+	updatedElement, cmd := input.UpdateSubElement(m.activeElement(), msg)
 	m.replaceActiveElement(updatedElement)
 	return m, cmd
 }

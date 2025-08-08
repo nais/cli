@@ -1,12 +1,12 @@
-package init
+package create
 
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/nais/cli/internal/init/components"
-	"github.com/nais/cli/internal/init/components/button"
-	"github.com/nais/cli/internal/init/components/grid"
+	"github.com/nais/cli/internal/input"
+	"github.com/nais/cli/internal/input/button"
+	"github.com/nais/cli/internal/input/grid"
 )
 
 const dotChar = " • "
@@ -38,7 +38,7 @@ func (m *metadataModel) Init() tea.Cmd {
 	submit := button.New("Submit")
 
 	m.grid = grid.Model{
-		Elements: [][]components.Element{
+		Elements: [][]input.Element{
 			{&name},
 			{&team},
 			{&submit},

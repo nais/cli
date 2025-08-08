@@ -1,13 +1,13 @@
 // Package components provides a common interface for UI elements in the application.
-package components
+package input
 
 import (
 	"fmt"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/nais/cli/internal/init/components/button"
-	"github.com/nais/cli/internal/init/components/confirm"
+	"github.com/nais/cli/internal/input/button"
+	"github.com/nais/cli/internal/input/confirm"
 )
 
 type Element interface {

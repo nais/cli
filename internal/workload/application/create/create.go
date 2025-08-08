@@ -1,5 +1,5 @@
 // Package init is a command to get started with a new nais application or naisjob
-package init
+package create
 
 /*
 Ressurser og skalering
@@ -24,7 +24,7 @@ import (
 	// nais_io_v1 "github.com/nais/liberator/pkg/apis/nais.io/v1"
 	// nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/nais/cli/internal/init/command/flag"
+	"github.com/nais/cli/internal/workload/application/command/flag"
 	"github.com/nais/naistrix"
 )
 
@@ -33,7 +33,7 @@ type model struct {
 	activeModel string
 }
 
-func initialModel(flags *flag.Init) model {
+func initialModel(flags *flag.Create) model {
 	return model{
 		models: map[string]tea.Model{
 			"metadata": &metadataFlowModel{
@@ -44,7 +44,7 @@ func initialModel(flags *flag.Init) model {
 	}
 }
 
-func Run(flags *flag.Init, out naistrix.Output) error {
+func Run(flags *flag.Create, out naistrix.Output) error {
 	m := initialModel(flags)
 	if _, err := tea.NewProgram(&m).Run(); err != nil {
 		out.Printf("Could not start nais init prompter: %s\n", err)

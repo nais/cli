@@ -1,20 +1,20 @@
-package init
+package create
 
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/nais/cli/internal/init/command/flag"
-	"github.com/nais/cli/internal/init/components"
-	"github.com/nais/cli/internal/init/components/button"
-	"github.com/nais/cli/internal/init/components/confirm"
-	progressiveform "github.com/nais/cli/internal/init/components/progressive_form"
+	"github.com/nais/cli/internal/input"
+	"github.com/nais/cli/internal/input/button"
+	"github.com/nais/cli/internal/input/confirm"
+	progressiveform "github.com/nais/cli/internal/input/progressive_form"
+	"github.com/nais/cli/internal/workload/application/command/flag"
 )
 
 type metadataFlowModel struct {
 	name   textinput.Model
 	team   textinput.Model
 	submit button.Model
-	flags  *flag.Init
+	flags  *flag.Create
 
 	flow progressiveform.Model
 }
@@ -44,8 +44,8 @@ func (m *metadataFlowModel) Init() tea.Cmd {
 	name.CharLimit = 30
 	name.Width = 20
 
-	if m.flags.Application != "" {
-		name.SetValue(m.flags.Application)
+	if m.flags.Name != "" {
+		name.SetValue(m.flags.Name)
 	}
 
 	team := textinput.New()
@@ -70,7 +70,7 @@ func (m *metadataFlowModel) Init() tea.Cmd {
 	// }
 
 	m.flow = progressiveform.Model{
-		Elements: []components.Element{
+		Elements: []input.Element{
 			&name,
 			&team,
 			&scaling,
