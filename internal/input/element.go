@@ -1,4 +1,4 @@
-// Package components provides a common interface for UI elements in the application.
+// Package input provides a common interface for UI elements in the application.
 package input
 
 import (
