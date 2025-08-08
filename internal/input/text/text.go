@@ -48,7 +48,10 @@ func (m Model) View() string {
 }
 
 func (m Model) Valid() bool {
-	return m.Model.Validate(m.Model.Value()) == nil
+	if m.Validate == nil {
+		return true
+	}
+	return m.Validate(m.Value()) == nil
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
