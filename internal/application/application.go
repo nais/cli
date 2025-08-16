@@ -44,7 +44,7 @@ func newApplication(flags *root.Flags) *naistrix.Application {
 func Run(ctx context.Context, w io.Writer) error {
 	flags := &root.Flags{}
 	app := newApplication(flags)
-	executedCommand, err := app.Run(ctx, naistrix.NewWriter(w), os.Args[1:])
+	err := app.Run(naistrix.RunWithContext(ctx), naistrix.RunWithOutput(naistrix.NewWriter(w)))
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {
@@ -57,7 +57,7 @@ func Run(ctx context.Context, w io.Writer) error {
 		}()
 	}
 
-	if !autoComplete && executedCommand != nil {
+	if executedCommand := app.ExecutedCommand(); !autoComplete && executedCommand != nil {
 		collectCommandHistogram(ctx, executedCommand, err)
 	}
 

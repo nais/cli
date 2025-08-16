@@ -30,7 +30,7 @@ func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parent
 			t.Fatalf("failed to run command %q: %v", strings.Join(helpCmd, " "), err)
 		}
 	}()
-	_, err := newApplication(&root.Flags{}).Run(ctx, naistrix.Discard(), helpCmd)
+	err := newApplication(&root.Flags{}).Run(naistrix.RunWithContext(ctx), naistrix.RunWithOutput(naistrix.Discard()), naistrix.RunWithArgs(helpCmd))
 	if err != nil {
 		t.Fatalf("failed to run command %s: %v", strings.Join(helpCmd, " "), err)
 	}
