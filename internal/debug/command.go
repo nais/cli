@@ -1,6 +1,7 @@
 package debug
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/debug/command/flag"
@@ -8,15 +9,18 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
-
-func Run(workloadName string, flags *flag.Debug) error {
-	clientSet, err := SetupClient(flags.DebugSticky, flags.Context)
+func Run(ctx context.Context, workloadName string, flags *flag.Debug) error {
+	clientSet, err := SetupClient(flags, flags.Context)
 	if err != nil {
 		return err
 	}
 
-	dg := Setup(clientSet, flags.DebugSticky, workloadName, debugImageDefault, flags.ByPod)
+	dg := &Debug{
+		ctx:          ctx,
+		podsClient:   clientSet.CoreV1().Pods(flags.Namespace),
+		flags:        flags,
+		workloadName: workloadName,
+	}
 	if err := dg.Debug(); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
@@ -24,7 +28,7 @@ func Run(workloadName string, flags *flag.Debug) error {
 	return nil
 }
 
-func SetupClient(flags *flag.DebugSticky, cluster flag.Context) (kubernetes.Interface, error) {
+func SetupClient(flags *flag.Debug, cluster flag.Context) (kubernetes.Interface, error) {
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(cluster)))
 
 	if flags.Namespace == "" {
@@ -32,7 +36,7 @@ func SetupClient(flags *flag.DebugSticky, cluster flag.Context) (kubernetes.Inte
 	}
 
 	if cluster != "" {
-		flags.Context = flag.Context(cluster)
+		flags.Context = cluster
 	}
 
 	clientSet, err := k8s.SetupClientGo(string(cluster))
