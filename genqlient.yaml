@@ -1,6 +1,7 @@
 schema: schema.graphql
 operations:
   - internal/naisapi/**/*.go
+  - internal/apply/**/*.go
 bindings:
   Slug:
     type: string

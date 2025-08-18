@@ -45,6 +45,40 @@ func (v *AddTeamMemberResponse) GetAddTeamMember() AddTeamMemberAddTeamMemberAdd
 	return v.AddTeamMember
 }
 
+// CreateValkeyCreateValkeyCreateValkeyPayload includes the requested fields of the GraphQL type CreateValkeyPayload.
+type CreateValkeyCreateValkeyCreateValkeyPayload struct {
+	// Valkey instance that was created.
+	Valkey CreateValkeyCreateValkeyCreateValkeyPayloadValkey `json:"valkey"`
+}
+
+// GetValkey returns CreateValkeyCreateValkeyCreateValkeyPayload.Valkey, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayload) GetValkey() CreateValkeyCreateValkeyCreateValkeyPayloadValkey {
+	return v.Valkey
+}
+
+// CreateValkeyCreateValkeyCreateValkeyPayloadValkey includes the requested fields of the GraphQL type Valkey.
+type CreateValkeyCreateValkeyCreateValkeyPayloadValkey struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns CreateValkeyCreateValkeyCreateValkeyPayloadValkey.Id, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetId() string { return v.Id }
+
+// GetName returns CreateValkeyCreateValkeyCreateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetName() string { return v.Name }
+
+// CreateValkeyResponse is returned by CreateValkey on success.
+type CreateValkeyResponse struct {
+	// Create a new Valkey instance.
+	CreateValkey CreateValkeyCreateValkeyCreateValkeyPayload `json:"createValkey"`
+}
+
+// GetCreateValkey returns CreateValkeyResponse.CreateValkey, and is useful for accessing the field via an interface.
+func (v *CreateValkeyResponse) GetCreateValkey() CreateValkeyCreateValkeyCreateValkeyPayload {
+	return v.CreateValkey
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -2079,6 +2113,55 @@ func (v *UsersUsersUserConnectionNodesUser) GetName() string { return v.Name }
 // GetEmail returns UsersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
 func (v *UsersUsersUserConnectionNodesUser) GetEmail() string { return v.Email }
 
+type ValkeyMaxMemoryPolicy string
+
+const (
+	// Evict keys using the least frequently used algorithm.
+	ValkeyMaxMemoryPolicyAllkeysLfu ValkeyMaxMemoryPolicy = "ALLKEYS_LFU"
+	// Evict keys using the least recently used algorithm.
+	ValkeyMaxMemoryPolicyAllkeysLru ValkeyMaxMemoryPolicy = "ALLKEYS_LRU"
+	// Evict keys randomly.
+	ValkeyMaxMemoryPolicyAllkeysRandom ValkeyMaxMemoryPolicy = "ALLKEYS_RANDOM"
+	// No eviction policy, will return an error when memory limit is reached.
+	ValkeyMaxMemoryPolicyNoEviction ValkeyMaxMemoryPolicy = "NO_EVICTION"
+	// Evict volatile keys using the least frequently used algorithm.
+	ValkeyMaxMemoryPolicyVolatileLfu ValkeyMaxMemoryPolicy = "VOLATILE_LFU"
+	// Evict volatile keys using the least recently used algorithm.
+	ValkeyMaxMemoryPolicyVolatileLru ValkeyMaxMemoryPolicy = "VOLATILE_LRU"
+	// Evict volatile keys randomly.
+	ValkeyMaxMemoryPolicyVolatileRandom ValkeyMaxMemoryPolicy = "VOLATILE_RANDOM"
+	// Evict volatile keys based on their time to live.
+	ValkeyMaxMemoryPolicyVolatileTtl ValkeyMaxMemoryPolicy = "VOLATILE_TTL"
+)
+
+var AllValkeyMaxMemoryPolicy = []ValkeyMaxMemoryPolicy{
+	ValkeyMaxMemoryPolicyAllkeysLfu,
+	ValkeyMaxMemoryPolicyAllkeysLru,
+	ValkeyMaxMemoryPolicyAllkeysRandom,
+	ValkeyMaxMemoryPolicyNoEviction,
+	ValkeyMaxMemoryPolicyVolatileLfu,
+	ValkeyMaxMemoryPolicyVolatileLru,
+	ValkeyMaxMemoryPolicyVolatileRandom,
+	ValkeyMaxMemoryPolicyVolatileTtl,
+}
+
+type ValkeySize string
+
+const (
+	// Small Valkey instance.
+	ValkeySizeSmall ValkeySize = "SMALL"
+	// Medium Valkey instance.
+	ValkeySizeMedium ValkeySize = "MEDIUM"
+	// Large Valkey instance.
+	ValkeySizeLarge ValkeySize = "LARGE"
+)
+
+var AllValkeySize = []ValkeySize{
+	ValkeySizeSmall,
+	ValkeySizeMedium,
+	ValkeySizeLarge,
+}
+
 // State of the workload
 type WorkloadState string
 
@@ -2133,6 +2216,22 @@ func (v *__AddTeamMemberInput) GetEmail() string { return v.Email }
 
 // GetRole returns __AddTeamMemberInput.Role, and is useful for accessing the field via an interface.
 func (v *__AddTeamMemberInput) GetRole() TeamMemberRole { return v.Role }
+
+// __CreateValkeyInput is used internally by genqlient
+type __CreateValkeyInput struct {
+	Name            string                `json:"name"`
+	Size            ValkeySize            `json:"size"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy"`
+}
+
+// GetName returns __CreateValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetName() string { return v.Name }
+
+// GetSize returns __CreateValkeyInput.Size, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetSize() ValkeySize { return v.Size }
+
+// GetMaxMemoryPolicy returns __CreateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
 
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
@@ -2191,6 +2290,47 @@ func AddTeamMember(
 	}
 
 	data_ = &AddTeamMemberResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateValkey.
+const CreateValkey_Operation = `
+mutation CreateValkey ($name: String!, $size: ValkeySize!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	createValkey(input: {name:$name,size:$size,maxMemoryPolicy:$maxMemoryPolicy}) {
+		valkey {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	size ValkeySize,
+	maxMemoryPolicy ValkeyMaxMemoryPolicy,
+) (data_ *CreateValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateValkey",
+		Query:  CreateValkey_Operation,
+		Variables: &__CreateValkeyInput{
+			Name:            name,
+			Size:            size,
+			MaxMemoryPolicy: maxMemoryPolicy,
+		},
+	}
+
+	data_ = &CreateValkeyResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

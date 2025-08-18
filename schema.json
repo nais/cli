@@ -51,8 +51,7 @@
 				},
 				"required": [
 					"name",
-					"size",
-					"maxMemoryPolicy"
+					"size"
 				],
 				"type": "object"
 			},

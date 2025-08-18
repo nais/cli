@@ -8,6 +8,7 @@ import (
 
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
+	apply "github.com/nais/cli/internal/apply/command"
 	login "github.com/nais/cli/internal/auth/login"
 	logout "github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
@@ -36,6 +37,7 @@ func newApplication(flags *root.Flags) *naistrix.Application {
 			debug.Debug(flags),
 			kubeconfig.Kubeconfig(flags),
 			validate.Validate(flags),
+			apply.Apply(flags),
 		},
 		StickyFlags: flags,
 	}

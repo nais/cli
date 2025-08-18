@@ -8,5 +8,5 @@ size = "sdf"
 
 [[valkey]]
 name = "24s"
-size = "s"
-maxMemoryPolicy = "sf"
+size = "LARGE"
+maxMemoryPolicy = "ALLKEYS_LRU"
