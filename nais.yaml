@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=./schema.json
+
+naisVersion: "1"
+openSearch:
+  - name: skdj
+    size: dskjf

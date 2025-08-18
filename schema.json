@@ -1,0 +1,66 @@
+{
+	"$id": "https://nais.io/schema/apply",
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"additionalProperties": false,
+	"properties": {
+		"environment": {
+			"type": "string"
+		},
+		"naisVersion": {
+			"enum": [
+				"1"
+			],
+			"type": "string"
+		},
+		"openSearch": {
+			"items": {
+				"additionalProperties": false,
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"size": {
+						"description": "Size is the size of the OpenSearch instance.",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"size"
+				],
+				"type": "object"
+			},
+			"type": "array"
+		},
+		"valkey": {
+			"items": {
+				"additionalProperties": false,
+				"properties": {
+					"maxMemoryPolicy": {
+						"description": "MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. \"allkeys-lru\".",
+						"type": "string"
+					},
+					"name": {
+						"description": "Name is the name of the Valkey instance, e.g. \"my-valkey\".",
+						"type": "string"
+					},
+					"size": {
+						"description": "Size is the size of the Valkey instance.",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"size",
+					"maxMemoryPolicy"
+				],
+				"type": "object"
+			},
+			"type": "array"
+		}
+	},
+	"required": [
+		"naisVersion"
+	],
+	"type": "object"
+}

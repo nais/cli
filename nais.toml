@@ -1,0 +1,12 @@
+#:schema ./schema.json
+
+naisVersion = "1"
+
+[[openSearch]]
+name = "asfd"
+size = "sdf"
+
+[[valkey]]
+name = "24s"
+size = "s"
+maxMemoryPolicy = "sf"
