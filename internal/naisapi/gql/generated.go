@@ -45,6 +45,44 @@ func (v *AddTeamMemberResponse) GetAddTeamMember() AddTeamMemberAddTeamMemberAdd
 	return v.AddTeamMember
 }
 
+// CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload includes the requested fields of the GraphQL type CreateOpenSearchPayload.
+type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload struct {
+	// OpenSearch instance that was created.
+	OpenSearch CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch `json:"openSearch"`
+}
+
+// GetOpenSearch returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload.OpenSearch, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload) GetOpenSearch() CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch {
+	return v.OpenSearch
+}
+
+// CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch.Id, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetId() string {
+	return v.Id
+}
+
+// GetName returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetName() string {
+	return v.Name
+}
+
+// CreateOpenSearchResponse is returned by CreateOpenSearch on success.
+type CreateOpenSearchResponse struct {
+	// Create a new OpenSearch instance.
+	CreateOpenSearch CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload `json:"createOpenSearch"`
+}
+
+// GetCreateOpenSearch returns CreateOpenSearchResponse.CreateOpenSearch, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchResponse) GetCreateOpenSearch() CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload {
+	return v.CreateOpenSearch
+}
+
 // CreateValkeyCreateValkeyCreateValkeyPayload includes the requested fields of the GraphQL type CreateValkeyPayload.
 type CreateValkeyCreateValkeyCreateValkeyPayload struct {
 	// Valkey instance that was created.
@@ -608,6 +646,34 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 		}
 	}
 	return &retval, nil
+}
+
+type OpenSearchMajorVersion string
+
+const (
+	// OpenSearch Version 2.x
+	OpenSearchMajorVersionV2 OpenSearchMajorVersion = "V2"
+)
+
+var AllOpenSearchMajorVersion = []OpenSearchMajorVersion{
+	OpenSearchMajorVersionV2,
+}
+
+type OpenSearchSize string
+
+const (
+	// Small OpenSearch instance.
+	OpenSearchSizeSmall OpenSearchSize = "SMALL"
+	// Medium OpenSearch instance.
+	OpenSearchSizeMedium OpenSearchSize = "MEDIUM"
+	// Large OpenSearch instance.
+	OpenSearchSizeLarge OpenSearchSize = "LARGE"
+)
+
+var AllOpenSearchSize = []OpenSearchSize{
+	OpenSearchSizeSmall,
+	OpenSearchSizeMedium,
+	OpenSearchSizeLarge,
 }
 
 // RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload includes the requested fields of the GraphQL type RemoveTeamMemberPayload.
@@ -2217,15 +2283,47 @@ func (v *__AddTeamMemberInput) GetEmail() string { return v.Email }
 // GetRole returns __AddTeamMemberInput.Role, and is useful for accessing the field via an interface.
 func (v *__AddTeamMemberInput) GetRole() TeamMemberRole { return v.Role }
 
+// __CreateOpenSearchInput is used internally by genqlient
+type __CreateOpenSearchInput struct {
+	Name            string                 `json:"name,omitempty"`
+	EnvironmentName string                 `json:"environmentName,omitempty"`
+	TeamSlug        string                 `json:"teamSlug,omitempty"`
+	Size            OpenSearchSize         `json:"size,omitempty"`
+	Version         OpenSearchMajorVersion `json:"version,omitempty"`
+}
+
+// GetName returns __CreateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetSize returns __CreateOpenSearchInput.Size, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetSize() OpenSearchSize { return v.Size }
+
+// GetVersion returns __CreateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
 // __CreateValkeyInput is used internally by genqlient
 type __CreateValkeyInput struct {
-	Name            string                `json:"name"`
-	Size            ValkeySize            `json:"size"`
-	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy"`
+	Name            string                `json:"name,omitempty"`
+	EnvironmentName string                `json:"environmentName,omitempty"`
+	TeamSlug        string                `json:"teamSlug,omitempty"`
+	Size            ValkeySize            `json:"size,omitempty"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 }
 
 // GetName returns __CreateValkeyInput.Name, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
 // GetSize returns __CreateValkeyInput.Size, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetSize() ValkeySize { return v.Size }
@@ -2301,10 +2399,55 @@ func AddTeamMember(
 	return data_, err_
 }
 
+// The mutation executed by CreateOpenSearch.
+const CreateOpenSearch_Operation = `
+mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: OpenSearchSize!, $version: OpenSearchMajorVersion) {
+	createOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,version:$version}) {
+		openSearch {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	size OpenSearchSize,
+	version OpenSearchMajorVersion,
+) (data_ *CreateOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateOpenSearch",
+		Query:  CreateOpenSearch_Operation,
+		Variables: &__CreateOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Size:            size,
+			Version:         version,
+		},
+	}
+
+	data_ = &CreateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by CreateValkey.
 const CreateValkey_Operation = `
-mutation CreateValkey ($name: String!, $size: ValkeySize!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
-	createValkey(input: {name:$name,size:$size,maxMemoryPolicy:$maxMemoryPolicy}) {
+mutation CreateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: ValkeySize!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	createValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,maxMemoryPolicy:$maxMemoryPolicy}) {
 		valkey {
 			id
 			name
@@ -2317,6 +2460,8 @@ func CreateValkey(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	name string,
+	environmentName string,
+	teamSlug string,
 	size ValkeySize,
 	maxMemoryPolicy ValkeyMaxMemoryPolicy,
 ) (data_ *CreateValkeyResponse, err_ error) {
@@ -2325,6 +2470,8 @@ func CreateValkey(
 		Query:  CreateValkey_Operation,
 		Variables: &__CreateValkeyInput{
 			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
 			Size:            size,
 			MaxMemoryPolicy: maxMemoryPolicy,
 		},

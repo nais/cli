@@ -1268,6 +1268,21 @@ The cost series.
 	series: [ServiceCostSeries!]!
 }
 
+input CreateOpenSearchInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	size: OpenSearchSize!
+	version: OpenSearchMajorVersion
+}
+
+type CreateOpenSearchPayload {
+"""
+OpenSearch instance that was created.
+"""
+	openSearch: OpenSearch!
+}
+
 input CreateSecretInput {
 	name: String!
 	environment: String!
@@ -1347,6 +1362,8 @@ type CreateUnleashForTeamPayload {
 
 input CreateValkeyInput {
 	name: String!
+	environmentName: String!
+	teamSlug: Slug!
 	size: ValkeySize!
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 }
@@ -3004,6 +3021,12 @@ Trigger a job
 		input: TriggerJobInput!
 	): TriggerJobPayload!
 """
+Create a new OpenSearch instance.
+"""
+	createOpenSearch(
+		input: CreateOpenSearchInput!
+	): CreateOpenSearchPayload!
+"""
 Enable a reconciler
 
 A reconciler must be fully configured before it can be enabled.
@@ -3411,6 +3434,13 @@ The OpenSearchMaintenanceUpdate.
 	node: OpenSearchMaintenanceUpdate!
 }
 
+enum OpenSearchMajorVersion {
+"""
+OpenSearch Version 2.x
+"""
+	V2
+}
+
 input OpenSearchOrder {
 	field: OpenSearchOrderField!
 	direction: OrderDirection!
@@ -3419,6 +3449,21 @@ input OpenSearchOrder {
 enum OpenSearchOrderField {
 	NAME
 	ENVIRONMENT
+}
+
+enum OpenSearchSize {
+"""
+Small OpenSearch instance.
+"""
+	SMALL
+"""
+Medium OpenSearch instance.
+"""
+	MEDIUM
+"""
+Large OpenSearch instance.
+"""
+	LARGE
 }
 
 type OpenSearchStatus {

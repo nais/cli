@@ -1,12 +1,19 @@
 #:schema ./schema.json
 
-naisVersion = "1"
+naisVersion = "v3"
+environment = "dev-gcp"
+team = "basseng"
 
-[[openSearch]]
-name = "asfd"
-size = "sdf"
-
-[[valkey]]
-name = "24s"
+[valkey.24s]
 size = "LARGE"
 maxMemoryPolicy = "ALLKEYS_LRU"
+
+# alternatively
+[openSearch.asdf]
+size = "SMALL"
+
+[openSearch.foo]
+size = "MEDIUM"
+
+[openSearch.bar]
+size = "LARGE"

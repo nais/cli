@@ -8,40 +8,40 @@
 		},
 		"naisVersion": {
 			"enum": [
-				"1"
+				"v3"
 			],
 			"type": "string"
 		},
 		"openSearch": {
-			"items": {
+			"additionalProperties": {
 				"additionalProperties": false,
 				"properties": {
-					"name": {
-						"type": "string"
-					},
 					"size": {
 						"description": "Size is the size of the OpenSearch instance.",
+						"type": "string"
+					},
+					"version": {
+						"description": "Version is the major version of OpenSearch, e.g. \"2\".",
 						"type": "string"
 					}
 				},
 				"required": [
-					"name",
 					"size"
 				],
 				"type": "object"
 			},
-			"type": "array"
+			"description": "OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.",
+			"type": "object"
+		},
+		"team": {
+			"type": "string"
 		},
 		"valkey": {
-			"items": {
+			"additionalProperties": {
 				"additionalProperties": false,
 				"properties": {
 					"maxMemoryPolicy": {
 						"description": "MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. \"allkeys-lru\".",
-						"type": "string"
-					},
-					"name": {
-						"description": "Name is the name of the Valkey instance, e.g. \"my-valkey\".",
 						"type": "string"
 					},
 					"size": {
@@ -50,16 +50,18 @@
 					}
 				},
 				"required": [
-					"name",
 					"size"
 				],
 				"type": "object"
 			},
-			"type": "array"
+			"description": "Valkey is a map of Valkey instances to be created, where the key is the name of the instance.",
+			"type": "object"
 		}
 	},
 	"required": [
-		"naisVersion"
+		"naisVersion",
+		"environment",
+		"team"
 	],
 	"type": "object"
 }

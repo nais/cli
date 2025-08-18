@@ -1,8 +1,18 @@
 # yaml-language-server: $schema=./schema.json
 
-naisVersion: "1"
+naisVersion: v3
 environment: "dev-nais"
+team: "basseng"
 
 openSearch:
-  - name: skdj
-    size: dskjf
+  asdf:
+    size: "SMALL"
+  foo:
+    size: "MEDIUM"
+  bar:
+    size: "LARGE"
+
+valkey:
+  foo:
+    size: "SMALL"
+    maxMemoryPolicy: "VOLATILE_TTL"

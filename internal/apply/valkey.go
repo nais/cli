@@ -7,15 +7,17 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func CreateValkey(ctx context.Context, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
-	_ = `# @genqlient
+func CreateValkey(ctx context.Context, name string, metadata ResourceMetadata, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
+	_ = `# @genqlient(omitempty: true)
 		mutation CreateValkey(
 		  $name: String!,
+		  $environmentName: String!
+		  $teamSlug: Slug!
 		  $size: ValkeySize!,
 		  $maxMemoryPolicy: ValkeyMaxMemoryPolicy,
 		) {
 		  createValkey(
-		    input: { name: $name, size: $size, maxMemoryPolicy: $maxMemoryPolicy }
+		    input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug, size: $size, maxMemoryPolicy: $maxMemoryPolicy }
 		  ) {
 		    valkey {
 		      id
@@ -30,7 +32,7 @@ func CreateValkey(ctx context.Context, data *Valkey) (*gql.CreateValkeyCreateVal
 		return nil, err
 	}
 
-	resp, err := gql.CreateValkey(ctx, client, data.Name, data.Size, data.MaxMemoryPolicy)
+	resp, err := gql.CreateValkey(ctx, client, name, metadata.Environment, metadata.TeamSlug, data.Size, data.MaxMemoryPolicy)
 	if err != nil {
 		return nil, err
 	}
