@@ -1,19 +1,23 @@
 #:schema ./schema.json
 
 naisVersion = "v3"
-environment = "dev-gcp"
-team = "basseng"
+environment = "dev"
+team = "devteam"
 
 [valkey.24s]
-size = "LARGE"
+size = "RAM_14GB"
+tier = "SINGLE_NODE"
 maxMemoryPolicy = "ALLKEYS_LRU"
 
 # alternatively
 [openSearch.asdf]
-size = "SMALL"
+size = "RAM_4GB"
+tier = "SINGLE_NODE"
 
 [openSearch.foo]
-size = "MEDIUM"
+size = "RAM_32GB"
+tier = "SINGLE_NODE"
 
 [openSearch.bar]
-size = "LARGE"
+size = "RAM_64GB"
+tier = "HIGH_AVAILABILITY"

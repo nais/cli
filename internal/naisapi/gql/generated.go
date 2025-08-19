@@ -662,18 +662,31 @@ var AllOpenSearchMajorVersion = []OpenSearchMajorVersion{
 type OpenSearchSize string
 
 const (
-	// Small OpenSearch instance.
-	OpenSearchSizeSmall OpenSearchSize = "SMALL"
-	// Medium OpenSearch instance.
-	OpenSearchSizeMedium OpenSearchSize = "MEDIUM"
-	// Large OpenSearch instance.
-	OpenSearchSizeLarge OpenSearchSize = "LARGE"
+	OpenSearchSizeRam4gb  OpenSearchSize = "RAM_4GB"
+	OpenSearchSizeRam8gb  OpenSearchSize = "RAM_8GB"
+	OpenSearchSizeRam16gb OpenSearchSize = "RAM_16GB"
+	OpenSearchSizeRam32gb OpenSearchSize = "RAM_32GB"
+	OpenSearchSizeRam64gb OpenSearchSize = "RAM_64GB"
 )
 
 var AllOpenSearchSize = []OpenSearchSize{
-	OpenSearchSizeSmall,
-	OpenSearchSizeMedium,
-	OpenSearchSizeLarge,
+	OpenSearchSizeRam4gb,
+	OpenSearchSizeRam8gb,
+	OpenSearchSizeRam16gb,
+	OpenSearchSizeRam32gb,
+	OpenSearchSizeRam64gb,
+}
+
+type OpenSearchTier string
+
+const (
+	OpenSearchTierSingleNode       OpenSearchTier = "SINGLE_NODE"
+	OpenSearchTierHighAvailability OpenSearchTier = "HIGH_AVAILABILITY"
+)
+
+var AllOpenSearchTier = []OpenSearchTier{
+	OpenSearchTierSingleNode,
+	OpenSearchTierHighAvailability,
 }
 
 // RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload includes the requested fields of the GraphQL type RemoveTeamMemberPayload.
@@ -2214,18 +2227,37 @@ var AllValkeyMaxMemoryPolicy = []ValkeyMaxMemoryPolicy{
 type ValkeySize string
 
 const (
-	// Small Valkey instance.
-	ValkeySizeSmall ValkeySize = "SMALL"
-	// Medium Valkey instance.
-	ValkeySizeMedium ValkeySize = "MEDIUM"
-	// Large Valkey instance.
-	ValkeySizeLarge ValkeySize = "LARGE"
+	ValkeySizeRam1gb   ValkeySize = "RAM_1GB"
+	ValkeySizeRam4gb   ValkeySize = "RAM_4GB"
+	ValkeySizeRam8gb   ValkeySize = "RAM_8GB"
+	ValkeySizeRam14gb  ValkeySize = "RAM_14GB"
+	ValkeySizeRam28gb  ValkeySize = "RAM_28GB"
+	ValkeySizeRam56gb  ValkeySize = "RAM_56GB"
+	ValkeySizeRam112gb ValkeySize = "RAM_112GB"
+	ValkeySizeRam200gb ValkeySize = "RAM_200GB"
 )
 
 var AllValkeySize = []ValkeySize{
-	ValkeySizeSmall,
-	ValkeySizeMedium,
-	ValkeySizeLarge,
+	ValkeySizeRam1gb,
+	ValkeySizeRam4gb,
+	ValkeySizeRam8gb,
+	ValkeySizeRam14gb,
+	ValkeySizeRam28gb,
+	ValkeySizeRam56gb,
+	ValkeySizeRam112gb,
+	ValkeySizeRam200gb,
+}
+
+type ValkeyTier string
+
+const (
+	ValkeyTierSingleNode       ValkeyTier = "SINGLE_NODE"
+	ValkeyTierHighAvailability ValkeyTier = "HIGH_AVAILABILITY"
+)
+
+var AllValkeyTier = []ValkeyTier{
+	ValkeyTierSingleNode,
+	ValkeyTierHighAvailability,
 }
 
 // State of the workload
@@ -2289,6 +2321,7 @@ type __CreateOpenSearchInput struct {
 	EnvironmentName string                 `json:"environmentName,omitempty"`
 	TeamSlug        string                 `json:"teamSlug,omitempty"`
 	Size            OpenSearchSize         `json:"size,omitempty"`
+	Tier            OpenSearchTier         `json:"tier,omitempty"`
 	Version         OpenSearchMajorVersion `json:"version,omitempty"`
 }
 
@@ -2304,6 +2337,9 @@ func (v *__CreateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 // GetSize returns __CreateOpenSearchInput.Size, and is useful for accessing the field via an interface.
 func (v *__CreateOpenSearchInput) GetSize() OpenSearchSize { return v.Size }
 
+// GetTier returns __CreateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
 // GetVersion returns __CreateOpenSearchInput.Version, and is useful for accessing the field via an interface.
 func (v *__CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
 
@@ -2313,6 +2349,7 @@ type __CreateValkeyInput struct {
 	EnvironmentName string                `json:"environmentName,omitempty"`
 	TeamSlug        string                `json:"teamSlug,omitempty"`
 	Size            ValkeySize            `json:"size,omitempty"`
+	Tier            ValkeyTier            `json:"tier,omitempty"`
 	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 }
 
@@ -2327,6 +2364,9 @@ func (v *__CreateValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
 // GetSize returns __CreateValkeyInput.Size, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetSize() ValkeySize { return v.Size }
+
+// GetTier returns __CreateValkeyInput.Tier, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetTier() ValkeyTier { return v.Tier }
 
 // GetMaxMemoryPolicy returns __CreateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
@@ -2401,8 +2441,8 @@ func AddTeamMember(
 
 // The mutation executed by CreateOpenSearch.
 const CreateOpenSearch_Operation = `
-mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: OpenSearchSize!, $version: OpenSearchMajorVersion) {
-	createOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,version:$version}) {
+mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: OpenSearchSize!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion) {
+	createOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,tier:$tier,version:$version}) {
 		openSearch {
 			id
 			name
@@ -2418,6 +2458,7 @@ func CreateOpenSearch(
 	environmentName string,
 	teamSlug string,
 	size OpenSearchSize,
+	tier OpenSearchTier,
 	version OpenSearchMajorVersion,
 ) (data_ *CreateOpenSearchResponse, err_ error) {
 	req_ := &graphql.Request{
@@ -2428,6 +2469,7 @@ func CreateOpenSearch(
 			EnvironmentName: environmentName,
 			TeamSlug:        teamSlug,
 			Size:            size,
+			Tier:            tier,
 			Version:         version,
 		},
 	}
@@ -2446,8 +2488,8 @@ func CreateOpenSearch(
 
 // The mutation executed by CreateValkey.
 const CreateValkey_Operation = `
-mutation CreateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: ValkeySize!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
-	createValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,maxMemoryPolicy:$maxMemoryPolicy}) {
+mutation CreateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: ValkeySize!, $tier: ValkeyTier!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	createValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,tier:$tier,maxMemoryPolicy:$maxMemoryPolicy}) {
 		valkey {
 			id
 			name
@@ -2463,6 +2505,7 @@ func CreateValkey(
 	environmentName string,
 	teamSlug string,
 	size ValkeySize,
+	tier ValkeyTier,
 	maxMemoryPolicy ValkeyMaxMemoryPolicy,
 ) (data_ *CreateValkeyResponse, err_ error) {
 	req_ := &graphql.Request{
@@ -2473,6 +2516,7 @@ func CreateValkey(
 			EnvironmentName: environmentName,
 			TeamSlug:        teamSlug,
 			Size:            size,
+			Tier:            tier,
 			MaxMemoryPolicy: maxMemoryPolicy,
 		},
 	}

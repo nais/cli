@@ -1272,6 +1272,7 @@ input CreateOpenSearchInput {
 	name: String!
 	environmentName: String!
 	teamSlug: Slug!
+	tier: OpenSearchTier!
 	size: OpenSearchSize!
 	version: OpenSearchMajorVersion
 }
@@ -1364,6 +1365,7 @@ input CreateValkeyInput {
 	name: String!
 	environmentName: String!
 	teamSlug: Slug!
+	tier: ValkeyTier!
 	size: ValkeySize!
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 }
@@ -3452,22 +3454,20 @@ enum OpenSearchOrderField {
 }
 
 enum OpenSearchSize {
-"""
-Small OpenSearch instance.
-"""
-	SMALL
-"""
-Medium OpenSearch instance.
-"""
-	MEDIUM
-"""
-Large OpenSearch instance.
-"""
-	LARGE
+	RAM_4GB
+	RAM_8GB
+	RAM_16GB
+	RAM_32GB
+	RAM_64GB
 }
 
 type OpenSearchStatus {
 	state: String!
+}
+
+enum OpenSearchTier {
+	SINGLE_NODE
+	HIGH_AVAILABILITY
 }
 
 """
@@ -8146,22 +8146,23 @@ enum ValkeyOrderField {
 }
 
 enum ValkeySize {
-"""
-Small Valkey instance.
-"""
-	SMALL
-"""
-Medium Valkey instance.
-"""
-	MEDIUM
-"""
-Large Valkey instance.
-"""
-	LARGE
+	RAM_1GB
+	RAM_4GB
+	RAM_8GB
+	RAM_14GB
+	RAM_28GB
+	RAM_56GB
+	RAM_112GB
+	RAM_200GB
 }
 
 type ValkeyStatus {
 	state: String!
+}
+
+enum ValkeyTier {
+	SINGLE_NODE
+	HIGH_AVAILABILITY
 }
 
 """

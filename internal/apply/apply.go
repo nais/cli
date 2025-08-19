@@ -25,13 +25,13 @@ func Run(ctx context.Context, files []string, flags *flag.Apply, out naistrix.Ou
 	// TODO(tronghn): verify naisVersion in schema
 
 	for name, v := range a.Valkey {
-		if _, err := CreateValkey(ctx, name, a.ResourceMetadata, v); err != nil {
+		if err := UpsertValkey(ctx, name, a.ResourceMetadata, v); err != nil {
 			return fmt.Errorf("failed to create valkey from file %s: %w", name, err)
 		}
 	}
 
 	for name, o := range a.OpenSearch {
-		if _, err := CreateOpenSearch(ctx, name, a.ResourceMetadata, o); err != nil {
+		if err := UpsertOpenSearch(ctx, name, a.ResourceMetadata, o); err != nil {
 			return fmt.Errorf("failed to create openSearch from file %s: %w", name, err)
 		}
 	}
