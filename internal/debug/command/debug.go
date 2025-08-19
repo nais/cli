@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/MakeNowJust/heredoc/v2"
@@ -19,7 +18,7 @@ func Debug(parentFlags *root.Flags) *naistrix.Command {
 		Flags:     parentFlags,
 		Context:   flag.Context(defaultContext),
 		Namespace: defaultNamespace,
-		Ttl:       time.Minute,
+		Ttl:       24 * time.Hour,
 	}
 
 	return &naistrix.Command{
@@ -30,13 +29,6 @@ func Debug(parentFlags *root.Flags) *naistrix.Command {
 
 			To debug a live pod, run the command without the "--copy" flag.
 		`),
-		ValidateFunc: func(ctx context.Context, args []string) error {
-			if flags.Ttl > time.Hour {
-				return fmt.Errorf("the --ttl duration can not exceed 1 hour")
-			}
-
-			return nil
-		},
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
