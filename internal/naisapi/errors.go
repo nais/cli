@@ -6,7 +6,11 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-func IsAlreadyExistsError(err error) bool {
+func IsErrAlreadyExists(err error) bool {
+	if err == nil {
+		return false
+	}
+
 	var gerr gqlerror.List
 	ok := errors.As(err, &gerr)
 	if !ok {

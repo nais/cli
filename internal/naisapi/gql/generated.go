@@ -1925,6 +1925,78 @@ func (v *TeamsTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
 // GetPurpose returns TeamsTeamsTeamConnectionNodesTeam.Purpose, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionNodesTeam) GetPurpose() string { return v.Purpose }
 
+// UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
+type UpdateOpenSearchResponse struct {
+	// Update an existing OpenSearch instance.
+	UpdateOpenSearch UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload `json:"updateOpenSearch"`
+}
+
+// GetUpdateOpenSearch returns UpdateOpenSearchResponse.UpdateOpenSearch, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchResponse) GetUpdateOpenSearch() UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload {
+	return v.UpdateOpenSearch
+}
+
+// UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload includes the requested fields of the GraphQL type UpdateOpenSearchPayload.
+type UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload struct {
+	// OpenSearch instance that was updated.
+	OpenSearch UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch `json:"openSearch"`
+}
+
+// GetOpenSearch returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload.OpenSearch, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload) GetOpenSearch() UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch {
+	return v.OpenSearch
+}
+
+// UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch.Id, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetId() string {
+	return v.Id
+}
+
+// GetName returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetName() string {
+	return v.Name
+}
+
+// UpdateValkeyResponse is returned by UpdateValkey on success.
+type UpdateValkeyResponse struct {
+	// Update an existing Valkey instance.
+	UpdateValkey UpdateValkeyUpdateValkeyUpdateValkeyPayload `json:"updateValkey"`
+}
+
+// GetUpdateValkey returns UpdateValkeyResponse.UpdateValkey, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyResponse) GetUpdateValkey() UpdateValkeyUpdateValkeyUpdateValkeyPayload {
+	return v.UpdateValkey
+}
+
+// UpdateValkeyUpdateValkeyUpdateValkeyPayload includes the requested fields of the GraphQL type UpdateValkeyPayload.
+type UpdateValkeyUpdateValkeyUpdateValkeyPayload struct {
+	// Valkey instance that was updated.
+	Valkey UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey `json:"valkey"`
+}
+
+// GetValkey returns UpdateValkeyUpdateValkeyUpdateValkeyPayload.Valkey, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayload) GetValkey() UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey {
+	return v.Valkey
+}
+
+// UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey includes the requested fields of the GraphQL type Valkey.
+type UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Id, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetId() string { return v.Id }
+
+// GetName returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetName() string { return v.Name }
+
 // UserTeamsMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // UserTeamsMeAuthenticatedUser is implemented by the following types:
@@ -2399,6 +2471,62 @@ type __TeamMembersInput struct {
 // GetSlug returns __TeamMembersInput.Slug, and is useful for accessing the field via an interface.
 func (v *__TeamMembersInput) GetSlug() string { return v.Slug }
 
+// __UpdateOpenSearchInput is used internally by genqlient
+type __UpdateOpenSearchInput struct {
+	Name            string                 `json:"name,omitempty"`
+	EnvironmentName string                 `json:"environmentName,omitempty"`
+	TeamSlug        string                 `json:"teamSlug,omitempty"`
+	Size            OpenSearchSize         `json:"size,omitempty"`
+	Tier            OpenSearchTier         `json:"tier,omitempty"`
+	Version         OpenSearchMajorVersion `json:"version,omitempty"`
+}
+
+// GetName returns __UpdateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetSize returns __UpdateOpenSearchInput.Size, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetSize() OpenSearchSize { return v.Size }
+
+// GetTier returns __UpdateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
+// GetVersion returns __UpdateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
+// __UpdateValkeyInput is used internally by genqlient
+type __UpdateValkeyInput struct {
+	Name            string                `json:"name,omitempty"`
+	EnvironmentName string                `json:"environmentName,omitempty"`
+	TeamSlug        string                `json:"teamSlug,omitempty"`
+	Size            ValkeySize            `json:"size,omitempty"`
+	Tier            ValkeyTier            `json:"tier,omitempty"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
+}
+
+// GetName returns __UpdateValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetSize returns __UpdateValkeyInput.Size, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetSize() ValkeySize { return v.Size }
+
+// GetTier returns __UpdateValkeyInput.Tier, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns __UpdateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
+
 // The mutation executed by AddTeamMember.
 const AddTeamMember_Operation = `
 mutation AddTeamMember ($slug: Slug!, $email: String!, $role: TeamMemberRole!) {
@@ -2794,6 +2922,100 @@ func Teams(
 	}
 
 	data_ = &TeamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateOpenSearch.
+const UpdateOpenSearch_Operation = `
+mutation UpdateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: OpenSearchSize!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion) {
+	updateOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,tier:$tier,version:$version}) {
+		openSearch {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	size OpenSearchSize,
+	tier OpenSearchTier,
+	version OpenSearchMajorVersion,
+) (data_ *UpdateOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateOpenSearch",
+		Query:  UpdateOpenSearch_Operation,
+		Variables: &__UpdateOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Size:            size,
+			Tier:            tier,
+			Version:         version,
+		},
+	}
+
+	data_ = &UpdateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateValkey.
+const UpdateValkey_Operation = `
+mutation UpdateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $size: ValkeySize!, $tier: ValkeyTier!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	updateValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,size:$size,tier:$tier,maxMemoryPolicy:$maxMemoryPolicy}) {
+		valkey {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	size ValkeySize,
+	tier ValkeyTier,
+	maxMemoryPolicy ValkeyMaxMemoryPolicy,
+) (data_ *UpdateValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateValkey",
+		Query:  UpdateValkey_Operation,
+		Variables: &__UpdateValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Size:            size,
+			Tier:            tier,
+			MaxMemoryPolicy: maxMemoryPolicy,
+		},
+	}
+
+	data_ = &UpdateValkeyResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

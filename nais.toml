@@ -9,7 +9,6 @@ size = "RAM_14GB"
 tier = "SINGLE_NODE"
 maxMemoryPolicy = "ALLKEYS_LRU"
 
-# alternatively
 [openSearch.asdf]
 size = "RAM_4GB"
 tier = "SINGLE_NODE"
