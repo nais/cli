@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cuelang.org/go/cue/cuecontext"
+	"cuelang.org/go/cue/load"
 	"github.com/goccy/go-yaml"
 	"github.com/nais/cli/internal/apply/command/flag"
 	"github.com/nais/naistrix"
@@ -21,8 +23,6 @@ func Run(ctx context.Context, files []string, flags *flag.Apply, out naistrix.Ou
 			return err
 		}
 	}
-
-	// TODO(tronghn): verify naisVersion in schema
 
 	for name, v := range a.Valkey {
 		if err := UpsertValkey(ctx, name, a.ResourceMetadata, v); err != nil {
@@ -59,6 +59,10 @@ func decodeFile(filePath string, v any) error {
 	case "toml":
 		decoder := toml.NewDecoder(f)
 		return decoder.DisallowUnknownFields().Decode(v)
+	case "cue":
+		insts := load.Instances([]string{"."}, nil)
+		decoder := cuecontext.New().BuildInstance(insts[0])
+		return decoder.Decode(v)
 	default:
 		return fmt.Errorf("unsupported file extension %s for file %s", ext, filePath)
 	}
