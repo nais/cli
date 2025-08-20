@@ -18,7 +18,8 @@ func Debug(parentFlags *root.Flags) *naistrix.Command {
 		Flags:     parentFlags,
 		Context:   flag.Context(defaultContext),
 		Namespace: defaultNamespace,
-		Ttl:       24 * time.Hour,
+		TTL:       24 * time.Hour,
+		Timeout:   30 * time.Second,
 	}
 
 	return &naistrix.Command{
