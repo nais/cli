@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/debug/command/flag"
+	"github.com/nais/cli/internal/task"
 	"github.com/pterm/pterm"
 	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -36,8 +37,11 @@ type Debug struct {
 }
 
 func (d *Debug) Debug() error {
-	pods, err := d.getPodsForWorkload()
+	pods, err := task.Timed(d.ctx, d.flags.Timeout, "Fetching pods for workload", func(ctx context.Context) (*corev1.PodList, error) {
+		return d.getPodsForWorkload(ctx)
+	})
 	if err != nil {
+		pterm.Error.Println("Failed to get pods for workload")
 		return err
 	}
 
@@ -48,20 +52,20 @@ func (d *Debug) Debug() error {
 
 	pod, err := interactiveSelectPod(pods.Items)
 	if err != nil {
-		pterm.Error.Printf("Failed to select pod: %v\n", err)
+		pterm.Error.Println("Failed to select pod")
 		return err
 	}
 
 	if err := d.debugPod(*pod); err != nil {
-		pterm.Error.Printf("Failed to debug pod %s: %v\n", pod.Name, err)
+		pterm.Error.Println("Failed to debug pod")
+		return err
 	}
 
 	return nil
 }
 
-func (d *Debug) getPodsForWorkload() (*corev1.PodList, error) {
-	pterm.Info.Println("Fetching pods for workload...")
-	podList, err := d.podsClient.List(d.ctx, labelSelector("app.kubernetes.io/name", d.workloadName))
+func (d *Debug) getPodsForWorkload(ctx context.Context) (*corev1.PodList, error) {
+	podList, err := d.podsClient.List(ctx, labelSelector("app.kubernetes.io/name", d.workloadName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pods: %w", err)
 	}
@@ -70,7 +74,7 @@ func (d *Debug) getPodsForWorkload() (*corev1.PodList, error) {
 		return podList, nil
 	}
 
-	podList, err = d.podsClient.List(d.ctx, labelSelector("app=", d.workloadName))
+	podList, err = d.podsClient.List(ctx, labelSelector("app=", d.workloadName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pods: %w", err)
 	}
@@ -78,8 +82,8 @@ func (d *Debug) getPodsForWorkload() (*corev1.PodList, error) {
 	return podList, nil
 }
 
-func (d *Debug) podExists(name string) (bool, error) {
-	if _, err := d.podsClient.Get(d.ctx, name, metav1.GetOptions{}); err == nil {
+func (d *Debug) podExists(ctx context.Context, name string) (bool, error) {
+	if _, err := d.podsClient.Get(ctx, name, metav1.GetOptions{}); err == nil {
 		return true, nil
 	} else if k8serrors.IsNotFound(err) {
 		return false, nil
@@ -105,15 +109,18 @@ func (d *Debug) debugPod(pod corev1.Pod) error {
 		return d.createDebugPod(args, pod)
 	}
 
-	return d.createDebugContainer(args, &pod)
+	return d.createDebugContainer(args)
 }
 
-func (d *Debug) createDebugContainer(commonArgs []string, pod *corev1.Pod) error {
-	pterm.Info.Printf("Creating ephemeral debug container in pod %s...\n", pod.Name)
-
+func (d *Debug) createDebugContainer(commonArgs []string) error {
 	args := append(commonArgs, "--target", d.workloadName) // workloadName is the same as container name for nais apps
-	if err := d.kubectl(d.ctx, true, args...); err != nil {
-		return fmt.Errorf("failed to start debug command: %v", err)
+
+	_, err := task.Timed(d.ctx, d.flags.Timeout, "Creating ephemeral debug container", func(ctx context.Context) (*any, error) {
+		return nil, d.kubectl(ctx, true, args...)
+	})
+	if err != nil {
+		pterm.Error.Println("Failed to create ephemeral debug container")
+		return err
 	}
 
 	pterm.Info.Println("Remember to restart the pod to remove the debug container")
@@ -121,19 +128,19 @@ func (d *Debug) createDebugContainer(commonArgs []string, pod *corev1.Pod) error
 }
 
 func (d *Debug) createDebugPod(commonArgs []string, pod corev1.Pod) error {
-	pterm.Info.Printf("Creating a copy of pod %s with a debug container...\n", pod.Name)
+	debugPodName := createDebugPodName(pod.Name)
 
-	podCopyName := debugPodName(pod.Name)
-	// If debug pod already exists, attach instead of creating a new one
-	if exists, err := d.podExists(podCopyName); exists {
-		pterm.Info.Printf("Debug pod %q already exists, attaching...\n", podCopyName)
-		return d.attach(podCopyName)
-	} else if err != nil {
-		return fmt.Errorf("failed to check for existing debug pod %q: %v", podCopyName, err)
+	exists, err := task.Timed(d.ctx, d.flags.Timeout, "Check for existing debug pod", func(ctx context.Context) (bool, error) {
+		return d.podExists(ctx, debugPodName)
+	})
+	if err != nil {
+		return fmt.Errorf("failed to check for existing debug pod: %w", err)
+	} else if exists {
+		return d.attach(d.ctx, debugPodName)
 	}
 
 	args := append(commonArgs,
-		"--copy-to", debugPodName(pod.Name),
+		"--copy-to", debugPodName,
 		"--container", debugPodContainerName,
 		"--keep-annotations",
 		"--keep-liveness",
@@ -141,16 +148,22 @@ func (d *Debug) createDebugPod(commonArgs []string, pod corev1.Pod) error {
 		"--keep-startup",
 		"--attach=false",
 	)
-	if err := d.kubectl(d.ctx, false, args...); err != nil {
-		return fmt.Errorf("failed to start debug command: %v", err)
+	_, err = task.Timed(d.ctx, d.flags.Timeout, "Create debug pod", func(ctx context.Context) (*any, error) {
+		return nil, d.kubectl(ctx, false, args...)
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create debug pod: %v", err)
 	}
 
-	if err := d.annotateAndLabelDebugPod(podCopyName, pod.Labels); err != nil {
+	_, err = task.Timed(d.ctx, d.flags.Timeout, "Annotate debug pod", func(ctx context.Context) (*any, error) {
+		return nil, d.annotateAndLabelDebugPod(ctx, debugPodName, pod.Labels)
+	})
+	if err != nil {
 		return fmt.Errorf("failed to annotate and label debug pod: %w", err)
 	}
 
-	if err := d.attach(podCopyName); err != nil {
-		return fmt.Errorf("failed to attach to debug pod %q: %w", podCopyName, err)
+	if err := d.attach(d.ctx, debugPodName); err != nil {
+		return fmt.Errorf("failed to attach to debug pod %q: %w", debugPodName, err)
 	}
 
 	// TODO ask if the user wants to delete the debug pod after attaching
@@ -158,7 +171,7 @@ func (d *Debug) createDebugPod(commonArgs []string, pod corev1.Pod) error {
 	return nil
 }
 
-func (d *Debug) annotateAndLabelDebugPod(debugPodName string, existingLabels map[string]string) error {
+func (d *Debug) annotateAndLabelDebugPod(ctx context.Context, debugPodName string, existingLabels map[string]string) error {
 	args := []string{
 		"label",
 		"pod/" + debugPodName,
@@ -172,7 +185,7 @@ func (d *Debug) annotateAndLabelDebugPod(debugPodName string, existingLabels map
 	}
 
 	if err := d.kubectl(
-		d.ctx,
+		ctx,
 		false,
 		args...,
 	); err != nil {
@@ -182,7 +195,7 @@ func (d *Debug) annotateAndLabelDebugPod(debugPodName string, existingLabels map
 	killAfter := time.Now().Add(d.flags.TTL).Format(time.RFC3339)
 
 	if err := d.kubectl(
-		d.ctx,
+		ctx,
 		false,
 		"annotate",
 		"pod/"+debugPodName,
@@ -201,9 +214,9 @@ func interactiveSelectPod(pods []corev1.Pod) (*corev1.Pod, error) {
 			podNames = append(podNames, p.Name)
 		}
 
-		result, err := pterm.DefaultInteractiveSelect.WithOptions(podNames).Show()
+		result, err := pterm.DefaultInteractiveSelect.WithOptions(podNames).WithDefaultText(pterm.Normal("Please select a pod")).Show()
 		if err != nil {
-			pterm.Error.Printf("Prompt failed: %v\n", err)
+			pterm.Error.Println("Prompt failed")
 			return nil, err
 		}
 
@@ -227,82 +240,38 @@ func labelSelector(key, value string) metav1.ListOptions {
 }
 
 // debugPodName generates a name for the debug pod copy given a pod name.
-func debugPodName(podName string) string {
+func createDebugPodName(podName string) string {
 	return podName + "-" + debugPodSuffix
 }
 
-func waitFor[T any](ctx context.Context, timeout time.Duration, msg string, f func(context.Context) *T) (*T, error) {
-	graceDuration := 300 * time.Millisecond // time to wait between checks
-
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
-	status, err := (&pterm.AreaPrinter{}).Start()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create status area: %w", err)
-	}
-	defer status.Stop()
-
-	for ctx.Err() == nil {
-		select {
-		case <-ctx.Done():
-			pterm.Println()
-			return nil, fmt.Errorf("timed out after %v", timeout)
-		default:
-			if deadline, ok := ctx.Deadline(); ok {
-				status.Update(pterm.LightGreen(pterm.Sprintf("%s [%v]", msg, time.Until(deadline).Round(time.Second))))
-			} else {
-				status.Update(pterm.LightGreen(pterm.Sprintf("%s [%v]", msg, "?")))
-			}
-
-			if result := f(ctx); result != nil {
-				pterm.Println()
-				return result, nil
-			}
-
-			time.Sleep(graceDuration)
-		}
-	}
-
-	return nil, fmt.Errorf("wait for err: %w", ctx.Err())
-}
-
-func (d *Debug) attach(podCopyName string) error {
-	isReady := func(ctx context.Context) *string {
-		pod, err := d.podsClient.Get(d.ctx, podCopyName, metav1.GetOptions{})
+func (d *Debug) debugContainerIsReady(podName string) func(ctx context.Context) (*corev1.Pod, error) {
+	return func(ctx context.Context) (*corev1.Pod, error) {
+		pod, err := d.podsClient.Get(ctx, podName, metav1.GetOptions{})
 		if err != nil {
-			return nil
+			return nil, err
 		}
 
 		for _, c := range pod.Status.ContainerStatuses {
 			if c.Name == debugPodContainerName && c.State.Running != nil {
-				return &podCopyName
+				return pod, nil
 			}
 		}
 
-		return nil
+		return nil, fmt.Errorf("no ready debug container with name %q found in pod %q", debugPodContainerName, podName)
 	}
+}
 
-	podName, err := waitFor(d.ctx, d.flags.Timeout, "Waiting for debug container to start", isReady)
+func (d *Debug) attach(ctx context.Context, podName string) error {
+	_, err := task.Timed(ctx, d.flags.Timeout, "Attaching to container", func(ctx context.Context) (*any, error) {
+		_, err := withRetryOnErr(d.debugContainerIsReady(podName))(ctx)
+		return nil, err
+	})
 	if err != nil {
 		return fmt.Errorf("debug container did not start: %w", err)
 	}
 
-	if err := d.kubectl(d.ctx,
-		true,
-		"attach",
-		"pod/"+*podName,
-		"--container", debugPodContainerName,
-		"--stdin",
-		"--tty",
-		"--quiet",
-	); err != nil {
-		return fmt.Errorf("failed to attach to the debug container: %w", err)
-	}
-
-	pterm.Info.Println("Exited from Debug container")
-
-	return err
+	pterm.Info.Printf("You are now typing in the debug container in %q. Type exit to exit.\n", podName)
+	return d.kubectl(ctx, true, "attach", "pod/"+podName, "--container", debugPodContainerName, "--stdin", "--tty", "--quiet")
 }
 
 func (d *Debug) kubectl(ctx context.Context, attach bool, args ...string) error {
@@ -335,4 +304,16 @@ func (d *Debug) kubectl(ctx context.Context, attach bool, args ...string) error 
 	}
 
 	return nil
+}
+
+// withRetryOnErr retries the function until it returns nil error, or context is done.
+func withRetryOnErr[T any](f func(context.Context) (*T, error)) func(context.Context) (*T, error) {
+	return func(ctx context.Context) (*T, error) {
+		ret, err := f(ctx)
+		for err != nil {
+			ret, err = f(ctx)
+		}
+
+		return ret, err
+	}
 }
