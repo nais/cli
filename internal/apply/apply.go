@@ -38,13 +38,23 @@ func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) 
 	}
 
 	for name, v := range a.Valkey {
-		if err := valkey.Upsert(ctx, name, a.Environment, a.TeamSlug, v); err != nil {
+		metadata := valkey.Metadata{
+			Name:            name,
+			EnvironmentName: a.Environment,
+			TeamSlug:        a.TeamSlug,
+		}
+		if err := valkey.Upsert(ctx, metadata, v); err != nil {
 			return fmt.Errorf("failed to create valkey from file %s: %w", name, err)
 		}
 	}
 
 	for name, o := range a.OpenSearch {
-		if err := opensearch.Upsert(ctx, name, a.Environment, a.TeamSlug, o); err != nil {
+		metadata := opensearch.Metadata{
+			Name:            name,
+			EnvironmentName: a.Environment,
+			TeamSlug:        a.TeamSlug,
+		}
+		if err := opensearch.Upsert(ctx, metadata, o); err != nil {
 			return fmt.Errorf("failed to create openSearch from file %s: %w", name, err)
 		}
 	}

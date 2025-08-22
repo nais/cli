@@ -16,16 +16,25 @@ type OpenSearch struct {
 	Version gql.OpenSearchMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V2"`
 }
 
-func Upsert(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) error {
-	_, err := Create(ctx, name, environmentName, teamSlug, data)
+type Metadata struct {
+	// Name is the name of the Valkey instance.
+	Name string
+	// EnvironmentName is the name of the environment where the Valkey instance is created.
+	EnvironmentName string
+	// TeamSlug is the slug of the team that owns the Valkey instance.
+	TeamSlug string
+}
+
+func Upsert(ctx context.Context, metadata Metadata, data *OpenSearch) error {
+	_, err := Create(ctx, metadata, data)
 	if naisapi.IsErrAlreadyExists(err) {
-		_, err := Update(ctx, name, environmentName, teamSlug, data)
+		_, err := Update(ctx, metadata, data)
 		return err
 	}
 	return err
 }
 
-func Create(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
+func Create(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateOpenSearch(
 		  $name: String!,
@@ -51,7 +60,7 @@ func Create(ctx context.Context, name, environmentName, teamSlug string, data *O
 		return nil, err
 	}
 
-	resp, err := gql.CreateOpenSearch(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.Version)
+	resp, err := gql.CreateOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Size, data.Tier, data.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +68,7 @@ func Create(ctx context.Context, name, environmentName, teamSlug string, data *O
 	return &resp.CreateOpenSearch.OpenSearch, nil
 }
 
-func Update(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
+func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateOpenSearch(
 		  $name: String!,
@@ -85,7 +94,7 @@ func Update(ctx context.Context, name, environmentName, teamSlug string, data *O
 		return nil, err
 	}
 
-	resp, err := gql.UpdateOpenSearch(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.Version)
+	resp, err := gql.UpdateOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Size, data.Tier, data.Version)
 	if err != nil {
 		return nil, err
 	}

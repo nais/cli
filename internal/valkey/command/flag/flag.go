@@ -10,6 +10,9 @@ type Valkey struct {
 
 type Create struct {
 	*Valkey
+	Size            string `name:"size" short:"s" usage:"Size of the Valkey instance."`
+	Tier            string `name:"tier" short:"t" usage:"Tier of the Valkey instance."`
+	MaxMemoryPolicy string `name:"max-memory-policy" short:"m" usage:"Max memory policy for the Valkey instance."`
 }
 
 type Delete struct {

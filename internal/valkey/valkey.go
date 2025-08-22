@@ -16,16 +16,25 @@ type Valkey struct {
 	MaxMemoryPolicy gql.ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty" toml:"maxMemoryPolicy,omitempty"`
 }
 
-func Upsert(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) error {
-	_, err := Create(ctx, name, environmentName, teamSlug, data)
+type Metadata struct {
+	// Name is the name of the Valkey instance.
+	Name string
+	// EnvironmentName is the name of the environment where the Valkey instance is created.
+	EnvironmentName string
+	// TeamSlug is the slug of the team that owns the Valkey instance.
+	TeamSlug string
+}
+
+func Upsert(ctx context.Context, metadata Metadata, data *Valkey) error {
+	_, err := Create(ctx, metadata, data)
 	if naisapi.IsErrAlreadyExists(err) {
-		_, err := Update(ctx, name, environmentName, teamSlug, data)
+		_, err := Update(ctx, metadata, data)
 		return err
 	}
 	return err
 }
 
-func Create(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
+func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateValkey(
 		  $name: String!,
@@ -51,7 +60,7 @@ func Create(ctx context.Context, name, environmentName, teamSlug string, data *V
 		return nil, err
 	}
 
-	resp, err := gql.CreateValkey(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
+	resp, err := gql.CreateValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +68,7 @@ func Create(ctx context.Context, name, environmentName, teamSlug string, data *V
 	return &resp.CreateValkey.Valkey, nil
 }
 
-func Update(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
+func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateValkey(
 		  $name: String!,
@@ -85,7 +94,7 @@ func Update(ctx context.Context, name, environmentName, teamSlug string, data *V
 		return nil, err
 	}
 
-	resp, err := gql.UpdateValkey(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
+	resp, err := gql.UpdateValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
 	if err != nil {
 		return nil, err
 	}
