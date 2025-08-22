@@ -16,7 +16,7 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 		Description: "This command lists all Valkey instances across your teams.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
-			// TODO: filter by team
+			// TODO: filter by team and environment
 			// FIXME
 			return fmt.Errorf("not implemented yet")
 		},

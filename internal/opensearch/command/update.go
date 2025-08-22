@@ -12,7 +12,7 @@ func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Update{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "update",
-		Title:       "Update a OpenSearch instance.",
+		Title:       "Update an OpenSearch instance.",
 		Description: "This command updates an existing OpenSearch instance.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {

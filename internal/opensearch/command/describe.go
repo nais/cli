@@ -12,8 +12,8 @@ func describeOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Describe{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "describe",
-		Title:       "Describe a OpenSearch instance.",
-		Description: "This command describes a OpenSearch instance.",
+		Title:       "Describe an OpenSearch instance.",
+		Description: "This command describes an OpenSearch instance.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
 			// FIXME

@@ -12,7 +12,7 @@ func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Delete{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "delete",
-		Title:       "Delete a OpenSearch instance.",
+		Title:       "Delete an OpenSearch instance.",
 		Description: "This command deletes an existing OpenSearch instance.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
