@@ -30,14 +30,13 @@ const (
 )
 
 type Debug struct {
-	ctx          context.Context
 	podsClient   v1.PodInterface
 	flags        *flag.Debug
 	workloadName string
 }
 
-func (d *Debug) Debug() error {
-	pods, err := task.Timed(d.ctx, d.flags.Timeout, "Fetching pods for workload", func(ctx context.Context) (*corev1.PodList, error) {
+func (d *Debug) Debug(ctx context.Context) error {
+	pods, err := task.Timed(ctx, d.flags.Timeout, "Fetching pods for workload", func(ctx context.Context) (*corev1.PodList, error) {
 		return d.getPodsForWorkload(ctx)
 	})
 	if err != nil {
@@ -56,7 +55,7 @@ func (d *Debug) Debug() error {
 		return err
 	}
 
-	if err := d.debugPod(*pod); err != nil {
+	if err := d.debugPod(ctx, *pod); err != nil {
 		pterm.Error.Println("Failed to debug pod")
 		return err
 	}
@@ -82,17 +81,19 @@ func (d *Debug) getPodsForWorkload(ctx context.Context) (*corev1.PodList, error)
 	return podList, nil
 }
 
-func (d *Debug) podExists(ctx context.Context, name string) (bool, error) {
-	if _, err := d.podsClient.Get(ctx, name, metav1.GetOptions{}); err == nil {
-		return true, nil
-	} else if k8serrors.IsNotFound(err) {
-		return false, nil
-	} else {
-		return false, err
+func (d *Debug) podExists(name string) func(context.Context) (bool, error) {
+	return func(ctx context.Context) (bool, error) {
+		if _, err := d.podsClient.Get(ctx, name, metav1.GetOptions{}); err == nil {
+			return true, nil
+		} else if k8serrors.IsNotFound(err) {
+			return false, nil
+		} else {
+			return false, err
+		}
 	}
 }
 
-func (d *Debug) debugPod(pod corev1.Pod) error {
+func (d *Debug) debugPod(ctx context.Context, pod corev1.Pod) error {
 	args := []string{
 		"debug",
 		"pod/" + pod.Name,
@@ -106,16 +107,16 @@ func (d *Debug) debugPod(pod corev1.Pod) error {
 	}
 
 	if d.flags.Copy {
-		return d.createDebugPod(args, pod)
+		return d.createDebugPod(ctx, args, pod)
 	}
 
-	return d.createDebugContainer(args)
+	return d.createDebugContainer(ctx, args)
 }
 
-func (d *Debug) createDebugContainer(commonArgs []string) error {
+func (d *Debug) createDebugContainer(ctx context.Context, commonArgs []string) error {
 	args := append(commonArgs, "--target", d.workloadName) // workloadName is the same as container name for nais apps
 
-	_, err := task.Timed(d.ctx, d.flags.Timeout, "Creating ephemeral debug container", func(ctx context.Context) (*any, error) {
+	_, err := task.Timed(ctx, d.flags.Timeout, "Creating ephemeral debug container", func(ctx context.Context) (*any, error) {
 		return nil, d.kubectl(ctx, true, args...)
 	})
 	if err != nil {
@@ -127,16 +128,14 @@ func (d *Debug) createDebugContainer(commonArgs []string) error {
 	return nil
 }
 
-func (d *Debug) createDebugPod(commonArgs []string, pod corev1.Pod) error {
+func (d *Debug) createDebugPod(ctx context.Context, commonArgs []string, pod corev1.Pod) error {
 	debugPodName := createDebugPodName(pod.Name)
 
-	exists, err := task.Timed(d.ctx, d.flags.Timeout, "Check for existing debug pod", func(ctx context.Context) (bool, error) {
-		return d.podExists(ctx, debugPodName)
-	})
+	exists, err := task.Timed(ctx, d.flags.Timeout, "Check for existing debug pod", d.podExists(debugPodName))
 	if err != nil {
 		return fmt.Errorf("failed to check for existing debug pod: %w", err)
 	} else if exists {
-		return d.attach(d.ctx, debugPodName)
+		return d.attach(ctx, debugPodName)
 	}
 
 	args := append(commonArgs,
@@ -148,21 +147,21 @@ func (d *Debug) createDebugPod(commonArgs []string, pod corev1.Pod) error {
 		"--keep-startup",
 		"--attach=false",
 	)
-	_, err = task.Timed(d.ctx, d.flags.Timeout, "Create debug pod", func(ctx context.Context) (*any, error) {
+	_, err = task.Timed(ctx, d.flags.Timeout, "Create debug pod", func(ctx context.Context) (*any, error) {
 		return nil, d.kubectl(ctx, false, args...)
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create debug pod: %v", err)
 	}
 
-	_, err = task.Timed(d.ctx, d.flags.Timeout, "Annotate debug pod", func(ctx context.Context) (*any, error) {
+	_, err = task.Timed(ctx, d.flags.Timeout, "Annotate debug pod", func(ctx context.Context) (*any, error) {
 		return nil, d.annotateAndLabelDebugPod(ctx, debugPodName, pod.Labels)
 	})
 	if err != nil {
 		return fmt.Errorf("failed to annotate and label debug pod: %w", err)
 	}
 
-	if err := d.attach(d.ctx, debugPodName); err != nil {
+	if err := d.attach(ctx, debugPodName); err != nil {
 		return fmt.Errorf("failed to attach to debug pod %q: %w", debugPodName, err)
 	}
 
@@ -311,7 +310,13 @@ func withRetryOnErr[T any](f func(context.Context) (*T, error)) func(context.Con
 	return func(ctx context.Context) (*T, error) {
 		ret, err := f(ctx)
 		for err != nil {
-			ret, err = f(ctx)
+			select {
+			case <-ctx.Done():
+				return nil, err
+
+			default:
+				ret, err = f(ctx)
+			}
 		}
 
 		return ret, err

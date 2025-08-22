@@ -16,12 +16,11 @@ func Run(ctx context.Context, workloadName string, flags *flag.Debug) error {
 	}
 
 	dg := &Debug{
-		ctx:          ctx,
 		podsClient:   clientSet.CoreV1().Pods(flags.Namespace),
 		flags:        flags,
 		workloadName: workloadName,
 	}
-	if err := dg.Debug(); err != nil {
+	if err := dg.Debug(ctx); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
 
