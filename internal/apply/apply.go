@@ -11,11 +11,12 @@ import (
 	"cuelang.org/go/cue/load"
 	"github.com/goccy/go-yaml"
 	"github.com/nais/cli/internal/apply/command/flag"
+	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/naistrix"
 	"github.com/pelletier/go-toml/v2"
 )
 
-func Run(ctx context.Context, files []string, flags *flag.Apply, out naistrix.Output) error {
+func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) error {
 	a := &Apply{}
 
 	for _, filePath := range files {
@@ -25,13 +26,13 @@ func Run(ctx context.Context, files []string, flags *flag.Apply, out naistrix.Ou
 	}
 
 	for name, v := range a.Valkey {
-		if err := UpsertValkey(ctx, name, a.ResourceMetadata, v); err != nil {
+		if err := valkey.Upsert(ctx, name, a.Environment, a.TeamSlug, v); err != nil {
 			return fmt.Errorf("failed to create valkey from file %s: %w", name, err)
 		}
 	}
 
 	for name, o := range a.OpenSearch {
-		if err := UpsertOpenSearch(ctx, name, a.ResourceMetadata, o); err != nil {
+		if err := UpsertOpenSearch(ctx, name, a.Environment, a.TeamSlug, o); err != nil {
 			return fmt.Errorf("failed to create openSearch from file %s: %w", name, err)
 		}
 	}

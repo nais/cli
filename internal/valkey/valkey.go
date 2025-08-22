@@ -1,4 +1,4 @@
-package apply
+package valkey
 
 import (
 	"context"
@@ -7,16 +7,25 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func UpsertValkey(ctx context.Context, name string, metadata ResourceMetadata, data *Valkey) error {
-	_, err := CreateValkey(ctx, name, metadata, data)
+type Valkey struct {
+	// Size is the size of the Valkey instance.
+	Size gql.ValkeySize `json:"size" toml:"size" jsonschema:"enum=RAM_1GB,enum=RAM_4GB,enum=RAM_8GB,enum=RAM_14GB,enum=RAM_28GB,enum=RAM_56GB,enum=RAM_112GB,enum=RAM_200GB"`
+	// Tier is the tier of the Valkey instance.
+	Tier gql.ValkeyTier `json:"tier" toml:"tier" jsonschema:"enum=SINGLE_NODE,enum=HIGH_AVAILABILITY"`
+	// MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. "allkeys-lru".
+	MaxMemoryPolicy gql.ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty" toml:"maxMemoryPolicy,omitempty"`
+}
+
+func Upsert(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) error {
+	_, err := Create(ctx, name, environmentName, teamSlug, data)
 	if naisapi.IsErrAlreadyExists(err) {
-		_, err := UpdateValkey(ctx, name, metadata, data)
+		_, err := Update(ctx, name, environmentName, teamSlug, data)
 		return err
 	}
 	return err
 }
 
-func CreateValkey(ctx context.Context, name string, metadata ResourceMetadata, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
+func Create(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateValkey(
 		  $name: String!,
@@ -42,7 +51,7 @@ func CreateValkey(ctx context.Context, name string, metadata ResourceMetadata, d
 		return nil, err
 	}
 
-	resp, err := gql.CreateValkey(ctx, client, name, metadata.Environment, metadata.TeamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
+	resp, err := gql.CreateValkey(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +59,7 @@ func CreateValkey(ctx context.Context, name string, metadata ResourceMetadata, d
 	return &resp.CreateValkey.Valkey, nil
 }
 
-func UpdateValkey(ctx context.Context, name string, metadata ResourceMetadata, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
+func Update(ctx context.Context, name, environmentName, teamSlug string, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateValkey(
 		  $name: String!,
@@ -76,7 +85,7 @@ func UpdateValkey(ctx context.Context, name string, metadata ResourceMetadata, d
 		return nil, err
 	}
 
-	resp, err := gql.UpdateValkey(ctx, client, name, metadata.Environment, metadata.TeamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
+	resp, err := gql.UpdateValkey(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.MaxMemoryPolicy)
 	if err != nil {
 		return nil, err
 	}

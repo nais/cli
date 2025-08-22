@@ -99,6 +99,10 @@ OpenSearch was updated.
 """
 	OPENSEARCH_UPDATED
 """
+OpenSearch was deleted.
+"""
+	OPENSEARCH_DELETED
+"""
 Reconciler enabled activity log entry.
 """
 	RECONCILER_ENABLED
@@ -223,6 +227,10 @@ Valkey was updated.
 """
 	VALKEY_UPDATED
 """
+Valkey was deleted.
+"""
+	VALKEY_DELETED
+"""
 Activity log entry for when a vulnerability is updated.
 """
 	VULNERABILITY_UPDATED
@@ -339,14 +347,6 @@ All activity log entries related to secrets will use this resource type.
 """
 	SECRET
 	SERVICE_ACCOUNT
-"""
-Activity log entries related to valkey instances.
-"""
-	VALKEY
-"""
-Activity log entries related to OpenSearch instances.
-"""
-	OPENSEARCH
 """
 All activity log entries related to teams will use this resource type.
 """
@@ -1461,6 +1461,19 @@ Whether or not the job was deleted.
 	success: Boolean
 }
 
+input DeleteOpenSearchInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+type DeleteOpenSearchPayload {
+"""
+Whether or not the OpenSearch instance was deleted.
+"""
+	openSearchDeleted: Boolean
+}
+
 input DeleteSecretInput {
 	name: String!
 	environment: String!
@@ -1498,6 +1511,19 @@ The service account that the token belonged to.
 Whether or not the service account token was deleted.
 """
 	serviceAccountTokenDeleted: Boolean
+}
+
+input DeleteValkeyInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+type DeleteValkeyPayload {
+"""
+Whether or not the job was deleted.
+"""
+	valkeyDeleted: Boolean
 }
 
 """
@@ -3059,6 +3085,12 @@ Update an existing OpenSearch instance.
 		input: UpdateOpenSearchInput!
 	): UpdateOpenSearchPayload!
 """
+Delete an existing OpenSearch instance.
+"""
+	deleteOpenSearch(
+		input: DeleteOpenSearchInput!
+	): DeleteOpenSearchPayload!
+"""
 Enable a reconciler
 
 A reconciler must be fully configured before it can be enabled.
@@ -3303,6 +3335,12 @@ Update an existing Valkey instance.
 		input: UpdateValkeyInput!
 	): UpdateValkeyPayload!
 """
+Delete an existing Valkey instance.
+"""
+	deleteValkey(
+		input: DeleteValkeyInput!
+	): DeleteValkeyPayload!
+"""
 Updates a vulnerability
 This mutation is currently unstable and may change in the future.
 """
@@ -3400,6 +3438,41 @@ type OpenSearchCost {
 }
 
 type OpenSearchCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
 """
@@ -8191,6 +8264,41 @@ type ValkeyCost {
 }
 
 type ValkeyCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
 """

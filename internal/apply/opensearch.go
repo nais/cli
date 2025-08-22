@@ -7,16 +7,16 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func UpsertOpenSearch(ctx context.Context, name string, metadata ResourceMetadata, data *OpenSearch) error {
-	_, err := CreateOpenSearch(ctx, name, metadata, data)
+func UpsertOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) error {
+	_, err := CreateOpenSearch(ctx, name, environmentName, teamSlug, data)
 	if naisapi.IsErrAlreadyExists(err) {
-		_, err := UpdateOpenSearch(ctx, name, metadata, data)
+		_, err := UpdateOpenSearch(ctx, name, environmentName, teamSlug, data)
 		return err
 	}
 	return err
 }
 
-func CreateOpenSearch(ctx context.Context, name string, metadata ResourceMetadata, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
+func CreateOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateOpenSearch(
 		  $name: String!,
@@ -42,7 +42,7 @@ func CreateOpenSearch(ctx context.Context, name string, metadata ResourceMetadat
 		return nil, err
 	}
 
-	resp, err := gql.CreateOpenSearch(ctx, client, name, metadata.Environment, metadata.TeamSlug, data.Size, data.Tier, data.Version)
+	resp, err := gql.CreateOpenSearch(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func CreateOpenSearch(ctx context.Context, name string, metadata ResourceMetadat
 	return &resp.CreateOpenSearch.OpenSearch, nil
 }
 
-func UpdateOpenSearch(ctx context.Context, name string, metadata ResourceMetadata, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
+func UpdateOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateOpenSearch(
 		  $name: String!,
@@ -76,7 +76,7 @@ func UpdateOpenSearch(ctx context.Context, name string, metadata ResourceMetadat
 		return nil, err
 	}
 
-	resp, err := gql.UpdateOpenSearch(ctx, client, name, metadata.Environment, metadata.TeamSlug, data.Size, data.Tier, data.Version)
+	resp, err := gql.UpdateOpenSearch(ctx, client, name, environmentName, teamSlug, data.Size, data.Tier, data.Version)
 	if err != nil {
 		return nil, err
 	}

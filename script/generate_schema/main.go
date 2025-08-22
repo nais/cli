@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	err := genSchema("./schema.json", apply.Apply{}, "github.com/nais/cli", "./internal/apply/")
+	err := genSchema("./schema.json", apply.Apply{}, "github.com/nais/cli", "./internal/")
 	if err != nil {
 		log.Fatal(err)
 	}
