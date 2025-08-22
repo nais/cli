@@ -23,6 +23,6 @@ openSearch: foo: {
 }
 
 openSearch: bar: {
-	size: "RAM_6a4GB"
+	size: "RAM_64GB"
 	tier: "HIGH_AVAILABILITY"
 }

@@ -11,10 +11,22 @@ import (
 	"cuelang.org/go/cue/load"
 	"github.com/goccy/go-yaml"
 	"github.com/nais/cli/internal/apply/command/flag"
+	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/naistrix"
 	"github.com/pelletier/go-toml/v2"
 )
+
+type Apply struct {
+	Version     string `json:"naisVersion" toml:"naisVersion" jsonschema:"enum=v3"`
+	Environment string `json:"environment" toml:"environment"`
+	TeamSlug    string `json:"team" toml:"team"`
+
+	// Valkey is a map of Valkey instances to be created, where the key is the name of the instance.
+	Valkey map[string]*valkey.Valkey `json:"valkey,omitempty" toml:"valkey,omitempty"`
+	// OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.
+	OpenSearch map[string]*opensearch.OpenSearch `json:"openSearch,omitempty" toml:"openSearch,omitempty"`
+}
 
 func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) error {
 	a := &Apply{}
@@ -32,7 +44,7 @@ func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) 
 	}
 
 	for name, o := range a.OpenSearch {
-		if err := UpsertOpenSearch(ctx, name, a.Environment, a.TeamSlug, o); err != nil {
+		if err := opensearch.Upsert(ctx, name, a.Environment, a.TeamSlug, o); err != nil {
 			return fmt.Errorf("failed to create openSearch from file %s: %w", name, err)
 		}
 	}

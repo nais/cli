@@ -1,4 +1,4 @@
-package apply
+package opensearch
 
 import (
 	"context"
@@ -7,16 +7,25 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func UpsertOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) error {
-	_, err := CreateOpenSearch(ctx, name, environmentName, teamSlug, data)
+type OpenSearch struct {
+	// Size is the size of the OpenSearch instance.
+	Size gql.OpenSearchSize `json:"size" toml:"size" jsonschema:"enum=RAM_4GB,enum=RAM_8GB,enum=RAM_16GB,enum=RAM_32GB,enum=RAM_64GB"`
+	// Tier is the tier of the OpenSearch instance.
+	Tier gql.OpenSearchTier `json:"tier" toml:"tier" jsonschema:"enum=SINGLE_NODE,enum=HIGH_AVAILABILITY"`
+	// Version is the major version of OpenSearch"
+	Version gql.OpenSearchMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V2"`
+}
+
+func Upsert(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) error {
+	_, err := Create(ctx, name, environmentName, teamSlug, data)
 	if naisapi.IsErrAlreadyExists(err) {
-		_, err := UpdateOpenSearch(ctx, name, environmentName, teamSlug, data)
+		_, err := Update(ctx, name, environmentName, teamSlug, data)
 		return err
 	}
 	return err
 }
 
-func CreateOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
+func Create(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateOpenSearch(
 		  $name: String!,
@@ -50,7 +59,7 @@ func CreateOpenSearch(ctx context.Context, name, environmentName, teamSlug strin
 	return &resp.CreateOpenSearch.OpenSearch, nil
 }
 
-func UpdateOpenSearch(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
+func Update(ctx context.Context, name, environmentName, teamSlug string, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateOpenSearch(
 		  $name: String!,
