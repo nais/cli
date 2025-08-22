@@ -40,6 +40,8 @@ github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7 h1:+ugXZyYXIb2NFWaXleLbouy
 github.com/GoogleCloudPlatform/cloudsql-proxy v1.37.7/go.mod h1:9iAgV6bpVWBq2BpG4J691fNCdKYd4JqR5ey9m4odfHE=
 github.com/Khan/genqlient v0.8.1 h1:wtOCc8N9rNynRLXN3k3CnfzheCUNKBcvXmVv5zt6WCs=
 github.com/Khan/genqlient v0.8.1/go.mod h1:R2G6DzjBvCbhjsEajfRjbWdVglSH/73kSivC9TLWVjU=
+github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
+github.com/MakeNowJust/heredoc v1.0.0/go.mod h1:mG5amYoWBHf8vpLOuehzbGGw0EHxpZZ6lCpQ4fNJ8LE=
 github.com/MakeNowJust/heredoc/v2 v2.0.1 h1:rlCHh70XXXv7toz95ajQWOWQnN4WNLt0TdpZYIR/J6A=
 github.com/MakeNowJust/heredoc/v2 v2.0.1/go.mod h1:6/2Abh5s+hc3g9nbWLe9ObDIOhaRrqsyY9MWy+4JdRM=
 github.com/MarvinJWendt/testza v0.1.0/go.mod h1:7AxNvlfeHP7Z/hDQ5JtE3OKYT3XFUeLCDE2DQninSqs=
@@ -414,8 +416,8 @@ github.com/nais/device v0.0.0-20250703090236-08bd8b276591 h1:MgFQR6KwI6nB8Dl8c6I
 github.com/nais/device v0.0.0-20250703090236-08bd8b276591/go.mod h1:5EJDz4LiIliyvsUZb8gRDwpqihR7r4J+T4pJxUjBc9I=
 github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae h1:aZqDazMXxDdL1qSG9SpTMm+WZYY0RJp0yTrs8TSzJ+0=
 github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae/go.mod h1:Z0ycpT5Ug9Edacd5173bShlh9vCtogCwoLCbjv/pz18=
-github.com/nais/naistrix v0.3.1 h1:9/S297620cAtbFRN51105kJNKKVBXasa2ALmWbrITlM=
-github.com/nais/naistrix v0.3.1/go.mod h1:lLHnRUy/wzrjr79pH1PqdzUDc3N7hp9Ex+H76RytWAw=
+github.com/nais/naistrix v0.4.0 h1:Pf3bdnhWSnVDqwoJ496ZyupXvv5Gf4uu6BKXhFmj0CA=
+github.com/nais/naistrix v0.4.0/go.mod h1:KQj7//htD3ZW/93v+6eyHjL/x6w93sc5dUBFCC/QdKY=
 github.com/onsi/ginkgo/v2 v2.23.4 h1:ktYTpKJAVZnDT4VjxSbiBenUjmlL/5QkBEocaWXiQus=
 github.com/onsi/ginkgo/v2 v2.23.4/go.mod h1:Bt66ApGPBFzHyR+JO10Zbt0Gsp4uWxu5mIOTusL46e8=
 github.com/onsi/gomega v1.37.0 h1:CdEG8g0S133B4OswTDC/5XPSzE1OeP29QOioj2PID2Y=

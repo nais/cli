@@ -43,7 +43,7 @@ func Initialize() func(verbose bool) {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		err := provider.Shutdown(ctx)
-		if err != nil {
+		if err != nil && verbose {
 			fmt.Printf("Failed up upload metrics: %v\n", err)
 		}
 	}

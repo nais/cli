@@ -29,7 +29,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
 	github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae
-	github.com/nais/naistrix v0.3.1
+	github.com/nais/naistrix v0.4.0
 	github.com/pterm/pterm v0.12.81
 	github.com/savioxavier/termlink v1.4.3
 	github.com/sethvargo/go-retry v0.3.0
@@ -70,6 +70,7 @@ require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
+	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect

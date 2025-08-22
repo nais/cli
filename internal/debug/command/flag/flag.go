@@ -1,24 +1,18 @@
 package flag
 
 import (
+	"time"
+
 	"github.com/nais/cli/internal/root"
 )
 
-type (
-	Context     string
-	DebugSticky struct {
-		*root.Flags
-		Context   Context `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
-		Namespace string  `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
-		Copy      bool    `name:"copy" usage:"Create a copy of the pod with a debug container. The original pod remains running and unaffected."`
-	}
-)
+type Context string
 
 type Debug struct {
-	*DebugSticky
-	ByPod bool `name:"by-pod" short:"b" usage:"Attach to a specific |BY-POD| in a workload."`
-}
-
-type DebugTidy struct {
-	*DebugSticky
+	*root.Flags
+	Context   Context       `short:"c" usage:"The kubeconfig |context| to use. Defaults to current context."`
+	Namespace string        `short:"n" usage:"The kubernetes |namespace| to use. Defaults to current namespace."`
+	Copy      bool          `usage:"Create a copy of the pod with a debug container. The original pod remains running and unaffected."`
+	TTL       time.Duration `usage:"|Duration| the debug pod remains after exit. Only has effect when --copy is specified."`
+	Timeout   time.Duration `usage:"|Duration| to wait for each remote interaction this command does. Usually the default is sufficient."`
 }
