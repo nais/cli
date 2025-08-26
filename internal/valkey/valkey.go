@@ -68,6 +68,91 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 	return &resp.CreateValkey.Valkey, nil
 }
 
+func Get(ctx context.Context, metadata Metadata) (*gql.GetValkeyTeamEnvironmentValkey, error) {
+	_ = `# @genqlient
+		query GetValkey($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+		  team(slug: $teamSlug) {
+			environment(name: $environmentName) {
+			  valkey(name: $name) {
+				name
+				size
+				tier
+				maxMemoryPolicy
+			  }
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.Team.Environment.Valkey, nil
+}
+
+func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkeysValkeyConnectionNodesValkey, error) {
+	_ = `# @genqlient
+		query GetAllValkeys($teamSlug: Slug!) {
+		  team(slug: $teamSlug) {
+			valkeys {
+			  nodes {
+				name
+				size
+				tier
+				maxMemoryPolicy
+				teamEnvironment {
+				  environment {
+					name
+				  }
+				}
+			  }
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetAllValkeys(ctx, client, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Team.Valkeys.Nodes, nil
+}
+
+func Delete(ctx context.Context, metadata Metadata) (bool, error) {
+	_ = `# @genqlient
+		mutation DeleteValkey($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+		  deleteValkey(input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug }) {
+		    valkeyDeleted
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := gql.DeleteValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+	if err != nil {
+		return false, err
+	}
+
+	return resp.DeleteValkey.ValkeyDeleted, nil
+}
+
 func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateValkey(

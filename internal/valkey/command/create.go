@@ -8,46 +8,25 @@ import (
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
-	flags := &flag.Create{Valkey: parentFlags}
+	flags := &flag.Upsert{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "create",
-		Title:       "Create a Valkey instance.",
-		Description: "This command creates a Valkey instance.",
-		Flags:       flags,
-		Args: []naistrix.Argument{
-			{Name: "name"},
-			{Name: "team"},
-			{Name: "environment"},
-		},
-		ValidateFunc: func(_ context.Context, args []string) error {
-			if len(args) != 3 {
-				return fmt.Errorf("expected 3 arguments, got %d", len(args))
-			}
-			if args[0] == "" {
-				return fmt.Errorf("name cannot be empty")
-			}
-			if args[1] == "" {
-				return fmt.Errorf("team cannot be empty")
-			}
-			if args[2] == "" {
-				return fmt.Errorf("environment cannot be empty")
-			}
-			return nil
-		},
+		Name:         "create",
+		Title:        "Create a Valkey instance.",
+		Description:  "This command creates a Valkey instance.",
+		Flags:        flags,
+		Args:         args,
+		ValidateFunc: validateFunc,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			metadata := valkey.Metadata{
-				Name:            args[0],
-				TeamSlug:        args[1],
-				EnvironmentName: args[2],
-			}
+			metadata := metadataFromArgs(args)
 
 			// defaults
 			data := &valkey.Valkey{
-				Size: "RAM_4GB",
-				Tier: "SINGLE_NODE",
+				Size: "RAM_1GB",
+				Tier: "HIGH_AVAILABILITY",
 			}
 
 			if flags.Size != "" {
@@ -57,8 +36,36 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				data.Tier = gql.ValkeyTier(flags.Tier)
 			}
 
+			outData := pterm.TableData{
+				{"Field", "Value"},
+				{"Team", metadata.TeamSlug},
+				{"Environment", metadata.EnvironmentName},
+				{"Name", metadata.Name},
+				{"Size", string(data.Size)},
+				{"Tier", string(data.Tier)},
+			}
+
+			if flags.MaxMemoryPolicy != "" {
+				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
+				outData = append(outData, []string{"Max Memory Policy", string(data.MaxMemoryPolicy)})
+			}
+
+			pterm.Info.Println("You are about to create a Valkey instance with the following configuration:")
+			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(outData).Render(); err != nil {
+				return err
+			}
+			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+			if !result {
+				return fmt.Errorf("cancelled by user")
+			}
+
 			_, err := valkey.Create(ctx, metadata, data)
-			return err
+			if err != nil {
+				return err
+			}
+
+			pterm.Success.Printfln("Created Valkey instance %q for %q in %q", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
+			return nil
 		},
 		// TODO: completion, examples, etc.
 		//  how do we generate valid options for size and tier in usage text?

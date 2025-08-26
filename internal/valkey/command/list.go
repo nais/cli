@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
@@ -13,12 +15,31 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "list",
 		Title:       "List existing Valkey instances.",
-		Description: "This command lists all Valkey instances across your teams.",
+		Description: "This command lists all Valkey instances for a given team.",
 		Flags:       flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
-			// TODO: filter by team and environment
-			// FIXME
-			return fmt.Errorf("not implemented yet")
+		Args: []naistrix.Argument{
+			{Name: "team"},
+		},
+		ValidateFunc: func(_ context.Context, args []string) error {
+			if args[0] == "" {
+				return fmt.Errorf("team cannot be empty")
+			}
+			return nil
+		},
+		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+			valkeys, err := valkey.GetAll(ctx, args[0])
+			if err != nil {
+				return fmt.Errorf("fetching existing Valkey instance: %w", err)
+			}
+
+			// TODO: flags to filter by environment, size, tier, etc?
+			data := pterm.TableData{
+				{"Environment", "Name", "Size", "Tier", "Max Memory Policy"},
+			}
+			for _, v := range valkeys {
+				data = append(data, []string{v.TeamEnvironment.Environment.Name, v.Name, string(v.Size), string(v.Tier), string(v.MaxMemoryPolicy)})
+			}
+			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
 		},
 	}
 }

@@ -117,6 +117,116 @@ func (v *CreateValkeyResponse) GetCreateValkey() CreateValkeyCreateValkeyCreateV
 	return v.CreateValkey
 }
 
+// DeleteValkeyDeleteValkeyDeleteValkeyPayload includes the requested fields of the GraphQL type DeleteValkeyPayload.
+type DeleteValkeyDeleteValkeyDeleteValkeyPayload struct {
+	// Whether or not the job was deleted.
+	ValkeyDeleted bool `json:"valkeyDeleted"`
+}
+
+// GetValkeyDeleted returns DeleteValkeyDeleteValkeyDeleteValkeyPayload.ValkeyDeleted, and is useful for accessing the field via an interface.
+func (v *DeleteValkeyDeleteValkeyDeleteValkeyPayload) GetValkeyDeleted() bool { return v.ValkeyDeleted }
+
+// DeleteValkeyResponse is returned by DeleteValkey on success.
+type DeleteValkeyResponse struct {
+	// Delete an existing Valkey instance.
+	DeleteValkey DeleteValkeyDeleteValkeyDeleteValkeyPayload `json:"deleteValkey"`
+}
+
+// GetDeleteValkey returns DeleteValkeyResponse.DeleteValkey, and is useful for accessing the field via an interface.
+func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteValkeyPayload {
+	return v.DeleteValkey
+}
+
+// GetAllValkeysResponse is returned by GetAllValkeys on success.
+type GetAllValkeysResponse struct {
+	// Get a team by its slug.
+	Team GetAllValkeysTeam `json:"team"`
+}
+
+// GetTeam returns GetAllValkeysResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysResponse) GetTeam() GetAllValkeysTeam { return v.Team }
+
+// GetAllValkeysTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllValkeysTeam struct {
+	// Valkey instances owned by the team.
+	Valkeys GetAllValkeysTeamValkeysValkeyConnection `json:"valkeys"`
+}
+
+// GetValkeys returns GetAllValkeysTeam.Valkeys, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeam) GetValkeys() GetAllValkeysTeamValkeysValkeyConnection { return v.Valkeys }
+
+// GetAllValkeysTeamValkeysValkeyConnection includes the requested fields of the GraphQL type ValkeyConnection.
+type GetAllValkeysTeamValkeysValkeyConnection struct {
+	Nodes []GetAllValkeysTeamValkeysValkeyConnectionNodesValkey `json:"nodes"`
+}
+
+// GetNodes returns GetAllValkeysTeamValkeysValkeyConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnection) GetNodes() []GetAllValkeysTeamValkeysValkeyConnectionNodesValkey {
+	return v.Nodes
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkey includes the requested fields of the GraphQL type Valkey.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkey struct {
+	Name            string                                                             `json:"name"`
+	Size            ValkeySize                                                         `json:"size"`
+	Tier            ValkeyTier                                                         `json:"tier"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                              `json:"maxMemoryPolicy"`
+	TeamEnvironment GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetName returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Name, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetName() string { return v.Name }
+
+// GetSize returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Size, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetSize() ValkeySize { return v.Size }
+
+// GetTier returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Tier, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy {
+	return v.MaxMemoryPolicy
+}
+
+// GetTeamEnvironment returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetTeamEnvironment() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment) GetEnvironment() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -469,6 +579,62 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 // GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// GetValkeyResponse is returned by GetValkey on success.
+type GetValkeyResponse struct {
+	// Get a team by its slug.
+	Team GetValkeyTeam `json:"team"`
+}
+
+// GetTeam returns GetValkeyResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyResponse) GetTeam() GetValkeyTeam { return v.Team }
+
+// GetValkeyTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetValkeyTeam struct {
+	// Get a specific environment for the team.
+	Environment GetValkeyTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetValkeyTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeam) GetEnvironment() GetValkeyTeamEnvironment { return v.Environment }
+
+// GetValkeyTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetValkeyTeamEnvironment struct {
+	// Valkey instance in the team environment.
+	Valkey GetValkeyTeamEnvironmentValkey `json:"valkey"`
+}
+
+// GetValkey returns GetValkeyTeamEnvironment.Valkey, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironment) GetValkey() GetValkeyTeamEnvironmentValkey { return v.Valkey }
+
+// GetValkeyTeamEnvironmentValkey includes the requested fields of the GraphQL type Valkey.
+type GetValkeyTeamEnvironmentValkey struct {
+	Name            string                `json:"name"`
+	Size            ValkeySize            `json:"size"`
+	Tier            ValkeyTier            `json:"tier"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy"`
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkey.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetName() string { return v.Name }
+
+// GetSize returns GetValkeyTeamEnvironmentValkey.Size, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetSize() ValkeySize { return v.Size }
+
+// GetTier returns GetValkeyTeamEnvironmentValkey.Tier, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns GetValkeyTeamEnvironmentValkey.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy {
+	return v.MaxMemoryPolicy
 }
 
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
@@ -2443,6 +2609,30 @@ func (v *__CreateValkeyInput) GetTier() ValkeyTier { return v.Tier }
 // GetMaxMemoryPolicy returns __CreateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
 
+// __DeleteValkeyInput is used internally by genqlient
+type __DeleteValkeyInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __DeleteValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __DeleteValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __DeleteValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __GetAllValkeysInput is used internally by genqlient
+type __GetAllValkeysInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllValkeysInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllValkeysInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -2450,6 +2640,22 @@ type __GetTeamWorkloadsInput struct {
 
 // GetSlug returns __GetTeamWorkloadsInput.Slug, and is useful for accessing the field via an interface.
 func (v *__GetTeamWorkloadsInput) GetSlug() string { return v.Slug }
+
+// __GetValkeyInput is used internally by genqlient
+type __GetValkeyInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __GetValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __GetValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __GetValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __RemoveTeamMemberInput is used internally by genqlient
 type __RemoveTeamMemberInput struct {
@@ -2661,6 +2867,90 @@ func CreateValkey(
 	return data_, err_
 }
 
+// The mutation executed by DeleteValkey.
+const DeleteValkey_Operation = `
+mutation DeleteValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	deleteValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug}) {
+		valkeyDeleted
+	}
+}
+`
+
+func DeleteValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *DeleteValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteValkey",
+		Query:  DeleteValkey_Operation,
+		Variables: &__DeleteValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &DeleteValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllValkeys.
+const GetAllValkeys_Operation = `
+query GetAllValkeys ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		valkeys {
+			nodes {
+				name
+				size
+				tier
+				maxMemoryPolicy
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllValkeys(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllValkeysResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllValkeys",
+		Query:  GetAllValkeys_Operation,
+		Variables: &__GetAllValkeysInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllValkeysResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetTeamWorkloads.
 const GetTeamWorkloads_Operation = `
 query GetTeamWorkloads ($slug: Slug!) {
@@ -2702,6 +2992,51 @@ func GetTeamWorkloads(
 	}
 
 	data_ = &GetTeamWorkloadsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetValkey.
+const GetValkey_Operation = `
+query GetValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		environment(name: $environmentName) {
+			valkey(name: $name) {
+				name
+				size
+				tier
+				maxMemoryPolicy
+			}
+		}
+	}
+}
+`
+
+func GetValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *GetValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetValkey",
+		Query:  GetValkey_Operation,
+		Variables: &__GetValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &GetValkeyResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

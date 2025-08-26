@@ -418,6 +418,119 @@ The added team member.
 	member: TeamMember
 }
 
+"""
+Alert interface.
+"""
+interface Alert {
+"""
+Alert interface.
+"""
+	id: ID!
+"""
+Alert interface.
+"""
+	name: String!
+"""
+Alert interface.
+"""
+	team: Team!
+"""
+Alert interface.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+Alert interface.
+"""
+	state: AlertState!
+"""
+Alert interface.
+"""
+	query: String!
+"""
+Alert interface.
+"""
+	duration: Float!
+}
+
+"""
+AlertConnection connection.
+"""
+type AlertConnection {
+"""
+Pagination information.
+"""
+	pageInfo: PageInfo!
+"""
+List of nodes.
+"""
+	nodes: [Alert!]!
+"""
+List of edges.
+"""
+	edges: [AlertEdge!]!
+}
+
+"""
+Alert edge.
+"""
+type AlertEdge {
+"""
+Cursor for this edge that can be used for pagination.
+"""
+	cursor: Cursor!
+"""
+The Alert.
+"""
+	node: Alert!
+}
+
+"""
+Ordering options when fetching alerts.
+"""
+input AlertOrder {
+"""
+Ordering options when fetching alerts.
+"""
+	field: AlertOrderField!
+"""
+Ordering options when fetching alerts.
+"""
+	direction: OrderDirection!
+}
+
+"""
+Fields to order alerts in an environment by.
+"""
+enum AlertOrderField {
+"""
+Order by name.
+"""
+	NAME
+"""
+Order by state.
+"""
+	STATE
+"""
+ENVIRONMENT
+"""
+	ENVIRONMENT
+}
+
+enum AlertState {
+"""
+Only return alerts that are firing.
+"""
+	FIRING
+"""
+Only return alerts that are inactive.
+"""
+	INACTIVE
+"""
+Only return alerts that are pending.
+"""
+	PENDING
+}
+
 input AllowTeamAccessToUnleashInput {
 	teamSlug: Slug!
 	allowedTeamSlug: Slug!
@@ -3742,6 +3855,67 @@ type Price {
 }
 
 """
+PrometheusAlert type
+"""
+type PrometheusAlert implements Node & Alert{
+"""
+The unique identifier for the alert.
+"""
+	id: ID!
+"""
+The name of the alert.
+"""
+	name: String!
+"""
+The team that owns the alert.
+"""
+	team: Team!
+"""
+The team environment for the alert.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+The state of the alert.
+"""
+	state: AlertState!
+"""
+The query for the alert.
+"""
+	query: String!
+"""
+The duration for the alert.
+"""
+	duration: Float!
+"""
+The prometheus rule group for the alert.
+"""
+	ruleGroup: String!
+"""
+The details of the alert available if state is firing.
+"""
+	details: [PrometheusAlertDetails!]!
+}
+
+type PrometheusAlertDetails {
+"""
+The action to take when the alert fires.
+"""
+	action: String!
+"""
+The consequence of the alert firing.
+"""
+	consequence: String!
+"""
+A summary of the alert.
+"""
+	summary: String!
+"""
+The time when the alert started firing.
+"""
+	since: Time!
+}
+
+"""
 The query root for the Nais GraphQL API.
 """
 type Query {
@@ -6074,6 +6248,32 @@ Filter items.
 """
 		filter: ActivityLogFilter
 	): ActivityLogEntryConnection!
+	alerts(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: AlertOrder
+"""
+Filter the returned objects
+"""
+		filter: TeamAlertsFilter
+	): AlertConnection!
 """
 Nais applications owned by the team.
 """
@@ -6441,6 +6641,16 @@ Filter the returned objects
 }
 
 """
+Input for filtering alerts.
+"""
+input TeamAlertsFilter {
+"""
+Input for filtering alerts.
+"""
+	states: [AlertState!]
+}
+
+"""
 Input for filtering the applications of a team.
 """
 input TeamApplicationsFilter {
@@ -6733,6 +6943,32 @@ The Slack alerts channel for the team environment.
 The connected team.
 """
 	team: Team!
+	alerts(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: AlertOrder
+"""
+Filter the returned objects
+"""
+		filter: TeamAlertsFilter
+	): AlertConnection!
 """
 Nais application in the team environment.
 """
@@ -8220,6 +8456,7 @@ type Valkey implements Persistence & Node{
 	status: ValkeyStatus!
 	tier: ValkeyTier!
 	size: ValkeySize!
+	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 	cost: ValkeyCost!
 """
 Fetch maintenances updates for the Valkey instance.
