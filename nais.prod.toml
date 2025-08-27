@@ -1,0 +1,7 @@
+#:schema ./schema.json
+
+naisVersion = "v3"
+
+[openSearch.foo]
+size = "RAM_16GB"
+tier = "HIGH_AVAILABILITY"
