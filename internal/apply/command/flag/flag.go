@@ -7,10 +7,11 @@ import (
 type filePath string
 
 func (filePath) FileExtensions() (extensions []string) {
-	return []string{"json", "yaml", "yml", "toml"}
+	return []string{"toml"}
 }
 
 type Apply struct {
 	*root.Flags
-	FilePath filePath `name:"file" short:"f" usage:"Path to the |FILE| containing resource definitions."`
+	Mixin filePath `name:"mixin" short:"m" usage:"Path to the |FILE| containing mixins."`
+	Team  string   `name:"team" short:"t" usage:"|TEAM| that owns the resources."`
 }

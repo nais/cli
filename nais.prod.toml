@@ -2,6 +2,6 @@
 
 naisVersion = "v3"
 
-[openSearch.foo]
-size = "RAM_16GB"
+[valkey.foo]
+size = "RAM_56GB"
 tier = "HIGH_AVAILABILITY"

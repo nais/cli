@@ -18,30 +18,43 @@ import (
 )
 
 type Apply struct {
-	Version     string `json:"naisVersion" toml:"naisVersion" jsonschema:"enum=v3"`
-	Environment string `json:"environment" toml:"environment"`
-	TeamSlug    string `json:"team" toml:"team"`
-
+	Version string `json:"naisVersion" toml:"naisVersion" jsonschema:"enum=v3"`
 	// Valkey is a map of Valkey instances to be created, where the key is the name of the instance.
 	Valkey map[string]*valkey.Valkey `json:"valkey,omitempty" toml:"valkey,omitempty"`
 	// OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.
 	OpenSearch map[string]*opensearch.OpenSearch `json:"openSearch,omitempty" toml:"openSearch,omitempty"`
 }
 
-func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) error {
+func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, out naistrix.Output) error {
 	a := &Apply{}
+	if err := decodeFile(filePath, a); err != nil {
+		return err
+	}
 
-	for _, filePath := range files {
-		if err := decodeFile(filePath, a); err != nil {
-			return err
+	if flags.Mixin != "" {
+		if err := decodeFile(string(flags.Mixin), a); err != nil {
+			return fmt.Errorf("failed to decode mixin file: %w", err)
+		}
+	} else {
+		// auto-detect mixin if not provided
+		ext := filepath.Ext(filePath)
+		mixinPath := strings.TrimSuffix(filePath, ext) + "." + environment + ext
+		_, err := os.Stat(mixinPath)
+		if err == nil {
+			if flags.IsVerbose() {
+				out.Println("No mixin file provided, using auto-detected mixin from " + mixinPath)
+			}
+			if err := decodeFile(mixinPath, a); err != nil {
+				return fmt.Errorf("failed to decode mixin file: %w", err)
+			}
 		}
 	}
 
 	for name, v := range a.Valkey {
 		metadata := valkey.Metadata{
 			Name:            name,
-			EnvironmentName: a.Environment,
-			TeamSlug:        a.TeamSlug,
+			EnvironmentName: environment,
+			TeamSlug:        flags.Team,
 		}
 		if err := valkey.Upsert(ctx, metadata, v); err != nil {
 			return fmt.Errorf("failed to create valkey from file %s: %w", name, err)
@@ -51,8 +64,8 @@ func Run(ctx context.Context, files []string, _ *flag.Apply, _ naistrix.Output) 
 	for name, o := range a.OpenSearch {
 		metadata := opensearch.Metadata{
 			Name:            name,
-			EnvironmentName: a.Environment,
-			TeamSlug:        a.TeamSlug,
+			EnvironmentName: environment,
+			TeamSlug:        flags.Team,
 		}
 		if err := opensearch.Upsert(ctx, metadata, o); err != nil {
 			return fmt.Errorf("failed to create openSearch from file %s: %w", name, err)

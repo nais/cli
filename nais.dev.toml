@@ -2,28 +2,6 @@
 
 naisVersion = "v3"
 
-[openSearch.foo]
-size = "RAM_16GB"
-
-[application.bar]
-image = "${IMAGE}"
-# lists are additive with base configuration
-networkPolicy.outbound.external = [
-    { host = "google.com", port = 443 },
-    { host = "example.com", port = 443 },
-]
-networkPolicy.outbound.workload = [
-    { name = "foobar", team = "devteam" },
-]
-
-[[application.bar.networkPolicy.outbound.external]]
-host = "google.com"
-port = 443
-
-[[application.bar.networkPolicy.outbound.external]]
-host = "microsoft.com"
-port = 443
-
-[[application.bar.networkPolicy.outbound.workload]]
-name = "foobar"
-team = "devteam"
+[valkey.foo]
+size = "RAM_28GB"
+tier = "HIGH_AVAILABILITY"

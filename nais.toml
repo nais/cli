@@ -2,37 +2,7 @@
 
 naisVersion = "v3"
 
-[valkey.24s]
-size = "RAM_14GB"
-tier = "SINGLE_NODE"
-maxMemoryPolicy = "ALLKEYS_LRU"
-
-[openSearch.asdf]
+[valkey.foo]
 size = "RAM_4GB"
 tier = "SINGLE_NODE"
-
-[openSearch.foo]
-size = "RAM_32GB"
-tier = "SINGLE_NODE"
-
-[openSearch.bar]
-size = "RAM_64GB"
-tier = "HIGH_AVAILABILITY"
-
-[application.bar]
-image = "${IMAGE}"
-networkPolicy.outbound = [
-    "google.com",
-    "example.com",
-]
-
-# team is inferred from global nais cli config
-# environment is required for all commands
-
-# nais apply <environment> <config-file> [--with-overrides <override-file>] [--set <key>=<value> ...]
-# nais apply dev-gcp nais.toml --with-overrides nais.dev.toml --set application.bar.image=example.com/app:1.2.3
-# nais apply prod-gcp nais.toml --with-overrides nais.prod.toml --set application.bar.image=example.com/app:1.2.3
-
-# nais <resource> set image <environment> <name> <image>
-# nais application set image dev-gcp bar example.com/app:1.2.3
-# nais job set image dev-gcp bar example.com/app:1.2.3
+maxMemoryPolicy = "ALLKEYS_LRU"
