@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+# common functions for CI tasks
+
 output() {
 	key="$1"
 	value="$2"

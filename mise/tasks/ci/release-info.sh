@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#MISE description = "Generate release information using git-cliff"
+
 repository="${1:-$GITHUB_REPOSITORY}"
 token="${2:-$GITHUB_TOKEN}"
 
