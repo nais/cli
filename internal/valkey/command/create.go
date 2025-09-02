@@ -14,11 +14,12 @@ import (
 func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Create{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "create",
-		Title:       "Create a Valkey instance.",
-		Description: "This command creates a Valkey instance.",
-		Flags:       flags,
-		Args:        defaultArgs,
+		Name:         "create",
+		Title:        "Create a Valkey instance.",
+		Description:  "This command creates a Valkey instance.",
+		Flags:        flags,
+		Args:         defaultArgs,
+		ValidateFunc: defaultValidateFunc,
 		Examples: []naistrix.Example{
 			{
 				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, using the default size and tier.",
@@ -41,7 +42,6 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				Command:     "my-team dev some-valkey --size RAM_4GB --tier SINGLE_NODE --max-memory-policy ALLKEYS_LRU",
 			},
 		},
-		ValidateFunc: defaultValidateFunc,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			metadata := metadataFromArgs(args)
 

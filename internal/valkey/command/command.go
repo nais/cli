@@ -27,6 +27,8 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 }
 
 var (
+	// TODO(tronghn): team and environment should be a global configuration option with global flags to override
+	//  per invocation instead of arguments.
 	defaultArgs = []naistrix.Argument{
 		{Name: "team"},
 		{Name: "environment"},
