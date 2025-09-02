@@ -28,28 +28,21 @@ func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			pterm.DefaultSection.Println("Valkey instance details")
-			err = pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(pterm.TableData{
-				{"Team", "Environment", "Name", "Size", "Tier", "Max Memory Policy"},
-				{metadata.TeamSlug, metadata.EnvironmentName, metadata.Name, string(existing.Size), string(existing.Tier), string(existing.MaxMemoryPolicy)},
-			}).Render()
+			err = pterm.DefaultTable.
+				WithHasHeader().
+				WithHeaderRowSeparator("-").
+				WithData(valkey.FormatDetails(metadata, existing)).
+				Render()
 			if err != nil {
 				return fmt.Errorf("rendering table: %w", err)
 			}
 
 			pterm.DefaultSection.Println("Valkey access list")
-			acl := pterm.TableData{
-				{"Team", "Environment", "Name", "Type", "Access"},
-			}
-			for _, edge := range existing.Access.Edges {
-				acl = append(acl, []string{
-					edge.Node.Workload.GetTeam().Slug,
-					metadata.EnvironmentName,
-					edge.Node.Workload.GetName(),
-					edge.Node.Workload.GetTypename(),
-					edge.Node.Access,
-				})
-			}
-			err = pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(acl).Render()
+			err = pterm.DefaultTable.
+				WithHasHeader().
+				WithHeaderRowSeparator("-").
+				WithData(valkey.FormatAccessList(metadata, existing)).
+				Render()
 			return nil
 		},
 	}

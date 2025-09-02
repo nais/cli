@@ -201,3 +201,31 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 
 	return &resp.UpdateValkey.Valkey, nil
 }
+
+func FormatDetails(metadata Metadata, valkey *gql.GetValkeyTeamEnvironmentValkey) [][]string {
+	return [][]string{
+		{"Field", "Value"},
+		{"Team", metadata.TeamSlug},
+		{"Environment", metadata.EnvironmentName},
+		{"Name", metadata.Name},
+		{"Size", string(valkey.Size)},
+		{"Tier", string(valkey.Tier)},
+		{"Max Memory Policy", string(valkey.MaxMemoryPolicy)},
+	}
+}
+
+func FormatAccessList(metadata Metadata, valkey *gql.GetValkeyTeamEnvironmentValkey) [][]string {
+	acl := [][]string{
+		{"Team", "Environment", "Name", "Type", "Access"},
+	}
+	for _, edge := range valkey.Access.Edges {
+		acl = append(acl, []string{
+			edge.Node.Workload.GetTeam().Slug,
+			metadata.EnvironmentName,
+			edge.Node.Workload.GetName(),
+			edge.Node.Workload.GetTypename(),
+			edge.Node.Access,
+		})
+	}
+	return acl
+}

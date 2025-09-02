@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/nais/cli/internal/valkey"
@@ -27,17 +28,28 @@ func deleteValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
 
-			pterm.Warning.Println("You are about to delete a Valkey instance with the following configuration:")
-			outData := pterm.TableData{
-				{"Field", "Value"},
-				{"Team", metadata.TeamSlug},
-				{"Environment", metadata.EnvironmentName},
-				{"Name", metadata.Name},
-				{"Size", string(existing.Size)},
-				{"Tier", string(existing.Tier)},
-				{"Max Memory Policy", string(existing.MaxMemoryPolicy)},
+			if len(existing.Access.Edges) > 0 {
+				pterm.Error.Println("This Valkey instance cannot be deleted as it is currently in use by the following workloads:")
+				err = pterm.DefaultTable.
+					WithHasHeader().
+					WithHeaderRowSeparator("-").
+					WithData(valkey.FormatAccessList(metadata, existing)).
+					Render()
+				if err != nil {
+					return err
+				}
+
+				pterm.Info.Println("Remove all references to this Valkey instance from the workloads and try again.")
+				return errors.New("")
 			}
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(outData).Render(); err != nil {
+
+			pterm.Warning.Println("You are about to delete a Valkey instance with the following configuration:")
+			err = pterm.DefaultTable.
+				WithHasHeader().
+				WithHeaderRowSeparator("-").
+				WithData(valkey.FormatDetails(metadata, existing)).
+				Render()
+			if err != nil {
 				return err
 			}
 			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
