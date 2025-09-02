@@ -18,8 +18,14 @@ func deleteValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Title:        "Delete a Valkey instance.",
 		Description:  "This command deletes an existing Valkey instance.",
 		Flags:        flags,
-		Args:         args,
-		ValidateFunc: validateFunc,
+		Args:         defaultArgs,
+		ValidateFunc: defaultValidateFunc,
+		Examples: []naistrix.Example{
+			{
+				Description: "Delete an existing Valkey instance named some-valkey for my-team in the dev environment.",
+				Command:     "my-team dev some-valkey",
+			},
+		},
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			metadata := metadataFromArgs(args)
 

@@ -12,14 +12,32 @@ import (
 )
 
 func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
-	flags := &flag.Upsert{Valkey: parentFlags}
+	flags := &flag.Update{Valkey: parentFlags}
 	return &naistrix.Command{
 		Name:         "update",
 		Title:        "Update a Valkey instance.",
 		Description:  "This command updates an existing Valkey instance.",
 		Flags:        flags,
-		Args:         args,
-		ValidateFunc: validateFunc,
+		Args:         defaultArgs,
+		ValidateFunc: defaultValidateFunc,
+		Examples: []naistrix.Example{
+			{
+				Description: "Set the |SIZE| for a Valkey instance named some-valkey for my-team in the dev environment.",
+				Command:     "my-team dev some-valkey --size RAM_8GB",
+			},
+			{
+				Description: "Set the |TIER| for a Valkey instance named some-valkey for my-team in the dev environment.",
+				Command:     "my-team dev some-valkey --tier SINGLE_NODE",
+			},
+			{
+				Description: "Set the |MAX_MEMORY_POLICY| for a Valkey instance named some-valkey for my-team in the dev environment.",
+				Command:     "my-team dev some-valkey --max-memory-policy NO_EVICTION",
+			},
+			{
+				Description: "Set all available options for a Valkey instance named some-valkey for my-team in the dev environment.",
+				Command:     "my-team dev some-valkey --size RAM_8GB --tier SINGLE_NODE --max-memory-policy NO_EVICTION",
+			},
+		},
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			metadata := metadataFromArgs(args)
 

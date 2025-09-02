@@ -26,6 +26,12 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return nil
 		},
+		Examples: []naistrix.Example{
+			{
+				Description: "List all Valkeys for the team named my-team.",
+				Command:     "my-team",
+			},
+		},
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			valkeys, err := valkey.GetAll(ctx, args[0])
 			if err != nil {

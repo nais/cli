@@ -23,7 +23,14 @@ type List struct {
 	*Valkey
 }
 
-type Upsert struct {
+type Create struct {
+	*Valkey
+	Size            Size            `name:"size" short:"s" usage:"|SIZE| of the Valkey instance. Defaults to |RAM_1GB|."`
+	Tier            Tier            `name:"tier" short:"t" usage:"|TIER| of the Valkey instance. Defaults to |HIGH_AVAILABILITY|."`
+	MaxMemoryPolicy MaxMemoryPolicy `name:"max-memory-policy" short:"m" usage:"|MAX_MEMORY_POLICY| for the Valkey instance."`
+}
+
+type Update struct {
 	*Valkey
 	Size            Size            `name:"size" short:"s" usage:"|SIZE| of the Valkey instance."`
 	Tier            Tier            `name:"tier" short:"t" usage:"|TIER| of the Valkey instance."`

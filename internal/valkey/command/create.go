@@ -12,14 +12,36 @@ import (
 )
 
 func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
-	flags := &flag.Upsert{Valkey: parentFlags}
+	flags := &flag.Create{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:         "create",
-		Title:        "Create a Valkey instance.",
-		Description:  "This command creates a Valkey instance.",
-		Flags:        flags,
-		Args:         args,
-		ValidateFunc: validateFunc,
+		Name:        "create",
+		Title:       "Create a Valkey instance.",
+		Description: "This command creates a Valkey instance.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		Examples: []naistrix.Example{
+			{
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, using the default size and tier.",
+				Command:     "my-team dev some-valkey",
+			},
+			{
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |SIZE|.",
+				Command:     "my-team dev some-valkey --size RAM_4GB",
+			},
+			{
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |TIER|.",
+				Command:     "my-team dev some-valkey --tier SINGLE_NODE",
+			},
+			{
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |MAX_MEMORY_POLICY|.",
+				Command:     "my-team dev some-valkey --max-memory-policy ALLKEYS_LRU",
+			},
+			{
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with all possible options specified.",
+				Command:     "my-team dev some-valkey --size RAM_4GB --tier SINGLE_NODE --max-memory-policy ALLKEYS_LRU",
+			},
+		},
+		ValidateFunc: defaultValidateFunc,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			metadata := metadataFromArgs(args)
 
@@ -67,9 +89,5 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			pterm.Success.Printfln("Created Valkey instance %q for %q in %q", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
-		// TODO: completion, examples, etc.
-		//  how do we generate valid options for size and tier in usage text?
-		//  how do we display defaults for size and tier?
-		//  should team and environment be flags? default to some stored state for the current authenticated user?
 	}
 }

@@ -27,12 +27,12 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 }
 
 var (
-	args = []naistrix.Argument{
+	defaultArgs = []naistrix.Argument{
 		{Name: "team"},
 		{Name: "environment"},
 		{Name: "name"},
 	}
-	validateFunc = func(_ context.Context, args []string) error {
+	defaultValidateFunc = func(_ context.Context, args []string) error {
 		if len(args) != 3 {
 			return fmt.Errorf("expected 3 arguments, got %d", len(args))
 		}
