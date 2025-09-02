@@ -38,14 +38,14 @@ jobs:
           echo "changelog<<EOF" >>"$GITHUB_OUTPUT"
           echo "$changelog" >>"$GITHUB_OUTPUT"
           echo "EOF" >>"$GITHUB_OUTPUT"
-          
+
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo -n "PR comment with release info: "
             if [[ -n "$changelog" ]]; then
               pr_comment="# :pencil: Changelog preview
           Below is a preview of the Changelog that will be added to the next release. \
           Only commit messages that follow the [Conventional Commits specification](https://www.conventionalcommits.org/) will be included in the Changelog.
-          
+
           $changelog"
             else
               pr_comment="# :disappointed: No release for you
@@ -276,7 +276,7 @@ jobs:
         target:
           - template: nur.nix
             repo: nais/nur
-            file: pkgs/nais-cli/default.nix
+            file: pkgs/nais-cli.nix
           - template: scoop.json
             repo: nais/scoop-bucket
             file: nais-cli.json
