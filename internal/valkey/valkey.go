@@ -78,6 +78,21 @@ func Get(ctx context.Context, metadata Metadata) (*gql.GetValkeyTeamEnvironmentV
 				size
 				tier
 				maxMemoryPolicy
+				access(first: 1000, orderBy: {direction: ASC, field: ACCESS}) {
+				  edges {
+					node {
+					  access
+					  workload {
+						id
+						name
+						__typename
+						team {
+						  slug
+						}
+					  }
+					}
+				  }
+				}
 			  }
 			}
 		  }

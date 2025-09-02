@@ -617,10 +617,11 @@ func (v *GetValkeyTeamEnvironment) GetValkey() GetValkeyTeamEnvironmentValkey { 
 
 // GetValkeyTeamEnvironmentValkey includes the requested fields of the GraphQL type Valkey.
 type GetValkeyTeamEnvironmentValkey struct {
-	Name            string                `json:"name"`
-	Size            ValkeySize            `json:"size"`
-	Tier            ValkeyTier            `json:"tier"`
-	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy"`
+	Name            string                                                     `json:"name"`
+	Size            ValkeySize                                                 `json:"size"`
+	Tier            ValkeyTier                                                 `json:"tier"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                      `json:"maxMemoryPolicy"`
+	Access          GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection `json:"access"`
 }
 
 // GetName returns GetValkeyTeamEnvironmentValkey.Name, and is useful for accessing the field via an interface.
@@ -635,6 +636,289 @@ func (v *GetValkeyTeamEnvironmentValkey) GetTier() ValkeyTier { return v.Tier }
 // GetMaxMemoryPolicy returns GetValkeyTeamEnvironmentValkey.MaxMemoryPolicy, and is useful for accessing the field via an interface.
 func (v *GetValkeyTeamEnvironmentValkey) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy {
 	return v.MaxMemoryPolicy
+}
+
+// GetAccess returns GetValkeyTeamEnvironmentValkey.Access, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetAccess() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection {
+	return v.Access
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection includes the requested fields of the GraphQL type ValkeyAccessConnection.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection struct {
+	Edges []GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge `json:"edges"`
+}
+
+// GetEdges returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection.Edges, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection) GetEdges() []GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge {
+	return v.Edges
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge includes the requested fields of the GraphQL type ValkeyAccessEdge.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge struct {
+	Node GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess `json:"node"`
+}
+
+// GetNode returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge.Node, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge) GetNode() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess {
+	return v.Node
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess includes the requested fields of the GraphQL type ValkeyAccess.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess struct {
+	Access   string                                                                                                  `json:"access"`
+	Workload GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload `json:"-"`
+}
+
+// GetAccess returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Access, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) GetAccess() string {
+	return v.Access
+}
+
+// GetWorkload returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) GetWorkload() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload {
+	return v.Workload
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess struct {
+	Access string `json:"access"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) __premarshalJSON() (*__premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess, error) {
+	var retval __premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess
+
+	retval.Access = v.Access
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload is implemented by the following types:
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload interface {
+	implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload()
+	// GetId returns the interface-field "id" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetId() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
+}
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
+}
+
+func __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(b []byte, v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload: "%T"`, v)
+	}
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Id, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Id, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam) GetSlug() string {
+	return v.Slug
 }
 
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
@@ -3013,6 +3297,21 @@ query GetValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
 				size
 				tier
 				maxMemoryPolicy
+				access(first: 1000, orderBy: {direction:ASC,field:ACCESS}) {
+					edges {
+						node {
+							access
+							workload {
+								id
+								name
+								__typename
+								team {
+									slug
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}
