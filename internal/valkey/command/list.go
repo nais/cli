@@ -40,10 +40,24 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 
 			// TODO: flags to filter by environment, size, tier, etc?
 			data := pterm.TableData{
-				{"Environment", "Name", "Size", "Tier", "Max Memory Policy"},
+				{
+					"Environment",
+					"Name",
+					"Size",
+					"Tier",
+					"Workloads",
+					"Max memory policy",
+				},
 			}
 			for _, v := range valkeys {
-				data = append(data, []string{v.TeamEnvironment.Environment.Name, v.Name, string(v.Size), string(v.Tier), string(v.MaxMemoryPolicy)})
+				data = append(data, []string{
+					v.TeamEnvironment.Environment.Name,
+					v.Name,
+					string(v.Size),
+					string(v.Tier),
+					fmt.Sprintf("%d", len(v.Access.Edges)),
+					string(v.MaxMemoryPolicy),
+				})
 			}
 			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
 		},

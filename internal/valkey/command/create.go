@@ -14,15 +14,20 @@ import (
 func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Create{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:         "create",
-		Title:        "Create a Valkey instance.",
-		Description:  "This command creates a Valkey instance.",
-		Flags:        flags,
-		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc,
+		Name:        "create",
+		Title:       "Create a Valkey instance.",
+		Description: "This command creates a Valkey instance.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		ValidateFunc: func(ctx context.Context, args []string) error {
+			if err := flags.Validate(); err != nil {
+				return err
+			}
+			return defaultValidateFunc(ctx, args)
+		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, using the default size and tier.",
+				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with default settings.",
 				Command:     "my-team dev some-valkey",
 			},
 			{
@@ -47,8 +52,9 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 
 			// defaults
 			data := &valkey.Valkey{
-				Size: "RAM_1GB",
-				Tier: "HIGH_AVAILABILITY",
+				Size:            gql.ValkeySizeRam1gb,
+				Tier:            gql.ValkeyTierHighAvailability,
+				MaxMemoryPolicy: gql.ValkeyMaxMemoryPolicyNoEviction,
 			}
 
 			if flags.Size != "" {
@@ -57,25 +63,25 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if flags.Tier != "" {
 				data.Tier = gql.ValkeyTier(flags.Tier)
 			}
+			if flags.MaxMemoryPolicy != "" {
+				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
+			}
 
-			outData := pterm.TableData{
+			info := pterm.TableData{
 				{"Field", "Value"},
 				{"Team", metadata.TeamSlug},
 				{"Environment", metadata.EnvironmentName},
 				{"Name", metadata.Name},
 				{"Size", string(data.Size)},
 				{"Tier", string(data.Tier)},
-			}
-
-			if flags.MaxMemoryPolicy != "" {
-				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
-				outData = append(outData, []string{"Max Memory Policy", string(data.MaxMemoryPolicy)})
+				{"Max memory policy", string(data.MaxMemoryPolicy)},
 			}
 
 			pterm.Info.Println("You are about to create a Valkey instance with the following configuration:")
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(outData).Render(); err != nil {
+			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(info).Render(); err != nil {
 				return err
 			}
+
 			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
 			if !result {
 				return fmt.Errorf("cancelled by user")

@@ -14,12 +14,17 @@ import (
 func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Update{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:         "update",
-		Title:        "Update a Valkey instance.",
-		Description:  "This command updates an existing Valkey instance.",
-		Flags:        flags,
-		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc,
+		Name:        "update",
+		Title:       "Update a Valkey instance.",
+		Description: "This command updates an existing Valkey instance.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		ValidateFunc: func(ctx context.Context, args []string) error {
+			if err := flags.Validate(); err != nil {
+				return err
+			}
+			return defaultValidateFunc(ctx, args)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Set the |SIZE| for a Valkey instance named some-valkey for my-team in the dev environment.",
@@ -47,51 +52,54 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			data := &valkey.Valkey{
-				Size: existing.Size,
-				Tier: existing.Tier,
+				Size:            existing.Size,
+				Tier:            existing.Tier,
+				MaxMemoryPolicy: existing.MaxMemoryPolicy,
 			}
 
-			outData := pterm.TableData{
+			info := pterm.TableData{
 				{"Field", "Old Value", "New Value"},
 				{"Team", metadata.TeamSlug, "(unchanged)"},
 				{"Environment", metadata.EnvironmentName, "(unchanged)"},
 				{"Name", metadata.Name, "(unchanged)"},
 			}
 
-			if flags.Size != "" {
+			newSize := "(unchanged)"
+			if flags.Size != "" && string(flags.Size) != string(existing.Size) {
+				if flags.IsVerbose() {
+					pterm.Info.Printf("Changing size from %q to %q\n", existing.Size, flags.Size)
+				}
 				data.Size = gql.ValkeySize(flags.Size)
-				outData = append(outData, []string{"Size", string(existing.Size), string(data.Size)})
-				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing size from %q to %q\n", existing.Size, data.Size)
-				}
-			} else {
-				outData = append(outData, []string{"Size", string(existing.Size), "(unchanged)"})
+				newSize = string(flags.Size)
 			}
+			info = append(info, []string{"Size", string(existing.Size), newSize})
 
-			if flags.Tier != "" {
+			newTier := "(unchanged)"
+			if flags.Tier != "" && string(flags.Tier) != string(existing.Tier) {
+				if flags.IsVerbose() {
+					pterm.Info.Printf("Changing tier from %q to %q\n", existing.Tier, flags.Tier)
+				}
 				data.Tier = gql.ValkeyTier(flags.Tier)
-				outData = append(outData, []string{"Tier", string(existing.Tier), string(data.Tier)})
-				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing tier from %q to %q\n", existing.Tier, data.Tier)
-				}
-			} else {
-				outData = append(outData, []string{"Tier", string(existing.Tier), "(unchanged)"})
+				newTier = string(flags.Tier)
 			}
+			info = append(info, []string{"Tier", string(existing.Tier), newTier})
 
-			if flags.MaxMemoryPolicy != "" {
-				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
-				outData = append(outData, []string{"Max Memory Policy", string(existing.MaxMemoryPolicy), string(data.MaxMemoryPolicy)})
+			newMaxMemoryPolicy := "(unchanged)"
+			if flags.MaxMemoryPolicy != "" && string(flags.MaxMemoryPolicy) != string(existing.MaxMemoryPolicy) {
 				if flags.IsVerbose() {
-					pterm.Info.Printf("Updating max memory policy to %q\n", data.MaxMemoryPolicy)
+					pterm.Info.Printf("Changing max memory policy from %q to %q\n", existing.MaxMemoryPolicy, flags.MaxMemoryPolicy)
 				}
-			} else {
-				outData = append(outData, []string{"Max Memory Policy", string(existing.MaxMemoryPolicy), "(unchanged)"})
+				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
+				newMaxMemoryPolicy = string(flags.MaxMemoryPolicy)
 			}
+			info = append(info, []string{"Max memory policy", string(existing.MaxMemoryPolicy), newMaxMemoryPolicy})
 
 			pterm.Info.Println("You are about to update a Valkey instance with the following configuration:")
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(outData).Render(); err != nil {
+			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(info).Render(); err != nil {
 				return err
 			}
+
+			pterm.Warning.Println("Changing settings may cause a restart of the Valkey instance.")
 			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
 			if !result {
 				return fmt.Errorf("cancelled by user")

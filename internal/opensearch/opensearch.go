@@ -17,11 +17,11 @@ type OpenSearch struct {
 }
 
 type Metadata struct {
-	// Name is the name of the Valkey instance.
+	// Name is the name of the OpenSearch instance.
 	Name string
-	// EnvironmentName is the name of the environment where the Valkey instance is created.
+	// EnvironmentName is the name of the environment where the OpenSearch instance is created.
 	EnvironmentName string
-	// TeamSlug is the slug of the team that owns the Valkey instance.
+	// TeamSlug is the slug of the team that owns the OpenSearch instance.
 	TeamSlug string
 }
 
@@ -68,6 +68,113 @@ func Create(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.Crea
 	return &resp.CreateOpenSearch.OpenSearch, nil
 }
 
+func Delete(ctx context.Context, metadata Metadata) (bool, error) {
+	_ = `# @genqlient
+		mutation DeleteOpenSearch($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+		  deleteOpenSearch(input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug }) {
+		    openSearchDeleted
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := gql.DeleteOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+	if err != nil {
+		return false, err
+	}
+
+	return resp.DeleteOpenSearch.OpenSearchDeleted, nil
+}
+
+func Get(ctx context.Context, metadata Metadata) (*gql.GetOpenSearchTeamEnvironmentOpenSearch, error) {
+	_ = `# @genqlient
+		query GetOpenSearch($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+		  team(slug: $teamSlug) {
+			environment(name: $environmentName) {
+			  openSearch(name: $name) {
+				name
+				size
+				tier
+				version
+				majorVersion
+				access(first: 1000, orderBy: {direction: ASC, field: ACCESS}) {
+				  edges {
+					node {
+					  access
+					  workload {
+						id
+						name
+						__typename
+						team {
+						  slug
+						}
+					  }
+					}
+				  }
+				}
+			  }
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.Team.Environment.OpenSearch, nil
+}
+
+func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch, error) {
+	_ = `# @genqlient
+		query GetAllOpenSearches($teamSlug: Slug!) {
+		  team(slug: $teamSlug) {
+			openSearches {
+			  nodes {
+				name
+				size
+				tier
+				version
+				teamEnvironment {
+				  environment {
+					name
+				  }
+				}
+				access(first: 1000) {
+				  edges {
+					node {
+					  access
+					}
+				  }
+				}
+			  }
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetAllOpenSearches(ctx, client, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Team.OpenSearches.Nodes, nil
+}
+
 func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateOpenSearch(
@@ -100,4 +207,32 @@ func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.Upda
 	}
 
 	return &resp.UpdateOpenSearch.OpenSearch, nil
+}
+
+func FormatDetails(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnvironmentOpenSearch) [][]string {
+	return [][]string{
+		{"Field", "Value"},
+		{"Team", metadata.TeamSlug},
+		{"Environment", metadata.EnvironmentName},
+		{"Name", metadata.Name},
+		{"Size", string(openSearch.Size)},
+		{"Tier", string(openSearch.Tier)},
+		{"Version", openSearch.Version},
+	}
+}
+
+func FormatAccessList(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnvironmentOpenSearch) [][]string {
+	acl := [][]string{
+		{"Team", "Environment", "Name", "Type", "Access"},
+	}
+	for _, edge := range openSearch.Access.Edges {
+		acl = append(acl, []string{
+			edge.Node.Workload.GetTeam().Slug,
+			metadata.EnvironmentName,
+			edge.Node.Workload.GetName(),
+			edge.Node.Workload.GetTypename(),
+			edge.Node.Access,
+		})
+	}
+	return acl
 }

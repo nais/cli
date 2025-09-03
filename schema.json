@@ -3,9 +3,6 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"additionalProperties": false,
 	"properties": {
-		"environment": {
-			"type": "string"
-		},
 		"naisVersion": {
 			"enum": [
 				"v3"
@@ -52,9 +49,6 @@
 			"description": "OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.",
 			"type": "object"
 		},
-		"team": {
-			"type": "string"
-		},
 		"valkey": {
 			"additionalProperties": {
 				"additionalProperties": false,
@@ -97,9 +91,7 @@
 		}
 	},
 	"required": [
-		"naisVersion",
-		"environment",
-		"team"
+		"naisVersion"
 	],
 	"type": "object"
 }

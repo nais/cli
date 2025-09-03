@@ -68,6 +68,28 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 	return &resp.CreateValkey.Valkey, nil
 }
 
+func Delete(ctx context.Context, metadata Metadata) (bool, error) {
+	_ = `# @genqlient
+		mutation DeleteValkey($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+		  deleteValkey(input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug }) {
+		    valkeyDeleted
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := gql.DeleteValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+	if err != nil {
+		return false, err
+	}
+
+	return resp.DeleteValkey.ValkeyDeleted, nil
+}
+
 func Get(ctx context.Context, metadata Metadata) (*gql.GetValkeyTeamEnvironmentValkey, error) {
 	_ = `# @genqlient
 		query GetValkey($name: String!, $environmentName: String!, $teamSlug: Slug!) {
@@ -127,6 +149,13 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkey
 					name
 				  }
 				}
+				access(first: 1000) {
+				  edges {
+					node {
+					  access
+					}
+				  }
+				}
 			  }
 			}
 		  }
@@ -144,28 +173,6 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkey
 	}
 
 	return resp.Team.Valkeys.Nodes, nil
-}
-
-func Delete(ctx context.Context, metadata Metadata) (bool, error) {
-	_ = `# @genqlient
-		mutation DeleteValkey($name: String!, $environmentName: String!, $teamSlug: Slug!) {
-		  deleteValkey(input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug }) {
-		    valkeyDeleted
-		  }
-		}
-	`
-
-	client, err := naisapi.GraphqlClient(ctx)
-	if err != nil {
-		return false, err
-	}
-
-	resp, err := gql.DeleteValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
-	if err != nil {
-		return false, err
-	}
-
-	return resp.DeleteValkey.ValkeyDeleted, nil
 }
 
 func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
@@ -210,7 +217,7 @@ func FormatDetails(metadata Metadata, valkey *gql.GetValkeyTeamEnvironmentValkey
 		{"Name", metadata.Name},
 		{"Size", string(valkey.Size)},
 		{"Tier", string(valkey.Tier)},
-		{"Max Memory Policy", string(valkey.MaxMemoryPolicy)},
+		{"Max memory policy", string(valkey.MaxMemoryPolicy)},
 	}
 }
 
