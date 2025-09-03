@@ -55,7 +55,6 @@ description = "Build the Nais CLI binary"
 wait_for = ['fmt']
 run = """
 go build \
-  -installsuffix cgo \
   -ldflags "-s -w -X github.com/nais/cli/internal/version.Version=${VERSION:-local}" \
   -o bin/nais ./
 """
@@ -78,4 +77,4 @@ pin = true
 
 [tools]
 git-cliff = "2.9.1"
-go = "1.24.6"
+go = "1.25.1"

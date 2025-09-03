@@ -8,7 +8,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func schema(parentFlags *flag.Api) *naistrix.Command {
+func schemaCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Schema{Api: parentFlags}
 	return &naistrix.Command{
 		Name:  "schema",
