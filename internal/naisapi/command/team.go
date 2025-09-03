@@ -2,23 +2,18 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
-	"github.com/nais/naistrix/writer"
-	"github.com/savioxavier/termlink"
+	"github.com/nais/naistrix/output"
 	"k8s.io/utils/strings/slices"
 )
 
-func team(parentFlags *flag.Api) *naistrix.Command {
-	flags := &flag.Team{
-		Api: parentFlags,
-	}
-
+func teamCommand(parentFlags *flag.Api) *naistrix.Command {
+	flags := &flag.Team{Api: parentFlags}
 	return &naistrix.Command{
 		Name:  "team",
 		Title: "Operations on a team.",
@@ -70,19 +65,16 @@ func listMembers(parentFlags *flag.Team) *naistrix.Command {
 				}
 			}
 
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(members)
+			}
+
 			if len(members) == 0 {
 				out.Println("Team has no members.")
 				return nil
 			}
 
-			var w writer.Writer
-			if flags.Output == "json" {
-				w = writer.NewJSON(out, true)
-			} else {
-				w = writer.NewTable(out, writer.WithColumns("Name", "Email", "Role"))
-			}
-
-			return w.Write(members)
+			return out.Table().Render(members)
 		},
 		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
 			if len(toComplete) < 2 {
@@ -290,6 +282,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+			// TODO: Once pterm/pterm#697 is resolved, we can use a link to Console instead of just the workload name.
 			type workload struct {
 				Name            string            `json:"name"`
 				Environment     string            `json:"environment"`
@@ -304,11 +297,6 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				return err
 			}
 
-			if len(ret) == 0 {
-				out.Println("Team has no workloads.")
-				return nil
-			}
-
 			workloads := make([]workload, len(ret))
 			for i, w := range ret {
 				workloads[i] = workload{
@@ -320,33 +308,16 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				}
 			}
 
-			var w writer.Writer
 			if flags.Output == "json" {
-				w = writer.NewJSON(out, true)
-			} else {
-				w = writer.NewTable(
-					out,
-					writer.WithColumns("Name", "Environment", "Type", "State", "Vulnerabilities"),
-					writer.WithFormatter(func(row, column int, value any) string {
-						if column == 0 {
-							workloadName := fmt.Sprint(value)
-							workloadType := "app"
-							envName := workloads[row].Environment
-
-							if workloads[row].Type == "Job" {
-								workloadType = "job"
-							}
-
-							url := fmt.Sprintf("https://console.nav.cloud.nais.io/team/%s/%s/%s/%s", teamSlug, envName, workloadType, workloadName)
-							return termlink.ColorLink(workloadName, url, "underline")
-						}
-
-						return fmt.Sprint(value)
-					}),
-				)
+				return out.JSON(output.JSONWithPrettyOutput()).Render(workloads)
 			}
 
-			return w.Write(workloads)
+			if len(ret) == 0 {
+				out.Println("Team has no workloads.")
+				return nil
+			}
+
+			return out.Table().Render(workloads)
 		},
 		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
 			if len(toComplete) < 2 {

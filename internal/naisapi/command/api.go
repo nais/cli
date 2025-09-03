@@ -12,11 +12,11 @@ func Api(parentFlags *flag.Alpha) *naistrix.Command {
 		Title:       "Interact with Nais API.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
-			proxy(flags),
-			schema(flags),
-			team(flags),
-			teams(flags),
-			status(flags),
+			proxyCommand(flags),
+			schemaCommand(flags),
+			teamCommand(flags),
+			teamsCommand(flags),
+			statusCommand(flags),
 		},
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func proxy(parentFlags *flag.Api) *naistrix.Command {
+func proxyCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Proxy{Api: parentFlags, ListenAddr: "localhost:4242"}
 	return &naistrix.Command{
 		Name:        "proxy",

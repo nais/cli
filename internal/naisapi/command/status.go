@@ -7,35 +7,50 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/nais/naistrix/writer"
-	"github.com/savioxavier/termlink"
+	"github.com/nais/naistrix/output"
 )
 
-func status(parentFlags *flag.Api) *naistrix.Command {
+type workload struct {
+	Kind        string   `json:"kind"`
+	Name        string   `json:"name"`
+	Environment string   `json:"environment"`
+	ErrorTypes  []string `json:"errorType"`
+}
+
+type workloadsWithIssues []workload
+
+func (f workloadsWithIssues) String() string {
+	if len(f) == 0 {
+		return "No issues detected"
+	}
+
+	issues := fmt.Sprintf("%v workloads with issues\n\n", len(f))
+	for _, w := range f {
+		issues += fmt.Sprintf("%s (%s): %s\n", w.Kind, w.Environment, w.Name)
+		issues += formatErrorTypes(w.ErrorTypes) + "\n\n"
+	}
+
+	return strings.TrimRight(issues, "\n")
+}
+
+type team struct {
+	// TODO: Once https://github.com/pterm/pterm/issues/697 is resolved, we can use a link to Console instead of just the slug.
+	Slug      string              `json:"slug"`
+	Workloads int                 `json:"workloads"`
+	NotNais   int                 `heading:"Not Nais" json:"notNais"`
+	Issues    workloadsWithIssues `heading:"Issues" json:"failing"`
+}
+
+func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Status{Api: parentFlags}
 	return &naistrix.Command{
 		Name:  "status",
 		Title: "Get a quick overview of the status of your teams.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
-			type failing struct {
-				Kind        string   `json:"kind"`
-				Name        string   `json:"name"`
-				Environment string   `json:"environment"`
-				ErrorTypes  []string `json:"errorType"`
-			}
-
-			type team struct {
-				Slug    string    `json:"slug"`
-				Total   int       `json:"total"`
-				NotNais int       `json:"notNais"`
-				Failing []failing `json:"failing"`
-			}
-
 			var teams []team
 
 			ret, err := naisapi.GetStatus(ctx, flags)
@@ -45,13 +60,13 @@ func status(parentFlags *flag.Api) *naistrix.Command {
 
 			for _, t := range ret {
 				n := team{
-					Slug:    t.Team.Slug,
-					Total:   t.Team.Total.PageInfo.TotalCount,
-					NotNais: t.Team.NotNice.PageInfo.TotalCount,
-					Failing: []failing{},
+					Slug:      t.Team.Slug,
+					Workloads: t.Team.Total.PageInfo.TotalCount,
+					NotNais:   t.Team.NotNice.PageInfo.TotalCount,
+					Issues:    make(workloadsWithIssues, 0),
 				}
 				for _, f := range t.Team.Failing.Nodes {
-					a := failing{
+					a := workload{
 						Kind:        f.GetTypename(),
 						Name:        f.GetName(),
 						Environment: f.GetTeamEnvironment().Environment.Name,
@@ -59,7 +74,7 @@ func status(parentFlags *flag.Api) *naistrix.Command {
 					for _, et := range f.GetStatus().Errors {
 						a.ErrorTypes = append(a.ErrorTypes, et.GetTypename())
 					}
-					n.Failing = append(n.Failing, a)
+					n.Issues = append(n.Issues, a)
 				}
 				teams = append(teams, n)
 			}
@@ -69,47 +84,29 @@ func status(parentFlags *flag.Api) *naistrix.Command {
 				return nil
 			}
 
-			var w writer.Writer
 			if flags.Output == "json" {
-				w = writer.NewJSON(out, true)
-			} else {
-				w = writer.NewTable(out, writer.WithColumns("Slug", "Total", "Not Nais", "Failing"), writer.WithFormatter(func(row, column int, value any) string {
-					switch column {
-					case 0:
-						slug := fmt.Sprint(value)
-						return termlink.ColorLink(slug, "https://console.nav.cloud.nais.io/team/"+slug, "underline")
-					case 3:
-						failing := value.([]failing)
-						if len(failing) == 0 {
-							return "No failing workloads"
-						}
-						style := lipgloss.NewStyle().Foreground(lipgloss.Color("9")).UnsetPadding()
-						failingStr := style.Render(fmt.Sprintf("%v failing workloads", len(failing))) + "\n"
-						for _, f := range failing {
-							failingStr += fmt.Sprintf("%s (%s): %s\n", f.Kind, f.Environment, f.Name)
-							if len(f.ErrorTypes) > 0 {
-								failingStr += formatErrorTypes(f.ErrorTypes)
-							} else {
-								failingStr += "Unknown failure\n"
-							}
-						}
-						return failingStr
-					}
-					return fmt.Sprint(value)
-				}))
+				return out.JSON(output.JSONWithPrettyOutput()).Render(teams)
 			}
 
-			return w.Write(teams)
+			return out.Table().Render(teams)
 		},
 	}
 }
 
 func formatErrorTypes(errorTypes []string) string {
+	if len(errorTypes) == 0 {
+		return "Unknown failure"
+	}
+
 	texts := map[string]string{}
 	for _, et := range errorTypes {
 		switch et {
 		case "WorkloadStatusNoRunningInstances":
 			texts[et] = "No running instances"
+		case "WorkloadStatusVulnerable":
+			texts[et] = "Vulnerabilities detected"
+		case "WorkloadStatusFailedRun":
+			texts[et] = "Failed job run"
 		default:
 			texts[et] = et
 		}
