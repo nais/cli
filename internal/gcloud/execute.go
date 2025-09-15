@@ -15,13 +15,15 @@ func executeGcloud(ctx context.Context, out naistrix.Output, verbose bool, arg .
 	if verbose {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-	}
-	o, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("%v\nerror running %q command: %w", string(o), cmd.String(), err)
-	}
-
-	if !verbose {
+		err := cmd.Run()
+		if err != nil {
+			return fmt.Errorf("running: %q, err %w", cmd.String(), err)
+		}
+	} else {
+		o, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("%v\nerror running %q command: %w", string(o), cmd.String(), err)
+		}
 		out.Println("Logged in with gcloud.")
 	}
 
