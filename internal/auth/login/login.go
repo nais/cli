@@ -37,7 +37,7 @@ func Login(rootFlags *root.Flags) *naistrix.Command {
 				return naisapi.Login(ctx, out)
 			}
 
-			return gcloud.Login(ctx, out)
+			return gcloud.Login(ctx, out, flags.IsVerbose())
 		},
 	}
 }

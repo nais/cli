@@ -28,7 +28,7 @@ func Logout(rootFlags *root.Flags) *naistrix.Command {
 				return naisapi.Logout(ctx, out)
 			}
 
-			return gcloud.Logout(ctx, out)
+			return gcloud.Logout(ctx, out, flags.IsVerbose())
 		},
 	}
 }
