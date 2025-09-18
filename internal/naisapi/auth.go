@@ -20,36 +20,60 @@ import (
 
 var ErrNotAuthenticated = errors.New("not authenticated")
 
-// AuthenticatedUser represents the authenticated user.
+// AuthenticatedTokenUser represents the authenticated user.
 // It provides primitives for interacting with the Nais API on behalf of the user.
 // The primitives may return an [ErrNotAuthenticated] if the user has invalid or
 // expired credentials, in which case the user must reauthenticate through [Login].
-type AuthenticatedUser struct {
+type AuthenticatedTokenUser struct {
 	oauth2.TokenSource
-	ConsoleHost string
+	consoleHost string
+}
+
+type AuthenticatedUser interface {
+	HTTPClient(ctx context.Context) *http.Client
+	RoundTripper(base http.RoundTripper) http.RoundTripper
+	SetAuthorizationHeader(headers http.Header) error
+	ConsoleHost() string
+	APIURL() string
 }
 
 // GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or
 // expired credentials, in which case the user must reauthenticate through [Login].
-func GetAuthenticatedUser(ctx context.Context) (*AuthenticatedUser, error) {
+func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
+	if host := os.Getenv("NAIS_API_LOCAL_HOST"); host != "" {
+		return &LocalhostUser{
+			consoleHost: host,
+			email:       os.Getenv("NAIS_API_LOCAL_EMAIL"),
+		}, nil
+	}
+
 	secret, err := getUserSecret(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &AuthenticatedUser{
+	return &AuthenticatedTokenUser{
 		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx}),
-		ConsoleHost: secret.ConsoleHost,
+		consoleHost: secret.ConsoleHost,
 	}, nil
 }
 
+// ConsoleHost returns the console host of the authenticated user.
+func (a *AuthenticatedTokenUser) ConsoleHost() string {
+	return a.consoleHost
+}
+
+func (a *AuthenticatedTokenUser) APIURL() string {
+	return fmt.Sprintf("https://%s/graphql", a.ConsoleHost())
+}
+
 // HTTPClient returns a [http.Client] configured with the user's access token.
-func (a *AuthenticatedUser) HTTPClient(ctx context.Context) *http.Client {
+func (a *AuthenticatedTokenUser) HTTPClient(ctx context.Context) *http.Client {
 	return oauth2.NewClient(ctx, a.TokenSource)
 }
 
 // RoundTripper returns a [http.RoundTripper] configured with the user's access token.
-func (a *AuthenticatedUser) RoundTripper(base http.RoundTripper) http.RoundTripper {
+func (a *AuthenticatedTokenUser) RoundTripper(base http.RoundTripper) http.RoundTripper {
 	return &oauth2.Transport{
 		Base:   base,
 		Source: a.TokenSource,
@@ -57,7 +81,7 @@ func (a *AuthenticatedUser) RoundTripper(base http.RoundTripper) http.RoundTripp
 }
 
 // SetAuthorizationHeader sets the "Authorization" header with the user's access token.
-func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
+func (a *AuthenticatedTokenUser) SetAuthorizationHeader(headers http.Header) error {
 	tok, err := a.TokenSource.Token()
 	if err != nil {
 		return err
@@ -69,7 +93,7 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 
 // Login initiates the OAuth2 authorization code flow to authenticate the user.
 // The user's secret is saved in the system keyring.
-// See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
+// See [AuthenticatedTokenUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func Login(ctx context.Context, out naistrix.Output) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {

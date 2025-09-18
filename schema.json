@@ -1,0 +1,97 @@
+{
+	"$id": "https://nais.io/schema/apply",
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"additionalProperties": false,
+	"properties": {
+		"naisVersion": {
+			"enum": [
+				"v3"
+			],
+			"type": "string"
+		},
+		"openSearch": {
+			"additionalProperties": {
+				"additionalProperties": false,
+				"properties": {
+					"size": {
+						"description": "Size is the size of the OpenSearch instance.",
+						"enum": [
+							"RAM_4GB",
+							"RAM_8GB",
+							"RAM_16GB",
+							"RAM_32GB",
+							"RAM_64GB"
+						],
+						"type": "string"
+					},
+					"tier": {
+						"description": "Tier is the tier of the OpenSearch instance.",
+						"enum": [
+							"SINGLE_NODE",
+							"HIGH_AVAILABILITY"
+						],
+						"type": "string"
+					},
+					"version": {
+						"description": "Version is the major version of OpenSearch\"",
+						"enum": [
+							"V2"
+						],
+						"type": "string"
+					}
+				},
+				"required": [
+					"size",
+					"tier"
+				],
+				"type": "object"
+			},
+			"description": "OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.",
+			"type": "object"
+		},
+		"valkey": {
+			"additionalProperties": {
+				"additionalProperties": false,
+				"properties": {
+					"maxMemoryPolicy": {
+						"description": "MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. \"allkeys-lru\".",
+						"type": "string"
+					},
+					"size": {
+						"description": "Size is the size of the Valkey instance.",
+						"enum": [
+							"RAM_1GB",
+							"RAM_4GB",
+							"RAM_8GB",
+							"RAM_14GB",
+							"RAM_28GB",
+							"RAM_56GB",
+							"RAM_112GB",
+							"RAM_200GB"
+						],
+						"type": "string"
+					},
+					"tier": {
+						"description": "Tier is the tier of the Valkey instance.",
+						"enum": [
+							"SINGLE_NODE",
+							"HIGH_AVAILABILITY"
+						],
+						"type": "string"
+					}
+				},
+				"required": [
+					"size",
+					"tier"
+				],
+				"type": "object"
+			},
+			"description": "Valkey is a map of Valkey instances to be created, where the key is the name of the instance.",
+			"type": "object"
+		}
+	},
+	"required": [
+		"naisVersion"
+	],
+	"type": "object"
+}

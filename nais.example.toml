@@ -1,0 +1,20 @@
+# nais example toml wip poc something
+
+# team is inferred from global nais cli config (todo)
+# environment is required for all commands
+# mixin is auto-detected if matching `*<environment>.toml` existing next to the base config file, e.g.
+# e.g. `nais apply dev nais.toml --team devteam` will use `nais.dev.toml` if it exists
+
+# nais apply <environment> <config-file> --team <team> [--mixin <override-file>]
+# nais apply dev nais.toml --mixin nais.dev.toml --team devteam
+# nais apply prod nais.toml --mixin nais.prod.toml --team devteam
+
+# -------------------------------
+# possible features to add later:
+
+# nais apply dev nais.toml --mixin nais.dev.toml --team devteam --set application.bar.image=example.com/app:1.2.3
+# nais apply prod nais.toml --mixin nais.prod.toml --team devteam --set application.bar.image=example.com/app:1.2.3
+
+# nais <resource> set image <environment> <name> <image>
+# nais application set image dev bar example.com/app:1.2.3
+# nais job set image dev bar example.com/app:1.2.3

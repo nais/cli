@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=./schema.json
+
+naisVersion: v3
+environment: "dev"
+team: "devteam"
+
+openSearch:
+  asdf:
+    tier: SINGLE_NODE
+    size: RAM_4GB
+  foo:
+    tier: SINGLE_NODE
+    size: RAM_32GB
+  bar:
+    tier: HIGH_AVAILABILITY
+    size: RAM_64GB
+
+valkey:
+  foo:
+    tier: SINGLE_NODE
+    size: RAM_14GB
+    maxMemoryPolicy: "VOLATILE_TTL"
