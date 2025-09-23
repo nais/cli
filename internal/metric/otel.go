@@ -36,14 +36,14 @@ func Initialize() func(verbose bool) {
 	provider := newMeterProvider()
 	otel.SetMeterProvider(provider)
 
-	return func(verbose bool) {
-		if verbose {
+	return func(trace bool) {
+		if trace {
 			fmt.Println("Shutdown: uploading metrics...")
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		err := provider.Shutdown(ctx)
-		if err != nil {
+		if err != nil && trace {
 			fmt.Printf("Failed up upload metrics: %v\n", err)
 		}
 	}
