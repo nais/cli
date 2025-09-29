@@ -130,10 +130,19 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		pterm.Println("When setup is complete, a new instance has been created and replication of data has started.")
 	}
 
+	helperName, err := helperAppName(m.cfg.AppName)
+	if err != nil {
+		return fmt.Errorf("failed to generate helper app name: %w", err)
+	}
+
 	pterm.Println("You can check the replication progress in the Google Cloud Console:")
 	ui.LinkStyle.Printfln("\t%s", cloudConsoleUrl)
 	pterm.Println()
-	pterm.DefaultParagraph.Println("When the migration has status 'Running' and is in the 'CDC' or 'Ready to Promote' phase, you can proceed with the next step of the migration:")
+	pterm.DefaultParagraph.Println("When the migration has status 'Running' and is in the 'CDC' or 'Ready to Promote' phase, everything is ready for the next step of the migration.")
+	pterm.DefaultParagraph.Println("If you want to check that the replication is working as expected before proceeding, you can connect to the new instance and check that everything looks correct:")
+	ui.CmdStyle.Printfln("\tnais postgres psql %s", helperName)
+	pterm.Println()
+	pterm.DefaultParagraph.Println("When you are ready to proceed with the next step of the migration, run the promote command:")
 	ui.CmdStyle.Printfln("\tnais postgres migrate promote %s %s", m.cfg.AppName, m.cfg.Target.InstanceName)
 	pterm.Println()
 	pterm.Info.Println("Be aware that during promotion (the next step), your instance will be unavailable for some time.")
@@ -174,4 +183,16 @@ func (m *Migrator) ConfigureTarget() {
 			m.cfg.Target.DiskSize = m.cfg.Target.DiskSize.OrMaybe(ui.AskForDiskSize(m.cfg.Source.DiskSize))
 		}
 	})
+}
+
+// helperAppName generates a name for the helper application, based on the application name.
+// This is a copy of the corresponding function in nais/cloudsql-migrator/internal/pkg/common_main/main.go
+// If a functional change is made here, it should be made in both places.
+func helperAppName(basename string) (string, error) {
+	helperName, err := namegen.ShortName(fmt.Sprintf("migrator-%s", basename), 63)
+	if err != nil {
+		return "", err
+	}
+
+	return helperName, nil
 }
