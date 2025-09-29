@@ -64,9 +64,9 @@ jobs:
       matrix:
         mise-task:
           - check:deadcode
+          - check:govet
+          - check:govulncheck
           - check:staticcheck
-          - check:vet
-          - check:vulncheck
           - ci:fmt
           - test
     needs:
