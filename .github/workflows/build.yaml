@@ -18,10 +18,10 @@ jobs:
       version: ${{ steps.generate.outputs.version }}
       changelog: ${{ steps.generate.outputs.changelog }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: jdx/mise-action@v2
+      - uses: jdx/mise-action@v3
       - name: Generate release info
         id: generate
         run: |
@@ -62,7 +62,13 @@ jobs:
   checks:
     strategy:
       matrix:
-        mise_target: [deadcode, vulncheck, ci-fmt, staticcheck, test, vet]
+        mise-task:
+          - check:deadcode
+          - check:staticcheck
+          - check:vet
+          - check:vulncheck
+          - ci:fmt
+          - test
     needs:
       - release-info
     runs-on: ubuntu-latest
@@ -70,14 +76,9 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - name: Checkout latest code
-        uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
-        with:
-          cache: false
-      - name: mise run ${{ matrix.mise_target }}
-        run: |
-          mise run ${{ matrix.mise_target }}
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
+      - run: mise run check:${{ matrix.mise-tash }}
 
   builds:
     runs-on: ubuntu-latest
@@ -88,11 +89,8 @@ jobs:
     needs:
       - release-info
     steps:
-      - name: Checkout latest code
-        uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
-        with:
-          cache: false
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
       - name: build
         run: |
           ./script/completions.sh
@@ -117,8 +115,7 @@ jobs:
           fi
 
           tar -zcf "nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz" ./completions -C bin/ "$binary"
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: archive-${{ matrix.os }}-${{ matrix.arch }}
           path: nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
@@ -131,11 +128,8 @@ jobs:
     needs:
       - release-info
     steps:
-      - name: Checkout latest code
-        uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
-        with:
-          cache: false
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
       - name: package deb
         run: |
           ./script/completions.sh
@@ -143,8 +137,7 @@ jobs:
           export VERSION="${{ needs.release-info.outputs.version }}"
           export GOARCH="${{ matrix.arch }}"
           mise run package-deb
-      - name: Upload deb
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.arch }}
           path: nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.arch }}.deb
@@ -168,15 +161,12 @@ jobs:
       - package-deb
       - checks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: DeterminateSystems/nix-installer-action@v17
-      - name: Create tag
-        run: |
-          git tag ${{ needs.release-info.outputs.version }}
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - uses: DeterminateSystems/nix-installer-action@v20
+      - run: git tag ${{ needs.release-info.outputs.version }}
+      - uses: actions/download-artifact@v5
       - name: Generate hashes
         id: hashes
         run: |
@@ -202,13 +192,11 @@ jobs:
             done
           done
 
-      - name: Upload hashes
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: hashes-json
           path: hashes.json
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.release-info.outputs.version }}
           body: ${{ needs.release-info.outputs.changelog }}
@@ -239,26 +227,21 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout latest code
-        uses: actions/checkout@v4
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
+      - uses: actions/checkout@v5
+      - id: auth
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.NAIS_IO_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: "gh-cli@nais-io.iam.gserviceaccount.com"
-          token_format: "access_token"
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v2"
-      - name: "Download arm64 deb artifacts"
-        uses: actions/download-artifact@v4
+          service_account: gh-cli@nais-io.iam.gserviceaccount.com
+          token_format: access_token
+      - uses: google-github-actions/setup-gcloud@v3
+      - uses: actions/download-artifact@v5
         with:
           name: deb-arm64
-      - name: "Download amd64 deb artifacts"
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: deb-amd64
-      - name: "Upload new deb file to Google repository"
+      - name: Upload new deb file to Google repository
         env:
           VERSION: ${{ needs.release-info.outputs.version }}
         run: |
@@ -287,19 +270,17 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout latest code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: navikt/github-app-token-generator@v1
         id: token
         with:
           private-key: "${{ secrets.NAIS_APP_PRIVATE_KEY }}"
           app-id: "${{ secrets.NAIS_APP_ID }}"
           repo: ${{ matrix.target.repo }}
-      - name: Download hashes
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: hashes-json
-      - name: "Generate manifest"
+      - name: Generate manifest
         run: |
           git clone "https://git:${{ steps.token.outputs.token }}@github.com/${{ matrix.target.repo }}" repo
           cd repo || exit 1
