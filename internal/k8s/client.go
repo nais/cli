@@ -110,7 +110,7 @@ func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace st
 	)
 	rawConfig, err := kubeConfig.RawConfig()
 	if err != nil {
-		return
+		return defaultContext, defaultNamespace
 	}
 
 	defaultContext = rawConfig.CurrentContext
@@ -118,7 +118,7 @@ func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace st
 		defaultNamespace = context.Namespace
 	}
 
-	return
+	return defaultContext, defaultNamespace
 }
 
 func GetAllContexts() ([]string, error) {
@@ -142,14 +142,14 @@ func GetNamespaceForContext(context string) (namespace string, err error) {
 
 	rawConfig, err := kubeConfig.RawConfig()
 	if err != nil {
-		return
+		return namespace, err
 	}
 
 	if context, exists := rawConfig.Contexts[context]; exists {
 		namespace = context.Namespace
 	}
 
-	return
+	return namespace, err
 }
 
 func GetNamespacesForContext(ctx context.Context, kubeCtx string) ([]string, error) {
