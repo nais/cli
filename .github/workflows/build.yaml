@@ -159,7 +159,7 @@ jobs:
           - repo: nais/scoop-bucket
             file: nais-cli.json
           - repo: nais/homebrew-tap
-            file: Formula/nais-cli.rb
+            file: Formula/nais.rb
     permissions:
       contents: read
       id-token: write
