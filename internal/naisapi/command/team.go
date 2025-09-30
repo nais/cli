@@ -284,11 +284,12 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			// TODO: Once pterm/pterm#697 is resolved, we can use a link to Console instead of just the workload name.
 			type workload struct {
-				Name            string            `json:"name"`
-				Environment     string            `json:"environment"`
-				Type            string            `json:"type"`
-				State           gql.WorkloadState `json:"state"`
-				Vulnerabilities int               `json:"vulnerabilities"`
+				Name            string `json:"name"`
+				Environment     string `json:"environment"`
+				Type            string `json:"type"`
+				State           string `json:"state"`
+				Vulnerabilities int    `json:"vulnerabilities"`
+				Issues          int    `heading:"Critical Issues" json:"issues"`
 			}
 
 			teamSlug := args[0]
@@ -299,12 +300,21 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 
 			workloads := make([]workload, len(ret))
 			for i, w := range ret {
+				state := "(unknown)"
+				switch actual := w.(type) {
+				case *gql.GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication:
+					state = string(actual.GetApplicationState())
+				case *gql.GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob:
+					state = string(actual.GetJobState())
+				}
+
 				workloads[i] = workload{
 					Name:            w.GetName(),
 					Environment:     w.GetTeamEnvironment().Environment.Name,
 					Type:            w.GetTypename(),
-					State:           w.GetStatus().State,
+					State:           state,
 					Vulnerabilities: w.GetImage().VulnerabilitySummary.Total,
+					Issues:          w.GetTotalIssues().PageInfo.TotalCount,
 				}
 			}
 

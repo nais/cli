@@ -45,6 +45,802 @@ func (v *AddTeamMemberResponse) GetAddTeamMember() AddTeamMemberAddTeamMemberAdd
 	return v.AddTeamMember
 }
 
+type ApplicationState string
+
+const (
+	// The application is running.
+	ApplicationStateRunning ApplicationState = "RUNNING"
+	// The application is not running.
+	ApplicationStateNotRunning ApplicationState = "NOT_RUNNING"
+	// The application state is unknown.
+	ApplicationStateUnknown ApplicationState = "UNKNOWN"
+)
+
+var AllApplicationState = []ApplicationState{
+	ApplicationStateRunning,
+	ApplicationStateNotRunning,
+	ApplicationStateUnknown,
+}
+
+// CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload includes the requested fields of the GraphQL type CreateOpenSearchPayload.
+type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload struct {
+	// OpenSearch instance that was created.
+	OpenSearch CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch `json:"openSearch"`
+}
+
+// GetOpenSearch returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload.OpenSearch, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload) GetOpenSearch() CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch {
+	return v.OpenSearch
+}
+
+// CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch.Id, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetId() string {
+	return v.Id
+}
+
+// GetName returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetName() string {
+	return v.Name
+}
+
+// CreateOpenSearchResponse is returned by CreateOpenSearch on success.
+type CreateOpenSearchResponse struct {
+	// Create a new OpenSearch instance.
+	CreateOpenSearch CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload `json:"createOpenSearch"`
+}
+
+// GetCreateOpenSearch returns CreateOpenSearchResponse.CreateOpenSearch, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchResponse) GetCreateOpenSearch() CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload {
+	return v.CreateOpenSearch
+}
+
+// CreateValkeyCreateValkeyCreateValkeyPayload includes the requested fields of the GraphQL type CreateValkeyPayload.
+type CreateValkeyCreateValkeyCreateValkeyPayload struct {
+	// Valkey instance that was created.
+	Valkey CreateValkeyCreateValkeyCreateValkeyPayloadValkey `json:"valkey"`
+}
+
+// GetValkey returns CreateValkeyCreateValkeyCreateValkeyPayload.Valkey, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayload) GetValkey() CreateValkeyCreateValkeyCreateValkeyPayloadValkey {
+	return v.Valkey
+}
+
+// CreateValkeyCreateValkeyCreateValkeyPayloadValkey includes the requested fields of the GraphQL type Valkey.
+type CreateValkeyCreateValkeyCreateValkeyPayloadValkey struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns CreateValkeyCreateValkeyCreateValkeyPayloadValkey.Id, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetId() string { return v.Id }
+
+// GetName returns CreateValkeyCreateValkeyCreateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetName() string { return v.Name }
+
+// CreateValkeyResponse is returned by CreateValkey on success.
+type CreateValkeyResponse struct {
+	// Create a new Valkey instance.
+	CreateValkey CreateValkeyCreateValkeyCreateValkeyPayload `json:"createValkey"`
+}
+
+// GetCreateValkey returns CreateValkeyResponse.CreateValkey, and is useful for accessing the field via an interface.
+func (v *CreateValkeyResponse) GetCreateValkey() CreateValkeyCreateValkeyCreateValkeyPayload {
+	return v.CreateValkey
+}
+
+// DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload includes the requested fields of the GraphQL type DeleteOpenSearchPayload.
+type DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload struct {
+	// Whether or not the OpenSearch instance was deleted.
+	OpenSearchDeleted bool `json:"openSearchDeleted"`
+}
+
+// GetOpenSearchDeleted returns DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload.OpenSearchDeleted, and is useful for accessing the field via an interface.
+func (v *DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload) GetOpenSearchDeleted() bool {
+	return v.OpenSearchDeleted
+}
+
+// DeleteOpenSearchResponse is returned by DeleteOpenSearch on success.
+type DeleteOpenSearchResponse struct {
+	// Delete an existing OpenSearch instance.
+	DeleteOpenSearch DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload `json:"deleteOpenSearch"`
+}
+
+// GetDeleteOpenSearch returns DeleteOpenSearchResponse.DeleteOpenSearch, and is useful for accessing the field via an interface.
+func (v *DeleteOpenSearchResponse) GetDeleteOpenSearch() DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload {
+	return v.DeleteOpenSearch
+}
+
+// DeleteValkeyDeleteValkeyDeleteValkeyPayload includes the requested fields of the GraphQL type DeleteValkeyPayload.
+type DeleteValkeyDeleteValkeyDeleteValkeyPayload struct {
+	// Whether or not the job was deleted.
+	ValkeyDeleted bool `json:"valkeyDeleted"`
+}
+
+// GetValkeyDeleted returns DeleteValkeyDeleteValkeyDeleteValkeyPayload.ValkeyDeleted, and is useful for accessing the field via an interface.
+func (v *DeleteValkeyDeleteValkeyDeleteValkeyPayload) GetValkeyDeleted() bool { return v.ValkeyDeleted }
+
+// DeleteValkeyResponse is returned by DeleteValkey on success.
+type DeleteValkeyResponse struct {
+	// Delete an existing Valkey instance.
+	DeleteValkey DeleteValkeyDeleteValkeyDeleteValkeyPayload `json:"deleteValkey"`
+}
+
+// GetDeleteValkey returns DeleteValkeyResponse.DeleteValkey, and is useful for accessing the field via an interface.
+func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteValkeyPayload {
+	return v.DeleteValkey
+}
+
+// GetAllOpenSearchesResponse is returned by GetAllOpenSearches on success.
+type GetAllOpenSearchesResponse struct {
+	// Get a team by its slug.
+	Team GetAllOpenSearchesTeam `json:"team"`
+}
+
+// GetTeam returns GetAllOpenSearchesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesResponse) GetTeam() GetAllOpenSearchesTeam { return v.Team }
+
+// GetAllOpenSearchesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllOpenSearchesTeam struct {
+	// OpenSearch instances owned by the team.
+	OpenSearches GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection `json:"openSearches"`
+}
+
+// GetOpenSearches returns GetAllOpenSearchesTeam.OpenSearches, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeam) GetOpenSearches() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection {
+	return v.OpenSearches
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection includes the requested fields of the GraphQL type OpenSearchConnection.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection struct {
+	Nodes []GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch `json:"nodes"`
+}
+
+// GetNodes returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection) GetNodes() []GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch {
+	return v.Nodes
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch struct {
+	Name string `json:"name"`
+	// Available memory for the OpenSearch instance.
+	Memory OpenSearchMemory `json:"memory"`
+	// Availability tier for the OpenSearch instance.
+	Tier OpenSearchTier `json:"tier"`
+	// Available storage in GB.
+	StorageGB int `json:"storageGB"`
+	// Fetch version for the OpenSearch instance.
+	Version         GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion                          `json:"version"`
+	State           OpenSearchState                                                                                       `json:"state"`
+	TeamEnvironment GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment                  `json:"teamEnvironment"`
+	Access          GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection `json:"access"`
+}
+
+// GetName returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetName() string {
+	return v.Name
+}
+
+// GetMemory returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Memory, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetMemory() OpenSearchMemory {
+	return v.Memory
+}
+
+// GetTier returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Tier, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetTier() OpenSearchTier {
+	return v.Tier
+}
+
+// GetStorageGB returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.StorageGB, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetStorageGB() int {
+	return v.StorageGB
+}
+
+// GetVersion returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Version, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetVersion() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion {
+	return v.Version
+}
+
+// GetState returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.State, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetState() OpenSearchState {
+	return v.State
+}
+
+// GetTeamEnvironment returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetTeamEnvironment() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetAccess returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Access, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetAccess() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection {
+	return v.Access
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection includes the requested fields of the GraphQL type OpenSearchAccessConnection.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection struct {
+	Edges []GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge `json:"edges"`
+}
+
+// GetEdges returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection.Edges, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnection) GetEdges() []GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge {
+	return v.Edges
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge includes the requested fields of the GraphQL type OpenSearchAccessEdge.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge struct {
+	Node GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess `json:"node"`
+}
+
+// GetNode returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge.Node, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge) GetNode() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess {
+	return v.Node
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess includes the requested fields of the GraphQL type OpenSearchAccess.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess struct {
+	Access string `json:"access"`
+}
+
+// GetAccess returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess.Access, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) GetAccess() string {
+	return v.Access
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironment) GetEnvironment() GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion includes the requested fields of the GraphQL type OpenSearchVersion.
+type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion struct {
+	// The full version string of the OpenSearch instance. This will be available after the instance is created.
+	Actual string `json:"actual"`
+}
+
+// GetActual returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion.Actual, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion) GetActual() string {
+	return v.Actual
+}
+
+// GetAllValkeysResponse is returned by GetAllValkeys on success.
+type GetAllValkeysResponse struct {
+	// Get a team by its slug.
+	Team GetAllValkeysTeam `json:"team"`
+}
+
+// GetTeam returns GetAllValkeysResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysResponse) GetTeam() GetAllValkeysTeam { return v.Team }
+
+// GetAllValkeysTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllValkeysTeam struct {
+	// Valkey instances owned by the team.
+	Valkeys GetAllValkeysTeamValkeysValkeyConnection `json:"valkeys"`
+}
+
+// GetValkeys returns GetAllValkeysTeam.Valkeys, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeam) GetValkeys() GetAllValkeysTeamValkeysValkeyConnection { return v.Valkeys }
+
+// GetAllValkeysTeamValkeysValkeyConnection includes the requested fields of the GraphQL type ValkeyConnection.
+type GetAllValkeysTeamValkeysValkeyConnection struct {
+	Nodes []GetAllValkeysTeamValkeysValkeyConnectionNodesValkey `json:"nodes"`
+}
+
+// GetNodes returns GetAllValkeysTeamValkeysValkeyConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnection) GetNodes() []GetAllValkeysTeamValkeysValkeyConnectionNodesValkey {
+	return v.Nodes
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkey includes the requested fields of the GraphQL type Valkey.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkey struct {
+	Name string `json:"name"`
+	// Available memory for the Valkey instance.
+	Memory ValkeyMemory `json:"memory"`
+	// Availability tier for the Valkey instance.
+	Tier            ValkeyTier                                                                      `json:"tier"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                                           `json:"maxMemoryPolicy"`
+	State           ValkeyState                                                                     `json:"state"`
+	TeamEnvironment GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment              `json:"teamEnvironment"`
+	Access          GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection `json:"access"`
+}
+
+// GetName returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Name, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetName() string { return v.Name }
+
+// GetMemory returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Memory, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetMemory() ValkeyMemory {
+	return v.Memory
+}
+
+// GetTier returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Tier, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy {
+	return v.MaxMemoryPolicy
+}
+
+// GetState returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.State, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetState() ValkeyState { return v.State }
+
+// GetTeamEnvironment returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetTeamEnvironment() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetAccess returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkey.Access, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkey) GetAccess() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection {
+	return v.Access
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection includes the requested fields of the GraphQL type ValkeyAccessConnection.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection struct {
+	Edges []GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge `json:"edges"`
+}
+
+// GetEdges returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection.Edges, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnection) GetEdges() []GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge {
+	return v.Edges
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge includes the requested fields of the GraphQL type ValkeyAccessEdge.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge struct {
+	Node GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess `json:"node"`
+}
+
+// GetNode returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge.Node, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge) GetNode() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess {
+	return v.Node
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess includes the requested fields of the GraphQL type ValkeyAccess.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess struct {
+	Access string `json:"access"`
+}
+
+// GetAccess returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Access, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) GetAccess() string {
+	return v.Access
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment) GetEnvironment() GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetOpenSearchResponse is returned by GetOpenSearch on success.
+type GetOpenSearchResponse struct {
+	// Get a team by its slug.
+	Team GetOpenSearchTeam `json:"team"`
+}
+
+// GetTeam returns GetOpenSearchResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchResponse) GetTeam() GetOpenSearchTeam { return v.Team }
+
+// GetOpenSearchTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetOpenSearchTeam struct {
+	// Get a specific environment for the team.
+	Environment GetOpenSearchTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetOpenSearchTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeam) GetEnvironment() GetOpenSearchTeamEnvironment { return v.Environment }
+
+// GetOpenSearchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetOpenSearchTeamEnvironment struct {
+	// OpenSearch instance in the team environment.
+	OpenSearch GetOpenSearchTeamEnvironmentOpenSearch `json:"openSearch"`
+}
+
+// GetOpenSearch returns GetOpenSearchTeamEnvironment.OpenSearch, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironment) GetOpenSearch() GetOpenSearchTeamEnvironmentOpenSearch {
+	return v.OpenSearch
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type GetOpenSearchTeamEnvironmentOpenSearch struct {
+	Name string `json:"name"`
+	// Available memory for the OpenSearch instance.
+	Memory OpenSearchMemory `json:"memory"`
+	// Availability tier for the OpenSearch instance.
+	Tier OpenSearchTier `json:"tier"`
+	// Available storage in GB.
+	StorageGB int `json:"storageGB"`
+	// Fetch version for the OpenSearch instance.
+	Version GetOpenSearchTeamEnvironmentOpenSearchVersion                          `json:"version"`
+	State   OpenSearchState                                                        `json:"state"`
+	Access  GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection `json:"access"`
+}
+
+// GetName returns GetOpenSearchTeamEnvironmentOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetName() string { return v.Name }
+
+// GetMemory returns GetOpenSearchTeamEnvironmentOpenSearch.Memory, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetMemory() OpenSearchMemory { return v.Memory }
+
+// GetTier returns GetOpenSearchTeamEnvironmentOpenSearch.Tier, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetTier() OpenSearchTier { return v.Tier }
+
+// GetStorageGB returns GetOpenSearchTeamEnvironmentOpenSearch.StorageGB, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetStorageGB() int { return v.StorageGB }
+
+// GetVersion returns GetOpenSearchTeamEnvironmentOpenSearch.Version, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetVersion() GetOpenSearchTeamEnvironmentOpenSearchVersion {
+	return v.Version
+}
+
+// GetState returns GetOpenSearchTeamEnvironmentOpenSearch.State, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetState() OpenSearchState { return v.State }
+
+// GetAccess returns GetOpenSearchTeamEnvironmentOpenSearch.Access, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetAccess() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection {
+	return v.Access
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection includes the requested fields of the GraphQL type OpenSearchAccessConnection.
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection struct {
+	Edges []GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge `json:"edges"`
+}
+
+// GetEdges returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection.Edges, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnection) GetEdges() []GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge {
+	return v.Edges
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge includes the requested fields of the GraphQL type OpenSearchAccessEdge.
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge struct {
+	Node GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess `json:"node"`
+}
+
+// GetNode returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge.Node, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdge) GetNode() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess {
+	return v.Node
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess includes the requested fields of the GraphQL type OpenSearchAccess.
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess struct {
+	Access   string                                                                                                                      `json:"access"`
+	Workload GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload `json:"-"`
+}
+
+// GetAccess returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess.Access, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) GetAccess() string {
+	return v.Access
+}
+
+// GetWorkload returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess.Workload, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) GetWorkload() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload {
+	return v.Workload
+}
+
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess struct {
+	Access string `json:"access"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) __premarshalJSON() (*__premarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess, error) {
+	var retval __premarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess
+
+	retval.Access = v.Access
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload is implemented by the following types:
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload interface {
+	implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload()
+	// GetId returns the interface-field "id" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetId() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam
+}
+
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
+}
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
+}
+
+func __unmarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(b []byte, v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload: "%T"`, v)
+	}
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication.Id, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) GetTeam() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob.Id, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) GetTeam() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam) GetSlug() string {
+	return v.Slug
+}
+
+// GetOpenSearchTeamEnvironmentOpenSearchVersion includes the requested fields of the GraphQL type OpenSearchVersion.
+type GetOpenSearchTeamEnvironmentOpenSearchVersion struct {
+	// The full version string of the OpenSearch instance. This will be available after the instance is created.
+	Actual string `json:"actual"`
+	// The desired major version of the OpenSearch instance.
+	DesiredMajor OpenSearchMajorVersion `json:"desiredMajor"`
+}
+
+// GetActual returns GetOpenSearchTeamEnvironmentOpenSearchVersion.Actual, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetActual() string { return v.Actual }
+
+// GetDesiredMajor returns GetOpenSearchTeamEnvironmentOpenSearchVersion.DesiredMajor, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetDesiredMajor() OpenSearchMajorVersion {
+	return v.DesiredMajor
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -171,8 +967,10 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
+	// The application state.
+	ApplicationState ApplicationState `json:"applicationState"`
 	// Interface for workloads.
-	Status GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
 	// Interface for workloads.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 	// Interface for workloads.
@@ -189,9 +987,14 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetNam
 	return v.Name
 }
 
-// GetStatus returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Status, and is useful for accessing the field via an interface.
-func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus {
-	return v.Status
+// GetApplicationState returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.ApplicationState, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetApplicationState() ApplicationState {
+	return v.ApplicationState
+}
+
+// GetTotalIssues returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.TotalIssues, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetTotalIssues() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection {
+	return v.TotalIssues
 }
 
 // GetImage returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication.Image, and is useful for accessing the field via an interface.
@@ -209,8 +1012,10 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
+	// The state of the Job
+	JobState JobState `json:"jobState"`
 	// Interface for workloads.
-	Status GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
 	// Interface for workloads.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 	// Interface for workloads.
@@ -225,9 +1030,14 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetTypename() 
 // GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetName() string { return v.Name }
 
-// GetStatus returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Status, and is useful for accessing the field via an interface.
-func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus {
-	return v.Status
+// GetJobState returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.JobState, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetJobState() JobState {
+	return v.JobState
+}
+
+// GetTotalIssues returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.TotalIssues, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) GetTotalIssues() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection {
+	return v.TotalIssues
 }
 
 // GetImage returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob.Image, and is useful for accessing the field via an interface.
@@ -257,11 +1067,11 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 	//
 	// Interface for workloads.
 	GetName() string
-	// GetStatus returns the interface-field "status" from its implementation.
+	// GetTotalIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// Interface for workloads.
-	GetStatus() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus
+	GetTotalIssues() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection
 	// GetImage returns the interface-field "image" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
@@ -361,17 +1171,6 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContai
 	return v.Total
 }
 
-// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus includes the requested fields of the GraphQL type WorkloadStatus.
-type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus struct {
-	// State of the workload
-	State WorkloadState `json:"state"`
-}
-
-// GetState returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus.State, and is useful for accessing the field via an interface.
-func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadStatus) GetState() WorkloadState {
-	return v.State
-}
-
 // GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
 type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment struct {
 	// Get the environment.
@@ -397,6 +1196,379 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 // GetName returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection struct {
+	// Pagination information.
+	PageInfo GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetPageInfo returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection) GetPageInfo() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo struct {
+	// The total amount of items in the connection.
+	TotalCount int `json:"totalCount"`
+}
+
+// GetTotalCount returns GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnectionPageInfo) GetTotalCount() int {
+	return v.TotalCount
+}
+
+// GetValkeyResponse is returned by GetValkey on success.
+type GetValkeyResponse struct {
+	// Get a team by its slug.
+	Team GetValkeyTeam `json:"team"`
+}
+
+// GetTeam returns GetValkeyResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyResponse) GetTeam() GetValkeyTeam { return v.Team }
+
+// GetValkeyTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetValkeyTeam struct {
+	// Get a specific environment for the team.
+	Environment GetValkeyTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetValkeyTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeam) GetEnvironment() GetValkeyTeamEnvironment { return v.Environment }
+
+// GetValkeyTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetValkeyTeamEnvironment struct {
+	// Valkey instance in the team environment.
+	Valkey GetValkeyTeamEnvironmentValkey `json:"valkey"`
+}
+
+// GetValkey returns GetValkeyTeamEnvironment.Valkey, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironment) GetValkey() GetValkeyTeamEnvironmentValkey { return v.Valkey }
+
+// GetValkeyTeamEnvironmentValkey includes the requested fields of the GraphQL type Valkey.
+type GetValkeyTeamEnvironmentValkey struct {
+	Name string `json:"name"`
+	// Available memory for the Valkey instance.
+	Memory ValkeyMemory `json:"memory"`
+	// Availability tier for the Valkey instance.
+	Tier            ValkeyTier                                                 `json:"tier"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                      `json:"maxMemoryPolicy"`
+	State           ValkeyState                                                `json:"state"`
+	Access          GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection `json:"access"`
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkey.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetName() string { return v.Name }
+
+// GetMemory returns GetValkeyTeamEnvironmentValkey.Memory, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetMemory() ValkeyMemory { return v.Memory }
+
+// GetTier returns GetValkeyTeamEnvironmentValkey.Tier, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns GetValkeyTeamEnvironmentValkey.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy {
+	return v.MaxMemoryPolicy
+}
+
+// GetState returns GetValkeyTeamEnvironmentValkey.State, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetState() ValkeyState { return v.State }
+
+// GetAccess returns GetValkeyTeamEnvironmentValkey.Access, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkey) GetAccess() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection {
+	return v.Access
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection includes the requested fields of the GraphQL type ValkeyAccessConnection.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection struct {
+	Edges []GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge `json:"edges"`
+}
+
+// GetEdges returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection.Edges, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection) GetEdges() []GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge {
+	return v.Edges
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge includes the requested fields of the GraphQL type ValkeyAccessEdge.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge struct {
+	Node GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess `json:"node"`
+}
+
+// GetNode returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge.Node, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdge) GetNode() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess {
+	return v.Node
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess includes the requested fields of the GraphQL type ValkeyAccess.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess struct {
+	Access   string                                                                                                  `json:"access"`
+	Workload GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload `json:"-"`
+}
+
+// GetAccess returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Access, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) GetAccess() string {
+	return v.Access
+}
+
+// GetWorkload returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) GetWorkload() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload {
+	return v.Workload
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess struct {
+	Access string `json:"access"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) __premarshalJSON() (*__premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess, error) {
+	var retval __premarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess
+
+	retval.Access = v.Access
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload is implemented by the following types:
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload interface {
+	implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload()
+	// GetId returns the interface-field "id" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetId() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam
+}
+
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
+}
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
+}
+
+func __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(b []byte, v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload: "%T"`, v)
+	}
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Id, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob struct {
+	// Interface for workloads.
+	Id string `json:"id"`
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
+}
+
+// GetId returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Id, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetId() string {
+	return v.Id
+}
+
+// GetName returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeam returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam {
+	return v.Team
+}
+
+// GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam) GetSlug() string {
+	return v.Slug
 }
 
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
@@ -574,6 +1746,86 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 		}
 	}
 	return &retval, nil
+}
+
+type JobState string
+
+const (
+	JobStateCompleted JobState = "COMPLETED"
+	JobStateRunning   JobState = "RUNNING"
+	JobStateFailed    JobState = "FAILED"
+	JobStateUnknown   JobState = "UNKNOWN"
+)
+
+var AllJobState = []JobState{
+	JobStateCompleted,
+	JobStateRunning,
+	JobStateFailed,
+	JobStateUnknown,
+}
+
+type OpenSearchMajorVersion string
+
+const (
+	// OpenSearch Version 2.x
+	OpenSearchMajorVersionV2 OpenSearchMajorVersion = "V2"
+	// OpenSearch Version 1.x
+	OpenSearchMajorVersionV1 OpenSearchMajorVersion = "V1"
+)
+
+var AllOpenSearchMajorVersion = []OpenSearchMajorVersion{
+	OpenSearchMajorVersionV2,
+	OpenSearchMajorVersionV1,
+}
+
+type OpenSearchMemory string
+
+const (
+	OpenSearchMemoryGb2  OpenSearchMemory = "GB_2"
+	OpenSearchMemoryGb4  OpenSearchMemory = "GB_4"
+	OpenSearchMemoryGb8  OpenSearchMemory = "GB_8"
+	OpenSearchMemoryGb16 OpenSearchMemory = "GB_16"
+	OpenSearchMemoryGb32 OpenSearchMemory = "GB_32"
+	OpenSearchMemoryGb64 OpenSearchMemory = "GB_64"
+)
+
+var AllOpenSearchMemory = []OpenSearchMemory{
+	OpenSearchMemoryGb2,
+	OpenSearchMemoryGb4,
+	OpenSearchMemoryGb8,
+	OpenSearchMemoryGb16,
+	OpenSearchMemoryGb32,
+	OpenSearchMemoryGb64,
+}
+
+type OpenSearchState string
+
+const (
+	OpenSearchStatePoweroff    OpenSearchState = "POWEROFF"
+	OpenSearchStateRebalancing OpenSearchState = "REBALANCING"
+	OpenSearchStateRebuilding  OpenSearchState = "REBUILDING"
+	OpenSearchStateRunning     OpenSearchState = "RUNNING"
+	OpenSearchStateUnknown     OpenSearchState = "UNKNOWN"
+)
+
+var AllOpenSearchState = []OpenSearchState{
+	OpenSearchStatePoweroff,
+	OpenSearchStateRebalancing,
+	OpenSearchStateRebuilding,
+	OpenSearchStateRunning,
+	OpenSearchStateUnknown,
+}
+
+type OpenSearchTier string
+
+const (
+	OpenSearchTierSingleNode       OpenSearchTier = "SINGLE_NODE"
+	OpenSearchTierHighAvailability OpenSearchTier = "HIGH_AVAILABILITY"
+)
+
+var AllOpenSearchTier = []OpenSearchTier{
+	OpenSearchTierSingleNode,
+	OpenSearchTierHighAvailability,
 }
 
 // RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload includes the requested fields of the GraphQL type RemoveTeamMemberPayload.
@@ -845,11 +2097,7 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
 	// Nais workloads owned by the team.
-	Total TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection `json:"total"`
-	// Nais workloads owned by the team.
-	NotNice TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection `json:"notNice"`
-	// Nais workloads owned by the team.
-	Failing TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection `json:"failing"`
+	Workloads TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection `json:"workloads"`
 }
 
 // GetSlug returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam.Slug, and is useful for accessing the field via an interface.
@@ -857,54 +2105,44 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam) GetSlug()
 	return v.Slug
 }
 
-// GetTotal returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam.Total, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam) GetTotal() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection {
-	return v.Total
+// GetWorkloads returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam.Workloads, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam) GetWorkloads() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection {
+	return v.Workloads
 }
 
-// GetNotNice returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam.NotNice, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam) GetNotNice() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection {
-	return v.NotNice
-}
-
-// GetFailing returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam.Failing, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam) GetFailing() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection {
-	return v.Failing
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
 // The GraphQL type's documentation follows.
 //
 // Workload connection.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection struct {
-	// Pagination information.
-	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo `json:"pageInfo"`
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection struct {
 	// List of nodes.
-	Nodes []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload `json:"-"`
+	Nodes []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+	// Pagination information.
+	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
 }
 
-// GetPageInfo returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection) GetPageInfo() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo {
-	return v.PageInfo
-}
-
-// GetNodes returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection) GetNodes() []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload {
+// GetNodes returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) GetNodes() []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload {
 	return v.Nodes
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection) UnmarshalJSON(b []byte) error {
+// GetPageInfo returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) GetPageInfo() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo {
+	return v.PageInfo
+}
+
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection
+		*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection
 		Nodes []json.RawMessage `json:"nodes"`
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection = v
+	firstPass.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -915,16 +2153,16 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 		dst := &v.Nodes
 		src := firstPass.Nodes
 		*dst = make(
-			[]TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload,
+			[]TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload,
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
 			if len(src) != 0 && string(src) != "null" {
-				err = __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload(
+				err = __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(
 					src, dst)
 				if err != nil {
 					return fmt.Errorf(
-						"unable to unmarshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection.Nodes: %w", err)
+						"unable to unmarshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection.Nodes: %w", err)
 				}
 			}
 		}
@@ -932,13 +2170,13 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 	return nil
 }
 
-type __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection struct {
-	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo `json:"pageInfo"`
-
+type __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection struct {
 	Nodes []json.RawMessage `json:"nodes"`
+
+	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection) MarshalJSON() ([]byte, error) {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -946,10 +2184,9 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 	return json.Marshal(premarshaled)
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection) __premarshalJSON() (*__premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection, error) {
-	var retval __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection, error) {
+	var retval __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection
 
-	retval.PageInfo = v.PageInfo
 	{
 
 		dst := &retval.Nodes
@@ -960,94 +2197,95 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 		for i, src := range src {
 			dst := &(*dst)[i]
 			var err error
-			*dst, err = __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload(
+			*dst, err = __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(
 				&src)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"unable to marshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnection.Nodes: %w", err)
+					"unable to marshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection.Nodes: %w", err)
 			}
 		}
 	}
+	retval.PageInfo = v.PageInfo
 	return &retval, nil
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
 // An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication struct {
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
 	// Interface for workloads.
-	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 	// Interface for workloads.
-	Status TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
 	return v.Typename
 }
 
-// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication) GetName() string {
+// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) GetName() string {
 	return v.Name
 }
 
-// GetTeamEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication) GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment {
+// GetTeamEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
 	return v.TeamEnvironment
 }
 
-// GetStatus returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication.Status, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication) GetStatus() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus {
-	return v.Status
+// GetIssues returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication.Issues, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) GetIssues() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection {
+	return v.Issues
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
 	// Interface for workloads.
-	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 	// Interface for workloads.
-	Status TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus `json:"status"`
+	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
 	return v.Typename
 }
 
-// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob) GetName() string {
+// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) GetName() string {
 	return v.Name
 }
 
-// GetTeamEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob) GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment {
+// GetTeamEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
 	return v.TeamEnvironment
 }
 
-// GetStatus returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob.Status, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob) GetStatus() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus {
-	return v.Status
+// GetIssues returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob.Issues, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) GetIssues() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection {
+	return v.Issues
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
 //
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload is implemented by the following types:
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob
 // The GraphQL type's documentation follows.
 //
 // Interface for workloads.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload interface {
-	implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload()
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 	// GetName returns the interface-field "name" from its implementation.
@@ -1059,20 +2297,20 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkload
 	// The GraphQL interface field's documentation follows.
 	//
 	// Interface for workloads.
-	GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment
-	// GetStatus returns the interface-field "status" from its implementation.
+	GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
+	// GetIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// Interface for workloads.
-	GetStatus() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus
+	GetIssues() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
 
-func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload(b []byte, v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload) error {
+func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload) error {
 	if string(b) == "null" {
 		return nil
 	}
@@ -1087,78 +2325,78 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFail
 
 	switch tn.TypeName {
 	case "Application":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication)
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication)
 		return json.Unmarshal(b, *v)
 	case "Job":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob)
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
 			"response was missing Workload.__typename")
 	default:
 		return fmt.Errorf(
-			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
 	}
 }
 
-func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload) ([]byte, error) {
+func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
 
 	var typename string
 	switch v := (*v).(type) {
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication:
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication:
 		typename = "Application"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesApplication
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob:
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob:
 		typename = "Job"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesJob
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
 		return []byte("null"), nil
 	default:
 		return nil, fmt.Errorf(
-			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkload: "%T"`, v)
+			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
 	}
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus includes the requested fields of the GraphQL type WorkloadStatus.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus struct {
-	// State of the workload
-	State WorkloadState `json:"state"`
-	// Errors related to the workload
-	Errors []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError `json:"-"`
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection struct {
+	// List of nodes.
+	Nodes []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue `json:"-"`
+	// Pagination information.
+	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo `json:"pageInfo"`
 }
 
-// GetState returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus.State, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus) GetState() WorkloadState {
-	return v.State
+// GetNodes returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) GetNodes() []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue {
+	return v.Nodes
 }
 
-// GetErrors returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus.Errors, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus) GetErrors() []TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError {
-	return v.Errors
+// GetPageInfo returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) GetPageInfo() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo {
+	return v.PageInfo
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus) UnmarshalJSON(b []byte) error {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus
-		Errors []json.RawMessage `json:"errors"`
+		*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection
+		Nodes []json.RawMessage `json:"nodes"`
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus = v
+	firstPass.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -1166,19 +2404,19 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 	}
 
 	{
-		dst := &v.Errors
-		src := firstPass.Errors
+		dst := &v.Nodes
+		src := firstPass.Nodes
 		*dst = make(
-			[]TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError,
+			[]TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue,
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
 			if len(src) != 0 && string(src) != "null" {
-				err = __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError(
+				err = __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(
 					src, dst)
 				if err != nil {
 					return fmt.Errorf(
-						"unable to unmarshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus.Errors: %w", err)
+						"unable to unmarshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection.Nodes: %w", err)
 				}
 			}
 		}
@@ -1186,13 +2424,13 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 	return nil
 }
 
-type __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus struct {
-	State WorkloadState `json:"state"`
+type __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
 
-	Errors []json.RawMessage `json:"errors"`
+	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo `json:"pageInfo"`
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus) MarshalJSON() ([]byte, error) {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -1200,117 +2438,128 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWork
 	return json.Marshal(premarshaled)
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus) __premarshalJSON() (*__premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus, error) {
-	var retval __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) __premarshalJSON() (*__premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection, error) {
+	var retval __premarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection
 
-	retval.State = v.State
 	{
 
-		dst := &retval.Errors
-		src := v.Errors
+		dst := &retval.Nodes
+		src := v.Nodes
 		*dst = make(
 			[]json.RawMessage,
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
 			var err error
-			*dst, err = __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError(
+			*dst, err = __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(
 				&src)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"unable to marshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatus.Errors: %w", err)
+					"unable to marshal TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection.Nodes: %w", err)
 			}
 		}
 	}
+	retval.PageInfo = v.PageInfo
 	return &retval, nil
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress includes the requested fields of the GraphQL type WorkloadStatusDeprecatedIngress.
-// The GraphQL type's documentation follows.
-//
-// Error describing usage of a deprecated ingress
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry includes the requested fields of the GraphQL type WorkloadStatusDeprecatedRegistry.
-// The GraphQL type's documentation follows.
-//
-// Error describing usage of a deprecated registry
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue includes the requested fields of the GraphQL type FailedJobRunsIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue struct {
+	Typename string `json:"__typename"`
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError includes the requested fields of the GraphQL interface WorkloadStatusError.
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) GetTypename() string {
+	return v.Typename
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) GetTypename() string {
+	return v.Typename
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue) GetTypename() string {
+	return v.Typename
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL interface Issue.
 //
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError is implemented by the following types:
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable
-// The GraphQL type's documentation follows.
-//
-// An error for a workload
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError interface {
-	implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError()
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue is implemented by the following types:
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue interface {
+	implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
-	// GetLevel returns the interface-field "level" from its implementation.
-	// The GraphQL interface field's documentation follows.
-	//
-	// An error for a workload
-	GetLevel() WorkloadStatusErrorLevel
 }
 
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError() {
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 
-func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError(b []byte, v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError) error {
+func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(b []byte, v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue) error {
 	if string(b) == "null" {
 		return nil
 	}
@@ -1324,380 +2573,285 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFail
 	}
 
 	switch tn.TypeName {
-	case "WorkloadStatusDeprecatedIngress":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress)
+	case "DeprecatedIngressIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusDeprecatedRegistry":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry)
+	case "DeprecatedRegistryIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusFailedRun":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun)
+	case "FailedJobRunsIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusInvalidNaisYaml":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml)
+	case "FailedSynchronizationIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusMissingSBOM":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM)
+	case "InvalidSpecIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusNoRunningInstances":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances)
+	case "MissingSbomIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusSynchronizationFailing":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing)
+	case "NoRunningInstancesIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusUnsupportedCloudSQLVersion":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion)
+	case "OpenSearchIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue)
 		return json.Unmarshal(b, *v)
-	case "WorkloadStatusVulnerable":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable)
+	case "SqlInstanceStateIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
-			"response was missing WorkloadStatusError.__typename")
+			"response was missing Issue.__typename")
 	default:
 		return fmt.Errorf(
-			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError: "%v"`, tn.TypeName)
+			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue: "%v"`, tn.TypeName)
 	}
 }
 
-func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError) ([]byte, error) {
+func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue) ([]byte, error) {
 
 	var typename string
 	switch v := (*v).(type) {
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress:
-		typename = "WorkloadStatusDeprecatedIngress"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedIngress
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry:
-		typename = "WorkloadStatusDeprecatedRegistry"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusDeprecatedRegistry
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun:
-		typename = "WorkloadStatusFailedRun"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue:
+		typename = "FailedJobRunsIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml:
-		typename = "WorkloadStatusInvalidNaisYaml"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM:
-		typename = "WorkloadStatusMissingSBOM"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances:
-		typename = "WorkloadStatusNoRunningInstances"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue:
+		typename = "MissingSbomIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing:
-		typename = "WorkloadStatusSynchronizationFailing"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion:
-		typename = "WorkloadStatusUnsupportedCloudSQLVersion"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue:
+		typename = "OpenSearchIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable:
-		typename = "WorkloadStatusVulnerable"
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
 		return []byte("null"), nil
 	default:
 		return nil, fmt.Errorf(
-			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusError: "%T"`, v)
+			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue: "%T"`, v)
 	}
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun includes the requested fields of the GraphQL type WorkloadStatusFailedRun.
-// The GraphQL type's documentation follows.
-//
-// Error describing that the workload is failing to run
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
-	// Error message
-	Detail string `json:"detail"`
-	// Name of the run
-	Name string `json:"name"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// GetDetail returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun.Detail, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun) GetDetail() string {
-	return v.Detail
-}
-
-// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun.Name, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusFailedRun) GetName() string {
-	return v.Name
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml includes the requested fields of the GraphQL type WorkloadStatusInvalidNaisYaml.
-// The GraphQL type's documentation follows.
-//
-// The last deployed YAML is invalid
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusInvalidNaisYaml) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM includes the requested fields of the GraphQL type WorkloadStatusMissingSBOM.
-// The GraphQL type's documentation follows.
-//
-// Error describing that the workload is missing SBOM
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusMissingSBOM) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances includes the requested fields of the GraphQL type WorkloadStatusNoRunningInstances.
-// The GraphQL type's documentation follows.
-//
-// A workload does not have any active instances, but is requested to have some
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusNoRunningInstances) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing includes the requested fields of the GraphQL type WorkloadStatusSynchronizationFailing.
-// The GraphQL type's documentation follows.
-//
-// Error describing that the workload is failing to synchronize
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusSynchronizationFailing) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion includes the requested fields of the GraphQL type WorkloadStatusUnsupportedCloudSQLVersion.
-// The GraphQL type's documentation follows.
-//
-// Error describing usage of an instance of Cloud SQL with a unsupported version
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusUnsupportedCloudSQLVersion) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable includes the requested fields of the GraphQL type WorkloadStatusVulnerable.
-// The GraphQL type's documentation follows.
-//
-// Error describing that the workload is missing SBOM
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable struct {
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue struct {
 	Typename string `json:"__typename"`
-	// An error for a workload
-	Level WorkloadStatusErrorLevel `json:"level"`
 }
 
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable) GetTypename() string {
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue) GetTypename() string {
 	return v.Typename
 }
 
-// GetLevel returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable.Level, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadStatusErrorsWorkloadStatusVulnerable) GetLevel() WorkloadStatusErrorLevel {
-	return v.Level
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo struct {
+	// The total amount of items in the connection.
+	TotalCount int `json:"totalCount"`
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment struct {
+// GetTotalCount returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionPageInfo) GetTotalCount() int {
+	return v.TotalCount
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment struct {
 	// Get the environment.
-	Environment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment `json:"environment"`
+	Environment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironment) GetEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment {
+// GetEnvironment returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment) GetEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment {
 	return v.Environment
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
 // An environment represents a runtime environment for workloads.
 //
 // Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment struct {
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment struct {
 	// Unique name of the environment.
 	Name string `json:"name"`
 }
 
-// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
+// GetName returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
 // The GraphQL type's documentation follows.
 //
 // # This type is used for paginating the connection
 //
 // Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo struct {
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo struct {
 	// The total amount of items in the connection.
 	TotalCount int `json:"totalCount"`
 }
 
-// GetTotalCount returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamFailingWorkloadConnectionPageInfo) GetTotalCount() int {
-	return v.TotalCount
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
-// The GraphQL type's documentation follows.
-//
-// Workload connection.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection struct {
-	// Pagination information.
-	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo `json:"pageInfo"`
-}
-
-// GetPageInfo returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnection) GetPageInfo() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo {
-	return v.PageInfo
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-// The GraphQL type's documentation follows.
-//
-// # This type is used for paginating the connection
-//
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo struct {
-	// The total amount of items in the connection.
-	TotalCount int `json:"totalCount"`
-}
-
-// GetTotalCount returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamNotNiceWorkloadConnectionPageInfo) GetTotalCount() int {
-	return v.TotalCount
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
-// The GraphQL type's documentation follows.
-//
-// Workload connection.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection struct {
-	// Pagination information.
-	PageInfo TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo `json:"pageInfo"`
-}
-
-// GetPageInfo returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnection) GetPageInfo() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo {
-	return v.PageInfo
-}
-
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-// The GraphQL type's documentation follows.
-//
-// # This type is used for paginating the connection
-//
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo struct {
-	// The total amount of items in the connection.
-	TotalCount int `json:"totalCount"`
-}
-
-// GetTotalCount returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamTotalWorkloadConnectionPageInfo) GetTotalCount() int {
+// GetTotalCount returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionPageInfo) GetTotalCount() int {
 	return v.TotalCount
 }
 
@@ -1811,6 +2965,78 @@ func (v *TeamsTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
 
 // GetPurpose returns TeamsTeamsTeamConnectionNodesTeam.Purpose, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionNodesTeam) GetPurpose() string { return v.Purpose }
+
+// UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
+type UpdateOpenSearchResponse struct {
+	// Update an existing OpenSearch instance.
+	UpdateOpenSearch UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload `json:"updateOpenSearch"`
+}
+
+// GetUpdateOpenSearch returns UpdateOpenSearchResponse.UpdateOpenSearch, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchResponse) GetUpdateOpenSearch() UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload {
+	return v.UpdateOpenSearch
+}
+
+// UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload includes the requested fields of the GraphQL type UpdateOpenSearchPayload.
+type UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload struct {
+	// OpenSearch instance that was updated.
+	OpenSearch UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch `json:"openSearch"`
+}
+
+// GetOpenSearch returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload.OpenSearch, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayload) GetOpenSearch() UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch {
+	return v.OpenSearch
+}
+
+// UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch.Id, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetId() string {
+	return v.Id
+}
+
+// GetName returns UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetName() string {
+	return v.Name
+}
+
+// UpdateValkeyResponse is returned by UpdateValkey on success.
+type UpdateValkeyResponse struct {
+	// Update an existing Valkey instance.
+	UpdateValkey UpdateValkeyUpdateValkeyUpdateValkeyPayload `json:"updateValkey"`
+}
+
+// GetUpdateValkey returns UpdateValkeyResponse.UpdateValkey, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyResponse) GetUpdateValkey() UpdateValkeyUpdateValkeyUpdateValkeyPayload {
+	return v.UpdateValkey
+}
+
+// UpdateValkeyUpdateValkeyUpdateValkeyPayload includes the requested fields of the GraphQL type UpdateValkeyPayload.
+type UpdateValkeyUpdateValkeyUpdateValkeyPayload struct {
+	// Valkey instance that was updated.
+	Valkey UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey `json:"valkey"`
+}
+
+// GetValkey returns UpdateValkeyUpdateValkeyUpdateValkeyPayload.Valkey, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayload) GetValkey() UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey {
+	return v.Valkey
+}
+
+// UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey includes the requested fields of the GraphQL type Valkey.
+type UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Id, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetId() string { return v.Id }
+
+// GetName returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetName() string { return v.Name }
 
 // UserTeamsMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
@@ -2079,43 +3305,90 @@ func (v *UsersUsersUserConnectionNodesUser) GetName() string { return v.Name }
 // GetEmail returns UsersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
 func (v *UsersUsersUserConnectionNodesUser) GetEmail() string { return v.Email }
 
-// State of the workload
-type WorkloadState string
+type ValkeyMaxMemoryPolicy string
 
 const (
-	// Everything is nais
-	WorkloadStateNais WorkloadState = "NAIS"
-	// Something is not nais
-	WorkloadStateNotNais WorkloadState = "NOT_NAIS"
-	// Something is failing
-	WorkloadStateFailing WorkloadState = "FAILING"
-	// Unknown state
-	WorkloadStateUnknown WorkloadState = "UNKNOWN"
+	// Keeps frequently used keys; removes least frequently used (LFU) keys
+	ValkeyMaxMemoryPolicyAllkeysLfu ValkeyMaxMemoryPolicy = "ALLKEYS_LFU"
+	// Keeps most recently used keys; removes least recently used (LRU) keys
+	ValkeyMaxMemoryPolicyAllkeysLru ValkeyMaxMemoryPolicy = "ALLKEYS_LRU"
+	// Randomly removes keys to make space for the new data added.
+	ValkeyMaxMemoryPolicyAllkeysRandom ValkeyMaxMemoryPolicy = "ALLKEYS_RANDOM"
+	// New values aren't saved when memory limit is reached. When a database uses replication, this applies to the primary database.
+	ValkeyMaxMemoryPolicyNoEviction ValkeyMaxMemoryPolicy = "NO_EVICTION"
+	// Removes least frequently used keys with a TTL set.
+	ValkeyMaxMemoryPolicyVolatileLfu ValkeyMaxMemoryPolicy = "VOLATILE_LFU"
+	// Removes least recently used keys with a time-to-live (TTL) set.
+	ValkeyMaxMemoryPolicyVolatileLru ValkeyMaxMemoryPolicy = "VOLATILE_LRU"
+	// Randomly removes keys with a TTL set.
+	ValkeyMaxMemoryPolicyVolatileRandom ValkeyMaxMemoryPolicy = "VOLATILE_RANDOM"
+	// Removes keys with a TTL set, the keys with the shortest remaining time-to-live value first.
+	ValkeyMaxMemoryPolicyVolatileTtl ValkeyMaxMemoryPolicy = "VOLATILE_TTL"
 )
 
-var AllWorkloadState = []WorkloadState{
-	WorkloadStateNais,
-	WorkloadStateNotNais,
-	WorkloadStateFailing,
-	WorkloadStateUnknown,
+var AllValkeyMaxMemoryPolicy = []ValkeyMaxMemoryPolicy{
+	ValkeyMaxMemoryPolicyAllkeysLfu,
+	ValkeyMaxMemoryPolicyAllkeysLru,
+	ValkeyMaxMemoryPolicyAllkeysRandom,
+	ValkeyMaxMemoryPolicyNoEviction,
+	ValkeyMaxMemoryPolicyVolatileLfu,
+	ValkeyMaxMemoryPolicyVolatileLru,
+	ValkeyMaxMemoryPolicyVolatileRandom,
+	ValkeyMaxMemoryPolicyVolatileTtl,
 }
 
-// Workload status error level
-type WorkloadStatusErrorLevel string
+type ValkeyMemory string
 
 const (
-	// TODO are errors that should be fixed when possible
-	WorkloadStatusErrorLevelTodo WorkloadStatusErrorLevel = "TODO"
-	// WARNING are errors that should be fixed, but are not critical
-	WorkloadStatusErrorLevelWarning WorkloadStatusErrorLevel = "WARNING"
-	// ERROR are errors that must be fixed
-	WorkloadStatusErrorLevelError WorkloadStatusErrorLevel = "ERROR"
+	ValkeyMemoryGb1   ValkeyMemory = "GB_1"
+	ValkeyMemoryGb4   ValkeyMemory = "GB_4"
+	ValkeyMemoryGb8   ValkeyMemory = "GB_8"
+	ValkeyMemoryGb14  ValkeyMemory = "GB_14"
+	ValkeyMemoryGb28  ValkeyMemory = "GB_28"
+	ValkeyMemoryGb56  ValkeyMemory = "GB_56"
+	ValkeyMemoryGb112 ValkeyMemory = "GB_112"
+	ValkeyMemoryGb200 ValkeyMemory = "GB_200"
 )
 
-var AllWorkloadStatusErrorLevel = []WorkloadStatusErrorLevel{
-	WorkloadStatusErrorLevelTodo,
-	WorkloadStatusErrorLevelWarning,
-	WorkloadStatusErrorLevelError,
+var AllValkeyMemory = []ValkeyMemory{
+	ValkeyMemoryGb1,
+	ValkeyMemoryGb4,
+	ValkeyMemoryGb8,
+	ValkeyMemoryGb14,
+	ValkeyMemoryGb28,
+	ValkeyMemoryGb56,
+	ValkeyMemoryGb112,
+	ValkeyMemoryGb200,
+}
+
+type ValkeyState string
+
+const (
+	ValkeyStatePoweroff    ValkeyState = "POWEROFF"
+	ValkeyStateRebalancing ValkeyState = "REBALANCING"
+	ValkeyStateRebuilding  ValkeyState = "REBUILDING"
+	ValkeyStateRunning     ValkeyState = "RUNNING"
+	ValkeyStateUnknown     ValkeyState = "UNKNOWN"
+)
+
+var AllValkeyState = []ValkeyState{
+	ValkeyStatePoweroff,
+	ValkeyStateRebalancing,
+	ValkeyStateRebuilding,
+	ValkeyStateRunning,
+	ValkeyStateUnknown,
+}
+
+type ValkeyTier string
+
+const (
+	ValkeyTierSingleNode       ValkeyTier = "SINGLE_NODE"
+	ValkeyTierHighAvailability ValkeyTier = "HIGH_AVAILABILITY"
+)
+
+var AllValkeyTier = []ValkeyTier{
+	ValkeyTierSingleNode,
+	ValkeyTierHighAvailability,
 }
 
 // __AddTeamMemberInput is used internally by genqlient
@@ -2134,6 +3407,130 @@ func (v *__AddTeamMemberInput) GetEmail() string { return v.Email }
 // GetRole returns __AddTeamMemberInput.Role, and is useful for accessing the field via an interface.
 func (v *__AddTeamMemberInput) GetRole() TeamMemberRole { return v.Role }
 
+// __CreateOpenSearchInput is used internally by genqlient
+type __CreateOpenSearchInput struct {
+	Name            string                 `json:"name,omitempty"`
+	EnvironmentName string                 `json:"environmentName,omitempty"`
+	TeamSlug        string                 `json:"teamSlug,omitempty"`
+	Memory          OpenSearchMemory       `json:"memory,omitempty"`
+	Tier            OpenSearchTier         `json:"tier,omitempty"`
+	Version         OpenSearchMajorVersion `json:"version,omitempty"`
+	StorageGB       int                    `json:"storageGB,omitempty"`
+}
+
+// GetName returns __CreateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMemory returns __CreateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
+
+// GetTier returns __CreateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
+// GetVersion returns __CreateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
+// GetStorageGB returns __CreateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+
+// __CreateValkeyInput is used internally by genqlient
+type __CreateValkeyInput struct {
+	Name            string                `json:"name,omitempty"`
+	EnvironmentName string                `json:"environmentName,omitempty"`
+	TeamSlug        string                `json:"teamSlug,omitempty"`
+	Memory          ValkeyMemory          `json:"memory,omitempty"`
+	Tier            ValkeyTier            `json:"tier,omitempty"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
+}
+
+// GetName returns __CreateValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMemory returns __CreateValkeyInput.Memory, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetMemory() ValkeyMemory { return v.Memory }
+
+// GetTier returns __CreateValkeyInput.Tier, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns __CreateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
+
+// __DeleteOpenSearchInput is used internally by genqlient
+type __DeleteOpenSearchInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __DeleteOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __DeleteOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__DeleteOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __DeleteOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__DeleteOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __DeleteValkeyInput is used internally by genqlient
+type __DeleteValkeyInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __DeleteValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __DeleteValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __DeleteValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __GetAllOpenSearchesInput is used internally by genqlient
+type __GetAllOpenSearchesInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllOpenSearchesInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllOpenSearchesInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __GetAllValkeysInput is used internally by genqlient
+type __GetAllValkeysInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllValkeysInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllValkeysInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __GetOpenSearchInput is used internally by genqlient
+type __GetOpenSearchInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __GetOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __GetOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __GetOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -2141,6 +3538,22 @@ type __GetTeamWorkloadsInput struct {
 
 // GetSlug returns __GetTeamWorkloadsInput.Slug, and is useful for accessing the field via an interface.
 func (v *__GetTeamWorkloadsInput) GetSlug() string { return v.Slug }
+
+// __GetValkeyInput is used internally by genqlient
+type __GetValkeyInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __GetValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __GetValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __GetValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __RemoveTeamMemberInput is used internally by genqlient
 type __RemoveTeamMemberInput struct {
@@ -2161,6 +3574,66 @@ type __TeamMembersInput struct {
 
 // GetSlug returns __TeamMembersInput.Slug, and is useful for accessing the field via an interface.
 func (v *__TeamMembersInput) GetSlug() string { return v.Slug }
+
+// __UpdateOpenSearchInput is used internally by genqlient
+type __UpdateOpenSearchInput struct {
+	Name            string                 `json:"name,omitempty"`
+	EnvironmentName string                 `json:"environmentName,omitempty"`
+	TeamSlug        string                 `json:"teamSlug,omitempty"`
+	Memory          OpenSearchMemory       `json:"memory,omitempty"`
+	Tier            OpenSearchTier         `json:"tier,omitempty"`
+	Version         OpenSearchMajorVersion `json:"version,omitempty"`
+	StorageGB       int                    `json:"storageGB,omitempty"`
+}
+
+// GetName returns __UpdateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMemory returns __UpdateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
+
+// GetTier returns __UpdateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
+// GetVersion returns __UpdateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
+// GetStorageGB returns __UpdateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+
+// __UpdateValkeyInput is used internally by genqlient
+type __UpdateValkeyInput struct {
+	Name            string                `json:"name,omitempty"`
+	EnvironmentName string                `json:"environmentName,omitempty"`
+	TeamSlug        string                `json:"teamSlug,omitempty"`
+	Memory          ValkeyMemory          `json:"memory,omitempty"`
+	Tier            ValkeyTier            `json:"tier,omitempty"`
+	MaxMemoryPolicy ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
+}
+
+// GetName returns __UpdateValkeyInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateValkeyInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMemory returns __UpdateValkeyInput.Memory, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetMemory() ValkeyMemory { return v.Memory }
+
+// GetTier returns __UpdateValkeyInput.Tier, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetTier() ValkeyTier { return v.Tier }
+
+// GetMaxMemoryPolicy returns __UpdateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
+func (v *__UpdateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
 
 // The mutation executed by AddTeamMember.
 const AddTeamMember_Operation = `
@@ -2202,6 +3675,354 @@ func AddTeamMember(
 	return data_, err_
 }
 
+// The mutation executed by CreateOpenSearch.
+const CreateOpenSearch_Operation = `
+mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: OpenSearchMemory!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion!, $storageGB: Int!) {
+	createOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,version:$version,storageGB:$storageGB}) {
+		openSearch {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	memory OpenSearchMemory,
+	tier OpenSearchTier,
+	version OpenSearchMajorVersion,
+	storageGB int,
+) (data_ *CreateOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateOpenSearch",
+		Query:  CreateOpenSearch_Operation,
+		Variables: &__CreateOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Memory:          memory,
+			Tier:            tier,
+			Version:         version,
+			StorageGB:       storageGB,
+		},
+	}
+
+	data_ = &CreateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateValkey.
+const CreateValkey_Operation = `
+mutation CreateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: ValkeyMemory!, $tier: ValkeyTier!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	createValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,maxMemoryPolicy:$maxMemoryPolicy}) {
+		valkey {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	memory ValkeyMemory,
+	tier ValkeyTier,
+	maxMemoryPolicy ValkeyMaxMemoryPolicy,
+) (data_ *CreateValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateValkey",
+		Query:  CreateValkey_Operation,
+		Variables: &__CreateValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Memory:          memory,
+			Tier:            tier,
+			MaxMemoryPolicy: maxMemoryPolicy,
+		},
+	}
+
+	data_ = &CreateValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeleteOpenSearch.
+const DeleteOpenSearch_Operation = `
+mutation DeleteOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	deleteOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug}) {
+		openSearchDeleted
+	}
+}
+`
+
+func DeleteOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *DeleteOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteOpenSearch",
+		Query:  DeleteOpenSearch_Operation,
+		Variables: &__DeleteOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &DeleteOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeleteValkey.
+const DeleteValkey_Operation = `
+mutation DeleteValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	deleteValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug}) {
+		valkeyDeleted
+	}
+}
+`
+
+func DeleteValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *DeleteValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteValkey",
+		Query:  DeleteValkey_Operation,
+		Variables: &__DeleteValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &DeleteValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllOpenSearches.
+const GetAllOpenSearches_Operation = `
+query GetAllOpenSearches ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		openSearches {
+			nodes {
+				name
+				memory
+				tier
+				storageGB
+				version {
+					actual
+				}
+				state
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				access(first: 1000) {
+					edges {
+						node {
+							access
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllOpenSearches(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllOpenSearchesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllOpenSearches",
+		Query:  GetAllOpenSearches_Operation,
+		Variables: &__GetAllOpenSearchesInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllOpenSearchesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllValkeys.
+const GetAllValkeys_Operation = `
+query GetAllValkeys ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		valkeys {
+			nodes {
+				name
+				memory
+				tier
+				maxMemoryPolicy
+				state
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				access(first: 1000) {
+					edges {
+						node {
+							access
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllValkeys(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllValkeysResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllValkeys",
+		Query:  GetAllValkeys_Operation,
+		Variables: &__GetAllValkeysInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllValkeysResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetOpenSearch.
+const GetOpenSearch_Operation = `
+query GetOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		environment(name: $environmentName) {
+			openSearch(name: $name) {
+				name
+				memory
+				tier
+				storageGB
+				version {
+					actual
+					desiredMajor
+				}
+				state
+				access(first: 1000, orderBy: {direction:ASC,field:ACCESS}) {
+					edges {
+						node {
+							access
+							workload {
+								id
+								name
+								__typename
+								team {
+									slug
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *GetOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetOpenSearch",
+		Query:  GetOpenSearch_Operation,
+		Variables: &__GetOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &GetOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetTeamWorkloads.
 const GetTeamWorkloads_Operation = `
 query GetTeamWorkloads ($slug: Slug!) {
@@ -2210,8 +4031,16 @@ query GetTeamWorkloads ($slug: Slug!) {
 			nodes {
 				__typename
 				name
-				status {
-					state
+				... on Application {
+					applicationState: state
+				}
+				... on Job {
+					jobState: state
+				}
+				totalIssues: issues {
+					pageInfo {
+						totalCount
+					}
 				}
 				image {
 					vulnerabilitySummary {
@@ -2243,6 +4072,67 @@ func GetTeamWorkloads(
 	}
 
 	data_ = &GetTeamWorkloadsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetValkey.
+const GetValkey_Operation = `
+query GetValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		environment(name: $environmentName) {
+			valkey(name: $name) {
+				name
+				memory
+				tier
+				maxMemoryPolicy
+				state
+				access(first: 1000, orderBy: {direction:ASC,field:ACCESS}) {
+					edges {
+						node {
+							access
+							workload {
+								id
+								name
+								__typename
+								team {
+									slug
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *GetValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetValkey",
+		Query:  GetValkey_Operation,
+		Variables: &__GetValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &GetValkeyResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -2377,20 +4267,7 @@ query TeamStatus {
 				nodes {
 					team {
 						slug
-						total: workloads(first: 1) {
-							pageInfo {
-								totalCount
-							}
-						}
-						notNice: workloads(first: 1, filter: {states:[NOT_NAIS]}) {
-							pageInfo {
-								totalCount
-							}
-						}
-						failing: workloads(filter: {states:[FAILING]}, orderBy: {field:STATUS,direction:DESC}) {
-							pageInfo {
-								totalCount
-							}
+						workloads(first: 500) {
 							nodes {
 								__typename
 								name
@@ -2399,17 +4276,17 @@ query TeamStatus {
 										name
 									}
 								}
-								status {
-									state
-									errors {
+								issues(first: 100, filter: {severity:CRITICAL}) {
+									nodes {
 										__typename
-										level
-										... on WorkloadStatusFailedRun {
-											detail
-											name
-										}
+									}
+									pageInfo {
+										totalCount
 									}
 								}
+							}
+							pageInfo {
+								totalCount
 							}
 						}
 					}
@@ -2463,6 +4340,102 @@ func Teams(
 	}
 
 	data_ = &TeamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateOpenSearch.
+const UpdateOpenSearch_Operation = `
+mutation UpdateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: OpenSearchMemory!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion!, $storageGB: Int!) {
+	updateOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,version:$version,storageGB:$storageGB}) {
+		openSearch {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateOpenSearch(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	memory OpenSearchMemory,
+	tier OpenSearchTier,
+	version OpenSearchMajorVersion,
+	storageGB int,
+) (data_ *UpdateOpenSearchResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateOpenSearch",
+		Query:  UpdateOpenSearch_Operation,
+		Variables: &__UpdateOpenSearchInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Memory:          memory,
+			Tier:            tier,
+			Version:         version,
+			StorageGB:       storageGB,
+		},
+	}
+
+	data_ = &UpdateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateValkey.
+const UpdateValkey_Operation = `
+mutation UpdateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: ValkeyMemory!, $tier: ValkeyTier!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
+	updateValkey(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,maxMemoryPolicy:$maxMemoryPolicy}) {
+		valkey {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateValkey(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	memory ValkeyMemory,
+	tier ValkeyTier,
+	maxMemoryPolicy ValkeyMaxMemoryPolicy,
+) (data_ *UpdateValkeyResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateValkey",
+		Query:  UpdateValkey_Operation,
+		Variables: &__UpdateValkeyInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Memory:          memory,
+			Tier:            tier,
+			MaxMemoryPolicy: maxMemoryPolicy,
+		},
+	}
+
+	data_ = &UpdateValkeyResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
