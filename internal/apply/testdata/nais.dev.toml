@@ -1,0 +1,7 @@
+#:schema ./schema.json
+
+naisVersion = "v3"
+
+[valkey.foo]
+memory = "GB_28"
+tier = "HIGH_AVAILABILITY"
