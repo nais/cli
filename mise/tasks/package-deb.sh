@@ -4,7 +4,7 @@
 set -euo pipefail
 
 arch="$GOARCH"
-ARCH="$arch" GOARCH="" go tool github.com/goreleaser/nfpm/v2/cmd/nfpm package \
+ARCH="$arch" GOARCH="" GOOS="" go tool github.com/goreleaser/nfpm/v2/cmd/nfpm package \
   --packager deb \
   --config .nfpm.yaml \
   --target nais-cli_"$arch".deb
