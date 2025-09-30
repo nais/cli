@@ -60,7 +60,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: archive-${{ matrix.os }}-${{ matrix.arch }}
-          path: nais-cli_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
+          path: nais-cli_${{ matrix.os }}_${{ matrix.arch }}.tgz
+          if-no-files-found: error
   package-deb:
     runs-on: ubuntu-latest
     strategy:
@@ -79,6 +80,7 @@ jobs:
         with:
           name: deb-${{ matrix.arch }}
           path: nais-cli_${{ matrix.arch }}.deb
+          if-no-files-found: error
   # Used by GitHub to determine if all checks/builds have passed
   branch-protection-checkpoint:
     runs-on: ubuntu-latest
@@ -117,6 +119,7 @@ jobs:
         with:
           name: template-vars
           path: ./template.vars
+          if-no-files-found: error
       - run: |
           echo "## :rocket: Release ${{ needs.release-info.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "A new release is available over at https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-info.outputs.version }}." >> $GITHUB_STEP_SUMMARY
