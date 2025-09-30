@@ -3,15 +3,11 @@ package flag
 import (
 	"context"
 
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/cli/internal/alpha/command/flag"
 )
 
-type Alpha struct {
-	*root.Flags
-}
-
 type Api struct {
-	*Alpha
+	*flag.Alpha
 }
 
 type Proxy struct {
