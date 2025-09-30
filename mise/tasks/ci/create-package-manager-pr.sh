@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 #MISE description="Create PR in a package-manager repository"
-set -euo pipefail
+
+set -o errexit
+set -o nounset
+set -o pipefail
 
 workspace="$MISE_PROJECT_ROOT"
 

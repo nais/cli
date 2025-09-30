@@ -1,16 +1,13 @@
-name: Publish release
-
+name: Nais CLI
 on:
   pull_request:
     types: [opened, reopened, synchronize]
   push:
     branches: [main]
     paths-ignore: ["**.md"]
-
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   release-info:
     runs-on: ubuntu-latest
@@ -24,7 +21,6 @@ jobs:
       - uses: jdx/mise-action@v3
       - id: release-info
         run: mise run ci:release-info
-
   checks:
     strategy:
       matrix:
@@ -35,8 +31,6 @@ jobs:
           - check:staticcheck
           - ci:fmt
           - test
-    needs:
-      - release-info
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -44,149 +38,90 @@ jobs:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
       - run: mise run ${{ matrix.mise-task }}
-
   builds:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         arch: [amd64, arm64]
         os: [windows, linux, darwin]
-    needs:
-      - release-info
+    needs: [release-info]
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
       - name: build
-        run: |
-          ./script/completions.sh
-
-          export VERSION="${{ needs.release-info.outputs.version }}"
-          export GOOS="${{ matrix.os }}"
-          export GOARCH="${{ matrix.arch }}"
-          mise run build
-
-          binary="nais"
-          if [[ "${{ matrix.os }}" == "windows" ]]; then
-            binary="nais.exe"
-            mv "bin/nais" "bin/$binary"
-
-            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-              sudo apt-get update; sudo apt-get install --yes osslsigncode
-              echo "${{ secrets.SIGN_CERT }}" > nais.crt
-              echo "${{ secrets.SIGN_KEY }}" > nais.key
-              osslsigncode sign -certs nais.crt -key nais.key -n "nais-cli" -i "https://doc.nais.io/cli" -verbose -in "bin/$binary" -out "bin/nais-signed"
-              mv "bin/nais-signed" "bin/$binary"
-            fi
-          fi
-
-          tar -zcf "nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz" ./completions -C bin/ "$binary"
+        env:
+          VERSION: ${{ needs.release-info.outputs.version }}
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}
+          SIGN_CERT: ${{ secrets.SIGN_CERT }}
+          SIGN_KEY: ${{ secrets.SIGN_KEY }}
+        run: mise run ci:build
       - uses: actions/upload-artifact@v4
         with:
           name: archive-${{ matrix.os }}-${{ matrix.arch }}
-          path: nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
-
+          path: nais-cli_${{ matrix.os }}_${{ matrix.arch }}.tar.gz
   package-deb:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         arch: [amd64, arm64]
-    needs:
-      - release-info
+    needs: [release-info]
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
       - name: package deb
-        run: |
-          ./script/completions.sh
-
-          export VERSION="${{ needs.release-info.outputs.version }}"
-          export GOARCH="${{ matrix.arch }}"
-          mise run package-deb
+        env:
+          VERSION: ${{ needs.release-info.outputs.version }}
+          GOARCH: ${{ matrix.arch }}
+        run: mise run package-deb
       - uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.arch }}
-          path: nais-cli_${{ needs.release-info.outputs.version }}_${{ matrix.arch }}.deb
-
+          path: nais-cli_${{ matrix.arch }}.deb
   # Used by GitHub to determine if all checks/builds have passed
   branch-protection-checkpoint:
     runs-on: ubuntu-latest
-    needs:
-      - checks
-      - builds
-      - package-deb
+    needs: [checks, builds, package-deb]
     steps:
       - run: echo Checks and builds passed
-
   release-github:
-    if: github.ref == 'refs/heads/main' && needs.release-info.outputs.changelog != ''
+    if: github.ref == 'refs/heads/main' && needs.release-info.outputs.changelog != '' && needs.release-info.outputs.version != ''
     runs-on: ubuntu-latest
-    needs:
-      - release-info
-      - builds
-      - package-deb
-      - checks
+    needs: [release-info, branch-protection-checkpoint]
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: DeterminateSystems/nix-installer-action@v20
-      - run: git tag ${{ needs.release-info.outputs.version }}
       - uses: actions/download-artifact@v5
-      - name: Generate hashes
-        id: hashes
-        run: |
-          echo '{}' > hashes.json
-          version="${{ needs.release-info.outputs.version }}"
-
-          for arch in amd64 arm64; do
-            # Generate hashes for debs
-            file="nais-cli_${version}_${arch}.deb"
-            hash="$(nix-hash --type sha256 --flat "./deb-${arch}/${file}")"
-            echo "$hash  $file" >> checksums.txt
-
-            # Generate hashes for archives
-            for os in linux darwin windows; do
-              file="nais-cli_${version}_${os}_${arch}.tar.gz"
-              hash16="$(nix-hash --type sha256 --flat "./archive-${os}-${arch}/${file}")"
-              hash32="$(nix-hash --type sha256 --flat --base32 "./archive-${os}-${arch}/${file}")"
-              echo "$hash16  $file" >> checksums.txt
-
-              # This is used by the external release jobs (nur, homebrew, scoop)
-              jq --arg os "$os" --arg arch "$arch" --arg encoding "base16" --arg hash "$hash16" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
-              jq --arg os "$os" --arg arch "$arch" --arg encoding "base32" --arg hash "$hash32" '.[$os][$arch][$encoding] = $hash' hashes.json > new_hashes.json; mv {new_,}hashes.json
-            done
-          done
-
-      - uses: actions/upload-artifact@v4
         with:
-          name: hashes-json
-          path: hashes.json
+          merge-multiple: true
+          path: release_artifacts
+      - run: mise run ci:generate-checksums ./release_artifacts/ > ./release_artifacts/checksums.txt
       - uses: softprops/action-gh-release@v2
+        id: release
         with:
           tag_name: ${{ needs.release-info.outputs.version }}
           body: ${{ needs.release-info.outputs.changelog }}
           prerelease: false
-          files: |
-            archive-linux-amd64/nais-cli_${{ needs.release-info.outputs.version }}_linux_amd64.tar.gz
-            archive-linux-arm64/nais-cli_${{ needs.release-info.outputs.version }}_linux_arm64.tar.gz
-            archive-darwin-amd64/nais-cli_${{ needs.release-info.outputs.version }}_darwin_amd64.tar.gz
-            archive-darwin-arm64/nais-cli_${{ needs.release-info.outputs.version }}_darwin_arm64.tar.gz
-            archive-windows-amd64/nais-cli_${{ needs.release-info.outputs.version }}_windows_amd64.tar.gz
-            archive-windows-arm64/nais-cli_${{ needs.release-info.outputs.version }}_windows_arm64.tar.gz
-            deb-amd64/nais-cli_${{ needs.release-info.outputs.version }}_amd64.deb
-            deb-arm64/nais-cli_${{ needs.release-info.outputs.version }}_arm64.deb
-            checksums.txt
+          files: ./release_artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - env:
+          VERSION: ${{ needs.release-info.outputs.version }}
+        run: |
+          echo '${{ steps.release.outputs.assets }}' > assets.json
+          mise run ci:prepare-template-vars ./release_artifacts/checksums.txt ./assets.json -v > template.vars
+      - uses: actions/upload-artifact@v4
+        with:
+          name: template-vars
+          path: ./template.vars
       - run: |
           echo "## :rocket: Release ${{ needs.release-info.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "A new release is available over at https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-info.outputs.version }}." >> $GITHUB_STEP_SUMMARY
-
   release-gar:
     if: github.ref == 'refs/heads/main'
-    needs:
-      - release-info
-      - release-github # this also waits for package-deb for us
+    needs: [release-github]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -207,17 +142,12 @@ jobs:
         with:
           name: deb-amd64
       - name: Upload new deb file to Google repository
-        env:
-          VERSION: ${{ needs.release-info.outputs.version }}
         run: |
-          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_arm64.deb --location europe-north1
-          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_${VERSION}_amd64.deb --location europe-north1
-
+          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_arm64.deb --location europe-north1
+          gcloud --project nais-io artifacts apt upload nais-ppa --quiet --source nais-cli_amd64.deb --location europe-north1
   release-external-repos:
     if: github.ref == 'refs/heads/main'
-    needs:
-      - release-info
-      - release-github
+    needs: [release-github]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -237,6 +167,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
       - uses: navikt/github-app-token-generator@v1
         id: token
         with:
@@ -245,25 +176,9 @@ jobs:
           repo: ${{ matrix.target.repo }}
       - uses: actions/download-artifact@v5
         with:
-          name: hashes-json
-      - name: Generate manifest
-        run: |
-          git clone "https://git:${{ steps.token.outputs.token }}@github.com/${{ matrix.target.repo }}" repo
-          cd repo || exit 1
-          sed \
-            -e "s/__VERSION__/${{ needs.release-info.outputs.version }}/g" \
-            -e "s/__SHA_WINDOWS_AMD64__/$(jq -r '.windows.amd64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_WINDOWS_ARM64__/$(jq -r '.windows.arm64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64__/$(jq -r '.darwin.amd64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64__/$(jq -r '.darwin.arm64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64__/$(jq -r '.linux.amd64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64__/$(jq -r '.linux.arm64.base16' ../hashes.json)/g" \
-            -e "s/__SHA_DARWIN_AMD64_BASE32__/$(jq -r '.darwin.amd64.base32' ../hashes.json)/g" \
-            -e "s/__SHA_DARWIN_ARM64_BASE32__/$(jq -r '.darwin.arm64.base32' ../hashes.json)/g" \
-            -e "s/__SHA_LINUX_AMD64_BASE32__/$(jq -r '.linux.amd64.base32' ../hashes.json)/g" \
-            -e "s/__SHA_LINUX_ARM64_BASE32__/$(jq -r '.linux.arm64.base32' ../hashes.json)/g" \
-            "../.github/workflows/templates/${{ matrix.target.template }}" \
-            > "${{ matrix.target.file }}"
+          name: template-vars
+      - timeout-minutes: 1
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: mise run ci:create-package-manager-pr "${{ matrix.target.repo }}" "${{ matrix.target.file }}"
 
-          git -c user.name='naisbot' -c user.email='bot@nais.io' commit -am "Bump nais-cli to ${{ needs.release-info.outputs.version }}"
-          git push
