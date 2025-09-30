@@ -1,0 +1,8 @@
+#:schema ./schema.json
+
+naisVersion = "v3"
+
+[valkey.foo]
+memory = "GB_4"
+tier = "SINGLE_NODE"
+maxMemoryPolicy = "ALLKEYS_LRU"

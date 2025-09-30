@@ -1,0 +1,112 @@
+{
+	"$id": "https://nais.io/schema/apply",
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"additionalProperties": false,
+	"properties": {
+		"naisVersion": {
+			"enum": [
+				"v3"
+			],
+			"type": "string"
+		},
+		"openSearch": {
+			"additionalProperties": {
+				"additionalProperties": false,
+				"properties": {
+					"memory": {
+						"description": "Memory is the memory for the OpenSearch instance.",
+						"enum": [
+							"GB_2",
+							"GB_4",
+							"GB_8",
+							"GB_16",
+							"GB_32",
+							"GB_64"
+						],
+						"type": "string"
+					},
+					"storageGB": {
+						"description": "StorageGB is the storage capacity in GB for the OpenSearch instance.",
+						"type": "integer"
+					},
+					"tier": {
+						"description": "Tier is the tier of the OpenSearch instance.",
+						"enum": [
+							"SINGLE_NODE",
+							"HIGH_AVAILABILITY"
+						],
+						"type": "string"
+					},
+					"version": {
+						"description": "Version is the major version of OpenSearch.",
+						"enum": [
+							"V2"
+						],
+						"type": "string"
+					}
+				},
+				"required": [
+					"memory",
+					"tier"
+				],
+				"type": "object"
+			},
+			"description": "OpenSearch is a map of OpenSearch instances to be created, where the key is the name of the instance.",
+			"type": "object"
+		},
+		"valkey": {
+			"additionalProperties": {
+				"additionalProperties": false,
+				"properties": {
+					"maxMemoryPolicy": {
+						"description": "MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. \"allkeys-lru\".",
+						"enum": [
+							"ALLKEYS_LFU",
+							"ALLKEYS_LRU",
+							"ALLKEYS_RANDOM",
+							"NO_EVICTION",
+							"VOLATILE_LFU",
+							"VOLATILE_LRU",
+							"VOLATILE_RANDOM",
+							"VOLATILE_TTL"
+						],
+						"type": "string"
+					},
+					"memory": {
+						"description": "Memory is the memory for the Valkey instance.",
+						"enum": [
+							"GB_1",
+							"GB_4",
+							"GB_8",
+							"GB_14",
+							"GB_28",
+							"GB_56",
+							"GB_112",
+							"GB_200"
+						],
+						"type": "string"
+					},
+					"tier": {
+						"description": "Tier is the tier of the Valkey instance.",
+						"enum": [
+							"SINGLE_NODE",
+							"HIGH_AVAILABILITY"
+						],
+						"type": "string"
+					}
+				},
+				"required": [
+					"memory",
+					"tier"
+				],
+				"type": "object"
+			},
+			"description": "Valkey is a map of Valkey instances to be created, where the key is the name of the instance.",
+			"type": "object"
+		}
+	},
+	"required": [
+		"naisVersion"
+	],
+	"type": "object"
+}
