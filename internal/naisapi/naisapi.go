@@ -3,7 +3,6 @@ package naisapi
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -28,7 +27,7 @@ func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
 		return "", err
 	}
 
-	schema, err := gqlfetch.BuildClientSchemaWithHeaders(ctx, fmt.Sprintf("https://%s/graphql", user.ConsoleHost), headers, false)
+	schema, err := gqlfetch.BuildClientSchemaWithHeaders(ctx, user.APIURL(), headers, false)
 	if err != nil {
 		return "", err
 	}
@@ -48,7 +47,7 @@ func StartProxy(ctx context.Context, out naistrix.Output, flags *flag.Proxy) err
 	// Setup reverse proxy to forward requests to the target server, but using a custom transport that authenticates the request
 	target := &url.URL{
 		Scheme: "https",
-		Host:   user.ConsoleHost,
+		Host:   user.ConsoleHost(),
 	}
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(req *httputil.ProxyRequest) {
