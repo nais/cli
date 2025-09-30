@@ -9,6 +9,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -41,7 +42,7 @@ type team struct {
 	Slug      string              `json:"slug"`
 	Workloads int                 `json:"workloads"`
 	NotNais   int                 `heading:"Not Nais" json:"notNais"`
-	Issues    workloadsWithIssues `heading:"Issues" json:"failing"`
+	Issues    workloadsWithIssues `heading:"Critical Issues" json:"failing"`
 }
 
 func statusCommand(parentFlags *flag.Api) *naistrix.Command {
@@ -59,19 +60,26 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 			}
 
 			for _, t := range ret {
+				workloadsWithCriticalIssues := make([]gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload, 0)
+				for _, w := range t.Team.Workloads.Nodes {
+					if w.GetIssues().PageInfo.TotalCount > 0 {
+						workloadsWithCriticalIssues = append(workloadsWithCriticalIssues, w)
+					}
+				}
+
 				n := team{
 					Slug:      t.Team.Slug,
-					Workloads: t.Team.Total.PageInfo.TotalCount,
-					NotNais:   t.Team.NotNice.PageInfo.TotalCount,
+					Workloads: t.Team.Workloads.PageInfo.TotalCount,
+					NotNais:   len(workloadsWithCriticalIssues),
 					Issues:    make(workloadsWithIssues, 0),
 				}
-				for _, f := range t.Team.Failing.Nodes {
+				for _, f := range workloadsWithCriticalIssues {
 					a := workload{
 						Kind:        f.GetTypename(),
 						Name:        f.GetName(),
 						Environment: f.GetTeamEnvironment().Environment.Name,
 					}
-					for _, et := range f.GetStatus().Errors {
+					for _, et := range f.GetIssues().Nodes {
 						a.ErrorTypes = append(a.ErrorTypes, et.GetTypename())
 					}
 					n.Issues = append(n.Issues, a)

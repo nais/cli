@@ -114,33 +114,17 @@ func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeams
 						nodes {
 							team {
 								slug
-								total: workloads(first: 1) {
-									pageInfo { totalCount }
-								}
-								notNice: workloads(first: 1, filter: {states: [NOT_NAIS]}) {
-									pageInfo { totalCount }
-								}
-								failing: workloads(
-									filter: { states: [FAILING] }
-									orderBy: { field: STATUS, direction: DESC }
-								) {
-									pageInfo { totalCount }
+								workloads(first: 500) {
 									nodes {
+										__typename
 										name
-										teamEnvironment {
-											environment { name }
-										}
-										status {
-											state
-											errors {
-												level
-												... on WorkloadStatusFailedRun {
-													detail
-													name
-												}
-											}
+										teamEnvironment { environment { name } }
+										issues(first: 100, filter: { severity: CRITICAL }) {
+											nodes { __typename }
+											pageInfo { totalCount }
 										}
 									}
+									pageInfo { totalCount }
 								}
 							}
 						}
@@ -265,7 +249,17 @@ func GetTeamWorkloads(ctx context.Context, teamSlug string) ([]gql.GetTeamWorklo
 					nodes {
 						__typename
 						name
-						status { state }
+						... on Application {
+						  applicationState: state
+						}
+						... on Job {
+						  jobState: state
+						}
+						totalIssues: issues {
+						  pageInfo {
+							totalCount
+						  }
+						}
 						image { vulnerabilitySummary { total } }
 						teamEnvironment { environment { name } }
 					}

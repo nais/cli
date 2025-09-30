@@ -57,6 +57,189 @@ The URL that specifies the behavior of this scalar.
 	url: String!
 ) on SCALAR
 
+enum ActivityLogActivityType {
+"""
+An application was deleted.
+"""
+	APPLICATION_DELETED
+"""
+An application was restarted.
+"""
+	APPLICATION_RESTARTED
+"""
+An application was scaled.
+"""
+	APPLICATION_SCALED
+"""
+All activity log entries related to direct cluster changes.
+"""
+	CLUSTER_AUDIT
+"""
+Activity log entry for deployment activity.
+"""
+	DEPLOYMENT
+"""
+Activity log entry for team deploy key updates.
+"""
+	TEAM_DEPLOY_KEY_UPDATED
+"""
+Activity log entries related to job deletion.
+"""
+	JOB_DELETED
+"""
+Activity log entries related to job triggering.
+"""
+	JOB_TRIGGERED
+"""
+OpenSearch was created.
+"""
+	OPENSEARCH_CREATED
+"""
+OpenSearch was updated.
+"""
+	OPENSEARCH_UPDATED
+"""
+OpenSearch was deleted.
+"""
+	OPENSEARCH_DELETED
+"""
+Started service maintenance on OpenSearch instance.
+"""
+	OPENSEARCH_MAINTENANCE_STARTED
+"""
+Reconciler enabled activity log entry.
+"""
+	RECONCILER_ENABLED
+"""
+Reconciler disabled activity log entry.
+"""
+	RECONCILER_DISABLED
+"""
+Reconciler configured activity log entry.
+"""
+	RECONCILER_CONFIGURED
+"""
+Repository was added to a team.
+"""
+	REPOSITORY_ADDED
+"""
+Repository was removed from a team.
+"""
+	REPOSITORY_REMOVED
+"""
+Secret was created.
+"""
+	SECRET_CREATED
+"""
+Secret value was added.
+"""
+	SECRET_VALUE_ADDED
+"""
+Secret value was updated.
+"""
+	SECRET_VALUE_UPDATED
+"""
+Secret value was removed.
+"""
+	SECRET_VALUE_REMOVED
+"""
+Secret was deleted.
+"""
+	SECRET_DELETED
+"""
+Service account was created.
+"""
+	SERVICE_ACCOUNT_CREATED
+"""
+Service account was updated.
+"""
+	SERVICE_ACCOUNT_UPDATED
+"""
+Service account was deleted.
+"""
+	SERVICE_ACCOUNT_DELETED
+"""
+Role was assigned to a service account.
+"""
+	SERVICE_ACCOUNT_ROLE_ASSIGNED
+"""
+Role was revoked from a service account.
+"""
+	SERVICE_ACCOUNT_ROLE_REVOKED
+"""
+Service account token was created.
+"""
+	SERVICE_ACCOUNT_TOKEN_CREATED
+"""
+Service account token was updated.
+"""
+	SERVICE_ACCOUNT_TOKEN_UPDATED
+"""
+Service account token was deleted.
+"""
+	SERVICE_ACCOUNT_TOKEN_DELETED
+"""
+Team was created.
+"""
+	TEAM_CREATED
+"""
+Team was updated.
+"""
+	TEAM_UPDATED
+"""
+Team delete key was created.
+"""
+	TEAM_CREATE_DELETE_KEY
+"""
+Team delete key was confirmed.
+"""
+	TEAM_CONFIRM_DELETE_KEY
+"""
+Team member was added.
+"""
+	TEAM_MEMBER_ADDED
+"""
+Team member was removed.
+"""
+	TEAM_MEMBER_REMOVED
+"""
+Team member role was set.
+"""
+	TEAM_MEMBER_SET_ROLE
+"""
+Team environment was updated.
+"""
+	TEAM_ENVIRONMENT_UPDATED
+"""
+Unleash instance was created.
+"""
+	UNLEASH_INSTANCE_CREATED
+"""
+Unleash instance was updated.
+"""
+	UNLEASH_INSTANCE_UPDATED
+"""
+Valkey was created.
+"""
+	VALKEY_CREATED
+"""
+Valkey was updated.
+"""
+	VALKEY_UPDATED
+"""
+Valkey was deleted.
+"""
+	VALKEY_DELETED
+"""
+Started service maintenance on Valkey instance.
+"""
+	VALKEY_MAINTENANCE_STARTED
+"""
+Activity log entry for when a vulnerability is updated.
+"""
+	VULNERABILITY_UPDATED
+}
+
 """
 Interface for activity log entries.
 """
@@ -140,6 +323,10 @@ All activity log entries related to applications will use this resource type.
 """
 	APP
 """
+All activity log entries related to direct cluster changes.
+"""
+	CLUSTER_AUDIT
+"""
 All activity log entries related to deploy keys will use this resource type.
 """
 	DEPLOY_KEY
@@ -147,6 +334,10 @@ All activity log entries related to deploy keys will use this resource type.
 All activity log entries related to jobs will use this resource type.
 """
 	JOB
+"""
+All activity log entries related to OpenSearches will use this resource type.
+"""
+	OPENSEARCH
 """
 All activity log entries related to reconcilers will use this resource type.
 """
@@ -169,9 +360,27 @@ All activity log entries related to unleash will use this resource type.
 """
 	UNLEASH
 """
+All activity log entries related to Valkeys will use this resource type.
+"""
+	VALKEY
+"""
 All activity log entries related to vulnerabilities will use this resource type.
 """
 	VULNERABILITY
+}
+
+input ActivityLogFilter {
+	activityTypes: [ActivityLogActivityType!]
+}
+
+interface ActivityLogger {
+	activityLog(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 }
 
 input AddRepositoryToTeamInput {
@@ -213,6 +422,119 @@ The added team member.
 	member: TeamMember
 }
 
+"""
+Alert interface.
+"""
+interface Alert {
+"""
+Alert interface.
+"""
+	id: ID!
+"""
+Alert interface.
+"""
+	name: String!
+"""
+Alert interface.
+"""
+	team: Team!
+"""
+Alert interface.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+Alert interface.
+"""
+	state: AlertState!
+"""
+Alert interface.
+"""
+	query: String!
+"""
+Alert interface.
+"""
+	duration: Float!
+}
+
+"""
+AlertConnection connection.
+"""
+type AlertConnection {
+"""
+Pagination information.
+"""
+	pageInfo: PageInfo!
+"""
+List of nodes.
+"""
+	nodes: [Alert!]!
+"""
+List of edges.
+"""
+	edges: [AlertEdge!]!
+}
+
+"""
+Alert edge.
+"""
+type AlertEdge {
+"""
+Cursor for this edge that can be used for pagination.
+"""
+	cursor: Cursor!
+"""
+The Alert.
+"""
+	node: Alert!
+}
+
+"""
+Ordering options when fetching alerts.
+"""
+input AlertOrder {
+"""
+Ordering options when fetching alerts.
+"""
+	field: AlertOrderField!
+"""
+Ordering options when fetching alerts.
+"""
+	direction: OrderDirection!
+}
+
+"""
+Fields to order alerts in an environment by.
+"""
+enum AlertOrderField {
+"""
+Order by name.
+"""
+	NAME
+"""
+Order by state.
+"""
+	STATE
+"""
+ENVIRONMENT
+"""
+	ENVIRONMENT
+}
+
+enum AlertState {
+"""
+Only return alerts that are firing.
+"""
+	FIRING
+"""
+Only return alerts that are inactive.
+"""
+	INACTIVE
+"""
+Only return alerts that are pending.
+"""
+	PENDING
+}
+
 input AllowTeamAccessToUnleashInput {
 	teamSlug: Slug!
 	allowedTeamSlug: Slug!
@@ -227,7 +549,7 @@ An application lets you run one or more instances of a container image on the [N
 
 Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 """
-type Application implements Node & Workload{
+type Application implements Node & Workload & ActivityLogger{
 """
 The globally unique ID of the application.
 """
@@ -243,7 +565,7 @@ The team that owns the application.
 """
 The environment the application is deployed in.
 """
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The team environment for the application.
 """
@@ -293,6 +615,64 @@ Get items before this cursor.
 If set, when the application was marked for deletion.
 """
 	deletionStartedAt: Time
+"""
+Activity log associated with the application.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
+"""
+The application state.
+"""
+	state: ApplicationState!
+"""
+Issues that affects the workload.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: IssueFilter
+	): IssueConnection!
 """
 BigQuery datasets referenced by the application. This does not currently support pagination, but will return all available datasets.
 """
@@ -387,20 +767,16 @@ Ordering options for items returned from the connection.
 """
 		orderBy: SqlInstanceOrder
 	): SqlInstanceConnection!
-"""
-Status of the application
-"""
-	status: WorkloadStatus!
 	utilization: WorkloadUtilization!
 """
 Valkey instances referenced by the application. This does not currently support pagination, but will return all available Valkey instances.
 """
-	valkeyInstances(
+	valkeys(
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: ValkeyInstanceOrder
-	): ValkeyInstanceConnection!
+		orderBy: ValkeyOrder
+	): ValkeyConnection!
 """
 Get the vulnerability summary history for application.
 """
@@ -524,6 +900,7 @@ The instance.
 
 enum ApplicationInstanceState {
 	RUNNING
+	STARTING
 	FAILING
 	UNKNOWN
 }
@@ -577,13 +954,17 @@ Order applications by the name of the environment.
 """
 	ENVIRONMENT
 """
+Order applications by state.
+"""
+	STATE
+"""
 Order applications by the deployment time.
 """
 	DEPLOYMENT_TIME
 """
-Order applications by status.
+Order applications by issue severity
 """
-	STATUS
+	ISSUES
 }
 
 type ApplicationResources implements WorkloadResources{
@@ -636,6 +1017,50 @@ The environment name that the entry belongs to.
 	environmentName: String
 }
 
+type ApplicationScaledActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: ApplicationScaledActivityLogEntryData!
+}
+
+type ApplicationScaledActivityLogEntryData {
+	newSize: Int!
+	direction: ScalingDirection!
+}
+
 """
 The scaling configuration of an application.
 """
@@ -652,6 +1077,21 @@ The maximum number of application instances.
 Scaling strategies for the application.
 """
 	strategies: [ScalingStrategy!]!
+}
+
+enum ApplicationState {
+"""
+The application is running.
+"""
+	RUNNING
+"""
+The application is not running.
+"""
+	NOT_RUNNING
+"""
+The application state is unknown.
+"""
+	UNKNOWN
 }
 
 input AssignRoleToServiceAccountInput {
@@ -689,7 +1129,7 @@ type BigQueryDataset implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	cascadingDelete: Boolean!
 	description: String
@@ -770,13 +1210,12 @@ type Bucket implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	cascadingDelete: Boolean!
 	publicAccessPrevention: String!
 	uniformBucketLevelAccess: Boolean!
 	workload: Workload
-	status: BucketStatus!
 }
 
 type BucketConnection {
@@ -790,11 +1229,6 @@ type BucketEdge {
 	node: Bucket!
 }
 
-type BucketError {
-	message: String!
-	details: String
-}
-
 input BucketOrder {
 	field: BucketOrderField!
 	direction: OrderDirection!
@@ -803,17 +1237,6 @@ input BucketOrder {
 enum BucketOrderField {
 	NAME
 	ENVIRONMENT
-}
-
-enum BucketState {
-	HEALTHY
-	ERROR
-	UNKNOWN
-}
-
-type BucketStatus {
-	state: BucketState!
-	errors: [BucketError!]!
 }
 
 """
@@ -837,6 +1260,56 @@ type ChangeDeploymentKeyPayload {
 The updated deploy key.
 """
 	deploymentKey: DeploymentKey
+}
+
+type ClusterAuditActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: ClusterAuditActivityLogEntryData!
+}
+
+type ClusterAuditActivityLogEntryData {
+"""
+The action that was performed.
+"""
+	action: String!
+"""
+The kind of resource that was affected by the action.
+"""
+	resourceKind: String!
 }
 
 input ConfigureReconcilerInput {
@@ -896,6 +1369,10 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Filter the vulnerabilities.
+"""
+		filter: ImageVulnerabilityFilter
 """
 Ordering options for items returned from the connection.
 """
@@ -966,6 +1443,23 @@ type CostMonthlySummary {
 The cost series.
 """
 	series: [ServiceCostSeries!]!
+}
+
+input CreateOpenSearchInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	tier: OpenSearchTier!
+	memory: OpenSearchMemory!
+	version: OpenSearchMajorVersion!
+	storageGB: Int!
+}
+
+type CreateOpenSearchPayload {
+"""
+OpenSearch instance that was created.
+"""
+	openSearch: OpenSearch!
 }
 
 input CreateSecretInput {
@@ -1045,6 +1539,22 @@ type CreateUnleashForTeamPayload {
 	unleash: UnleashInstance
 }
 
+input CreateValkeyInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	tier: ValkeyTier!
+	memory: ValkeyMemory!
+	maxMemoryPolicy: ValkeyMaxMemoryPolicy
+}
+
+type CreateValkeyPayload {
+"""
+Valkey instance that was created.
+"""
+	valkey: Valkey!
+}
+
 """
 Get current unit prices.
 """
@@ -1100,9 +1610,22 @@ The team that owned the deleted job.
 """
 	team: Team
 """
-Whether or not the application was deleted.
+Whether or not the job was deleted.
 """
 	success: Boolean
+}
+
+input DeleteOpenSearchInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+type DeleteOpenSearchPayload {
+"""
+Whether or not the OpenSearch instance was deleted.
+"""
+	openSearchDeleted: Boolean
 }
 
 input DeleteSecretInput {
@@ -1142,6 +1665,19 @@ The service account that the token belonged to.
 Whether or not the service account token was deleted.
 """
 	serviceAccountTokenDeleted: Boolean
+}
+
+input DeleteValkeyInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+type DeleteValkeyPayload {
+"""
+Whether or not the job was deleted.
+"""
+	valkeyDeleted: Boolean
 }
 
 """
@@ -1222,6 +1758,49 @@ Get items before this cursor.
 """
 		before: Cursor
 	): DeploymentStatusConnection!
+}
+
+type DeploymentActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: DeploymentActivityLogEntryData!
+}
+
+type DeploymentActivityLogEntryData {
+	triggerURL: String
 }
 
 type DeploymentConnection {
@@ -1377,6 +1956,23 @@ enum DeploymentStatusState {
 	PENDING
 }
 
+type DeprecatedIngressIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	ingresses: [String!]!
+	application: Application!
+}
+
+type DeprecatedRegistryIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+}
+
 input DisableReconcilerInput {
 	name: String!
 }
@@ -1521,10 +2117,6 @@ Order by team slug.
 """
 	TEAM_SLUG
 """
-Order by status.
-"""
-	STATUS
-"""
 Order by the deployment time.
 """
 	DEPLOYMENT_TIME
@@ -1543,6 +2135,22 @@ type ExternalNetworkPolicyIpv4 implements ExternalNetworkPolicyTarget{
 interface ExternalNetworkPolicyTarget {
 	target: String!
 	ports: [Int!]!
+}
+
+type FailedJobRunsIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	job: Job!
+}
+
+type FailedSynchronizationIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
 }
 
 type FeatureKafka implements Node{
@@ -1655,90 +2263,15 @@ Description of the vulnerability.
 Package name of the vulnerability.
 """
 	package: String!
+	suppression: ImageVulnerabilitySuppression
 """
-State of the vulnerability.
+Timestamp of when the vulnerability got its current severity.
 """
-	state: ImageVulnerabilityState!
+	severitySince: Time
 """
-Analysis trail of the vulnerability.
+Link to the vulnerability details.
 """
-	analysisTrail: ImageVulnerabilityAnalysisTrail!
-}
-
-type ImageVulnerabilityAnalysisComment {
-"""
-The comment provided.
-"""
-	comment: String!
-"""
-Was the vulnerability suppressed.
-"""
-	suppressed: Boolean!
-"""
-State of the vulnerability.
-"""
-	state: ImageVulnerabilityAnalysisState!
-"""
-Timestamp of the comment.
-"""
-	timestamp: Time!
-"""
-User who commented.
-"""
-	onBehalfOf: String!
-}
-
-type ImageVulnerabilityAnalysisCommentConnection {
-	pageInfo: PageInfo!
-	edges: [ImageVulnerabilityAnalysisCommentEdge!]!
-	nodes: [ImageVulnerabilityAnalysisComment!]!
-}
-
-type ImageVulnerabilityAnalysisCommentEdge {
-	cursor: Cursor!
-	node: ImageVulnerabilityAnalysisComment!
-}
-
-enum ImageVulnerabilityAnalysisState {
-"""
-Vulnerability is triaged.
-"""
-	IN_TRIAGE
-"""
-Vulnerability is resolved.
-"""
-	RESOLVED
-"""
-Vulnerability is marked as false positive.
-"""
-	FALSE_POSITIVE
-"""
-Vulnerability is marked as not affected.
-"""
-	NOT_AFFECTED
-}
-
-type ImageVulnerabilityAnalysisTrail {
-	state: ImageVulnerabilityAnalysisState!
-	comments(
-"""
-Get the first n items in the connection. This can be used in combination with the after parameter.
-"""
-		first: Int
-"""
-Get items after this cursor.
-"""
-		after: Cursor
-"""
-Get the last n items in the connection. This can be used in combination with the before parameter.
-"""
-		last: Int
-"""
-Get items before this cursor.
-"""
-		before: Cursor
-	): ImageVulnerabilityAnalysisCommentConnection!
-	suppressed: Boolean!
+	vulnerabilityDetailsLink: String!
 }
 
 type ImageVulnerabilityConnection {
@@ -1767,6 +2300,20 @@ The image vulnerability.
 	node: ImageVulnerability!
 }
 
+"""
+Input for filtering image vulnerabilities.
+"""
+input ImageVulnerabilityFilter {
+"""
+Input for filtering image vulnerabilities.
+"""
+	severity: ImageVulnerabilitySeverity
+"""
+Input for filtering image vulnerabilities.
+"""
+	severitySince: Time
+}
+
 type ImageVulnerabilityHistory {
 """
 Vulnerability summary samples.
@@ -1791,6 +2338,7 @@ Ordering options when fetching teams.
 enum ImageVulnerabilityOrderField {
 	IDENTIFIER
 	SEVERITY
+	SEVERITY_SINCE
 	PACKAGE
 	STATE
 	SUPPRESSED
@@ -1813,13 +2361,6 @@ enum ImageVulnerabilitySeverity {
 	HIGH
 	CRITICAL
 	UNASSIGNED
-}
-
-enum ImageVulnerabilityState {
-	TRIAGE
-	RESOLVED
-	FALSE_POSITIVE
-	NOT_AFFECTED
 }
 
 type ImageVulnerabilitySummary {
@@ -1851,6 +2392,40 @@ Number of vulnerabilities with severity CRITICAL.
 Number of vulnerabilities with severity UNASSIGNED.
 """
 	unassigned: Int!
+"""
+Timestamp of the last update of the vulnerability summary.
+"""
+	lastUpdated: Time
+}
+
+type ImageVulnerabilitySuppression {
+"""
+Suppression state of the vulnerability.
+"""
+	state: ImageVulnerabilitySuppressionState!
+"""
+The reason for the suppression of the vulnerability.
+"""
+	reason: String!
+}
+
+enum ImageVulnerabilitySuppressionState {
+"""
+Vulnerability is in triage.
+"""
+	IN_TRIAGE
+"""
+Vulnerability is resolved.
+"""
+	RESOLVED
+"""
+Vulnerability is marked as false positive.
+"""
+	FALSE_POSITIVE
+"""
+Vulnerability is marked as not affected.
+"""
+	NOT_AFFECTED
 }
 
 type InboundNetworkPolicy {
@@ -1866,6 +2441,61 @@ URL for the ingress.
 Type of ingress.
 """
 	type: IngressType!
+"""
+Metrics for the ingress.
+"""
+	metrics: IngressMetrics!
+}
+
+"""
+Ingress metric type.
+"""
+type IngressMetricSample {
+"""
+Timestamp of the value.
+"""
+	timestamp: Time!
+"""
+Value of the IngressMetricsType at the given timestamp.
+"""
+	value: Float!
+}
+
+type IngressMetrics {
+"""
+Number of requests to the ingress per second.
+"""
+	requestsPerSecond: Float!
+"""
+Number of errors in the ingress per second.
+"""
+	errorsPerSecond: Float!
+"""
+Ingress metrics between start and end with step size.
+"""
+	series(
+		input: IngressMetricsInput!
+	): [IngressMetricSample!]!
+}
+
+input IngressMetricsInput {
+	start: Time!
+	end: Time!
+	type: IngressMetricsType!
+}
+
+"""
+Type of ingress metrics to fetch.
+"""
+enum IngressMetricsType {
+"""
+Number of requests to the ingress per second.
+"""
+	REQUESTS_PER_SECOND
+"""
+Number of errors in the ingress per second.
+"""
+	ERRORS_PER_SECOND
 }
 
 enum IngressType {
@@ -1880,7 +2510,99 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 """
 scalar Int
 
-type Job implements Node & Workload{
+type InvalidSpecIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+}
+
+interface Issue {
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+}
+
+type IssueConnection {
+"""
+Pagination information.
+"""
+	pageInfo: PageInfo!
+"""
+List of nodes.
+"""
+	nodes: [Issue!]!
+"""
+List of edges.
+"""
+	edges: [IssueEdge!]!
+}
+
+type IssueEdge {
+"""
+Cursor for this edge that can be used for pagination.
+"""
+	cursor: Cursor!
+"""
+The Issue.
+"""
+	node: Issue!
+}
+
+input IssueFilter {
+	resourceName: String
+	resourceType: ResourceType
+	environments: [String!]
+	severity: Severity
+	issueType: IssueType
+}
+
+input IssueOrder {
+	field: IssueOrderField!
+	direction: OrderDirection!
+}
+
+enum IssueOrderField {
+"""
+Order by resource name.
+"""
+	RESOURCE_NAME
+"""
+Order by severity.
+"""
+	SEVERITY
+"""
+Order by environment.
+"""
+	ENVIRONMENT
+"""
+Order by resource type.
+"""
+	RESOURCE_TYPE
+"""
+Order by issue type.
+"""
+	ISSUE_TYPE
+}
+
+enum IssueType {
+	OPENSEARCH
+	VALKEY
+	SQLINSTANCE_STATE
+	SQLINSTANCE_VERSION
+	DEPRECATED_INGRESS
+	DEPRECATED_REGISTRY
+	NO_RUNNING_INSTANCES
+	FAILED_JOB_RUNS
+	FAILED_SYNCHRONIZATION
+	INVALID_SPEC
+	MISSING_SBOM
+	VULNERABLE_IMAGE
+}
+
+type Job implements Node & Workload & ActivityLogger{
 """
 The globally unique ID of the job.
 """
@@ -1896,7 +2618,7 @@ The team that owns the job.
 """
 The environment the job is deployed in.
 """
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The team environment for the job.
 """
@@ -1946,6 +2668,64 @@ The job manifest.
 If set, when the job was marked for deletion.
 """
 	deletionStartedAt: Time
+"""
+Activity log associated with the job.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
+"""
+The state of the Job
+"""
+	state: JobState!
+"""
+Issues that affects the workload.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: IssueFilter
+	): IssueConnection!
 """
 BigQuery datasets referenced by the job. This does not currently support pagination, but will return all available datasets.
 """
@@ -2041,18 +2821,14 @@ Ordering options for items returned from the connection.
 		orderBy: SqlInstanceOrder
 	): SqlInstanceConnection!
 """
-Status of the job
-"""
-	status: WorkloadStatus!
-"""
 Valkey instances referenced by the job. This does not currently support pagination, but will return all available Valkey instances.
 """
-	valkeyInstances(
+	valkeys(
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: ValkeyInstanceOrder
-	): ValkeyInstanceConnection!
+		orderBy: ValkeyOrder
+	): ValkeyConnection!
 """
 Get the vulnerability summary history for job.
 """
@@ -2149,13 +2925,17 @@ Order jobs by the name of the environment.
 """
 	ENVIRONMENT
 """
+Order by state.
+"""
+	STATE
+"""
 Order applications by the deployment time.
 """
 	DEPLOYMENT_TIME
 """
-Order jobs by status.
+Order jobs by issue severity
 """
-	STATUS
+	ISSUES
 }
 
 type JobResources implements WorkloadResources{
@@ -2340,6 +3120,13 @@ The time zone for the job. Defaults to UTC.
 	timeZone: String!
 }
 
+enum JobState {
+	COMPLETED
+	RUNNING
+	FAILED
+	UNKNOWN
+}
+
 type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -2394,7 +3181,7 @@ type KafkaTopic implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	acl(
 		first: Int
@@ -2500,6 +3287,17 @@ The globally unique ID of the log destination.
 	id: ID!
 }
 
+type MaintenanceWindow {
+"""
+Day of the week when the maintenance is scheduled.
+"""
+	dayOfWeek: Weekday!
+"""
+Time of day when the maintenance is scheduled.
+"""
+	timeOfDay: TimeOfDay!
+}
+
 """
 Maskinporten authentication.
 
@@ -2510,6 +3308,14 @@ type MaskinportenAuthIntegration implements AuthIntegration{
 The name of the integration.
 """
 	name: String!
+}
+
+type MissingSbomIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
 }
 
 """
@@ -2552,6 +3358,24 @@ Trigger a job
 	triggerJob(
 		input: TriggerJobInput!
 	): TriggerJobPayload!
+"""
+Create a new OpenSearch instance.
+"""
+	createOpenSearch(
+		input: CreateOpenSearchInput!
+	): CreateOpenSearchPayload!
+"""
+Update an existing OpenSearch instance.
+"""
+	updateOpenSearch(
+		input: UpdateOpenSearchInput!
+	): UpdateOpenSearchPayload!
+"""
+Delete an existing OpenSearch instance.
+"""
+	deleteOpenSearch(
+		input: DeleteOpenSearchInput!
+	): DeleteOpenSearchPayload!
 """
 Enable a reconciler
 
@@ -2785,6 +3609,24 @@ Remove team from the list of teams that can access the Unleash instance.
 		input: RevokeTeamAccessToUnleashInput!
 	): RevokeTeamAccessToUnleashPayload!
 """
+Create a new Valkey instance.
+"""
+	createValkey(
+		input: CreateValkeyInput!
+	): CreateValkeyPayload!
+"""
+Update an existing Valkey instance.
+"""
+	updateValkey(
+		input: UpdateValkeyInput!
+	): UpdateValkeyPayload!
+"""
+Delete an existing Valkey instance.
+"""
+	deleteValkey(
+		input: DeleteValkeyInput!
+	): DeleteValkeyPayload!
+"""
 Updates a vulnerability
 This mutation is currently unstable and may change in the future.
 """
@@ -2806,6 +3648,14 @@ type NetworkPolicyRule {
 	mutual: Boolean!
 }
 
+type NoRunningInstancesIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+}
+
 """
 This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/).
 """
@@ -2816,14 +3666,14 @@ This interface is implemented by types that supports the [Global Object Identifi
 	id: ID!
 }
 
-type OpenSearch implements Persistence & Node{
+type OpenSearch implements Persistence & Node & ActivityLogger{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	terminationProtection: Boolean!
-	status: OpenSearchStatus!
+	state: OpenSearchState!
 	workload: Workload
 	access(
 		first: Int
@@ -2832,6 +3682,47 @@ type OpenSearch implements Persistence & Node{
 		before: Cursor
 		orderBy: OpenSearchAccessOrder
 	): OpenSearchAccessConnection!
+"""
+Fetch version for the OpenSearch instance.
+"""
+	version: OpenSearchVersion!
+"""
+Availability tier for the OpenSearch instance.
+"""
+	tier: OpenSearchTier!
+"""
+Available memory for the OpenSearch instance.
+"""
+	memory: OpenSearchMemory!
+"""
+Available storage in GB.
+"""
+	storageGB: Int!
+"""
+Activity log associated with the reconciler.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 	cost: OpenSearchCost!
 """
 Fetch maintenances updates for the OpenSearch instance.
@@ -2875,12 +3766,95 @@ type OpenSearchCost {
 	sum: Float!
 }
 
+type OpenSearchCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
 type OpenSearchEdge {
 	cursor: Cursor!
 	node: OpenSearch!
 }
 
+type OpenSearchIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	openSearch: OpenSearch!
+	event: String!
+}
+
 type OpenSearchMaintenance {
+"""
+The day and time of the week when the maintenance will be scheduled.
+"""
+	window: MaintenanceWindow
 	updates(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -2946,6 +3920,26 @@ The OpenSearchMaintenanceUpdate.
 	node: OpenSearchMaintenanceUpdate!
 }
 
+enum OpenSearchMajorVersion {
+"""
+OpenSearch Version 2.x
+"""
+	V2
+"""
+OpenSearch Version 1.x
+"""
+	V1
+}
+
+enum OpenSearchMemory {
+	GB_2
+	GB_4
+	GB_8
+	GB_16
+	GB_32
+	GB_64
+}
+
 input OpenSearchOrder {
 	field: OpenSearchOrderField!
 	direction: OrderDirection!
@@ -2954,10 +3948,89 @@ input OpenSearchOrder {
 enum OpenSearchOrderField {
 	NAME
 	ENVIRONMENT
+	STATE
 }
 
-type OpenSearchStatus {
-	state: String!
+enum OpenSearchState {
+	POWEROFF
+	REBALANCING
+	REBUILDING
+	RUNNING
+	UNKNOWN
+}
+
+enum OpenSearchTier {
+	SINGLE_NODE
+	HIGH_AVAILABILITY
+}
+
+type OpenSearchUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: OpenSearchUpdatedActivityLogEntryData!
+}
+
+type OpenSearchUpdatedActivityLogEntryData {
+	updatedFields: [OpenSearchUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type OpenSearchUpdatedActivityLogEntryDataUpdatedField {
+"""
+The name of the field.
+"""
+	field: String!
+"""
+The old value of the field.
+"""
+	oldValue: String
+"""
+The new value of the field.
+"""
+	newValue: String
+}
+
+type OpenSearchVersion {
+"""
+The full version string of the OpenSearch instance. This will be available after the instance is created.
+"""
+	actual: String
+"""
+The desired major version of the OpenSearch instance.
+"""
+	desiredMajor: OpenSearchMajorVersion!
 }
 
 """
@@ -3025,6 +4098,75 @@ interface Persistence {
 
 type Price {
 	value: Float!
+}
+
+type PrometheusAlarm {
+"""
+The action to take when the alert fires.
+"""
+	action: String!
+"""
+The consequence of the alert firing.
+"""
+	consequence: String!
+"""
+A summary of the alert.
+"""
+	summary: String!
+"""
+The state of the alert.
+"""
+	state: AlertState!
+"""
+The current value of the metric that triggered the alert.
+"""
+	value: Float!
+"""
+The time when the alert started firing.
+"""
+	since: Time!
+}
+
+"""
+PrometheusAlert type
+"""
+type PrometheusAlert implements Node & Alert{
+"""
+The unique identifier for the alert.
+"""
+	id: ID!
+"""
+The name of the alert.
+"""
+	name: String!
+"""
+The team that owns the alert.
+"""
+	team: Team!
+"""
+The team environment for the alert.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+The state of the alert.
+"""
+	state: AlertState!
+"""
+The query for the alert.
+"""
+	query: String!
+"""
+The duration for the alert.
+"""
+	duration: Float!
+"""
+The prometheus rule group for the alert.
+"""
+	ruleGroup: String!
+"""
+The alarms of the alert available if state is firing.
+"""
+	alarms: [PrometheusAlarm!]!
 }
 
 """
@@ -3276,12 +4418,16 @@ Get vulnerability summary from given date until today.
 """
 		from: Date!
 	): ImageVulnerabilityHistory!
+"""
+Get the vulnerability summary for the tenant.
+"""
+	vulnerabilitySummary: TenantVulnerabilitySummary!
 }
 
 """
 Reconciler type.
 """
-type Reconciler implements Node{
+type Reconciler implements Node & ActivityLogger{
 """
 Unique identifier for the reconciler.
 """
@@ -3351,6 +4497,10 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
 	): ActivityLogEntryConnection!
 }
 
@@ -3774,6 +4924,14 @@ The delete key for the team. This can be used to confirm the deletion of the tea
 	key: TeamDeleteKey
 }
 
+enum ResourceType {
+	OPENSEARCH
+	VALKEY
+	SQLINSTANCE
+	APPLICATION
+	JOB
+}
+
 input RestartApplicationInput {
 	name: String!
 	teamSlug: Slug!
@@ -4009,6 +5167,17 @@ The name of the revoked role.
 	roleName: String!
 }
 
+enum ScalingDirection {
+"""
+The scaling direction is up.
+"""
+	UP
+"""
+The scaling direction is down.
+"""
+	DOWN
+}
+
 """
 Types of scaling strategies.
 """
@@ -4031,7 +5200,7 @@ Search filter for filtering search results.
 """
 Types that can be searched for.
 """
-union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | ValkeyInstance
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Valkey
 
 """
 Search node connection.
@@ -4083,7 +5252,7 @@ Search for applications.
 	KAFKA_TOPIC
 	OPENSEARCH
 	SQL_INSTANCE
-	VALKEY_INSTANCE
+	VALKEY
 }
 
 """
@@ -4101,7 +5270,7 @@ The name of the secret.
 """
 The environment the secret exists in.
 """
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The environment the secret exists in.
 """
@@ -4940,6 +6109,41 @@ The cost for the services used by the workload.
 	services: [ServiceCostSample!]!
 }
 
+type ServiceMaintenanceActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
 interface ServiceMaintenanceUpdate {
 	title: String!
 	description: String
@@ -4956,6 +6160,12 @@ type SetTeamMemberRolePayload {
 The updated team member.
 """
 	member: TeamMember
+}
+
+enum Severity {
+	CRITICAL
+	WARNING
+	TODO
 }
 
 """
@@ -4979,7 +6189,7 @@ type SqlDatabase implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	charset: String
 	collation: String
@@ -4991,7 +6201,7 @@ type SqlInstance implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	workload: Workload
 	cascadingDelete: Boolean!
@@ -5023,6 +6233,31 @@ type SqlInstance implements Persistence & Node{
 	): SqlInstanceUserConnection!
 	metrics: SqlInstanceMetrics!
 	state: SqlInstanceState!
+"""
+Issues that affects the workload.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+	): IssueConnection!
 	cost: SqlInstanceCost!
 }
 
@@ -5100,21 +6335,31 @@ enum SqlInstanceOrderField {
 	NAME
 	VERSION
 	ENVIRONMENT
-	STATUS
 	COST
 	CPU_UTILIZATION
 	MEMORY_UTILIZATION
 	DISK_UTILIZATION
+	STATE
 }
 
 enum SqlInstanceState {
 	UNSPECIFIED
+	STOPPED
 	RUNNABLE
 	SUSPENDED
 	PENDING_DELETE
 	PENDING_CREATE
 	MAINTENANCE
 	FAILED
+}
+
+type SqlInstanceStateIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	state: SqlInstanceState!
+	sqlInstance: SqlInstance!
 }
 
 type SqlInstanceStatus {
@@ -5146,6 +6391,14 @@ input SqlInstanceUserOrder {
 enum SqlInstanceUserOrderField {
 	NAME
 	AUTHENTICATION
+}
+
+type SqlInstanceVersionIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	sqlInstance: SqlInstance!
 }
 
 input StartOpenSearchMaintenanceInput {
@@ -5193,7 +6446,7 @@ Learn more about what Nais teams are and what they can be used for in the [offic
 
 External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
 """
-type Team implements Node{
+type Team implements Node & ActivityLogger{
 """
 The globally unique ID of the team.
 """
@@ -5301,7 +6554,40 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
 	): ActivityLogEntryConnection!
+"""
+EXPERIMENTAL: DO NOT USE
+"""
+	alerts(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: AlertOrder
+"""
+Filter the returned objects
+"""
+		filter: TeamAlertsFilter
+	): AlertConnection!
 """
 Nais applications owned by the team.
 """
@@ -5411,6 +6697,29 @@ Get items before this cursor.
 		before: Cursor
 	): DeploymentConnection!
 """
+Issues that affects the team.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+		orderBy: IssueOrder
+		filter: IssueFilter
+	): IssueConnection!
+"""
 Nais jobs owned by the team.
 """
 	jobs(
@@ -5467,7 +6776,7 @@ Ordering options for items returned from the connection.
 """
 OpenSearch instances owned by the team.
 """
-	openSearchInstances(
+	openSearches(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
 """
@@ -5574,7 +6883,7 @@ Ordering options for items returned from the connection.
 """
 Valkey instances owned by the team.
 """
-	valkeyInstances(
+	valkeys(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
 """
@@ -5594,8 +6903,8 @@ Get items before this cursor.
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: ValkeyInstanceOrder
-	): ValkeyInstanceConnection!
+		orderBy: ValkeyOrder
+	): ValkeyConnection!
 """
 Get the vulnerability summary history for team.
 """
@@ -5666,6 +6975,24 @@ Filter the returned objects
 """
 		filter: TeamWorkloadsFilter
 	): WorkloadConnection!
+}
+
+"""
+Input for filtering alerts.
+"""
+input TeamAlertsFilter {
+"""
+Input for filtering alerts.
+"""
+	name: String
+"""
+Input for filtering alerts.
+"""
+	environments: [String!]
+"""
+Input for filtering alerts.
+"""
+	states: [AlertState!]
 }
 
 """
@@ -5948,7 +7275,7 @@ The globally unique ID of the team environment.
 """
 Name of the team environment.
 """
-	name: String!
+	name: String! @deprecated(reason: "Use the `environment` field to get the environment name.")
 """
 The GCP project ID for the team environment.
 """
@@ -5961,6 +7288,35 @@ The Slack alerts channel for the team environment.
 The connected team.
 """
 	team: Team!
+"""
+EXPERIMENTAL: DO NOT USE
+"""
+	alerts(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: AlertOrder
+"""
+Filter the returned objects
+"""
+		filter: TeamAlertsFilter
+	): AlertConnection!
 """
 Nais application in the team environment.
 """
@@ -6005,7 +7361,7 @@ Kafka topic in the team environment.
 """
 OpenSearch instance in the team environment.
 """
-	openSearchInstance(
+	openSearch(
 		name: String!
 	): OpenSearch!
 """
@@ -6023,9 +7379,9 @@ SQL instance in the team environment.
 """
 Valkey instance in the team environment.
 """
-	valkeyInstance(
+	valkey(
 		name: String!
-	): ValkeyInstance!
+	): Valkey!
 """
 Workload in the team environment.
 """
@@ -6184,11 +7540,6 @@ type TeamInventoryCountApplications {
 Total number of applications.
 """
 	total: Int!
-"""
-Number of applications considered "not nais". When an application is considered "not nais", it means that the
-application might not be working as expected, or that it is not following the Nais guidelines.
-"""
-	notNais: Int!
 }
 
 type TeamInventoryCountBigQueryDatasets {
@@ -6210,10 +7561,6 @@ type TeamInventoryCountJobs {
 Total number of jobs.
 """
 	total: Int!
-"""
-Number of jobs considered not nais.
-"""
-	notNais: Int!
 }
 
 type TeamInventoryCountKafkaTopics {
@@ -6223,7 +7570,7 @@ Total number of Kafka topics.
 	total: Int!
 }
 
-type TeamInventoryCountOpenSearchInstances {
+type TeamInventoryCountOpenSearches {
 """
 Total number of OpenSearch instances.
 """
@@ -6237,7 +7584,7 @@ Total number of SQL instances.
 	total: Int!
 }
 
-type TeamInventoryCountValkeyInstances {
+type TeamInventoryCountValkeys {
 """
 Total number of Valkey instances.
 """
@@ -6253,9 +7600,9 @@ Application inventory count for a team.
 	buckets: TeamInventoryCountBuckets!
 	jobs: TeamInventoryCountJobs!
 	kafkaTopics: TeamInventoryCountKafkaTopics!
-	openSearchInstances: TeamInventoryCountOpenSearchInstances!
+	openSearches: TeamInventoryCountOpenSearches!
 	sqlInstances: TeamInventoryCountSqlInstances!
-	valkeyInstances: TeamInventoryCountValkeyInstances!
+	valkeys: TeamInventoryCountValkeys!
 }
 
 input TeamJobsFilter {
@@ -6531,6 +7878,10 @@ The unique slug of the team.
 """
 	SLUG
 """
+The team's accumulated cost over the last 12 months
+"""
+	ACCUMULATED_COST
+"""
 The accumulated risk score of the teams workloads.
 """
 	RISK_SCORE
@@ -6669,30 +8020,11 @@ The current resource usage.
 """
 The environment for the utilization data.
 """
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The environment for the utilization data.
 """
 	teamEnvironment: TeamEnvironment!
-}
-
-enum TeamVulnerabilityRanking {
-"""
-Top third most vulnerable teams.
-"""
-	MOST_VULNERABLE
-"""
-Middle third most vulnerable teams.
-"""
-	MIDDLE
-"""
-Bottom third most vulnerable teams.
-"""
-	LEAST_VULNERABLE
-"""
-Unknown ranking.
-"""
-	UNKNOWN
 }
 
 enum TeamVulnerabilityRiskScoreTrend {
@@ -6708,20 +8040,6 @@ Risk score is decreasing.
 Risk score is not changing.
 """
 	FLAT
-}
-
-enum TeamVulnerabilityState {
-	OK
-	TOO_MANY_VULNERABLE_WORKLOADS
-	COVERAGE_TOO_LOW
-	VULNERABLE
-	MISSING_SBOM
-}
-
-type TeamVulnerabilityStatus {
-	state: TeamVulnerabilityState!
-	title: String!
-	description: String!
 }
 
 type TeamVulnerabilitySummary {
@@ -6752,23 +8070,19 @@ Number of vulnerabilities with severity UNASSIGNED.
 """
 Number of workloads with a software bill of materials (SBOM) attached.
 """
-	bomCount: Int!
+	sbomCount: Int!
 """
 Coverage of the team.
 """
 	coverage: Float!
 """
-Ranking of the team based on vulnerability severity.
+Timestamp of the last update of the vulnerability summary.
 """
-	ranking: TeamVulnerabilityRanking!
+	lastUpdated: Time
 """
 Trend of vulnerability status for the team.
 """
 	riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
-"""
-Aggregated status of the vulnerabilities for the team.
-"""
-	status: [TeamVulnerabilityStatus!]!
 }
 
 """
@@ -6789,16 +8103,56 @@ input TeamWorkloadsFilter {
 Input for filtering team workloads.
 """
 	environments: [String!]
+}
+
+type TenantVulnerabilitySummary {
 """
-Input for filtering team workloads.
+Risk score of the tenant.
 """
-	states: [WorkloadState!]
+	riskScore: Int!
+"""
+Number of vulnerabilities with severity CRITICAL.
+"""
+	critical: Int!
+"""
+Number of vulnerabilities with severity HIGH.
+"""
+	high: Int!
+"""
+Number of vulnerabilities with severity MEDIUM.
+"""
+	medium: Int!
+"""
+Number of vulnerabilities with severity LOW.
+"""
+	low: Int!
+"""
+Number of vulnerabilities with severity UNASSIGNED.
+"""
+	unassigned: Int!
+"""
+Number of workloads with a software bill of materials (SBOM) attached.
+"""
+	sbomCount: Int!
+"""
+SBOM Coverage of the tenant.
+"""
+	coverage: Float!
+"""
+Timestamp of the last update of the vulnerability summary.
+"""
+	lastUpdated: Time
 }
 
 """
 Time is a string in [RFC 3339](https://rfc-editor.org/rfc/rfc3339.html) format, with sub-second precision added if present.
 """
 scalar Time
+
+"""
+TimeOfDay is the time of day, represented as a string in the format HH:MM:SS.
+"""
+scalar TimeOfDay
 
 """
 TokenX authentication.
@@ -6954,9 +8308,9 @@ Allowed team slug.
 
 input UpdateImageVulnerabilityInput {
 	vulnerabilityID: ID!
-	analysisState: ImageVulnerabilityAnalysisState!
-	comment: String!
+	reason: String!
 	suppress: Boolean!
+	state: ImageVulnerabilitySuppressionState
 }
 
 type UpdateImageVulnerabilityPayload {
@@ -6964,6 +8318,23 @@ type UpdateImageVulnerabilityPayload {
 The vulnerability updated.
 """
 	vulnerability: ImageVulnerability
+}
+
+input UpdateOpenSearchInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	tier: OpenSearchTier!
+	memory: OpenSearchMemory!
+	version: OpenSearchMajorVersion!
+	storageGB: Int!
+}
+
+type UpdateOpenSearchPayload {
+"""
+OpenSearch instance that was updated.
+"""
+	openSearch: OpenSearch!
 }
 
 input UpdateSecretValueInput {
@@ -7019,7 +8390,7 @@ type UpdateTeamEnvironmentPayload {
 """
 The updated team environment.
 """
-	environment: TeamEnvironment
+	environment: TeamEnvironment @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The updated team environment.
 """
@@ -7037,6 +8408,22 @@ type UpdateTeamPayload {
 The updated team.
 """
 	team: Team
+}
+
+input UpdateValkeyInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	tier: ValkeyTier!
+	memory: ValkeyMemory!
+	maxMemoryPolicy: ValkeyMaxMemoryPolicy
+}
+
+type UpdateValkeyPayload {
+"""
+Valkey instance that was updated.
+"""
+	valkey: Valkey!
 }
 
 """
@@ -7360,85 +8747,188 @@ The instance for the utilization data.
 	instance: String!
 }
 
-type ValkeyInstance implements Persistence & Node{
+type Valkey implements Persistence & Node & ActivityLogger{
 	id: ID!
 	name: String!
 	terminationProtection: Boolean!
 	team: Team!
-	environment: TeamEnvironment!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	access(
 		first: Int
 		after: Cursor
 		last: Int
 		before: Cursor
-		orderBy: ValkeyInstanceAccessOrder
-	): ValkeyInstanceAccessConnection!
+		orderBy: ValkeyAccessOrder
+	): ValkeyAccessConnection!
 	workload: Workload
-	status: ValkeyInstanceStatus!
-	cost: ValkeyInstanceCost!
+	state: ValkeyState!
+"""
+Availability tier for the Valkey instance.
+"""
+	tier: ValkeyTier!
+"""
+Available memory for the Valkey instance.
+"""
+	memory: ValkeyMemory!
+	maxMemoryPolicy: ValkeyMaxMemoryPolicy
+"""
+Activity log associated with the reconciler.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
+	cost: ValkeyCost!
 """
 Fetch maintenances updates for the Valkey instance.
 """
 	maintenance: ValkeyMaintenance!
 }
 
-type ValkeyInstanceAccess {
+type ValkeyAccess {
 	workload: Workload!
 	access: String!
 }
 
-type ValkeyInstanceAccessConnection {
+type ValkeyAccessConnection {
 	pageInfo: PageInfo!
-	nodes: [ValkeyInstanceAccess!]!
-	edges: [ValkeyInstanceAccessEdge!]!
+	nodes: [ValkeyAccess!]!
+	edges: [ValkeyAccessEdge!]!
 }
 
-type ValkeyInstanceAccessEdge {
+type ValkeyAccessEdge {
 	cursor: Cursor!
-	node: ValkeyInstanceAccess!
+	node: ValkeyAccess!
 }
 
-input ValkeyInstanceAccessOrder {
-	field: ValkeyInstanceAccessOrderField!
+input ValkeyAccessOrder {
+	field: ValkeyAccessOrderField!
 	direction: OrderDirection!
 }
 
-enum ValkeyInstanceAccessOrderField {
+enum ValkeyAccessOrderField {
 	ACCESS
 	WORKLOAD
 }
 
-type ValkeyInstanceConnection {
+type ValkeyConnection {
 	pageInfo: PageInfo!
-	nodes: [ValkeyInstance!]!
-	edges: [ValkeyInstanceEdge!]!
+	nodes: [Valkey!]!
+	edges: [ValkeyEdge!]!
 }
 
-type ValkeyInstanceCost {
+type ValkeyCost {
 	sum: Float!
 }
 
-type ValkeyInstanceEdge {
+type ValkeyCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type ValkeyEdge {
 	cursor: Cursor!
-	node: ValkeyInstance!
+	node: Valkey!
 }
 
-input ValkeyInstanceOrder {
-	field: ValkeyInstanceOrderField!
-	direction: OrderDirection!
-}
-
-enum ValkeyInstanceOrderField {
-	NAME
-	ENVIRONMENT
-}
-
-type ValkeyInstanceStatus {
-	state: String!
+type ValkeyIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	valkey: Valkey!
+	event: String!
 }
 
 type ValkeyMaintenance {
+"""
+The day and time of the week when the maintenance will be scheduled.
+"""
+	window: MaintenanceWindow
 	updates(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -7502,6 +8992,134 @@ Cursor for this edge that can be used for pagination.
 The ValkeyMaintenanceUpdate.
 """
 	node: ValkeyMaintenanceUpdate!
+}
+
+enum ValkeyMaxMemoryPolicy {
+"""
+Keeps frequently used keys; removes least frequently used (LFU) keys
+"""
+	ALLKEYS_LFU
+"""
+Keeps most recently used keys; removes least recently used (LRU) keys
+"""
+	ALLKEYS_LRU
+"""
+Randomly removes keys to make space for the new data added.
+"""
+	ALLKEYS_RANDOM
+"""
+New values aren't saved when memory limit is reached. When a database uses replication, this applies to the primary database.
+"""
+	NO_EVICTION
+"""
+Removes least frequently used keys with a TTL set.
+"""
+	VOLATILE_LFU
+"""
+Removes least recently used keys with a time-to-live (TTL) set.
+"""
+	VOLATILE_LRU
+"""
+Randomly removes keys with a TTL set.
+"""
+	VOLATILE_RANDOM
+"""
+Removes keys with a TTL set, the keys with the shortest remaining time-to-live value first.
+"""
+	VOLATILE_TTL
+}
+
+enum ValkeyMemory {
+	GB_1
+	GB_4
+	GB_8
+	GB_14
+	GB_28
+	GB_56
+	GB_112
+	GB_200
+}
+
+input ValkeyOrder {
+	field: ValkeyOrderField!
+	direction: OrderDirection!
+}
+
+enum ValkeyOrderField {
+	NAME
+	ENVIRONMENT
+	STATE
+}
+
+enum ValkeyState {
+	POWEROFF
+	REBALANCING
+	REBUILDING
+	RUNNING
+	UNKNOWN
+}
+
+enum ValkeyTier {
+	SINGLE_NODE
+	HIGH_AVAILABILITY
+}
+
+type ValkeyUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: ValkeyUpdatedActivityLogEntryData!
+}
+
+type ValkeyUpdatedActivityLogEntryData {
+	updatedFields: [ValkeyUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type ValkeyUpdatedActivityLogEntryDataUpdatedField {
+"""
+The name of the field.
+"""
+	field: String!
+"""
+The old value of the field.
+"""
+	oldValue: String
+"""
+The new value of the field.
+"""
+	newValue: String
 }
 
 """
@@ -7588,6 +9206,50 @@ The environment name that the entry belongs to.
 	environmentName: String
 }
 
+type VulnerableImageIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+	riskScore: Int!
+	critical: Int!
+}
+
+"""
+The days of the week.
+"""
+enum Weekday {
+"""
+Monday
+"""
+	MONDAY
+"""
+Tuesday
+"""
+	TUESDAY
+"""
+Wednesday
+"""
+	WEDNESDAY
+"""
+Thursday
+"""
+	THURSDAY
+"""
+Friday
+"""
+	FRIDAY
+"""
+Saturday
+"""
+	SATURDAY
+"""
+Sunday
+"""
+	SUNDAY
+}
+
 """
 Interface for workloads.
 """
@@ -7628,6 +9290,27 @@ Interface for workloads.
 Interface for workloads.
 """
 	deletionStartedAt: Time
+"""
+Interface for workloads.
+"""
+	activityLog(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
+"""
+Interface for workloads.
+"""
+	issues(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		orderBy: IssueOrder
+		filter: IssueFilter
+	): IssueConnection!
 """
 Interface for workloads.
 """
@@ -7689,13 +9372,9 @@ Interface for workloads.
 """
 Interface for workloads.
 """
-	status: WorkloadStatus!
-"""
-Interface for workloads.
-"""
-	valkeyInstances(
-		orderBy: ValkeyInstanceOrder
-	): ValkeyInstanceConnection!
+	valkeys(
+		orderBy: ValkeyOrder
+	): ValkeyConnection!
 """
 Interface for workloads.
 """
@@ -7853,10 +9532,6 @@ Order by name.
 """
 	NAME
 """
-Order by status.
-"""
-	STATUS
-"""
 Order by the name of the environment the workload is deployed in.
 """
 	ENVIRONMENT
@@ -7864,6 +9539,10 @@ Order by the name of the environment the workload is deployed in.
 Order by the deployment time.
 """
 	DEPLOYMENT_TIME
+"""
+Order workloads by issue severity
+"""
+	ISSUES
 """
 Order by risk score
 """
@@ -7888,6 +9567,14 @@ Order apps by vulnerability severity low
 Order apps by vulnerability severity unassigned
 """
 	VULNERABILITY_SEVERITY_UNASSIGNED
+"""
+Order by whether the workload has a software bill of materials (SBOM)
+"""
+	HAS_SBOM
+"""
+Order by the last time the vulnerabilities were scanned.
+"""
+	VULNERABILITY_LAST_SCANNED
 }
 
 """
@@ -7916,201 +9603,6 @@ Interface for resources allocated to workloads.
 Interface for resources allocated to workloads.
 """
 	requests: WorkloadResourceQuantity!
-}
-
-"""
-State of the workload
-"""
-enum WorkloadState {
-"""
-Everything is nais
-"""
-	NAIS
-"""
-Something is not nais
-"""
-	NOT_NAIS
-"""
-Something is failing
-"""
-	FAILING
-"""
-Unknown state
-"""
-	UNKNOWN
-}
-
-type WorkloadStatus {
-"""
-State of the workload
-"""
-	state: WorkloadState!
-"""
-Errors related to the workload
-"""
-	errors: [WorkloadStatusError!]!
-}
-
-"""
-Error describing usage of a deprecated ingress
-"""
-type WorkloadStatusDeprecatedIngress implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Deprecated ingress
-"""
-	ingress: String!
-}
-
-"""
-Error describing usage of a deprecated registry
-"""
-type WorkloadStatusDeprecatedRegistry implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Image registry
-"""
-	registry: String!
-"""
-Image repository
-"""
-	repository: String!
-"""
-Image name
-"""
-	name: String!
-"""
-Image tag
-"""
-	tag: String!
-}
-
-"""
-An error for a workload
-"""
-interface WorkloadStatusError {
-"""
-An error for a workload
-"""
-	level: WorkloadStatusErrorLevel!
-}
-
-"""
-Workload status error level
-"""
-enum WorkloadStatusErrorLevel {
-"""
-TODO are errors that should be fixed when possible
-"""
-	TODO
-"""
-WARNING are errors that should be fixed, but are not critical
-"""
-	WARNING
-"""
-ERROR are errors that must be fixed
-"""
-	ERROR
-}
-
-"""
-Error describing that the workload is failing to run
-"""
-type WorkloadStatusFailedRun implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Error message
-"""
-	detail: String!
-"""
-Name of the run
-"""
-	name: String!
-}
-
-"""
-The last deployed YAML is invalid
-"""
-type WorkloadStatusInvalidNaisYaml implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Error message
-"""
-	detail: String!
-}
-
-"""
-Error describing that the workload is missing SBOM
-"""
-type WorkloadStatusMissingSBOM implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-}
-
-"""
-A workload does not have any active instances, but is requested to have some
-"""
-type WorkloadStatusNoRunningInstances implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-}
-
-"""
-Error describing that the workload is failing to synchronize
-"""
-type WorkloadStatusSynchronizationFailing implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Error message
-"""
-	detail: String!
-}
-
-"""
-Error describing usage of an instance of Cloud SQL with a unsupported version
-"""
-type WorkloadStatusUnsupportedCloudSQLVersion implements WorkloadStatusError{
-"""
-Error level. Warning if the version is deprecated, error if the version is unsupported.
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Postgres version
-"""
-	version: String!
-}
-
-"""
-Error describing that the workload is missing SBOM
-"""
-type WorkloadStatusVulnerable implements WorkloadStatusError{
-"""
-Error level
-"""
-	level: WorkloadStatusErrorLevel!
-"""
-Vulnerabilities
-"""
-	summary: ImageVulnerabilitySummary!
 }
 
 type WorkloadUtilization {
