@@ -20,4 +20,4 @@ if [[ "$GOOS" == "windows" ]]; then
   fi
 fi
 
-tar -zcf "nais-cli_${GOOS}_${GOARCH}.tar.gz" ./completions -C bin/ "$binary"
+tar -zcf "nais-cli_${GOOS}_${GOARCH}.tgz" ./completions -C bin/ "$binary"
