@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"slices"
@@ -13,12 +14,14 @@ import (
 	debug "github.com/nais/cli/internal/debug/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	"github.com/nais/cli/internal/metric"
+	"github.com/nais/cli/internal/naisapi"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	"github.com/nais/cli/internal/root"
 	validate "github.com/nais/cli/internal/validate/command"
 	"github.com/nais/cli/internal/version"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func newApplication(flags *root.Flags) *naistrix.Application {
@@ -63,6 +66,11 @@ func Run(ctx context.Context, w io.Writer) error {
 	}
 
 	if err != nil {
+		if errors.Is(err, naisapi.ErrNotAuthenticated) {
+			// TODO(tronghn): If tty; prompt for login (y/n)?
+			pterm.Error.Println("You are not logged in. Please run `nais login -n` to authenticate.")
+		}
+
 		return err
 	}
 
