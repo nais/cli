@@ -154,15 +154,12 @@ jobs:
       fail-fast: false
       matrix:
         target:
-          - template: nur.nix
-            repo: nais/nur
+          - repo: nais/nur
             file: pkgs/nais-cli.nix
-          - template: scoop.json
-            repo: nais/scoop-bucket
+          - repo: nais/scoop-bucket
             file: nais-cli.json
-          - template: homebrew.rb
-            repo: nais/homebrew-tap
-            file: Formula/nais.rb
+          - repo: nais/homebrew-tap
+            file: Formula/nais-cli.rb
     permissions:
       contents: read
       id-token: write
