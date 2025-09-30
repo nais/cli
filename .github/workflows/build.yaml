@@ -15,15 +15,16 @@ jobs:
   release-info:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.generate.outputs.version }}
-      changelog: ${{ steps.generate.outputs.changelog }}
+      version: ${{ steps.release-info.outputs.version }}
+      changelog: ${{ steps.release-info.outputs.changelog }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v3
-      - id: generate
+      - id: release-info
         run: mise run ci:release-info
+
   checks:
     strategy:
       matrix:
@@ -38,8 +39,7 @@ jobs:
       - release-info
     runs-on: ubuntu-latest
     permissions:
-      checks: write
-      pull-requests: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
@@ -220,6 +220,7 @@ jobs:
       - release-github
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         target:
           - template: nur.nix
