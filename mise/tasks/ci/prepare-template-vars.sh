@@ -32,11 +32,9 @@ while read -r hash file; do
 
 	# normalize hash: uppercase
 	hash16=${hash^^}
-	hash32=$(basenc --base16 -d <<<"${hash16}" | basenc --base32)
 
 	url=$(jq -r --arg file "$basename" '.[] | select(.name == $file) | .browser_download_url' "$assets_json")
 
 	echo "${key}_HASH_BASE16=${hash16}"
-	echo "${key}_HASH_BASE32=${hash32}"
 	echo "${key}_URL=$url"
 done <"$checksums_txt"
