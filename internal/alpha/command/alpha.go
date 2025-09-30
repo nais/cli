@@ -1,9 +1,12 @@
 package command
 
 import (
+	"github.com/nais/cli/internal/alpha/command/flag"
+	apply "github.com/nais/cli/internal/apply/command"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
-	"github.com/nais/cli/internal/naisapi/command/flag"
+	opensearch "github.com/nais/cli/internal/opensearch/command"
 	"github.com/nais/cli/internal/root"
+	valkey "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/naistrix"
 )
 
@@ -15,6 +18,9 @@ func Alpha(parentFlags *root.Flags) *naistrix.Command {
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			naisapi.Api(flags),
+			apply.Apply(flags),
+			valkey.Valkey(flags),
+			opensearch.OpenSearch(flags),
 		},
 	}
 }
