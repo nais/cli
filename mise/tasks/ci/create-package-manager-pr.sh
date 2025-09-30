@@ -35,6 +35,7 @@ git config user.name "NAIS team app"
 git config user.email "devnull@nais.io"
 gh auth setup-git
 git switch -c "$branch"
+git add "$file"
 git commit -am "$name $version"
 git push --set-upstream origin "$branch"
 until gh pr create --fill --base main --head "$branch"; do echo "Retrying gh pr create..."; sleep 1; done
