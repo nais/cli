@@ -8,10 +8,10 @@
   stdenvNoCC,
 }: let
   shaMap = {
-    x86_64-linux = "$NAIS_CLI_LINUX_AMD64_HASH_BASE32";
-    aarch64-linux = "$NAIS_CLI_LINUX_ARM64_HASH_BASE32";
-    x86_64-darwin = "$NAIS_CLI_DARWIN_AMD64_HASH_BASE32";
-    aarch64-darwin = "$NAIS_CLI_DARWIN_ARM64_HASH_BASE32";
+    x86_64-linux = "$NAIS_CLI_LINUX_AMD64_HASH_BASE16";
+    aarch64-linux = "$NAIS_CLI_LINUX_ARM64_HASH_BASE16";
+    x86_64-darwin = "$NAIS_CLI_DARWIN_AMD64_HASH_BASE16";
+    aarch64-darwin = "$NAIS_CLI_DARWIN_ARM64_HASH_BASE16";
   };
 
   urlMap = {
