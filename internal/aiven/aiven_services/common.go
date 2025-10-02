@@ -8,9 +8,10 @@ import (
 )
 
 type ServiceSetup struct {
-	Instance string
-	Pool     KafkaPool
-	Access   OpenSearchAccess
+	Instance   string
+	Pool       KafkaPool
+	Access     OpenSearchAccess
+	SecretName string
 }
 
 type Service interface {

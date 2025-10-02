@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/nais/cli/internal/aiven/aiven_config"
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/liberator/pkg/namegen"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -125,4 +127,11 @@ func createDefaultDestination() (string, error) {
 	}
 
 	return newPath, nil
+}
+
+func CreateSecretName(username, namespace string) (string, error) {
+	return namegen.ShortName(
+		fmt.Sprintf("%s-%s", username, strings.ReplaceAll(namespace, ".", "-")),
+		64,
+	)
 }

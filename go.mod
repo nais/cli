@@ -28,7 +28,7 @@ require (
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
-	github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae
+	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
 	github.com/nais/naistrix v0.6.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/pterm/pterm v0.12.81

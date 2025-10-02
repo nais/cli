@@ -35,6 +35,12 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 				)
 			}
 
+			if createOpenSearchFlags.Secret == "" {
+				if createOpenSearchFlags.Secret, err = aiven.CreateSecretName(args[0], args[1]); err != nil {
+					return fmt.Errorf("creating secret name: %v", err)
+				}
+			}
+
 			service := &aiven_services.OpenSearch{}
 			aivenConfig := aiven.Setup(
 				ctx,
@@ -42,11 +48,11 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 				service,
 				args[0],
 				args[1],
-				createOpenSearchFlags.Secret,
 				createOpenSearchFlags.Expire,
 				&aiven_services.ServiceSetup{
-					Instance: createOpenSearchFlags.Instance,
-					Access:   access,
+					Instance:   createOpenSearchFlags.Instance,
+					Access:     access,
+					SecretName: createOpenSearchFlags.Secret,
 				},
 			)
 			aivenApp, err := aivenConfig.GenerateApplication(out)
@@ -55,7 +61,7 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 			}
 
 			out.Println("Use the following command to generate configuration secrets:")
-			out.Printf("\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			out.Printf("\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.OpenSearch.SecretName, aivenApp.Namespace)
 
 			return nil
 		},

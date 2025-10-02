@@ -8,7 +8,6 @@ import (
 
 	"github.com/nais/cli/internal/aiven/aiven_services"
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
-	"github.com/nais/liberator/pkg/namegen"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -23,19 +22,18 @@ type Aiven struct {
 }
 
 type Properties struct {
-	Username   string
-	Namespace  string
-	Dest       string
-	SecretName string
-	Expiry     int
-	Service    aiven_services.Service
+	Username  string
+	Namespace string
+	Dest      string
+	Expiry    int
+	Service   aiven_services.Service
 }
 
 func Setup(
 	ctx context.Context,
 	innClient ctrl.Client,
 	aivenService aiven_services.Service,
-	username, namespace, secretName string,
+	username, namespace string,
 	expiry uint,
 	serviceSetup *aiven_services.ServiceSetup,
 ) *Aiven {
@@ -43,11 +41,10 @@ func Setup(
 		Ctx:    ctx,
 		Client: innClient,
 		Properties: Properties{
-			Username:   username,
-			Namespace:  namespace,
-			SecretName: secretName,
-			Expiry:     int(expiry), // #nosec G115
-			Service:    aivenService,
+			Username:  username,
+			Namespace: namespace,
+			Expiry:    int(expiry), // #nosec G115
+			Service:   aivenService,
 		},
 	}
 	aivenService.Setup(serviceSetup)
@@ -61,29 +58,19 @@ func (a Aiven) GenerateApplication(out naistrix.Output) (*aiven_nais_io_v1.Aiven
 	if err := validateNamespace(a.Ctx, a.Client, properties.Namespace); err != nil {
 		return nil, err
 	}
-	secretName := properties.SecretName
 
-	if secretName == "" {
-		var err error
-		secretName, err = createSecretName(properties.Username, properties.Namespace)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	aivenApp := *a.aivenApplication(secretName)
+	aivenApp := *a.aivenApplication()
 	if err := a.createOrUpdate(&aivenApp, out); err != nil {
 		return nil, fmt.Errorf("create/update: %v", err)
 	}
 	return &aivenApp, nil
 }
 
-func (a Aiven) aivenApplication(secretName string) *aiven_nais_io_v1.AivenApplication {
+func (a Aiven) aivenApplication() *aiven_nais_io_v1.AivenApplication {
 	name := strings.ReplaceAll(a.Properties.Username, ".", "-")
 	expiresAt := time.Now().AddDate(0, 0, a.Properties.Expiry)
 	applicationSpec := aiven_nais_io_v1.AivenApplicationSpec{
-		SecretName: secretName,
-		Protected:  true,
+		Protected: true,
 		ExpiresAt: &metav1.Time{
 			Time: expiresAt,
 		},
@@ -136,13 +123,4 @@ func validateNamespace(ctx context.Context, client ctrl.Client, name string) err
 	}
 
 	return nil
-}
-
-func createSecretName(name, namespace string) (string, error) {
-	baseName := fmt.Sprintf("%s-%s", name, strings.ReplaceAll(namespace, ".", "-"))
-	secretName, err := namegen.ShortName(baseName, 64)
-	if err != nil {
-		return "", fmt.Errorf("could not create secretName: %s", err)
-	}
-	return secretName, nil
 }

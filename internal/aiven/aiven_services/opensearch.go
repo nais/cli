@@ -38,8 +38,9 @@ func (p OpenSearchAccess) String() string {
 }
 
 type OpenSearch struct {
-	instance string
-	access   OpenSearchAccess
+	instance   string
+	access     OpenSearchAccess
+	secretName string
 }
 
 func (o *OpenSearch) Name() string {
@@ -49,13 +50,15 @@ func (o *OpenSearch) Name() string {
 func (o *OpenSearch) Setup(setup *ServiceSetup) {
 	o.instance = setup.Instance
 	o.access = setup.Access
+	o.secretName = setup.SecretName
 }
 
 func (o *OpenSearch) Apply(aivenApplicationSpec *aiven_nais_io_v1.AivenApplicationSpec, namespace string) {
 	fullyQualifiedInstanceName := fmt.Sprintf("opensearch-%s-%s", namespace, o.instance)
 	aivenApplicationSpec.OpenSearch = &aiven_nais_io_v1.OpenSearchSpec{
-		Instance: fullyQualifiedInstanceName,
-		Access:   o.access.String(),
+		Instance:   fullyQualifiedInstanceName,
+		Access:     o.access.String(),
+		SecretName: o.secretName,
 	}
 }
 

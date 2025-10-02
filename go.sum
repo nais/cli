@@ -388,8 +388,8 @@ github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/nais/device v0.0.0-20250703090236-08bd8b276591 h1:MgFQR6KwI6nB8Dl8c6IWT9deni9ln2P0h7EX8kAo1Bo=
 github.com/nais/device v0.0.0-20250703090236-08bd8b276591/go.mod h1:5EJDz4LiIliyvsUZb8gRDwpqihR7r4J+T4pJxUjBc9I=
-github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae h1:aZqDazMXxDdL1qSG9SpTMm+WZYY0RJp0yTrs8TSzJ+0=
-github.com/nais/liberator v0.0.0-20250703075635-7da81032e1ae/go.mod h1:Z0ycpT5Ug9Edacd5173bShlh9vCtogCwoLCbjv/pz18=
+github.com/nais/liberator v0.0.0-20250924103433-536eaed90405 h1:1s+Ft9MPLtvc69TeaDUkSIpawt3RYT60/EawycwzPsU=
+github.com/nais/liberator v0.0.0-20250924103433-536eaed90405/go.mod h1:p6EA7AKqzH798N7yvG8GDHVMzzkpORoxoyfcFz5Oa7c=
 github.com/nais/naistrix v0.6.0 h1:2Rnxr9x2yVL11svDt6fesDpN75umCe8rlpZPb/qoLek=
 github.com/nais/naistrix v0.6.0/go.mod h1:bXq0TpixgkUmE/qOvOXd0XZgiOYhx6tfXOigR3HDIw8=
 github.com/onsi/ginkgo/v2 v2.25.3 h1:Ty8+Yi/ayDAGtk4XxmmfUy4GabvM+MegeB4cDLRi6nw=

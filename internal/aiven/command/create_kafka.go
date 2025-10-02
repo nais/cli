@@ -29,6 +29,12 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
 			}
 
+			if createKafkaFlags.Secret == "" {
+				if createKafkaFlags.Secret, err = aiven.CreateSecretName(args[0], args[1]); err != nil {
+					return fmt.Errorf("creating secret name: %v", err)
+				}
+			}
+
 			service := &aiven_services.Kafka{}
 
 			aivenConfig := aiven.Setup(
@@ -37,10 +43,10 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 				service,
 				args[0],
 				args[1],
-				createKafkaFlags.Secret,
 				createKafkaFlags.Expire,
 				&aiven_services.ServiceSetup{
-					Pool: pool,
+					Pool:       pool,
+					SecretName: createKafkaFlags.Secret,
 				},
 			)
 			aivenApp, err := aivenConfig.GenerateApplication(out)
@@ -50,7 +56,7 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 
 			}
 
-			out.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.SecretName, aivenApp.Namespace)
+			out.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.Kafka.SecretName, aivenApp.Namespace)
 
 			return nil
 		},
