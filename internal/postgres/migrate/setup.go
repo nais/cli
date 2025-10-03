@@ -140,7 +140,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	pterm.Println()
 	pterm.DefaultParagraph.Println("When the migration has status 'Running' and is in the 'CDC' or 'Ready to Promote' phase, everything is ready for the next step of the migration.")
 	pterm.DefaultParagraph.Println("If you want to check that the replication is working as expected before proceeding, you can connect to the new instance and check that everything looks correct.")
-	pterm.DefaultParagraph.Print("To connect to the new instance, follow the guide for Personal database access using the helper application (%s) created for this migration.", helperName)
+	pterm.DefaultParagraph.Printfln("To connect to the new instance, follow the guide for Personal database access using the helper application (%s) created for this migration.", helperName)
 	ui.LinkStyle.Println("\thttps://docs.nais.io/persistence/cloudsql/how-to/personal-access/")
 	pterm.Println()
 	pterm.DefaultParagraph.Println("When you are ready to proceed with the next step of the migration, run the promote command:")
