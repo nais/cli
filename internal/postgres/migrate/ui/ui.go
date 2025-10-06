@@ -131,6 +131,7 @@ var typeToVersion = map[string]int{
 	"POSTGRES_15": 15,
 	"POSTGRES_16": 16,
 	"POSTGRES_17": 17,
+	"POSTGRES_18": 18,
 }
 
 var AskForType = askForType

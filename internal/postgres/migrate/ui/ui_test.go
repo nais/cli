@@ -210,6 +210,7 @@ func TestUIAskForType_source_is_POSTGRES_14_only_list_newer_versions(t *testing.
 
 	expected := []string{
 		"Same as source (POSTGRES_14)",
+		"POSTGRES_18",
 		"POSTGRES_17",
 		"POSTGRES_16",
 		"POSTGRES_15",
