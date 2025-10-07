@@ -12,7 +12,17 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/savioxavier/termlink"
 )
+
+type team struct {
+	Slug string `json:"slug"`
+	Url  string `json:"url"`
+}
+
+func (t team) String() string {
+	return termlink.Link(t.Slug, t.Url)
+}
 
 type workload struct {
 	Kind        string   `json:"kind"`
@@ -37,9 +47,8 @@ func (f workloadsWithIssues) String() string {
 	return strings.TrimRight(issues, "\n")
 }
 
-type team struct {
-	// TODO: Once https://github.com/pterm/pterm/issues/697 is resolved, we can use a link to Console instead of just the slug.
-	Slug      string              `json:"slug"`
+type statusEntry struct {
+	Team      team                `json:"team"`
 	Workloads int                 `json:"workloads"`
 	NotNais   int                 `heading:"Not Nais" json:"notNais"`
 	Issues    workloadsWithIssues `heading:"Critical Issues" json:"failing"`
@@ -52,13 +61,17 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 		Title: "Get a quick overview of the status of your teams.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
-			var teams []team
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return err
+			}
 
 			ret, err := naisapi.GetStatus(ctx, flags)
 			if err != nil {
 				return err
 			}
 
+			var entries []statusEntry
 			for _, t := range ret {
 				workloadsWithCriticalIssues := make([]gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload, 0)
 				for _, w := range t.Team.Workloads.Nodes {
@@ -67,8 +80,11 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 					}
 				}
 
-				n := team{
-					Slug:      t.Team.Slug,
+				n := statusEntry{
+					Team: team{
+						Slug: t.Team.Slug,
+						Url:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
+					},
 					Workloads: t.Team.Workloads.PageInfo.TotalCount,
 					NotNais:   len(workloadsWithCriticalIssues),
 					Issues:    make(workloadsWithIssues, 0),
@@ -84,19 +100,19 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 					}
 					n.Issues = append(n.Issues, a)
 				}
-				teams = append(teams, n)
+				entries = append(entries, n)
 			}
 
-			if len(teams) == 0 {
+			if len(entries) == 0 {
 				out.Println("No teams found.")
 				return nil
 			}
 
 			if flags.Output == "json" {
-				return out.JSON(output.JSONWithPrettyOutput()).Render(teams)
+				return out.JSON(output.JSONWithPrettyOutput()).Render(entries)
 			}
 
-			return out.Table().Render(teams)
+			return out.Table().Render(entries)
 		},
 	}
 }

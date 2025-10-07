@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -9,8 +10,18 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/savioxavier/termlink"
 	"k8s.io/utils/strings/slices"
 )
+
+type teamWorkload struct {
+	Name string `json:"name"`
+	Url  string `json:"url"`
+}
+
+func (tw teamWorkload) String() string {
+	return termlink.Link(tw.Name, tw.Url)
+}
 
 func teamCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Team{Api: parentFlags}
@@ -282,14 +293,18 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			// TODO: Once pterm/pterm#697 is resolved, we can use a link to Console instead of just the workload name.
-			type workload struct {
-				Name            string `json:"name"`
-				Environment     string `json:"environment"`
-				Type            string `json:"type"`
-				State           string `json:"state"`
-				Vulnerabilities int    `json:"vulnerabilities"`
-				Issues          int    `heading:"Critical Issues" json:"issues"`
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return err
+			}
+
+			type entry struct {
+				Workload        teamWorkload `json:"workload"`
+				Environment     string       `json:"environment"`
+				Type            string       `json:"type"`
+				State           string       `json:"state"`
+				Vulnerabilities int          `json:"vulnerabilities"`
+				Issues          int          `heading:"Critical Issues" json:"issues"`
 			}
 
 			teamSlug := args[0]
@@ -298,7 +313,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				return err
 			}
 
-			workloads := make([]workload, len(ret))
+			entries := make([]entry, len(ret))
 			for i, w := range ret {
 				state := "(unknown)"
 				switch actual := w.(type) {
@@ -308,8 +323,23 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 					state = string(actual.GetJobState())
 				}
 
-				workloads[i] = workload{
-					Name:            w.GetName(),
+				workloadType := "app"
+				if w.GetTypename() == "Job" {
+					workloadType = "job"
+				}
+
+				entries[i] = entry{
+					Workload: teamWorkload{
+						Name: w.GetName(),
+						Url: fmt.Sprintf(
+							"https://%s/team/%s/%s/%s/%s",
+							user.ConsoleHost(),
+							teamSlug,
+							w.GetTeamEnvironment().Environment.Name,
+							workloadType,
+							w.GetName(),
+						),
+					},
 					Environment:     w.GetTeamEnvironment().Environment.Name,
 					Type:            w.GetTypename(),
 					State:           state,
@@ -319,7 +349,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 			}
 
 			if flags.Output == "json" {
-				return out.JSON(output.JSONWithPrettyOutput()).Render(workloads)
+				return out.JSON(output.JSONWithPrettyOutput()).Render(entries)
 			}
 
 			if len(ret) == 0 {
@@ -327,7 +357,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				return nil
 			}
 
-			return out.Table().Render(workloads)
+			return out.Table().Render(entries)
 		},
 		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
 			if len(toComplete) < 2 {
