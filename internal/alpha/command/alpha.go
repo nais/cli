@@ -15,6 +15,7 @@ func Alpha(parentFlags *root.Flags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "alpha",
 		Title:       "Alpha versions of Nais CLI commands.",
+		Description: "These commands are usually fully functional and ready to use, but the API might evolve based on your feedback.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			naisapi.Api(flags),
