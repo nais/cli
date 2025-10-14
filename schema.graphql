@@ -671,7 +671,7 @@ Ordering options for items returned from the connection.
 """
 Filtering options for items returned from the connection.
 """
-		filter: IssueFilter
+		filter: ResourceIssueFilter
 	): IssueConnection!
 """
 BigQuery datasets referenced by the application. This does not currently support pagination, but will return all available datasets.
@@ -1332,7 +1332,7 @@ Whether or not the asynchronous deletion process was started.
 """
 Container image.
 """
-type ContainerImage implements Node{
+type ContainerImage implements Node & ActivityLogger{
 """
 The globally unique ID of the container image node.
 """
@@ -1345,6 +1345,31 @@ Name of the container image.
 Tag of the container image.
 """
 	tag: String!
+"""
+Activity log associated with the container image.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 """
 Whether the image has a software bill of materials (SBOM) attached to it.
 """
@@ -1976,6 +2001,26 @@ type DeprecatedRegistryIssue implements Issue & Node{
 input DisableReconcilerInput {
 	name: String!
 }
+
+"""
+Represents a span or length of time.
+
+Durations are expressed as human-readable strings composed of decimal numbers followed by unit suffixes. Supported units are:
+
+| Unit     | Meaning      | Example |
+| :------- | :----------- | :------ |
+| ns       | nanoseconds  | `150ns` |
+| us or µs | microseconds | `250us` |
+| ms       | milliseconds | `500ms` |
+| s        | seconds      | `45s`   |
+| m        | minutes      | `3m`    |
+| h        | hours        | `2h`    |
+
+Durations can combine multiple units, e.g. `1h30m`, `2h45m30s`, or `300ms`.
+
+A leading - sign indicates a negative duration, e.g. `-15m`.
+"""
+scalar Duration
 
 input EnableReconcilerInput {
 	name: String!
@@ -2724,7 +2769,7 @@ Ordering options for items returned from the connection.
 """
 Filtering options for items returned from the connection.
 """
-		filter: IssueFilter
+		filter: ResourceIssueFilter
 	): IssueConnection!
 """
 BigQuery datasets referenced by the job. This does not currently support pagination, but will return all available datasets.
@@ -3287,6 +3332,42 @@ The globally unique ID of the log destination.
 	id: ID!
 }
 
+type LogLine {
+"""
+Timestamp of the log line.
+"""
+	time: Time!
+"""
+The log line message.
+"""
+	message: String!
+"""
+Labels attached to the log line.
+"""
+	labels: [LogLineLabel!]!
+}
+
+type LogLineLabel {
+"""
+The key of the label.
+"""
+	key: String!
+"""
+The value of the label.
+"""
+	value: String!
+}
+
+input LogSubscriptionFilter {
+	query: String!
+	logSubscriptionInitialBatch: LogSubscriptionInitialBatch
+}
+
+input LogSubscriptionInitialBatch {
+	since: Duration
+	limit: Int
+}
+
 type MaintenanceWindow {
 """
 Day of the week when the maintenance is scheduled.
@@ -3699,6 +3780,35 @@ Available storage in GB.
 """
 	storageGB: Int!
 """
+Issues that affects the instance.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: ResourceIssueFilter
+	): IssueConnection!
+"""
 Activity log associated with the reconciler.
 """
 	activityLog(
@@ -3949,6 +4059,10 @@ enum OpenSearchOrderField {
 	NAME
 	ENVIRONMENT
 	STATE
+"""
+Order OpenSearches by issue severity
+"""
+	ISSUES
 }
 
 enum OpenSearchState {
@@ -4922,6 +5036,11 @@ type RequestTeamDeletionPayload {
 The delete key for the team. This can be used to confirm the deletion of the team.
 """
 	key: TeamDeleteKey
+}
+
+input ResourceIssueFilter {
+	severity: Severity
+	issueType: IssueType
 }
 
 enum ResourceType {
@@ -6234,7 +6353,7 @@ type SqlInstance implements Persistence & Node{
 	metrics: SqlInstanceMetrics!
 	state: SqlInstanceState!
 """
-Issues that affects the workload.
+Issues that affects the instance.
 """
 	issues(
 """
@@ -6257,6 +6376,10 @@ Get items before this cursor.
 Ordering options for items returned from the connection.
 """
 		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: ResourceIssueFilter
 	): IssueConnection!
 	cost: SqlInstanceCost!
 }
@@ -6340,6 +6463,10 @@ enum SqlInstanceOrderField {
 	MEMORY_UTILIZATION
 	DISK_UTILIZATION
 	STATE
+"""
+Order SqlInstances by issue severity
+"""
+	ISSUES
 }
 
 enum SqlInstanceState {
@@ -6426,7 +6553,18 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 """
 scalar String
 
+"""
+The subscription root for the Nais GraphQL API.
+"""
 type Subscription {
+"""
+Subscribe to log lines
+
+This subscription is used to stream log lines.
+"""
+	log(
+		filter: LogSubscriptionFilter!
+	): LogLine!
 """
 Subscribe to workload logs
 
@@ -8773,6 +8911,35 @@ Available memory for the Valkey instance.
 	memory: ValkeyMemory!
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 """
+Issues that affects the instance.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: ResourceIssueFilter
+	): IssueConnection!
+"""
 Activity log associated with the reconciler.
 """
 	activityLog(
@@ -9049,6 +9216,10 @@ enum ValkeyOrderField {
 	NAME
 	ENVIRONMENT
 	STATE
+"""
+Order Valkeys by issue severity
+"""
+	ISSUES
 }
 
 enum ValkeyState {
@@ -9120,6 +9291,29 @@ The old value of the field.
 The new value of the field.
 """
 	newValue: String
+}
+
+type VulnerabilityActivityLogEntryData {
+"""
+The unique identifier of the vulnerability. E.g. CVE-****-****.
+"""
+	identifier: String!
+"""
+The severity of the vulnerability.
+"""
+	severity: ImageVulnerabilitySeverity!
+"""
+The package affected by the vulnerability.
+"""
+	package: String!
+"""
+The previous suppression state of the vulnerability.
+"""
+	previousSuppression: ImageVulnerabilitySuppression
+"""
+The new suppression state of the vulnerability.
+"""
+	newSuppression: ImageVulnerabilitySuppression
 }
 
 """
@@ -9199,11 +9393,15 @@ Name of the resource that was affected by the action.
 """
 The team slug that the entry belongs to.
 """
-	teamSlug: Slug!
+	teamSlug: Slug
 """
 The environment name that the entry belongs to.
 """
 	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: VulnerabilityActivityLogEntryData!
 }
 
 type VulnerableImageIssue implements Issue & Node{
@@ -9309,7 +9507,7 @@ Interface for workloads.
 		last: Int
 		before: Cursor
 		orderBy: IssueOrder
-		filter: IssueFilter
+		filter: ResourceIssueFilter
 	): IssueConnection!
 """
 Interface for workloads.
