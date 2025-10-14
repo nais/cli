@@ -3,15 +3,20 @@ package naisapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/Khan/genqlient/graphql"
+	logflag "github.com/nais/cli/internal/log/command/flag"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"github.com/sirupsen/logrus"
 	"github.com/suessflorian/gqlfetch"
 )
 
@@ -148,27 +153,6 @@ func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeams
 		return u.Teams.Nodes, nil
 	}
 
-	return nil, nil
-}
-
-func TailLog(ctx context.Context, _ *flag.Status) ([]gql.TailLogLogLogLine, error) {
-	_ = `# @genqlient
-subscription TailLog($query: String!, $batchLimit: Int, $batchSince: Duration) {
-  log(
-    filter: {
-      query: $query
-      logSubscriptionInitialBatch: { limit: $batchLimit, since: $batchSince }
-    }
-  ) {
-    message
-    labels {
-      key
-      value
-    }
-    time
-  }
-}
-	`
 	return nil, nil
 }
 
@@ -383,4 +367,63 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 
 	_, err = gql.RemoveTeamMember(ctx, client, teamSlug, email)
 	return err
+}
+
+func TailLog(ctx context.Context, out naistrix.Output, flags *logflag.LogFlags) error {
+	query := `# @genqlient
+		subscription TailLog($query: String!, $batchLimit: Int, $batchSince: Duration) {
+			log(
+				filter: {
+					query: $query
+					logSubscriptionInitialBatch: { limit: $batchLimit, since: $batchSince }
+				}
+			) {
+				message
+				labels {
+					key
+					value
+				}
+				time
+			}
+		}
+	`
+
+	user, err := GetAuthenticatedUser(ctx)
+	if err != nil {
+		return err
+	}
+	_ = user
+	req := graphql.Request{
+		OpName: "TailLog",
+		Query:  query,
+		Variables: struct {
+			Query      string `json:"query"`
+			BatchLimit int    `json:"batchLimit"`
+			BatchSince string `json:"batchSince"`
+		}{
+			Query:      `{service_namespace="nais-system"}`,
+			BatchLimit: 100,
+			BatchSince: (time.Minute * 5).String(),
+		},
+	}
+	_ = req
+
+	u, err := url.Parse(user.APIURL())
+	if err != nil {
+		return fmt.Errorf("parse api url: %w", err)
+	}
+
+	c := make(chan gql.TailLogWsResponse)
+
+	go func() {
+		for msg := range c {
+			out.Printf("%v\n", msg.Data.Log)
+		}
+	}()
+
+	if err := DoSSEQuery(u, user.HTTPClient(ctx), req, c, logrus.New()); err != nil {
+		return fmt.Errorf("sse sub: %w", err)
+	}
+
+	return nil
 }

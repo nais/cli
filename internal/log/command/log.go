@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/alpha/command/flag"
-	"github.com/nais/cli/internal/log"
 	logflags "github.com/nais/cli/internal/log/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
@@ -17,7 +17,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 		Description: "Fetch and stream logs from workloads and teams.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return log.Run(ctx, out, flags)
+			return naisapi.TailLog(ctx, out, flags)
 		},
 	}
 }
