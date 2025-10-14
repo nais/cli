@@ -586,7 +586,6 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionE
 }
 
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -682,6 +681,7 @@ type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdges
 
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
 }
+
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
 }
 
@@ -715,7 +715,6 @@ func __unmarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConn
 }
 
 func __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication:
@@ -885,7 +884,6 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) GetNodes() []GetTeamWo
 }
 
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -1088,6 +1086,7 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
+
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
 
@@ -1121,7 +1120,6 @@ func __unmarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(b [
 }
 
 func __marshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication:
@@ -1332,7 +1330,6 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 }
 
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -1428,6 +1425,7 @@ type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccess
 
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
 }
+
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
 }
 
@@ -1461,7 +1459,6 @@ func __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesV
 }
 
 func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication:
@@ -1620,7 +1617,6 @@ func __unmarshalIsAdminMeAuthenticatedUser(b []byte, v *IsAdminMeAuthenticatedUs
 }
 
 func __marshalIsAdminMeAuthenticatedUser(v *IsAdminMeAuthenticatedUser) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *IsAdminMeServiceAccount:
@@ -1688,7 +1684,6 @@ type IsAdminResponse struct {
 func (v *IsAdminResponse) GetMe() IsAdminMeAuthenticatedUser { return v.Me }
 
 func (v *IsAdminResponse) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -2051,7 +2046,6 @@ func __unmarshalTeamStatusMeAuthenticatedUser(b []byte, v *TeamStatusMeAuthentic
 }
 
 func __marshalTeamStatusMeAuthenticatedUser(v *TeamStatusMeAuthenticatedUser) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeServiceAccount:
@@ -2178,7 +2172,6 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 }
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -2353,6 +2346,7 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
 
@@ -2386,7 +2380,6 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 }
 
 func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication:
@@ -2432,7 +2425,6 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 }
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -2582,26 +2574,37 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
+
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 
@@ -2665,7 +2668,6 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 }
 
 func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue:
@@ -2911,7 +2913,6 @@ type TeamStatusResponse struct {
 func (v *TeamStatusResponse) GetMe() TeamStatusMeAuthenticatedUser { return v.Me }
 
 func (v *TeamStatusResponse) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
@@ -3131,7 +3132,6 @@ func __unmarshalUserTeamsMeAuthenticatedUser(b []byte, v *UserTeamsMeAuthenticat
 }
 
 func __marshalUserTeamsMeAuthenticatedUser(v *UserTeamsMeAuthenticatedUser) ([]byte, error) {
-
 	var typename string
 	switch v := (*v).(type) {
 	case *UserTeamsMeServiceAccount:
@@ -3251,7 +3251,6 @@ type UserTeamsResponse struct {
 func (v *UserTeamsResponse) GetMe() UserTeamsMeAuthenticatedUser { return v.Me }
 
 func (v *UserTeamsResponse) UnmarshalJSON(b []byte) error {
-
 	if string(b) == "null" {
 		return nil
 	}
