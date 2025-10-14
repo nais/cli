@@ -13,4 +13,6 @@ bindings:
     type: time.Time
   Date:
     type: time.Time
+  Duration:
+    type: time.Duration
 generated: internal/naisapi/gql/generated.go

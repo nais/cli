@@ -151,6 +151,27 @@ func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeams
 	return nil, nil
 }
 
+func TailLog(ctx context.Context, _ *flag.Status) ([]gql.TailLogLogLogLine, error) {
+	_ = `# @genqlient
+subscription TailLog($query: String!, $batchLimit: Int, $batchSince: Duration) {
+  log(
+    filter: {
+      query: $query
+      logSubscriptionInitialBatch: { limit: $batchLimit, since: $batchSince }
+    }
+  ) {
+    message
+    labels {
+      key
+      value
+    }
+    time
+  }
+}
+	`
+	return nil, nil
+}
+
 func GetAllTeamSlugs(ctx context.Context) ([]string, error) {
 	ret, err := GetAllTeams(ctx)
 	if err != nil {

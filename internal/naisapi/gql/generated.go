@@ -5,7 +5,9 @@ package gql
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 )
@@ -1868,6 +1870,50 @@ func (v *RemoveTeamMemberResponse) GetRemoveTeamMember() RemoveTeamMemberRemoveT
 	return v.RemoveTeamMember
 }
 
+// TailLogLogLogLine includes the requested fields of the GraphQL type LogLine.
+type TailLogLogLogLine struct {
+	// The log line message.
+	Message string `json:"message"`
+	// Labels attached to the log line.
+	Labels []TailLogLogLogLineLabelsLogLineLabel `json:"labels"`
+	// Timestamp of the log line.
+	Time time.Time `json:"time"`
+}
+
+// GetMessage returns TailLogLogLogLine.Message, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLine) GetMessage() string { return v.Message }
+
+// GetLabels returns TailLogLogLogLine.Labels, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLine) GetLabels() []TailLogLogLogLineLabelsLogLineLabel { return v.Labels }
+
+// GetTime returns TailLogLogLogLine.Time, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLine) GetTime() time.Time { return v.Time }
+
+// TailLogLogLogLineLabelsLogLineLabel includes the requested fields of the GraphQL type LogLineLabel.
+type TailLogLogLogLineLabelsLogLineLabel struct {
+	// The key of the label.
+	Key string `json:"key"`
+	// The value of the label.
+	Value string `json:"value"`
+}
+
+// GetKey returns TailLogLogLogLineLabelsLogLineLabel.Key, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLineLabelsLogLineLabel) GetKey() string { return v.Key }
+
+// GetValue returns TailLogLogLogLineLabelsLogLineLabel.Value, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLineLabelsLogLineLabel) GetValue() string { return v.Value }
+
+// TailLogResponse is returned by TailLog on success.
+type TailLogResponse struct {
+	// Subscribe to log lines
+	//
+	// This subscription is used to stream log lines.
+	Log TailLogLogLogLine `json:"log"`
+}
+
+// GetLog returns TailLogResponse.Log, and is useful for accessing the field via an interface.
+func (v *TailLogResponse) GetLog() TailLogLogLogLine { return v.Log }
+
 // Team member roles.
 type TeamMemberRole string
 
@@ -3567,6 +3613,22 @@ func (v *__RemoveTeamMemberInput) GetSlug() string { return v.Slug }
 // GetEmail returns __RemoveTeamMemberInput.Email, and is useful for accessing the field via an interface.
 func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
+// __TailLogInput is used internally by genqlient
+type __TailLogInput struct {
+	Query      string        `json:"query"`
+	BatchLimit int           `json:"batchLimit"`
+	BatchSince time.Duration `json:"batchSince"`
+}
+
+// GetQuery returns __TailLogInput.Query, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetQuery() string { return v.Query }
+
+// GetBatchLimit returns __TailLogInput.BatchLimit, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetBatchLimit() int { return v.BatchLimit }
+
+// GetBatchSince returns __TailLogInput.BatchSince, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetBatchSince() time.Duration { return v.BatchSince }
+
 // __TeamMembersInput is used internally by genqlient
 type __TeamMembersInput struct {
 	Slug string `json:"slug"`
@@ -4213,6 +4275,69 @@ func RemoveTeamMember(
 	)
 
 	return data_, err_
+}
+
+// The subscription executed by TailLog.
+const TailLog_Operation = `
+subscription TailLog ($query: String!, $batchLimit: Int, $batchSince: Duration) {
+	log(filter: {query:$query,logSubscriptionInitialBatch:{limit:$batchLimit,since:$batchSince}}) {
+		message
+		labels {
+			key
+			value
+		}
+		time
+	}
+}
+`
+
+// To unsubscribe, use [graphql.WebSocketClient.Unsubscribe]
+func TailLog(
+	ctx_ context.Context,
+	client_ graphql.WebSocketClient,
+	query string,
+	batchLimit int,
+	batchSince time.Duration,
+) (dataChan_ chan TailLogWsResponse, subscriptionID_ string, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TailLog",
+		Query:  TailLog_Operation,
+		Variables: &__TailLogInput{
+			Query:      query,
+			BatchLimit: batchLimit,
+			BatchSince: batchSince,
+		},
+	}
+
+	dataChan_ = make(chan TailLogWsResponse)
+	subscriptionID_, err_ = client_.Subscribe(req_, dataChan_, TailLogForwardData)
+
+	return dataChan_, subscriptionID_, err_
+}
+
+type TailLogWsResponse graphql.BaseResponse[*TailLogResponse]
+
+func TailLogForwardData(interfaceChan interface{}, jsonRawMsg json.RawMessage) error {
+	var gqlResp graphql.Response
+	var wsResp TailLogWsResponse
+	err := json.Unmarshal(jsonRawMsg, &gqlResp)
+	if err != nil {
+		return err
+	}
+	if len(gqlResp.Errors) == 0 {
+		err = json.Unmarshal(jsonRawMsg, &wsResp)
+		if err != nil {
+			return err
+		}
+	} else {
+		wsResp.Errors = gqlResp.Errors
+	}
+	dataChan_, ok := interfaceChan.(chan TailLogWsResponse)
+	if !ok {
+		return errors.New("failed to cast interface into 'chan TailLogWsResponse'")
+	}
+	dataChan_ <- wsResp
+	return nil
 }
 
 // The query executed by TeamMembers.
