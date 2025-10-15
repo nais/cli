@@ -22,27 +22,27 @@ func NewQueryBuilder() *QueryBuilder {
 	}
 }
 
-// AddTeam adds a team in the service_namespace selector in the query.
-func (qb *QueryBuilder) AddTeam(team string) *QueryBuilder {
-	qb.teams = append(qb.teams, team)
+// AddTeams adds teams in the service_namespace selector in the query.
+func (qb *QueryBuilder) AddTeams(team ...string) *QueryBuilder {
+	qb.teams = append(qb.teams, team...)
 	return qb
 }
 
-// AddEnvironment adds an environment in the k8s_cluster_name selector in the query.
-func (qb *QueryBuilder) AddEnvironment(environment string) *QueryBuilder {
-	qb.environments = append(qb.environments, environment)
+// AddEnvironments adds environments in the k8s_cluster_name selector in the query.
+func (qb *QueryBuilder) AddEnvironments(environment ...string) *QueryBuilder {
+	qb.environments = append(qb.environments, environment...)
 	return qb
 }
 
-// AddWorkload adds a workload in the service_name selector in the query.
-func (qb *QueryBuilder) AddWorkload(workload string) *QueryBuilder {
-	qb.workloads = append(qb.workloads, workload)
+// AddWorkloads adds workloads in the service_name selector in the query.
+func (qb *QueryBuilder) AddWorkloads(workload ...string) *QueryBuilder {
+	qb.workloads = append(qb.workloads, workload...)
 	return qb
 }
 
-// AddContainer adds a container in the k8s_container_name filter in the query.
-func (qb *QueryBuilder) AddContainer(container string) *QueryBuilder {
-	qb.containers = append(qb.containers, container)
+// AddContainers adds containers in the k8s_container_name filter in the query.
+func (qb *QueryBuilder) AddContainers(container ...string) *QueryBuilder {
+	qb.containers = append(qb.containers, container...)
 	return qb
 }
 

@@ -19,10 +19,10 @@ func TestQueryBuilder_Build(t *testing.T) {
 	t.Run("multiple fields added", func(t *testing.T) {
 		query := command.
 			NewQueryBuilder().
-			AddTeam("t1").AddTeam("t2").
-			AddEnvironment("e1").AddEnvironment("e2").
-			AddWorkload("w1").AddWorkload("w2").
-			AddContainer("c1").AddContainer("c2").
+			AddTeams("t1", "t2").
+			AddEnvironments("e1", "e2").
+			AddWorkloads("w1", "w2").
+			AddContainers("c1", "c2").
 			Build()
 
 		expected := `{` +

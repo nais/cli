@@ -3,24 +3,25 @@ package naisapi
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/sirupsen/logrus"
 )
 
-func DoSSEQuery[T any](u *url.URL, client *http.Client, graphqlRequest graphql.Request, c chan T, log logrus.FieldLogger) error {
-	body := bytes.Buffer{}
-	err := json.NewEncoder(&body).Encode(graphqlRequest)
+func SSEQuery[T any](ctx context.Context, graphqlRequest graphql.Request, f func(T)) error {
+	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
-		log.WithError(err).Error("Error encoding GraphQL request")
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, u.String(), &body)
+	body := bytes.Buffer{}
+	if err := json.NewEncoder(&body).Encode(graphqlRequest); err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, user.APIURL(), &body)
 	if err != nil {
 		return err
 	}
@@ -28,44 +29,41 @@ func DoSSEQuery[T any](u *url.URL, client *http.Client, graphqlRequest graphql.R
 	req.Header.Set("Accept", "text/event-stream")
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	resp, err := user.HTTPClient(ctx).Do(req)
 	if err != nil {
-		log.WithError(err).Error("Error connecting to SSE endpoint")
+		return err
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	scanner := bufio.NewScanner(resp.Body)
 
-	var event, data []byte
+	var data []byte
 	for scanner.Scan() {
 		line := scanner.Bytes()
+
 		// empty line indicates end of event
 		if len(line) == 0 {
-			// Event ended, print if any data was received
-			if len(data) > 0 {
-				fmt.Printf("Event: %s\nData: %s\n\n", event, data)
-
-				var decoded T
-				err := json.Unmarshal(data, &decoded)
-				if err != nil {
-					return err
-				}
-
-				c <- decoded
-				event, data = nil, nil
+			if len(data) == 0 {
+				continue
 			}
-			continue
+
+			var decoded graphql.BaseResponse[T]
+			if err := json.Unmarshal(data, &decoded); err != nil {
+				return err
+			}
+
+			f(decoded.Data)
+			data = nil
 		}
-		if after, ok := bytes.CutPrefix(line, []byte("event:")); ok {
-			event = bytes.TrimSpace(after)
-		}
+
 		if after, ok := bytes.CutPrefix(line, []byte("data:")); ok {
 			data = append(data, bytes.TrimSpace(after)...)
 			data = append(data, '\n')
 		}
 	}
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-	return nil
+
+	return scanner.Err()
 }

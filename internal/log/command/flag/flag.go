@@ -5,11 +5,10 @@ import (
 )
 
 type LogFlags struct {
-	Team      string `short:"t" long:"team" description:"Team of the workload" required:"true"`
-	Workload  string `short:"w" long:"workload" description:"Name of the workload to fetch logs from" required:"true"`
-	Container string `short:"c" long:"container" description:"Name of the container to fetch logs from (if multiple containers exist)"`
-	Follow    bool   `short:"f" long:"follow" description:"Follow the log output"`
-	Lines     int    `short:"n" long:"lines" description:"Number of lines to show from the end of the logs" default:"100"`
-
 	*flag.Alpha
+
+	Team        []string `name:"team" short:"t" usage:"Filter logs to a single |team|. Can be repeated."`
+	Environment []string `name:"environment" short:"e" usage:"Filter logs to a specific |environment|. Can be repeated."`
+	Workload    []string `name:"workload" short:"w" usage:"Filter logs to a single |workload|. Can be repeated."`
+	Container   []string `name:"container" short:"c" usage:"Filter logs to a specific |container|. Can be repeated."`
 }

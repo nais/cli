@@ -3360,7 +3360,7 @@ The value of the label.
 
 input LogSubscriptionFilter {
 	query: String!
-	logSubscriptionInitialBatch: LogSubscriptionInitialBatch
+	initialBatch: LogSubscriptionInitialBatch
 }
 
 input LogSubscriptionInitialBatch {
