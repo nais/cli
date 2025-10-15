@@ -366,11 +366,12 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 	return err
 }
 
-func TailLog(ctx context.Context, out naistrix.Output, logQuery string) error {
-	query := `# @genqlient
-		subscription TailLog($query: String!, $limit: Int, $since: Duration) {
+func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery string) error {
+	gqlQuery := `# @genqlient
+		subscription TailLog($environment: String!, $query: String!, $limit: Int, $since: Duration) {
 			log(
 				filter: {
+					environmentName: $environment
 					query: $query
 					initialBatch: {
 						limit: $limit
@@ -390,19 +391,25 @@ func TailLog(ctx context.Context, out naistrix.Output, logQuery string) error {
 
 	req := graphql.Request{
 		OpName: "TailLog",
-		Query:  query,
+		Query:  gqlQuery,
 		Variables: struct {
-			Query string `json:"query"`
-			Limit int    `json:"limit"`
-			Since string `json:"since"`
+			Environment string `json:"environment"`
+			Query       string `json:"query"`
+			Limit       int    `json:"limit"`
+			Since       string `json:"since"`
 		}{
-			Query: logQuery,
-			Limit: 100,
-			Since: time.Hour.String(),
+			Environment: environment,
+			Query:       lokiQuery,
+			Limit:       100,
+			Since:       time.Hour.String(),
 		},
 	}
 
 	cb := func(entry *gql.TailLogResponse) {
+		if entry == nil {
+			return
+		}
+
 		out.Println(entry.Log.Time)
 		out.Println(entry.Log.Message)
 		out.Println(entry.Log.Labels)

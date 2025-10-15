@@ -6,31 +6,23 @@ import (
 )
 
 type QueryBuilder struct {
-	teams        []string
-	environments []string
-	workloads    []string
-	containers   []string
+	teams      []string
+	workloads  []string
+	containers []string
 }
 
 // NewQueryBuilder creates a new instance of QueryBuilder.
 func NewQueryBuilder() *QueryBuilder {
 	return &QueryBuilder{
-		teams:        make([]string, 0),
-		environments: make([]string, 0),
-		workloads:    make([]string, 0),
-		containers:   make([]string, 0),
+		teams:      make([]string, 0),
+		workloads:  make([]string, 0),
+		containers: make([]string, 0),
 	}
 }
 
 // AddTeams adds teams in the service_namespace selector in the query.
 func (qb *QueryBuilder) AddTeams(team ...string) *QueryBuilder {
 	qb.teams = append(qb.teams, team...)
-	return qb
-}
-
-// AddEnvironments adds environments in the k8s_cluster_name selector in the query.
-func (qb *QueryBuilder) AddEnvironments(environment ...string) *QueryBuilder {
-	qb.environments = append(qb.environments, environment...)
 	return qb
 }
 
@@ -53,10 +45,6 @@ func (qb *QueryBuilder) Build() string {
 
 	if len(qb.teams) > 0 {
 		selectors = append(selectors, fmt.Sprintf("service_namespace=~%q", strings.Join(qb.teams, "|")))
-	}
-
-	if len(qb.environments) > 0 {
-		selectors = append(selectors, fmt.Sprintf("k8s_cluster_name=~%q", strings.Join(qb.environments, "|")))
 	}
 
 	if len(qb.workloads) > 0 {
