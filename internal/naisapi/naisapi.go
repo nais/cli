@@ -397,8 +397,8 @@ func TailLog(ctx context.Context, out naistrix.Output, logQuery string) error {
 			Since string `json:"since"`
 		}{
 			Query: logQuery,
-			Limit: 5,
-			Since: time.Minute.String(),
+			Limit: 100,
+			Since: time.Hour.String(),
 		},
 	}
 
