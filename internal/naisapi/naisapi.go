@@ -414,6 +414,7 @@ func TailLog(ctx context.Context, out naistrix.Output, flags *logflag.LogFlags) 
 	}
 
 	c := make(chan gql.TailLogWsResponse)
+	defer close(c)
 
 	go func() {
 		for msg := range c {
