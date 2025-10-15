@@ -1,7 +1,6 @@
 package command_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/nais/cli/internal/log/command"
@@ -20,7 +19,6 @@ func TestQueryBuilder_Build(t *testing.T) {
 		query := command.
 			NewQueryBuilder().
 			AddTeams("t1", "t2").
-			AddEnvironments("e1", "e2").
 			AddWorkloads("w1", "w2").
 			AddContainers("c1", "c2").
 			Build()
@@ -28,7 +26,6 @@ func TestQueryBuilder_Build(t *testing.T) {
 		expected := `{` +
 			`service_name!=""` +
 			`,service_namespace=~"t1|t2"` +
-			`,k8s_cluster_name=~"e1|e2"` +
 			`,service_name=~"w1|w2"` +
 			`}` +
 			` | k8s_container_name=~"c1|c2"`
@@ -36,7 +33,5 @@ func TestQueryBuilder_Build(t *testing.T) {
 		if query != expected {
 			t.Errorf("Expected query to be %q, got %q", expected, query)
 		}
-
-		fmt.Println(expected)
 	})
 }

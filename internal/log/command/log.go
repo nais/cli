@@ -18,6 +18,10 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 		Description: "Fetch and stream logs from workloads and teams.",
 		Flags:       flags,
 		ValidateFunc: func(ctx context.Context, args []string) error {
+			if flags.Environment == "" {
+				return fmt.Errorf("--environment is required")
+			}
+
 			if len(flags.Team) == 0 {
 				return fmt.Errorf("--team is required")
 			}
@@ -27,12 +31,11 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			query := NewQueryBuilder().
 				AddTeams(flags.Team...).
-				AddEnvironments(flags.Environment...).
 				AddWorkloads(flags.Workload...).
 				AddContainers(flags.Container...).
 				Build()
 
-			if err := naisapi.TailLog(ctx, out, query); err != nil {
+			if err := naisapi.TailLog(ctx, out, flags.Environment, query); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 

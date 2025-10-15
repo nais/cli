@@ -3359,6 +3359,7 @@ The value of the label.
 }
 
 input LogSubscriptionFilter {
+	environmentName: String!
 	query: String!
 	initialBatch: LogSubscriptionInitialBatch
 }

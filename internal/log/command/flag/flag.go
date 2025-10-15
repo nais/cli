@@ -7,8 +7,8 @@ import (
 type LogFlags struct {
 	*flag.Alpha
 
+	Environment string   `name:"environment" short:"e" usage:"Filter logs to a specific |environment|."`
 	Team        []string `name:"team" short:"t" usage:"Filter logs to a single |team|. Can be repeated."`
-	Environment []string `name:"environment" short:"e" usage:"Filter logs to a specific |environment|. Can be repeated."`
 	Workload    []string `name:"workload" short:"w" usage:"Filter logs to a single |workload|. Can be repeated."`
 	Container   []string `name:"container" short:"c" usage:"Filter logs to a specific |container|. Can be repeated."`
 }

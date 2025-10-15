@@ -3615,10 +3615,14 @@ func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
 // __TailLogInput is used internally by genqlient
 type __TailLogInput struct {
-	Query string        `json:"query"`
-	Limit int           `json:"limit"`
-	Since time.Duration `json:"since"`
+	Environment string        `json:"environment"`
+	Query       string        `json:"query"`
+	Limit       int           `json:"limit"`
+	Since       time.Duration `json:"since"`
 }
+
+// GetEnvironment returns __TailLogInput.Environment, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetEnvironment() string { return v.Environment }
 
 // GetQuery returns __TailLogInput.Query, and is useful for accessing the field via an interface.
 func (v *__TailLogInput) GetQuery() string { return v.Query }
@@ -4279,8 +4283,8 @@ func RemoveTeamMember(
 
 // The subscription executed by TailLog.
 const TailLog_Operation = `
-subscription TailLog ($query: String!, $limit: Int, $since: Duration) {
-	log(filter: {query:$query,initialBatch:{limit:$limit,since:$since}}) {
+subscription TailLog ($environment: String!, $query: String!, $limit: Int, $since: Duration) {
+	log(filter: {environmentName:$environment,query:$query,initialBatch:{limit:$limit,since:$since}}) {
 		time
 		message
 		labels {
@@ -4295,6 +4299,7 @@ subscription TailLog ($query: String!, $limit: Int, $since: Duration) {
 func TailLog(
 	ctx_ context.Context,
 	client_ graphql.WebSocketClient,
+	environment string,
 	query string,
 	limit int,
 	since time.Duration,
@@ -4303,9 +4308,10 @@ func TailLog(
 		OpName: "TailLog",
 		Query:  TailLog_Operation,
 		Variables: &__TailLogInput{
-			Query: query,
-			Limit: limit,
-			Since: since,
+			Environment: environment,
+			Query:       query,
+			Limit:       limit,
+			Since:       since,
 		},
 	}
 
