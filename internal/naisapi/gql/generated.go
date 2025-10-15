@@ -586,6 +586,7 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionE
 }
 
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccess) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -681,7 +682,6 @@ type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdges
 
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
 }
-
 func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob) implementsGraphQLInterfaceGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload() {
 }
 
@@ -715,6 +715,7 @@ func __unmarshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConn
 }
 
 func __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload(v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkload) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication:
@@ -884,6 +885,7 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) GetNodes() []GetTeamWo
 }
 
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -1086,7 +1088,6 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
-
 func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
 
@@ -1120,6 +1121,7 @@ func __unmarshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(b [
 }
 
 func __marshalGetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload(v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication:
@@ -1330,6 +1332,7 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 }
 
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccess) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -1425,7 +1428,6 @@ type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccess
 
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
 }
-
 func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob) implementsGraphQLInterfaceGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload() {
 }
 
@@ -1459,6 +1461,7 @@ func __unmarshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesV
 }
 
 func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload(v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkload) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication:
@@ -1617,6 +1620,7 @@ func __unmarshalIsAdminMeAuthenticatedUser(b []byte, v *IsAdminMeAuthenticatedUs
 }
 
 func __marshalIsAdminMeAuthenticatedUser(v *IsAdminMeAuthenticatedUser) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *IsAdminMeServiceAccount:
@@ -1684,6 +1688,7 @@ type IsAdminResponse struct {
 func (v *IsAdminResponse) GetMe() IsAdminMeAuthenticatedUser { return v.Me }
 
 func (v *IsAdminResponse) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -1867,22 +1872,22 @@ func (v *RemoveTeamMemberResponse) GetRemoveTeamMember() RemoveTeamMemberRemoveT
 
 // TailLogLogLogLine includes the requested fields of the GraphQL type LogLine.
 type TailLogLogLogLine struct {
+	// Timestamp of the log line.
+	Time time.Time `json:"time"`
 	// The log line message.
 	Message string `json:"message"`
 	// Labels attached to the log line.
 	Labels []TailLogLogLogLineLabelsLogLineLabel `json:"labels"`
-	// Timestamp of the log line.
-	Time time.Time `json:"time"`
 }
+
+// GetTime returns TailLogLogLogLine.Time, and is useful for accessing the field via an interface.
+func (v *TailLogLogLogLine) GetTime() time.Time { return v.Time }
 
 // GetMessage returns TailLogLogLogLine.Message, and is useful for accessing the field via an interface.
 func (v *TailLogLogLogLine) GetMessage() string { return v.Message }
 
 // GetLabels returns TailLogLogLogLine.Labels, and is useful for accessing the field via an interface.
 func (v *TailLogLogLogLine) GetLabels() []TailLogLogLogLineLabelsLogLineLabel { return v.Labels }
-
-// GetTime returns TailLogLogLogLine.Time, and is useful for accessing the field via an interface.
-func (v *TailLogLogLogLine) GetTime() time.Time { return v.Time }
 
 // TailLogLogLogLineLabelsLogLineLabel includes the requested fields of the GraphQL type LogLineLabel.
 type TailLogLogLogLineLabelsLogLineLabel struct {
@@ -2046,6 +2051,7 @@ func __unmarshalTeamStatusMeAuthenticatedUser(b []byte, v *TeamStatusMeAuthentic
 }
 
 func __marshalTeamStatusMeAuthenticatedUser(v *TeamStatusMeAuthenticatedUser) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeServiceAccount:
@@ -2172,6 +2178,7 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 }
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -2346,7 +2353,6 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload() {
 }
 
@@ -2380,6 +2386,7 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 }
 
 func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication:
@@ -2425,6 +2432,7 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 }
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -2574,37 +2582,26 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 
@@ -2668,6 +2665,7 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 }
 
 func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue(v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue:
@@ -2913,6 +2911,7 @@ type TeamStatusResponse struct {
 func (v *TeamStatusResponse) GetMe() TeamStatusMeAuthenticatedUser { return v.Me }
 
 func (v *TeamStatusResponse) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -3132,6 +3131,7 @@ func __unmarshalUserTeamsMeAuthenticatedUser(b []byte, v *UserTeamsMeAuthenticat
 }
 
 func __marshalUserTeamsMeAuthenticatedUser(v *UserTeamsMeAuthenticatedUser) ([]byte, error) {
+
 	var typename string
 	switch v := (*v).(type) {
 	case *UserTeamsMeServiceAccount:
@@ -3251,6 +3251,7 @@ type UserTeamsResponse struct {
 func (v *UserTeamsResponse) GetMe() UserTeamsMeAuthenticatedUser { return v.Me }
 
 func (v *UserTeamsResponse) UnmarshalJSON(b []byte) error {
+
 	if string(b) == "null" {
 		return nil
 	}
@@ -3614,19 +3615,19 @@ func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
 // __TailLogInput is used internally by genqlient
 type __TailLogInput struct {
-	Query      string        `json:"query"`
-	BatchLimit int           `json:"batchLimit"`
-	BatchSince time.Duration `json:"batchSince"`
+	Query string        `json:"query"`
+	Limit int           `json:"limit"`
+	Since time.Duration `json:"since"`
 }
 
 // GetQuery returns __TailLogInput.Query, and is useful for accessing the field via an interface.
 func (v *__TailLogInput) GetQuery() string { return v.Query }
 
-// GetBatchLimit returns __TailLogInput.BatchLimit, and is useful for accessing the field via an interface.
-func (v *__TailLogInput) GetBatchLimit() int { return v.BatchLimit }
+// GetLimit returns __TailLogInput.Limit, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetLimit() int { return v.Limit }
 
-// GetBatchSince returns __TailLogInput.BatchSince, and is useful for accessing the field via an interface.
-func (v *__TailLogInput) GetBatchSince() time.Duration { return v.BatchSince }
+// GetSince returns __TailLogInput.Since, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetSince() time.Duration { return v.Since }
 
 // __TeamMembersInput is used internally by genqlient
 type __TeamMembersInput struct {
@@ -4278,14 +4279,14 @@ func RemoveTeamMember(
 
 // The subscription executed by TailLog.
 const TailLog_Operation = `
-subscription TailLog ($query: String!, $batchLimit: Int, $batchSince: Duration) {
-	log(filter: {query:$query,logSubscriptionInitialBatch:{limit:$batchLimit,since:$batchSince}}) {
+subscription TailLog ($query: String!, $limit: Int, $since: Duration) {
+	log(filter: {query:$query,initialBatch:{limit:$limit,since:$since}}) {
+		time
 		message
 		labels {
 			key
 			value
 		}
-		time
 	}
 }
 `
@@ -4295,16 +4296,16 @@ func TailLog(
 	ctx_ context.Context,
 	client_ graphql.WebSocketClient,
 	query string,
-	batchLimit int,
-	batchSince time.Duration,
+	limit int,
+	since time.Duration,
 ) (dataChan_ chan TailLogWsResponse, subscriptionID_ string, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "TailLog",
 		Query:  TailLog_Operation,
 		Variables: &__TailLogInput{
-			Query:      query,
-			BatchLimit: batchLimit,
-			BatchSince: batchSince,
+			Query: query,
+			Limit: limit,
+			Since: since,
 		},
 	}
 

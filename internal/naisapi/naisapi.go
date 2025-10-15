@@ -3,7 +3,6 @@ package naisapi
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -12,11 +11,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Khan/genqlient/graphql"
-	logflag "github.com/nais/cli/internal/log/command/flag"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
-	"github.com/sirupsen/logrus"
 	"github.com/suessflorian/gqlfetch"
 )
 
@@ -369,62 +366,48 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 	return err
 }
 
-func TailLog(ctx context.Context, out naistrix.Output, flags *logflag.LogFlags) error {
+func TailLog(ctx context.Context, out naistrix.Output, logQuery string) error {
 	query := `# @genqlient
-		subscription TailLog($query: String!, $batchLimit: Int, $batchSince: Duration) {
+		subscription TailLog($query: String!, $limit: Int, $since: Duration) {
 			log(
 				filter: {
 					query: $query
-					logSubscriptionInitialBatch: { limit: $batchLimit, since: $batchSince }
+					initialBatch: {
+						limit: $limit
+						since: $since
+					}
 				}
 			) {
+				time
 				message
 				labels {
 					key
 					value
 				}
-				time
 			}
 		}
 	`
 
-	user, err := GetAuthenticatedUser(ctx)
-	if err != nil {
-		return err
-	}
-	_ = user
 	req := graphql.Request{
 		OpName: "TailLog",
 		Query:  query,
 		Variables: struct {
-			Query      string `json:"query"`
-			BatchLimit int    `json:"batchLimit"`
-			BatchSince string `json:"batchSince"`
+			Query string `json:"query"`
+			Limit int    `json:"limit"`
+			Since string `json:"since"`
 		}{
-			Query:      `{service_namespace="nais-system"}`,
-			BatchLimit: 100,
-			BatchSince: (time.Minute * 5).String(),
+			Query: logQuery,
+			Limit: 5,
+			Since: time.Minute.String(),
 		},
 	}
-	_ = req
 
-	u, err := url.Parse(user.APIURL())
-	if err != nil {
-		return fmt.Errorf("parse api url: %w", err)
+	cb := func(entry *gql.TailLogResponse) {
+		out.Println(entry.Log.Time)
+		out.Println(entry.Log.Message)
+		out.Println(entry.Log.Labels)
+		out.Println()
 	}
 
-	c := make(chan gql.TailLogWsResponse)
-	defer close(c)
-
-	go func() {
-		for msg := range c {
-			out.Printf("%v\n", msg.Data.Log)
-		}
-	}()
-
-	if err := DoSSEQuery(u, user.HTTPClient(ctx), req, c, logrus.New()); err != nil {
-		return fmt.Errorf("sse sub: %w", err)
-	}
-
-	return nil
+	return SSEQuery(ctx, req, cb)
 }
