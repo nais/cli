@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/nais/cli/internal/alpha/command/flag"
 	logflags "github.com/nais/cli/internal/log/command/flag"
@@ -29,8 +30,18 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 			return nil
 		},
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return fmt.Errorf("unable to get authenticated user: %w", err)
+			}
+
+			queryEnvironment := flags.Environment
+			if user.Domain() == "nav.no" {
+				queryEnvironment = strings.TrimSuffix(queryEnvironment, "-gcp")
+			}
+
 			query := NewQueryBuilder().
-				AddEnvironments(flags.Environment).
+				AddEnvironments(queryEnvironment).
 				AddTeams(flags.Team...).
 				AddWorkloads(flags.Workload...).
 				AddContainers(flags.Container...).
