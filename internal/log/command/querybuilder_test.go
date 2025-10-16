@@ -18,6 +18,7 @@ func TestQueryBuilder_Build(t *testing.T) {
 	t.Run("multiple fields added", func(t *testing.T) {
 		query := command.
 			NewQueryBuilder().
+			AddEnvironments("e1", "e2").
 			AddTeams("t1", "t2").
 			AddWorkloads("w1", "w2").
 			AddContainers("c1", "c2").
@@ -25,6 +26,7 @@ func TestQueryBuilder_Build(t *testing.T) {
 
 		expected := `{` +
 			`service_name!=""` +
+			`,k8s_cluster_name=~"e1|e2"` +
 			`,service_namespace=~"t1|t2"` +
 			`,service_name=~"w1|w2"` +
 			`}` +
