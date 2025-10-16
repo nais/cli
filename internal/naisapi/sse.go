@@ -8,9 +8,10 @@ import (
 	"net/http"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-func SSEQuery[T any](ctx context.Context, graphqlRequest graphql.Request, f func(T)) error {
+func SSEQuery[T any](ctx context.Context, graphqlRequest graphql.Request, onData func(T), onError func(gqlerror.Error)) error {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err
@@ -50,12 +51,19 @@ func SSEQuery[T any](ctx context.Context, graphqlRequest graphql.Request, f func
 				continue
 			}
 
-			var decoded graphql.BaseResponse[T]
+			var decoded graphql.BaseResponse[*T]
 			if err := json.Unmarshal(data, &decoded); err != nil {
 				return err
 			}
 
-			f(decoded.Data)
+			if decoded.Data != nil {
+				onData(*decoded.Data)
+			}
+
+			for _, e := range decoded.Errors {
+				onError(*e)
+			}
+
 			data = nil
 		}
 

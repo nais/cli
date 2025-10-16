@@ -15,6 +15,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/suessflorian/gqlfetch"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
@@ -405,16 +406,13 @@ func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery st
 		},
 	}
 
-	cb := func(entry *gql.TailLogResponse) {
-		if entry == nil {
-			return
-		}
-
-		out.Println(entry.Log.Time)
+	onData := func(entry gql.TailLogResponse) {
 		out.Println(entry.Log.Message)
-		out.Println(entry.Log.Labels)
-		out.Println()
 	}
 
-	return SSEQuery(ctx, req, cb)
+	onError := func(err gqlerror.Error) {
+		out.Printf("Error: %v", err)
+	}
+
+	return SSEQuery(ctx, req, onData, onError)
 }
