@@ -408,12 +408,16 @@ func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery st
 
 	onData := func(entry gql.TailLogResponse) {
 		if withTimestamps {
-			out.Printf("%s ", entry.Log.Time.Format(time.RFC3339))
-		}
-		if withLabels {
-			out.Printf("%v", entry.Log.Labels)
+			out.Printf("%s: ", entry.Log.Time.Format(time.RFC3339))
 		}
 		out.Println(entry.Log.Message)
+		if withLabels {
+			var labels []string
+			for _, label := range entry.Log.Labels {
+				labels = append(labels, label.Key+"="+label.Value)
+			}
+			out.Printf("Labels: [%s]\n", strings.Join(labels, ", "))
+		}
 	}
 
 	onError := func(err gqlerror.Error) {
