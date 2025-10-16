@@ -40,14 +40,17 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 				queryEnvironment = strings.TrimSuffix(queryEnvironment, "-gcp")
 			}
 
-			query := NewQueryBuilder().
-				AddEnvironments(queryEnvironment).
-				AddTeams(flags.Team...).
-				AddWorkloads(flags.Workload...).
-				AddContainers(flags.Container...).
-				Build()
+			query := flags.RawQuery
+			if query == "" {
+				query = NewQueryBuilder().
+					AddEnvironments(queryEnvironment).
+					AddTeams(flags.Team...).
+					AddWorkloads(flags.Workload...).
+					AddContainers(flags.Container...).
+					Build()
+			}
 
-			if err := naisapi.TailLog(ctx, out, flags.Environment, query); err != nil {
+			if err := naisapi.TailLog(ctx, out, flags.Environment, query, flags.WithTimestamps, flags.WithLabels); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 
