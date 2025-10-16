@@ -30,6 +30,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 		},
 		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
 			query := NewQueryBuilder().
+				AddEnvironments(flags.Environment).
 				AddTeams(flags.Team...).
 				AddWorkloads(flags.Workload...).
 				AddContainers(flags.Container...).
