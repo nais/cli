@@ -27,6 +27,7 @@ var ErrNotAuthenticated = errors.New("not authenticated")
 type AuthenticatedTokenUser struct {
 	oauth2.TokenSource
 	consoleHost string
+	domain      string
 }
 
 type AuthenticatedUser interface {
@@ -35,6 +36,7 @@ type AuthenticatedUser interface {
 	SetAuthorizationHeader(headers http.Header) error
 	ConsoleHost() string
 	APIURL() string
+	Domain() string
 }
 
 // GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or
@@ -55,7 +57,12 @@ func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 	return &AuthenticatedTokenUser{
 		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx}),
 		consoleHost: secret.ConsoleHost,
+		domain:      secret.Domain,
 	}, nil
+}
+
+func (a *AuthenticatedTokenUser) Domain() string {
+	return a.domain
 }
 
 // ConsoleHost returns the console host of the authenticated user.
@@ -156,7 +163,7 @@ func Login(ctx context.Context, out naistrix.Output) error {
 		return fmt.Errorf("getting tenant data: %w", err)
 	}
 
-	_, err = saveUserSecret(tok, tenantData.ConsoleURL)
+	_, err = saveUserSecret(tok, domain, tenantData.ConsoleURL)
 	if err != nil {
 		return fmt.Errorf("saving token: %w", err)
 	}
@@ -194,6 +201,7 @@ type userSecret struct {
 	oauth2.Token
 	IDToken     string `json:"id_token"`
 	ConsoleHost string `json:"console_host"`
+	Domain      string `json:"domain"`
 }
 
 type tenantData struct {
@@ -235,11 +243,12 @@ func getUserSecret(ctx context.Context) (*userSecret, error) {
 	return &sec, nil
 }
 
-func saveUserSecret(tok *oauth2.Token, consoleURL string) (*userSecret, error) {
+func saveUserSecret(tok *oauth2.Token, domain, consoleURL string) (*userSecret, error) {
 	sec := &userSecret{
 		Token:       *tok,
 		IDToken:     tok.Extra("id_token").(string),
 		ConsoleHost: consoleURL,
+		Domain:      domain,
 	}
 	secret, err := json.Marshal(sec)
 	if err != nil {
@@ -264,7 +273,7 @@ func refreshUserToken(ctx context.Context, sec *userSecret) (*userSecret, error)
 		return nil, ErrNotAuthenticated
 	}
 
-	return saveUserSecret(tok, sec.ConsoleHost)
+	return saveUserSecret(tok, sec.Domain, sec.ConsoleHost)
 }
 
 func getTenantData(domain string) (*tenantData, error) {
