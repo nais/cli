@@ -367,7 +367,7 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 	return err
 }
 
-func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery string) error {
+func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery string, withTimestamps, withLabels bool) error {
 	gqlQuery := `# @genqlient
 		subscription TailLog($environment: String!, $query: String!, $limit: Int, $since: Duration) {
 			log(
@@ -407,6 +407,12 @@ func TailLog(ctx context.Context, out naistrix.Output, environment, lokiQuery st
 	}
 
 	onData := func(entry gql.TailLogResponse) {
+		if withTimestamps {
+			out.Printf("%s ", entry.Log.Time.Format(time.RFC3339))
+		}
+		if withLabels {
+			out.Printf("%v", entry.Log.Labels)
+		}
 		out.Println(entry.Log.Message)
 	}
 
