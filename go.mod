@@ -31,7 +31,7 @@ require (
 	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
 	github.com/nais/naistrix v0.6.0
 	github.com/pelletier/go-toml/v2 v2.2.4
-	github.com/pterm/pterm v0.12.82-0.20251001224657-d5706ff0d019
+	github.com/pterm/pterm v0.12.82
 	github.com/savioxavier/termlink v1.4.3
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.11.1
