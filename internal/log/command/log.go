@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/nais/cli/internal/alpha/command/flag"
 	logflags "github.com/nais/cli/internal/log/command/flag"
@@ -12,7 +13,11 @@ import (
 )
 
 func Log(parentFlags *flag.Alpha) *naistrix.Command {
-	flags := &logflags.LogFlags{Alpha: parentFlags}
+	flags := &logflags.LogFlags{
+		Alpha: parentFlags,
+		Since: time.Hour,
+		Limit: 100,
+	}
 	return &naistrix.Command{
 		Name:        "log",
 		Title:       "Workload and team logs.",
@@ -50,7 +55,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 					Build()
 			}
 
-			if err := naisapi.TailLog(ctx, out, flags.Environment, query, flags.WithTimestamps, flags.WithLabels); err != nil {
+			if err := naisapi.TailLog(ctx, out, flags, query); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 
