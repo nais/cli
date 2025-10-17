@@ -52,8 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
-      - name: build
-        env:
+      - env:
           VERSION: ${{ needs.release-info.outputs.version }}
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
@@ -74,8 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: jdx/mise-action@v3
-      - name: package deb
-        env:
+      - env:
           VERSION: ${{ needs.release-info.outputs.version }}
           GOARCH: ${{ matrix.arch }}
         run: mise run package-deb
