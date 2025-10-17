@@ -370,14 +370,14 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 
 func TailLog(ctx context.Context, out naistrix.Output, flag *logflag.LogFlags, lokiQuery string) error {
 	gqlQuery := `# @genqlient
-		subscription TailLog($environment: String!, $query: String!, $limit: Int, $since: Duration) {
+		subscription TailLog($environment: String!, $query: String!, $limit: Int, $start: Time) {
 			log(
 				filter: {
 					environmentName: $environment
 					query: $query
 					initialBatch: {
 						limit: $limit
-						since: $since
+						start: $start
 					}
 				}
 			) {
