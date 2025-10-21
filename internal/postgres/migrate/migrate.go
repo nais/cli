@@ -22,7 +22,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -30,11 +29,14 @@ import (
 
 type Command string
 
+// maxJobNameLength is the maximum length for a Kubernetes CronJob name
+const maxJobNameLength = 52
+
 func (c Command) JobName(cfg config.Config) string {
 	base := cfg.MigrationName()
 	suffix := string(c)
 	name := fmt.Sprintf("%s-%s", base, suffix)
-	maxlen := validation.DNS1123LabelMaxLength
+	maxlen := maxJobNameLength
 
 	if len(name) > maxlen {
 		truncated, err := namegen.SuffixedShortName(base, suffix, maxlen)

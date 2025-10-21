@@ -1,10 +1,9 @@
-package migrate_test
+package migrate
 
 import (
 	"testing"
 
 	"github.com/nais/cli/internal/option"
-	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
@@ -21,17 +20,17 @@ func TestCommand(t *testing.T) {
 			mutateFn: func(cfg *config.Config) {
 				cfg.AppName = "some-unnecessarily-long-app-name-that-should-be-truncated"
 			},
-			expected: "migration-some-unnecessarily-long-app-name-that--eb4938d8-setup",
+			expected: "migration-some-unnecessarily-long-app-eb4938d8-setup",
 		},
 		"very long instance name": {
 			mutateFn: func(cfg *config.Config) {
 				cfg.Target.InstanceName = option.Some("some-unnecessarily-long-instance-name-that-should-be-truncated")
 			},
-			expected: "migration-some-app-some-unnecessarily-long-insta-63093bcb-setup",
+			expected: "migration-some-app-some-unnecessarily-63093bcb-setup",
 		},
 	}
 
-	const cmd = migrate.CommandSetup
+	const cmd = CommandSetup
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -45,8 +44,8 @@ func TestCommand(t *testing.T) {
 			tc.mutateFn(&cfg)
 
 			actual := cmd.JobName(cfg)
-			if len(actual) > 63 {
-				t.Errorf("job name exceeds 63 characters: %s", actual)
+			if len(actual) > maxJobNameLength {
+				t.Errorf("job name exceeds 52 characters: %s", actual)
 			}
 			if actual != tc.expected {
 				t.Errorf("expected job name %q, got %q", tc.expected, actual)
