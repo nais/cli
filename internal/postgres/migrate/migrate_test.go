@@ -1,10 +1,9 @@
-package migrate_test
+package migrate
 
 import (
 	"testing"
 
 	"github.com/nais/cli/internal/option"
-	"github.com/nais/cli/internal/postgres/migrate"
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
@@ -31,7 +30,7 @@ func TestCommand(t *testing.T) {
 		},
 	}
 
-	const cmd = migrate.CommandSetup
+	const cmd = CommandSetup
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -45,7 +44,7 @@ func TestCommand(t *testing.T) {
 			tc.mutateFn(&cfg)
 
 			actual := cmd.JobName(cfg)
-			if len(actual) > 52 {
+			if len(actual) > maxJobNameLength {
 				t.Errorf("job name exceeds 52 characters: %s", actual)
 			}
 			if actual != tc.expected {

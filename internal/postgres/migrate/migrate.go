@@ -29,11 +29,14 @@ import (
 
 type Command string
 
+// CronJob name max length
+const maxJobNameLength = 52
+
 func (c Command) JobName(cfg config.Config) string {
 	base := cfg.MigrationName()
 	suffix := string(c)
 	name := fmt.Sprintf("%s-%s", base, suffix)
-	maxlen := 52 // CronJob name max length
+	maxlen := maxJobNameLength
 
 	if len(name) > maxlen {
 		truncated, err := namegen.SuffixedShortName(base, suffix, maxlen)
