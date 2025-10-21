@@ -29,7 +29,7 @@ import (
 
 type Command string
 
-// CronJob name max length
+// maxJobNameLength is the maximum length for a Kubernetes CronJob name
 const maxJobNameLength = 52
 
 func (c Command) JobName(cfg config.Config) string {
