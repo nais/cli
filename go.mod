@@ -28,8 +28,7 @@ require (
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
-	github.com/nais/krakend/pkg/migration v0.0.0-20251023101753-7caa0215c6b9
-	github.com/nais/liberator v0.0.0-20251022061310-6a0ecb779414
+	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
 	github.com/nais/naistrix v0.6.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/pterm/pterm v0.12.82
@@ -51,12 +50,12 @@ require (
 	google.golang.org/api v0.246.0
 	google.golang.org/grpc v1.75.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.34.1
-	k8s.io/apimachinery v0.34.1
-	k8s.io/client-go v0.34.1
+	k8s.io/api v0.33.2
+	k8s.io/apimachinery v0.33.2
+	k8s.io/client-go v0.33.2
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20250604170112-4c0f3b243397
-	sigs.k8s.io/controller-runtime v0.22.3
+	sigs.k8s.io/controller-runtime v0.21.0
 )
 
 require (
@@ -103,7 +102,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
 	github.com/go-git/go-git/v5 v5.16.1 // indirect
@@ -152,14 +151,13 @@ require (
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/muesli/mango v0.1.0 // indirect
 	github.com/muesli/mango-cobra v1.2.0 // indirect
 	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nais/krakend v0.0.0-20250919070021-8644fe2a2928 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
@@ -224,11 +222,11 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	honnef.co/go/tools v0.6.1 // indirect
-	k8s.io/apiextensions-apiserver v0.34.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20250710124328-f3f2b991d03b // indirect
+	k8s.io/apiextensions-apiserver v0.33.2 // indirect
+	k8s.io/kube-openapi v0.0.0-20250701173324-9bd5c66d9911 // indirect
 	mvdan.cc/gofumpt v0.9.1 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
-	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
-	sigs.k8s.io/yaml v1.6.0 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.7.0 // indirect
+	sigs.k8s.io/yaml v1.5.0 // indirect
 )
