@@ -28,6 +28,7 @@ require (
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
+	github.com/nais/krakend/pkg/migration v0.0.0-20251023125853-05cb74e2d6be
 	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
 	github.com/nais/naistrix v0.6.0
 	github.com/pelletier/go-toml/v2 v2.2.4
@@ -158,6 +159,7 @@ require (
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
