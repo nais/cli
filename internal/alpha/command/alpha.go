@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/nais/cli/internal/alpha/command/flag"
 	apply "github.com/nais/cli/internal/apply/command"
+	krakend "github.com/nais/cli/internal/krakend/command"
 	log "github.com/nais/cli/internal/log/command"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
 	opensearch "github.com/nais/cli/internal/opensearch/command"
@@ -24,6 +25,7 @@ func Alpha(parentFlags *root.Flags) *naistrix.Command {
 			valkey.Valkey(flags),
 			opensearch.OpenSearch(flags),
 			log.Log(flags),
+			krakend.Krakend(flags),
 		},
 	}
 }
