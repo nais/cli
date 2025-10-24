@@ -178,6 +178,697 @@ func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteV
 	return v.DeleteValkey
 }
 
+// GetAllIssuesResponse is returned by GetAllIssues on success.
+type GetAllIssuesResponse struct {
+	// Get a team by its slug.
+	Team GetAllIssuesTeam `json:"team"`
+}
+
+// GetTeam returns GetAllIssuesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesResponse) GetTeam() GetAllIssuesTeam { return v.Team }
+
+// GetAllIssuesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllIssuesTeam struct {
+	// Issues that affects the team.
+	Issues GetAllIssuesTeamIssuesIssueConnection `json:"issues"`
+}
+
+// GetIssues returns GetAllIssuesTeam.Issues, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeam) GetIssues() GetAllIssuesTeamIssuesIssueConnection { return v.Issues }
+
+// GetAllIssuesTeamIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetAllIssuesTeamIssuesIssueConnection struct {
+	// List of nodes.
+	Nodes []GetAllIssuesTeamIssuesIssueConnectionNodesIssue `json:"-"`
+}
+
+// GetNodes returns GetAllIssuesTeamIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnection) GetNodes() []GetAllIssuesTeamIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetAllIssuesTeamIssuesIssueConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetAllIssuesTeamIssuesIssueConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetAllIssuesTeamIssuesIssueConnectionNodesIssue,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetAllIssuesTeamIssuesIssueConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetAllIssuesTeamIssuesIssueConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnection) __premarshalJSON() (*__premarshalGetAllIssuesTeamIssuesIssueConnection, error) {
+	var retval __premarshalGetAllIssuesTeamIssuesIssueConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetAllIssuesTeamIssuesIssueConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue includes the requested fields of the GraphQL type FailedJobRunsIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL interface Issue.
+//
+// GetAllIssuesTeamIssuesIssueConnectionNodesIssue is implemented by the following types:
+// GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
+type GetAllIssuesTeamIssuesIssueConnectionNodesIssue interface {
+	implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue()
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment
+	// GetSeverity returns the interface-field "severity" from its implementation.
+	GetSeverity() Severity
+	// GetMessage returns the interface-field "message" from its implementation.
+	GetMessage() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+
+func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *GetAllIssuesTeamIssuesIssueConnectionNodesIssue) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "DeprecatedIngressIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedRegistryIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedJobRunsIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedSynchronizationIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue)
+		return json.Unmarshal(b, *v)
+	case "InvalidSpecIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "MissingSbomIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue)
+		return json.Unmarshal(b, *v)
+	case "NoRunningInstancesIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceStateIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Issue.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesIssue: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTeamIssuesIssueConnectionNodesIssue) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue:
+		typename = "FailedJobRunsIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue:
+		typename = "MissingSbomIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue:
+		typename = "OpenSearchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesIssue: "%T"`, v)
+	}
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment) GetEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) GetMessage() string { return v.Message }
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetTypename() string {
+	return v.Typename
+}
+
 // GetAllOpenSearchesResponse is returned by GetAllOpenSearches on success.
 type GetAllOpenSearchesResponse struct {
 	// Get a team by its slug.
@@ -1870,6 +2561,20 @@ func (v *RemoveTeamMemberResponse) GetRemoveTeamMember() RemoveTeamMemberRemoveT
 	return v.RemoveTeamMember
 }
 
+type Severity string
+
+const (
+	SeverityCritical Severity = "CRITICAL"
+	SeverityWarning  Severity = "WARNING"
+	SeverityTodo     Severity = "TODO"
+)
+
+var AllSeverity = []Severity{
+	SeverityCritical,
+	SeverityWarning,
+	SeverityTodo,
+}
+
 // TailLogLogLogLine includes the requested fields of the GraphQL type LogLine.
 type TailLogLogLogLine struct {
 	// Timestamp of the log line.
@@ -3545,6 +4250,14 @@ func (v *__DeleteValkeyInput) GetEnvironmentName() string { return v.Environment
 // GetTeamSlug returns __DeleteValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetAllIssuesInput is used internally by genqlient
+type __GetAllIssuesInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllIssuesInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllIssuesInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetAllOpenSearchesInput is used internally by genqlient
 type __GetAllOpenSearchesInput struct {
 	TeamSlug string `json:"teamSlug"`
@@ -3615,10 +4328,10 @@ func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
 // __TailLogInput is used internally by genqlient
 type __TailLogInput struct {
-	Environment string        `json:"environment"`
-	Query       string        `json:"query"`
-	Limit       int           `json:"limit"`
-	Since       time.Duration `json:"since"`
+	Environment string    `json:"environment"`
+	Query       string    `json:"query"`
+	Limit       int       `json:"limit"`
+	Start       time.Time `json:"start"`
 }
 
 // GetEnvironment returns __TailLogInput.Environment, and is useful for accessing the field via an interface.
@@ -3630,8 +4343,8 @@ func (v *__TailLogInput) GetQuery() string { return v.Query }
 // GetLimit returns __TailLogInput.Limit, and is useful for accessing the field via an interface.
 func (v *__TailLogInput) GetLimit() int { return v.Limit }
 
-// GetSince returns __TailLogInput.Since, and is useful for accessing the field via an interface.
-func (v *__TailLogInput) GetSince() time.Duration { return v.Since }
+// GetStart returns __TailLogInput.Start, and is useful for accessing the field via an interface.
+func (v *__TailLogInput) GetStart() time.Time { return v.Start }
 
 // __TeamMembersInput is used internally by genqlient
 type __TeamMembersInput struct {
@@ -3902,6 +4615,51 @@ func DeleteValkey(
 	}
 
 	data_ = &DeleteValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllIssues.
+const GetAllIssues_Operation = `
+query GetAllIssues ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		issues {
+			nodes {
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				severity
+				message
+				__typename
+			}
+		}
+	}
+}
+`
+
+func GetAllIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllIssues",
+		Query:  GetAllIssues_Operation,
+		Variables: &__GetAllIssuesInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllIssuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -4283,8 +5041,8 @@ func RemoveTeamMember(
 
 // The subscription executed by TailLog.
 const TailLog_Operation = `
-subscription TailLog ($environment: String!, $query: String!, $limit: Int, $since: Duration) {
-	log(filter: {environmentName:$environment,query:$query,initialBatch:{limit:$limit,since:$since}}) {
+subscription TailLog ($environment: String!, $query: String!, $limit: Int, $start: Time) {
+	log(filter: {environmentName:$environment,query:$query,initialBatch:{limit:$limit,start:$start}}) {
 		time
 		message
 		labels {
@@ -4302,7 +5060,7 @@ func TailLog(
 	environment string,
 	query string,
 	limit int,
-	since time.Duration,
+	start time.Time,
 ) (dataChan_ chan TailLogWsResponse, subscriptionID_ string, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "TailLog",
@@ -4311,7 +5069,7 @@ func TailLog(
 			Environment: environment,
 			Query:       query,
 			Limit:       limit,
-			Since:       since,
+			Start:       start,
 		},
 	}
 
