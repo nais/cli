@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Generate release information using git-cliff"
+#MISE description="Build the Nais CLI binary"
 #MISE depends=["build", "completions"]
 set -euo pipefail
 
