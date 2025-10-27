@@ -30,7 +30,7 @@ type Application struct {
 
 func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
 	app, flags, err := naistrix.NewApplication(
-		"name",
+		"nais",
 		"Nais CLI",
 		version.Version,
 		naistrix.ApplicationWithWriter(w),
