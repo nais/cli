@@ -40,25 +40,42 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 
 			data := pterm.TableData{
 				{
-					"Type",
-					"Environment",
+					"Issue",
 					"Severity",
 					"Resource Name",
 					"Resource Type",
+					"Environment",
 					"Message",
 				},
 			}
 			for _, i := range issues {
 				data = append(data, []string{
 					i.IssueType,
-					i.Environment,
 					i.Severity,
 					i.ResourceName,
 					i.ResourceType,
-					i.Message,
+					i.Environment,
+					truncateString(i.Message, 60) + "[...]",
 				})
 			}
 			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
 		},
 	}
+}
+
+func truncateString(str string, max int) string {
+	truncated := ""
+	count := 0
+	if len(str) < max {
+		return str
+	}
+
+	for _, char := range str {
+		truncated += string(char)
+		count++
+		if count >= max {
+			break
+		}
+	}
+	return truncated
 }
