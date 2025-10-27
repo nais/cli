@@ -34,7 +34,7 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			i, err := bufio.NewReader(os.Stdin).ReadString('\n')
 			if err != nil {
@@ -45,7 +45,7 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(ctx, args[0], flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges)
+			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges)
 		},
 	}
 }

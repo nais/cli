@@ -19,7 +19,7 @@ func createOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command creates an OpenSearch instance.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func createOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "my-team dev some-opensearch --memory GB_4 --tier SINGLE_NODE --version V2 --storage-gb 100",
 			},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args)
 
 			// defaults

@@ -2,9 +2,12 @@ package flag
 
 import (
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/naistrix"
 )
 
 type filePath string
+
+var _ naistrix.FileAutoCompleter = (*filePath)(nil)
 
 func (filePath) FileExtensions() (extensions []string) {
 	return []string{"toml"}

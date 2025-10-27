@@ -20,7 +20,7 @@ func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command updates an existing Opensearch instance.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
@@ -48,7 +48,7 @@ func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "my-team dev some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V2 --storage-gb 1000",
 			},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args)
 
 			existing, err := opensearch.Get(ctx, metadata)

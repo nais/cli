@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/naistrix"
 )
 
 type Api struct {
@@ -17,7 +18,9 @@ type Proxy struct {
 
 type Output string
 
-func (o *Output) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Output)(nil)
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return []string{"table", "json"}, "Available output formats."
 }
 

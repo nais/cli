@@ -17,7 +17,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out naistrix.Output) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -84,7 +84,7 @@ func currentEmail(ctx context.Context) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out naistrix.Output) error {
+func grantUserAccess(ctx context.Context, projectID, role string, duration time.Duration, out *naistrix.OutputWriter) error {
 	email, err := currentEmail(ctx)
 	if err != nil {
 		return err
@@ -206,7 +206,7 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out naistrix.Output) error {
+func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -245,7 +245,7 @@ func ListUsers(ctx context.Context, appName string, cluster flag.Context, namesp
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out naistrix.Output) error {
+func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out *naistrix.OutputWriter) error {
 	err := validateSQLVariables(username, password, privilege)
 	if err != nil {
 		return err

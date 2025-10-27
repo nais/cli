@@ -6,6 +6,7 @@ import (
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
 )
 
 type OpenSearch struct {
@@ -68,7 +69,9 @@ func (u *Update) Validate() error {
 
 type Memory string
 
-func (s *Memory) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Memory)(nil)
+
+func (s *Memory) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	memories := make([]string, 0, len(gql.AllOpenSearchMemory))
 	for _, memory := range gql.AllOpenSearchMemory {
 		memories = append(memories, string(memory))
@@ -87,7 +90,9 @@ func (s *Memory) IsValid() bool {
 
 type Tier string
 
-func (t *Tier) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Tier)(nil)
+
+func (t *Tier) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	tiers := make([]string, 0, len(gql.AllOpenSearchTier))
 	for _, tier := range gql.AllOpenSearchTier {
 		tiers = append(tiers, string(tier))
@@ -106,7 +111,9 @@ func (t *Tier) IsValid() bool {
 
 type Version string
 
-func (v *Version) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Version)(nil)
+
+func (v *Version) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	versions := make([]string, 0, len(gql.AllOpenSearchMajorVersion))
 	for _, version := range gql.AllOpenSearchMajorVersion {
 		versions = append(versions, string(version))

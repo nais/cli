@@ -19,7 +19,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out naistrix.Output) error {
+func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespa
 	return nil
 }
 
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out naistrix.Output) error {
+func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out *naistrix.OutputWriter) error {
 	err := checkPostgresqlPassword(out)
 	if err != nil {
 		return err
@@ -166,7 +166,7 @@ func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
 	closer <- struct{}{} // connection is closed, send signal to stop proxy
 }
 
-func checkPostgresqlPassword(out naistrix.Output) error {
+func checkPostgresqlPassword(out *naistrix.OutputWriter) error {
 	if _, ok := os.LookupEnv("PGPASSWORD"); ok {
 		return fmt.Errorf("PGPASSWORD is set, please unset it before running this command")
 	}

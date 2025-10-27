@@ -20,7 +20,7 @@ func teamsCommand(parentFlags *flag.Api) *naistrix.Command {
 		Name:  "teams",
 		Title: "Get a list of your teams.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return err

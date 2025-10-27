@@ -3,17 +3,19 @@ package flag
 import (
 	"context"
 
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/naistrix"
 )
 
 type Output string
 
-type Status struct {
-	*root.Flags
-	Quiet  bool   `name:"quiet" short:"q" usage:"Suppress output"`
-	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
+var _ naistrix.FlagAutoCompleter = (*Output)(nil)
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"yaml", "json"}, "Available output formats."
 }
 
-func (o *Output) AutoComplete(context.Context, []string, string, any) ([]string, string) {
-	return []string{"yaml", "json"}, "Available output formats."
+type Status struct {
+	*naistrix.GlobalFlags
+	Quiet  bool   `name:"quiet" short:"q" usage:"Suppress output"`
+	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
 }

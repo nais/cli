@@ -52,7 +52,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
 				return fmt.Errorf("tier must start with `db-`")
 			}
@@ -64,8 +64,8 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			return nil
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return setup.Run(ctx, args[0], args[1], flags)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return setup.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags)
 		},
 	}
 }
@@ -81,8 +81,8 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return promote.Run(ctx, args[0], args[1], flags)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return promote.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags)
 		},
 	}
 }
@@ -98,8 +98,8 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "target_sql_instance_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return finalize.Run(ctx, args[0], args[1], flags)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return finalize.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags)
 		},
 	}
 }
@@ -115,8 +115,8 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "target_sql_instance_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return rollback.Run(ctx, args[0], args[1], flags)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return rollback.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags)
 		},
 	}
 }

@@ -17,37 +17,54 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
-	"github.com/nais/cli/internal/root"
 	validate "github.com/nais/cli/internal/validate/command"
 	"github.com/nais/cli/internal/version"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
 
-func newApplication(flags *root.Flags) *naistrix.Application {
-	return &naistrix.Application{
-		Name:    "nais",
-		Title:   "Nais CLI",
-		Version: version.Version,
-		SubCommands: []*naistrix.Command{
-			login.Login(flags),
-			logout.Logout(flags),
-			naisdevice.Naisdevice(flags),
-			aiven.Aiven(flags),
-			alpha.Alpha(flags),
-			postgres.Postgres(flags),
-			debug.Debug(flags),
-			kubeconfig.Kubeconfig(flags),
-			validate.Validate(flags),
-		},
-		StickyFlags: flags,
+type Application struct {
+	*naistrix.Application
+	Commands []*naistrix.Command
+}
+
+func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
+	app, flags, err := naistrix.NewApplication(
+		"name",
+		"Nais CLI",
+		version.Version,
+		naistrix.ApplicationWithWriter(w),
+	)
+	if err != nil {
+		return nil, nil, err
 	}
+
+	cmds := []*naistrix.Command{
+		login.Login(flags),
+		logout.Logout(flags),
+		naisdevice.Naisdevice(flags),
+		aiven.Aiven(flags),
+		alpha.Alpha(flags),
+		postgres.Postgres(flags),
+		debug.Debug(flags),
+		kubeconfig.Kubeconfig(flags),
+		validate.Validate(flags),
+	}
+
+	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {
+		return nil, nil, err
+	}
+
+	return &Application{Application: app}, flags, nil
 }
 
 func Run(ctx context.Context, w io.Writer) error {
-	flags := &root.Flags{}
-	app := newApplication(flags)
-	err := app.Run(naistrix.RunWithContext(ctx), naistrix.RunWithOutput(naistrix.NewWriter(w)))
+	app, flags, err := newApplication(w)
+	if err != nil {
+		return err
+	}
+
+	err = app.Run(naistrix.RunWithContext(ctx))
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {

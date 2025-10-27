@@ -50,14 +50,14 @@ func listMembers(parentFlags *flag.Team) *naistrix.Command {
 			{Name: "team"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			type member struct {
 				Name  string `json:"name"`
 				Email string `json:"email"`
 				Role  string `json:"role"`
 			}
 
-			ret, err := naisapi.GetTeamMembers(ctx, args[0])
+			ret, err := naisapi.GetTeamMembers(ctx, args.Get("team"))
 			if err != nil {
 				return err
 			}
@@ -87,7 +87,7 @@ func listMembers(parentFlags *flag.Team) *naistrix.Command {
 
 			return out.Table().Render(members)
 		},
-		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
+		AutoCompleteFunc: func(ctx context.Context, _ *naistrix.Arguments, toComplete string) ([]string, string) {
 			if len(toComplete) < 2 {
 				return nil, "Provide at least 2 characters to auto-complete team slugs."
 			}
@@ -129,27 +129,27 @@ func addMember(parentFlags *flag.Team) *naistrix.Command {
 			{Name: "member"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			role := gql.TeamMemberRoleMember
 			if flags.Owner {
 				role = gql.TeamMemberRoleOwner
 			}
 
-			if err := naisapi.AddTeamMember(ctx, args[0], args[1], role); err != nil {
-				return naistrix.Errorf("Unable to add %q to team %q:\n\n%s", args[1], args[0], err)
+			if err := naisapi.AddTeamMember(ctx, args.Get("team"), args.Get("member"), role); err != nil {
+				return naistrix.Errorf("Unable to add %q to team %q:\n\n%s", args.Get("member"), args.Get("team"), err)
 			}
 
-			out.Printf("%q has been added to the %q team.\n", args[1], args[0])
+			out.Printf("%q has been added to the %q team.\n", args.Get("member"), args.Get("team"))
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
 			isAdmin := naisapi.IsConsoleAdmin(ctx)
 
-			if isAdmin && len(args) == 0 && len(toComplete) < 2 {
+			if isAdmin && args.Len() == 0 && len(toComplete) < 2 {
 				return nil, "Provide at least 2 characters to auto-complete team slugs."
 			}
 
-			if len(args) == 0 {
+			if args.Len() == 0 {
 				var slugs []string
 
 				if isAdmin {
@@ -217,22 +217,22 @@ func removeMember(parentFlags *flag.Team) *naistrix.Command {
 			{Name: "member"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			if err := naisapi.RemoveTeamMember(ctx, args[0], args[1]); err != nil {
-				return naistrix.Errorf("Unable to remove %q from team %q:\n\n%s", args[1], args[0], err)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			if err := naisapi.RemoveTeamMember(ctx, args.Get("team"), args.Get("member")); err != nil {
+				return naistrix.Errorf("Unable to remove %q from team %q:\n\n%s", args.Get("member"), args.Get("team"), err)
 			}
 
-			out.Printf("%q has been removed from the %q team.\n", args[1], args[0])
+			out.Printf("%q has been removed from the %q team.\n", args.Get("member"), args.Get("team"))
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
 			isAdmin := naisapi.IsConsoleAdmin(ctx)
 
-			if isAdmin && len(args) == 0 && len(toComplete) < 2 {
+			if isAdmin && args.Len() == 0 && len(toComplete) < 2 {
 				return nil, "Provide at least 2 characters to auto-complete team slugs."
 			}
 
-			if len(args) == 0 {
+			if args.Len() == 0 {
 				var slugs []string
 
 				if isAdmin {
@@ -264,7 +264,7 @@ func removeMember(parentFlags *flag.Team) *naistrix.Command {
 				return slugs, "Choose a team to remove a member from."
 			}
 
-			members, err := naisapi.GetTeamMembers(ctx, args[0])
+			members, err := naisapi.GetTeamMembers(ctx, args.Get("team"))
 			if err != nil {
 				return nil, "Unable to fetch existing team members."
 			}
@@ -292,7 +292,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 			{Name: "team"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return err
@@ -307,7 +307,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				Issues          int          `heading:"Critical Issues" json:"issues"`
 			}
 
-			teamSlug := args[0]
+			teamSlug := args.Get("team")
 			ret, err := naisapi.GetTeamWorkloads(ctx, teamSlug)
 			if err != nil {
 				return err
@@ -359,7 +359,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 
 			return out.Table().Render(entries)
 		},
-		AutoCompleteFunc: func(ctx context.Context, _ []string, toComplete string) ([]string, string) {
+		AutoCompleteFunc: func(ctx context.Context, _ *naistrix.Arguments, toComplete string) ([]string, string) {
 			if len(toComplete) < 2 {
 				return nil, "Provide at least 2 characters to auto-complete team slugs."
 			}

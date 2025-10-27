@@ -44,7 +44,7 @@ func FormatGrpcError(err error) error {
 	return fmt.Errorf("%s: %s", gerr.Code(), gerr.Message())
 }
 
-func Connect(ctx context.Context, out naistrix.Output) error {
+func Connect(ctx context.Context, out *naistrix.OutputWriter) error {
 	connection, err := AgentConnection()
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func Connect(ctx context.Context, out naistrix.Output) error {
 	return waitForConnectionState(ctx, client, pb.AgentState_Connected, out)
 }
 
-func Disconnect(ctx context.Context, out naistrix.Output) error {
+func Disconnect(ctx context.Context, out *naistrix.OutputWriter) error {
 	connection, err := AgentConnection()
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func Disconnect(ctx context.Context, out naistrix.Output) error {
 	return waitForConnectionState(ctx, client, pb.AgentState_Disconnected, out)
 }
 
-func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wantedAgentState pb.AgentState, out naistrix.Output) error {
+func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wantedAgentState pb.AgentState, out *naistrix.OutputWriter) error {
 	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
 		KeepConnectionOnComplete: true,
 	})

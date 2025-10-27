@@ -10,7 +10,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func executeGcloud(ctx context.Context, out naistrix.Output, verbose bool, arg ...string) error {
+func executeGcloud(ctx context.Context, out *naistrix.OutputWriter, verbose bool, arg ...string) error {
 	cmd := exec.CommandContext(ctx, "gcloud", arg...)
 	if verbose {
 		cmd.Stdout = os.Stdout

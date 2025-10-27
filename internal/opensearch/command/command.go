@@ -36,28 +36,28 @@ var (
 		{Name: "environment"},
 		{Name: "name"},
 	}
-	defaultValidateFunc = func(_ context.Context, args []string) error {
-		if len(args) != 3 {
-			return fmt.Errorf("expected 3 arguments, got %d", len(args))
+	defaultValidateFunc = func(_ context.Context, args *naistrix.Arguments) error {
+		if args.Len() != 3 {
+			return fmt.Errorf("expected 3 arguments, got %d", args.Len())
 		}
-		if args[0] == "" {
+		if args.Get("team") == "" {
 			return fmt.Errorf("team cannot be empty")
 		}
-		if args[1] == "" {
+		if args.Get("environment") == "" {
 			return fmt.Errorf("environment cannot be empty")
 		}
-		if args[2] == "" {
+		if args.Get("name") == "" {
 			return fmt.Errorf("name cannot be empty")
 		}
 		return nil
 	}
 )
 
-func metadataFromArgs(args []string) opensearch.Metadata {
+func metadataFromArgs(args *naistrix.Arguments) opensearch.Metadata {
 	return opensearch.Metadata{
-		TeamSlug:        args[0],
-		EnvironmentName: args[1],
-		Name:            args[2],
+		TeamSlug:        args.Get("team"),
+		EnvironmentName: args.Get("environment"),
+		Name:            args.Get("name"),
 	}
 }
 

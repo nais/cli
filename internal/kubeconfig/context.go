@@ -5,7 +5,7 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func populateWithContexts(config *clientcmdapi.Config, cluster k8sCluster, email string, options filterOptions, out naistrix.Output) {
+func populateWithContexts(config *clientcmdapi.Config, cluster k8sCluster, email string, options filterOptions, out *naistrix.OutputWriter) {
 	if _, ok := config.Contexts[cluster.Name]; ok && !options.overwrite {
 		if options.verbose {
 			out.Printf("Context %q already exists in kubeconfig, skipping\n", cluster.Name)

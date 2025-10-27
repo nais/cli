@@ -4,15 +4,14 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func connectcmd(_ *root.Flags) *naistrix.Command {
+func connectcmd() *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "connect",
 		Title: "Connect your naisdevice.",
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return naisdevice.Connect(ctx, out)
 		},
 	}

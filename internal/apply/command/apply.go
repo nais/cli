@@ -21,11 +21,11 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 		},
 		AutoCompleteExtensions: []string{"toml"},
 		Flags:                  flags,
-		ValidateFunc: func(_ context.Context, args []string) error {
-			if args[0] == "" {
+		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
+			if args.Get("environment") == "" {
 				return fmt.Errorf("environment cannot be empty")
 			}
-			if args[1] == "" {
+			if args.Get("file") == "" {
 				return fmt.Errorf("file cannot be empty")
 			}
 			if flags.Team == "" {
@@ -33,9 +33,9 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 			}
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			environment := args[0]
-			filePath := args[1]
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			environment := args.Get("environment")
+			filePath := args.Get("file")
 
 			return apply.Run(ctx, environment, filePath, flags, out)
 		},

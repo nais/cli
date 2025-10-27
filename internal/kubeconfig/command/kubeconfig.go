@@ -7,14 +7,13 @@ import (
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
+func Kubeconfig(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
 	flags := &flag.Kubeconfig{
-		Flags:     rootFlags,
-		Overwrite: true,
+		GlobalFlags: parentFlags,
+		Overwrite:   true,
 	}
 	return &naistrix.Command{
 		Name:  "kubeconfig",
@@ -25,14 +24,14 @@ func Kubeconfig(rootFlags *root.Flags) *naistrix.Command {
 			"nais login"
 		`),
 		Flags: flags,
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
 			if _, err := gcloud.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
 			}
 
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			email, err := gcloud.GetActiveUserEmail(ctx)
 			if err != nil {
 				return err

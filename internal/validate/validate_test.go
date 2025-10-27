@@ -2,6 +2,7 @@ package validate
 
 import (
 	_ "embed"
+	"os"
 	"testing"
 
 	"github.com/nais/naistrix"
@@ -94,7 +95,8 @@ func TestValidate(t *testing.T) {
 			v.SchemaLoader = schemaLoader
 			v.Variables = test.vars
 
-			err := v.Validate(naistrix.Stdout())
+			l := naistrix.OutputVerbosityLevelNormal
+			err := v.Validate(naistrix.NewOutputWriter(os.Stdout, &l))
 			if test.wantErr {
 				assert.Error(t, err)
 			} else {

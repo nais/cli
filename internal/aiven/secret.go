@@ -30,7 +30,7 @@ type Secret struct {
 
 var ErrUnsuitableSecret = errors.New("unsuitable secret")
 
-func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out naistrix.Output) error {
+func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out *naistrix.OutputWriter) error {
 	aivenClient := k8s.SetupControllerRuntimeClient()
 
 	if err := validateNamespace(ctx, aivenClient, namespaceName); err != nil {
@@ -115,7 +115,7 @@ func (s *Secret) CreateOpenSearchConfigs() error {
 	return aiven_config.WriteOpenSearchEnvConfigToFile(s.Secret, s.DestinationPath)
 }
 
-func (s *Secret) generateConfig(out naistrix.Output) error {
+func (s *Secret) generateConfig(out *naistrix.OutputWriter) error {
 	out.Printf("Generating %v config from secret %v", s.Service.Name(), s.Secret.Name)
 	return s.Service.Generate(s)
 }

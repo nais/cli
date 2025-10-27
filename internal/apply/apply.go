@@ -22,7 +22,7 @@ type Apply struct {
 	OpenSearch map[string]*opensearch.OpenSearch `json:"openSearch,omitempty" toml:"openSearch,omitempty"`
 }
 
-func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, out naistrix.Output) error {
+func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, out *naistrix.OutputWriter) error {
 	a := &Apply{}
 	if err := decodeFile(filePath, a); err != nil {
 		return err

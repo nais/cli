@@ -14,7 +14,7 @@ func create(parentFlags *flag.Aiven) *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "create",
 		Title: "Grant a user access to an Aiven service.",
-		ValidateFunc: func(_ context.Context, _ []string) error {
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			if createFlags.Expire > 30 {
 				return fmt.Errorf("--expire must be less than %v days", 30)
 			}

@@ -26,7 +26,7 @@ func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "my-team dev some-opensearch",
 			},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args)
 
 			existing, err := opensearch.Get(ctx, metadata)

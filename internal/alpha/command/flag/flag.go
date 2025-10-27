@@ -1,9 +1,9 @@
 package flag
 
 import (
-	"github.com/nais/cli/internal/root"
+	"github.com/nais/naistrix"
 )
 
 type Alpha struct {
-	*root.Flags
+	*naistrix.GlobalFlags
 }
