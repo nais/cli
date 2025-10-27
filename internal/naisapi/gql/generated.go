@@ -635,10 +635,14 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 		typename = "VulnerableImageIssue"
 
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
-		}{typename, v}
+			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
+		}{typename, premarshaled}
 		return json.Marshal(result)
 	case nil:
 		return []byte("null"), nil
@@ -843,10 +847,11 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) GetTypename() st
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue struct {
-	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
-	Severity        Severity                                                       `json:"severity"`
-	Message         string                                                         `json:"message"`
-	Typename        string                                                         `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment         `json:"teamEnvironment"`
+	Severity        Severity                                                               `json:"severity"`
+	Message         string                                                                 `json:"message"`
+	Typename        string                                                                 `json:"__typename"`
+	Workload        GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload `json:"-"`
 }
 
 // GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.TeamEnvironment, and is useful for accessing the field via an interface.
@@ -866,6 +871,206 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetMess
 
 // GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetWorkload returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Workload, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) GetWorkload() GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload {
+	return v.Workload
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+
+	Severity Severity `json:"severity"`
+
+	Message string `json:"message"`
+
+	Typename string `json:"__typename"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue) __premarshalJSON() (*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue, error) {
+	var retval __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
+
+	retval.TeamEnvironment = v.TeamEnvironment
+	retval.Severity = v.Severity
+	retval.Message = v.Message
+	retval.Typename = v.Typename
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload is implemented by the following types:
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload interface {
+	implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload() {
+}
+
+func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload(b []byte, v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload(v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload: "%T"`, v)
+	}
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob) GetTypename() string {
 	return v.Typename
 }
 
@@ -4640,6 +4845,12 @@ query GetAllIssues ($teamSlug: Slug!) {
 				severity
 				message
 				__typename
+				... on VulnerableImageIssue {
+					workload {
+						name
+						__typename
+					}
+				}
 			}
 		}
 	}
