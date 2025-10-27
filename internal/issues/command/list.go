@@ -3,11 +3,13 @@ package command
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
+	"golang.org/x/term"
 )
 
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
@@ -48,6 +50,13 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 					"Message",
 				},
 			}
+
+			width, _, err := term.GetSize(int(os.Stdout.Fd()))
+			if err != nil {
+				fmt.Println("could not get terminal size:", err)
+				width = 160
+			}
+
 			for _, i := range issues {
 				data = append(data, []string{
 					i.IssueType,
@@ -55,7 +64,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 					i.ResourceName,
 					i.ResourceType,
 					i.Environment,
-					truncateString(i.Message, 60) + "[...]",
+					truncateString(i.Message, width-100),
 				})
 			}
 			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
@@ -77,5 +86,5 @@ func truncateString(str string, max int) string {
 			break
 		}
 	}
-	return truncated
+	return truncated + "[...]"
 }
