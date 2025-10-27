@@ -7,13 +7,12 @@ import (
 	log "github.com/nais/cli/internal/log/command"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
 	opensearch "github.com/nais/cli/internal/opensearch/command"
-	"github.com/nais/cli/internal/root"
 	valkey "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/naistrix"
 )
 
-func Alpha(parentFlags *root.Flags) *naistrix.Command {
-	flags := &flag.Alpha{Flags: parentFlags}
+func Alpha(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+	flags := &flag.Alpha{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "alpha",
 		Title:       "Alpha versions of Nais CLI commands.",

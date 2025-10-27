@@ -4,15 +4,14 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func disconnectcmd(_ *root.Flags) *naistrix.Command {
+func disconnectcmd() *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "disconnect",
 		Title: "Disconnect your naisdevice.",
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return naisdevice.Disconnect(ctx, out)
 		},
 	}

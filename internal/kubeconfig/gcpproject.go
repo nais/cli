@@ -16,7 +16,7 @@ type project struct {
 	Kind   Kind
 }
 
-func getProjects(ctx context.Context, options filterOptions, out naistrix.Output) ([]project, error) {
+func getProjects(ctx context.Context, options filterOptions, out *naistrix.OutputWriter) ([]project, error) {
 	var projects []project
 
 	svc, err := cloudresourcemanager.NewService(ctx)

@@ -23,8 +23,8 @@ func proxyCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return postgres.RunProxy(ctx, args[0], flags.Context, flags.Namespace, flags.Host, flags.Port, flags.IsVerbose(), out)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return postgres.RunProxy(ctx, args.Get("app_name"), flags.Context, flags.Namespace, flags.Host, flags.Port, flags.IsVerbose(), out)
 		},
 	}
 }

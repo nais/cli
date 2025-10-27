@@ -2,12 +2,11 @@ package command
 
 import (
 	"github.com/nais/cli/internal/aiven/command/flag"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func Aiven(parentFlags *root.Flags) *naistrix.Command {
-	aivenFlags := &flag.Aiven{Flags: parentFlags}
+func Aiven(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+	aivenFlags := &flag.Aiven{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "aiven",
 		Title:       "Manage Aiven services.",

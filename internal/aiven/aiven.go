@@ -52,7 +52,7 @@ func Setup(
 	return &aiven
 }
 
-func (a Aiven) GenerateApplication(out naistrix.Output) (*aiven_nais_io_v1.AivenApplication, error) {
+func (a Aiven) GenerateApplication(out *naistrix.OutputWriter) (*aiven_nais_io_v1.AivenApplication, error) {
 	properties := a.Properties
 
 	if err := validateNamespace(a.Ctx, a.Client, properties.Namespace); err != nil {
@@ -89,7 +89,7 @@ func (a Aiven) getExisting(existingAivenApp *aiven_nais_io_v1.AivenApplication) 
 	}, existingAivenApp)
 }
 
-func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out naistrix.Output) error {
+func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out *naistrix.OutputWriter) error {
 	existingAivenApp := aiven_nais_io_v1.AivenApplication{}
 	err := a.getExisting(&existingAivenApp)
 	if err != nil {

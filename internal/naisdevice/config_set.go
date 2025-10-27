@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/nais/device/pkg/pb"
+	"github.com/nais/naistrix"
 )
 
 var (
@@ -80,12 +81,12 @@ func SetConfig(ctx context.Context, setting string, value bool) error {
 	return nil
 }
 
-func AutocompleteSet(_ context.Context, args []string, _ string) ([]string, string) {
-	if len(args) == 0 {
+func AutocompleteSet(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+	if args.Len() == 0 {
 		return GetAllowedSettings(false, false), ""
-	} else if len(args) == 1 {
+	} else if args.Len() == 1 {
 		var completions []string
-		for key, value := range GetSettingValues(args[0]) {
+		for key, value := range GetSettingValues(args.Get("setting")) {
 			completions = append(completions, key+"\t"+value)
 		}
 		return completions, "Possible values"

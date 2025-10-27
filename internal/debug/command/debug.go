@@ -7,16 +7,15 @@ import (
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/k8s"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func Debug(parentFlags *root.Flags) *naistrix.Command {
+func Debug(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	stickyFlags := &flag.DebugSticky{
-		Flags:     parentFlags,
-		Context:   flag.Context(defaultContext),
-		Namespace: defaultNamespace,
+		GlobalFlags: parentFlags,
+		Context:     flag.Context(defaultContext),
+		Namespace:   defaultNamespace,
 	}
 
 	debugFlags := &flag.Debug{
@@ -38,8 +37,8 @@ func Debug(parentFlags *root.Flags) *naistrix.Command {
 		},
 		Flags:       debugFlags,
 		StickyFlags: stickyFlags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return debug.Run(args[0], debugFlags)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return debug.Run(args.Get("app_name"), debugFlags)
 		},
 	}
 }

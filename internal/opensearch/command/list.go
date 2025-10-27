@@ -20,8 +20,8 @@ func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "team"},
 		},
-		ValidateFunc: func(_ context.Context, args []string) error {
-			if args[0] == "" {
+		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
+			if args.Get("team") == "" {
 				return fmt.Errorf("team cannot be empty")
 			}
 			return nil
@@ -32,8 +32,8 @@ func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "my-team",
 			},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			opensearches, err := opensearch.GetAll(ctx, args[0])
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			opensearches, err := opensearch.GetAll(ctx, args.Get("team"))
 			if err != nil {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}

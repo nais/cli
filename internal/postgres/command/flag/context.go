@@ -5,11 +5,14 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/k8s"
+	"github.com/nais/naistrix"
 )
 
 type Context string
 
-func (c *Context) AutoComplete(ctx context.Context, args []string, toComplete string, flags any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Context)(nil)
+
+func (c *Context) AutoComplete(_ context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	_, ok := flags.(*Postgres)
 	if !ok {
 		return nil, "Invalid flags type"

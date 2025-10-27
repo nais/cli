@@ -3,14 +3,13 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/cli/internal/validate"
 	"github.com/nais/cli/internal/validate/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Validate(parentFlags *root.Flags) *naistrix.Command {
-	flags := &flag.Validate{Flags: parentFlags}
+func Validate(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+	flags := &flag.Validate{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:  "validate",
 		Title: "Validate one or more Nais manifest files.",
@@ -19,8 +18,8 @@ func Validate(parentFlags *root.Flags) *naistrix.Command {
 		},
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return validate.Run(args, flags, out)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return validate.Run(args.All(), flags, out)
 		},
 	}
 }

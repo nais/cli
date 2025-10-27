@@ -23,7 +23,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 		Title:       "Workload and team logs.",
 		Description: "Fetch and stream logs from workloads and teams.",
 		Flags:       flags,
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			if flags.Environment == "" {
 				return fmt.Errorf("--environment is required")
 			}
@@ -34,7 +34,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 
 			return nil
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return fmt.Errorf("unable to get authenticated user: %w", err)

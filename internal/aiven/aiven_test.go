@@ -2,6 +2,7 @@ package aiven
 
 import (
 	"context"
+	"os"
 	"testing"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -23,6 +25,8 @@ const (
 	expiry     = 1
 	pool       = "nav-dev"
 )
+
+var out = naistrix.NewOutputWriter(os.Stdout, ptr.To(naistrix.OutputVerbosityLevelNormal))
 
 func buildWithScheme(objects ...runtime.Object) *fake.ClientBuilder {
 	scheme := runtime.NewScheme()
@@ -44,7 +48,7 @@ func TestGenerateAivenApplicationCreated(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, expiry, &aiven_services.ServiceSetup{Pool: pool, SecretName: secretName})
-	currentAivenApp, err := aiven.GenerateApplication(naistrix.Stdout())
+	currentAivenApp, err := aiven.GenerateApplication(out)
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
@@ -76,7 +80,7 @@ func TestGenerateAivenApplicationUpdated(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, expiry, &aiven_services.ServiceSetup{Pool: pool, SecretName: secretName})
-	currentAivenApp, err := aiven.GenerateApplication(naistrix.Stdout())
+	currentAivenApp, err := aiven.GenerateApplication(out)
 	assert.NoError(t, err)
 
 	assert.Equal(t, username, currentAivenApp.Name, "Name has the same value")
@@ -116,7 +120,7 @@ func TestGenerateAivenApplicationUpdated_HasOwnerReference(t *testing.T) {
 	fakeClient := buildWithScheme(&namespace, &aivenApp).Build()
 	kafka := &aiven_services.Kafka{}
 	aiven := Setup(context.Background(), fakeClient, kafka, username, team, expiry, &aiven_services.ServiceSetup{Pool: pool, SecretName: secretName})
-	_, err := aiven.GenerateApplication(naistrix.Stdout())
+	_, err := aiven.GenerateApplication(out)
 	assert.EqualError(t, err, "create/update: username 'user' is owned by another resource; overwrite is not allowed")
 }
 

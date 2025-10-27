@@ -17,7 +17,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out naistrix.Output) error {
+func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(appName, namespace, cluster)
 	if err != nil {
 		return err

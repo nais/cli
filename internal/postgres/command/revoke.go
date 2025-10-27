@@ -34,7 +34,7 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			out.Println("", "Are you sure you want to continue (y/N): ")
 			input := bufio.NewScanner(os.Stdin)
 			input.Scan()
@@ -42,7 +42,7 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.RevokeAccess(ctx, args[0], flags.Namespace, flags.Context, flags.Schema)
+			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema)
 		},
 	}
 }

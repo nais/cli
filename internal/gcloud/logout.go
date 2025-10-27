@@ -6,7 +6,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func Logout(ctx context.Context, out naistrix.Output, verbose bool) error {
+func Logout(ctx context.Context, out *naistrix.OutputWriter, verbose bool) error {
 	if err := executeGcloud(ctx, out, verbose, "auth", "application-default", "revoke", "--quiet"); err != nil {
 		return err
 	}

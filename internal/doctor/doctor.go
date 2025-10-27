@@ -29,7 +29,7 @@ type Examination struct {
 	Checks []Check
 }
 
-func (e Examination) Run(out naistrix.Output) map[string]CheckReport {
+func (e Examination) Run(out *naistrix.OutputWriter) map[string]CheckReport {
 	out.Printf("Running %d check(s)\n", len(e.Checks))
 	resultQueue := make(chan CheckReport, len(e.Checks))
 	results := make(map[string]CheckReport)

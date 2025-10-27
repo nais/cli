@@ -49,7 +49,7 @@ func gatewayPrivileged(gw *pb.Gateway) string {
 	}
 }
 
-func PrintVerboseStatus(status *pb.AgentStatus, out naistrix.Output) {
+func PrintVerboseStatus(status *pb.AgentStatus, out *naistrix.OutputWriter) {
 	out.Printf("Naisdevice status: %s\n", status.ConnectionStateString())
 	if status.NewVersionAvailable {
 		out.Printf("\nNew version of naisdevice available!\nSee https://doc.nais.io/device/update for upgrade instructions.\n")
@@ -68,7 +68,7 @@ func PrintVerboseStatus(status *pb.AgentStatus, out naistrix.Output) {
 	}
 }
 
-func PrintFormattedStatus(format string, status *pb.AgentStatus, out naistrix.Output) error {
+func PrintFormattedStatus(format string, status *pb.AgentStatus, out *naistrix.OutputWriter) error {
 	switch format {
 	case "yaml":
 		o, err := yaml.Marshal(status)

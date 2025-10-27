@@ -6,11 +6,10 @@ import (
 	"strconv"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func set(_ *root.Flags) *naistrix.Command {
+func set() *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "set",
 		Title: "Set a configuration value.",
@@ -19,9 +18,9 @@ func set(_ *root.Flags) *naistrix.Command {
 			{Name: "value"},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			setting := args[0]
-			value, err := strconv.ParseBool(args[1])
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			setting := args.Get("setting")
+			value, err := strconv.ParseBool(args.Get("value"))
 			if err != nil {
 				return fmt.Errorf("invalid bool value: %v", err)
 			}

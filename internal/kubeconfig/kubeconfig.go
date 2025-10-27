@@ -13,7 +13,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func CreateKubeconfig(ctx context.Context, email string, out naistrix.Output, opts ...FilterOption) error {
+func CreateKubeconfig(ctx context.Context, email string, out *naistrix.OutputWriter, opts ...FilterOption) error {
 	var options filterOptions
 	for _, opt := range DefaultFilterOptions {
 		opt(&options)
@@ -76,7 +76,7 @@ func CreateKubeconfig(ctx context.Context, email string, out naistrix.Output, op
 	return nil
 }
 
-func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions, out naistrix.Output) error {
+func populateKubeconfig(config *api.Config, clusters []k8sCluster, email string, options filterOptions, out *naistrix.OutputWriter) error {
 	for _, cluster := range clusters {
 		if slices.Contains(options.excludeClusters, cluster.Name) {
 			if options.verbose {

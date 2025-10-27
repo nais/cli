@@ -23,14 +23,14 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 			{Name: "username"},
 			{Name: "namespace"},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			pool, err := aiven_services.KafkaPoolFromString(createKafkaFlags.Pool)
 			if err != nil {
 				return fmt.Errorf("valid values for pool should specify tenant and environment separated by a dash (-): %v", err)
 			}
 
 			if createKafkaFlags.Secret == "" {
-				if createKafkaFlags.Secret, err = aiven.CreateSecretName(args[0], args[1]); err != nil {
+				if createKafkaFlags.Secret, err = aiven.CreateSecretName(args.Get("username"), args.Get("namespace")); err != nil {
 					return fmt.Errorf("creating secret name: %v", err)
 				}
 			}
@@ -41,8 +41,8 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 				ctx,
 				k8s.SetupControllerRuntimeClient(),
 				service,
-				args[0],
-				args[1],
+				args.Get("username"),
+				args.Get("namespace"),
 				createKafkaFlags.Expire,
 				&aiven_services.ServiceSetup{
 					Pool:       pool,

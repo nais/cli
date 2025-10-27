@@ -7,7 +7,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func Run(files []string, flags *flag.Validate, out naistrix.Output) error {
+func Run(files []string, flags *flag.Validate, out *naistrix.OutputWriter) error {
 	templateVars := make(TemplateVariables)
 
 	if flags.VarsFilePath != "" {
@@ -17,9 +17,7 @@ func Run(files []string, flags *flag.Validate, out naistrix.Output) error {
 			return fmt.Errorf("load template variables: %v", err)
 		}
 		for key, val := range templateVars {
-			if flags.IsVerbose() {
-				out.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
-			}
+			out.Verbosef("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			templateVars[key] = val
 		}
 	}
@@ -27,12 +25,10 @@ func Run(files []string, flags *flag.Validate, out naistrix.Output) error {
 	if len(flags.Vars) > 0 {
 		overrides := TemplateVariablesFromSlice(flags.Vars)
 		for key, val := range overrides {
-			if flags.IsVerbose() {
-				if oldval, ok := templateVars[key]; ok {
-					out.Printf("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
-				}
-				out.Printf("[📝] Setting template variable '%s' to '%v'\n", key, val)
+			if oldval, ok := templateVars[key]; ok {
+				out.Verbosef("[⚠️] Overwriting template variable '%s'; previous value was '%v'\n", key, oldval)
 			}
+			out.Verbosef("[📝] Setting template variable '%s' to '%v'\n", key, val)
 			templateVars[key] = val
 		}
 	}

@@ -2,24 +2,28 @@ package application
 
 import (
 	"context"
+	"io"
 	"strings"
 	"testing"
 
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
 func TestHelpForAllCommands(t *testing.T) {
 	ctx := context.Background()
-	app := newApplication(&root.Flags{})
-	for _, cmd := range app.SubCommands {
+	app, _, err := newApplication(io.Discard)
+	if err != nil {
+		t.Fatalf("unable to create application: %v", err)
+	}
+
+	for _, cmd := range app.Commands {
 		t.Run("Generate help "+cmd.Name, func(t *testing.T) {
-			runCommand(t, ctx, cmd, []string{})
+			runCommand(t, ctx, app.Application, cmd, []string{})
 		})
 	}
 }
 
-func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parentCommands []string) {
+func runCommand(t *testing.T, ctx context.Context, app *naistrix.Application, cmd *naistrix.Command, parentCommands []string) {
 	t.Helper()
 
 	args := append(parentCommands, cmd.Name)
@@ -30,9 +34,8 @@ func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parent
 			t.Fatalf("failed to run command %q: %v", strings.Join(helpCmd, " "), err)
 		}
 	}()
-	err := newApplication(&root.Flags{}).Run(
+	err := app.Run(
 		naistrix.RunWithContext(ctx),
-		naistrix.RunWithOutput(naistrix.Discard()),
 		naistrix.RunWithArgs(helpCmd),
 	)
 	if err != nil {
@@ -41,7 +44,7 @@ func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parent
 
 	for _, subCmd := range cmd.SubCommands {
 		t.Run(subCmd.Name, func(t *testing.T) {
-			runCommand(t, ctx, subCmd, args)
+			runCommand(t, ctx, app, subCmd, args)
 		})
 	}
 }

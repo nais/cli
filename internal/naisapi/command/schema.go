@@ -14,7 +14,7 @@ func schemaCommand(parentFlags *flag.Api) *naistrix.Command {
 		Name:  "schema",
 		Title: "Outputs the Nais API GraphQL schema to stdout.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			s, err := naisapi.PullSchema(ctx, flags)
 			if err != nil {
 				return err

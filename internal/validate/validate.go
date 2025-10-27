@@ -34,7 +34,7 @@ func New(resourcePaths []string) Validate {
 	}
 }
 
-func (v Validate) Validate(out naistrix.Output) error {
+func (v Validate) Validate(out *naistrix.OutputWriter) error {
 	invalid := make([]string, 0)
 
 	for _, file := range v.ResourcePaths {
@@ -72,7 +72,7 @@ func (v Validate) Validate(out naistrix.Output) error {
 	return nil
 }
 
-func (v Validate) loadFile(name string, out naistrix.Output) ([]json.RawMessage, error) {
+func (v Validate) loadFile(name string, out *naistrix.OutputWriter) ([]json.RawMessage, error) {
 	_, err := os.Stat(name)
 	if err != nil {
 		return nil, fmt.Errorf("file %s does not exist", name)
@@ -95,7 +95,7 @@ func (v Validate) loadFile(name string, out naistrix.Output) ([]json.RawMessage,
 	return YAMLToJSONMessages(templated)
 }
 
-func printErrors(errors []gojsonschema.ResultError, out naistrix.Output) {
+func printErrors(errors []gojsonschema.ResultError, out *naistrix.OutputWriter) {
 	for _, err := range errors {
 		// skip noisy root error ("Must validate one and only one schema (oneOf)")
 		if err.Field() == gojsonschema.STRING_ROOT_SCHEMA_PROPERTY && err.Type() == "number_one_of" {

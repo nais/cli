@@ -42,7 +42,7 @@ func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
 	return schema, nil
 }
 
-func StartProxy(ctx context.Context, out naistrix.Output, flags *flag.Proxy) error {
+func StartProxy(ctx context.Context, out *naistrix.OutputWriter, flags *flag.Proxy) error {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err
@@ -368,7 +368,7 @@ func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
 	return err
 }
 
-func TailLog(ctx context.Context, out naistrix.Output, flag *logflag.LogFlags, lokiQuery string) error {
+func TailLog(ctx context.Context, out *naistrix.OutputWriter, flag *logflag.LogFlags, lokiQuery string) error {
 	gqlQuery := `# @genqlient
 		subscription TailLog($environment: String!, $query: String!, $limit: Int, $start: Time) {
 			log(

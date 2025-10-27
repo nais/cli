@@ -101,7 +101,7 @@ func (a *AuthenticatedTokenUser) SetAuthorizationHeader(headers http.Header) err
 // Login initiates the OAuth2 authorization code flow to authenticate the user.
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
-func Login(ctx context.Context, out naistrix.Output) error {
+func Login(ctx context.Context, out *naistrix.OutputWriter) error {
 	conf, oidcConfig, err := oauthConfig(ctx)
 	if err != nil {
 		return err
@@ -171,7 +171,7 @@ func Login(ctx context.Context, out naistrix.Output) error {
 }
 
 // Logout deletes the user's secret from the system keyring and triggers logout at the identity provider.
-func Logout(ctx context.Context, out naistrix.Output) error {
+func Logout(ctx context.Context, out *naistrix.OutputWriter) error {
 	err := deleteSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
 		return fmt.Errorf("deleting user secret: %w", err)

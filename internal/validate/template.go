@@ -51,7 +51,7 @@ func TemplateVariablesFromSlice(vars []string) TemplateVariables {
 }
 
 // ExecTemplate evaluates a template with the given context.
-func ExecTemplate(data []byte, ctx TemplateVariables, out naistrix.Output) ([]byte, error) {
+func ExecTemplate(data []byte, ctx TemplateVariables, out *naistrix.OutputWriter) ([]byte, error) {
 	if ctx == nil {
 		ctx = make(TemplateVariables)
 	}

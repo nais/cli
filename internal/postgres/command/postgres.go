@@ -6,16 +6,15 @@ import (
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/postgres/command/flag"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func Postgres(parentFlags *root.Flags) *naistrix.Command {
+func Postgres(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	flags := &flag.Postgres{
-		Flags:     parentFlags,
-		Namespace: flag.Namespace(defaultNamespace),
-		Context:   flag.Context(defaultContext),
+		GlobalFlags: parentFlags,
+		Namespace:   flag.Namespace(defaultNamespace),
+		Context:     flag.Context(defaultContext),
 	}
 
 	return &naistrix.Command{
@@ -33,7 +32,7 @@ func Postgres(parentFlags *root.Flags) *naistrix.Command {
 			psqlCommand(flags),
 			revokeCommand(flags),
 		},
-		ValidateFunc: func(ctx context.Context, _ []string) error {
+		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
 			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)
 			return err
 		},

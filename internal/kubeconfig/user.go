@@ -5,7 +5,7 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions, out naistrix.Output) error {
+func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, options filterOptions, out *naistrix.OutputWriter) error {
 	addGCPUser(config, email, options, out)
 
 	if !options.includeOnprem {
@@ -15,7 +15,7 @@ func addUsers(config *clientcmdapi.Config, clusters []k8sCluster, email string, 
 	return addOnpremUser(config, clusters, options, out)
 }
 
-func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions, out naistrix.Output) error {
+func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options filterOptions, out *naistrix.OutputWriter) error {
 	for _, cluster := range clusters {
 		if cluster.Kind == kindOnprem {
 			user := cluster.User
@@ -55,7 +55,7 @@ func addOnpremUser(config *clientcmdapi.Config, clusters []k8sCluster, options f
 	return nil
 }
 
-func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions, out naistrix.Output) {
+func addGCPUser(config *clientcmdapi.Config, email string, options filterOptions, out *naistrix.OutputWriter) {
 	if _, ok := config.AuthInfos[email]; ok && !options.overwrite {
 		if options.verbose {
 			out.Printf("User %q already exists in kubeconfig, skipping\n", email)

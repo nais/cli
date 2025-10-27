@@ -6,6 +6,7 @@ import (
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
 )
 
 type Valkey struct {
@@ -66,7 +67,9 @@ func (u *Update) Validate() error {
 
 type Memory string
 
-func (u *Memory) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Memory)(nil)
+
+func (u *Memory) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	memories := make([]string, 0, len(gql.AllValkeyMemory))
 	for _, memory := range gql.AllValkeyMemory {
 		memories = append(memories, string(memory))
@@ -85,7 +88,9 @@ func (u *Memory) IsValid() bool {
 
 type Tier string
 
-func (t *Tier) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*Tier)(nil)
+
+func (t *Tier) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	tiers := make([]string, 0, len(gql.AllValkeyTier))
 	for _, tier := range gql.AllValkeyTier {
 		tiers = append(tiers, string(tier))
@@ -104,7 +109,9 @@ func (t *Tier) IsValid() bool {
 
 type MaxMemoryPolicy string
 
-func (m *MaxMemoryPolicy) AutoComplete(context.Context, []string, string, any) ([]string, string) {
+var _ naistrix.FlagAutoCompleter = (*MaxMemoryPolicy)(nil)
+
+func (m *MaxMemoryPolicy) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	policies := make([]string, 0, len(gql.AllValkeyMaxMemoryPolicy))
 	for _, policy := range gql.AllValkeyMaxMemoryPolicy {
 		policies = append(policies, string(policy))

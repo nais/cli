@@ -22,11 +22,11 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 			{Name: "username"},
 			{Name: "namespace"},
 		},
-		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
+		AutoCompleteFunc: func(context.Context, *naistrix.Arguments, string) ([]string, string) {
 			return aiven_services.OpenSearchAccesses, ""
 		},
 		Flags: createOpenSearchFlags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			access, err := aiven_services.OpenSearchAccessFromString(createOpenSearchFlags.Access)
 			if err != nil {
 				return fmt.Errorf(
@@ -36,7 +36,7 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 			}
 
 			if createOpenSearchFlags.Secret == "" {
-				if createOpenSearchFlags.Secret, err = aiven.CreateSecretName(args[0], args[1]); err != nil {
+				if createOpenSearchFlags.Secret, err = aiven.CreateSecretName(args.Get("username"), args.Get("namespace")); err != nil {
 					return fmt.Errorf("creating secret name: %v", err)
 				}
 			}
@@ -46,8 +46,8 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 				ctx,
 				k8s.SetupControllerRuntimeClient(),
 				service,
-				args[0],
-				args[1],
+				args.Get("username"),
+				args.Get("namespace"),
 				createOpenSearchFlags.Expire,
 				&aiven_services.ServiceSetup{
 					Instance:   createOpenSearchFlags.Instance,

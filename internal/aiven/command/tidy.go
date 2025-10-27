@@ -13,7 +13,7 @@ func tidy(_ *flag.Aiven) *naistrix.Command {
 		Name:        "tidy",
 		Title:       "Clean up /tmp/aiven-secret-* files made by the Nais CLI.",
 		Description: "Caution - This command will delete all files in '/tmp' folder starting with 'aiven-secret-'.",
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return aiven.TidyLocalSecrets(out)
 		},
 	}

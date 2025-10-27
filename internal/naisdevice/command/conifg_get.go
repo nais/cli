@@ -6,19 +6,18 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/naisdevice"
-	"github.com/nais/cli/internal/root"
 	"github.com/nais/naistrix"
 )
 
-func get(_ *root.Flags) *naistrix.Command {
+func get() *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "get",
 		Title: "Get a naisdevice setting.",
 		Args: []naistrix.Argument{
 			{Name: "setting"},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			setting := args[0]
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			setting := args.Get("setting")
 
 			values, err := naisdevice.GetConfig(ctx)
 			if err != nil {

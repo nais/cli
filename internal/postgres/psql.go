@@ -11,7 +11,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out naistrix.Output) error {
+func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out *naistrix.OutputWriter) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err

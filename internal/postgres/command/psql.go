@@ -18,8 +18,8 @@ func psqlCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			{Name: "app_name"},
 		},
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			return postgres.RunPSQL(ctx, args[0], flags.Context, flags.Namespace, flags.IsVerbose(), out)
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return postgres.RunPSQL(ctx, args.Get("app_name"), flags.Context, flags.Namespace, flags.IsVerbose(), out)
 		},
 	}
 }

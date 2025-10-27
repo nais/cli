@@ -21,20 +21,20 @@ func get(_ *flag.Aiven) *naistrix.Command {
 			{Name: "username"},
 			{Name: "namespace"},
 		},
-		AutoCompleteFunc: func(ctx context.Context, args []string, toComplete string) ([]string, string) {
-			if len(args) == 0 {
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
+			if args.Len() == 0 {
 				return []string{"kafka", "opensearch"}, "Choose the service you want to get."
 			}
 			return nil, ""
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
-			service, err := aiven_services.FromString(args[0])
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			service, err := aiven_services.FromString(args.Get("service"))
 			if err != nil {
 				return err
 			}
 
-			username := args[1]
-			namespace := args[2]
+			username := args.Get("username")
+			namespace := args.Get("namespace")
 			if err := aiven.ExtractAndGenerateConfig(ctx, service, username, namespace, out); err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_get_secret_and_config_error_total")
 

@@ -17,7 +17,7 @@ func Krakend(parentFlags *flag.Alpha) *naistrix.Command {
 				Name:        "convert",
 				Title:       "Fetch and convert krakend resources to YAML.",
 				Description: "Temporary command to convert all Krakend resources in current namespace to Application and relevant config maps",
-				RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+				RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 					ret, err := migration.ConvertKrakends(ctx)
 					if err != nil {
 						return err

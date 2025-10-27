@@ -19,7 +19,7 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Description: "This command creates a Valkey instance.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(ctx context.Context, args []string) error {
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
@@ -47,7 +47,7 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				Command:     "my-team dev some-valkey --memory GB_4 --tier SINGLE_NODE --max-memory-policy ALLKEYS_LRU",
 			},
 		},
-		RunFunc: func(ctx context.Context, out naistrix.Output, args []string) error {
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args)
 
 			// defaults

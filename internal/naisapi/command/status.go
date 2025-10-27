@@ -60,7 +60,7 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 		Name:  "status",
 		Title: "Get a quick overview of the status of your teams.",
 		Flags: flags,
-		RunFunc: func(ctx context.Context, out naistrix.Output, _ []string) error {
+		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return err
