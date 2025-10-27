@@ -43,15 +43,19 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 					"Type",
 					"Environment",
 					"Severity",
+					"Resource Name",
+					"Resource Type",
 					"Message",
 				},
 			}
-			for _, v := range issues {
+			for _, i := range issues {
 				data = append(data, []string{
-					v.GetTypename(),
-					v.GetTeamEnvironment().Environment.Name,
-					string(v.GetSeverity()),
-					v.GetMessage(),
+					i.IssueType,
+					i.Environment,
+					i.Severity,
+					i.ResourceName,
+					i.ResourceType,
+					i.Message,
 				})
 			}
 			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
