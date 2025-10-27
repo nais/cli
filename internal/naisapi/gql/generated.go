@@ -345,34 +345,6 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetT
 	return v.Typename
 }
 
-// GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue includes the requested fields of the GraphQL type FailedJobRunsIssue.
-type GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue struct {
-	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
-	Severity        Severity                                                       `json:"severity"`
-	Message         string                                                         `json:"message"`
-	Typename        string                                                         `json:"__typename"`
-}
-
-// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
-	return v.TeamEnvironment
-}
-
-// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Severity, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetSeverity() Severity {
-	return v.Severity
-}
-
-// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Message, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetMessage() string {
-	return v.Message
-}
-
-// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue.Typename, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) GetTypename() string {
-	return v.Typename
-}
-
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
@@ -434,9 +406,9 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetTypename
 // GetAllIssuesTeamIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
@@ -460,11 +432,11 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) imple
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
-}
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -501,14 +473,14 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 	case "DeprecatedRegistryIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
-	case "FailedJobRunsIssue":
-		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue)
-		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
 	case "InvalidSpecIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue)
 		return json.Unmarshal(b, *v)
 	case "MissingSbomIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue)
@@ -560,14 +532,6 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 			*GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue:
-		typename = "FailedJobRunsIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetAllIssuesTeamIssuesIssueConnectionNodesFailedJobRunsIssue
-		}{typename, v}
-		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
 		typename = "FailedSynchronizationIssue"
 
@@ -582,6 +546,14 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue:
@@ -677,6 +649,34 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment s
 // GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue struct {
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	Typename        string                                                         `json:"__typename"`
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue) GetTypename() string {
+	return v.Typename
 }
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
@@ -1276,7 +1276,8 @@ type GetAllValkeysTeamValkeysValkeyConnectionNodesValkey struct {
 	// Available memory for the Valkey instance.
 	Memory ValkeyMemory `json:"memory"`
 	// Availability tier for the Valkey instance.
-	Tier            ValkeyTier                                                                      `json:"tier"`
+	Tier ValkeyTier `json:"tier"`
+	// Maximum memory policy for the Valkey instance.
 	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                                           `json:"maxMemoryPolicy"`
 	State           ValkeyState                                                                     `json:"state"`
 	TeamEnvironment GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironment              `json:"teamEnvironment"`
@@ -2163,7 +2164,8 @@ type GetValkeyTeamEnvironmentValkey struct {
 	// Available memory for the Valkey instance.
 	Memory ValkeyMemory `json:"memory"`
 	// Availability tier for the Valkey instance.
-	Tier            ValkeyTier                                                 `json:"tier"`
+	Tier ValkeyTier `json:"tier"`
+	// Maximum memory policy for the Valkey instance.
 	MaxMemoryPolicy ValkeyMaxMemoryPolicy                                      `json:"maxMemoryPolicy"`
 	State           ValkeyState                                                `json:"state"`
 	Access          GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnection `json:"access"`
@@ -3439,16 +3441,6 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 	return v.Typename
 }
 
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue includes the requested fields of the GraphQL type FailedJobRunsIssue.
-type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue struct {
-	Typename string `json:"__typename"`
-}
-
-// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue.Typename, and is useful for accessing the field via an interface.
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) GetTypename() string {
-	return v.Typename
-}
-
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	Typename string `json:"__typename"`
@@ -3474,9 +3466,9 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue is implemented by the following types:
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesNoRunningInstancesIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue
@@ -3494,11 +3486,11 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
-func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
-}
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
@@ -3535,14 +3527,14 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 	case "DeprecatedRegistryIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
-	case "FailedJobRunsIssue":
-		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue)
-		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
 	case "InvalidSpecIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue)
 		return json.Unmarshal(b, *v)
 	case "MissingSbomIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue)
@@ -3594,14 +3586,6 @@ func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorklo
 			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
 		}{typename, v}
 		return json.Marshal(result)
-	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue:
-		typename = "FailedJobRunsIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedJobRunsIssue
-		}{typename, v}
-		return json.Marshal(result)
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue:
 		typename = "FailedSynchronizationIssue"
 
@@ -3616,6 +3600,14 @@ func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorklo
 		result := struct {
 			TypeName string `json:"__typename"`
 			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue:
@@ -3680,6 +3672,16 @@ func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorklo
 		return nil, fmt.Errorf(
 			`unexpected concrete type for TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue: "%T"`, v)
 	}
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue) GetTypename() string {
+	return v.Typename
 }
 
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.

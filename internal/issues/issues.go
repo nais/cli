@@ -2,6 +2,7 @@ package issues
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -49,7 +50,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]Issue, error) {
 
 	resp, err := gql.GetAllIssues(ctx, client, teamSlug)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("graphql: %w", err)
 	}
 
 	ret := make([]Issue, 0)
