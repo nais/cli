@@ -1,13 +1,22 @@
 package flag
 
 import (
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/alpha/command/flag"
 )
 
 type Issues struct {
-	*alpha.Alpha
+	*flag.Alpha
 }
 
 type List struct {
 	*Issues
+	Filter string `name: "filter", usage:"filter"`
+}
+
+type Filters struct {
+	IssueType    string
+	Severity     string
+	Environment  string
+	ResourceName string
+	ResourceType string
 }
