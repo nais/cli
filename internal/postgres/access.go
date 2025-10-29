@@ -15,7 +15,8 @@ var grantAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TAB
 	GRANT ALL ON ALL SEQUENCES IN SCHEMA $schema TO cloudsqliamuser;
 	GRANT CREATE ON SCHEMA $schema TO cloudsqliamuser;`
 
-var grantSelectPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT SELECT ON TABLES TO cloudsqliamuser;
+var grantSelectPrivs = `GRANT USAGE ON SCHEMA $schema TO cloudsqliamuser;
+	ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT SELECT ON TABLES TO cloudsqliamuser;
 	ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT SELECT ON SEQUENCES TO cloudsqliamuser;
 	GRANT SELECT ON ALL TABLES IN SCHEMA $schema TO cloudsqliamuser;
 	GRANT SELECT ON ALL SEQUENCES IN SCHEMA $schema TO cloudsqliamuser;`
@@ -27,16 +28,32 @@ var revokeAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema REVOKE ALL ON T
 	REVOKE ALL ON ALL SEQUENCES IN SCHEMA $schema FROM cloudsqliamuser;
 	REVOKE CREATE ON SCHEMA $schema FROM cloudsqliamuser;`
 
+var (
+	grantUsage  = `GRANT USAGE ON SCHEMA $schema TO cloudsqliamuser;`
+	revokeUsage = `REVOKE USAGE ON SCHEMA $schema FROM cloudsqliamuser;`
+)
+
 func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, allPrivs bool) error {
+	prependUsageIfNotPublic := func(statement string) string {
+		if schema != "public" {
+			return grantUsage + "\n" + statement
+		}
+		return statement
+	}
+
 	if allPrivs {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, grantAllPrivs)
+		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, prependUsageIfNotPublic(grantAllPrivs))
 	} else {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, grantSelectPrivs)
+		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, prependUsageIfNotPublic(grantSelectPrivs))
 	}
 }
 
 func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string) error {
-	return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, revokeAllPrivs)
+	q := revokeAllPrivs
+	if schema != "public" {
+		q += "\n" + revokeUsage
+	}
+	return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, q)
 }
 
 func sqlExecAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema, statement string) error {
