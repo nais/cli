@@ -3888,6 +3888,61 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 	return &retval, nil
 }
 
+type IssueFilter struct {
+	ResourceName string       `json:"resourceName,omitempty"`
+	ResourceType ResourceType `json:"resourceType,omitempty"`
+	Environments []string     `json:"environments,omitempty"`
+	Severity     Severity     `json:"severity,omitempty"`
+	IssueType    IssueType    `json:"issueType,omitempty"`
+}
+
+// GetResourceName returns IssueFilter.ResourceName, and is useful for accessing the field via an interface.
+func (v *IssueFilter) GetResourceName() string { return v.ResourceName }
+
+// GetResourceType returns IssueFilter.ResourceType, and is useful for accessing the field via an interface.
+func (v *IssueFilter) GetResourceType() ResourceType { return v.ResourceType }
+
+// GetEnvironments returns IssueFilter.Environments, and is useful for accessing the field via an interface.
+func (v *IssueFilter) GetEnvironments() []string { return v.Environments }
+
+// GetSeverity returns IssueFilter.Severity, and is useful for accessing the field via an interface.
+func (v *IssueFilter) GetSeverity() Severity { return v.Severity }
+
+// GetIssueType returns IssueFilter.IssueType, and is useful for accessing the field via an interface.
+func (v *IssueFilter) GetIssueType() IssueType { return v.IssueType }
+
+type IssueType string
+
+const (
+	IssueTypeOpensearch            IssueType = "OPENSEARCH"
+	IssueTypeValkey                IssueType = "VALKEY"
+	IssueTypeSqlinstanceState      IssueType = "SQLINSTANCE_STATE"
+	IssueTypeSqlinstanceVersion    IssueType = "SQLINSTANCE_VERSION"
+	IssueTypeDeprecatedIngress     IssueType = "DEPRECATED_INGRESS"
+	IssueTypeDeprecatedRegistry    IssueType = "DEPRECATED_REGISTRY"
+	IssueTypeNoRunningInstances    IssueType = "NO_RUNNING_INSTANCES"
+	IssueTypeLastRunFailed         IssueType = "LAST_RUN_FAILED"
+	IssueTypeFailedSynchronization IssueType = "FAILED_SYNCHRONIZATION"
+	IssueTypeInvalidSpec           IssueType = "INVALID_SPEC"
+	IssueTypeMissingSbom           IssueType = "MISSING_SBOM"
+	IssueTypeVulnerableImage       IssueType = "VULNERABLE_IMAGE"
+)
+
+var AllIssueType = []IssueType{
+	IssueTypeOpensearch,
+	IssueTypeValkey,
+	IssueTypeSqlinstanceState,
+	IssueTypeSqlinstanceVersion,
+	IssueTypeDeprecatedIngress,
+	IssueTypeDeprecatedRegistry,
+	IssueTypeNoRunningInstances,
+	IssueTypeLastRunFailed,
+	IssueTypeFailedSynchronization,
+	IssueTypeInvalidSpec,
+	IssueTypeMissingSbom,
+	IssueTypeVulnerableImage,
+}
+
 type JobState string
 
 const (
@@ -4006,6 +4061,24 @@ type RemoveTeamMemberResponse struct {
 // GetRemoveTeamMember returns RemoveTeamMemberResponse.RemoveTeamMember, and is useful for accessing the field via an interface.
 func (v *RemoveTeamMemberResponse) GetRemoveTeamMember() RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload {
 	return v.RemoveTeamMember
+}
+
+type ResourceType string
+
+const (
+	ResourceTypeOpensearch  ResourceType = "OPENSEARCH"
+	ResourceTypeValkey      ResourceType = "VALKEY"
+	ResourceTypeSqlinstance ResourceType = "SQLINSTANCE"
+	ResourceTypeApplication ResourceType = "APPLICATION"
+	ResourceTypeJob         ResourceType = "JOB"
+)
+
+var AllResourceType = []ResourceType{
+	ResourceTypeOpensearch,
+	ResourceTypeValkey,
+	ResourceTypeSqlinstance,
+	ResourceTypeApplication,
+	ResourceTypeJob,
 }
 
 type Severity string
@@ -5699,11 +5772,15 @@ func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __GetAllIssuesInput is used internally by genqlient
 type __GetAllIssuesInput struct {
-	TeamSlug string `json:"teamSlug"`
+	TeamSlug string      `json:"teamSlug"`
+	Filter   IssueFilter `json:"filter"`
 }
 
 // GetTeamSlug returns __GetAllIssuesInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllIssuesInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetFilter returns __GetAllIssuesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetAllIssuesInput) GetFilter() IssueFilter { return v.Filter }
 
 // __GetAllOpenSearchesInput is used internally by genqlient
 type __GetAllOpenSearchesInput struct {
@@ -6075,9 +6152,9 @@ func DeleteValkey(
 
 // The query executed by GetAllIssues.
 const GetAllIssues_Operation = `
-query GetAllIssues ($teamSlug: Slug!) {
+query GetAllIssues ($teamSlug: Slug!, $filter: IssueFilter) {
 	team(slug: $teamSlug) {
-		issues {
+		issues(filter: $filter) {
 			nodes {
 				teamEnvironment {
 					environment {
@@ -6170,12 +6247,14 @@ func GetAllIssues(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	teamSlug string,
+	filter IssueFilter,
 ) (data_ *GetAllIssuesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetAllIssues",
 		Query:  GetAllIssues_Operation,
 		Variables: &__GetAllIssuesInput{
 			TeamSlug: teamSlug,
+			Filter:   filter,
 		},
 	}
 
