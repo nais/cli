@@ -99,10 +99,12 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				return err
 			}
 
-			pterm.Warning.Println("Changing settings may cause a restart of the Valkey instance.")
-			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-			if !result {
-				return fmt.Errorf("cancelled by user")
+			if !flags.Yes {
+				pterm.Warning.Println("Changing settings may cause a restart of the Valkey instance.")
+				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+				if !result {
+					return fmt.Errorf("cancelled by user")
+				}
 			}
 
 			_, err = valkey.Update(ctx, metadata, data)

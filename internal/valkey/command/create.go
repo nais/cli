@@ -82,9 +82,11 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				return err
 			}
 
-			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-			if !result {
-				return fmt.Errorf("cancelled by user")
+			if !flags.Yes {
+				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+				if !result {
+					return fmt.Errorf("cancelled by user")
+				}
 			}
 
 			_, err := valkey.Create(ctx, metadata, data)
