@@ -1,14 +1,15 @@
-package command
+package issues
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/nais/cli/internal/issues/command/flag"
+	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func TestParseFilters(t *testing.T) {
+func TestParse(t *testing.T) {
 	type want struct {
-		filters *flag.Filters
+		filters *gql.IssueFilter
 		err     string
 	}
 
@@ -21,8 +22,8 @@ func TestParseFilters(t *testing.T) {
 			name:  "single filter",
 			input: "environment=x",
 			want: want{
-				filters: &flag.Filters{
-					Environment: "x",
+				filters: &gql.IssueFilter{
+					Environments: []string{"x"},
 				},
 			},
 		},
@@ -30,9 +31,9 @@ func TestParseFilters(t *testing.T) {
 			name:  "multiple filters",
 			input: "environment=x,severity=CRITICAL",
 			want: want{
-				filters: &flag.Filters{
-					Environment: "x",
-					Severity:    "CRITICAL",
+				filters: &gql.IssueFilter{
+					Environments: []string{"x"},
+					Severity:     "CRITICAL",
 				},
 			},
 		},
@@ -55,7 +56,7 @@ func TestParseFilters(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := parseFilter(test.input)
+			got, err := ParseFilter(test.input)
 
 			if test.want.err != "" {
 				if err == nil {
@@ -68,8 +69,8 @@ func TestParseFilters(t *testing.T) {
 				return
 			}
 
-			if *got != *test.want.filters {
-				t.Errorf("parseFilter(%q) = %+v, want %+v", test.input, got, test.want.filters)
+			if !reflect.DeepEqual(got, test.want.filters) {
+				t.Errorf("parseFilter(%q): %+v, want = %+v", test.input, got, test.want.filters)
 			}
 		})
 	}

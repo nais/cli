@@ -12,11 +12,3 @@ type List struct {
 	*Issues
 	Filter string `name: "filter", usage:"filter"`
 }
-
-type Filters struct {
-	IssueType    string
-	Severity     string
-	Environment  string
-	ResourceName string
-	ResourceType string
-}

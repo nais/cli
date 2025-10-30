@@ -18,11 +18,19 @@ type Issue struct {
 	ID           string
 }
 
-func GetAll(ctx context.Context, teamSlug string) ([]Issue, error) {
+func GetAll(ctx context.Context, teamSlug string, issueFilter *gql.IssueFilter) ([]Issue, error) {
 	_ = `# @genqlient
-	query GetAllIssues($teamSlug: Slug!) {
+		# @genqlient(for: "IssueFilter.issueType", omitempty: true)
+		# @genqlient(for: "IssueFilter.severity", omitempty: true)
+		# @genqlient(for: "IssueFilter.resourceType", omitempty: true)
+		# @genqlient(for: "IssueFilter.resourceName", omitempty: true)
+		# @genqlient(for: "IssueFilter.environments", omitempty: true)
+	query GetAllIssues(
+		$teamSlug: Slug!, 
+		$filter: IssueFilter
+	) {
 	  team(slug: $teamSlug) {
-		issues {
+		  issues(filter: $filter) {
 		  nodes {
 			teamEnvironment {
 			  environment {
@@ -116,7 +124,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]Issue, error) {
 		return nil, err
 	}
 
-	resp, err := gql.GetAllIssues(ctx, client, teamSlug)
+	resp, err := gql.GetAllIssues(ctx, client, teamSlug, *issueFilter)
 	if err != nil {
 		return nil, fmt.Errorf("graphql: %w", err)
 	}
