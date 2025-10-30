@@ -58,12 +58,20 @@ func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 		if tenant == "" {
 			return nil, fmt.Errorf("NAIS_API_TENANT must be set when using GitHub Actions authentication")
 		}
+
+		ts := &githubActionsTokenSource{
+			ctx,
+			githubTokenURL,
+			githubTokenBearerToken,
+		}
+
+		token, err := ts.Token()
+		if err != nil {
+			return nil, fmt.Errorf("getting token from github actions: %w", err)
+		}
+
 		return &AuthenticatedTokenUser{
-			TokenSource: oauth2.ReuseTokenSource(nil, &githubActionsTokenSource{
-				ctx,
-				githubTokenURL,
-				githubTokenBearerToken,
-			}),
+			TokenSource: oauth2.StaticTokenSource(token),
 			consoleHost: "console." + tenant + ".cloud.nais.io",
 			domain:      "TODO",
 		}, nil
