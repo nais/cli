@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -49,13 +50,32 @@ func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 		}, nil
 	}
 
+	githubTokenURL := os.Getenv("ACTIONS_ID_TOKEN_REQUEST_URL")
+	githubTokenBearerToken := os.Getenv("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
+	if githubTokenURL != "" && githubTokenBearerToken != "" {
+		// TODO: this is temporary; should be derived from the token somehow
+		tenant := os.Getenv("NAIS_API_TENANT")
+		if tenant == "" {
+			return nil, fmt.Errorf("NAIS_API_TENANT must be set when using GitHub Actions authentication")
+		}
+		return &AuthenticatedTokenUser{
+			TokenSource: oauth2.ReuseTokenSource(nil, &githubActionsTokenSource{
+				ctx,
+				githubTokenURL,
+				githubTokenBearerToken,
+			}),
+			consoleHost: "console." + tenant + ".cloud.nais.io",
+			domain:      "TODO",
+		}, nil
+	}
+
 	secret, err := getUserSecret(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &AuthenticatedTokenUser{
-		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &tokenSource{ctx}),
+		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &userTokenSource{ctx}),
 		consoleHost: secret.ConsoleHost,
 		domain:      secret.Domain,
 	}, nil
@@ -208,17 +228,61 @@ type tenantData struct {
 	ConsoleURL string `json:"consoleUrl"`
 }
 
-type tokenSource struct {
+type userTokenSource struct {
 	ctx context.Context
 }
 
-func (k *tokenSource) Token() (*oauth2.Token, error) {
-	secret, err := getUserSecret(k.ctx)
+func (u *userTokenSource) Token() (*oauth2.Token, error) {
+	secret, err := getUserSecret(u.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting user secret: %w", err)
 	}
 
 	return &secret.Token, nil
+}
+
+type githubActionsTokenSource struct {
+	ctx          context.Context
+	requestURL   string
+	requestToken string
+}
+
+func (g *githubActionsTokenSource) Token() (*oauth2.Token, error) {
+	req, err := http.NewRequestWithContext(g.ctx, http.MethodGet, g.requestURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+	q := req.URL.Query()
+	q.Add("audience", "api.nais.io")
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Authorization", "bearer "+g.requestToken)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("fetching token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("unexpected status code: %s", resp.Status)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading body: %w", err)
+	}
+
+	var tokenResponse struct {
+		Token string `json:"value"`
+	}
+	err = json.Unmarshal(body, &tokenResponse)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshalling json: %w", err)
+	}
+
+	return &oauth2.Token{
+		AccessToken: tokenResponse.Token,
+	}, nil
 }
 
 func getUserSecret(ctx context.Context) (*userSecret, error) {
