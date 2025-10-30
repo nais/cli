@@ -33,6 +33,9 @@ class Nais < Formula
 
   def install
     bin.install "nais"
+    bash_completion.install "completions/nais.bash" => "nais"
+    zsh_completion.install "completions/nais.zsh" => "_nais"
+    fish_completion.install "completions/nais.fish"
   end
 
   test do
