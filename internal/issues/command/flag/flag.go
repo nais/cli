@@ -11,10 +11,12 @@ import (
 type Issues struct {
 	*flag.Alpha
 }
-type IssueType string
-type ResourceName string
-type ResourceType string
-type Severity string
+type (
+	IssueType    string
+	ResourceName string
+	ResourceType string
+	Severity     string
+)
 
 type List struct {
 	*Issues
@@ -32,6 +34,7 @@ func (s *Severity) AutoComplete(context.Context, *naistrix.Arguments, string, an
 func (r *ResourceType) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return toStrings(gql.AllResourceType), "Available resource types"
 }
+
 func (i *IssueType) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return toStrings(gql.AllIssueType), "Available issue types"
 }
@@ -42,5 +45,4 @@ func toStrings[T ~string](in []T) []string {
 		ret[i] = string(s)
 	}
 	return ret
-
 }
