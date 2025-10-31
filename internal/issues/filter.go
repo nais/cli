@@ -2,6 +2,7 @@ package issues
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -23,17 +24,39 @@ func ParseFilter(s string) (gql.IssueFilter, error) {
 		case "environment":
 			ret.Environments = []string{value}
 		case "severity":
-			ret.Severity = gql.Severity(value)
+			s, err := parseEnumValue(value, gql.AllSeverity)
+			if err != nil {
+				return gql.IssueFilter{}, err
+			}
+			ret.Severity = s
 		case "resourcename":
 			ret.ResourceName = value
 		case "resourcetype":
-			ret.ResourceType = gql.ResourceType(value)
+			rt, err := parseEnumValue(value, gql.AllResourceType)
+			if err != nil {
+				return gql.IssueFilter{}, err
+			}
+			ret.ResourceType = rt
 		case "issuetype":
-			ret.IssueType = gql.IssueType(value)
+			it, err := parseEnumValue(value, gql.AllIssueType)
+			if err != nil {
+				return gql.IssueFilter{}, err
+			}
+			ret.IssueType = it
 		default:
 			return gql.IssueFilter{}, fmt.Errorf("unknown filter key: %s", key)
 		}
 
 	}
 	return ret, nil
+}
+
+// parseEnumValue checks if value is valid for the given validValues slice and returns the value as the target type.
+// If not valid, returns an error with the valid values listed.
+func parseEnumValue[T ~string](value string, validValues []T) (T, error) {
+	v := T(strings.ToUpper(value))
+	if slices.Contains(validValues, v) {
+		return v, nil
+	}
+	return "", fmt.Errorf("invalid filter value: %s, valid values are: %+v", value, validValues)
 }
