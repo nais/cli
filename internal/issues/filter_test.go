@@ -64,7 +64,7 @@ func TestParse(t *testing.T) {
 				}
 
 				if err.Error() != test.want.err {
-					t.Errorf("parseFilter(%q) = %+v, want %+v", test.input, err, test.want.err)
+					t.Errorf("parseFilter(%q) = %+v, want error %+v", test.input, err, test.want.err)
 				}
 				return
 			}
