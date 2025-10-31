@@ -9,7 +9,7 @@ import (
 
 func TestParse(t *testing.T) {
 	type want struct {
-		filters *gql.IssueFilter
+		filters gql.IssueFilter
 		err     string
 	}
 
@@ -22,7 +22,7 @@ func TestParse(t *testing.T) {
 			name:  "single filter",
 			input: "environment=x",
 			want: want{
-				filters: &gql.IssueFilter{
+				filters: gql.IssueFilter{
 					Environments: []string{"x"},
 				},
 			},
@@ -31,7 +31,7 @@ func TestParse(t *testing.T) {
 			name:  "multiple filters",
 			input: "environment=x,severity=CRITICAL",
 			want: want{
-				filters: &gql.IssueFilter{
+				filters: gql.IssueFilter{
 					Environments: []string{"x"},
 					Severity:     "CRITICAL",
 				},
