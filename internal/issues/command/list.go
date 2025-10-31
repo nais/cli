@@ -35,7 +35,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			filters, err := issues.ParseFilter(flags.Filter)
+			filters, err := issues.ParseFilter(flags)
 			if err != nil {
 				return fmt.Errorf("parse filter: %w", err)
 			}

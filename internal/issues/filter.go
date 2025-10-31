@@ -5,49 +5,41 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func ParseFilter(s string) (gql.IssueFilter, error) {
-	if s == "" {
-		return gql.IssueFilter{}, nil
-	}
+func ParseFilter(flags *flag.List) (gql.IssueFilter, error) {
 	ret := gql.IssueFilter{}
-	parts := strings.SplitSeq(s, ",")
-	for part := range parts {
-		kv := strings.Split(part, "=")
-		if len(kv) != 2 {
-			return gql.IssueFilter{}, fmt.Errorf("incorrect filter: %s", part)
-		}
-		key, value := kv[0], kv[1]
-		switch strings.ToLower(key) {
-		case "environment":
-			ret.Environments = []string{value}
-		case "severity":
-			s, err := parseEnumValue(value, gql.AllSeverity)
-			if err != nil {
-				return gql.IssueFilter{}, err
-			}
-			ret.Severity = s
-		case "resourcename":
-			ret.ResourceName = value
-		case "resourcetype":
-			rt, err := parseEnumValue(value, gql.AllResourceType)
-			if err != nil {
-				return gql.IssueFilter{}, err
-			}
-			ret.ResourceType = rt
-		case "issuetype":
-			it, err := parseEnumValue(value, gql.AllIssueType)
-			if err != nil {
-				return gql.IssueFilter{}, err
-			}
-			ret.IssueType = it
-		default:
-			return gql.IssueFilter{}, fmt.Errorf("unknown filter key: %s", key)
-		}
 
+	if flags.Environment != "" {
+		ret.Environments = []string{flags.Environment}
 	}
+	if flags.IssueType != "" {
+		it, err := parseEnumValue(string(flags.IssueType), gql.AllIssueType)
+		if err != nil {
+			return gql.IssueFilter{}, err
+		}
+		ret.IssueType = it
+	}
+	if flags.ResourceName != "" {
+		ret.ResourceName = string(flags.ResourceName)
+	}
+	if flags.ResourceType != "" {
+		rt, err := parseEnumValue(string(flags.ResourceType), gql.AllResourceType)
+		if err != nil {
+			return gql.IssueFilter{}, err
+		}
+		ret.ResourceType = rt
+	}
+	if flags.Severity != "" {
+		s, err := parseEnumValue(string(flags.Severity), gql.AllSeverity)
+		if err != nil {
+			return gql.IssueFilter{}, err
+		}
+		ret.Severity = s
+	}
+
 	return ret, nil
 }
 
