@@ -7,16 +7,16 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func ParseFilter(s string) (*gql.IssueFilter, error) {
+func ParseFilter(s string) (gql.IssueFilter, error) {
 	if s == "" {
-		return nil, nil
+		return gql.IssueFilter{}, nil
 	}
-	ret := &gql.IssueFilter{}
+	ret := gql.IssueFilter{}
 	parts := strings.SplitSeq(s, ",")
 	for part := range parts {
 		kv := strings.Split(part, "=")
 		if len(kv) != 2 {
-			return nil, fmt.Errorf("incorrect filter: %s", part)
+			return gql.IssueFilter{}, fmt.Errorf("incorrect filter: %s", part)
 		}
 		key, value := kv[0], kv[1]
 		switch strings.ToLower(key) {
@@ -31,7 +31,7 @@ func ParseFilter(s string) (*gql.IssueFilter, error) {
 		case "issuetype":
 			ret.IssueType = gql.IssueType(value)
 		default:
-			return nil, fmt.Errorf("unknown filter key: %s", key)
+			return gql.IssueFilter{}, fmt.Errorf("unknown filter key: %s", key)
 		}
 
 	}

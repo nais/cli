@@ -18,7 +18,7 @@ type Issue struct {
 	ID           string
 }
 
-func GetAll(ctx context.Context, teamSlug string, issueFilter *gql.IssueFilter) ([]Issue, error) {
+func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) ([]Issue, error) {
 	_ = `# @genqlient
 		# @genqlient(for: "IssueFilter.issueType", omitempty: true)
 		# @genqlient(for: "IssueFilter.severity", omitempty: true)
@@ -124,7 +124,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter *gql.IssueFilter) 
 		return nil, err
 	}
 
-	resp, err := gql.GetAllIssues(ctx, client, teamSlug, *issueFilter)
+	resp, err := gql.GetAllIssues(ctx, client, teamSlug, issueFilter)
 	if err != nil {
 		return nil, fmt.Errorf("graphql: %w", err)
 	}
