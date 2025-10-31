@@ -51,6 +51,13 @@ func TestParse(t *testing.T) {
 				err: "incorrect filter: severity",
 			},
 		},
+		{
+			name:  "invalid filter value",
+			input: "severity=marning",
+			want: want{
+				err: "invalid filter value: marning, valid values are: [CRITICAL WARNING TODO]",
+			},
+		},
 	}
 
 	for _, test := range tests {
