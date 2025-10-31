@@ -40,7 +40,6 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 				return fmt.Errorf("parse filter: %w", err)
 			}
 			issues, err := issues.GetAll(ctx, args.Get("team"), filters)
-
 			if err != nil {
 				return fmt.Errorf("fetching issues: %w", err)
 			}
