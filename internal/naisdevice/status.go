@@ -2,13 +2,11 @@ package naisdevice
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sort"
 
 	"github.com/nais/device/pkg/pb"
 	"github.com/nais/naistrix"
-	"gopkg.in/yaml.v3"
 )
 
 func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
@@ -33,9 +31,9 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 func gatewayHealthy(gw *pb.Gateway) string {
 	if gw.Healthy {
 		return "connected"
-	} else {
-		return "disconnected"
 	}
+
+	return "disconnected"
 }
 
 func gatewayPrivileged(gw *pb.Gateway) string {
@@ -44,9 +42,8 @@ func gatewayPrivileged(gw *pb.Gateway) string {
 			return "active"
 		}
 		return "required"
-	} else {
-		return ""
 	}
+	return ""
 }
 
 func PrintVerboseStatus(status *pb.AgentStatus, out *naistrix.OutputWriter) {
@@ -69,20 +66,18 @@ func PrintVerboseStatus(status *pb.AgentStatus, out *naistrix.OutputWriter) {
 }
 
 func PrintFormattedStatus(format string, status *pb.AgentStatus, out *naistrix.OutputWriter) error {
-	switch format {
-	case "yaml":
-		o, err := yaml.Marshal(status)
-		if err != nil {
-			return fmt.Errorf("marshaling status: %v", err)
-		}
-		out.Println(string(o))
-	case "json":
-		o, err := json.Marshal(status)
-		if err != nil {
-			return fmt.Errorf("marshaling status: %v", err)
-		}
-		out.Println(string(o))
+	var o interface {
+		Render(v any) error
 	}
 
-	return nil
+	switch format {
+	case "yaml":
+		o = out.YAML()
+	case "json":
+		o = out.JSON()
+	default:
+		return fmt.Errorf("unknown format: %q", format)
+	}
+
+	return o.Render(status)
 }
