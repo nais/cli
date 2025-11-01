@@ -30,7 +30,7 @@ require (
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
 	github.com/nais/krakend/pkg/migration v0.0.0-20251023125853-05cb74e2d6be
 	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
-	github.com/nais/naistrix v0.9.2
+	github.com/nais/naistrix v0.10.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/pterm/pterm v0.12.82
 	github.com/savioxavier/termlink v1.4.3
@@ -50,7 +50,6 @@ require (
 	golang.org/x/sync v0.17.0
 	google.golang.org/api v0.246.0
 	google.golang.org/grpc v1.75.0
-	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.33.2
 	k8s.io/apimachinery v0.33.2
 	k8s.io/client-go v0.33.2
@@ -223,6 +222,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.6.1 // indirect
 	k8s.io/apiextensions-apiserver v0.33.2 // indirect
 	k8s.io/kube-openapi v0.0.0-20250701173324-9bd5c66d9911 // indirect
