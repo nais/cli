@@ -11,8 +11,8 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func statuscmd(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
-	flags := &flag.Status{GlobalFlags: parentFlags}
+func statuscmd(parentFlags *flag.Device) *naistrix.Command {
+	flags := &flag.Status{Device: parentFlags}
 	return &naistrix.Command{
 		Name:  "status",
 		Title: "Show the status of your naisdevice.",
