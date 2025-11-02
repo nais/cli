@@ -28,6 +28,34 @@ func GetStatus(ctx context.Context) (*pb.AgentStatus, error) {
 	return stream.Recv()
 }
 
+func GetGateways(ctx context.Context) ([]*pb.Gateway, error) {
+	agentStatus, err := GetStatus(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if agentStatus.GetConnectionState() != pb.AgentState_Connected {
+		return nil, fmt.Errorf("not connected to naisdevice")
+	}
+
+	return agentStatus.GetGateways(), nil
+}
+
+func GetGateway(ctx context.Context, gateway string) (*pb.Gateway, error) {
+	gateways, err := GetGateways(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, gw := range gateways {
+		if gw.Name == gateway {
+			return gw, nil
+		}
+	}
+
+	return nil, fmt.Errorf("unknown gateway: %q", gateway)
+}
+
 func gatewayHealthy(gw *pb.Gateway) string {
 	if gw.Healthy {
 		return "connected"
