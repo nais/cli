@@ -30,7 +30,7 @@ require (
 	github.com/nais/device v0.0.0-20250703090236-08bd8b276591
 	github.com/nais/krakend/pkg/migration v0.0.0-20251023125853-05cb74e2d6be
 	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
-	github.com/nais/naistrix v0.10.0
+	github.com/nais/naistrix v0.11.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/pterm/pterm v0.12.82
 	github.com/savioxavier/termlink v1.4.3
