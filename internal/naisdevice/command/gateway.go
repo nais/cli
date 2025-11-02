@@ -2,11 +2,10 @@ package command
 
 import (
 	"context"
-	"fmt"
+	"strings"
 
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/naisdevice/command/flag"
-	"github.com/nais/device/pkg/pb"
 	"github.com/nais/naistrix"
 )
 
@@ -47,16 +46,11 @@ func listcommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Title: "List gateways.",
 		Flags: flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			agentStatus, err := naisdevice.GetStatus(ctx)
+			allGateways, err := naisdevice.GetGateways(ctx)
 			if err != nil {
-				return err
+				return naistrix.Errorf("Unable to list gateways, are you connected to naisdevice?")
 			}
 
-			if agentStatus.GetConnectionState() != pb.AgentState_Connected {
-				return fmt.Errorf("not connected to naisdevice")
-			}
-
-			allGateways := agentStatus.GetGateways()
 			gateways := make([]gw, len(allGateways))
 			for i, g := range allGateways {
 				gateways[i] = gw{
@@ -93,8 +87,48 @@ func describecommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "gateway"},
 		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) (completions []string, activeHelp string) {
+			gateways, err := naisdevice.GetGateways(ctx)
+			if err != nil {
+				return []string{}, "Unable to list gateways, are you connected to naisdevice?"
+			}
+
+			gws := make([]string, len(gateways))
+			for i, g := range gateways {
+				gws[i] = g.Name
+			}
+
+			return gws, "Select a gateway to describe."
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return nil
+			gateway, err := naisdevice.GetGateway(ctx, args.Get("gateway"))
+			if err != nil {
+				return naistrix.Errorf("Unable to describe gateway, are you connected to naisdevice?")
+			}
+
+			var o interface {
+				Render(v any) error
+			}
+
+			switch flags.Output {
+			case "yaml":
+				o = out.YAML()
+			case "json":
+				o = out.JSON()
+			default:
+				out.Printf("Name: <info>%s</info>\n", gateway.Name)
+				out.Printf("Connected: <info>%s</info>\n", YesNo(gateway.Healthy))
+				out.Printf("Public key: <info>%s</info>\n", gateway.PublicKey)
+				out.Printf("Endpoint: <info>%s</info>\n", gateway.Endpoint)
+				out.Printf("IPv4: <info>%s</info>\n", gateway.Ipv4)
+				out.Printf("IPv6: <info>%s</info>\n", gateway.Ipv6)
+				out.Printf("Routes (IPv4): <info>%s</info>\n", strings.Join(gateway.RoutesIPv4, ", "))
+				out.Printf("Requires JITA: <info>%s</info>\n", YesNo(gateway.RequiresPrivilegedAccess))
+				out.Printf("Access group IDs: <info>%s</info>\n", strings.Join(gateway.AccessGroupIDs, ", "))
+				return nil
+			}
+
+			return o.Render(gateway)
 		},
 	}
 }

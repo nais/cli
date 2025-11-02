@@ -36,6 +36,7 @@ type List struct {
 
 type Describe struct {
 	*Gateway
+	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
 }
 
 type Connect struct {
