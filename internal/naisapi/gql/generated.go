@@ -178,6 +178,47 @@ func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteV
 	return v.DeleteValkey
 }
 
+// EnvironmentsEnvironmentsEnvironmentConnection includes the requested fields of the GraphQL type EnvironmentConnection.
+// The GraphQL type's documentation follows.
+//
+// Environment connection.
+type EnvironmentsEnvironmentsEnvironmentConnection struct {
+	// List of nodes.
+	Nodes []EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment `json:"nodes"`
+}
+
+// GetNodes returns EnvironmentsEnvironmentsEnvironmentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *EnvironmentsEnvironmentsEnvironmentConnection) GetNodes() []EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment {
+	return v.Nodes
+}
+
+// EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *EnvironmentsEnvironmentsEnvironmentConnectionNodesEnvironment) GetName() string {
+	return v.Name
+}
+
+// EnvironmentsResponse is returned by Environments on success.
+type EnvironmentsResponse struct {
+	// Get a list of environments.
+	Environments EnvironmentsEnvironmentsEnvironmentConnection `json:"environments"`
+}
+
+// GetEnvironments returns EnvironmentsResponse.Environments, and is useful for accessing the field via an interface.
+func (v *EnvironmentsResponse) GetEnvironments() EnvironmentsEnvironmentsEnvironmentConnection {
+	return v.Environments
+}
+
 // GetAllIssuesResponse is returned by GetAllIssues on success.
 type GetAllIssuesResponse struct {
 	// Get a team by its slug.
@@ -6139,6 +6180,38 @@ func DeleteValkey(
 	}
 
 	data_ = &DeleteValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by Environments.
+const Environments_Operation = `
+query Environments {
+	environments {
+		nodes {
+			name
+		}
+	}
+}
+`
+
+func Environments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *EnvironmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "Environments",
+		Query:  Environments_Operation,
+	}
+
+	data_ = &EnvironmentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

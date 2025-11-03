@@ -13,7 +13,7 @@ func ParseFilter(flags *flag.List) (gql.IssueFilter, error) {
 	ret := gql.IssueFilter{}
 
 	if flags.Environment != "" {
-		ret.Environments = []string{flags.Environment}
+		ret.Environments = []string{string(flags.Environment)}
 	}
 	if flags.IssueType != "" {
 		it, err := parseEnumValue(string(flags.IssueType), gql.AllIssueType)

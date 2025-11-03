@@ -155,6 +155,34 @@ func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeams
 	return nil, nil
 }
 
+func GetAllEnvironments(ctx context.Context) ([]string, error) {
+	_ = `# @genqlient
+		query Environments {
+			environments {
+				nodes {
+					name
+				}
+			}
+		}
+	`
+
+	client, err := GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.Environments(ctx, client)
+	if err != nil {
+		return nil, err
+	}
+
+	envs := make([]string, len(resp.Environments.Nodes))
+	for i, e := range resp.Environments.Nodes {
+		envs[i] = e.Name
+	}
+	return envs, nil
+}
+
 func GetAllTeamSlugs(ctx context.Context) ([]string, error) {
 	ret, err := GetAllTeams(ctx)
 	if err != nil {
