@@ -1,10 +1,23 @@
-package naisapi
+package auth
 
 import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 )
+
+func Localhost() (*LocalhostUser, bool) {
+	host := os.Getenv("NAIS_API_LOCAL_HOST")
+	if host == "" {
+		return nil, false
+	}
+
+	return &LocalhostUser{
+		consoleHost: host,
+		email:       os.Getenv("NAIS_API_LOCAL_EMAIL"),
+	}, true
+}
 
 type LocalhostUser struct {
 	consoleHost string

@@ -1,6 +1,7 @@
-// Package keyring is a simple wrapper that adds timeouts to the zalando/go-keyring package
+// keyring is a simple wrapper that adds timeouts to the zalando/go-keyring package
 // "Borrowed" with ❤️ from https://github.com/cli/cli/blob/17af24e147629aa1aed2546e87e9323aeabf4c8c/internal/keyring/keyring.go
-package naisapi
+
+package auth
 
 import (
 	"errors"
@@ -24,8 +25,7 @@ func (e *timeoutError) Error() string {
 	return e.message
 }
 
-// Set secret in keyring.
-func setSecret(secret string) error {
+func setKeyringSecret(secret string) error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
@@ -39,8 +39,7 @@ func setSecret(secret string) error {
 	}
 }
 
-// Get secret from keyring.
-func getSecret() (string, error) {
+func getKeyringSecret() (string, error) {
 	ch := make(chan struct {
 		val string
 		err error
@@ -64,8 +63,7 @@ func getSecret() (string, error) {
 	}
 }
 
-// Delete secret from keyring.
-func deleteSecret() error {
+func deleteKeyringSecret() error {
 	ch := make(chan error, 1)
 	go func() {
 		defer close(ch)
