@@ -48,6 +48,7 @@ func (e *Environment) AutoComplete(ctx context.Context, args *naistrix.Arguments
 	}
 	return envs, "Available environments"
 }
+
 func (s *Severity) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return toStrings(gql.AllSeverity), "Available severity levels"
 }
