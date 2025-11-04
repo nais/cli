@@ -30,7 +30,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		$filter: IssueFilter
 	) {
 	  team(slug: $teamSlug) {
-		  issues(filter: $filter first: 999) {
+		  issues(filter: $filter, first: 999) {
 		  nodes {
 			teamEnvironment {
 			  environment {
