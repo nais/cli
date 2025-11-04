@@ -4122,6 +4122,581 @@ var AllResourceType = []ResourceType{
 	ResourceTypeJob,
 }
 
+// Search filter for filtering search results.
+type SearchFilter struct {
+	// Search filter for filtering search results.
+	Query string `json:"query"`
+	// Search filter for filtering search results.
+	Type SearchType `json:"type"`
+}
+
+// GetQuery returns SearchFilter.Query, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetQuery() string { return v.Query }
+
+// GetType returns SearchFilter.Type, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetType() SearchType { return v.Type }
+
+// SearchResourceNamesResponse is returned by SearchResourceNames on success.
+type SearchResourceNamesResponse struct {
+	// Search for entities.
+	Search SearchResourceNamesSearchSearchNodeConnection `json:"search"`
+}
+
+// GetSearch returns SearchResourceNamesResponse.Search, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesResponse) GetSearch() SearchResourceNamesSearchSearchNodeConnection {
+	return v.Search
+}
+
+// SearchResourceNamesSearchSearchNodeConnection includes the requested fields of the GraphQL type SearchNodeConnection.
+// The GraphQL type's documentation follows.
+//
+// Search node connection.
+type SearchResourceNamesSearchSearchNodeConnection struct {
+	// List of edges.
+	Edges []SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge `json:"edges"`
+}
+
+// GetEdges returns SearchResourceNamesSearchSearchNodeConnection.Edges, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnection) GetEdges() []SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge {
+	return v.Edges
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge includes the requested fields of the GraphQL type SearchNodeEdge.
+// The GraphQL type's documentation follows.
+//
+// Search node edge.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge struct {
+	// The SearchNode.
+	Node SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode `json:"-"`
+}
+
+// GetNode returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge.Node, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge) GetNode() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode {
+	return v.Node
+}
+
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge
+		Node json.RawMessage `json:"node"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Node
+		src := firstPass.Node
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge.Node: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge struct {
+	Node json.RawMessage `json:"node"`
+}
+
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge) __premarshalJSON() (*__premarshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge, error) {
+	var retval __premarshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge
+
+	{
+
+		dst := &retval.Node
+		src := v.Node
+		var err error
+		*dst, err = __marshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdge.Node: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication struct {
+	Typename string `json:"__typename"`
+	// The name of the application.
+	Name string `json:"name"`
+	// The team that owns the application.
+	Team SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam `json:"team"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication.Name, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication.Team, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication) GetTeam() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam {
+	return v.Team
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam.Slug, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplicationTeam) GetSlug() string {
+	return v.Slug
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset includes the requested fields of the GraphQL type BigQueryDataset.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset) GetTypename() string {
+	return v.Typename
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket includes the requested fields of the GraphQL type Bucket.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket) GetTypename() string {
+	return v.Typename
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob includes the requested fields of the GraphQL type Job.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob struct {
+	Typename string `json:"__typename"`
+	// The name of the job.
+	Name string `json:"name"`
+	// The team that owns the job.
+	Team SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam `json:"team"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob.Name, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob.Team, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob) GetTeam() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam {
+	return v.Team
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam.Slug, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJobTeam) GetSlug() string {
+	return v.Slug
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic) GetTypename() string {
+	return v.Typename
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch struct {
+	Typename string                                                                             `json:"__typename"`
+	Name     string                                                                             `json:"name"`
+	Team     SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam `json:"team"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch.Name, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch.Team, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch) GetTeam() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam {
+	return v.Team
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam.Slug, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearchTeam) GetSlug() string {
+	return v.Slug
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode includes the requested fields of the GraphQL interface SearchNode.
+//
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode is implemented by the following types:
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey
+// The GraphQL type's documentation follows.
+//
+// Types that can be searched for.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode interface {
+	implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey) implementsGraphQLInterfaceSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode() {
+}
+
+func __unmarshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode(b []byte, v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication)
+		return json.Unmarshal(b, *v)
+	case "BigQueryDataset":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset)
+		return json.Unmarshal(b, *v)
+	case "Bucket":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopic":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic)
+		return json.Unmarshal(b, *v)
+	case "OpenSearch":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "SqlInstance":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance)
+		return json.Unmarshal(b, *v)
+	case "Team":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam)
+		return json.Unmarshal(b, *v)
+	case "Valkey":
+		*v = new(SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing SearchNode.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalSearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode(v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset:
+		typename = "BigQueryDataset"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBigQueryDataset
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket:
+		typename = "Bucket"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeBucket
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeJob
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic:
+		typename = "KafkaTopic"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeKafkaTopic
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch:
+		typename = "OpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance:
+		typename = "SqlInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam:
+		typename = "Team"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey:
+		typename = "Valkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSearchNode: "%T"`, v)
+	}
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance includes the requested fields of the GraphQL type SqlInstance.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance struct {
+	Typename string                                                                              `json:"__typename"`
+	Name     string                                                                              `json:"name"`
+	Team     SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam `json:"team"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance.Name, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance.Team, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstance) GetTeam() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam {
+	return v.Team
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam.Slug, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeSqlInstanceTeam) GetSlug() string {
+	return v.Slug
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeTeam) GetTypename() string {
+	return v.Typename
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey includes the requested fields of the GraphQL type Valkey.
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey struct {
+	Typename string                                                                         `json:"__typename"`
+	Name     string                                                                         `json:"name"`
+	Team     SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam `json:"team"`
+}
+
+// GetTypename returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey.Typename, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey.Name, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey.Team, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkey) GetTeam() SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam {
+	return v.Team
+}
+
+// SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam.Slug, and is useful for accessing the field via an interface.
+func (v *SearchResourceNamesSearchSearchNodeConnectionEdgesSearchNodeEdgeNodeValkeyTeam) GetSlug() string {
+	return v.Slug
+}
+
+// A list of possible search types.
+type SearchType string
+
+const (
+	// Search for teams.
+	SearchTypeTeam SearchType = "TEAM"
+	// Search for applications.
+	SearchTypeApplication     SearchType = "APPLICATION"
+	SearchTypeBigqueryDataset SearchType = "BIGQUERY_DATASET"
+	SearchTypeBucket          SearchType = "BUCKET"
+	SearchTypeJob             SearchType = "JOB"
+	SearchTypeKafkaTopic      SearchType = "KAFKA_TOPIC"
+	SearchTypeOpensearch      SearchType = "OPENSEARCH"
+	SearchTypeSqlInstance     SearchType = "SQL_INSTANCE"
+	SearchTypeValkey          SearchType = "VALKEY"
+)
+
+var AllSearchType = []SearchType{
+	SearchTypeTeam,
+	SearchTypeApplication,
+	SearchTypeBigqueryDataset,
+	SearchTypeBucket,
+	SearchTypeJob,
+	SearchTypeKafkaTopic,
+	SearchTypeOpensearch,
+	SearchTypeSqlInstance,
+	SearchTypeValkey,
+}
+
 type Severity string
 
 const (
@@ -5891,6 +6466,14 @@ func (v *__RemoveTeamMemberInput) GetSlug() string { return v.Slug }
 // GetEmail returns __RemoveTeamMemberInput.Email, and is useful for accessing the field via an interface.
 func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
+// __SearchResourceNamesInput is used internally by genqlient
+type __SearchResourceNamesInput struct {
+	Filter SearchFilter `json:"filter"`
+}
+
+// GetFilter returns __SearchResourceNamesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__SearchResourceNamesInput) GetFilter() SearchFilter { return v.Filter }
+
 // __TailLogInput is used internally by genqlient
 type __TailLogInput struct {
 	Environment string    `json:"environment"`
@@ -6700,6 +7283,74 @@ func RemoveTeamMember(
 	}
 
 	data_ = &RemoveTeamMemberResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by SearchResourceNames.
+const SearchResourceNames_Operation = `
+query SearchResourceNames ($filter: SearchFilter!) {
+	search(first: 999, filter: $filter) {
+		edges {
+			node {
+				__typename
+				... on Application {
+					name
+					team {
+						slug
+					}
+				}
+				... on Job {
+					name
+					team {
+						slug
+					}
+				}
+				... on OpenSearch {
+					name
+					team {
+						slug
+					}
+				}
+				... on Valkey {
+					name
+					team {
+						slug
+					}
+				}
+				... on SqlInstance {
+					name
+					team {
+						slug
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func SearchResourceNames(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	filter SearchFilter,
+) (data_ *SearchResourceNamesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SearchResourceNames",
+		Query:  SearchResourceNames_Operation,
+		Variables: &__SearchResourceNamesInput{
+			Filter: filter,
+		},
+	}
+
+	data_ = &SearchResourceNamesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

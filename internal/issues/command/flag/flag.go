@@ -31,13 +31,6 @@ type List struct {
 	Severity     Severity     `name:"severity" usage:"Filter issues by severity"`
 }
 
-func (r *ResourceName) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	// f := flags.(*List)
-	// fmt.Println("resource name selected", f.ResourceType)
-
-	return nil, "Resource name auto-completion not implemented"
-}
-
 func (e *Environment) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
 	// f := flags.(*List)
 	// fmt.Println("IssueType", f.IssueType)

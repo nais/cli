@@ -26,11 +26,11 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		# @genqlient(for: "IssueFilter.resourceName", omitempty: true)
 		# @genqlient(for: "IssueFilter.environments", omitempty: true)
 	query GetAllIssues(
-		$teamSlug: Slug!, 
+		$teamSlug: Slug!,
 		$filter: IssueFilter
 	) {
 	  team(slug: $teamSlug) {
-		  issues(filter: $filter) {
+		  issues(filter: $filter first: 999) {
 		  nodes {
 			teamEnvironment {
 			  environment {
