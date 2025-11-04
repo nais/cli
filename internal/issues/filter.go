@@ -37,6 +37,7 @@ func ParseFilter(flags *flag.List) (gql.IssueFilter, error) {
 		if err != nil {
 			return gql.IssueFilter{}, err
 		}
+
 		ret.Severity = s
 	}
 
