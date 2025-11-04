@@ -4,6 +4,7 @@ operations:
   - internal/apply/**/*.go
   - internal/valkey/**/*.go
   - internal/opensearch/**/*.go
+  - internal/issues/**/*.go
 bindings:
   Slug:
     type: string
