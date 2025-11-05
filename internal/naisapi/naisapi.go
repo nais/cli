@@ -243,36 +243,6 @@ func IsConsoleAdmin(ctx context.Context) bool {
 	return false
 }
 
-func GetTeamMembers(ctx context.Context, teamSlug string) ([]gql.TeamMembersTeamMembersTeamMemberConnectionNodesTeamMember, error) {
-	_ = `# @genqlient
-		query TeamMembers($slug: Slug!) {
-			team(slug: $slug) {
-				members(first: 1000) {
-					nodes {
-						role
-						user {
-							name
-							email
-						}
-					}
-				}
-			}
-		}
-	`
-
-	client, err := GraphqlClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := gql.TeamMembers(ctx, client, teamSlug)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Team.Members.Nodes, nil
-}
-
 func GetTeamWorkloads(ctx context.Context, teamSlug string) ([]gql.GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload, error) {
 	_ = `# @genqlient
 		query GetTeamWorkloads($slug: Slug!) {
@@ -344,56 +314,6 @@ func GetUsers(ctx context.Context) (*gql.UsersResponse, error) {
 	}
 
 	return gql.Users(ctx, client)
-}
-
-func AddTeamMember(ctx context.Context, teamSlug, email string, role gql.TeamMemberRole) error {
-	_ = `# @genqlient
-		mutation AddTeamMember(
-			$slug: Slug!
-			$email: String!
-			$role: TeamMemberRole!
-		) {
-			addTeamMember(input: {
-				teamSlug: $slug
-				userEmail: $email
-				role: $role
-			}) {
-				member { role }
-			}
-		}
-	`
-
-	client, err := GraphqlClient(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = gql.AddTeamMember(ctx, client, teamSlug, email, role)
-	return err
-}
-
-func RemoveTeamMember(ctx context.Context, teamSlug, email string) error {
-	_ = `# @genqlient
-		mutation RemoveTeamMember(
-			$slug: Slug!
-			$email: String!
-		) {
-			removeTeamMember(input: {
-				teamSlug: $slug
-				userEmail: $email
-			}) {
-				team { slug }
-			}
-		}
-	`
-
-	client, err := GraphqlClient(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = gql.RemoveTeamMember(ctx, client, teamSlug, email)
-	return err
 }
 
 func TailLog(ctx context.Context, out *naistrix.OutputWriter, flag *logflag.LogFlags, lokiQuery string) error {

@@ -1,10 +1,11 @@
 schema: schema.graphql
 operations:
-  - internal/naisapi/**/*.go
   - internal/apply/**/*.go
   - internal/valkey/**/*.go
   - internal/opensearch/**/*.go
   - internal/issues/**/*.go
+  - internal/member/**/*.go
+  - internal/naisapi/**/*.go
 bindings:
   Slug:
     type: string
