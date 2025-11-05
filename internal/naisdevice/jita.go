@@ -4,17 +4,21 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/urlopen"
 	"github.com/nais/device/pkg/pb"
 )
 
-func AccessPrivilegedGateway(gatewayName string) error {
-	url := fmt.Sprintf("https://naisdevice-jita.external.prod-gcp.nav.cloud.nais.io/?gateway=%s", gatewayName)
-	err := urlopen.Open(url)
+func AccessPrivilegedGateway(ctx context.Context, gateway string) error {
+	connection, err := AgentConnection()
 	if err != nil {
-		return fmt.Errorf("unable to open your browser, please open this manually: %s", url)
+		return err
 	}
-	return nil
+	defer func() { _ = connection.Close() }()
+
+	_, err = pb.NewDeviceAgentClient(connection).ShowJita(ctx, &pb.ShowJitaRequest{
+		Gateway: gateway,
+	})
+
+	return err
 }
 
 func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
@@ -22,9 +26,9 @@ func GetPrivilegedGateways(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = connection.Close() }()
 
 	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
 
 	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
 		KeepConnectionOnComplete: true,
