@@ -13,6 +13,7 @@ import (
 	logout "github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
+	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/naisapi"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
@@ -43,6 +44,7 @@ func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
 		login.Login(flags),
 		logout.Logout(flags),
 		naisdevice.Naisdevice(flags),
+		members.Members(flags),
 		aiven.Aiven(flags),
 		alpha.Alpha(flags),
 		postgres.Postgres(flags),
