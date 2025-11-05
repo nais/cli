@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"context"
+
 	"github.com/nais/naistrix"
 )
 
@@ -10,11 +12,11 @@ type Member struct {
 
 type Output string
 
-// var _ naistrix.FlagAutoCompleter = (*Output)(nil)
+var _ naistrix.FlagAutoCompleter = (*Output)(nil)
 
-// func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-// 	return []string{"table", "json"}, "Available output formats."
-// }
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
+}
 
 type AddMember struct {
 	*Member
