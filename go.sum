@@ -389,8 +389,8 @@ github.com/muhlemmer/httpforwarded v0.1.0 h1:x4DLrzXdliq8mprgUMR0olDvHGkou5BJsK/
 github.com/muhlemmer/httpforwarded v0.1.0/go.mod h1:yo9czKedo2pdZhoXe+yDkGVbU0TJ0q9oQ90BVoDEtw0=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
-github.com/nais/device v0.0.0-20250703090236-08bd8b276591 h1:MgFQR6KwI6nB8Dl8c6IWT9deni9ln2P0h7EX8kAo1Bo=
-github.com/nais/device v0.0.0-20250703090236-08bd8b276591/go.mod h1:5EJDz4LiIliyvsUZb8gRDwpqihR7r4J+T4pJxUjBc9I=
+github.com/nais/device v1.6.1 h1:J/z+XQVqPY4ZNU31Ew52xSyz8ymqkdpOFWXsyvdHQ78=
+github.com/nais/device v1.6.1/go.mod h1:hhcnFD5enMJGSXtbwVxQtQpCWB8e7NNI+bY3EqYrU1I=
 github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9 h1:+FXD+P7Z45/sbzgsPBN7agv5Po429HlPayL6y/GU95s=
 github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9/go.mod h1:GB1VfSnXR1+Ijn38TYNVjdKCe84Fah3WaYQwnFne5DI=
 github.com/nais/krakend/pkg/migration v0.0.0-20251023125853-05cb74e2d6be h1:k4Ca9o05JKdX7WejLZ0P1+fUKrya8mglDA/rPqjqUKg=

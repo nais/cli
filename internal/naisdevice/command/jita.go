@@ -63,7 +63,7 @@ func run(ctx context.Context, args *naistrix.Arguments, _ *naistrix.OutputWriter
 	}
 
 	for _, gateway := range args.All() {
-		if err := naisdevice.AccessPrivilegedGateway(gateway); err != nil {
+		if err := naisdevice.AccessPrivilegedGateway(ctx, gateway); err != nil {
 			return fmt.Errorf("access JITA gateway: %w", err)
 		}
 	}
