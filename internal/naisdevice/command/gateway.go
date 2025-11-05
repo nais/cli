@@ -32,14 +32,14 @@ func gatewaycmd(parentFlags *flag.Device) *naistrix.Command {
 		Title:       "Interact with naisdevice gateways.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
-			listcommand(flags),
-			describecommand(flags),
-			connectcommand(flags),
+			listCommand(flags),
+			describeCommand(flags),
+			grantAccessCommand(flags),
 		},
 	}
 }
 
-func listcommand(parentFlags *flag.Gateway) *naistrix.Command {
+func listCommand(parentFlags *flag.Gateway) *naistrix.Command {
 	flags := &flag.List{Gateway: parentFlags}
 	return &naistrix.Command{
 		Name:  "list",
@@ -49,6 +49,9 @@ func listcommand(parentFlags *flag.Gateway) *naistrix.Command {
 			allGateways, err := naisdevice.GetGateways(ctx)
 			if err != nil {
 				return naistrix.Errorf("Unable to list gateways, are you connected to naisdevice?")
+			} else if len(allGateways) == 0 {
+				out.Infoln("There are no gateways available.")
+				return nil
 			}
 
 			gateways := make([]gw, len(allGateways))
@@ -78,7 +81,7 @@ func listcommand(parentFlags *flag.Gateway) *naistrix.Command {
 	}
 }
 
-func describecommand(parentFlags *flag.Gateway) *naistrix.Command {
+func describeCommand(parentFlags *flag.Gateway) *naistrix.Command {
 	flags := &flag.Describe{Gateway: parentFlags}
 	return &naistrix.Command{
 		Name:  "describe",
@@ -133,16 +136,57 @@ func describecommand(parentFlags *flag.Gateway) *naistrix.Command {
 	}
 }
 
-func connectcommand(parentFlags *flag.Gateway) *naistrix.Command {
-	flags := &flag.Connect{Gateway: parentFlags}
+func grantAccessCommand(parentFlags *flag.Gateway) *naistrix.Command {
+	flags := &flag.GrantAccess{Gateway: parentFlags}
 	return &naistrix.Command{
-		Name:  "connect",
-		Title: "Connect to a gateway.",
+		Name:  "grant-access",
+		Title: "Grant yourself access to a privileged gateway.",
 		Flags: flags,
 		Args: []naistrix.Argument{
-			{Name: "gateway"},
+			{Name: "gateway", Repeatable: true},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			allGateways, err := naisdevice.GetGateways(ctx)
+			if err != nil {
+				return naistrix.Errorf("Unable to list gateways, are you connected to naisdevice?")
+			}
+
+			jitaGateways := make([]string, 0)
+			for _, gatewayArg := range args.GetRepeatable("gateway") {
+				found := false
+				for _, gateway := range allGateways {
+					if gateway.Name != gatewayArg {
+						continue
+					}
+
+					if !gateway.RequiresPrivilegedAccess {
+						out.Infof("%q does not require JITA so it should already be connected.\n", gateway.Name)
+						found = true
+						break
+					}
+
+					if gateway.Healthy {
+						out.Infof("%q is already connected, no need to grant access.\n", gateway.Name)
+						found = true
+						break
+					}
+
+					jitaGateways = append(jitaGateways, gatewayArg)
+					found = true
+					break
+				}
+
+				if !found {
+					out.Errorf("%q is not a valid gateway.\n", gatewayArg)
+				}
+			}
+
+			for _, g := range jitaGateways {
+				if err := naisdevice.ShowJITA(ctx, g); err != nil {
+					out.Errorf("Unable to access the %q gateway", g)
+				}
+			}
+
 			return nil
 		},
 	}
