@@ -39,6 +39,6 @@ type Describe struct {
 	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
 }
 
-type Connect struct {
+type GrantAccess struct {
 	*Gateway
 }

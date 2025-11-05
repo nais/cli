@@ -27,10 +27,10 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/mitchellh/go-ps v1.0.0
-	github.com/nais/device v1.6.1
+	github.com/nais/device v1.7.3
 	github.com/nais/krakend/pkg/migration v0.0.0-20251112211103-82b954ae962b
 	github.com/nais/liberator v0.0.0-20251105145237-b406841758d4
-	github.com/nais/naistrix v0.13.0
+	github.com/nais/naistrix v0.16.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.82
