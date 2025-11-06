@@ -18,7 +18,7 @@ import (
 )
 
 func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

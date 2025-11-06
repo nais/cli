@@ -9,6 +9,8 @@ import (
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 	"golang.org/x/oauth2"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -16,7 +18,9 @@ import (
 
 type DB interface {
 	DBConnection(ctx context.Context) (*ConnectionInfo, error)
-	RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, verbose bool, out *naistrix.OutputWriter) error
+	RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, out *naistrix.OutputWriter, printInstructions bool) error
+
+	AppName() string
 
 	// TODO: Remove when interface migration complete
 	ToCloudSQLDBInfo() (*CloudSQLDBInfo, error)
@@ -30,7 +34,11 @@ type DBInfo struct {
 	appName       string
 }
 
-func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (DB, error) {
+func (d *DBInfo) AppName() string {
+	return d.appName
+}
+
+func NewDBInfo(ctx context.Context, appName string, namespace flag.Namespace, context flag.Context) (DB, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),
@@ -59,15 +67,46 @@ func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (
 		return nil, fmt.Errorf("NewDBInfo: load kubeclient configuration: %w", err)
 	}
 
-	return &CloudSQLDBInfo{
-		DBInfo: DBInfo{
-			k8sClient:     k8sClient,
-			dynamicClient: dynamicClient,
-			config:        kubeConfig,
-			namespace:     namespace,
-			appName:       appName,
-		},
-	}, nil
+	dbInfo := &DBInfo{
+		k8sClient:     k8sClient,
+		dynamicClient: dynamicClient,
+		config:        kubeConfig,
+		namespace:     namespace,
+		appName:       appName,
+	}
+
+	isCloudSQL, err := IsCloudSQL(ctx, dbInfo)
+	if err != nil {
+		return nil, err
+	}
+	if isCloudSQL {
+		return &CloudSQLDBInfo{
+			DBInfo: dbInfo,
+		}, nil
+	} else {
+		return NewPostgresDBInfo(ctx, dbInfo)
+	}
+}
+
+func IsCloudSQL(ctx context.Context, i *DBInfo) (bool, error) {
+	sqlInstances, err := i.dynamicClient.Resource(schema.GroupVersionResource{
+		Group:    "sql.cnrm.cloud.google.com",
+		Version:  "v1beta1",
+		Resource: "sqlinstances",
+	}).Namespace(string(i.namespace)).List(ctx, meta_v1.ListOptions{
+		LabelSelector: "app=" + i.appName,
+	})
+	if err != nil {
+		return false, fmt.Errorf("fetchDBInstance: error looking for sqlinstance %q in %q: %w", i.appName, i.namespace, err)
+	}
+
+	if len(sqlInstances.Items) == 1 {
+		return true, nil
+	} else if len(sqlInstances.Items) > 1 {
+		return true, fmt.Errorf("fetchDBInstance: multiple sqlinstances found for app %q in %q", i.appName, i.namespace)
+	}
+
+	return false, nil
 }
 
 type ConnectionInfo struct {
@@ -76,7 +115,6 @@ type ConnectionInfo struct {
 	dbName   string
 	instance string
 	port     string
-	host     string
 	url      *url.URL
 	jdbcUrl  *url.URL
 }

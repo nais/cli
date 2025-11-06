@@ -125,7 +125,7 @@ func TestPassword(t *testing.T) {
 
 func createDbInfo(k8sClient kubernetes.Interface) *CloudSQLDBInfo {
 	return &CloudSQLDBInfo{
-		DBInfo: DBInfo{
+		DBInfo: &DBInfo{
 			k8sClient:     k8sClient,
 			dynamicClient: nil,
 			config:        nil,

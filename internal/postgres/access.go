@@ -57,7 +57,7 @@ func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace,
 }
 
 func sqlExecAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema, statement string) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

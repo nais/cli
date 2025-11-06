@@ -15,7 +15,7 @@ func EnableAuditLogging(ctx context.Context, appName string, cluster flag.Contex
 }
 
 func enableAuditAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
