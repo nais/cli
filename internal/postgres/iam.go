@@ -23,12 +23,17 @@ func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Con
 		return err
 	}
 
-	projectID, err := dbInfo.ProjectID(ctx)
+	cloudSQLDBInfo, err := dbInfo.ToCloudSQLDBInfo()
 	if err != nil {
 		return err
 	}
 
-	connectionName, err := dbInfo.ConnectionName(ctx)
+	projectID, err := cloudSQLDBInfo.ProjectID(ctx)
+	if err != nil {
+		return err
+	}
+
+	connectionName, err := cloudSQLDBInfo.ConnectionName(ctx)
 	if err != nil {
 		return err
 	}

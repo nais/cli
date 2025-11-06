@@ -25,17 +25,21 @@ func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespa
 		return err
 	}
 
-	projectID, err := dbInfo.ProjectID(ctx)
+	return dbInfo.RunProxy(ctx, host, &port, make(chan<- int), verbose, out)
+}
+
+func (d *CloudSQLDBInfo) RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, verbose bool, out *naistrix.OutputWriter) error {
+	projectID, err := d.ProjectID(ctx)
 	if err != nil {
 		return err
 	}
 
-	connectionName, err := dbInfo.ConnectionName(ctx)
+	connectionName, err := d.ConnectionName(ctx)
 	if err != nil {
 		return err
 	}
 
-	connectionInfo, err := dbInfo.DBConnection(ctx)
+	connectionInfo, err := d.DBConnection(ctx)
 	if err != nil {
 		return err
 	}
@@ -54,9 +58,9 @@ func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespa
 	out.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
 	out.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
 	out.Println()
-	out.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", appName+"' again.")
+	out.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", d.appName+"' again.")
 
-	err = runProxy(ctx, projectID, connectionName, address, make(chan int, 1), verbose, out)
+	err = runProxy(ctx, projectID, connectionName, host, portCh, verbose, out)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil
@@ -68,7 +72,7 @@ func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespa
 	return nil
 }
 
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan int, verbose bool, out *naistrix.OutputWriter) error {
+func runProxy(ctx context.Context, projectID, connectionName, address string, port chan<- int, verbose bool, out *naistrix.OutputWriter) error {
 	err := checkPostgresqlPassword(out)
 	if err != nil {
 		return err

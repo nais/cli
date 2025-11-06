@@ -23,12 +23,17 @@ func RotatePassword(ctx context.Context, appName string, cluster flag.Context, n
 		return err
 	}
 
-	projectID, err := dbInfo.ProjectID(ctx)
+	cloudSQLDBInfo, err := dbInfo.ToCloudSQLDBInfo()
 	if err != nil {
 		return err
 	}
 
-	dbConnectionInfo, err := dbInfo.DBConnection(ctx)
+	projectID, err := cloudSQLDBInfo.ProjectID(ctx)
+	if err != nil {
+		return err
+	}
+
+	dbConnectionInfo, err := cloudSQLDBInfo.DBConnection(ctx)
 	if err != nil {
 		return err
 	}
@@ -53,8 +58,8 @@ func RotatePassword(ctx context.Context, appName string, cluster flag.Context, n
 		return err
 	}
 
-	out.Printf("Updating password in k8s secret google-sql-%v\n", dbInfo.appName)
-	err = updateKubernetesSecret(ctx, dbInfo, dbConnectionInfo)
+	out.Printf("Updating password in k8s secret google-sql-%v\n", cloudSQLDBInfo.appName)
+	err = updateKubernetesSecret(ctx, cloudSQLDBInfo, dbConnectionInfo)
 	if err != nil {
 		return err
 	}
@@ -63,7 +68,7 @@ func RotatePassword(ctx context.Context, appName string, cluster flag.Context, n
 	return nil
 }
 
-func updateKubernetesSecret(ctx context.Context, dbInfo *DBInfo, dbConnectionInfo *ConnectionInfo) error {
+func updateKubernetesSecret(ctx context.Context, dbInfo *CloudSQLDBInfo, dbConnectionInfo *ConnectionInfo) error {
 	secret, err := dbInfo.k8sClient.CoreV1().Secrets(string(dbInfo.namespace)).Get(ctx, "google-sql-"+dbInfo.appName, v1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("unable to the k8s secret %q in %q: %w", "google-sql-"+dbInfo.appName, dbInfo.namespace, err)
