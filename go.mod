@@ -29,9 +29,10 @@ require (
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v1.6.1
 	github.com/nais/krakend/pkg/migration v0.0.0-20251023125853-05cb74e2d6be
-	github.com/nais/liberator v0.0.0-20250924103433-536eaed90405
+	github.com/nais/liberator v0.0.0-20251105145237-b406841758d4
 	github.com/nais/naistrix v0.13.0
 	github.com/pelletier/go-toml/v2 v2.2.4
+	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.82
 	github.com/savioxavier/termlink v1.4.3
 	github.com/sethvargo/go-retry v0.3.0
@@ -155,6 +156,7 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	github.com/moby/spdystream v0.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/muesli/mango v0.2.0 // indirect
@@ -163,9 +165,9 @@ require (
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f // indirect
 	github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.22.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect

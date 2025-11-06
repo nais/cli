@@ -11,13 +11,13 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, verbose bool, out *naistrix.OutputWriter) error {
+func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go func() {
-		err := dbInfo.RunProxy(ctx, "localhost", nil, portCh, verbose, out)
+		err := dbInfo.RunProxy(ctx, "localhost", nil, portCh, out, false)
 		if err != nil {
 			if errors.Is(err, context.Canceled) {
 				return

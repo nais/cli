@@ -18,7 +18,7 @@ import (
 )
 
 func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
@@ -212,7 +212,7 @@ func formatCondition(expr, title string) string {
 }
 
 func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
@@ -256,7 +256,7 @@ func AddUser(ctx context.Context, appName, username, password string, cluster fl
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}

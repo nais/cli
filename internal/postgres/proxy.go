@@ -2,167 +2,22 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
-	"net"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"sync"
-	"syscall"
-	"time"
 
-	"cloud.google.com/go/cloudsqlconn"
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 
 func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
 
-	return dbInfo.RunProxy(ctx, host, &port, make(chan<- int), verbose, out)
-}
-
-func (d *CloudSQLDBInfo) RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, verbose bool, out *naistrix.OutputWriter) error {
-	projectID, err := d.ProjectID(ctx)
-	if err != nil {
-		return err
-	}
-
-	connectionName, err := d.ConnectionName(ctx)
-	if err != nil {
-		return err
-	}
-
-	connectionInfo, err := d.DBConnection(ctx)
-	if err != nil {
-		return err
-	}
-
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return err
-	}
-
-	address := fmt.Sprintf("%v:%v", host, port)
-
-	out.Printf("Starting proxy on %v\n", address)
-	out.Println("If you are using psql, you can connect to the database by running:")
-	out.Printf("psql -h %v -p %v -U %v %v\n", host, port, email, connectionInfo.dbName)
-	out.Println()
-	out.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
-	out.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
-	out.Println()
-	out.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", d.appName+"' again.")
-
-	err = runProxy(ctx, projectID, connectionName, host, portCh, verbose, out)
-	if err != nil {
-		if errors.Is(err, context.Canceled) {
-			return nil
-		}
-
-		fmt.Fprintln(os.Stderr, "\nERROR:", err)
-	}
-
-	return nil
-}
-
-func runProxy(ctx context.Context, projectID, connectionName, address string, port chan<- int, verbose bool, out *naistrix.OutputWriter) error {
-	err := checkPostgresqlPassword(out)
-	if err != nil {
-		return err
-	}
-
-	if !verbose {
-		logging.DisableLogging()
-	}
-
-	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour, out); err != nil {
-		return err
-	}
-
-	opts := []cloudsqlconn.Option{
-		cloudsqlconn.WithIAMAuthN(),
-	}
-	d, err := cloudsqlconn.NewDialer(ctx, opts...)
-	if err != nil {
-		return fmt.Errorf("failed to create dialer: %w", err)
-	}
-
-	if err := d.Warmup(ctx, connectionName); err != nil {
-		return fmt.Errorf("failed to warmup connection: %w", err)
-	}
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	ctx, stop := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
-	defer stop()
-
-	lc := net.ListenConfig{}
-	listener, err := lc.Listen(ctx, "tcp", address)
-	if err != nil {
-		return fmt.Errorf("failed to listen on TCP address: %w", err)
-	}
-
-	out.Println("Listening on", listener.Addr().String())
-
-	port <- listener.Addr().(*net.TCPAddr).Port
-
-	go func() {
-		<-ctx.Done()
-		if err := listener.Close(); err != nil {
-			out.Println("error closing listener", err)
-		}
-	}()
-
-	wg := sync.WaitGroup{}
-	for ctx.Err() == nil {
-		conn, err := listener.Accept()
-		if err != nil {
-			out.Println("error accepting connection", err)
-			time.Sleep(100 * time.Millisecond)
-			continue
-		}
-
-		out.Println("New connection", conn.RemoteAddr())
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-
-			ctx, cancel := context.WithCancel(ctx)
-			defer cancel()
-
-			go func() {
-				<-ctx.Done()
-				if err := conn.Close(); err != nil {
-					out.Println("error closing connection", err)
-				}
-			}()
-
-			conn2, err := d.Dial(ctx, connectionName)
-			if err != nil {
-				out.Println("error dialing connection", err)
-				return
-			}
-			defer conn2.Close()
-
-			closer := make(chan struct{}, 2)
-			go copy(closer, conn2, conn)
-			go copy(closer, conn, conn2)
-			<-closer
-			out.Println("Connection complete", conn.RemoteAddr())
-		}()
-	}
-
-	out.Println("Waiting for connections to close")
-	wg.Wait()
-
-	return nil
+	return dbInfo.RunProxy(ctx, host, &port, make(chan<- int, 1), out, true)
 }
 
 func copy(closer chan struct{}, dst io.Writer, src io.Reader) {
