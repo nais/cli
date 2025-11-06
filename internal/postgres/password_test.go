@@ -123,13 +123,15 @@ func TestPassword(t *testing.T) {
 	}
 }
 
-func createDbInfo(k8sClient kubernetes.Interface) *DBInfo {
-	return &DBInfo{
-		k8sClient:      k8sClient,
-		dynamicClient:  nil,
-		config:         nil,
-		namespace:      namespace,
-		appName:        appName,
+func createDbInfo(k8sClient kubernetes.Interface) *CloudSQLDBInfo {
+	return &CloudSQLDBInfo{
+		DBInfo: DBInfo{
+			k8sClient:     k8sClient,
+			dynamicClient: nil,
+			config:        nil,
+			namespace:     namespace,
+			appName:       appName,
+		},
 		projectID:      "project-id",
 		connectionName: "connection:name",
 	}

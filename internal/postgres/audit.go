@@ -25,7 +25,12 @@ func enableAuditAsAppUser(ctx context.Context, appName string, namespace flag.Na
 		return err
 	}
 
-	err = validateAuditFlags(ctx, dbInfo)
+	cloudSQLDbInfo, err := dbInfo.ToCloudSQLDBInfo()
+	if err != nil {
+		return err
+	}
+
+	err = validateAuditFlags(ctx, cloudSQLDbInfo)
 	if err != nil {
 		return fmt.Errorf("required flags missing for instance: %v", err)
 	}
@@ -46,7 +51,7 @@ func enableAuditAsAppUser(ctx context.Context, appName string, namespace flag.Na
 	return nil
 }
 
-func validateAuditFlags(ctx context.Context, info *DBInfo) error {
+func validateAuditFlags(ctx context.Context, info *CloudSQLDBInfo) error {
 	dbFlags, err := getDBFlags(ctx, info)
 	if err != nil {
 		return fmt.Errorf("validateAuditFlags: error getting db flags: %w", err)
@@ -74,7 +79,7 @@ func validateRequiredFlags(dbFlags map[string]string, requiredFlags []string) er
 	return nil
 }
 
-func getDBFlags(ctx context.Context, info *DBInfo) (map[string]string, error) {
+func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, error) {
 	dbFlags := make(map[string]string)
 	sqlInstances, err := info.dynamicClient.Resource(schema.GroupVersionResource{
 		Group:    "sql.cnrm.cloud.google.com",

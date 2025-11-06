@@ -5,30 +5,32 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 	"golang.org/x/oauth2"
-	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-type DBInfo struct {
-	k8sClient      kubernetes.Interface
-	dynamicClient  dynamic.Interface
-	config         clientcmd.ClientConfig
-	namespace      flag.Namespace
-	appName        string
-	projectID      string
-	connectionName string
+type DB interface {
+	DBConnection(ctx context.Context) (*ConnectionInfo, error)
+	RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, verbose bool, out *naistrix.OutputWriter) error
+
+	// TODO: Remove when interface migration complete
+	ToCloudSQLDBInfo() (*CloudSQLDBInfo, error)
 }
 
-func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (*DBInfo, error) {
+type DBInfo struct {
+	k8sClient     kubernetes.Interface
+	dynamicClient dynamic.Interface
+	config        clientcmd.ClientConfig
+	namespace     flag.Namespace
+	appName       string
+}
+
+func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (DB, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),
@@ -57,107 +59,15 @@ func NewDBInfo(appName string, namespace flag.Namespace, context flag.Context) (
 		return nil, fmt.Errorf("NewDBInfo: load kubeclient configuration: %w", err)
 	}
 
-	return &DBInfo{
-		k8sClient:     k8sClient,
-		dynamicClient: dynamicClient,
-		config:        kubeConfig,
-		namespace:     namespace,
-		appName:       appName,
+	return &CloudSQLDBInfo{
+		DBInfo: DBInfo{
+			k8sClient:     k8sClient,
+			dynamicClient: dynamicClient,
+			config:        kubeConfig,
+			namespace:     namespace,
+			appName:       appName,
+		},
 	}, nil
-}
-
-func (i *DBInfo) ProjectID(ctx context.Context) (string, error) {
-	if i.projectID == "" {
-		err := i.fetchDBInstance(ctx)
-		if err != nil {
-			return "", err
-		}
-	}
-	return i.projectID, nil
-}
-
-func (i *DBInfo) ConnectionName(ctx context.Context) (string, error) {
-	if i.connectionName == "" {
-		err := i.fetchDBInstance(ctx)
-		if err != nil {
-			return "", err
-		}
-	}
-	return i.connectionName, nil
-}
-
-func (i *DBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
-	secret, err := i.k8sClient.CoreV1().Secrets(string(i.namespace)).Get(ctx, "google-sql-"+i.appName, v1.GetOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("unable to get database password from %q in %q: %w", "google-sql-"+i.appName, i.namespace, err)
-	}
-
-	connectionName, err := i.ConnectionName(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return createConnectionInfo(*secret, connectionName), nil
-}
-
-func createConnectionInfo(secret corev1.Secret, instance string) *ConnectionInfo {
-	var pgUrl *url.URL
-	var jdbcUrl *url.URL
-	var err error
-	for name, val := range secret.Data {
-		if strings.HasSuffix(name, "_URL") {
-			value := string(val)
-			if strings.HasSuffix(name, "_JDBC_URL") {
-				jdbcUrl, err = url.Parse(value)
-			} else {
-				pgUrl, err = url.Parse(value)
-			}
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
-
-	return &ConnectionInfo{
-		username: getSecretDataValue(secret, "_USERNAME"),
-		password: getSecretDataValue(secret, "_PASSWORD"),
-		dbName:   getSecretDataValue(secret, "_DATABASE"),
-		port:     getSecretDataValue(secret, "_PORT"),
-		host:     getSecretDataValue(secret, "_HOST"),
-		url:      pgUrl,
-		jdbcUrl:  jdbcUrl,
-		instance: instance,
-	}
-}
-
-func (i *DBInfo) fetchDBInstance(ctx context.Context) error {
-	sqlInstances, err := i.dynamicClient.Resource(schema.GroupVersionResource{
-		Group:    "sql.cnrm.cloud.google.com",
-		Version:  "v1beta1",
-		Resource: "sqlinstances",
-	}).Namespace(string(i.namespace)).List(ctx, v1.ListOptions{
-		LabelSelector: "app=" + i.appName,
-	})
-	if err != nil {
-		return fmt.Errorf("fetchDBInstance: error looking for sqlinstance %q in %q: %w", i.appName, i.namespace, err)
-	}
-
-	if len(sqlInstances.Items) == 0 {
-		return fmt.Errorf("fetchDBInstance: no sqlinstance found for app %q in %q", i.appName, i.namespace)
-	} else if len(sqlInstances.Items) > 1 {
-		return fmt.Errorf("fetchDBInstance: multiple sqlinstances found for app %q in %q", i.appName, i.namespace)
-	}
-
-	sqlInstance := sqlInstances.Items[0]
-
-	connectionName, ok, err := unstructured.NestedString(sqlInstance.Object, "status", "connectionName")
-	if !ok || err != nil {
-		return fmt.Errorf("missing 'connectionName' status field; run 'kubectl describe sqlinstance %s' and check for status failures", sqlInstance.GetName())
-	}
-
-	i.connectionName = connectionName
-	i.projectID = sqlInstance.GetAnnotations()["cnrm.cloud.google.com/project-id"]
-	return nil
 }
 
 type ConnectionInfo struct {
@@ -195,15 +105,6 @@ func (c *ConnectionInfo) SetPassword(password string) {
 			RawQuery: queries.Encode(),
 		}
 	}
-}
-
-func getSecretDataValue(secret corev1.Secret, suffix string) string {
-	for name, val := range secret.Data {
-		if strings.HasSuffix(name, suffix) {
-			return string(val)
-		}
-	}
-	return ""
 }
 
 // formatInvalidGrantError returns a custom error message if the error is of type oauth2.RetrieveError and if it has the

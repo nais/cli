@@ -22,16 +22,6 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 		return err
 	}
 
-	projectID, err := dbInfo.ProjectID(ctx)
-	if err != nil {
-		return err
-	}
-
-	connectionName, err := dbInfo.ConnectionName(ctx)
-	if err != nil {
-		return err
-	}
-
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
 		return err
@@ -46,7 +36,7 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go func() {
-		err := runProxy(ctx, projectID, connectionName, "localhost:0", portCh, verbose, out)
+		err := dbInfo.RunProxy(ctx, "localhost", nil, portCh, verbose, out)
 		if err != nil {
 			if errors.Is(err, context.Canceled) {
 				return
