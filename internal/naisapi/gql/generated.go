@@ -3021,6 +3021,170 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetDesiredMajor() OpenSe
 	return v.DesiredMajor
 }
 
+// GetTeamApplicationsResponse is returned by GetTeamApplications on success.
+type GetTeamApplicationsResponse struct {
+	// Get a team by its slug.
+	Team GetTeamApplicationsTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamApplicationsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsResponse) GetTeam() GetTeamApplicationsTeam { return v.Team }
+
+// GetTeamApplicationsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamApplicationsTeam struct {
+	// Nais applications owned by the team.
+	Applications GetTeamApplicationsTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetTeamApplicationsTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeam) GetApplications() GetTeamApplicationsTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetTeamApplicationsTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetTeamApplicationsTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnection) GetNodes() []GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+	// The application state.
+	State ApplicationState `json:"state"`
+	// Issues that affects the workload.
+	TotalIssues GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection `json:"totalIssues"`
+	// The container image of the application.
+	Image GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage `json:"image"`
+	// The team environment for the application.
+	TeamEnvironment GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetName returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetState returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication.State, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication) GetState() ApplicationState {
+	return v.State
+}
+
+// GetTotalIssues returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication.TotalIssues, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication) GetTotalIssues() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection {
+	return v.TotalIssues
+}
+
+// GetImage returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication.Image, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication) GetImage() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage {
+	return v.Image
+}
+
+// GetTeamEnvironment returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage struct {
+	// Get the summary of the vulnerabilities of the image.
+	VulnerabilitySummary GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+// GetVulnerabilitySummary returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImage) GetVulnerabilitySummary() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+}
+
+// GetTotal returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationImageContainerImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection struct {
+	// Pagination information.
+	PageInfo GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetPageInfo returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnection) GetPageInfo() GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo struct {
+	// The total amount of items in the connection.
+	TotalCount int `json:"totalCount"`
+}
+
+// GetTotalCount returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationTotalIssuesIssueConnectionPageInfo) GetTotalCount() int {
+	return v.TotalCount
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -5911,6 +6075,14 @@ func (v *__GetOpenSearchInput) GetEnvironmentName() string { return v.Environmen
 // GetTeamSlug returns __GetOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetTeamApplicationsInput is used internally by genqlient
+type __GetTeamApplicationsInput struct {
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns __GetTeamApplicationsInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetTeamApplicationsInput) GetSlug() string { return v.Slug }
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -6580,6 +6752,60 @@ func GetOpenSearch(
 	}
 
 	data_ = &GetOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTeamApplications.
+const GetTeamApplications_Operation = `
+query GetTeamApplications ($slug: Slug!) {
+	team(slug: $slug) {
+		applications(first: 500) {
+			nodes {
+				name
+				state
+				totalIssues: issues {
+					pageInfo {
+						totalCount
+					}
+				}
+				image {
+					vulnerabilitySummary {
+						total
+					}
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetTeamApplications(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+) (data_ *GetTeamApplicationsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamApplications",
+		Query:  GetTeamApplications_Operation,
+		Variables: &__GetTeamApplicationsInput{
+			Slug: slug,
+		},
+	}
+
+	data_ = &GetTeamApplicationsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
