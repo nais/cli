@@ -23,6 +23,10 @@ type AddMember struct {
 	Owner bool `name:"owner" short:"o" usage:"Assign owner role to the member."`
 }
 
+type SetRole struct {
+	*Member
+}
+
 type RemoveMember struct {
 	*Member
 }

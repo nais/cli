@@ -15,6 +15,7 @@ func Members(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
 			list(flags),
 			add(flags),
 			remove(flags),
+			setRole(flags),
 		},
 	}
 }
