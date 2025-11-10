@@ -9,8 +9,7 @@ import (
 
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
-	login "github.com/nais/cli/internal/auth/login"
-	logout "github.com/nais/cli/internal/auth/logout"
+	"github.com/nais/cli/internal/auth"
 	debug "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
@@ -52,8 +51,9 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		AdditionalFlags: additional,
 	}
 	cmds := []*naistrix.Command{
-		login.Login(globalFlags),
-		logout.Logout(globalFlags),
+		auth.Auth(globalFlags),
+		auth.LoginDeprecated(globalFlags),
+		auth.LogoutDeprecated(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
 		aiven.Aiven(globalFlags),
