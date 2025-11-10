@@ -49,3 +49,7 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 	headers.Set("Authorization", "Bearer "+tok.AccessToken)
 	return nil
 }
+
+func (a *AuthenticatedUser) GetTokenSource() oauth2.TokenSource {
+	return a.TokenSource
+}

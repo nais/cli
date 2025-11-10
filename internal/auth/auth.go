@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"fmt"
-
 	"github.com/nais/cli/internal/auth/flag"
+	"github.com/nais/cli/internal/auth/login"
+	"github.com/nais/cli/internal/auth/logout"
+	"github.com/nais/cli/internal/auth/printaccesstoken"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
@@ -16,12 +17,9 @@ func Auth(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Description: "Commands related to authentication in the nais platform",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
-			Login(flags),
-			Logout(flags),
+			login.Login(flags),
+			logout.Logout(flags),
+			printaccesstoken.PrintAccessToken(flags),
 		},
 	}
-}
-
-func Deprecated(cmd *naistrix.Command) {
-	cmd.Title = fmt.Sprintf("%s (Deprecated, use `nais auth %s`)", cmd.Title, cmd.Name)
 }
