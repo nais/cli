@@ -3,12 +3,13 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/validate"
 	"github.com/nais/cli/internal/validate/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Validate(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Validate(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Validate{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:  "validate",

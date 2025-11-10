@@ -3,13 +3,14 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Postgres(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	flags := &flag.Postgres{
 		GlobalFlags: parentFlags,

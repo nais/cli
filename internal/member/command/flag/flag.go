@@ -3,11 +3,12 @@ package flag
 import (
 	"context"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
 
 type Member struct {
-	*naistrix.GlobalFlags
+	*flags.GlobalFlags
 }
 
 type Output string

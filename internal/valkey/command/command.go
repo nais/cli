@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -26,21 +27,16 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 	}
 }
 
-var (
-	// TODO(tronghn): `team` and `environment` are currently required arguments for many of these subcommands.
-	//  These should be re-usable configuration options (e.g. a 'shared' package for consistency) with command-specific
-	//  flags to override per invocation instead of requiring repeated arguments.
-	defaultArgs = []naistrix.Argument{
-		{Name: "team"},
-		{Name: "environment"},
-		{Name: "name"},
-	}
-	defaultValidateFunc = func(_ context.Context, args *naistrix.Arguments) error {
-		if args.Len() != 3 {
-			return fmt.Errorf("expected 3 arguments, got %d", args.Len())
-		}
-		if args.Get("team") == "" {
-			return fmt.Errorf("team cannot be empty")
+// TODO(jhrv): Make team into a flag instead of arg
+var defaultArgs = []naistrix.Argument{
+	{Name: "environment"},
+	{Name: "name"},
+}
+
+func defaultValidateFunc(team string) naistrix.ValidateFunc {
+	return func(_ context.Context, args *naistrix.Arguments) error {
+		if args.Len() != 2 {
+			return fmt.Errorf("expected 2 arguments, got %d", args.Len())
 		}
 		if args.Get("environment") == "" {
 			return fmt.Errorf("environment cannot be empty")
@@ -48,13 +44,13 @@ var (
 		if args.Get("name") == "" {
 			return fmt.Errorf("name cannot be empty")
 		}
-		return nil
+		return validation.CheckTeam(team)
 	}
-)
+}
 
-func metadataFromArgs(args *naistrix.Arguments) valkey.Metadata {
+func metadataFromArgs(args *naistrix.Arguments, team string) valkey.Metadata {
 	return valkey.Metadata{
-		TeamSlug:        args.Get("team"),
+		TeamSlug:        team,
 		EnvironmentName: args.Get("environment"),
 		Name:            args.Get("name"),
 	}

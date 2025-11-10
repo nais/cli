@@ -43,9 +43,6 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "list-workloads",
 		Title: "List workloads of a team.",
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
@@ -62,8 +59,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				Issues          int          `heading:"Critical Issues" json:"issues"`
 			}
 
-			teamSlug := args.Get("team")
-			ret, err := naisapi.GetTeamWorkloads(ctx, teamSlug)
+			ret, err := naisapi.GetTeamWorkloads(ctx, flags.Team.Team)
 			if err != nil {
 				return err
 			}
@@ -89,7 +85,7 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 						Url: fmt.Sprintf(
 							"https://%s/team/%s/%s/%s/%s",
 							user.ConsoleHost(),
-							teamSlug,
+							flags.Team.Team,
 							w.GetTeamEnvironment().Environment.Name,
 							workloadType,
 							w.GetName(),

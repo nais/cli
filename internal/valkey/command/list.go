@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -13,27 +14,19 @@ import (
 func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.List{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "list",
-		Title:       "List existing Valkey instances.",
-		Description: "This command lists all Valkey instances for a given team.",
-		Flags:       flags,
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if args.Get("team") == "" {
-				return fmt.Errorf("team cannot be empty")
-			}
-			return nil
-		},
+		Name:         "list",
+		Title:        "List existing Valkey instances.",
+		Description:  "This command lists all Valkey instances for a given team.",
+		Flags:        flags,
+		ValidateFunc: validation.TeamValidator(flags.Team),
 		Examples: []naistrix.Example{
 			{
-				Description: "List all Valkeys for the team named my-team.",
-				Command:     "my-team",
+				Description: "List all Valkeys for the team.",
+				Command:     "",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			valkeys, err := valkey.GetAll(ctx, args.Get("team"))
+			valkeys, err := valkey.GetAll(ctx, flags.Team)
 			if err != nil {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}

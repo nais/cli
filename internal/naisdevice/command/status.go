@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/cli/internal/naisdevice/command/flag"
 	"github.com/nais/device/pkg/pb"
 	"github.com/nais/naistrix"
 )
 
-func statuscmd(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func statuscmd(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Status{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:  "status",

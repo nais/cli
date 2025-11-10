@@ -28,20 +28,6 @@ type Team struct {
 	*Api
 }
 
-type AddMember struct {
-	*Team
-	Owner bool `name:"owner" short:"o" usage:"Assign owner role to the member."`
-}
-
-type RemoveMember struct {
-	*Team
-}
-
-type ListMembers struct {
-	*Team
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
-}
-
 type ListWorkloads struct {
 	*Team
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`

@@ -18,15 +18,15 @@ func describeOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description:  "This command describes an OpenSearch instance, listing its current configuration and access list.",
 		Flags:        flags,
 		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc,
+		ValidateFunc: defaultValidateFunc(flags.Team),
 		Examples: []naistrix.Example{
 			{
-				Description: "Describe an existing OpenSearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch",
+				Description: "Describe an existing OpenSearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args)
+			metadata := metadataFromArgs(args, flags.Team)
 
 			existing, err := opensearch.Get(ctx, metadata)
 			if err != nil {

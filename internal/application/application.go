@@ -12,6 +12,7 @@ import (
 	login "github.com/nais/cli/internal/auth/login"
 	logout "github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
+	"github.com/nais/cli/internal/flags"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
@@ -30,7 +31,7 @@ type Application struct {
 }
 
 func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
-	app, flags, err := naistrix.NewApplication(
+	app, f, err := naistrix.NewApplication(
 		"nais",
 		"Nais CLI",
 		version.Version,
@@ -40,24 +41,31 @@ func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
 		return nil, nil, err
 	}
 
+	additional := &flags.AdditionalFlags{}
+	globalFlags := &flags.GlobalFlags{GlobalFlags: f, AdditionalFlags: additional}
+
+	if err := app.AddGlobalFlags(additional); err != nil {
+		return nil, nil, err
+	}
+
 	cmds := []*naistrix.Command{
-		login.Login(flags),
-		logout.Logout(flags),
-		naisdevice.Naisdevice(flags),
-		members.Members(flags),
-		aiven.Aiven(flags),
-		alpha.Alpha(flags),
-		postgres.Postgres(flags),
-		debug.Debug(flags),
-		kubeconfig.Kubeconfig(flags),
-		validate.Validate(flags),
+		login.Login(globalFlags),
+		logout.Logout(globalFlags),
+		naisdevice.Naisdevice(globalFlags),
+		members.Members(globalFlags),
+		aiven.Aiven(globalFlags),
+		alpha.Alpha(globalFlags),
+		postgres.Postgres(globalFlags),
+		debug.Debug(globalFlags),
+		kubeconfig.Kubeconfig(globalFlags),
+		validate.Validate(globalFlags),
 	}
 
 	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {
 		return nil, nil, err
 	}
 
-	return &Application{Application: app}, flags, nil
+	return &Application{Application: app}, f, nil
 }
 
 func Run(ctx context.Context, w io.Writer) error {

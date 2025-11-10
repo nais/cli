@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 	"golang.org/x/term"
@@ -15,23 +16,15 @@ import (
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 	flags := &flag.List{Issues: parentFlags}
 	return &naistrix.Command{
-		Name:        "list",
-		Title:       "List issues.",
-		Description: "This command lists all issues for a given team.",
-		Flags:       flags,
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if args.Get("team") == "" {
-				return fmt.Errorf("team cannot be empty")
-			}
-			return nil
-		},
+		Name:         "list",
+		Title:        "List issues.",
+		Description:  "This command lists all issues for a given team.",
+		Flags:        flags,
+		ValidateFunc: validation.TeamValidator(flags.Team),
 		Examples: []naistrix.Example{
 			{
-				Description: "List all issues for the team named my-team.",
-				Command:     "my-team",
+				Description: "List all issues for the team.",
+				Command:     "",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -39,7 +32,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 			if err != nil {
 				return fmt.Errorf("parse filter: %w", err)
 			}
-			issues, err := issues.GetAll(ctx, args.Get("team"), filters)
+			issues, err := issues.GetAll(ctx, flags.Team, filters)
 			if err != nil {
 				return fmt.Errorf("fetching issues: %w", err)
 			}

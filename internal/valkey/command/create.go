@@ -23,32 +23,32 @@ func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
-			return defaultValidateFunc(ctx, args)
+			return defaultValidateFunc(flags.Team)(ctx, args)
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with default settings.",
-				Command:     "my-team dev some-valkey",
+				Description: "Create a Valkey instance named some-valkey in the dev environment, with default settings.",
+				Command:     "dev some-valkey",
 			},
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |MEMORY|.",
-				Command:     "my-team dev some-valkey --memory GB_4",
+				Description: "Create a Valkey instance named some-valkey in the dev environment, with the specified |MEMORY|.",
+				Command:     "dev some-valkey --memory GB_4",
 			},
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |TIER|.",
-				Command:     "my-team dev some-valkey --tier SINGLE_NODE",
+				Description: "Create a Valkey instance named some-valkey in the dev environment, with the specified |TIER|.",
+				Command:     "dev some-valkey --tier SINGLE_NODE",
 			},
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with the specified |MAX_MEMORY_POLICY|.",
-				Command:     "my-team dev some-valkey --max-memory-policy ALLKEYS_LRU",
+				Description: "Create a Valkey instance named some-valkey in the dev environment, with the specified |MAX_MEMORY_POLICY|.",
+				Command:     "dev some-valkey --max-memory-policy ALLKEYS_LRU",
 			},
 			{
-				Description: "Create a Valkey instance named some-valkey for my-team in the dev environment, with all possible options specified.",
-				Command:     "my-team dev some-valkey --memory GB_4 --tier SINGLE_NODE --max-memory-policy ALLKEYS_LRU",
+				Description: "Create a Valkey instance named some-valkey in the dev environment, with all possible options specified.",
+				Command:     "dev some-valkey --memory GB_4 --tier SINGLE_NODE --max-memory-policy ALLKEYS_LRU",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args)
+			metadata := metadataFromArgs(args, flags.Team)
 
 			// defaults
 			data := &valkey.Valkey{

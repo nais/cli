@@ -22,9 +22,6 @@ func list(parentFlags *flag.Member) *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "list",
 		Title: "List members of a team.",
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			type teamMember struct {
@@ -33,7 +30,7 @@ func list(parentFlags *flag.Member) *naistrix.Command {
 				Role  string `json:"role"`
 			}
 
-			ret, err := member.GetTeamMembers(ctx, args.Get("team"))
+			ret, err := member.GetTeamMembers(ctx, flags.Team)
 			if err != nil {
 				return err
 			}

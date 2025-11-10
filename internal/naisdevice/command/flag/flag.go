@@ -3,6 +3,7 @@ package flag
 import (
 	"context"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
 
@@ -15,7 +16,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 }
 
 type Status struct {
-	*naistrix.GlobalFlags
+	*flags.GlobalFlags
 	Quiet  bool   `name:"quiet" short:"q" usage:"Suppress output"`
 	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
 }
