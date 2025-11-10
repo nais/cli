@@ -1,8 +1,9 @@
-package auth
+package login
 
 import (
 	"context"
 
+	"github.com/nais/cli/internal/auth/common"
 	"github.com/nais/cli/internal/auth/flag"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
@@ -10,18 +11,18 @@ import (
 	"github.com/nais/naistrix"
 )
 
-type loginFlags struct {
+type flags struct {
 	*flag.Auth
 	Nais bool `name:"nais" short:"n" usage:"Login using login.nais.io instead of gcloud."`
 }
 
 func LoginDeprecated(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Auth{GlobalFlags: parentFlags}
-	return Login(flags, Deprecated)
+	return Login(flags, common.Deprecated)
 }
 
 func Login(parentFlags *flag.Auth, modifiers ...func(*naistrix.Command)) *naistrix.Command {
-	flags := &loginFlags{Auth: parentFlags}
+	flags := &flags{Auth: parentFlags}
 	cmd := &naistrix.Command{
 		Name:  "login",
 		Title: "Log in to the Nais platform.",

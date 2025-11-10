@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi/auth"
 	"github.com/nais/naistrix"
+	"golang.org/x/oauth2"
 )
 
 var ErrNotAuthenticated = auth.ErrNotAuthenticated
@@ -24,6 +25,7 @@ type AuthenticatedUser interface {
 	ConsoleHost() string
 	APIURL() string
 	Domain() string
+	GetTokenSource() oauth2.TokenSource
 }
 
 // GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or

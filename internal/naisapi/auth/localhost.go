@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"golang.org/x/oauth2"
 )
 
 func Localhost() (*LocalhostUser, bool) {
@@ -22,6 +24,14 @@ func Localhost() (*LocalhostUser, bool) {
 type LocalhostUser struct {
 	consoleHost string
 	email       string
+}
+
+type LocalhostTokenSource struct{}
+
+func (l *LocalhostTokenSource) Token() (*oauth2.Token, error) {
+	return &oauth2.Token{
+		AccessToken: "not-really-an-access-token",
+	}, nil
 }
 
 func (l *LocalhostUser) Domain() string {
@@ -54,6 +64,10 @@ func (l *LocalhostUser) SetAuthorizationHeader(headers http.Header) error {
 		headers.Set("X-User-Email", l.email)
 	}
 	return nil
+}
+
+func (l *LocalhostUser) GetTokenSource() oauth2.TokenSource {
+	return &LocalhostTokenSource{}
 }
 
 type LocalhostRoundtripper struct {
