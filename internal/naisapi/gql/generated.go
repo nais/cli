@@ -4122,6 +4122,62 @@ var AllResourceType = []ResourceType{
 	ResourceTypeJob,
 }
 
+// SetRoleResponse is returned by SetRole on success.
+type SetRoleResponse struct {
+	// Assign a role to a team member
+	//
+	// The user must already be a member of the team for this mutation to succeed.
+	SetTeamMemberRole SetRoleSetTeamMemberRoleSetTeamMemberRolePayload `json:"setTeamMemberRole"`
+}
+
+// GetSetTeamMemberRole returns SetRoleResponse.SetTeamMemberRole, and is useful for accessing the field via an interface.
+func (v *SetRoleResponse) GetSetTeamMemberRole() SetRoleSetTeamMemberRoleSetTeamMemberRolePayload {
+	return v.SetTeamMemberRole
+}
+
+// SetRoleSetTeamMemberRoleSetTeamMemberRolePayload includes the requested fields of the GraphQL type SetTeamMemberRolePayload.
+type SetRoleSetTeamMemberRoleSetTeamMemberRolePayload struct {
+	// The updated team member.
+	Member SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember `json:"member"`
+}
+
+// GetMember returns SetRoleSetTeamMemberRoleSetTeamMemberRolePayload.Member, and is useful for accessing the field via an interface.
+func (v *SetRoleSetTeamMemberRoleSetTeamMemberRolePayload) GetMember() SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember {
+	return v.Member
+}
+
+// SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember includes the requested fields of the GraphQL type TeamMember.
+type SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember struct {
+	// User instance.
+	User SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser `json:"user"`
+	// The role that the user has in the team.
+	Role TeamMemberRole `json:"role"`
+}
+
+// GetUser returns SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember.User, and is useful for accessing the field via an interface.
+func (v *SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember) GetUser() SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser {
+	return v.User
+}
+
+// GetRole returns SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember.Role, and is useful for accessing the field via an interface.
+func (v *SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMember) GetRole() TeamMemberRole {
+	return v.Role
+}
+
+// SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser struct {
+	// The full name of the user.
+	Name string `json:"name"`
+}
+
+// GetName returns SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser.Name, and is useful for accessing the field via an interface.
+func (v *SetRoleSetTeamMemberRoleSetTeamMemberRolePayloadMemberTeamMemberUser) GetName() string {
+	return v.Name
+}
+
 type Severity string
 
 const (
@@ -5891,6 +5947,22 @@ func (v *__RemoveTeamMemberInput) GetSlug() string { return v.Slug }
 // GetEmail returns __RemoveTeamMemberInput.Email, and is useful for accessing the field via an interface.
 func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
+// __SetRoleInput is used internally by genqlient
+type __SetRoleInput struct {
+	Slug  string         `json:"slug"`
+	Email string         `json:"email"`
+	Role  TeamMemberRole `json:"role"`
+}
+
+// GetSlug returns __SetRoleInput.Slug, and is useful for accessing the field via an interface.
+func (v *__SetRoleInput) GetSlug() string { return v.Slug }
+
+// GetEmail returns __SetRoleInput.Email, and is useful for accessing the field via an interface.
+func (v *__SetRoleInput) GetEmail() string { return v.Email }
+
+// GetRole returns __SetRoleInput.Role, and is useful for accessing the field via an interface.
+func (v *__SetRoleInput) GetRole() TeamMemberRole { return v.Role }
+
 // __TailLogInput is used internally by genqlient
 type __TailLogInput struct {
 	Environment string    `json:"environment"`
@@ -6700,6 +6772,49 @@ func RemoveTeamMember(
 	}
 
 	data_ = &RemoveTeamMemberResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by SetRole.
+const SetRole_Operation = `
+mutation SetRole ($slug: Slug!, $email: String!, $role: TeamMemberRole!) {
+	setTeamMemberRole(input: {teamSlug:$slug,userEmail:$email,role:$role}) {
+		member {
+			user {
+				name
+			}
+			role
+		}
+	}
+}
+`
+
+func SetRole(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+	email string,
+	role TeamMemberRole,
+) (data_ *SetRoleResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SetRole",
+		Query:  SetRole_Operation,
+		Variables: &__SetRoleInput{
+			Slug:  slug,
+			Email: email,
+			Role:  role,
+		},
+	}
+
+	data_ = &SetRoleResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
