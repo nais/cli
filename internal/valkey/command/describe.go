@@ -18,15 +18,15 @@ func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Description:  "This command describes a Valkey instance, listing its current configuration and access list.",
 		Flags:        flags,
 		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc,
+		ValidateFunc: defaultValidateFunc(flags.Team),
 		Examples: []naistrix.Example{
 			{
-				Description: "Describe an existing Valkey instance named some-valkey for my-team in the dev environment.",
-				Command:     "my-team dev some-valkey",
+				Description: "Describe an existing Valkey instance named some-valkey in the dev environment.",
+				Command:     "dev some-valkey",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args)
+			metadata := metadataFromArgs(args, flags.Team)
 
 			existing, err := valkey.Get(ctx, metadata)
 			if err != nil {

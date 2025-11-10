@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
 
@@ -13,7 +14,7 @@ func (varsFilePath) FileExtensions() (extensions []string) {
 }
 
 type Validate struct {
-	*naistrix.GlobalFlags
+	*flags.GlobalFlags
 	VarsFilePath varsFilePath `name:"vars-file" short:"f" usage:"Path to the |FILE| containing template variables in JSON or YAML format."`
 	Vars         []string     `name:"var" usage:"Template variable in |KEY=VALUE| form. Can be repeated."`
 }

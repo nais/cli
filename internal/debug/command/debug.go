@@ -6,11 +6,12 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/k8s"
 	"github.com/nais/naistrix"
 )
 
-func Debug(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
 	stickyFlags := &flag.DebugSticky{
 		GlobalFlags: parentFlags,

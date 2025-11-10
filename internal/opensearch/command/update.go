@@ -24,32 +24,32 @@ func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
-			return defaultValidateFunc(ctx, args)
+			return defaultValidateFunc(flags.Team)(ctx, args)
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Set the |MEMORY| for an Opensearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch --memory GB_8",
+				Description: "Set the |MEMORY| for an Opensearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch --memory GB_8",
 			},
 			{
-				Description: "Set the |TIER| for an OpenSearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch --tier HIGH_AVAILABILITY",
+				Description: "Set the |TIER| for an OpenSearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch --tier HIGH_AVAILABILITY",
 			},
 			{
-				Description: "Set the |STORAGE-GB| for an OpenSearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch --storage-gb 1000",
+				Description: "Set the |STORAGE-GB| for an OpenSearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch --storage-gb 1000",
 			},
 			{
-				Description: "Upgrade the major |VERSION| for an OpenSearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch --version V2",
+				Description: "Upgrade the major |VERSION| for an OpenSearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch --version V2",
 			},
 			{
-				Description: "Set all available options for an OpenSearch instance named some-opensearch for my-team in the dev environment.",
-				Command:     "my-team dev some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V2 --storage-gb 1000",
+				Description: "Set all available options for an OpenSearch instance named some-opensearch in the dev environment.",
+				Command:     "dev some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V2 --storage-gb 1000",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args)
+			metadata := metadataFromArgs(args, flags.Team)
 
 			existing, err := opensearch.Get(ctx, metadata)
 			if err != nil {

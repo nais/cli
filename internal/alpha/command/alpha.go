@@ -3,6 +3,7 @@ package command
 import (
 	"github.com/nais/cli/internal/alpha/command/flag"
 	apply "github.com/nais/cli/internal/apply/command"
+	"github.com/nais/cli/internal/flags"
 	issues "github.com/nais/cli/internal/issues/command"
 	krakend "github.com/nais/cli/internal/krakend/command"
 	log "github.com/nais/cli/internal/log/command"
@@ -12,7 +13,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func Alpha(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Alpha{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "alpha",

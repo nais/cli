@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -13,27 +14,19 @@ import (
 func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.List{OpenSearch: parentFlags}
 	return &naistrix.Command{
-		Name:        "list",
-		Title:       "List existing Opensearch instances.",
-		Description: "This command lists all Opensearch instances for a given team.",
-		Flags:       flags,
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if args.Get("team") == "" {
-				return fmt.Errorf("team cannot be empty")
-			}
-			return nil
-		},
+		Name:         "list",
+		Title:        "List existing Opensearch instances.",
+		Description:  "This command lists all Opensearch instances for a given team.",
+		Flags:        flags,
+		ValidateFunc: validation.TeamValidator(flags.Team),
 		Examples: []naistrix.Example{
 			{
-				Description: "List all OpenSearches for the team named my-team.",
-				Command:     "my-team",
+				Description: "List all OpenSearches for the team.",
+				Command:     "",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			opensearches, err := opensearch.GetAll(ctx, args.Get("team"))
+			opensearches, err := opensearch.GetAll(ctx, flags.Team)
 			if err != nil {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}

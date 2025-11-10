@@ -7,6 +7,7 @@ import (
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/apply"
 	"github.com/nais/cli/internal/apply/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -28,10 +29,8 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 			if args.Get("file") == "" {
 				return fmt.Errorf("file cannot be empty")
 			}
-			if flags.Team == "" {
-				return fmt.Errorf("team cannot be empty")
-			}
-			return nil
+
+			return validation.CheckTeam(flags.Team)
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			environment := args.Get("environment")

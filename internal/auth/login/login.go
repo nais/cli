@@ -4,18 +4,19 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/auth"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
-type flags struct {
-	*naistrix.GlobalFlags
+type LoginFlags struct {
+	*flags.GlobalFlags
 	Nais bool `name:"nais" short:"n" usage:"Login using login.nais.io instead of gcloud."`
 }
 
-func Login(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
-	flags := &flags{GlobalFlags: parentFlags}
+func Login(parentFlags *flags.GlobalFlags) *naistrix.Command {
+	flags := &LoginFlags{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:  "login",
 		Title: "Log in to the Nais platform.",

@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/kubeconfig"
 	"github.com/nais/cli/internal/kubeconfig/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Kubeconfig(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Kubeconfig(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Kubeconfig{
 		GlobalFlags: parentFlags,
 		Overwrite:   true,

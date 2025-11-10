@@ -1,11 +1,12 @@
 package command
 
 import (
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/member/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Members(parentFlags *naistrix.GlobalFlags) *naistrix.Command {
+func Members(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Member{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "members",

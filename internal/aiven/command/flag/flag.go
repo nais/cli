@@ -1,10 +1,8 @@
 package flag
 
-import (
-	"github.com/nais/naistrix"
-)
+import "github.com/nais/cli/internal/flags"
 
-type Aiven struct{ *naistrix.GlobalFlags }
+type Aiven struct{ *flags.GlobalFlags }
 
 type Create struct {
 	*Aiven
