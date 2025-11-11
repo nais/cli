@@ -1,11 +1,9 @@
 package command
 
 import (
-	"context"
 	"fmt"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -33,19 +31,17 @@ var defaultArgs = []naistrix.Argument{
 	{Name: "name"},
 }
 
-func defaultValidateFunc(team string) naistrix.ValidateFunc {
-	return func(_ context.Context, args *naistrix.Arguments) error {
-		if args.Len() != 2 {
-			return fmt.Errorf("expected 2 arguments, got %d", args.Len())
-		}
-		if args.Get("environment") == "" {
-			return fmt.Errorf("environment cannot be empty")
-		}
-		if args.Get("name") == "" {
-			return fmt.Errorf("name cannot be empty")
-		}
-		return validation.CheckTeam(team)
+func validateArgs(args *naistrix.Arguments) error {
+	if args.Len() != 2 {
+		return fmt.Errorf("expected 2 arguments, got %d", args.Len())
 	}
+	if args.Get("environment") == "" {
+		return fmt.Errorf("environment cannot be empty")
+	}
+	if args.Get("name") == "" {
+		return fmt.Errorf("name cannot be empty")
+	}
+	return nil
 }
 
 func metadataFromArgs(args *naistrix.Arguments, team string) valkey.Metadata {

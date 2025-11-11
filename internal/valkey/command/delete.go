@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -14,12 +15,18 @@ import (
 func deleteValkey(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Delete{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:         "delete",
-		Title:        "Delete a Valkey instance.",
-		Description:  "This command deletes an existing Valkey instance.",
-		Flags:        flags,
-		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc(flags.Team),
+		Name:        "delete",
+		Title:       "Delete a Valkey instance.",
+		Description: "This command deletes an existing Valkey instance.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
+			if err := validateArgs(args); err != nil {
+				return err
+			}
+
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Delete an existing Valkey instance named some-valkey in the dev environment.",

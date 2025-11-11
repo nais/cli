@@ -16,11 +16,13 @@ import (
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 	flags := &flag.List{Issues: parentFlags}
 	return &naistrix.Command{
-		Name:         "list",
-		Title:        "List issues.",
-		Description:  "This command lists all issues for a given team.",
-		Flags:        flags,
-		ValidateFunc: validation.TeamValidator(flags.Team),
+		Name:        "list",
+		Title:       "List issues.",
+		Description: "This command lists all issues for a given team.",
+		Flags:       flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all issues for the team.",

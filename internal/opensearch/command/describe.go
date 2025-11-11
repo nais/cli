@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -13,12 +14,18 @@ import (
 func describeOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Describe{OpenSearch: parentFlags}
 	return &naistrix.Command{
-		Name:         "describe",
-		Title:        "Describe an OpenSearch instance.",
-		Description:  "This command describes an OpenSearch instance, listing its current configuration and access list.",
-		Flags:        flags,
-		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc(flags.Team),
+		Name:        "describe",
+		Title:       "Describe an OpenSearch instance.",
+		Description: "This command describes an OpenSearch instance, listing its current configuration and access list.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateArgs(args); err != nil {
+				return err
+			}
+
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Describe an existing OpenSearch instance named some-opensearch in the dev environment.",
