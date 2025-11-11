@@ -25,7 +25,6 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 	}
 }
 
-// TODO(jhrv): Make team into a flag instead of arg
 var defaultArgs = []naistrix.Argument{
 	{Name: "environment"},
 	{Name: "name"},
