@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -23,7 +24,12 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
-			return defaultValidateFunc(flags.Team)(ctx, args)
+
+			if err := validateArgs(args); err != nil {
+				return err
+			}
+
+			return validation.CheckTeam(flags.Team)
 		},
 		Examples: []naistrix.Example{
 			{

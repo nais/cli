@@ -14,11 +14,13 @@ import (
 func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.List{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:         "list",
-		Title:        "List existing Valkey instances.",
-		Description:  "This command lists all Valkey instances for a given team.",
-		Flags:        flags,
-		ValidateFunc: validation.TeamValidator(flags.Team),
+		Name:        "list",
+		Title:       "List existing Valkey instances.",
+		Description: "This command lists all Valkey instances for a given team.",
+		Flags:       flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all Valkeys for the team.",

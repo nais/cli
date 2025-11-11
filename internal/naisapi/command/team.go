@@ -8,6 +8,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"github.com/savioxavier/termlink"
@@ -44,6 +45,9 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 		Name:  "list-workloads",
 		Title: "List workloads of a team.",
 		Flags: flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team.Team)
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {

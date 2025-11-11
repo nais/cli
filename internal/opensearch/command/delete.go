@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -14,12 +15,18 @@ import (
 func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Delete{OpenSearch: parentFlags}
 	return &naistrix.Command{
-		Name:         "delete",
-		Title:        "Delete an OpenSearch instance.",
-		Description:  "This command deletes an existing OpenSearch instance.",
-		Flags:        flags,
-		Args:         defaultArgs,
-		ValidateFunc: defaultValidateFunc(flags.Team),
+		Name:        "delete",
+		Title:       "Delete an OpenSearch instance.",
+		Description: "This command deletes an existing OpenSearch instance.",
+		Flags:       flags,
+		Args:        defaultArgs,
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateArgs(args); err != nil {
+				return err
+			}
+
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Delete an existing OpenSearch instance named some-opensearch in the dev environment.",

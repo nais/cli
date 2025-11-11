@@ -14,11 +14,13 @@ import (
 func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.List{OpenSearch: parentFlags}
 	return &naistrix.Command{
-		Name:         "list",
-		Title:        "List existing Opensearch instances.",
-		Description:  "This command lists all Opensearch instances for a given team.",
-		Flags:        flags,
-		ValidateFunc: validation.TeamValidator(flags.Team),
+		Name:        "list",
+		Title:       "List existing Opensearch instances.",
+		Description: "This command lists all Opensearch instances for a given team.",
+		Flags:       flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team)
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all OpenSearches for the team.",
