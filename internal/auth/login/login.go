@@ -10,13 +10,13 @@ import (
 	"github.com/nais/naistrix"
 )
 
-type LoginFlags struct {
+type loginFlags struct {
 	*flags.GlobalFlags
 	Nais bool `name:"nais" short:"n" usage:"Login using login.nais.io instead of gcloud."`
 }
 
 func Login(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &LoginFlags{GlobalFlags: parentFlags}
+	flags := &loginFlags{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:  "login",
 		Title: "Log in to the Nais platform.",

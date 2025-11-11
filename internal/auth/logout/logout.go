@@ -10,13 +10,13 @@ import (
 	"github.com/nais/naistrix"
 )
 
-type LogoutFlags struct {
+type logoutFlags struct {
 	*flags.GlobalFlags
 	Nais bool `name:"nais" short:"n" usage:"Logout using login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais login --nais\"."`
 }
 
 func Logout(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &LogoutFlags{GlobalFlags: parentFlags}
+	flags := &logoutFlags{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "logout",
 		Title:       "Log out and remove credentials.",
