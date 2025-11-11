@@ -22,7 +22,6 @@ func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Examples: []naistrix.Example{
 			{
 				Description: "List all OpenSearches for the team.",
-				Command:     "",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
