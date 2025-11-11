@@ -11,7 +11,7 @@ import (
 
 type printAccessTokenFlags struct {
 	*flag.Auth
-	Nais bool `name:"nais" short:"n" usage:"Print token from auth.nais.io instead of gcloud.\nShould be used if you logged in using \"nais auth login --nais\"."`
+	Nais bool `name:"nais" short:"n" usage:"Print token from login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais auth login --nais\"."`
 }
 
 func PrintAccessToken(parentFlags *flag.Auth) *naistrix.Command {
