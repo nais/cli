@@ -30,7 +30,7 @@ type Application struct {
 	Commands []*naistrix.Command
 }
 
-func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
+func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	app, f, err := naistrix.NewApplication(
 		"nais",
 		"Nais CLI",
@@ -42,12 +42,15 @@ func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
 	}
 
 	additional := &flags.AdditionalFlags{}
-	globalFlags := &flags.GlobalFlags{GlobalFlags: f, AdditionalFlags: additional}
 
 	if err := app.AddGlobalFlags(additional); err != nil {
 		return nil, nil, err
 	}
 
+	globalFlags := &flags.GlobalFlags{
+		GlobalFlags:     f,
+		AdditionalFlags: additional,
+	}
 	cmds := []*naistrix.Command{
 		login.Login(globalFlags),
 		logout.Logout(globalFlags),
@@ -65,11 +68,11 @@ func newApplication(w io.Writer) (*Application, *naistrix.GlobalFlags, error) {
 		return nil, nil, err
 	}
 
-	return &Application{Application: app}, f, nil
+	return &Application{Application: app}, globalFlags, nil
 }
 
 func Run(ctx context.Context, w io.Writer) error {
-	app, flags, err := newApplication(w)
+	app, f, err := newApplication(w)
 	if err != nil {
 		return err
 	}
@@ -83,7 +86,7 @@ func Run(ctx context.Context, w io.Writer) error {
 			if err := recover(); err != nil {
 				handlePanic(err)
 			}
-			flushMetrics(flags.IsTrace())
+			flushMetrics(f.IsTrace())
 		}()
 	}
 
