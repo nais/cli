@@ -14,7 +14,6 @@ type Issue struct {
 	Message      string
 	ResourceName string
 	ResourceType string
-	IssueType    string
 	ID           string
 }
 
@@ -40,7 +39,6 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			id
 			severity
 			message
-			__typename
 			... on DeprecatedIngressIssue {
 			  application {
 				name
@@ -137,57 +135,44 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			Environment: issue.GetTeamEnvironment().Environment.Name,
 			Severity:    string(issue.GetSeverity()),
 			Message:     issue.GetMessage(),
-			IssueType:   issue.GetTypename(),
 		}
 		switch c := issue.(type) {
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
 			i.ResourceName = c.Application.GetName()
 			i.ResourceType = c.Application.GetTypename()
-			i.IssueType = "Deprecated ingress"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "Deprecated registry"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "Failed synchronization"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "Invalid spec"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue:
 			i.ResourceName = c.Job.GetName()
 			i.ResourceType = c.Job.GetTypename()
-			i.IssueType = "Last job run failed"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "Missing SBOM"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "No running instances"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue:
 			i.ResourceName = c.OpenSearch.GetName()
 			i.ResourceType = c.OpenSearch.GetTypename()
-			i.IssueType = "Opensearch issue"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue:
 			i.ResourceName = c.SqlInstance.GetName()
 			i.ResourceType = c.SqlInstance.GetTypename()
-			i.IssueType = "SQL instance problem"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue:
 			i.ResourceName = c.SqlInstance.GetName()
 			i.ResourceType = c.SqlInstance.GetTypename()
-			i.IssueType = "SQL instance version outdated"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue:
 			i.ResourceName = c.Valkey.GetName()
 			i.ResourceType = c.Valkey.GetTypename()
-			i.IssueType = "Valkey issue"
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
-			i.IssueType = "Vulnerable image"
 		}
 		ret = append(ret, i)
 

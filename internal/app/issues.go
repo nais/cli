@@ -8,10 +8,9 @@ import (
 )
 
 type ApplicationIssue struct {
-	Type        gql.IssueType
-	Severity    gql.Severity
-	Message     string
-	Environment string
+	Severity    gql.Severity `json:"severity"`
+	Message     string       `json:"message"`
+	Environment string       `json:"environment"`
 }
 
 func GetApplicationIssues(ctx context.Context, slug, name string, envs []string) ([]ApplicationIssue, error) {
@@ -27,7 +26,6 @@ func GetApplicationIssues(ctx context.Context, slug, name string, envs []string)
 		 	    }
 			    issues(first: 500) {
 			      nodes {
-					__typename
 		            severity
 		            message
 		          }
@@ -54,7 +52,6 @@ func GetApplicationIssues(ctx context.Context, slug, name string, envs []string)
 	for _, app := range resp.Team.Applications.Nodes {
 		for _, issue := range app.Issues.Nodes {
 			ret = append(ret, ApplicationIssue{
-				Type:        gql.IssueType(issue.GetTypename()),
 				Severity:    issue.GetSeverity(),
 				Message:     issue.GetMessage(),
 				Environment: app.TeamEnvironment.Environment.Name,
