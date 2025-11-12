@@ -40,7 +40,6 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 
 			data := pterm.TableData{
 				{
-					"Issue",
 					"Severity",
 					"Resource Name",
 					"Resource Type",
@@ -57,12 +56,11 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 
 			for _, i := range issues {
 				data = append(data, []string{
-					i.IssueType,
 					i.Severity,
 					i.ResourceName,
 					i.ResourceType,
 					i.Environment,
-					truncateString(i.Message, width-100),
+					truncateString(i.Message, width-70),
 				})
 			}
 			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
