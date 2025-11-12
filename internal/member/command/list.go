@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/member/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"k8s.io/utils/strings/slices"
@@ -24,9 +23,6 @@ func list(parentFlags *flag.Member) *naistrix.Command {
 		Name:  "list",
 		Title: "List members of a team.",
 		Flags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			type teamMember struct {
 				Name  string `json:"name"`
