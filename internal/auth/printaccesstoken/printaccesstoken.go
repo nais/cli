@@ -20,6 +20,7 @@ func PrintAccessToken(parentFlags *flag.Auth) *naistrix.Command {
 		Name:        "print-access-token",
 		Title:       "Print current access token",
 		Description: "Print the last fetched access token",
+		Aliases:     []string{"token"},
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if flags.Nais {
