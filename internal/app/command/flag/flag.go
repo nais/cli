@@ -9,6 +9,7 @@ import (
 
 type App struct {
 	*flags.GlobalFlags
+	Environment []string `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
 type Output string
@@ -19,6 +20,10 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 	return []string{"table", "json"}, "Available output formats."
 }
 
+type Issues struct {
+	*App
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
 type ListApps struct {
 	*App
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`

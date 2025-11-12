@@ -2699,8 +2699,15 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnection) GetNodes() [
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The team environment for the application.
+	TeamEnvironment GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
 	// Issues that affects the workload.
 	Issues GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection `json:"issues"`
+}
+
+// GetTeamEnvironment returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
 }
 
 // GetIssues returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication.Issues, and is useful for accessing the field via an interface.
@@ -2710,15 +2717,8 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection struct {
-	// Pagination information.
-	PageInfo GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo `json:"pageInfo"`
 	// List of nodes.
 	Nodes []GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue `json:"-"`
-}
-
-// GetPageInfo returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection) GetPageInfo() GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo {
-	return v.PageInfo
 }
 
 // GetNodes returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
@@ -2766,8 +2766,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 }
 
 type __premarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection struct {
-	PageInfo GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo `json:"pageInfo"`
-
 	Nodes []json.RawMessage `json:"nodes"`
 }
 
@@ -2782,7 +2780,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection) __premarshalJSON() (*__premarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection, error) {
 	var retval __premarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection
 
-	retval.PageInfo = v.PageInfo
 	{
 
 		dst := &retval.Nodes
@@ -2806,10 +2803,9 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
-	Typename  string   `json:"__typename"`
-	Severity  Severity `json:"severity"`
-	Message   string   `json:"message"`
-	Ingresses []string `json:"ingresses"`
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
 }
 
 // GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
@@ -2825,11 +2821,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) GetMessage() string {
 	return v.Message
-}
-
-// GetIngresses returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue.Ingresses, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) GetIngresses() []string {
-	return v.Ingresses
 }
 
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
@@ -3271,11 +3262,9 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue struct {
-	Typename  string   `json:"__typename"`
-	Severity  Severity `json:"severity"`
-	Message   string   `json:"message"`
-	RiskScore int      `json:"riskScore"`
-	Critical  int      `json:"critical"`
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
 }
 
 // GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
@@ -3293,30 +3282,31 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 	return v.Message
 }
 
-// GetRiskScore returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue.RiskScore, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue) GetRiskScore() int {
-	return v.RiskScore
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
 }
 
-// GetCritical returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue.Critical, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue) GetCritical() int {
-	return v.Critical
+// GetEnvironment returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
 }
 
-// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
-// # This type is used for paginating the connection
+// An environment represents a runtime environment for workloads.
 //
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo struct {
-	// The total amount of items in the connection.
-	TotalCount int `json:"totalCount"`
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
 }
 
-// GetTotalCount returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionPageInfo) GetTotalCount() int {
-	return v.TotalCount
+// GetName returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
 }
 
 // GetOpenSearchResponse is returned by GetOpenSearch on success.
@@ -6729,9 +6719,9 @@ func (v *__GetAllValkeysInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __GetApplicationIssuesInput is used internally by genqlient
 type __GetApplicationIssuesInput struct {
-	Slug string `json:"slug"`
-	Name string `json:"name"`
-	Env  string `json:"env"`
+	Slug string   `json:"slug"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
 }
 
 // GetSlug returns __GetApplicationIssuesInput.Slug, and is useful for accessing the field via an interface.
@@ -6741,7 +6731,7 @@ func (v *__GetApplicationIssuesInput) GetSlug() string { return v.Slug }
 func (v *__GetApplicationIssuesInput) GetName() string { return v.Name }
 
 // GetEnv returns __GetApplicationIssuesInput.Env, and is useful for accessing the field via an interface.
-func (v *__GetApplicationIssuesInput) GetEnv() string { return v.Env }
+func (v *__GetApplicationIssuesInput) GetEnv() []string { return v.Env }
 
 // __GetOpenSearchInput is used internally by genqlient
 type __GetOpenSearchInput struct {
@@ -7384,25 +7374,20 @@ func GetAllValkeys(
 
 // The query executed by GetApplicationIssues.
 const GetApplicationIssues_Operation = `
-query GetApplicationIssues ($slug: Slug!, $name: String!, $env: String!) {
+query GetApplicationIssues ($slug: Slug!, $name: String!, $env: [String!]) {
 	team(slug: $slug) {
-		applications(filter: {name:$name,environments:[$env]}) {
+		applications(filter: {name:$name,environments:$env}) {
 			nodes {
-				issues(first: 500) {
-					pageInfo {
-						totalCount
+				teamEnvironment {
+					environment {
+						name
 					}
+				}
+				issues(first: 500) {
 					nodes {
 						__typename
 						severity
 						message
-						... on DeprecatedIngressIssue {
-							ingresses
-						}
-						... on VulnerableImageIssue {
-							riskScore
-							critical
-						}
 					}
 				}
 			}
@@ -7416,7 +7401,7 @@ func GetApplicationIssues(
 	client_ graphql.Client,
 	slug string,
 	name string,
-	env string,
+	env []string,
 ) (data_ *GetApplicationIssuesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetApplicationIssues",
