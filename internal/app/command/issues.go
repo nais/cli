@@ -9,7 +9,7 @@ import (
 )
 
 func issues(parentFlags *flag.App) *naistrix.Command {
-	flags := &flag.ListApps{
+	flags := &flag.Issues{
 		App: parentFlags,
 	}
 
@@ -18,17 +18,16 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 		Title: "Show issues for an application.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
-			{Name: "team"},
-			{Name: "env"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			teamSlug := args.Get("team")
-			name := args.Get("name")
-			env := args.Get("env")
-			ret, err := app.GetApplicationIssues(ctx, teamSlug, name, env)
+			ret, err := app.GetApplicationIssues(ctx, flags.Team, args.Get("name"), flags.Environment)
 			if err != nil {
 				return err
+			}
+			if len(ret) == 0 {
+				out.Println("No issues found for application.")
+				return nil
 			}
 
 			return out.Table().Render(ret)
