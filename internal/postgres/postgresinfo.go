@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/nais/cli/internal/naisapi"
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"github.com/nais/naistrix"
 	"github.com/pkg/errors"
@@ -39,17 +40,27 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 		return nil, err
 	}
 
+	user, err := naisapi.GetAuthenticatedUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	token, err := user.GetTokenSource().Token()
+	if err != nil {
+		return nil, err
+	}
+
 	queries := url.Values{}
 	queries.Add("sslmode", "required")
 	pgUrl := &url.URL{
 		Scheme:   "postgresql",
-		User:     url.UserPassword(email, ""),
+		User:     url.UserPassword(email, token.AccessToken),
 		Host:     "localhost",
 		Path:     "app",
 		RawQuery: queries.Encode(),
 	}
 
 	queries.Add("user", email)
+	queries.Add("password", token.AccessToken)
 	jdbcUrl := &url.URL{
 		Scheme:   "jdbc:postgresql",
 		Host:     "localhost:5432",
@@ -59,6 +70,7 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 
 	return &ConnectionInfo{
 		username: email,
+		password: token.AccessToken,
 		dbName:   "app",
 		instance: "localhost",
 		port:     "5432",
