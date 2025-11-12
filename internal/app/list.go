@@ -20,14 +20,24 @@ type InstancesInfo struct {
 }
 
 type Age time.Time
+type State string
 
 type Application struct {
+	State         State          `json:"state"`
 	Name          string         `json:"name"`
 	Environment   string         `json:"environment"`
 	InstancesInfo *InstancesInfo `heading:"Running" json:"running"`
-	State         string
-	IssueInfo     *IssueInfo `heading:"Issues" json:"issue_info"`
-	Age           Age        `json:"age"`
+	IssueInfo     *IssueInfo     `heading:"Issues" json:"issue_info"`
+	Age           Age            `json:"age"`
+}
+
+func (s State) String() string {
+	if s == State(gql.ApplicationStateRunning) {
+		return "  🟢"
+	} else if s == State(gql.ApplicationStateNotRunning) {
+		return "  🔴"
+	}
+	return "  ⚪"
 }
 
 func (i IssueInfo) String() string {
@@ -117,7 +127,7 @@ func GetTeamApplications(ctx context.Context, team string, orderBy gql.Applicati
 		ret = append(ret, Application{
 			Name:          app.Name,
 			Environment:   app.TeamEnvironment.Environment.Name,
-			State:         string(app.State),
+			State:         State(app.State),
 			Age:           lastUpdated,
 			IssueInfo:     issueInfo(app.Issues.GetNodes()),
 			InstancesInfo: instanceInfo(app.Instances.GetNodes()),
