@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -21,11 +20,7 @@ func deleteValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Flags:       flags,
 		Args:        defaultArgs,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-
-			return validation.CheckTeam(flags.Team)
+			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
 			{

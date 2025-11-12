@@ -1,9 +1,11 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -15,6 +17,9 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 		Name:        "valkey",
 		Title:       "Manage Valkey instances.",
 		StickyFlags: flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team)
+		},
 		SubCommands: []*naistrix.Command{
 			createValkey(flags),
 			deleteValkey(flags),
