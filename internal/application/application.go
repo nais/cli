@@ -9,6 +9,7 @@ import (
 
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
+	appCommand "github.com/nais/cli/internal/app/command"
 	login "github.com/nais/cli/internal/auth/login"
 	logout "github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
@@ -54,6 +55,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	cmds := []*naistrix.Command{
 		login.Login(globalFlags),
 		logout.Logout(globalFlags),
+		appCommand.App(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
 		aiven.Aiven(globalFlags),
