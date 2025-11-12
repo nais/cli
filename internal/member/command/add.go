@@ -24,16 +24,15 @@ func add(parentFlags *flag.Member) *naistrix.Command {
 		Description: "Only team owners can add team members.",
 		Examples: []naistrix.Example{
 			{
-				Description: "Add some-user@example.com to the my-team team as a regular member.",
-				Command:     "my-team some-user@example.com",
+				Description: "Add some-user@example.com as a regular member.",
+				Command:     "some-user@example.com",
 			},
 			{
-				Description: "Add some-user@example.com to the my-team team as a team owner.",
-				Command:     "my-team some-user@example.com -o",
+				Description: "Add some-user@example.com as a team owner.",
+				Command:     "some-user@example.com -o",
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "team"},
 			{Name: "member"},
 		},
 		Flags: flags,
@@ -43,52 +42,14 @@ func add(parentFlags *flag.Member) *naistrix.Command {
 				role = gql.TeamMemberRoleOwner
 			}
 
-			if err := member.AddTeamMember(ctx, args.Get("team"), args.Get("member"), role); err != nil {
-				return naistrix.Errorf("Unable to add %q to team %q:\n\n%s", args.Get("member"), args.Get("team"), err)
+			if err := member.AddTeamMember(ctx, flags.Team, args.Get("member"), role); err != nil {
+				return naistrix.Errorf("Unable to add %q to team %q:\n\n%s", args.Get("member"), flags.Team, err)
 			}
 
-			out.Printf("%q has been added to the %q team.\n", args.Get("member"), args.Get("team"))
+			out.Printf("%q has been added to the %q team.\n", args.Get("member"), flags.Team)
 			return nil
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
-			isAdmin := naisapi.IsConsoleAdmin(ctx)
-
-			if isAdmin && args.Len() == 0 && len(toComplete) < 2 {
-				return nil, "Provide at least 2 characters to auto-complete team slugs."
-			}
-
-			if args.Len() == 0 {
-				var slugs []string
-
-				if isAdmin {
-					allSlugs, err := naisapi.GetAllTeamSlugs(ctx)
-					if err != nil {
-						return nil, "Unable to fetch team slugs."
-					}
-
-					slugs = slices.Filter([]string{}, allSlugs, func(slug string) bool {
-						return strings.HasPrefix(slug, toComplete)
-					})
-				} else {
-					userTeams, err := naisapi.GetUserTeams(ctx)
-					if err != nil {
-						return nil, "Unable to fetch team slugs."
-					}
-
-					for _, t := range userTeams {
-						if t.Role == gql.TeamMemberRoleOwner {
-							slugs = append(slugs, t.Team.Slug)
-						}
-					}
-				}
-
-				if len(slugs) == 0 {
-					return nil, "You are not an owner of any teams."
-				}
-
-				return slugs, "Choose a team to add a member to."
-			}
-
 			if len(toComplete) < 2 {
 				return nil, "Provide at least 2 characters to auto-complete user emails."
 			}
