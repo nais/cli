@@ -139,15 +139,6 @@ func instanceInfo(instances []gql.GetTeamApplicationsTeamApplicationsApplication
 	}
 }
 
-func age(deployments []gql.GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationDeploymentsDeploymentConnectionNodesDeployment) *time.Duration {
-	if len(deployments) == 0 {
-		return nil
-	}
-
-	ret := time.Since(deployments[0].GetCreatedAt())
-	return &ret
-}
-
 func issueInfo(issues []gql.GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue) *IssueInfo {
 	if len(issues) == 0 {
 		return nil
