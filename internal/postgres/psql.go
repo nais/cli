@@ -62,7 +62,9 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
-	cmd.Env = os.Environ()
+	environ := os.Environ()
+	environ = append(environ, fmt.Sprintf("PGPASSWORD=%s", connectionInfo.password))
+	cmd.Env = environ
 
 	return cmd.Run()
 }
