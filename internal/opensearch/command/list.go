@@ -6,7 +6,6 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -18,9 +17,6 @@ func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Title:       "List existing Opensearch instances.",
 		Description: "This command lists all Opensearch instances for a given team.",
 		Flags:       flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
-		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all OpenSearches for the team.",

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -18,9 +17,6 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 		Title:       "List existing Valkey instances.",
 		Description: "This command lists all Valkey instances for a given team.",
 		Flags:       flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
-		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all Valkeys for the team.",

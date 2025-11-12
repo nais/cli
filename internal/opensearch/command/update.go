@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -26,11 +25,7 @@ func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return err
 			}
 
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-
-			return validation.CheckTeam(flags.Team)
+			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
 			{

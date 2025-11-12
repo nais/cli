@@ -1,12 +1,14 @@
 package command
 
 import (
+	"context"
 	"fmt"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -16,6 +18,9 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 		Name:        "opensearch",
 		Title:       "Manage OpenSearch instances.",
 		StickyFlags: flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return validation.CheckTeam(flags.Team)
+		},
 		SubCommands: []*naistrix.Command{
 			createOpenSearch(flags),
 			deleteOpenSearch(flags),
@@ -26,7 +31,7 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 	}
 }
 
-// TODO(jhrv): Make team into a flag instead of arg
+// TODO(jhrv): Make environment into a flag instead of arg
 var defaultArgs = []naistrix.Argument{
 	{Name: "environment"},
 	{Name: "name"},

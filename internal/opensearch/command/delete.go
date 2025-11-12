@@ -7,7 +7,6 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -21,11 +20,7 @@ func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Flags:       flags,
 		Args:        defaultArgs,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-
-			return validation.CheckTeam(flags.Team)
+			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
 			{
