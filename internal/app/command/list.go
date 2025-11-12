@@ -16,9 +16,6 @@ func list(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "list",
 		Title: "List applications in a team.",
-		Args: []naistrix.Argument{
-			{Name: "team"},
-		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			type application struct {
@@ -26,10 +23,9 @@ func list(parentFlags *flag.App) *naistrix.Command {
 				Environment     string `json:"environment"`
 				State           string `json:"state"`
 				Vulnerabilities int    `json:"vulnerabilities"`
-				Issues          int    `heading:"Critical Issues" json:"issues"`
+				Issues          int    `heading:"Issues" json:"issues"`
 			}
-			teamSlug := args.Get("team")
-			ret, err := app.GetTeamApplications(ctx, teamSlug)
+			ret, err := app.GetTeamApplications(ctx, flags.Team)
 			if err != nil {
 				return err
 			}

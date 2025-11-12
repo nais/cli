@@ -8,36 +8,28 @@ import (
 )
 
 type ApplicationIssue struct {
-	Total     int           `json:"total"`
-	Type      gql.IssueType `json:"type"`
-	Severity  gql.Severity  `json:"severity"`
-	Message   string        `json:"message"`
-	Ingresses []string      `json:"ingresses,omitempty"`
-	RiskScore int           `json:"risk_score,omitempty"`
-	Critical  int           `json:"critical,omitempty"`
+	Type        gql.IssueType
+	Severity    gql.Severity
+	Message     string
+	Environment string
 }
 
-func GetApplicationIssues(ctx context.Context, slug, name, env string) ([]ApplicationIssue, error) {
+func GetApplicationIssues(ctx context.Context, slug, name string, envs []string) ([]ApplicationIssue, error) {
 	_ = `# @genqlient
-		query GetApplicationIssues($slug: Slug!, $name: String!, $env: String!) {
+		query GetApplicationIssues($slug: Slug!, $name: String!, $env: [String!]) {
 		  team(slug: $slug) {
-		    applications(filter: { name: $name, environments: [$env] }) {
+		    applications(filter: { name: $name, environments: $env }) {
 		      nodes {
-		        issues(first: 500) {
-		          pageInfo {
-		            totalCount
-		          }
-		          nodes {
+				teamEnvironment{
+          		  environment {
+              	    name
+		 	      }
+		 	    }
+			    issues(first: 500) {
+			      nodes {
 					__typename
 		            severity
 		            message
-		            ... on DeprecatedIngressIssue {
-		              ingresses
-		            }
-		            ... on VulnerableImageIssue{
-		              riskScore
-		              critical
-		            }
 		          }
 		        }
 		      }
@@ -51,24 +43,22 @@ func GetApplicationIssues(ctx context.Context, slug, name, env string) ([]Applic
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationIssues(ctx, client, slug, name, env)
+	resp, err := gql.GetApplicationIssues(ctx, client, slug, name, envs)
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]ApplicationIssue, len(resp.Team.Applications.Nodes[0].Issues.Nodes))
-	for i, issue := range resp.Team.Applications.Nodes {
-		ret[i] = ApplicationIssue{
-			Total:    issue.Issues.PageInfo.TotalCount,
-			Type:     gql.IssueType(issue.Issues.Nodes[i].GetTypename()),
-			Severity: issue.Issues.Nodes[i].GetSeverity(),
-			Message:  issue.Issues.Nodes[i].GetMessage(),
-		}
-		switch c := issue.Issues.Nodes[0].(type) {
-		case *gql.GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue:
-			ret[i].Ingresses = c.Ingresses
-		case *gql.GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue:
-			ret[i].RiskScore = c.RiskScore
-			ret[i].Critical = c.Critical
+	if len(resp.Team.Applications.Nodes) == 0 {
+		return nil, nil
+	}
+	ret := make([]ApplicationIssue, 0)
+	for _, app := range resp.Team.Applications.Nodes {
+		for _, issue := range app.Issues.Nodes {
+			ret = append(ret, ApplicationIssue{
+				Type:        gql.IssueType(issue.GetTypename()),
+				Severity:    issue.GetSeverity(),
+				Message:     issue.GetMessage(),
+				Environment: app.TeamEnvironment.Environment.Name,
+			})
 		}
 	}
 	return ret, nil
