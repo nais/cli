@@ -167,7 +167,7 @@ func (d *CloudSQLDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 		out.Printf("psql -h %v -p %d -U %v %v\n", host, *port, email, connectionInfo.dbName)
 		out.Println()
 		out.Println("If you are using a JDBC client, you can connect to the database by using the following connection string:")
-		out.Printf("Connection URL: %v\n", connectionInfo.jdbcUrl)
+		out.Printf("Connection URL: jdbc:postgresql://%v/%v?user=%v\n", address, connectionInfo.dbName, email)
 		out.Println()
 		out.Println("If you get asked for a password, you can leave it blank. If that doesn't work, try running 'nais postgres grant", d.AppName()+"' again.")
 	}
@@ -267,7 +267,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 			go copy(closer, conn2, conn)
 			go copy(closer, conn, conn2)
 			<-closer
-			out.Infof("Connection complete %s", conn.RemoteAddr())
+			out.Infof("Connection complete %s\n", conn.RemoteAddr())
 		}()
 	}
 
