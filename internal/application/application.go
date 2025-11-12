@@ -100,7 +100,7 @@ func Run(ctx context.Context, w io.Writer) error {
 	if err != nil {
 		if errors.Is(err, naisapi.ErrNotAuthenticated) {
 			// TODO(tronghn): If tty; prompt for login (y/n)?
-			pterm.Error.Println("You are not logged in. Please run `nais login -n` to authenticate.")
+			pterm.Error.Println("You are not logged in. Please run `nais auth login --nais` to authenticate.")
 		}
 
 		return err
