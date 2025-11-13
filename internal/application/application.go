@@ -15,6 +15,7 @@ import (
 	"github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
+	issues "github.com/nais/cli/internal/issues/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
@@ -66,6 +67,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		debug.Debug(globalFlags),
 		kubeconfig.Kubeconfig(globalFlags),
 		validate.Validate(globalFlags),
+		issues.Issues(globalFlags),
 	}
 
 	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {

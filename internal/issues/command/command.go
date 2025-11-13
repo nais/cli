@@ -1,13 +1,13 @@
 package command
 
 import (
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Issues(parentFlags *alpha.Alpha) *naistrix.Command {
-	flags := &flag.Issues{Alpha: parentFlags}
+func Issues(parentFlags *flags.GlobalFlags) *naistrix.Command {
+	flags := &flag.Issues{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "issues",
 		Title:       "Manage issues.",
