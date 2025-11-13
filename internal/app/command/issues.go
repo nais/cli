@@ -37,5 +37,15 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			if args.Len() == 0 {
+				apps, err := app.GetApplicationNames(ctx, flags.Team)
+				if err != nil {
+					return nil, "Unable to fetch application names."
+				}
+				return apps, "Select an application."
+			}
+			return nil, ""
+		},
 	}
 }

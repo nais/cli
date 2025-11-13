@@ -20,7 +20,7 @@ type InstancesInfo struct {
 	Running int `json:"running"`
 }
 
-type Age time.Time
+type LastUpdated time.Time
 type State string
 
 type Application struct {
@@ -29,7 +29,7 @@ type Application struct {
 	Environment   string         `json:"environment"`
 	InstancesInfo *InstancesInfo `heading:"Running" json:"running"`
 	IssueInfo     *IssueInfo     `heading:"Issues" json:"issue_info"`
-	Age           Age            `json:"last_updated"`
+	LastUpdated   LastUpdated    `heading:"Last Updated" json:"last_updated"`
 }
 
 func (s State) String() string {
@@ -49,7 +49,7 @@ func (i InstancesInfo) String() string {
 	return fmt.Sprintf("%v/%v", i.Running, i.Total)
 }
 
-func (a Age) String() string {
+func (a LastUpdated) String() string {
 	t := time.Time(a)
 	if t.IsZero() {
 		return "<unknown>"
@@ -72,8 +72,38 @@ func (a Age) String() string {
 	return fmt.Sprintf("%vy", int(d.Hours()/24/365))
 }
 
-func (a Age) MarshalJSON() ([]byte, error) {
+func (a LastUpdated) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", time.Time(a).Format(time.RFC3339)), nil
+}
+
+func GetApplicationNames(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query GetApplicationNames($team: Slug!) {
+		  team(slug: $team) {
+			  applications(first: 1000) {
+		      nodes {
+		        name
+		      }
+		    }
+		  }
+		}
+		`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetApplicationNames(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]string, 0)
+
+	for _, app := range resp.Team.Applications.Nodes {
+		ret = append(ret, app.Name)
+	}
+	return ret, nil
 }
 
 func GetTeamApplications(ctx context.Context, team string, orderBy gql.ApplicationOrder, filter gql.TeamApplicationsFilter) ([]Application, error) {
@@ -124,16 +154,16 @@ func GetTeamApplications(ctx context.Context, team string, orderBy gql.Applicati
 	ret := make([]Application, 0)
 
 	for _, app := range resp.Team.Applications.Nodes {
-		var lastUpdated Age
+		var lastUpdated LastUpdated
 		if len(app.Deployments.GetNodes()) > 0 {
-			lastUpdated = Age(app.Deployments.GetNodes()[0].GetCreatedAt())
+			lastUpdated = LastUpdated(app.Deployments.GetNodes()[0].GetCreatedAt())
 		}
 
 		ret = append(ret, Application{
 			Name:          app.Name,
 			Environment:   app.TeamEnvironment.Environment.Name,
 			State:         State(app.State),
-			Age:           lastUpdated,
+			LastUpdated:   lastUpdated,
 			IssueInfo:     issueInfo(app.Issues.GetNodes()),
 			InstancesInfo: instanceInfo(app.Instances.GetNodes()),
 		})
