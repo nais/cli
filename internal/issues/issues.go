@@ -15,8 +15,8 @@ type Issue struct {
 	ID           string   `json:"id" hidden:"true"`
 	Severity     Severity `json:"severity"`
 	Environment  string   `json:"environment"`
-	ResourceName string   `json:"resource_name"`
-	ResourceType string   `json:"resource_type"`
+	ResourceName string   `json:"resource_name" heading:"Resource Name"`
+	ResourceType string   `json:"resource_type" heading:"Resource Type"`
 	Message      string   `json:"message"`
 }
 
