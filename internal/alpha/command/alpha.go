@@ -4,7 +4,6 @@ import (
 	"github.com/nais/cli/internal/alpha/command/flag"
 	apply "github.com/nais/cli/internal/apply/command"
 	"github.com/nais/cli/internal/flags"
-	issues "github.com/nais/cli/internal/issues/command"
 	krakend "github.com/nais/cli/internal/krakend/command"
 	log "github.com/nais/cli/internal/log/command"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
@@ -27,7 +26,6 @@ func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			opensearch.OpenSearch(flags),
 			log.Log(flags),
 			krakend.Krakend(flags),
-			issues.Issues(flags),
 		},
 	}
 }
