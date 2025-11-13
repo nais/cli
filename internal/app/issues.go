@@ -3,14 +3,21 @@ package app
 import (
 	"context"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
+type Severity gql.Severity
+
 type ApplicationIssue struct {
-	Severity    gql.Severity `json:"severity"`
-	Message     string       `json:"message"`
-	Environment string       `json:"environment"`
+	Severity    Severity `json:"severity"`
+	Message     string   `json:"message"`
+	Environment string   `json:"environment"`
+}
+
+func (s Severity) String() string {
+	return formatting.ColoredSeverityString(string(s), gql.Severity(s))
 }
 
 func GetApplicationIssues(ctx context.Context, slug, name string, envs []string) ([]ApplicationIssue, error) {
@@ -52,7 +59,7 @@ func GetApplicationIssues(ctx context.Context, slug, name string, envs []string)
 	for _, app := range resp.Team.Applications.Nodes {
 		for _, issue := range app.Issues.Nodes {
 			ret = append(ret, ApplicationIssue{
-				Severity:    issue.GetSeverity(),
+				Severity:    Severity(issue.GetSeverity()),
 				Message:     issue.GetMessage(),
 				Environment: app.TeamEnvironment.Environment.Name,
 			})

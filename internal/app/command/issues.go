@@ -6,6 +6,7 @@ import (
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/output"
 )
 
 func issues(parentFlags *flag.App) *naistrix.Command {
@@ -28,6 +29,10 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 			if len(ret) == 0 {
 				out.Println("No issues found for application.")
 				return nil
+			}
+
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
 			return out.Table().Render(ret)

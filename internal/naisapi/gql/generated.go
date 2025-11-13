@@ -8089,7 +8089,7 @@ func GetOpenSearch(
 const GetTeamApplications_Operation = `
 query GetTeamApplications ($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter) {
 	team(slug: $team) {
-		applications(orderBy: $orderBy, filter: $filter) {
+		applications(orderBy: $orderBy, filter: $filter, first: 1000) {
 			nodes {
 				name
 				teamEnvironment {

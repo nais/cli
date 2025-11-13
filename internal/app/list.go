@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
@@ -28,20 +29,20 @@ type Application struct {
 	Environment   string         `json:"environment"`
 	InstancesInfo *InstancesInfo `heading:"Running" json:"running"`
 	IssueInfo     *IssueInfo     `heading:"Issues" json:"issue_info"`
-	Age           Age            `json:"age"`
+	Age           Age            `json:"last_updated"`
 }
 
 func (s State) String() string {
 	if s == State(gql.ApplicationStateRunning) {
-		return "  🟢"
+		return "Running"
 	} else if s == State(gql.ApplicationStateNotRunning) {
-		return "  🔴"
+		return "<error>Not running</error>"
 	}
-	return "  ⚪"
+	return "<info>Unknown</info>"
 }
 
 func (i IssueInfo) String() string {
-	return fmt.Sprintf("%v %v", i.Count, i.Severity)
+	return formatting.ColoredSeverityString(fmt.Sprintf("%v %v", i.Count, i.Severity), gql.Severity(i.Severity))
 }
 
 func (i InstancesInfo) String() string {
@@ -71,11 +72,15 @@ func (a Age) String() string {
 	return fmt.Sprintf("%vy", int(d.Hours()/24/365))
 }
 
+func (a Age) MarshalJSON() ([]byte, error) {
+	return fmt.Appendf(nil, "%q", time.Time(a).Format(time.RFC3339)), nil
+}
+
 func GetTeamApplications(ctx context.Context, team string, orderBy gql.ApplicationOrder, filter gql.TeamApplicationsFilter) ([]Application, error) {
 	_ = `# @genqlient
 		query GetTeamApplications($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter) {
 		  team(slug: $team) {
-		    applications(orderBy: $orderBy, filter: $filter) {
+			  applications(orderBy: $orderBy, filter: $filter, first: 1000) {
 		      nodes {
 		        name
 		        teamEnvironment {

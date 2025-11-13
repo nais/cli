@@ -4,17 +4,24 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
+type Severity gql.Severity
+
 type Issue struct {
-	Environment  string
-	Severity     string
-	Message      string
-	ResourceName string
-	ResourceType string
-	ID           string
+	ID           string   `json:"id" hidden:"true"`
+	Severity     Severity `json:"severity"`
+	Environment  string   `json:"environment"`
+	ResourceName string   `json:"resource_name"`
+	ResourceType string   `json:"resource_type"`
+	Message      string   `json:"message"`
+}
+
+func (s Severity) String() string {
+	return formatting.ColoredSeverityString(string(s), gql.Severity(s))
 }
 
 func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) ([]Issue, error) {
@@ -133,7 +140,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		i := Issue{
 			ID:          issue.GetId(),
 			Environment: issue.GetTeamEnvironment().Environment.Name,
-			Severity:    string(issue.GetSeverity()),
+			Severity:    Severity(issue.GetSeverity()),
 			Message:     issue.GetMessage(),
 		}
 		switch c := issue.(type) {

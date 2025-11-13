@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/app/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/output"
 )
 
 func list(parentFlags *flag.App) *naistrix.Command {
@@ -25,6 +26,10 @@ func list(parentFlags *flag.App) *naistrix.Command {
 			}, gql.TeamApplicationsFilter{Environments: flags.Environment})
 			if err != nil {
 				return err
+			}
+
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
 			return out.Table().Render(ret)
