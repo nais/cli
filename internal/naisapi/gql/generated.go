@@ -3363,6 +3363,63 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 	return v.Name
 }
 
+// GetApplicationNamesResponse is returned by GetApplicationNames on success.
+type GetApplicationNamesResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationNamesTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationNamesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesResponse) GetTeam() GetApplicationNamesTeam { return v.Team }
+
+// GetApplicationNamesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationNamesTeam struct {
+	// Nais applications owned by the team.
+	Applications GetApplicationNamesTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetApplicationNamesTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeam) GetApplications() GetApplicationNamesTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetApplicationNamesTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetApplicationNamesTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationNamesTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeamApplicationsApplicationConnection) GetNodes() []GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+}
+
+// GetName returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
 // GetOpenSearchResponse is returned by GetOpenSearch on success.
 type GetOpenSearchResponse struct {
 	// Get a team by its slug.
@@ -7320,6 +7377,14 @@ func (v *__GetApplicationIssuesInput) GetName() string { return v.Name }
 // GetEnv returns __GetApplicationIssuesInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetApplicationIssuesInput) GetEnv() []string { return v.Env }
 
+// __GetApplicationNamesInput is used internally by genqlient
+type __GetApplicationNamesInput struct {
+	Team string `json:"team"`
+}
+
+// GetTeam returns __GetApplicationNamesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetApplicationNamesInput) GetTeam() string { return v.Team }
+
 // __GetOpenSearchInput is used internally by genqlient
 type __GetOpenSearchInput struct {
 	Name            string `json:"name"`
@@ -8009,6 +8074,44 @@ func GetApplicationIssues(
 	}
 
 	data_ = &GetApplicationIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetApplicationNames.
+const GetApplicationNames_Operation = `
+query GetApplicationNames ($team: Slug!) {
+	team(slug: $team) {
+		applications(first: 1000) {
+			nodes {
+				name
+			}
+		}
+	}
+}
+`
+
+func GetApplicationNames(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+) (data_ *GetApplicationNamesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationNames",
+		Query:  GetApplicationNames_Operation,
+		Variables: &__GetApplicationNamesInput{
+			Team: team,
+		},
+	}
+
+	data_ = &GetApplicationNamesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

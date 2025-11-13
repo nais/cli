@@ -76,6 +76,36 @@ func (a Age) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", time.Time(a).Format(time.RFC3339)), nil
 }
 
+func GetApplicationNames(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query GetApplicationNames($team: Slug!) {
+		  team(slug: $team) {
+			  applications(first: 1000) {
+		      nodes {
+		        name
+		      }
+		    }
+		  }
+		}
+		`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetApplicationNames(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]string, 0)
+
+	for _, app := range resp.Team.Applications.Nodes {
+		ret = append(ret, app.Name)
+	}
+	return ret, nil
+}
+
 func GetTeamApplications(ctx context.Context, team string, orderBy gql.ApplicationOrder, filter gql.TeamApplicationsFilter) ([]Application, error) {
 	_ = `# @genqlient
 		query GetTeamApplications($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter) {
