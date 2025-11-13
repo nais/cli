@@ -41,7 +41,7 @@ func (s State) String() string {
 }
 
 func (i IssueInfo) String() string {
-	return fmt.Sprintf("%v:%v", i.Severity, i.Count)
+	return fmt.Sprintf("%v %v", i.Count, i.Severity)
 }
 
 func (i InstancesInfo) String() string {
@@ -60,15 +60,15 @@ func (a Age) String() string {
 	} else if seconds < 0 {
 		return "0s"
 	} else if seconds < 60 {
-		return fmt.Sprintf("%ds", seconds)
+		return fmt.Sprintf("%vs", seconds)
 	} else if minutes := int(d.Minutes()); minutes < 60 {
-		return fmt.Sprintf("%dm", minutes)
+		return fmt.Sprintf("%vm", minutes)
 	} else if hours := int(d.Hours()); hours < 24 {
-		return fmt.Sprintf("%dh", hours)
+		return fmt.Sprintf("%vh", hours)
 	} else if hours < 24*365 {
-		return fmt.Sprintf("%dd", hours/24)
+		return fmt.Sprintf("%vd", hours/24)
 	}
-	return fmt.Sprintf("%dy", int(d.Hours()/24/365))
+	return fmt.Sprintf("%vy", int(d.Hours()/24/365))
 }
 
 func GetTeamApplications(ctx context.Context, team string, orderBy gql.ApplicationOrder, filter gql.TeamApplicationsFilter) ([]Application, error) {
