@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
 
 type Issues struct {
-	*flag.Alpha
+	*flags.GlobalFlags
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 

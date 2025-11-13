@@ -20,8 +20,10 @@ type InstancesInfo struct {
 	Running int `json:"running"`
 }
 
-type LastUpdated time.Time
-type State string
+type (
+	LastUpdated time.Time
+	State       string
+)
 
 type Application struct {
 	State         State          `json:"state"`
