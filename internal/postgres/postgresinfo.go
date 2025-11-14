@@ -35,11 +35,6 @@ func NewPostgresDBInfo(ctx context.Context, dbInfo *DBInfo) (DB, error) {
 }
 
 func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	user, err := naisapi.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return nil, err
@@ -48,6 +43,8 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 	if err != nil {
 		return nil, err
 	}
+
+	email := user.Email()
 
 	queries := url.Values{}
 	queries.Add("sslmode", "required")
@@ -70,6 +67,7 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 
 	return &ConnectionInfo{
 		username: email,
+		email:    email,
 		password: token.AccessToken,
 		dbName:   "app",
 		instance: "localhost",
@@ -94,6 +92,12 @@ func (p *postgresDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 	if len(pods.Items) != 1 {
 		return fmt.Errorf("found %d pods marked as master for cluster %s", len(pods.Items), p.clusterName)
 	}
+
+	user, err := naisapi.GetAuthenticatedUser(ctx)
+	if err != nil {
+		return err
+	}
+	email := user.Email()
 
 	masterPod := pods.Items[0]
 	pfUrl := p.DBInfo.k8sClient.CoreV1().RESTClient().Post().
@@ -140,11 +144,6 @@ func (p *postgresDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 
 	if printInstructions {
 		connectionInfo, err := p.DBConnection(ctx)
-		if err != nil {
-			return err
-		}
-
-		email, err := currentEmail(ctx)
 		if err != nil {
 			return err
 		}

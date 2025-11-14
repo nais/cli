@@ -35,6 +35,7 @@ func GithubActions(ctx context.Context) (*AuthenticatedUser, bool, error) {
 		TokenSource: oauth2.StaticTokenSource(token),
 		consoleHost: "console." + tenant + ".cloud.nais.io",
 		domain:      "TODO",
+		email:       "TODO",
 	}, true, nil
 }
 

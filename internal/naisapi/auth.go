@@ -26,6 +26,7 @@ type AuthenticatedUser interface {
 	APIURL() string
 	Domain() string
 	GetTokenSource() oauth2.TokenSource
+	Email() string
 }
 
 // GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or

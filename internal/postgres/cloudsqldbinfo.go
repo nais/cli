@@ -64,10 +64,10 @@ func (i *CloudSQLDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 		return nil, err
 	}
 
-	return createConnectionInfo(*secret, connectionName), nil
+	return createConnectionInfo(ctx, *secret, connectionName)
 }
 
-func createConnectionInfo(secret core_v1.Secret, instance string) *ConnectionInfo {
+func createConnectionInfo(ctx context.Context, secret core_v1.Secret, instance string) (*ConnectionInfo, error) {
 	var pgUrl *url.URL
 	var jdbcUrl *url.URL
 	var err error
@@ -85,15 +85,21 @@ func createConnectionInfo(secret core_v1.Secret, instance string) *ConnectionInf
 		}
 	}
 
+	email, err := currentEmail(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ConnectionInfo{
 		username: getSecretDataValue(secret, "_USERNAME"),
+		email:    email,
 		password: getSecretDataValue(secret, "_PASSWORD"),
 		dbName:   getSecretDataValue(secret, "_DATABASE"),
 		port:     getSecretDataValue(secret, "_PORT"),
 		url:      pgUrl,
 		jdbcUrl:  jdbcUrl,
 		instance: instance,
-	}
+	}, nil
 }
 
 func getSecretDataValue(secret core_v1.Secret, suffix string) string {

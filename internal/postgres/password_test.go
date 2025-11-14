@@ -97,7 +97,10 @@ func TestPassword(t *testing.T) {
 			}
 
 			dbInfo := createDbInfo(k8sClient)
-			dbConnectionInfo := createConnectionInfo(*secret, dbInfo.connectionName)
+			dbConnectionInfo, err := createConnectionInfo(t.Context(), *secret, dbInfo.connectionName)
+			if err != nil {
+				t.Fatalf("failed to create connectionInfo: %v", err)
+			}
 
 			dbConnectionInfo.SetPassword(newPassword)
 

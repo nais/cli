@@ -38,6 +38,10 @@ func (l *LocalhostUser) Domain() string {
 	return "example.com"
 }
 
+func (l *LocalhostUser) Email() string {
+	return l.email
+}
+
 func (l *LocalhostUser) ConsoleHost() string {
 	return l.consoleHost
 }

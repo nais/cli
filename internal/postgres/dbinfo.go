@@ -111,6 +111,7 @@ func IsCloudSQL(ctx context.Context, i *DBInfo) (bool, error) {
 
 type ConnectionInfo struct {
 	username string
+	email    string
 	password string
 	dbName   string
 	instance string

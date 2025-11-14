@@ -27,11 +27,6 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 		return err
 	}
 
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return err
-	}
-
 	portCh := make(chan int, 1)
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -53,7 +48,7 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 	arguments := []string{
 		"--host", "localhost",
 		"--port", fmt.Sprintf("%d", port),
-		"--username", email,
+		"--username", connectionInfo.email,
 		"--dbname", connectionInfo.dbName,
 	}
 

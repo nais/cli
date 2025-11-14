@@ -28,6 +28,7 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &oidcTokenSource{ctx}),
 		consoleHost: secret.ConsoleHost,
 		domain:      secret.Domain,
+		email:       secret.Email,
 	}, nil
 }
 
@@ -91,12 +92,18 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 		return fmt.Errorf("getting primary_domain claim: %w", err)
 	}
 
+	var email string
+	err = j.Get("email", &email)
+	if err != nil {
+		return fmt.Errorf("getting email claim: %w", err)
+	}
+
 	tenantData, err := getTenantData(domain)
 	if err != nil {
 		return fmt.Errorf("getting tenant data: %w", err)
 	}
 
-	_, err = storeOIDCUser(tok, domain, tenantData.ConsoleURL)
+	_, err = storeOIDCUser(tok, domain, email, tenantData.ConsoleURL)
 	if err != nil {
 		return fmt.Errorf("saving token: %w", err)
 	}
@@ -148,6 +155,7 @@ type oidcUser struct {
 	IDToken     string `json:"id_token"`
 	ConsoleHost string `json:"console_host"`
 	Domain      string `json:"domain"`
+	Email       string `json:"email"`
 }
 
 func getOIDCUser(ctx context.Context) (*oidcUser, error) {
@@ -172,12 +180,13 @@ func getOIDCUser(ctx context.Context) (*oidcUser, error) {
 	return &sec, nil
 }
 
-func storeOIDCUser(tok *oauth2.Token, domain, consoleURL string) (*oidcUser, error) {
+func storeOIDCUser(tok *oauth2.Token, domain, email, consoleURL string) (*oidcUser, error) {
 	sec := &oidcUser{
 		Token:       *tok,
 		IDToken:     tok.Extra("id_token").(string),
 		ConsoleHost: consoleURL,
 		Domain:      domain,
+		Email:       email,
 	}
 	secret, err := json.Marshal(sec)
 	if err != nil {
@@ -202,7 +211,7 @@ func refreshOIDCUser(ctx context.Context, sec *oidcUser) (*oidcUser, error) {
 		return nil, ErrNotAuthenticated
 	}
 
-	return storeOIDCUser(tok, sec.Domain, sec.ConsoleHost)
+	return storeOIDCUser(tok, sec.Domain, sec.Email, sec.ConsoleHost)
 }
 
 type tenantData struct {

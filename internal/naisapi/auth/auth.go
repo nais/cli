@@ -15,10 +15,15 @@ type AuthenticatedUser struct {
 	oauth2.TokenSource
 	consoleHost string
 	domain      string
+	email       string
 }
 
 func (a *AuthenticatedUser) Domain() string {
 	return a.domain
+}
+
+func (a *AuthenticatedUser) Email() string {
+	return a.email
 }
 
 func (a *AuthenticatedUser) ConsoleHost() string {
