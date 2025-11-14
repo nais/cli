@@ -15,6 +15,7 @@ func App(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			list(flags),
 			issues(flags),
+			restart(flags),
 		},
 	}
 }

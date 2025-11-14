@@ -20,6 +20,10 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 	return []string{"table", "json"}, "Available output formats."
 }
 
+type Restart struct {
+	*App
+}
+
 type Issues struct {
 	*App
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
