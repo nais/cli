@@ -3,7 +3,6 @@ package login
 import (
 	"context"
 
-	"github.com/nais/cli/internal/auth/common"
 	"github.com/nais/cli/internal/auth/flag"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
@@ -17,13 +16,35 @@ type loginFlags struct {
 }
 
 func LoginDeprecated(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &flag.Auth{GlobalFlags: parentFlags}
-	return Login(flags, common.Deprecated)
+	flags := &loginFlags{Auth: &flag.Auth{GlobalFlags: parentFlags}}
+	return &naistrix.Command{
+		Name:  "login",
+		Title: "Log in to the Nais platform.",
+		Flags: flags,
+		Examples: []naistrix.Example{
+			{
+				Description: "Log in to the Nais platform using gcloud.",
+			},
+			{
+				Description: "Log in to the Nais platform using login.nais.io.",
+				Command:     "-n",
+			},
+		},
+		Description: `Uses "gcloud auth login --update-adc" by default.`,
+		Deprecated: naistrix.DeprecatedWithReplacementFunc(func(context.Context, *naistrix.Arguments) []string {
+			cmd := []string{"auth", "login"}
+			if flags.Nais {
+				cmd = append(cmd, "-n")
+			}
+
+			return cmd
+		}),
+	}
 }
 
-func Login(parentFlags *flag.Auth, modifiers ...func(*naistrix.Command)) *naistrix.Command {
+func Login(parentFlags *flag.Auth) *naistrix.Command {
 	flags := &loginFlags{Auth: parentFlags}
-	cmd := &naistrix.Command{
+	return &naistrix.Command{
 		Name:  "login",
 		Title: "Log in to the Nais platform.",
 		Examples: []naistrix.Example{
@@ -45,8 +66,4 @@ func Login(parentFlags *flag.Auth, modifiers ...func(*naistrix.Command)) *naistr
 			return gcloud.Login(ctx, out, flags.IsVerbose())
 		},
 	}
-	for _, modifier := range modifiers {
-		modifier(cmd)
-	}
-	return cmd
 }

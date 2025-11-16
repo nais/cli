@@ -3,7 +3,6 @@ package logout
 import (
 	"context"
 
-	"github.com/nais/cli/internal/auth/common"
 	"github.com/nais/cli/internal/auth/flag"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
@@ -17,13 +16,26 @@ type loginFlags struct {
 }
 
 func LogoutDeprecated(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &flag.Auth{GlobalFlags: parentFlags}
-	return Logout(flags, common.Deprecated)
+	flags := &loginFlags{Auth: &flag.Auth{GlobalFlags: parentFlags}}
+	return &naistrix.Command{
+		Name:        "logout",
+		Title:       "Log out and remove credentials.",
+		Description: "Log out of the Nais platform and remove credentials from your local machine.",
+		Flags:       flags,
+		Deprecated: naistrix.DeprecatedWithReplacementFunc(func(context.Context, *naistrix.Arguments) []string {
+			cmd := []string{"auth", "logout"}
+			if flags.Nais {
+				cmd = append(cmd, "-n")
+			}
+
+			return cmd
+		}),
+	}
 }
 
-func Logout(parentFlags *flag.Auth, modifiers ...func(*naistrix.Command)) *naistrix.Command {
+func Logout(parentFlags *flag.Auth) *naistrix.Command {
 	flags := &loginFlags{Auth: parentFlags}
-	cmd := &naistrix.Command{
+	return &naistrix.Command{
 		Name:        "logout",
 		Title:       "Log out and remove credentials.",
 		Description: "Log out of the Nais platform and remove credentials from your local machine.",
@@ -36,8 +48,4 @@ func Logout(parentFlags *flag.Auth, modifiers ...func(*naistrix.Command)) *naist
 			return gcloud.Logout(ctx, out, flags.IsVerbose())
 		},
 	}
-	for _, modifier := range modifiers {
-		modifier(cmd)
-	}
-	return cmd
 }
