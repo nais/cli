@@ -39,7 +39,7 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 	if err != nil {
 		return nil, err
 	}
-	token, err := user.GetTokenSource().Token()
+	token, err := user.AccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -50,14 +50,14 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 	queries.Add("sslmode", "required")
 	pgUrl := &url.URL{
 		Scheme:   "postgresql",
-		User:     url.UserPassword(email, token.AccessToken),
+		User:     url.UserPassword(email, token),
 		Host:     "localhost",
 		Path:     "app",
 		RawQuery: queries.Encode(),
 	}
 
 	queries.Add("user", email)
-	queries.Add("password", token.AccessToken)
+	queries.Add("password", token)
 	jdbcUrl := &url.URL{
 		Scheme:   "jdbc:postgresql",
 		Host:     "localhost:5432",
@@ -68,7 +68,7 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 	return &ConnectionInfo{
 		username: email,
 		email:    email,
-		password: token.AccessToken,
+		password: token,
 		dbName:   "app",
 		instance: "localhost",
 		port:     "5432",

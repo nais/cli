@@ -28,11 +28,11 @@ func PrintAccessToken(parentFlags *flag.Auth) *naistrix.Command {
 				if err != nil {
 					return err
 				}
-				token, err := user.GetTokenSource().Token()
+				token, err := user.AccessToken()
 				if err != nil {
 					return err
 				}
-				out.Println(token.AccessToken)
+				out.Println(token)
 				return nil
 			}
 

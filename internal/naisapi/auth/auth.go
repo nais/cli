@@ -2,20 +2,34 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"golang.org/x/oauth2"
 )
 
-var ErrNotAuthenticated = errors.New("not authenticated")
-
 type AuthenticatedUser struct {
-	oauth2.TokenSource
 	consoleHost string
 	domain      string
 	email       string
+	ts          oauth2.TokenSource
+}
+
+func (a *AuthenticatedUser) AccessToken() (string, error) {
+	tok, err := a.ts.Token()
+	if err != nil {
+		return "", err
+	}
+
+	return tok.AccessToken, nil
+}
+
+func (a *AuthenticatedUser) APIURL() string {
+	return fmt.Sprintf("https://%s/graphql", a.ConsoleHost())
+}
+
+func (a *AuthenticatedUser) ConsoleHost() string {
+	return a.consoleHost
 }
 
 func (a *AuthenticatedUser) Domain() string {
@@ -26,27 +40,19 @@ func (a *AuthenticatedUser) Email() string {
 	return a.email
 }
 
-func (a *AuthenticatedUser) ConsoleHost() string {
-	return a.consoleHost
-}
-
-func (a *AuthenticatedUser) APIURL() string {
-	return fmt.Sprintf("https://%s/graphql", a.ConsoleHost())
-}
-
 func (a *AuthenticatedUser) HTTPClient(ctx context.Context) *http.Client {
-	return oauth2.NewClient(ctx, a.TokenSource)
+	return oauth2.NewClient(ctx, a.ts)
 }
 
 func (a *AuthenticatedUser) RoundTripper(base http.RoundTripper) http.RoundTripper {
 	return &oauth2.Transport{
 		Base:   base,
-		Source: a.TokenSource,
+		Source: a.ts,
 	}
 }
 
 func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
-	tok, err := a.TokenSource.Token()
+	tok, err := a.ts.Token()
 	if err != nil {
 		return err
 	}
@@ -55,6 +61,14 @@ func (a *AuthenticatedUser) SetAuthorizationHeader(headers http.Header) error {
 	return nil
 }
 
-func (a *AuthenticatedUser) GetTokenSource() oauth2.TokenSource {
-	return a.TokenSource
+type tokenSourceFunc func() (*oauth2.Token, error)
+
+func (t tokenSourceFunc) Token() (*oauth2.Token, error) {
+	return t()
+}
+
+type roundTripperFunc func(r *http.Request) (*http.Response, error)
+
+func (r roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return r(req)
 }

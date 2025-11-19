@@ -7,28 +7,60 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/nais/naistrix"
-	"github.com/zitadel/oidc/v3/pkg/client"
+	oidcclient "github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"golang.org/x/oauth2"
 )
 
+var ErrNeedsOIDCLogin = errors.New("unauthenticated: user must log in with OIDC")
+
 func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
-	secret, err := getOIDCUser(ctx)
+	user, err := getOIDCUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	client, err := newOidcClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get oidc config: %w", err)
+	}
+
+	idToken, err := client.ParseIDToken(ctx, user.IDToken)
+	if err != nil {
+		return nil, ErrNeedsOIDCLogin
+	}
+
+	domain, ok := idToken.Domain()
+	if !ok {
+		return nil, fmt.Errorf("%w: missing primary_domain claim", ErrNeedsOIDCLogin)
+	}
+
+	email, ok := idToken.Email()
+	if !ok {
+		return nil, fmt.Errorf("%w: missing email claim", ErrNeedsOIDCLogin)
+	}
+
+	ts := tokenSourceFunc(func() (*oauth2.Token, error) {
+		user, err := getOIDCUser(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		return &user.Token, nil
+	})
+
 	return &AuthenticatedUser{
-		TokenSource: oauth2.ReuseTokenSource(&secret.Token, &oidcTokenSource{ctx}),
-		consoleHost: secret.ConsoleHost,
-		domain:      secret.Domain,
-		email:       secret.Email,
+		consoleHost: user.ConsoleHost,
+		domain:      domain,
+		email:       email,
+		ts:          oauth2.ReuseTokenSourceWithExpiry(&user.Token, ts, 30*time.Second),
 	}, nil
 }
 
@@ -36,7 +68,7 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
-	conf, oidcConfig, err := oauthConfig(ctx)
+	client, err := newOidcClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -46,13 +78,13 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	ch := make(chan *oauth2.Token)
 
 	go func() {
-		if err := listenServer(ctx, conf, verifier, state, ch); err != nil {
+		if err := client.CallbackServer(ctx, verifier, state, ch); err != nil {
 			out.Println("Error starting server:", err)
 			return
 		}
 	}()
 
-	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
+	url := client.oauth2.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
 
 	_ = urlopen.Open(url)
 
@@ -69,44 +101,47 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	case tok = <-ch:
 	}
 
-	jwkSet, err := jwk.Fetch(ctx, oidcConfig.JwksURI)
-	if err != nil {
-		return fmt.Errorf("fetching jwks from %q: %w", oidcConfig.JwksURI, err)
+	raw, ok := tok.Extra("id_token").(string)
+	if !ok {
+		return fmt.Errorf("missing id_token in token response")
 	}
 
-	idToken := tok.Extra("id_token").(string)
-	j, err := jwt.ParseString(idToken,
-		jwt.WithKeySet(jwkSet),
-		jwt.WithValidate(true),
-		jwt.WithIssuer(oauthIssuer()),
-		jwt.WithAudience(oauthClientID()),
-		jwt.WithClaimValue("email_verified", true),
-	)
+	idToken, err := client.ParseIDToken(ctx, raw)
 	if err != nil {
-		return fmt.Errorf("parse jwt: %w", err)
+		return fmt.Errorf("parse id token: %w", err)
 	}
 
-	var domain string
-	err = j.Get("urn:zitadel:iam:user:resourceowner:primary_domain", &domain)
-	if err != nil {
-		return fmt.Errorf("getting primary_domain claim: %w", err)
+	domain, ok := idToken.Domain()
+	if !ok {
+		return fmt.Errorf("missing primary_domain claim")
 	}
 
-	var email string
-	err = j.Get("email", &email)
+	type tenantData struct {
+		ConsoleURL string `json:"consoleUrl"`
+	}
+	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
+	res, err := http.Get(u)
 	if err != nil {
-		return fmt.Errorf("getting email claim: %w", err)
+		return fmt.Errorf("get %q: %w", u, err)
+	}
+	defer func() {
+		_ = res.Body.Close()
+	}()
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("get %q: unexpected status code: %q", u, res.Status)
 	}
 
-	tenantData, err := getTenantData(domain)
+	var tenant tenantData
+	err = json.NewDecoder(res.Body).Decode(&tenant)
 	if err != nil {
-		return fmt.Errorf("getting tenant data: %w", err)
+		return fmt.Errorf("decode: %w", err)
 	}
 
-	_, err = storeOIDCUser(tok, domain, email, tenantData.ConsoleURL)
+	_, err = storeOIDCUser(tok, tenant.ConsoleURL)
 	if err != nil {
-		return fmt.Errorf("saving token: %w", err)
+		return fmt.Errorf("store oidcUser: %w", err)
 	}
+
 	return nil
 }
 
@@ -114,15 +149,15 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 func OIDCLogout(ctx context.Context, out *naistrix.OutputWriter) error {
 	err := deleteKeyringSecret()
 	if err != nil && !errors.Is(err, errSecretNotFound) {
-		return fmt.Errorf("deleting user secret: %w", err)
+		return fmt.Errorf("delete user secret: %w", err)
 	}
 
-	_, oidcConfig, err := oauthConfig(ctx)
+	client, err := newOidcClient(ctx)
 	if err != nil {
-		return fmt.Errorf("getting oauth config: %w", err)
+		return fmt.Errorf("get oauth config: %w", err)
 	}
 
-	url := oidcConfig.EndSessionEndpoint
+	url := client.oidc.EndSessionEndpoint
 
 	_ = urlopen.Open(url)
 
@@ -136,146 +171,116 @@ func OIDCLogout(ctx context.Context, out *naistrix.OutputWriter) error {
 	return nil
 }
 
-type oidcTokenSource struct {
-	ctx context.Context
-}
-
-func (u *oidcTokenSource) Token() (*oauth2.Token, error) {
-	secret, err := getOIDCUser(u.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &secret.Token, nil
-}
-
 // oidcUser defines the data to marshal to and from the system keyring.
 type oidcUser struct {
 	oauth2.Token
 	IDToken     string `json:"id_token"`
 	ConsoleHost string `json:"console_host"`
-	Domain      string `json:"domain"`
-	Email       string `json:"email"`
+}
+
+func (u *oidcUser) Refresh(ctx context.Context) (*oidcUser, error) {
+	client, err := newOidcClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get oauth config: %w", err)
+	}
+
+	tok, err := client.oauth2.TokenSource(ctx, &u.Token).Token()
+	if err != nil {
+		return nil, ErrNeedsOIDCLogin
+	}
+
+	user, err := storeOIDCUser(tok, u.ConsoleHost)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %+v", ErrNeedsOIDCLogin, err)
+	}
+
+	return user, nil
 }
 
 func getOIDCUser(ctx context.Context) (*oidcUser, error) {
-	secretData, err := getKeyringSecret()
+	secret, err := getKeyringSecret()
 	if err != nil {
 		if errors.Is(err, errSecretNotFound) {
-			return nil, ErrNotAuthenticated
+			return nil, ErrNeedsOIDCLogin
 		}
-		return nil, fmt.Errorf("getting oidc user: %w", err)
+		return nil, fmt.Errorf("get oidc user: %w", err)
 	}
 
-	var sec oidcUser
-	err = json.Unmarshal([]byte(secretData), &sec)
+	var user oidcUser
+	err = json.Unmarshal([]byte(secret), &user)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshalling data from keyring")
+		return nil, fmt.Errorf("unmarshal data from keyring")
 	}
 
-	if !sec.Valid() {
-		return refreshOIDCUser(ctx, &sec)
+	if !user.Valid() {
+		return user.Refresh(ctx)
 	}
 
-	return &sec, nil
+	return &user, nil
 }
 
-func storeOIDCUser(tok *oauth2.Token, domain, email, consoleURL string) (*oidcUser, error) {
+func storeOIDCUser(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
+	idToken, ok := tok.Extra("id_token").(string)
+	if !ok {
+		return nil, fmt.Errorf("missing id_token")
+	}
+
 	sec := &oidcUser{
 		Token:       *tok,
-		IDToken:     tok.Extra("id_token").(string),
+		IDToken:     idToken,
 		ConsoleHost: consoleURL,
-		Domain:      domain,
-		Email:       email,
 	}
+
 	secret, err := json.Marshal(sec)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling token: %w", err)
+		return nil, fmt.Errorf("marshal token: %w", err)
 	}
 
 	err = setKeyringSecret(string(secret))
 	if err != nil {
-		return nil, fmt.Errorf("storing oidc user: %w", err)
+		return nil, fmt.Errorf("set keyring secret: %w", err)
 	}
+
 	return sec, nil
 }
 
-func refreshOIDCUser(ctx context.Context, sec *oidcUser) (*oidcUser, error) {
-	cfg, _, err := oauthConfig(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("getting oauth config: %w", err)
-	}
-
-	tok, err := cfg.TokenSource(ctx, &sec.Token).Token()
-	if err != nil {
-		return nil, ErrNotAuthenticated
-	}
-
-	return storeOIDCUser(tok, sec.Domain, sec.Email, sec.ConsoleHost)
+type oidcClient struct {
+	oauth2 *oauth2.Config
+	oidc   *oidc.DiscoveryConfiguration
 }
 
-type tenantData struct {
-	ConsoleURL string `json:"consoleUrl"`
-}
+func newOidcClient(ctx context.Context) (*oidcClient, error) {
+	clientID := "320114319427740585"
+	if c := os.Getenv("NAIS_ZITADEL_CLIENT_ID"); c != "" {
+		clientID = c
+	}
 
-func getTenantData(domain string) (*tenantData, error) {
-	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-	res, err := http.Get(u)
+	issuer := "https://auth.nais.io"
+	if i := os.Getenv("NAIS_ZITADEL_DOMAIN"); i != "" {
+		issuer = i
+	}
+
+	oidcCfg, err := oidcclient.Discover(ctx, issuer, http.DefaultClient)
 	if err != nil {
-		return nil, fmt.Errorf("getting %q: %w", u, err)
-	}
-	defer func() {
-		_ = res.Body.Close()
-	}()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("getting %q: %v", u, res.Status)
+		return nil, fmt.Errorf("discover oidc configuration from %q: %w", issuer, err)
 	}
 
-	var data tenantData
-	err = json.NewDecoder(res.Body).Decode(&data)
-	if err != nil {
-		return nil, fmt.Errorf("decoding: %w", err)
-	}
-
-	return &data, nil
-}
-
-func oauthConfig(ctx context.Context) (*oauth2.Config, *oidc.DiscoveryConfiguration, error) {
-	oidcConfig, err := client.Discover(ctx, oauthIssuer(), http.DefaultClient)
-	if err != nil {
-		return nil, nil, fmt.Errorf("discover oidc configuration from %q: %w", oauthIssuer(), err)
-	}
-
-	conf := &oauth2.Config{
-		ClientID: oauthClientID(),
+	oauth2Cfg := &oauth2.Config{
+		ClientID: clientID,
 		Scopes:   []string{"openid", "profile", "email", "offline_access", "urn:zitadel:iam:user:resourceowner"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  oidcConfig.AuthorizationEndpoint,
-			TokenURL: oidcConfig.TokenEndpoint,
+			AuthURL:  oidcCfg.AuthorizationEndpoint,
+			TokenURL: oidcCfg.TokenEndpoint,
 		},
 		RedirectURL: "http://localhost:8865/callback",
 	}
-	return conf, oidcConfig, nil
+
+	return &oidcClient{oauth2Cfg, oidcCfg}, nil
 }
 
-func oauthIssuer() string {
-	if issuer := os.Getenv("NAIS_ZITADEL_DOMAIN"); issuer != "" {
-		return issuer
-	}
-	return "https://auth.nais.io"
-}
-
-func oauthClientID() string {
-	if clientID := os.Getenv("NAIS_ZITADEL_CLIENT_ID"); clientID != "" {
-		return clientID
-	}
-	return "320114319427740585"
-}
-
-func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state string, ch chan *oauth2.Token) error {
-	srv := &http.Server{Addr: ":8865"}
-	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+func (c *oidcClient) CallbackServer(ctx context.Context, verifier, state string, ch chan *oauth2.Token) error {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Query().Get("state") != state {
 			http.Error(w, "State did not match", http.StatusBadRequest)
 			return
@@ -283,7 +288,7 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 
 		code := r.URL.Query().Get("code")
 
-		tok, err := cfg.Exchange(ctx, code, oauth2.VerifierOption(verifier))
+		tok, err := c.oauth2.Exchange(ctx, code, oauth2.VerifierOption(verifier))
 		if err != nil {
 			http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -293,6 +298,11 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 
 		ch <- tok
 	})
+
+	srv := &http.Server{
+		Addr:    ":8865",
+		Handler: mux,
+	}
 
 	go func() {
 		<-ctx.Done()
@@ -304,4 +314,46 @@ func listenServer(ctx context.Context, cfg *oauth2.Config, verifier, state strin
 	}
 
 	return nil
+}
+
+func (c *oidcClient) ParseIDToken(ctx context.Context, token string) (*IDToken, error) {
+	jwkSet, err := jwk.Fetch(ctx, c.oidc.JwksURI)
+	if err != nil {
+		return nil, fmt.Errorf("fetch jwks from %q: %w", c.oidc.JwksURI, err)
+	}
+
+	j, err := jwt.ParseString(token,
+		jwt.WithKeySet(jwkSet),
+		jwt.WithIssuer(c.oidc.Issuer),
+		jwt.WithAudience(c.oauth2.ClientID),
+		jwt.WithClaimValue("email_verified", true),
+		jwt.WithValidate(true),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("parse jwt: %w", err)
+	}
+
+	return &IDToken{j}, nil
+}
+
+type IDToken struct {
+	jwt.Token
+}
+
+func (t *IDToken) Domain() (string, bool) {
+	var domain string
+	if err := t.Get("urn:zitadel:iam:user:resourceowner:primary_domain", &domain); err != nil {
+		return "", false
+	}
+
+	return domain, true
+}
+
+func (t *IDToken) Email() (string, bool) {
+	var email string
+	if err := t.Get("email", &email); err != nil {
+		return "", false
+	}
+
+	return email, true
 }
