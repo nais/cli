@@ -6,30 +6,29 @@ import (
 
 	"github.com/nais/cli/internal/naisapi/auth"
 	"github.com/nais/naistrix"
-	"golang.org/x/oauth2"
 )
 
-var ErrNotAuthenticated = auth.ErrNotAuthenticated
+var ErrNeedsLogin = auth.ErrNeedsOIDCLogin
 
 // AuthenticatedUser represents the authenticated user.
 // It provides primitives for interacting with the Nais API on behalf of the user.
-// The primitives may return an [ErrNotAuthenticated] if the user has invalid or
+// The primitives may return an [ErrNeedsLogin] if the user has invalid or
 // expired credentials, in which case the user must reauthenticate through [Login].
 type AuthenticatedUser interface {
+	AccessToken() (string, error)
+	APIURL() string
+	ConsoleHost() string
+	Domain() string
+	Email() string
 	// HTTPClient returns a [http.Client] configured with the user's credentials.
 	HTTPClient(ctx context.Context) *http.Client
 	// RoundTripper returns a [http.RoundTripper] configured with the user's credentials.
 	RoundTripper(base http.RoundTripper) http.RoundTripper
 	// SetAuthorizationHeader sets the "Authorization" header with the user's credentials.
 	SetAuthorizationHeader(headers http.Header) error
-	ConsoleHost() string
-	APIURL() string
-	Domain() string
-	GetTokenSource() oauth2.TokenSource
-	Email() string
 }
 
-// GetAuthenticatedUser may return an [ErrNotAuthenticated] if the user has invalid or
+// GetAuthenticatedUser may return an [ErrNeedsLogin] if the user has invalid or
 // expired credentials, in which case the user must reauthenticate through [Login].
 func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 	local, ok := auth.Localhost()
@@ -37,12 +36,12 @@ func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 		return local, nil
 	}
 
-	githubActions, ok, err := auth.GithubActions(ctx)
+	gha, ok, err := auth.GithubActions(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if ok {
-		return githubActions, nil
+		return gha, nil
 	}
 
 	return auth.OIDC(ctx)
