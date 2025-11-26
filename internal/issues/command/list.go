@@ -6,7 +6,6 @@ import (
 
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -18,9 +17,6 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 		Title:       "List issues.",
 		Description: "This command lists all issues for a given team.",
 		Flags:       flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
-		},
 		Examples: []naistrix.Example{
 			{
 				Description: "List all issues for the team.",
