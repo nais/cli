@@ -9,6 +9,7 @@ import (
 
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
+	appCommand "github.com/nais/cli/internal/app/command"
 	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/auth/login"
 	"github.com/nais/cli/internal/auth/logout"
@@ -56,6 +57,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		auth.Auth(globalFlags),
 		login.LoginDeprecated(globalFlags),
 		logout.LogoutDeprecated(globalFlags),
+		appCommand.App(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
 		aiven.Aiven(globalFlags),
