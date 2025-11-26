@@ -36,6 +36,11 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 				return fmt.Errorf("fetching issues: %w", err)
 			}
 
+			if len(issues) == 0 {
+				out.Infoln("No issues found")
+				return nil
+			}
+
 			if flags.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(issues)
 			}
