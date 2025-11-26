@@ -5574,6 +5574,44 @@ var AllResourceType = []ResourceType{
 	ResourceTypeJob,
 }
 
+// RestartAppResponse is returned by RestartApp on success.
+type RestartAppResponse struct {
+	// Restart an application.
+	RestartApplication RestartAppRestartApplicationRestartApplicationPayload `json:"restartApplication"`
+}
+
+// GetRestartApplication returns RestartAppResponse.RestartApplication, and is useful for accessing the field via an interface.
+func (v *RestartAppResponse) GetRestartApplication() RestartAppRestartApplicationRestartApplicationPayload {
+	return v.RestartApplication
+}
+
+// RestartAppRestartApplicationRestartApplicationPayload includes the requested fields of the GraphQL type RestartApplicationPayload.
+type RestartAppRestartApplicationRestartApplicationPayload struct {
+	// The application that was restarted.
+	Application RestartAppRestartApplicationRestartApplicationPayloadApplication `json:"application"`
+}
+
+// GetApplication returns RestartAppRestartApplicationRestartApplicationPayload.Application, and is useful for accessing the field via an interface.
+func (v *RestartAppRestartApplicationRestartApplicationPayload) GetApplication() RestartAppRestartApplicationRestartApplicationPayloadApplication {
+	return v.Application
+}
+
+// RestartAppRestartApplicationRestartApplicationPayloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type RestartAppRestartApplicationRestartApplicationPayloadApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+}
+
+// GetName returns RestartAppRestartApplicationRestartApplicationPayloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetName() string {
+	return v.Name
+}
+
 // SetRoleResponse is returned by SetRole on success.
 type SetRoleResponse struct {
 	// Assign a role to a team member
@@ -7453,6 +7491,22 @@ func (v *__RemoveTeamMemberInput) GetSlug() string { return v.Slug }
 // GetEmail returns __RemoveTeamMemberInput.Email, and is useful for accessing the field via an interface.
 func (v *__RemoveTeamMemberInput) GetEmail() string { return v.Email }
 
+// __RestartAppInput is used internally by genqlient
+type __RestartAppInput struct {
+	Team        string `json:"team"`
+	Application string `json:"application"`
+	Env         string `json:"env"`
+}
+
+// GetTeam returns __RestartAppInput.Team, and is useful for accessing the field via an interface.
+func (v *__RestartAppInput) GetTeam() string { return v.Team }
+
+// GetApplication returns __RestartAppInput.Application, and is useful for accessing the field via an interface.
+func (v *__RestartAppInput) GetApplication() string { return v.Application }
+
+// GetEnv returns __RestartAppInput.Env, and is useful for accessing the field via an interface.
+func (v *__RestartAppInput) GetEnv() string { return v.Env }
+
 // __SetRoleInput is used internally by genqlient
 type __SetRoleInput struct {
 	Slug  string         `json:"slug"`
@@ -8435,6 +8489,46 @@ func RemoveTeamMember(
 	}
 
 	data_ = &RemoveTeamMemberResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by RestartApp.
+const RestartApp_Operation = `
+mutation RestartApp ($team: Slug!, $application: String!, $env: String!) {
+	restartApplication(input: {teamSlug:$team,environmentName:$env,name:$application}) {
+		application {
+			name
+		}
+	}
+}
+`
+
+func RestartApp(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	application string,
+	env string,
+) (data_ *RestartAppResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "RestartApp",
+		Query:  RestartApp_Operation,
+		Variables: &__RestartAppInput{
+			Team:        team,
+			Application: application,
+			Env:         env,
+		},
+	}
+
+	data_ = &RestartAppResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
