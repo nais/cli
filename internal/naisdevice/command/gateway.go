@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/naisdevice"
@@ -145,6 +147,22 @@ func grantAccessCommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "gateway", Repeatable: true},
 		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			gateways, err := naisdevice.GetGateways(ctx)
+			if err != nil {
+				return nil, fmt.Sprintf("error listing gateways: %v - is it running?", err)
+			}
+
+			var gatewayNames []string
+			for _, g := range gateways {
+				// only suggest gateways that require privileged access and are not already present in the args list
+				if g.RequiresPrivilegedAccess && !slices.Contains(args.All(), g.Name) {
+					gatewayNames = append(gatewayNames, g.Name)
+				}
+			}
+
+			return gatewayNames, ""
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			allGateways, err := naisdevice.GetGateways(ctx)
 			if err != nil {
@@ -161,12 +179,6 @@ func grantAccessCommand(parentFlags *flag.Gateway) *naistrix.Command {
 
 					if !gateway.RequiresPrivilegedAccess {
 						out.Infof("%q does not require JITA so it should already be connected.\n", gateway.Name)
-						found = true
-						break
-					}
-
-					if gateway.Healthy {
-						out.Infof("%q is already connected, no need to grant access.\n", gateway.Name)
 						found = true
 						break
 					}
