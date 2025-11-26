@@ -12,6 +12,7 @@ import (
 
 type Issues struct {
 	*flag.Alpha
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 type (
@@ -22,19 +23,24 @@ type (
 	Environment  string
 )
 
+type Output string
+
+var _ naistrix.FlagAutoCompleter = (*Output)(nil)
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
+}
+
 type List struct {
 	*Issues
-	Environment  Environment  `name:"environment" usage:"Filter issues by environment"` // TODO: Find and list environments
+	Environment  Environment  `name:"environment" usage:"Filter issues by environment"`
 	IssueType    IssueType    `name:"issuetype" usage:"Filter issues by issue type"`
-	ResourceName ResourceName `name:"resourcename" usage:"Filter issues by resource name"` // TODO: Find resource names in current team
+	ResourceName ResourceName `name:"resourcename" usage:"Filter issues by resource name"`
 	ResourceType ResourceType `name:"resourcetype" usage:"Filter issues by resource type"`
 	Severity     Severity     `name:"severity" usage:"Filter issues by severity"`
 }
 
 func (e *Environment) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	// f := flags.(*List)
-	// fmt.Println("IssueType", f.IssueType)
-
 	envs, err := naisapi.GetAllEnvironments(ctx)
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)

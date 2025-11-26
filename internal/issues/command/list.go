@@ -3,14 +3,12 @@ package command
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
-	"golang.org/x/term"
+	"github.com/nais/naistrix/output"
 )
 
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
@@ -38,49 +36,11 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 				return fmt.Errorf("fetching issues: %w", err)
 			}
 
-			data := pterm.TableData{
-				{
-					"Severity",
-					"Resource Name",
-					"Resource Type",
-					"Environment",
-					"Message",
-				},
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(issues)
 			}
 
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
-			if err != nil {
-				fmt.Println("could not get terminal size:", err)
-				width = 160
-			}
-
-			for _, i := range issues {
-				data = append(data, []string{
-					i.Severity,
-					i.ResourceName,
-					i.ResourceType,
-					i.Environment,
-					truncateString(i.Message, width-70),
-				})
-			}
-			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
+			return out.Table().Render(issues)
 		},
 	}
-}
-
-func truncateString(str string, max int) string {
-	truncated := ""
-	count := 0
-	if len(str) < max {
-		return str
-	}
-
-	for _, char := range str {
-		truncated += string(char)
-		count++
-		if count >= max {
-			break
-		}
-	}
-	return truncated + "[...]"
 }
