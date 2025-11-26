@@ -2,14 +2,25 @@ package flag
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
 type App struct {
 	*flags.GlobalFlags
-	Environment []string `name:"environment" short:"e" usage:"Filter by environment."`
+	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+}
+type Environments []string
+
+func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	envs, err := naisapi.GetAllEnvironments(ctx)
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
 }
 
 type Output string

@@ -9,7 +9,6 @@ import (
 )
 
 func RestartApp(ctx context.Context, team, application string, envs []string) (string, error) {
-
 	_ = `# @genqlient
 		mutation RestartApp($team: Slug!, $application: String!, $env: String!) {
 		  restartApplication(
