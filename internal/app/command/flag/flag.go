@@ -39,7 +39,7 @@ type Issues struct {
 	*App
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
-type ListApps struct {
+type List struct {
 	*App
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }

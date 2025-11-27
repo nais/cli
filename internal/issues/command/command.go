@@ -13,6 +13,7 @@ func Issues(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Issues{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "issues",
+		Aliases:     []string{"issue"},
 		Title:       "Manage issues.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {

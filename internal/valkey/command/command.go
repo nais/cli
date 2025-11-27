@@ -15,6 +15,7 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 	flags := &flag.Valkey{Alpha: parentFlags}
 	return &naistrix.Command{
 		Name:        "valkey",
+		Aliases:     []string{"valkeys"},
 		Title:       "Manage Valkey instances.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
