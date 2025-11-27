@@ -20,6 +20,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 	}
 	return &naistrix.Command{
 		Name:        "log",
+		Aliases:     []string{"logs"},
 		Title:       "Workload and team logs.",
 		Description: "Fetch and stream logs from workloads and teams.",
 		Flags:       flags,

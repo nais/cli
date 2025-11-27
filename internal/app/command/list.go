@@ -11,7 +11,7 @@ import (
 )
 
 func list(parentFlags *flag.App) *naistrix.Command {
-	flags := &flag.ListApps{
+	flags := &flag.List{
 		App: parentFlags,
 	}
 

@@ -16,6 +16,7 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 	flags := &flag.OpenSearch{Alpha: parentFlags}
 	return &naistrix.Command{
 		Name:        "opensearch",
+		Aliases:     []string{"opensearches"},
 		Title:       "Manage OpenSearch instances.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {

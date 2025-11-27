@@ -13,6 +13,7 @@ func Members(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Member{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "members",
+		Aliases:     []string{"member"},
 		Title:       "Interact with Nais team members.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
