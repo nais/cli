@@ -5,12 +5,28 @@ import (
 	"fmt"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
 
+type Environments []string
+
 type Valkey struct {
 	*alpha.Alpha
+	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
+}
+
+func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	return autoCompleteEnvironments(ctx)
+}
+
+func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
+	envs, err := naisapi.GetAllEnvironments(ctx)
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
 }
 
 type Create struct {
@@ -43,8 +59,14 @@ type Describe struct {
 	*Valkey
 }
 
+type Env string
 type List struct {
 	*Valkey
+	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+}
+
+func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	return autoCompleteEnvironments(ctx)
 }
 
 type Update struct {

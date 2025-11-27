@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -18,17 +19,20 @@ func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Description: "This command describes a Valkey instance, listing its current configuration and access list.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
+				return err
+			}
 			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Describe an existing Valkey instance named some-valkey in the dev environment.",
-				Command:     "dev some-valkey",
+				Description: "Describe an existing Valkey instance named some-valkey.",
+				Command:     "some-valkey",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args, flags.Team)
+			metadata := metadataFromArgs(args, flags.Team, string(flags.Environment))
 
 			existing, err := valkey.Get(ctx, metadata)
 			if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
@@ -20,6 +21,9 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		Flags:       flags,
 		Args:        defaultArgs,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
+				return err
+			}
 			if err := flags.Validate(); err != nil {
 				return err
 			}
@@ -28,24 +32,24 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Set the |MEMORY| for a Valkey instance named some-valkey in the dev environment.",
-				Command:     "dev some-valkey --memory GB_8",
+				Description: "Set the |MEMORY| for a Valkey instance named some-valkey.",
+				Command:     "some-valkey --memory GB_8",
 			},
 			{
-				Description: "Set the |TIER| for a Valkey instance named some-valkey in the dev environment.",
-				Command:     "dev some-valkey --tier SINGLE_NODE",
+				Description: "Set the |TIER| for a Valkey instance named some-valkey.",
+				Command:     "some-valkey --tier SINGLE_NODE",
 			},
 			{
-				Description: "Set the |MAX_MEMORY_POLICY| for a Valkey instance named some-valkey in the dev environment.",
-				Command:     "dev some-valkey --max-memory-policy NO_EVICTION",
+				Description: "Set the |MAX_MEMORY_POLICY| for a Valkey instance named some-valkey.",
+				Command:     "some-valkey --max-memory-policy NO_EVICTION",
 			},
 			{
-				Description: "Set all available options for a Valkey instance named some-valkey in the dev environment.",
-				Command:     "dev some-valkey --memory GB_8 --tier SINGLE_NODE --max-memory-policy NO_EVICTION",
+				Description: "Set all available options for a Valkey instance named some-valkey.",
+				Command:     "some-valkey --memory GB_8 --tier SINGLE_NODE --max-memory-policy NO_EVICTION",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args, flags.Team)
+			metadata := metadataFromArgs(args, flags.Team, string(flags.Environment))
 
 			existing, err := valkey.Get(ctx, metadata)
 			if err != nil {

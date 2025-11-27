@@ -18,7 +18,9 @@ func createOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Title:       "Create an OpenSearch instance.",
 		Description: "This command creates an OpenSearch instance.",
 		Flags:       flags,
-		Args:        defaultArgs,
+		Args: []naistrix.Argument{
+			{Name: "name"},
+		},
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if err := flags.Validate(); err != nil {
 				return err
@@ -28,32 +30,32 @@ func createOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with default settings.",
-				Command:     "dev some-opensearch",
+				Description: "Create an OpenSearch instance named some-opensearch with default settings.",
+				Command:     "some-opensearch",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with the specified |MEMORY|.",
-				Command:     "dev some-opensearch --memory GB_4",
+				Description: "Create an OpenSearch instance named some-opensearch with the specified |MEMORY|.",
+				Command:     "some-opensearch --memory GB_4",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with the specified |TIER|.",
-				Command:     "dev some-opensearch --tier SINGLE_NODE",
+				Description: "Create an OpenSearch instance named some-opensearch with the specified |TIER|.",
+				Command:     "some-opensearch --tier SINGLE_NODE",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with the specified major |VERSION|.",
-				Command:     "dev some-opensearch --version V2",
+				Description: "Create an OpenSearch instance named some-opensearch with the specified major |VERSION|.",
+				Command:     "some-opensearch --version V2",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with the specified |STORAGE-GB|.",
-				Command:     "dev some-opensearch --storage-gb 100",
+				Description: "Create an OpenSearch instance named some-opensearch with the specified |STORAGE-GB|.",
+				Command:     "some-opensearch --storage-gb 100",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch in the dev environment, with all possible options specified.",
-				Command:     "dev some-opensearch --memory GB_4 --tier SINGLE_NODE --version V2 --storage-gb 100",
+				Description: "Create an OpenSearch instance named some-opensearch with all possible options specified.",
+				Command:     "some-opensearch --memory GB_4 --tier SINGLE_NODE --version V2 --storage-gb 100",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args, flags.Team)
+			metadata := metadataFromArgs(args, flags.Team, string(flags.Environment))
 
 			// defaults
 			data := &opensearch.OpenSearch{

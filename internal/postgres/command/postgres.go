@@ -21,6 +21,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "postgres",
 		Title:       "Manage postgres instances.",
+		Aliases:     []string{"pg"},
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			migrateCommand(flags),
