@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
@@ -28,7 +29,6 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
 
-			// TODO: flags to filter by environment, memory, tier, etc?
 			data := pterm.TableData{
 				{
 					"Environment",
@@ -41,6 +41,10 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 				},
 			}
 			for _, v := range valkeys {
+				// TODO: use filter in GQL query instead
+				if len(flags.Environment) > 0 && !slices.Contains(flags.Environment, string(v.TeamEnvironment.Environment.Name)) {
+					continue
+				}
 				data = append(data, []string{
 					v.TeamEnvironment.Environment.Name,
 					v.Name,

@@ -18,18 +18,20 @@ func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Title:       "Delete an OpenSearch instance.",
 		Description: "This command deletes an existing OpenSearch instance.",
 		Flags:       flags,
-		Args:        defaultArgs,
+		Args: []naistrix.Argument{
+			{Name: "name"},
+		},
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Delete an existing OpenSearch instance named some-opensearch in the dev environment.",
-				Command:     "dev some-opensearch",
+				Description: "Delete an existing OpenSearch instance named some-opensearch.",
+				Command:     "some-opensearch",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args, flags.Team)
+			metadata := metadataFromArgs(args, flags.Team, string(flags.Environment))
 
 			existing, err := opensearch.Get(ctx, metadata)
 			if err != nil {

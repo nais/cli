@@ -16,7 +16,7 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 	flags := &flag.OpenSearch{Alpha: parentFlags}
 	return &naistrix.Command{
 		Name:        "opensearch",
-		Aliases:     []string{"opensearches"},
+		Aliases:     []string{"opensearches", "os"},
 		Title:       "Manage OpenSearch instances.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
@@ -32,29 +32,21 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 	}
 }
 
-// TODO(jhrv): Make environment into a flag instead of arg
-var defaultArgs = []naistrix.Argument{
-	{Name: "environment"},
-	{Name: "name"},
-}
-
 func validateArgs(args *naistrix.Arguments) error {
-	if args.Len() != 2 {
-		return fmt.Errorf("expected 2 arguments, got %d", args.Len())
-	}
-	if args.Get("environment") == "" {
-		return fmt.Errorf("environment cannot be empty")
+	if args.Len() != 1 {
+		return fmt.Errorf("expected 1 arguments, got %d", args.Len())
 	}
 	if args.Get("name") == "" {
 		return fmt.Errorf("name cannot be empty")
 	}
+
 	return nil
 }
 
-func metadataFromArgs(args *naistrix.Arguments, team string) opensearch.Metadata {
+func metadataFromArgs(args *naistrix.Arguments, team string, environment string) opensearch.Metadata {
 	return opensearch.Metadata{
 		TeamSlug:        team,
-		EnvironmentName: args.Get("environment"),
+		EnvironmentName: environment,
 		Name:            args.Get("name"),
 	}
 }

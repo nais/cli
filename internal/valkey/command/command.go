@@ -32,16 +32,12 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 }
 
 var defaultArgs = []naistrix.Argument{
-	{Name: "environment"},
 	{Name: "name"},
 }
 
 func validateArgs(args *naistrix.Arguments) error {
-	if args.Len() != 2 {
-		return fmt.Errorf("expected 2 arguments, got %d", args.Len())
-	}
-	if args.Get("environment") == "" {
-		return fmt.Errorf("environment cannot be empty")
+	if args.Len() != 1 {
+		return fmt.Errorf("expected 1 argument, got %d", args.Len())
 	}
 	if args.Get("name") == "" {
 		return fmt.Errorf("name cannot be empty")
@@ -49,10 +45,10 @@ func validateArgs(args *naistrix.Arguments) error {
 	return nil
 }
 
-func metadataFromArgs(args *naistrix.Arguments, team string) valkey.Metadata {
+func metadataFromArgs(args *naistrix.Arguments, team string, environment string) valkey.Metadata {
 	return valkey.Metadata{
 		TeamSlug:        team,
-		EnvironmentName: args.Get("environment"),
+		EnvironmentName: environment,
 		Name:            args.Get("name"),
 	}
 }
