@@ -5,11 +5,40 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/output"
 )
+
+type state string
+
+func (s state) String() string {
+	switch s {
+	case state(gql.OpenSearchStateRunning):
+		return "Running"
+	case state(gql.OpenSearchStatePoweroff):
+		return "<error>Stopped</error>"
+	case state(gql.OpenSearchStateRebalancing):
+		return "<warn>Rebalancing</warn>"
+	case state(gql.OpenSearchStateRebuilding):
+		return "<info>Rebuilding</info>"
+	default:
+		return "<info>Unknown</info>"
+	}
+}
+
+type OpenSearchSummary struct {
+	State       state  `header:"State"`
+	Environment string `header:"Environment"`
+	Name        string `header:"Name"`
+	Tier        string `header:"Tier"`
+	Memory      string `header:"Memory"`
+	StorageGB   int    `header:"Storage (GB)"`
+	Workloads   int    `header:"Workloads"`
+	Version     string `header:"Version"`
+}
 
 func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.List{OpenSearch: parentFlags}
@@ -29,36 +58,34 @@ func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}
 
-			// TODO: remove pterm here and for rest of commands that use it
-			data := pterm.TableData{
-				{
-					"Environment",
-					"Name",
-					"Tier",
-					"Memory",
-					"Storage",
-					"Workloads",
-					"Version",
-					"State",
-				},
+			if len(opensearches) == 0 {
+				out.Infoln("No OpenSearch instances found")
+				return nil
 			}
+
+			var summaries []OpenSearchSummary
 			for _, o := range opensearches {
 				// TODO: use filter in GQL query instead
 				if len(flags.Environment) > 0 && !slices.Contains(flags.Environment, string(o.TeamEnvironment.Environment.Name)) {
 					continue
 				}
-				data = append(data, []string{
-					o.TeamEnvironment.Environment.Name,
-					o.Name,
-					string(o.Tier),
-					string(o.Memory),
-					fmt.Sprintf("%d GB", o.StorageGB),
-					fmt.Sprintf("%d", len(o.Access.Edges)),
-					o.Version.Actual,
-					string(o.State),
+				summaries = append(summaries, OpenSearchSummary{
+					Environment: o.TeamEnvironment.Environment.Name,
+					Name:        o.Name,
+					Tier:        string(o.Tier),
+					Memory:      string(o.Memory),
+					StorageGB:   o.StorageGB,
+					Workloads:   len(o.Access.Edges),
+					Version:     o.Version.Actual,
+					State:       state(o.State),
 				})
 			}
-			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
+
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(summaries)
+			}
+
+			return out.Table().Render(summaries)
 		},
 	}
 }
