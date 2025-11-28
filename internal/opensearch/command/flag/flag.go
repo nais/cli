@@ -50,10 +50,17 @@ type Describe struct {
 	*OpenSearch
 }
 
+type Output string
+
 type Env string
 type List struct {
 	*OpenSearch
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
 }
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {

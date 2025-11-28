@@ -5,14 +5,42 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/output"
 )
+
+type state string
+
+func (s state) String() string {
+	switch s {
+	case state(gql.ValkeyStateRunning):
+		return "Running"
+	case state(gql.ValkeyStatePoweroff):
+		return "<error>Stopped</error>"
+	case state(gql.ValkeyStateRebalancing):
+		return "<warn>Rebalancing</warn>"
+	case state(gql.ValkeyStateRebuilding):
+		return "<info>Rebuilding</info>"
+	default:
+		return "<info>Unknown</info>"
+	}
+}
+
+type ValkeySummary struct {
+	State       state  `header:"State"`
+	Environment string `header:"Environment"`
+	Name        string `header:"Name"`
+	Tier        string `header:"Tier"`
+	Memory      string `header:"Memory"`
+	Workloads   int    `header:"Workloads"`
+}
 
 func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.List{Valkey: parentFlags}
+
 	return &naistrix.Command{
 		Name:        "list",
 		Title:       "List existing Valkey instances.",
@@ -29,33 +57,32 @@ func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
 
-			data := pterm.TableData{
-				{
-					"Environment",
-					"Name",
-					"Tier",
-					"Memory",
-					"Workloads",
-					"Max memory policy",
-					"State",
-				},
+			if len(valkeys) == 0 {
+				out.Infoln("No Valkey instances found")
+				return nil
 			}
+
+			var summaries []ValkeySummary
 			for _, v := range valkeys {
 				// TODO: use filter in GQL query instead
 				if len(flags.Environment) > 0 && !slices.Contains(flags.Environment, string(v.TeamEnvironment.Environment.Name)) {
 					continue
 				}
-				data = append(data, []string{
-					v.TeamEnvironment.Environment.Name,
-					v.Name,
-					string(v.Tier),
-					string(v.Memory),
-					fmt.Sprintf("%d", len(v.Access.Edges)),
-					string(v.MaxMemoryPolicy),
-					string(v.State),
+				summaries = append(summaries, ValkeySummary{
+					Environment: v.TeamEnvironment.Environment.Name,
+					Name:        v.Name,
+					Tier:        string(v.Tier),
+					Memory:      string(v.Memory),
+					Workloads:   len(v.Access.Edges),
+					State:       state(v.State),
 				})
 			}
-			return pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(data).Render()
+
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(summaries)
+			}
+
+			return out.Table().Render(summaries)
 		},
 	}
 }
