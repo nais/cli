@@ -24,6 +24,20 @@ func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			return validateArgs(args)
 		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			if args.Len() == 0 {
+				instances, err := opensearch.GetAll(ctx, flags.Team)
+				if err != nil {
+					return nil, "Unable to fetch OpenSearch instances."
+				}
+				var names []string
+				for _, instance := range instances {
+					names = append(names, instance.Name)
+				}
+				return names, "Select an OpenSearch instance."
+			}
+			return nil, ""
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Delete an existing OpenSearch instance named some-opensearch.",
