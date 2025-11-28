@@ -25,6 +25,20 @@ func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return validateArgs(args)
 		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			if args.Len() == 0 {
+				instances, err := valkey.GetAll(ctx, flags.Team)
+				if err != nil {
+					return nil, "Unable to fetch Valkey instances."
+				}
+				var names []string
+				for _, instance := range instances {
+					names = append(names, instance.Name)
+				}
+				return names, "Select a Valkey instance."
+			}
+			return nil, ""
+		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Describe an existing Valkey instance named some-valkey.",
