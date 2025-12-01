@@ -49,6 +49,7 @@ type Delete struct {
 
 type Get struct {
 	*OpenSearch
+	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
 type Output string

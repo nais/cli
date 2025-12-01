@@ -56,7 +56,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 					Build()
 			}
 
-			if err := naisapi.TailLog(ctx, out, flags, query); err != nil {
+			if err := naisapi.TailLog(ctx, out, flags.Environment, flags.Limit, flags.Since, flags.WithTimestamps, flags.WithLabels, query); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 

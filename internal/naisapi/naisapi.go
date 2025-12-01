@@ -11,7 +11,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Khan/genqlient/graphql"
-	logflag "github.com/nais/cli/internal/log/command/flag"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
@@ -316,7 +315,7 @@ func GetUsers(ctx context.Context) (*gql.UsersResponse, error) {
 	return gql.Users(ctx, client)
 }
 
-func TailLog(ctx context.Context, out *naistrix.OutputWriter, flag *logflag.LogFlags, lokiQuery string) error {
+func TailLog(ctx context.Context, out *naistrix.OutputWriter, env string, limit int, since time.Duration, withTimestamps, withLabels bool, lokiQuery string) error {
 	gqlQuery := `# @genqlient
 		subscription TailLog($environment: String!, $query: String!, $limit: Int, $start: Time) {
 			log(
@@ -348,19 +347,19 @@ func TailLog(ctx context.Context, out *naistrix.OutputWriter, flag *logflag.LogF
 			Limit       int    `json:"limit"`
 			Start       string `json:"start"`
 		}{
-			Environment: flag.Environment,
+			Environment: env,
 			Query:       lokiQuery,
-			Limit:       flag.Limit,
-			Start:       time.Now().Add(-flag.Since).Format(time.RFC3339),
+			Limit:       limit,
+			Start:       time.Now().Add(-since).Format(time.RFC3339),
 		},
 	}
 
 	onData := func(entry gql.TailLogResponse) {
-		if flag.WithTimestamps {
+		if withTimestamps {
 			out.Printf("%s: ", entry.Log.Time.Format(time.RFC3339))
 		}
 		out.Println(entry.Log.Message)
-		if flag.WithLabels {
+		if withLabels {
 			var labels []string
 			for _, label := range entry.Log.Labels {
 				labels = append(labels, label.Key+"="+label.Value)
