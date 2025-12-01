@@ -23,6 +23,7 @@ func App(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			list(flags),
 			issues(flags),
 			restart(flags),
+			log(flags),
 		},
 	}
 }
