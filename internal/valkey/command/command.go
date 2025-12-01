@@ -22,10 +22,10 @@ func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
 			return validation.CheckTeam(flags.Team)
 		},
 		SubCommands: []*naistrix.Command{
-			createValkey(flags),
-			deleteValkey(flags),
-			describeValkey(flags),
-			listValkeys(flags),
+			create(flags),
+			delete(flags),
+			get(flags),
+			list(flags),
 			updateValkey(flags),
 		},
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func createOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
+func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Create{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "create",

@@ -11,7 +11,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func deleteOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
+func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Delete{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "delete",

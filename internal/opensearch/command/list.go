@@ -40,7 +40,7 @@ type OpenSearchSummary struct {
 	Version     string `header:"Version"`
 }
 
-func listOpenSearches(parentFlags *flag.OpenSearch) *naistrix.Command {
+func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.List{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "list",

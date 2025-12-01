@@ -38,7 +38,7 @@ type ValkeySummary struct {
 	Workloads   int    `header:"Workloads"`
 }
 
-func listValkeys(parentFlags *flag.Valkey) *naistrix.Command {
+func list(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.List{Valkey: parentFlags}
 
 	return &naistrix.Command{

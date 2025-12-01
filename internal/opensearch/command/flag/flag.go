@@ -10,14 +10,15 @@ import (
 	"github.com/nais/naistrix"
 )
 
-type Environments []string
-
 type OpenSearch struct {
 	*alpha.Alpha
 	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
-func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+type Env string
+
+func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	//TODO: only return environments with OpenSearches
 	return autoCompleteEnvironments(ctx)
 }
 
@@ -46,13 +47,18 @@ type Delete struct {
 	*OpenSearch
 }
 
-type Describe struct {
+type Get struct {
 	*OpenSearch
 }
 
 type Output string
 
-type Env string
+type Environments []string
+
+func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	return autoCompleteEnvironments(ctx)
+}
+
 type List struct {
 	*OpenSearch
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
@@ -61,10 +67,6 @@ type List struct {
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return []string{"table", "json"}, "Available output formats."
-}
-
-func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	return autoCompleteEnvironments(ctx)
 }
 
 type Update struct {
