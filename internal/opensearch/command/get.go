@@ -11,11 +11,11 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func describeOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
-	flags := &flag.Describe{OpenSearch: parentFlags}
+func get(parentFlags *flag.OpenSearch) *naistrix.Command {
+	flags := &flag.Get{OpenSearch: parentFlags}
 	return &naistrix.Command{
-		Name:        "describe",
-		Title:       "Describe an OpenSearch instance.",
+		Name:        "get",
+		Title:       "Get an OpenSearch instance.",
 		Description: "This command describes an OpenSearch instance, listing its current configuration and access list.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
@@ -44,8 +44,8 @@ func describeOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Describe an existing OpenSearch instance named some-opensearch.",
-				Command:     "some-opensearch",
+				Description: "Describe an existing OpenSearch instance named some-opensearch in environment dev.",
+				Command:     "some-opensearch --environment dev",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

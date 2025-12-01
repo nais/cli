@@ -12,7 +12,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func deleteValkey(parentFlags *flag.Valkey) *naistrix.Command {
+func delete(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Delete{Valkey: parentFlags}
 	return &naistrix.Command{
 		Name:        "delete",

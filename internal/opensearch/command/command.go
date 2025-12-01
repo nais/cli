@@ -23,11 +23,11 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 			return validation.CheckTeam(flags.Team)
 		},
 		SubCommands: []*naistrix.Command{
-			createOpenSearch(flags),
-			deleteOpenSearch(flags),
-			describeOpenSearch(flags),
-			listOpenSearches(flags),
-			updateOpenSearch(flags),
+			create(flags),
+			delete(flags),
+			get(flags),
+			list(flags),
+			update(flags),
 		},
 	}
 }

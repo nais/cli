@@ -12,7 +12,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func updateOpenSearch(parentFlags *flag.OpenSearch) *naistrix.Command {
+func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 	flags := &flag.Update{OpenSearch: parentFlags}
 	return &naistrix.Command{
 		Name:        "update",

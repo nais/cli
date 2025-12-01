@@ -11,11 +11,11 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
+func get(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Describe{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "describe",
-		Title:       "Describe a Valkey instance.",
+		Name:        "get",
+		Title:       "Get a Valkey instance.",
 		Description: "This command describes a Valkey instance, listing its current configuration and access list.",
 		Flags:       flags,
 		Args:        defaultArgs,
@@ -41,8 +41,8 @@ func describeValkey(parentFlags *flag.Valkey) *naistrix.Command {
 		},
 		Examples: []naistrix.Example{
 			{
-				Description: "Describe an existing Valkey instance named some-valkey.",
-				Command:     "some-valkey",
+				Description: "Describe an existing Valkey instance named some-valkey in environment dev.",
+				Command:     "some-valkey --environment dev",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

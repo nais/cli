@@ -12,7 +12,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
-func createValkey(parentFlags *flag.Valkey) *naistrix.Command {
+func create(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Create{Valkey: parentFlags}
 	return &naistrix.Command{
 		Name:        "create",
