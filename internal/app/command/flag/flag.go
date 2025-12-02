@@ -34,11 +34,11 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 
 	f := flags.(*Log)
 	if len(f.Environment) == 0 {
-		return nil, "Please provide environment to auto-complete instances."
+		return nil, "Please provide environment (--environment/-e) to auto-complete instances."
 	}
 
 	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete instances."
+		return nil, "Please provide team to auto-complete instances. 'nais config team set <team>', or '--team <team>' flag."
 	}
 
 	instances, err := app.GetApplicationInstances(ctx, string(f.Team), args.Get("name"), string(f.Environment))
@@ -72,8 +72,20 @@ type List struct {
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	//TODO: only return environments with Applications
-	return autoCompleteEnvironments(ctx)
+	if args.Len() == 0 {
+		return autoCompleteEnvironments(ctx)
+	}
+
+	f := flags.(*Log)
+	if len(f.Team) == 0 {
+		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	envs, err := app.ApplicationEnvironments(ctx, f.Team, args.Get("name"))
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
 }
 
 type Log struct {
@@ -84,7 +96,7 @@ type Log struct {
 	WithTimestamps bool          `name:"with-timestamps" usage:"Include timestamps in log output."`
 	WithLabels     bool          `name:"with-labels" usage:"Include labels in log output."`
 	RawQuery       string        `name:"raw-query" usage:"Provide a raw query to filter logs. See https://grafana.com/docs/loki/latest/logql/ for syntax."`
-	Since          time.Duration `name:"since" short:"s" usage:"How far back in time to start the initial batch."`
+	Since          time.Duration `name:"since" short:"s" usage:"How far back in time to start the initial batch. Examples: 300s, 1h, 2h45m. Defaults to 1h."`
 	Limit          int           `name:"limit" short:"l" usage:"Maximum number of initial log lines."`
 }
 
