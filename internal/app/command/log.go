@@ -48,13 +48,13 @@ func log(parentFlags *flag.App) *naistrix.Command {
 			if user.Domain() == "nav.no" {
 				queryEnvironment = flag.Env(strings.TrimSuffix(string(queryEnvironment), "-gcp"))
 			}
-
+			appName := args.Get("name")
 			query := flags.RawQuery
 			if query == "" {
 				query = logs.NewQueryBuilder().
 					AddEnvironments(string(queryEnvironment)).
 					AddTeams(flags.Team).
-					AddWorkloads(args.Get("name")).
+					AddWorkloads(appName).
 					AddContainers(flags.Container...).
 					AddPods(flags.Instance...).
 					Build()

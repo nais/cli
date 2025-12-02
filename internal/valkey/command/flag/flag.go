@@ -61,12 +61,14 @@ type Describe struct {
 
 type Output string
 
-type Env string
-type List struct {
-	*Valkey
-	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
-}
+type (
+	Env  string
+	List struct {
+		*Valkey
+		Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+		Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+	}
+)
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return []string{"table", "json"}, "Available output formats."

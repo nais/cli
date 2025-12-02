@@ -75,7 +75,7 @@ func (qb *QueryBuilder) Build() string {
 		filters = append(filters, fmt.Sprintf("k8s_container_name=~%q", strings.Join(qb.containers, "|")))
 	}
 
-	if len(qb.containers) > 0 {
+	if len(qb.pods) > 0 {
 		filters = append(filters, fmt.Sprintf("k8s_pod_name=~%q", strings.Join(qb.pods, "|")))
 	}
 
