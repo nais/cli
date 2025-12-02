@@ -187,6 +187,21 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllOpenSearchesTeamO
 	return resp.Team.OpenSearches.Nodes, nil
 }
 
+func OpenSearchEnvironments(ctx context.Context, team, name string) ([]string, error) {
+	all, err := GetAll(ctx, team)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]string, 0)
+	for _, os := range all {
+		if os.Name == name {
+			ret = append(ret, os.TeamEnvironment.Environment.Name)
+		}
+	}
+	return ret, nil
+}
+
 func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation UpdateOpenSearch(
