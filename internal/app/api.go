@@ -68,3 +68,44 @@ func GetApplicationInstances(ctx context.Context, team, app, env string) ([]stri
 	}
 	return ret, nil
 }
+
+func ApplicationEnvironments(ctx context.Context, team, appName string) ([]string, error) {
+	_ = `# @genqlient
+		query ApplicationEnvironments($team: Slug!, $filter: TeamApplicationsFilter) {
+		  team(slug: $team) {
+			  applications(filter: $filter, first: 1000) {
+		      nodes {
+		        name
+		        teamEnvironment {
+		          environment {
+		            name
+		          }
+		        }
+		      }
+		    }
+		  }
+		}
+		`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := gql.TeamApplicationsFilter{
+		Name: appName,
+	}
+
+	resp, err := gql.ApplicationEnvironments(ctx, client, team, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]string, 0)
+	for _, app := range resp.Team.Applications.Nodes {
+		if app.GetName() == appName {
+			ret = append(ret, app.TeamEnvironment.Environment.Name)
+		}
+	}
+	return ret, nil
+}

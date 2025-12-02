@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
 	logs "github.com/nais/cli/internal/log/command"
 	"github.com/nais/cli/internal/naisapi"
@@ -64,6 +65,16 @@ func log(parentFlags *flag.App) *naistrix.Command {
 			}
 
 			return nil
+		},
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			if args.Len() == 0 {
+				apps, err := app.GetApplicationNames(ctx, flags.Team)
+				if err != nil {
+					return nil, "Unable to fetch application names."
+				}
+				return apps, "Select an application."
+			}
+			return nil, ""
 		},
 	}
 }
