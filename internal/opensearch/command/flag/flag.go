@@ -7,6 +7,7 @@ import (
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/naistrix"
 )
 
@@ -18,7 +19,6 @@ type OpenSearch struct {
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	//TODO: only return environments with OpenSearches
 	return autoCompleteEnvironments(ctx)
 }
 
@@ -47,9 +47,28 @@ type Delete struct {
 	*OpenSearch
 }
 
+type GetEnv string
+
+func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	if args.Len() == 0 {
+		return autoCompleteEnvironments(ctx)
+	}
+
+	f := flags.(*Get)
+	if len(f.Team) == 0 {
+		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	envs, err := opensearch.OpenSearchEnvironments(ctx, f.Team, args.Get("name"))
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
+}
+
 type Get struct {
 	*OpenSearch
-	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
 type Output string
