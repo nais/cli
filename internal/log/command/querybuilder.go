@@ -10,6 +10,7 @@ type QueryBuilder struct {
 	teams        []string
 	workloads    []string
 	containers   []string
+	pods         []string
 }
 
 // NewQueryBuilder creates a new instance of QueryBuilder.
@@ -19,6 +20,7 @@ func NewQueryBuilder() *QueryBuilder {
 		teams:        make([]string, 0),
 		workloads:    make([]string, 0),
 		containers:   make([]string, 0),
+		pods:         make([]string, 0),
 	}
 }
 
@@ -46,6 +48,12 @@ func (qb *QueryBuilder) AddContainers(container ...string) *QueryBuilder {
 	return qb
 }
 
+// AddContainers adds containers in the k8s_container_name filter in the query.
+func (qb *QueryBuilder) AddPods(pod ...string) *QueryBuilder {
+	qb.pods = append(qb.pods, pod...)
+	return qb
+}
+
 // Build constructs the final query string that can be used to fetch logs.
 func (qb *QueryBuilder) Build() string {
 	selectors := []string{`service_name!=""`} // make sure we have at least one selector
@@ -65,6 +73,10 @@ func (qb *QueryBuilder) Build() string {
 
 	if len(qb.containers) > 0 {
 		filters = append(filters, fmt.Sprintf("k8s_container_name=~%q", strings.Join(qb.containers, "|")))
+	}
+
+	if len(qb.containers) > 0 {
+		filters = append(filters, fmt.Sprintf("k8s_pod_name=~%q", strings.Join(qb.pods, "|")))
 	}
 
 	query := fmt.Sprintf("{%s}", strings.Join(selectors, ","))

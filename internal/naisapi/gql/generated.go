@@ -2705,6 +2705,84 @@ func (v *GetAllValkeysTeamValkeysValkeyConnectionNodesValkeyTeamEnvironmentEnvir
 	return v.Name
 }
 
+// GetApplicationInstancesResponse is returned by GetApplicationInstances on success.
+type GetApplicationInstancesResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationInstancesTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationInstancesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesResponse) GetTeam() GetApplicationInstancesTeam { return v.Team }
+
+// GetApplicationInstancesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationInstancesTeam struct {
+	// Nais applications owned by the team.
+	Applications GetApplicationInstancesTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetApplicationInstancesTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesTeam) GetApplications() GetApplicationInstancesTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetApplicationInstancesTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetApplicationInstancesTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationInstancesTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesTeamApplicationsApplicationConnection) GetNodes() []GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The application instances.
+	Instances GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection `json:"instances"`
+}
+
+// GetInstances returns GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication.Instances, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplication) GetInstances() GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection {
+	return v.Instances
+}
+
+// GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection includes the requested fields of the GraphQL type ApplicationInstanceConnection.
+type GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnection) GetNodes() []GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance {
+	return v.Nodes
+}
+
+// GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance struct {
+	Name string `json:"name"`
+}
+
+// GetName returns GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationInstancesTeamApplicationsApplicationConnectionNodesApplicationInstancesApplicationInstanceConnectionNodesApplicationInstance) GetName() string {
+	return v.Name
+}
+
 // GetApplicationIssuesResponse is returned by GetApplicationIssues on success.
 type GetApplicationIssuesResponse struct {
 	// Get a team by its slug.
@@ -7399,6 +7477,22 @@ type __GetAllValkeysInput struct {
 // GetTeamSlug returns __GetAllValkeysInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllValkeysInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetApplicationInstancesInput is used internally by genqlient
+type __GetApplicationInstancesInput struct {
+	Team    string                 `json:"team"`
+	OrderBy ApplicationOrder       `json:"orderBy"`
+	Filter  TeamApplicationsFilter `json:"filter"`
+}
+
+// GetTeam returns __GetApplicationInstancesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetApplicationInstancesInput) GetTeam() string { return v.Team }
+
+// GetOrderBy returns __GetApplicationInstancesInput.OrderBy, and is useful for accessing the field via an interface.
+func (v *__GetApplicationInstancesInput) GetOrderBy() ApplicationOrder { return v.OrderBy }
+
+// GetFilter returns __GetApplicationInstancesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetApplicationInstancesInput) GetFilter() TeamApplicationsFilter { return v.Filter }
+
 // __GetApplicationIssuesInput is used internally by genqlient
 type __GetApplicationIssuesInput struct {
 	Slug string   `json:"slug"`
@@ -8075,6 +8169,52 @@ func GetAllValkeys(
 	}
 
 	data_ = &GetAllValkeysResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetApplicationInstances.
+const GetApplicationInstances_Operation = `
+query GetApplicationInstances ($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter) {
+	team(slug: $team) {
+		applications(orderBy: $orderBy, filter: $filter, first: 1000) {
+			nodes {
+				instances {
+					nodes {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetApplicationInstances(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	orderBy ApplicationOrder,
+	filter TeamApplicationsFilter,
+) (data_ *GetApplicationInstancesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationInstances",
+		Query:  GetApplicationInstances_Operation,
+		Variables: &__GetApplicationInstancesInput{
+			Team:    team,
+			OrderBy: orderBy,
+			Filter:  filter,
+		},
+	}
+
+	data_ = &GetApplicationInstancesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

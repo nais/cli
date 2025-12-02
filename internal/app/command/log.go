@@ -52,9 +52,10 @@ func log(parentFlags *flag.App) *naistrix.Command {
 			if query == "" {
 				query = logs.NewQueryBuilder().
 					AddEnvironments(string(queryEnvironment)).
-					AddTeams(flags.Team...).
+					AddTeams(flags.Team).
 					AddWorkloads(args.Get("name")).
 					AddContainers(flags.Container...).
+					AddPods(flags.Instance...).
 					Build()
 			}
 
