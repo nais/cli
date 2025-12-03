@@ -60,6 +60,10 @@ type EnableAudit struct {
 	*Postgres
 }
 
+type VerifyAudit struct {
+	*Postgres
+}
+
 type Grant struct {
 	*Postgres
 }

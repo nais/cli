@@ -20,7 +20,7 @@ func enableAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			err := postgres.EnableAuditLogging(ctx, args.Get("app_name"), flags.Context, flags.Namespace)
+			err := postgres.EnableAuditLogging(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
 			if err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "enable_audit_logging_error")
 			}
