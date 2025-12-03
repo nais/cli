@@ -11,6 +11,7 @@ import (
 	nais_io_v1alpha1 "github.com/nais/liberator/pkg/apis/nais.io/v1alpha1"
 	"github.com/nais/naistrix"
 	"github.com/pkg/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -190,6 +191,9 @@ func (p *postgresDBInfo) fetchClusterInfo(ctx context.Context) error {
 		Resource: "applications",
 	}).Namespace(string(p.namespace)).Get(ctx, p.appName, meta_v1.GetOptions{})
 	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return p.fetchClusterInfoFromCluster(ctx)
+		}
 		return fmt.Errorf("fetchClusterInfo: error looking for Application %q in %q: %w", p.appName, p.namespace, err)
 	}
 
@@ -204,6 +208,26 @@ func (p *postgresDBInfo) fetchClusterInfo(ctx context.Context) error {
 	}
 
 	p.clusterName = app.Spec.Postgres.ClusterName
+
+	return nil
+}
+
+// fetchClusterInfoFromCluster assumes the given "appname" is in reality the name of a postgres cluster directly
+// Attempts to verify that this is the case by looking for such a cluster and using it if found
+func (p *postgresDBInfo) fetchClusterInfoFromCluster(ctx context.Context) error {
+	_, err := p.dynamicClient.Resource(schema.GroupVersionResource{
+		Group:    "data.nais.io",
+		Version:  "v1",
+		Resource: "postgres",
+	}).Namespace(string(p.namespace)).Get(ctx, p.appName, meta_v1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return fmt.Errorf("unable to find either Application or Postgres cluster named %q in %q: %w", p.appName, p.namespace, err)
+		}
+		return fmt.Errorf("fetchClusterInfo: error looking for Postgres %q in %q: %w", p.appName, p.namespace, err)
+	}
+
+	p.clusterName = p.appName
 
 	return nil
 }
