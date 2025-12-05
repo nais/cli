@@ -179,6 +179,10 @@ Service account token was deleted.
 """
 	SERVICE_ACCOUNT_TOKEN_DELETED
 """
+A user was granted access to a postgres cluster
+"""
+	POSTGRES_GRANT_ACCESS
+"""
 Team was created.
 """
 	TEAM_CREATED
@@ -351,6 +355,10 @@ All activity log entries related to secrets will use this resource type.
 """
 	SECRET
 	SERVICE_ACCOUNT
+"""
+All activity log entries related to postgres clusters will use this resource type.
+"""
+	POSTGRES
 """
 All activity log entries related to teams will use this resource type.
 """
@@ -1264,6 +1272,58 @@ The threshold that must be met for the scaling to trigger.
 	threshold: Int!
 }
 
+type CVE implements Node{
+"""
+The globally unique ID of the CVE.
+"""
+	id: ID!
+"""
+The unique identifier of the CVE. E.g. CVE-****-****.
+"""
+	identifier: String!
+"""
+Severity of the CVE.
+"""
+	severity: ImageVulnerabilitySeverity!
+"""
+Title of the CVE
+"""
+	title: String!
+"""
+Description of the CVE.
+"""
+	description: String!
+"""
+Link to the CVE details.
+"""
+	detailsLink: String!
+"""
+CVSS score of the CVE.
+"""
+	cvssScore: Float
+"""
+Affected workloads
+"""
+	workloads(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WorkloadWithVulnerabilityConnection!
+}
+
 input ChangeDeploymentKeyInput {
 	teamSlug: Slug!
 }
@@ -1868,6 +1928,10 @@ The deployment.
 	node: Deployment!
 }
 
+input DeploymentFilter {
+	from: Time
+}
+
 """
 Deployment key type.
 """
@@ -2264,6 +2328,18 @@ The `Float` scalar type represents signed double-precision fractional values as 
 """
 scalar Float
 
+input GrantPostgresAccessInput {
+	clusterName: String!
+	teamSlug: Slug!
+	environmentName: String!
+	grantee: String!
+	duration: String!
+}
+
+type GrantPostgresAccessPayload {
+	error: String
+}
+
 """
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as "4") or integer (such as 4) input value will be accepted as an ID.
 """
@@ -2311,6 +2387,10 @@ Timestamp of when the vulnerability got its current severity.
 Link to the vulnerability details.
 """
 	vulnerabilityDetailsLink: String!
+"""
+CVSS score of the vulnerability.
+"""
+	cvssScore: Float
 }
 
 type ImageVulnerabilityConnection {
@@ -3714,6 +3794,12 @@ Start maintenance updates for an OpenSearch instance.
 		input: StartOpenSearchMaintenanceInput!
 	): StartOpenSearchMaintenancePayload
 """
+Grant access to this postgres cluster
+"""
+	grantPostgresAccess(
+		input: GrantPostgresAccessInput!
+	): GrantPostgresAccessPayload!
+"""
 Create a new Nais team
 
 The user creating the team will be granted team ownership, unless the user is a service account, in which case the
@@ -4335,6 +4421,58 @@ interface Persistence {
 	teamEnvironment: TeamEnvironment!
 }
 
+type Postgres implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+	teamEnvironment: TeamEnvironment!
+}
+
+type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: PostgresGrantAccessActivityLogEntryData!
+}
+
+type PostgresGrantAccessActivityLogEntryData {
+	grantee: String!
+	until: Time!
+}
+
 type Price {
 	value: Float!
 }
@@ -4452,6 +4590,31 @@ End month of the period, inclusive.
 """
 		to: Date!
 	): CostMonthlySummary!
+"""
+Get a list of deployments.
+"""
+	deployments(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter options for the deployments returned from the connection.
+"""
+		filter: DeploymentFilter
+	): DeploymentConnection!
 """
 Get a list of environments.
 """
@@ -4667,6 +4830,12 @@ Get the mean time to fix history for all teams.
 	vulnerabilityFixHistory(
 		from: Date!
 	): VulnerabilityFixHistory!
+"""
+Get a specific CVE by its identifier.
+"""
+	cve(
+		identifier: String!
+	): CVE!
 }
 
 """
@@ -5450,7 +5619,7 @@ Search filter for filtering search results.
 """
 Types that can be searched for.
 """
-union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Valkey
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Valkey
 
 """
 Search node connection.
@@ -5501,6 +5670,7 @@ Search for applications.
 	JOB
 	KAFKA_TOPIC
 	OPENSEARCH
+	POSTGRES
 	SQL_INSTANCE
 	VALKEY
 }
@@ -5706,6 +5876,10 @@ The Secret.
 Input for filtering the secrets of a team.
 """
 input SecretFilter {
+"""
+Input for filtering the secrets of a team.
+"""
+	name: String
 """
 Input for filtering the secrets of a team.
 """
@@ -7187,6 +7361,12 @@ Get vulnerability summary from given date until today.
 """
 		from: Date!
 	): ImageVulnerabilityHistory!
+"""
+Get the mean time to fix history for a team.
+"""
+	vulnerabilityFixHistory(
+		from: Date!
+	): VulnerabilityFixHistory!
 	vulnerabilitySummary(
 		filter: TeamVulnerabilitySummaryFilter
 	): TeamVulnerabilitySummary!
@@ -7219,12 +7399,6 @@ Ordering options for items returned from the connection.
 """
 		orderBy: VulnerabilitySummaryOrder
 	): WorkloadVulnerabilitySummaryConnection!
-"""
-Get the mean time to fix history for a team.
-"""
-	vulnerabilityFixHistory(
-		from: Date!
-	): VulnerabilityFixHistory!
 """
 Nais workloads owned by the team.
 """
@@ -10115,6 +10289,37 @@ A cursor for use in pagination.
 The workload vulnerability summary.
 """
 	node: WorkloadVulnerabilitySummary!
+}
+
+type WorkloadWithVulnerability {
+	vulnerability: ImageVulnerability!
+	workload: Workload!
+}
+
+type WorkloadWithVulnerabilityConnection {
+"""
+Information to aid in pagination.
+"""
+	pageInfo: PageInfo!
+"""
+List of edges.
+"""
+	edges: [WorkloadWithVulnerabilityEdge!]!
+"""
+List of nodes.
+"""
+	nodes: [WorkloadWithVulnerability!]!
+}
+
+type WorkloadWithVulnerabilityEdge {
+"""
+A cursor for use in pagination.
+"""
+	cursor: Cursor!
+"""
+The vulnerability.
+"""
+	node: WorkloadWithVulnerability!
 }
 
 
