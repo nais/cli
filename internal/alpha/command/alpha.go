@@ -10,6 +10,7 @@ import (
 	naisapi "github.com/nais/cli/internal/naisapi/command"
 	opensearch "github.com/nais/cli/internal/opensearch/command"
 	valkey "github.com/nais/cli/internal/valkey/command"
+	vulnerability "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
 )
 
@@ -28,6 +29,7 @@ func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			log.Log(flags),
 			krakend.Krakend(flags),
 			mcpcmd.MCP(flags),
+			vulnerability.Vulnerability(flags),
 		},
 	}
 }

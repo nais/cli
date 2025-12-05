@@ -11,6 +11,7 @@ operations:
   - internal/kafka/**/*.go
   - internal/postgres/**/*.go
   - internal/secret/**/*.go
+  - internal/vulnerability/**/*.go
 bindings:
   Slug:
     type: string
