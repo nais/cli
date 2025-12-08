@@ -506,12 +506,29 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability struct {
 	// Package name of the vulnerability.
-	Package string `json:"package"`
+	Package     string                                                                                                                                        `json:"package"`
+	Suppression FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
 }
 
 // GetPackage returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Package, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetPackage() string {
 	return v.Package
+}
+
+// GetSuppression returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetSuppression() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetState returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
 }
 
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload includes the requested fields of the GraphQL interface Workload.
@@ -5655,6 +5672,26 @@ var AllImageVulnerabilitySeverity = []ImageVulnerabilitySeverity{
 	ImageVulnerabilitySeverityUnassigned,
 }
 
+type ImageVulnerabilitySuppressionState string
+
+const (
+	// Vulnerability is in triage.
+	ImageVulnerabilitySuppressionStateInTriage ImageVulnerabilitySuppressionState = "IN_TRIAGE"
+	// Vulnerability is resolved.
+	ImageVulnerabilitySuppressionStateResolved ImageVulnerabilitySuppressionState = "RESOLVED"
+	// Vulnerability is marked as false positive.
+	ImageVulnerabilitySuppressionStateFalsePositive ImageVulnerabilitySuppressionState = "FALSE_POSITIVE"
+	// Vulnerability is marked as not affected.
+	ImageVulnerabilitySuppressionStateNotAffected ImageVulnerabilitySuppressionState = "NOT_AFFECTED"
+)
+
+var AllImageVulnerabilitySuppressionState = []ImageVulnerabilitySuppressionState{
+	ImageVulnerabilitySuppressionStateInTriage,
+	ImageVulnerabilitySuppressionStateResolved,
+	ImageVulnerabilitySuppressionStateFalsePositive,
+	ImageVulnerabilitySuppressionStateNotAffected,
+}
+
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // IsAdminMeAuthenticatedUser is implemented by the following types:
@@ -8417,6 +8454,9 @@ query FindWorkloadsForCve ($identifier: String!) {
 			nodes {
 				vulnerability {
 					package
+					suppression {
+						state
+					}
 				}
 				workload {
 					__typename
