@@ -364,6 +364,302 @@ func (v *EnvironmentsResponse) GetEnvironments() EnvironmentsEnvironmentsEnviron
 	return v.Environments
 }
 
+// FindWorkloadsForCveCveCVE includes the requested fields of the GraphQL type CVE.
+type FindWorkloadsForCveCveCVE struct {
+	// The globally unique ID of the CVE.
+	Id string `json:"id"`
+	// The unique identifier of the CVE. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Severity of the CVE.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Title of the CVE
+	Title string `json:"title"`
+	// Description of the CVE.
+	Description string `json:"description"`
+	// Link to the CVE details.
+	DetailsLink string `json:"detailsLink"`
+	// CVSS score of the CVE.
+	CvssScore float64 `json:"cvssScore"`
+	// Affected workloads
+	Workloads FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection `json:"workloads"`
+}
+
+// GetId returns FindWorkloadsForCveCveCVE.Id, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetId() string { return v.Id }
+
+// GetIdentifier returns FindWorkloadsForCveCveCVE.Identifier, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetIdentifier() string { return v.Identifier }
+
+// GetSeverity returns FindWorkloadsForCveCveCVE.Severity, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetSeverity() ImageVulnerabilitySeverity { return v.Severity }
+
+// GetTitle returns FindWorkloadsForCveCveCVE.Title, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetTitle() string { return v.Title }
+
+// GetDescription returns FindWorkloadsForCveCveCVE.Description, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetDescription() string { return v.Description }
+
+// GetDetailsLink returns FindWorkloadsForCveCveCVE.DetailsLink, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetDetailsLink() string { return v.DetailsLink }
+
+// GetCvssScore returns FindWorkloadsForCveCveCVE.CvssScore, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetCvssScore() float64 { return v.CvssScore }
+
+// GetWorkloads returns FindWorkloadsForCveCveCVE.Workloads, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVE) GetWorkloads() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection {
+	return v.Workloads
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection includes the requested fields of the GraphQL type WorkloadWithVulnerabilityConnection.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection struct {
+	// List of nodes.
+	Nodes []FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability `json:"nodes"`
+}
+
+// GetNodes returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection) GetNodes() []FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability {
+	return v.Nodes
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability includes the requested fields of the GraphQL type WorkloadWithVulnerability.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability struct {
+	Vulnerability FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability `json:"vulnerability"`
+	Workload      FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload                        `json:"-"`
+}
+
+// GetVulnerability returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability.Vulnerability, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability) GetVulnerability() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability {
+	return v.Vulnerability
+}
+
+// GetWorkload returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability.Workload, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability) GetWorkload() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload {
+	return v.Workload
+}
+
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability struct {
+	Vulnerability FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability `json:"vulnerability"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability) __premarshalJSON() (*__premarshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability, error) {
+	var retval __premarshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability
+
+	retval.Vulnerability = v.Vulnerability
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability struct {
+	// Package name of the vulnerability.
+	Package     string                                                                                                                                        `json:"package"`
+	Suppression FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
+}
+
+// GetPackage returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetPackage() string {
+	return v.Package
+}
+
+// GetSuppression returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetSuppression() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetState returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload is implemented by the following types:
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload interface {
+	implementsGraphQLInterfaceFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+}
+
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) implementsGraphQLInterfaceFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload() {
+}
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) implementsGraphQLInterfaceFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload() {
+}
+
+func __unmarshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload(b []byte, v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload(v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload: "%T"`, v)
+	}
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+}
+
+// GetTypename returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob includes the requested fields of the GraphQL type Job.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+}
+
+// GetTypename returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// FindWorkloadsForCveResponse is returned by FindWorkloadsForCve on success.
+type FindWorkloadsForCveResponse struct {
+	// Get a specific CVE by its identifier.
+	Cve FindWorkloadsForCveCveCVE `json:"cve"`
+}
+
+// GetCve returns FindWorkloadsForCveResponse.Cve, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveResponse) GetCve() FindWorkloadsForCveCveCVE { return v.Cve }
+
 // GetAllIssuesResponse is returned by GetAllIssues on success.
 type GetAllIssuesResponse struct {
 	// Get a team by its slug.
@@ -5358,6 +5654,44 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 	return v.Slug
 }
 
+type ImageVulnerabilitySeverity string
+
+const (
+	ImageVulnerabilitySeverityLow        ImageVulnerabilitySeverity = "LOW"
+	ImageVulnerabilitySeverityMedium     ImageVulnerabilitySeverity = "MEDIUM"
+	ImageVulnerabilitySeverityHigh       ImageVulnerabilitySeverity = "HIGH"
+	ImageVulnerabilitySeverityCritical   ImageVulnerabilitySeverity = "CRITICAL"
+	ImageVulnerabilitySeverityUnassigned ImageVulnerabilitySeverity = "UNASSIGNED"
+)
+
+var AllImageVulnerabilitySeverity = []ImageVulnerabilitySeverity{
+	ImageVulnerabilitySeverityLow,
+	ImageVulnerabilitySeverityMedium,
+	ImageVulnerabilitySeverityHigh,
+	ImageVulnerabilitySeverityCritical,
+	ImageVulnerabilitySeverityUnassigned,
+}
+
+type ImageVulnerabilitySuppressionState string
+
+const (
+	// Vulnerability is in triage.
+	ImageVulnerabilitySuppressionStateInTriage ImageVulnerabilitySuppressionState = "IN_TRIAGE"
+	// Vulnerability is resolved.
+	ImageVulnerabilitySuppressionStateResolved ImageVulnerabilitySuppressionState = "RESOLVED"
+	// Vulnerability is marked as false positive.
+	ImageVulnerabilitySuppressionStateFalsePositive ImageVulnerabilitySuppressionState = "FALSE_POSITIVE"
+	// Vulnerability is marked as not affected.
+	ImageVulnerabilitySuppressionStateNotAffected ImageVulnerabilitySuppressionState = "NOT_AFFECTED"
+)
+
+var AllImageVulnerabilitySuppressionState = []ImageVulnerabilitySuppressionState{
+	ImageVulnerabilitySuppressionStateInTriage,
+	ImageVulnerabilitySuppressionStateResolved,
+	ImageVulnerabilitySuppressionStateFalsePositive,
+	ImageVulnerabilitySuppressionStateNotAffected,
+}
+
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // IsAdminMeAuthenticatedUser is implemented by the following types:
@@ -7552,6 +7886,14 @@ func (v *__DeleteValkeyInput) GetEnvironmentName() string { return v.Environment
 // GetTeamSlug returns __DeleteValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __FindWorkloadsForCveInput is used internally by genqlient
+type __FindWorkloadsForCveInput struct {
+	Identifier string `json:"identifier"`
+}
+
+// GetIdentifier returns __FindWorkloadsForCveInput.Identifier, and is useful for accessing the field via an interface.
+func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifier }
+
 // __GetAllIssuesInput is used internally by genqlient
 type __GetAllIssuesInput struct {
 	TeamSlug string      `json:"teamSlug"`
@@ -8086,6 +8428,60 @@ func Environments(
 	}
 
 	data_ = &EnvironmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by FindWorkloadsForCve.
+const FindWorkloadsForCve_Operation = `
+query FindWorkloadsForCve ($identifier: String!) {
+	cve(identifier: $identifier) {
+		id
+		identifier
+		severity
+		title
+		description
+		detailsLink
+		cvssScore
+		workloads {
+			nodes {
+				vulnerability {
+					package
+					suppression {
+						state
+					}
+				}
+				workload {
+					__typename
+					name
+				}
+			}
+		}
+	}
+}
+`
+
+func FindWorkloadsForCve(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	identifier string,
+) (data_ *FindWorkloadsForCveResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "FindWorkloadsForCve",
+		Query:  FindWorkloadsForCve_Operation,
+		Variables: &__FindWorkloadsForCveInput{
+			Identifier: identifier,
+		},
+	}
+
+	data_ = &FindWorkloadsForCveResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -7,6 +7,7 @@ operations:
   - internal/member/**/*.go
   - internal/naisapi/**/*.go
   - internal/app/**/*.go
+  - internal/vulnerability/**/*.go
 bindings:
   Slug:
     type: string
