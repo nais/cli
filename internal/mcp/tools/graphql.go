@@ -168,10 +168,11 @@ Many fields support filters:
 
 ### Tips
 
-1. Always use ` + "`__typename`" + ` when querying union/interface types (Workload, Issue, etc.)
-2. Use fragment spreads for type-specific fields: ` + "`... on Application { ingresses { url } }`" + `
-3. Start with schema exploration to discover available fields
-4. Use pagination for large result sets (default to first: 50)
+1. DO NOT query secret-related types/fields (Secret, SecretValue, etc.)
+2. Always use ` + "`__typename`" + ` when querying union/interface types (Workload, Issue, etc.)
+3. Use fragment spreads for type-specific fields: ` + "`... on Application { ingresses { url } }`" + `
+4. Start with schema exploration to discover available fields
+5. Use pagination for large result sets (default to first: 50)
 
 ### Nais Console URLs
 
@@ -409,6 +410,69 @@ type queryValidationResult struct {
 	depth         int
 }
 
+// forbiddenTypes are GraphQL types that contain sensitive data and should not be accessible via MCP queries.
+// These types and their fields expose secret values that should not be returned to LLMs.
+var forbiddenTypes = map[string]bool{
+	"Secret":                           true, // The Secret type contains secret values
+	"SecretValue":                      true, // SecretValue contains the actual secret data
+	"SecretConnection":                 true, // Connection type that returns Secret nodes
+	"SecretEdge":                       true, // Edge type that wraps Secret
+	"DeploymentKey":                    true, // Contains the actual deployment key
+	"CreateServiceAccountTokenPayload": true, // Contains the service account token secret
+	"ServiceAccountToken":              true, // Service account token metadata (but secret field is blocked separately)
+	"ServiceAccountTokenConnection":    true, // Connection type that returns ServiceAccountToken nodes
+	"ServiceAccountTokenEdge":          true, // Edge type that wraps ServiceAccountToken
+}
+
+// checkForSecrets recursively checks if a selection set accesses any forbidden secret-related types.
+// It validates against the GraphQL schema to ensure queries don't access Secret or SecretValue types.
+func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, string) {
+	for _, selection := range selectionSet {
+		switch sel := selection.(type) {
+		case *ast.Field:
+			// Check if this field's definition exists in the schema
+			if sel.Definition != nil {
+				// Check if the field returns a forbidden type
+				typeName := getBaseTypeName(sel.Definition.Type)
+				if forbiddenTypes[typeName] {
+					return true, fmt.Sprintf("field '%s' returns forbidden type '%s'", sel.Name, typeName)
+				}
+			}
+
+			// Recursively check nested selections
+			if len(sel.SelectionSet) > 0 {
+				if found, reason := checkForSecrets(sel.SelectionSet, schema); found {
+					return true, reason
+				}
+			}
+		case *ast.InlineFragment:
+			// Check if the inline fragment is on a forbidden type
+			if sel.TypeCondition != "" && forbiddenTypes[sel.TypeCondition] {
+				return true, fmt.Sprintf("inline fragment on forbidden type '%s'", sel.TypeCondition)
+			}
+			// Check inline fragments recursively
+			if found, reason := checkForSecrets(sel.SelectionSet, schema); found {
+				return true, reason
+			}
+		case *ast.FragmentSpread:
+			// Fragment spreads would need fragment definitions to be fully validated
+			// For now, we flag any fragment that has "secret" in its name as a heuristic
+			if strings.Contains(strings.ToLower(sel.Name), "secret") {
+				return true, fmt.Sprintf("fragment '%s' may access secret data", sel.Name)
+			}
+		}
+	}
+	return false, ""
+}
+
+// getBaseTypeName extracts the base type name from a GraphQL type, removing list and non-null wrappers.
+func getBaseTypeName(t *ast.Type) string {
+	if t.Elem != nil {
+		return getBaseTypeName(t.Elem)
+	}
+	return t.Name()
+}
+
 // validateGraphQLQuery validates a GraphQL query against the schema.
 func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string) (*queryValidationResult, error) {
 	// Fetch the cached and repaired schema
@@ -456,6 +520,14 @@ func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string)
 		return &queryValidationResult{
 			valid: false,
 			error: fmt.Sprintf("query depth %d exceeds maximum allowed depth of %d", depth, maxQueryDepth),
+		}, nil
+	}
+
+	// Check for forbidden secret-related types and fields
+	if found, reason := checkForSecrets(op.SelectionSet, schema); found {
+		return &queryValidationResult{
+			valid: false,
+			error: fmt.Sprintf("access to secrets is not allowed: %s", reason),
 		}, nil
 	}
 
