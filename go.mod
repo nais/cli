@@ -27,6 +27,7 @@ require (
 	github.com/lestrrat-go/jwx/v3 v3.0.8
 	github.com/lib/pq v1.10.9
 	github.com/mailgun/raymond/v2 v2.0.48
+	github.com/mark3labs/mcp-go v0.43.2
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v1.7.3
 	github.com/nais/krakend/pkg/migration v0.0.0-20251112211103-82b954ae962b
@@ -210,6 +211,7 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/zitadel/logging v0.6.2 // indirect
 	github.com/zitadel/schema v1.3.1 // indirect
 	gitlab.com/digitalxero/go-conventional-commit v1.0.7 // indirect
