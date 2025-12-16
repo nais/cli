@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/nais/cli/internal/mcp/client"
 	"github.com/nais/cli/internal/mcp/resources"
@@ -105,19 +104,4 @@ func (s *Server) serveSSE(ctx context.Context) error {
 // This is useful for testing or advanced configuration.
 func (s *Server) MCPServer() *server.MCPServer {
 	return s.mcpServer
-}
-
-// Client returns the GraphQL client used by the server.
-func (s *Server) Client() client.Client {
-	return s.client
-}
-
-// AddTool adds a custom tool to the server.
-func (s *Server) AddTool(tool mcp.Tool, handler server.ToolHandlerFunc) {
-	s.mcpServer.AddTool(tool, handler)
-}
-
-// AddResource adds a custom resource to the server.
-func (s *Server) AddResource(resource mcp.Resource, handler server.ResourceHandlerFunc) {
-	s.mcpServer.AddResource(resource, handler)
 }

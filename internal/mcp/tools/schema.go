@@ -326,10 +326,7 @@ func (t *toolContext) handleSchemaGetType(reqCtx context.Context, req mcp.CallTo
 
 	// Add interfaces this type implements
 	if len(def.Interfaces) > 0 {
-		var interfaces []string
-		for _, iface := range def.Interfaces {
-			interfaces = append(interfaces, iface)
-		}
+		interfaces := append([]string(nil), def.Interfaces...)
 		result["implements"] = interfaces
 	}
 
@@ -363,10 +360,7 @@ func (t *toolContext) handleSchemaGetType(reqCtx context.Context, req mcp.CallTo
 
 	// Add types for UNION
 	if def.Kind == ast.Union {
-		var types []string
-		for _, t := range def.Types {
-			types = append(types, t)
-		}
+		types := append([]string(nil), def.Types...)
 		result["types"] = types
 	}
 

@@ -64,7 +64,7 @@ func runServe(ctx context.Context, flags *flag.Serve, out *naistrix.OutputWriter
 	// Configure logging
 	var logOutput io.Writer = os.Stderr
 	if flags.LogFile != "" {
-		f, err := os.OpenFile(flags.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+		f, err := os.OpenFile(flags.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
 		if err != nil {
 			return err
 		}
