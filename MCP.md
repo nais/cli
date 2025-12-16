@@ -22,7 +22,8 @@ Add to your MCP settings file:
   "mcpServers": {
     "nais": {
       "command": "nais",
-      "args": ["alpha", "mcp", "serve"]
+      "args": ["alpha", "mcp", "serve"],
+			"tools": ["*"]
     }
   }
 }
@@ -33,6 +34,7 @@ Add to your MCP settings file:
 {
   "context_servers": {
     "nais": {
+      "enabled": true,
       "command": "nais",
       "args": ["alpha", "mcp", "serve"]
     }
@@ -40,25 +42,31 @@ Add to your MCP settings file:
 }
 ```
 
-**Cline for VS Code** (`.vscode/mcp.json`):
-```json
-{
-  "mcpServers": {
-    "nais": {
-      "command": "nais",
-      "args": ["alpha", "mcp", "serve"]
-    }
-  }
-}
-```
+**VS Code** (with Cline extension):
 
-**IntelliJ IDEA** (MCP plugin settings):
+1. Open the command palette
+2. Select "MCP: Add Server..."
+3. Select "Command (stdio)"
+4. Insert `nais` in the command input and press Enter
+5. Insert `alpha mcp serve` in the args input and press Enter
+6. When prompted for a name, insert `nais`
+7. Select if you want to add it as a Global or Workspace MCP server
+
+**IntelliJ IDEA** (with GitHub Copilot):
+
+See [GitHub Copilot MCP documentation](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/extend-copilot-chat-with-mcp?tool=jetbrains) for setup instructions.
+
+Local server configuration:
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "nais": {
       "command": "nais",
-      "args": ["alpha", "mcp", "serve"]
+      "args": [
+        "alpha",
+        "mcp",
+        "serve"
+      ]
     }
   }
 }
