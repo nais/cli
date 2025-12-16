@@ -19,7 +19,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var ErrNeedsOIDCLogin = errors.New("unauthenticated: user must log in with OIDC")
+var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais auth login -n`")
 
 func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	user, err := getOIDCUser(ctx)
