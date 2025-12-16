@@ -424,7 +424,7 @@ func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string)
 	}
 
 	// Parse the query
-	doc, errList := gqlparser.LoadQuery(schema, query)
+	doc, errList := gqlparser.LoadQueryWithRules(schema, query, nil)
 	if len(errList) > 0 {
 		return &queryValidationResult{
 			valid: false,
