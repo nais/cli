@@ -57,7 +57,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secrets' returns forbidden type 'SecretConnection'",
+			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing Secret.values field",
@@ -76,7 +76,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secrets' returns forbidden type 'SecretConnection'",
+			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing SecretValue.value field",
@@ -95,7 +95,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secrets' returns forbidden type 'SecretConnection'",
+			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing secret via teamEnvironment.secret",
@@ -115,7 +115,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secret' returns forbidden type 'Secret'",
+			expectedError: "MCP security policy: field 'secret' returns type 'Secret' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "allow query accessing activity log for secrets (activity log entries, not secret data)",
@@ -239,7 +239,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secrets' returns forbidden type 'SecretConnection'",
+			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing job.secrets field",
@@ -261,7 +261,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'secrets' returns forbidden type 'SecretConnection'",
+			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "allow query accessing deployments (no secrets)",
@@ -330,7 +330,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'deploymentKey' returns forbidden type 'DeploymentKey'",
+			expectedError: "MCP security policy: field 'deploymentKey' returns type 'DeploymentKey' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing DeploymentKey.key field",
@@ -344,7 +344,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'deploymentKey' returns forbidden type 'DeploymentKey'",
+			expectedError: "MCP security policy: field 'deploymentKey' returns type 'DeploymentKey' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block mutation creating service account token (returns secret)",
@@ -360,7 +360,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'createServiceAccountToken' returns forbidden type 'CreateServiceAccountTokenPayload'",
+			expectedError: "MCP security policy: field 'createServiceAccountToken' returns type 'CreateServiceAccountTokenPayload' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
 			name: "block query accessing service account tokens via Query.serviceAccounts",
@@ -380,7 +380,7 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 				}
 			`,
 			shouldBlock:   true,
-			expectedError: "field 'tokens' returns forbidden type 'ServiceAccountTokenConnection'",
+			expectedError: "MCP security policy: field 'tokens' returns type 'ServiceAccountTokenConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 	}
 
