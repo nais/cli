@@ -435,7 +435,7 @@ func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, s
 				// Check if the field returns a forbidden type
 				typeName := getBaseTypeName(sel.Definition.Type)
 				if forbiddenTypes[typeName] {
-					return true, fmt.Sprintf("field '%s' returns forbidden type '%s'", sel.Name, typeName)
+					return true, fmt.Sprintf("MCP security policy: field '%s' returns type '%s' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.", sel.Name, typeName)
 				}
 			}
 
@@ -448,7 +448,7 @@ func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, s
 		case *ast.InlineFragment:
 			// Check if the inline fragment is on a forbidden type
 			if sel.TypeCondition != "" && forbiddenTypes[sel.TypeCondition] {
-				return true, fmt.Sprintf("inline fragment on forbidden type '%s'", sel.TypeCondition)
+				return true, fmt.Sprintf("MCP security policy: inline fragment on type '%s' which contains sensitive data that cannot be accessed via this interface", sel.TypeCondition)
 			}
 			// Check inline fragments recursively
 			if found, reason := checkForSecrets(sel.SelectionSet, schema); found {
@@ -458,7 +458,7 @@ func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, s
 			// Fragment spreads would need fragment definitions to be fully validated
 			// For now, we flag any fragment that has "secret" in its name as a heuristic
 			if strings.Contains(strings.ToLower(sel.Name), "secret") {
-				return true, fmt.Sprintf("fragment '%s' may access secret data", sel.Name)
+				return true, fmt.Sprintf("MCP security policy: fragment '%s' may access sensitive data that cannot be accessed via this interface", sel.Name)
 			}
 		}
 	}
@@ -527,7 +527,7 @@ func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string)
 	if found, reason := checkForSecrets(op.SelectionSet, schema); found {
 		return &queryValidationResult{
 			valid: false,
-			error: fmt.Sprintf("access to secrets is not allowed: %s", reason),
+			error: reason,
 		}, nil
 	}
 
