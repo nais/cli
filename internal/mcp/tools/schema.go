@@ -399,7 +399,7 @@ func (t *toolContext) handleSchemaListQueries(
 
 	queryType := explorer.schema.Query
 	if queryType == nil {
-		return nil, fmt.Errorf("Query type not found in schema")
+		return nil, fmt.Errorf("query type not found in schema")
 	}
 
 	var queries []SchemaOperationInfo
