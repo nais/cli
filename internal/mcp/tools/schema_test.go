@@ -875,34 +875,34 @@ type User {
 	}
 }
 
-func TestFormatASTFields(t *testing.T) {
+func TestFormatASTFieldsTyped(t *testing.T) {
 	explorer, err := NewSchemaExplorer(testSchema)
 	if err != nil {
 		t.Fatalf("failed to parse schema: %v", err)
 	}
 
 	app := explorer.schema.Types["Application"]
-	result := formatASTFields(app.Fields)
+	result := formatASTFieldsTyped(app.Fields)
 
 	if len(result) == 0 {
 		t.Error("expected formatted fields")
 	}
 
-	// Check that fields have expected keys
+	// Check that fields have expected properties
 	for _, f := range result {
-		if _, ok := f["name"]; !ok {
-			t.Error("expected name key in field")
+		if f.Name == "" {
+			t.Error("expected name in field")
 		}
-		if _, ok := f["type"]; !ok {
-			t.Error("expected type key in field")
+		if f.Type == "" {
+			t.Error("expected type in field")
 		}
 	}
 
 	// Check deprecated field
 	var foundDeprecated bool
 	for _, f := range result {
-		if f["name"] == "environment" {
-			if _, ok := f["deprecated"]; ok {
+		if f.Name == "environment" {
+			if f.Deprecated != nil {
 				foundDeprecated = true
 			}
 		}
