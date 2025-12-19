@@ -4,7 +4,6 @@ package tools
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -138,125 +137,110 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	// List all types tool
 	listTypesTool := mcp.NewTool("schema_list_types",
 		mcp.WithDescription("List all types in the Nais GraphQL API schema, grouped by kind. Use this to explore available data types before querying specific type details. Useful for understanding the API structure."),
-		mcp.WithString("kind",
-			mcp.Description("Filter by kind: 'OBJECT', 'INTERFACE', 'ENUM', 'UNION', 'INPUT_OBJECT', 'SCALAR', or 'all' (default: 'all')"),
-		),
-		mcp.WithString("search",
-			mcp.Description("Filter type names containing this string (case-insensitive)"),
-		),
+		mcp.WithInputSchema[SchemaListTypesInput](),
+		mcp.WithOutputSchema[SchemaListTypesOutput](),
 	)
-	s.AddTool(listTypesTool, ctx.handleSchemaListTypes)
+	s.AddTool(listTypesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListTypes))
 
 	// Get type details tool
 	getTypeTool := mcp.NewTool("schema_get_type",
 		mcp.WithDescription("Get complete details about a GraphQL type: fields with their types, interfaces it implements, types that implement it (for interfaces), enum values, or union member types. Use this to understand the shape of data returned by queries."),
-		mcp.WithString("name",
-			mcp.Required(),
-			mcp.Description("The exact type name (e.g., 'Application', 'Team', 'DeploymentState')"),
-		),
+		mcp.WithInputSchema[SchemaGetTypeInput](),
+		mcp.WithOutputSchema[SchemaGetTypeOutput](),
 	)
-	s.AddTool(getTypeTool, ctx.handleSchemaGetType)
+	s.AddTool(getTypeTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetType))
 
 	// List queries tool
 	listQueriesTool := mcp.NewTool("schema_list_queries",
 		mcp.WithDescription("List all available GraphQL query operations with their return types and number of arguments. These are the entry points for reading data from the Nais API."),
-		mcp.WithString("search",
-			mcp.Description("Filter query names or descriptions containing this string (case-insensitive)"),
-		),
+		mcp.WithInputSchema[SchemaListQueriesInput](),
+		mcp.WithOutputSchema[[]SchemaOperationInfo](),
 	)
-	s.AddTool(listQueriesTool, ctx.handleSchemaListQueries)
+	s.AddTool(listQueriesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListQueries))
 
 	// List mutations tool
 	listMutationsTool := mcp.NewTool("schema_list_mutations",
 		mcp.WithDescription("List all available GraphQL mutation operations with their return types and number of arguments. Mutations are used to modify data (note: the MCP server currently only exposes read operations)."),
-		mcp.WithString("search",
-			mcp.Description("Filter mutation names or descriptions containing this string (case-insensitive)"),
-		),
+		mcp.WithInputSchema[SchemaListMutationsInput](),
+		mcp.WithOutputSchema[[]SchemaOperationInfo](),
 	)
-	s.AddTool(listMutationsTool, ctx.handleSchemaListMutations)
+	s.AddTool(listMutationsTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListMutations))
 
 	// Get field details tool
 	getFieldTool := mcp.NewTool("schema_get_field",
 		mcp.WithDescription("Get detailed information about a specific field including its arguments with types and defaults, return type, description, and deprecation status. Use 'Query' as the type to inspect query operations, or 'Mutation' for mutations."),
-		mcp.WithString("type",
-			mcp.Required(),
-			mcp.Description("The type name containing the field (use 'Query' for root queries, 'Mutation' for root mutations, or any object type name)"),
-		),
-		mcp.WithString("field",
-			mcp.Required(),
-			mcp.Description("The field name to inspect"),
-		),
+		mcp.WithInputSchema[SchemaGetFieldInput](),
+		mcp.WithOutputSchema[SchemaGetFieldOutput](),
 	)
-	s.AddTool(getFieldTool, ctx.handleSchemaGetField)
+	s.AddTool(getFieldTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetField))
 
 	// Get enum values tool
 	getEnumTool := mcp.NewTool("schema_get_enum",
 		mcp.WithDescription("Get all possible values for an enum type with their descriptions and deprecation status. Use this to understand valid values for enum fields (e.g., ApplicationState, DeploymentState)."),
-		mcp.WithString("name",
-			mcp.Required(),
-			mcp.Description("The enum type name (e.g., 'ApplicationState', 'TeamRole')"),
-		),
+		mcp.WithInputSchema[SchemaGetEnumInput](),
+		mcp.WithOutputSchema[SchemaGetEnumOutput](),
 	)
-	s.AddTool(getEnumTool, ctx.handleSchemaGetEnum)
+	s.AddTool(getEnumTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetEnum))
 
 	// Search schema tool
 	searchSchemaTool := mcp.NewTool("schema_search",
 		mcp.WithDescription("Search across all schema types, fields, and enum values by name or description. Returns up to 50 matches. Use this to discover relevant types when you're not sure of exact names."),
-		mcp.WithString("query",
-			mcp.Required(),
-			mcp.Description("Search term to match against names and descriptions (case-insensitive)"),
-		),
+		mcp.WithInputSchema[SchemaSearchInput](),
+		mcp.WithOutputSchema[SchemaSearchOutput](),
 	)
-	s.AddTool(searchSchemaTool, ctx.handleSchemaSearch)
+	s.AddTool(searchSchemaTool, mcp.NewStructuredToolHandler(ctx.handleSchemaSearch))
 
 	// Get types implementing interface
 	getImplementorsTool := mcp.NewTool("schema_get_implementors",
 		mcp.WithDescription("Get all concrete types that implement a GraphQL interface. Use this to find all possible types when a query returns an interface type."),
-		mcp.WithString("interface",
-			mcp.Required(),
-			mcp.Description("The interface name (e.g., 'Workload', 'Issue')"),
-		),
+		mcp.WithInputSchema[SchemaGetImplementorsInput](),
+		mcp.WithOutputSchema[SchemaGetImplementorsOutput](),
 	)
-	s.AddTool(getImplementorsTool, ctx.handleSchemaGetImplementors)
+	s.AddTool(getImplementorsTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetImplementors))
 
 	// Get union types
 	getUnionTypesTool := mcp.NewTool("schema_get_union_types",
 		mcp.WithDescription("Get all member types of a GraphQL union. Use this to understand what concrete types can be returned when a query returns a union type."),
-		mcp.WithString("union",
-			mcp.Required(),
-			mcp.Description("The union type name"),
-		),
+		mcp.WithInputSchema[SchemaGetUnionTypesInput](),
+		mcp.WithOutputSchema[SchemaGetUnionTypesOutput](),
 	)
-	s.AddTool(getUnionTypesTool, ctx.handleSchemaGetUnionTypes)
+	s.AddTool(getUnionTypesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetUnionTypes))
 }
 
 // handleSchemaListTypes handles the schema_list_types tool.
-func (t *toolContext) handleSchemaListTypes(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaListTypes(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaListTypesInput,
+) (SchemaListTypesOutput, error) {
 	t.logger.Debug("Executing schema_list_types tool")
 
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
+		return SchemaListTypesOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	t.logger.Debug("Fetching schema")
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
 		t.logger.Error("Failed to get schema", "error", err)
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaListTypesOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 	t.logger.Debug("Schema fetched", "size", len(schemaText))
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
 		t.logger.Error("Failed to parse schema", "error", err)
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaListTypesOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 	t.logger.Debug("Schema parsed successfully", "types", len(explorer.schema.Types))
 
-	kind := strings.ToUpper(req.GetString("kind", "all"))
-	search := strings.ToLower(req.GetString("search", ""))
+	kind := strings.ToUpper(args.Kind)
+	if kind == "" {
+		kind = "ALL"
+	}
+	search := strings.ToLower(args.Search)
 
-	result := make(map[string][]string)
+	var output SchemaListTypesOutput
 
 	for name, def := range explorer.schema.Types {
 		// Skip built-in types
@@ -275,93 +259,100 @@ func (t *toolContext) handleSchemaListTypes(reqCtx context.Context, req mcp.Call
 			continue
 		}
 
-		kindKey := strings.ToLower(defKind) + "s"
-		result[kindKey] = append(result[kindKey], name)
+		switch def.Kind {
+		case ast.Object:
+			output.Objects = append(output.Objects, name)
+		case ast.Interface:
+			output.Interfaces = append(output.Interfaces, name)
+		case ast.Enum:
+			output.Enums = append(output.Enums, name)
+		case ast.Union:
+			output.Unions = append(output.Unions, name)
+		case ast.InputObject:
+			output.InputObjects = append(output.InputObjects, name)
+		case ast.Scalar:
+			output.Scalars = append(output.Scalars, name)
+		}
 	}
 
 	// Sort all lists
-	for k := range result {
-		sort.Strings(result[k])
-	}
+	sort.Strings(output.Objects)
+	sort.Strings(output.Interfaces)
+	sort.Strings(output.Enums)
+	sort.Strings(output.Unions)
+	sort.Strings(output.InputObjects)
+	sort.Strings(output.Scalars)
 
-	return jsonResult(result)
+	return output, nil
 }
 
 // handleSchemaGetType handles the schema_get_type tool.
-func (t *toolContext) handleSchemaGetType(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaGetType(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaGetTypeInput,
+) (SchemaGetTypeOutput, error) {
 	t.logger.Debug("Executing schema_get_type tool")
 
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
+		return SchemaGetTypeOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
-	name, err := req.RequireString("name")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
-	t.logger.Debug("Fetching schema for type lookup", "type_name", name)
+	t.logger.Debug("Fetching schema for type lookup", "type_name", args.Name)
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
 		t.logger.Error("Failed to get schema", "error", err)
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaGetTypeOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
 		t.logger.Error("Failed to parse schema", "error", err)
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaGetTypeOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	def, ok := explorer.schema.Types[name]
+	def, ok := explorer.schema.Types[args.Name]
 	if !ok {
-		return mcp.NewToolResultError(fmt.Sprintf("type %q not found", name)), nil
+		return SchemaGetTypeOutput{}, fmt.Errorf("type %q not found", args.Name)
 	}
 
-	result := map[string]any{
-		"name":        def.Name,
-		"kind":        string(def.Kind),
-		"description": def.Description,
+	output := SchemaGetTypeOutput{
+		Name:        def.Name,
+		Kind:        string(def.Kind),
+		Description: def.Description,
 	}
 
 	// Add interfaces this type implements
 	if len(def.Interfaces) > 0 {
-		interfaces := append([]string(nil), def.Interfaces...)
-		result["implements"] = interfaces
+		output.Implements = append([]string(nil), def.Interfaces...)
 	}
 
 	// Add fields for OBJECT, INTERFACE, INPUT_OBJECT
 	if def.Kind == ast.Object || def.Kind == ast.Interface || def.Kind == ast.InputObject {
-		result["fields"] = formatASTFields(def.Fields)
+		output.Fields = formatASTFieldsTyped(def.Fields)
 	}
 
 	// Add enum values for ENUM
 	if def.Kind == ast.Enum {
-		var values []map[string]any
 		for _, v := range def.EnumValues {
-			value := map[string]any{
-				"name": v.Name,
+			value := SchemaEnumValue{
+				Name:        v.Name,
+				Description: v.Description,
 			}
-			if v.Description != "" {
-				value["description"] = v.Description
-			}
-			if v.Directives.ForName("deprecated") != nil {
-				dep := v.Directives.ForName("deprecated")
+			if dep := v.Directives.ForName("deprecated"); dep != nil {
 				if reason := dep.Arguments.ForName("reason"); reason != nil {
-					value["deprecated"] = reason.Value.Raw
+					value.Deprecated = reason.Value.Raw
 				} else {
-					value["deprecated"] = true
+					value.Deprecated = true
 				}
 			}
-			values = append(values, value)
+			output.Values = append(output.Values, value)
 		}
-		result["values"] = values
 	}
 
 	// Add types for UNION
 	if def.Kind == ast.Union {
-		types := append([]string(nil), def.Types...)
-		result["types"] = types
+		output.Types = append([]string(nil), def.Types...)
 	}
 
 	// Add implementedBy for INTERFACE
@@ -369,7 +360,7 @@ func (t *toolContext) handleSchemaGetType(reqCtx context.Context, req mcp.CallTo
 		var implementedBy []string
 		for typeName, typeDef := range explorer.schema.Types {
 			for _, iface := range typeDef.Interfaces {
-				if iface == name {
+				if iface == args.Name {
 					implementedBy = append(implementedBy, typeName)
 					break
 				}
@@ -377,255 +368,247 @@ func (t *toolContext) handleSchemaGetType(reqCtx context.Context, req mcp.CallTo
 		}
 		sort.Strings(implementedBy)
 		if len(implementedBy) > 0 {
-			result["implementedBy"] = implementedBy
+			output.ImplementedBy = implementedBy
 		}
 	}
 
-	return jsonResult(result)
+	return output, nil
 }
 
 // handleSchemaListQueries handles the schema_list_queries tool.
-func (t *toolContext) handleSchemaListQueries(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaListQueries(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaListQueriesInput,
+) ([]SchemaOperationInfo, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
+		return nil, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return nil, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return nil, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	search := strings.ToLower(req.GetString("search", ""))
+	search := strings.ToLower(args.Search)
 
 	queryType := explorer.schema.Query
 	if queryType == nil {
-		return mcp.NewToolResultError("Query type not found in schema"), nil
+		return nil, fmt.Errorf("Query type not found in schema")
 	}
 
-	var queries []map[string]any
+	var queries []SchemaOperationInfo
 	for _, field := range queryType.Fields {
 		if search == "" || strings.Contains(strings.ToLower(field.Name), search) || strings.Contains(strings.ToLower(field.Description), search) {
-			queries = append(queries, map[string]any{
-				"name":        field.Name,
-				"returnType":  field.Type.String(),
-				"description": truncate(field.Description, 150),
-				"argCount":    len(field.Arguments),
+			queries = append(queries, SchemaOperationInfo{
+				Name:        field.Name,
+				ReturnType:  field.Type.String(),
+				Description: truncate(field.Description, 150),
+				ArgCount:    len(field.Arguments),
 			})
 		}
 	}
 
 	// Sort by name
 	sort.Slice(queries, func(i, j int) bool {
-		return queries[i]["name"].(string) < queries[j]["name"].(string)
+		return queries[i].Name < queries[j].Name
 	})
 
-	return jsonResult(queries)
+	return queries, nil
 }
 
 // handleSchemaListMutations handles the schema_list_mutations tool.
-func (t *toolContext) handleSchemaListMutations(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaListMutations(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaListMutationsInput,
+) ([]SchemaOperationInfo, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
+		return nil, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return nil, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return nil, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	search := strings.ToLower(req.GetString("search", ""))
+	search := strings.ToLower(args.Search)
 
 	mutationType := explorer.schema.Mutation
 	if mutationType == nil {
-		return jsonResult([]map[string]any{})
+		return []SchemaOperationInfo{}, nil
 	}
 
-	var mutations []map[string]any
+	var mutations []SchemaOperationInfo
 	for _, field := range mutationType.Fields {
 		if search == "" || strings.Contains(strings.ToLower(field.Name), search) || strings.Contains(strings.ToLower(field.Description), search) {
-			mutations = append(mutations, map[string]any{
-				"name":        field.Name,
-				"returnType":  field.Type.String(),
-				"description": truncate(field.Description, 150),
-				"argCount":    len(field.Arguments),
+			mutations = append(mutations, SchemaOperationInfo{
+				Name:        field.Name,
+				ReturnType:  field.Type.String(),
+				Description: truncate(field.Description, 150),
+				ArgCount:    len(field.Arguments),
 			})
 		}
 	}
 
 	// Sort by name
 	sort.Slice(mutations, func(i, j int) bool {
-		return mutations[i]["name"].(string) < mutations[j]["name"].(string)
+		return mutations[i].Name < mutations[j].Name
 	})
 
-	return jsonResult(mutations)
+	return mutations, nil
 }
 
 // handleSchemaGetField handles the schema_get_field tool.
-func (t *toolContext) handleSchemaGetField(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaGetField(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaGetFieldInput,
+) (SchemaGetFieldOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
-	}
-
-	typeName, err := req.RequireString("type")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
-	fieldName, err := req.RequireString("field")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return SchemaGetFieldOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaGetFieldOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaGetFieldOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	typeDef, ok := explorer.schema.Types[typeName]
+	typeDef, ok := explorer.schema.Types[args.Type]
 	if !ok {
-		return mcp.NewToolResultError(fmt.Sprintf("type %q not found", typeName)), nil
+		return SchemaGetFieldOutput{}, fmt.Errorf("type %q not found", args.Type)
 	}
 
 	var field *ast.FieldDefinition
 	for _, f := range typeDef.Fields {
-		if f.Name == fieldName {
+		if f.Name == args.Field {
 			field = f
 			break
 		}
 	}
 
 	if field == nil {
-		return mcp.NewToolResultError(fmt.Sprintf("field %q not found on type %q", fieldName, typeName)), nil
+		return SchemaGetFieldOutput{}, fmt.Errorf("field %q not found on type %q", args.Field, args.Type)
 	}
 
-	result := map[string]any{
-		"name":        field.Name,
-		"type":        field.Type.String(),
-		"description": field.Description,
+	output := SchemaGetFieldOutput{
+		Name:        field.Name,
+		Type:        field.Type.String(),
+		Description: field.Description,
 	}
 
 	// Check for deprecation
 	if dep := field.Directives.ForName("deprecated"); dep != nil {
 		if reason := dep.Arguments.ForName("reason"); reason != nil {
-			result["deprecated"] = reason.Value.Raw
+			output.Deprecated = reason.Value.Raw
 		} else {
-			result["deprecated"] = true
+			output.Deprecated = true
 		}
 	}
 
 	// Add arguments
 	if len(field.Arguments) > 0 {
-		var args []map[string]any
 		for _, arg := range field.Arguments {
-			argInfo := map[string]any{
-				"name": arg.Name,
-				"type": arg.Type.String(),
-			}
-			if arg.Description != "" {
-				argInfo["description"] = arg.Description
+			argInfo := SchemaArgumentInfo{
+				Name:        arg.Name,
+				Type:        arg.Type.String(),
+				Description: arg.Description,
 			}
 			if arg.DefaultValue != nil {
-				argInfo["default"] = arg.DefaultValue.String()
+				argInfo.Default = arg.DefaultValue.String()
 			}
-			args = append(args, argInfo)
+			output.Args = append(output.Args, argInfo)
 		}
-		result["args"] = args
 	}
 
-	return jsonResult(result)
+	return output, nil
 }
 
 // handleSchemaGetEnum handles the schema_get_enum tool.
-func (t *toolContext) handleSchemaGetEnum(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaGetEnum(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaGetEnumInput,
+) (SchemaGetEnumOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
-	}
-
-	name, err := req.RequireString("name")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return SchemaGetEnumOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaGetEnumOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaGetEnumOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	def, ok := explorer.schema.Types[name]
+	def, ok := explorer.schema.Types[args.Name]
 	if !ok || def.Kind != ast.Enum {
-		return mcp.NewToolResultError(fmt.Sprintf("enum %q not found", name)), nil
+		return SchemaGetEnumOutput{}, fmt.Errorf("enum %q not found", args.Name)
 	}
 
-	var values []map[string]any
+	output := SchemaGetEnumOutput{
+		Name:        def.Name,
+		Description: def.Description,
+	}
+
 	for _, v := range def.EnumValues {
-		value := map[string]any{
-			"name": v.Name,
-		}
-		if v.Description != "" {
-			value["description"] = v.Description
+		value := SchemaEnumValue{
+			Name:        v.Name,
+			Description: v.Description,
 		}
 		if dep := v.Directives.ForName("deprecated"); dep != nil {
 			if reason := dep.Arguments.ForName("reason"); reason != nil {
-				value["deprecated"] = reason.Value.Raw
+				value.Deprecated = reason.Value.Raw
 			} else {
-				value["deprecated"] = true
+				value.Deprecated = true
 			}
 		}
-		values = append(values, value)
+		output.Values = append(output.Values, value)
 	}
 
-	result := map[string]any{
-		"name":        def.Name,
-		"description": def.Description,
-		"values":      values,
-	}
-
-	return jsonResult(result)
+	return output, nil
 }
 
 // handleSchemaSearch handles the schema_search tool.
-func (t *toolContext) handleSchemaSearch(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaSearch(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaSearchInput,
+) (SchemaSearchOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
-	}
-
-	query, err := req.RequireString("query")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return SchemaSearchOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaSearchOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaSearchOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	query = strings.ToLower(query)
-	var results []map[string]any
+	query := strings.ToLower(args.Query)
+	var results []SchemaSearchResult
 
 	// Search types
 	for name, def := range explorer.schema.Types {
@@ -636,22 +619,22 @@ func (t *toolContext) handleSchemaSearch(reqCtx context.Context, req mcp.CallToo
 
 		// Match type name or description
 		if strings.Contains(strings.ToLower(name), query) || strings.Contains(strings.ToLower(def.Description), query) {
-			results = append(results, map[string]any{
-				"kind":        strings.ToLower(string(def.Kind)),
-				"name":        name,
-				"description": truncate(def.Description, 100),
+			results = append(results, SchemaSearchResult{
+				Kind:        strings.ToLower(string(def.Kind)),
+				Name:        name,
+				Description: truncate(def.Description, 100),
 			})
 		}
 
 		// Search fields
 		for _, field := range def.Fields {
 			if strings.Contains(strings.ToLower(field.Name), query) || strings.Contains(strings.ToLower(field.Description), query) {
-				results = append(results, map[string]any{
-					"kind":        "field",
-					"type":        name,
-					"name":        field.Name,
-					"fieldType":   field.Type.String(),
-					"description": truncate(field.Description, 100),
+				results = append(results, SchemaSearchResult{
+					Kind:        "field",
+					Type:        name,
+					Name:        field.Name,
+					FieldType:   field.Type.String(),
+					Description: truncate(field.Description, 100),
 				})
 			}
 		}
@@ -659,11 +642,11 @@ func (t *toolContext) handleSchemaSearch(reqCtx context.Context, req mcp.CallToo
 		// Search enum values
 		for _, v := range def.EnumValues {
 			if strings.Contains(strings.ToLower(v.Name), query) || strings.Contains(strings.ToLower(v.Description), query) {
-				results = append(results, map[string]any{
-					"kind":        "enum_value",
-					"enum":        name,
-					"name":        v.Name,
-					"description": truncate(v.Description, 100),
+				results = append(results, SchemaSearchResult{
+					Kind:        "enum_value",
+					Enum:        name,
+					Name:        v.Name,
+					Description: truncate(v.Description, 100),
 				})
 			}
 		}
@@ -671,10 +654,10 @@ func (t *toolContext) handleSchemaSearch(reqCtx context.Context, req mcp.CallToo
 
 	// Sort results by kind then name
 	sort.Slice(results, func(i, j int) bool {
-		if results[i]["kind"].(string) != results[j]["kind"].(string) {
-			return results[i]["kind"].(string) < results[j]["kind"].(string)
+		if results[i].Kind != results[j].Kind {
+			return results[i].Kind < results[j].Kind
 		}
-		return results[i]["name"].(string) < results[j]["name"].(string)
+		return results[i].Name < results[j].Name
 	})
 
 	// Limit results
@@ -682,46 +665,45 @@ func (t *toolContext) handleSchemaSearch(reqCtx context.Context, req mcp.CallToo
 		results = results[:50]
 	}
 
-	return jsonResult(map[string]any{
-		"totalMatches": len(results),
-		"results":      results,
-	})
+	return SchemaSearchOutput{
+		TotalMatches: len(results),
+		Results:      results,
+	}, nil
 }
 
 // handleSchemaGetImplementors handles the schema_get_implementors tool.
-func (t *toolContext) handleSchemaGetImplementors(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaGetImplementors(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaGetImplementorsInput,
+) (SchemaGetImplementorsOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
-	}
-
-	interfaceName, err := req.RequireString("interface")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return SchemaGetImplementorsOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaGetImplementorsOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaGetImplementorsOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
 	// Verify the interface exists
-	def, ok := explorer.schema.Types[interfaceName]
+	def, ok := explorer.schema.Types[args.Interface]
 	if !ok || def.Kind != ast.Interface {
-		return mcp.NewToolResultError(fmt.Sprintf("interface %q not found", interfaceName)), nil
+		return SchemaGetImplementorsOutput{}, fmt.Errorf("interface %q not found", args.Interface)
 	}
 
-	var implementors []map[string]any
+	var implementors []SchemaImplementorInfo
 	for typeName, typeDef := range explorer.schema.Types {
 		for _, iface := range typeDef.Interfaces {
-			if iface == interfaceName {
-				implementors = append(implementors, map[string]any{
-					"name":        typeName,
-					"description": truncate(typeDef.Description, 100),
+			if iface == args.Interface {
+				implementors = append(implementors, SchemaImplementorInfo{
+					Name:        typeName,
+					Description: truncate(typeDef.Description, 100),
 				})
 				break
 			}
@@ -730,87 +712,77 @@ func (t *toolContext) handleSchemaGetImplementors(reqCtx context.Context, req mc
 
 	// Sort by name
 	sort.Slice(implementors, func(i, j int) bool {
-		return implementors[i]["name"].(string) < implementors[j]["name"].(string)
+		return implementors[i].Name < implementors[j].Name
 	})
 
-	result := map[string]any{
-		"interface":    interfaceName,
-		"description":  def.Description,
-		"implementors": implementors,
-		"count":        len(implementors),
-	}
-
-	return jsonResult(result)
+	return SchemaGetImplementorsOutput{
+		Interface:    args.Interface,
+		Description:  def.Description,
+		Implementors: implementors,
+		Count:        len(implementors),
+	}, nil
 }
 
 // handleSchemaGetUnionTypes handles the schema_get_union_types tool.
-func (t *toolContext) handleSchemaGetUnionTypes(reqCtx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+func (t *toolContext) handleSchemaGetUnionTypes(
+	reqCtx context.Context,
+	req mcp.CallToolRequest,
+	args SchemaGetUnionTypesInput,
+) (SchemaGetUnionTypesOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return mcp.NewToolResultError("rate limit exceeded, please try again later"), nil
-	}
-
-	unionName, err := req.RequireString("union")
-	if err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
+		return SchemaGetUnionTypesOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get schema: %v", err)), nil
+		return SchemaGetUnionTypesOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to parse schema: %v", err)), nil
+		return SchemaGetUnionTypesOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	def, ok := explorer.schema.Types[unionName]
+	def, ok := explorer.schema.Types[args.Union]
 	if !ok || def.Kind != ast.Union {
-		return mcp.NewToolResultError(fmt.Sprintf("union %q not found", unionName)), nil
+		return SchemaGetUnionTypesOutput{}, fmt.Errorf("union %q not found", args.Union)
 	}
 
-	var types []map[string]any
+	var types []SchemaUnionMember
 	for _, typeName := range def.Types {
 		typeDef := explorer.schema.Types[typeName]
-		typeInfo := map[string]any{
-			"name": typeName,
+		member := SchemaUnionMember{
+			Name: typeName,
 		}
 		if typeDef != nil {
-			typeInfo["description"] = truncate(typeDef.Description, 100)
+			member.Description = truncate(typeDef.Description, 100)
 		}
-		types = append(types, typeInfo)
+		types = append(types, member)
 	}
 
-	result := map[string]any{
-		"union":       unionName,
-		"description": def.Description,
-		"types":       types,
-		"count":       len(types),
-	}
-
-	return jsonResult(result)
+	return SchemaGetUnionTypesOutput{
+		Union:       args.Union,
+		Description: def.Description,
+		Types:       types,
+		Count:       len(types),
+	}, nil
 }
 
-// formatASTFields formats ast.FieldDefinition list for output.
-func formatASTFields(fields ast.FieldList) []map[string]any {
-	var result []map[string]any
+// formatASTFieldsTyped converts AST fields to typed SchemaFieldInfo slice.
+func formatASTFieldsTyped(fields ast.FieldList) []SchemaFieldInfo {
+	var result []SchemaFieldInfo
 	for _, f := range fields {
-		field := map[string]any{
-			"name": f.Name,
-			"type": f.Type.String(),
-		}
-		if f.Description != "" {
-			field["description"] = truncate(f.Description, 150)
+		field := SchemaFieldInfo{
+			Name:        f.Name,
+			Type:        f.Type.String(),
+			Description: truncate(f.Description, 150),
 		}
 		if dep := f.Directives.ForName("deprecated"); dep != nil {
 			if reason := dep.Arguments.ForName("reason"); reason != nil {
-				field["deprecated"] = reason.Value.Raw
+				field.Deprecated = reason.Value.Raw
 			} else {
-				field["deprecated"] = true
+				field.Deprecated = true
 			}
-		}
-		if len(f.Arguments) > 0 {
-			field["argCount"] = len(f.Arguments)
 		}
 		result = append(result, field)
 	}
@@ -825,13 +797,4 @@ func truncate(s string, length int) string {
 		return s
 	}
 	return s[:length] + "..."
-}
-
-// jsonResult returns a JSON-formatted tool result.
-func jsonResult(data any) (*mcp.CallToolResult, error) {
-	jsonData, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to marshal result: %v", err)), nil
-	}
-	return mcp.NewToolResultText(string(jsonData)), nil
 }
