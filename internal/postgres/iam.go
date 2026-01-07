@@ -290,6 +290,31 @@ func AddUser(ctx context.Context, appName, username, password string, cluster fl
 	return nil
 }
 
+func DropUser(ctx context.Context, appName string, username string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	if err != nil {
+		return err
+	}
+
+	connectionInfo, err := dbInfo.DBConnection(ctx)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
+	if err != nil {
+		return err
+	}
+
+	_, err = db.ExecContext(ctx, fmt.Sprintf("drop role %v;", username))
+	if err != nil {
+		return formatInvalidGrantError(err)
+	}
+	out.Printf("User %v has been dropped", username)
+
+	return nil
+}
+
 func validateSQLVariables(variables ...string) error {
 	r, err := regexp.Compile("^([A-Za-z0-9-_]+)$")
 	if err != nil {
