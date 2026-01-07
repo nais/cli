@@ -16,6 +16,7 @@ func usersCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			addCommand(flags),
+			dropCommand(flags),
 			listCommand(flags),
 		},
 	}
@@ -53,6 +54,23 @@ func listCommand(parentFlags *flag.User) *naistrix.Command {
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return postgres.ListUsers(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
+		},
+	}
+}
+
+func dropCommand(parentFlags *flag.User) *naistrix.Command {
+	flags := &flag.UserDrop{User: parentFlags}
+
+	return &naistrix.Command{
+		Name:  "drop",
+		Title: "Drop a user from a SQL instance database.",
+		Args: []naistrix.Argument{
+			{Name: "app_name"},
+			{Name: "username"},
+		},
+		Flags: flags,
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			return postgres.DropUser(ctx, args.Get("app_name"), args.Get("username"), flags.Context, flags.Namespace, out)
 		},
 	}
 }
