@@ -52,6 +52,10 @@ type UserAdd struct {
 	Privilege string `name:"privilege" usage:"The privilege to grant to the user."`
 }
 
+type UserDrop struct {
+	*User
+}
+
 type UserList struct {
 	*User
 }
