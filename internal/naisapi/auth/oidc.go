@@ -17,6 +17,7 @@ import (
 	oidcclient "github.com/zitadel/oidc/v3/pkg/client"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"golang.org/x/oauth2"
+	"golang.org/x/sync/errgroup"
 )
 
 var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais auth login -n`")
@@ -75,17 +76,19 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 
 	state := uuid.New().String()
 	verifier := oauth2.GenerateVerifier()
-	ch := make(chan *oauth2.Token)
 
-	go func() {
-		if err := client.CallbackServer(ctx, verifier, state, ch); err != nil {
-			out.Println("Error starting server:", err)
-			return
+	ctx, cancel := context.WithCancel(ctx)
+	srv := client.CallbackServer(ctx, cancel, verifier, state)
+
+	wg, ctx := errgroup.WithContext(ctx)
+	wg.Go(func() error {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return fmt.Errorf("error starting login callback server: %w", err)
 		}
-	}()
+		return nil
+	})
 
 	url := client.oauth2.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.S256ChallengeOption(verifier))
-
 	_ = urlopen.Open(url)
 
 	out.Println("Your browser has been opened to visit:")
@@ -94,55 +97,10 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	out.Println()
 	out.Println("If your browser didn't open, please copy the URL above and paste it in your browser's address bar")
 
-	var tok *oauth2.Token
-	select {
-	case <-ctx.Done():
-		return nil
-	case tok = <-ch:
-	}
-
-	raw, ok := tok.Extra("id_token").(string)
-	if !ok {
-		return fmt.Errorf("missing id_token in token response")
-	}
-
-	idToken, err := client.ParseIDToken(ctx, raw)
-	if err != nil {
-		return fmt.Errorf("parse id token: %w", err)
-	}
-
-	domain, ok := idToken.Domain()
-	if !ok {
-		return fmt.Errorf("missing primary_domain claim")
-	}
-
-	type tenantData struct {
-		ConsoleURL string `json:"consoleUrl"`
-	}
-	u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-	res, err := http.Get(u)
-	if err != nil {
-		return fmt.Errorf("get %q: %w", u, err)
-	}
-	defer func() {
-		_ = res.Body.Close()
-	}()
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("get %q: unexpected status code: %q", u, res.Status)
-	}
-
-	var tenant tenantData
-	err = json.NewDecoder(res.Body).Decode(&tenant)
-	if err != nil {
-		return fmt.Errorf("decode: %w", err)
-	}
-
-	_, err = storeOIDCUser(tok, tenant.ConsoleURL)
-	if err != nil {
-		return fmt.Errorf("store oidcUser: %w", err)
-	}
-
-	return nil
+	// context is canceled when the login callback handler completes once or when errgroup returns a non-nil error
+	<-ctx.Done()
+	_ = srv.Shutdown(context.Background())
+	return wg.Wait()
 }
 
 // OIDCLogout deletes the user's secret from the system keyring and triggers logout at the identity provider.
@@ -278,9 +236,11 @@ func newOidcClient(ctx context.Context) (*oidcClient, error) {
 	return &oidcClient{oauth2Cfg, oidcCfg}, nil
 }
 
-func (c *oidcClient) CallbackServer(ctx context.Context, verifier, state string, ch chan *oauth2.Token) error {
+func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFunc, verifier, state string) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		defer cancel()
+
 		if r.URL.Query().Get("state") != state {
 			http.Error(w, "State did not match", http.StatusBadRequest)
 			return
@@ -294,26 +254,70 @@ func (c *oidcClient) CallbackServer(ctx context.Context, verifier, state string,
 			return
 		}
 
-		_, _ = fmt.Fprintln(w, "Success! You can now close this window.")
+		raw, ok := tok.Extra("id_token").(string)
+		if !ok {
+			http.Error(w, "Missing id_token in token response", http.StatusInternalServerError)
+			return
+		}
 
-		ch <- tok
+		idToken, err := c.ParseIDToken(ctx, raw)
+		if err != nil {
+			http.Error(w, "Failed to parse ID token: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		domain, ok := idToken.Domain()
+		if !ok {
+			http.Error(w, "Missing primary_domain claim in ID token", http.StatusUnauthorized)
+			return
+		}
+		if domain == "nais.io" {
+			// TODO: we should probably support this at some point
+			http.Error(w, "Cannot login with `@nais.io` user; please use a tenant-specific account", http.StatusBadRequest)
+			return
+		}
+
+		type tenantData struct {
+			ConsoleURL string `json:"consoleUrl"`
+		}
+		u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
+		res, err := http.Get(u)
+		if err != nil {
+			http.Error(w, "Failed to get tenant data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer func() {
+			_ = res.Body.Close()
+		}()
+		if res.StatusCode == http.StatusNotFound {
+			http.Error(w, fmt.Sprintf("No tenant data found for domain %q", domain), http.StatusBadRequest)
+			return
+		}
+		if res.StatusCode != http.StatusOK {
+			http.Error(w, "Failed to get tenant data: unexpected status code "+res.Status, http.StatusInternalServerError)
+			return
+		}
+
+		var tenant tenantData
+		err = json.NewDecoder(res.Body).Decode(&tenant)
+		if err != nil {
+			http.Error(w, "Failed to decode tenant data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err = storeOIDCUser(tok, tenant.ConsoleURL)
+		if err != nil {
+			http.Error(w, "Failed to store user data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, _ = fmt.Fprintln(w, "Successfully logged in! You can now close this window.")
 	})
 
-	srv := &http.Server{
+	return &http.Server{
 		Addr:    ":8865",
 		Handler: mux,
 	}
-
-	go func() {
-		<-ctx.Done()
-		_ = srv.Shutdown(context.Background())
-	}()
-
-	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return err
-	}
-
-	return nil
 }
 
 func (c *oidcClient) ParseIDToken(ctx context.Context, token string) (*IDToken, error) {
