@@ -28,7 +28,7 @@ jobs:
         run: mise run ci:release-info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IS_FORK: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
   checks:
     strategy:
       matrix:
