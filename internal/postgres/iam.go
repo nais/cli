@@ -271,18 +271,18 @@ func AddUser(ctx context.Context, appName, username, password string, cluster fl
 		return err
 	}
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER '%v' WITH ENCRYPTED PASSWORD '%v' NOCREATEDB;", username, password))
+	_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE USER "%v" WITH ENCRYPTED PASSWORD '%v' NOCREATEDB;", username, password))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
 	out.Printf("Created user: %v", username)
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to '%q';", privilege, username))
+	_, err = db.ExecContext(ctx, fmt.Sprintf("alter default privileges in schema public grant %v on tables to "%q";", privilege, username))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to '%q';", privilege, username))
+	_, err = db.ExecContext(ctx, fmt.Sprintf("grant %v on all tables in schema public to "%q";", privilege, username))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
@@ -306,7 +306,7 @@ func DropUser(ctx context.Context, appName string, username string, cluster flag
 		return err
 	}
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf("drop role '%v';", username))
+	_, err = db.ExecContext(ctx, fmt.Sprintf("drop role "%v";", username))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
