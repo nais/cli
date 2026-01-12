@@ -6,6 +6,7 @@ main() {
 	local repository token changelog version
 	repository="$1"
 	token="$2"
+	is_fork="$3"
 
 	changelog="$(git-cliff \
 		--bump \
@@ -36,7 +37,9 @@ main() {
 		)
 	fi
 
-	if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+	if [[ "$is_fork" == "true" && -n "$GITHUB_STEP_SUMMARY" ]]; then
+		echo "$body" >>"$GITHUB_STEP_SUMMARY"
+	elif [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
 		gh pr comment "${GITHUB_REF_NAME%%/merge}" \
 			--edit-last --create-if-none \
 			--repo "$repository" \
@@ -78,9 +81,10 @@ output() {
 
 repository="${1:-$GITHUB_REPOSITORY}"
 token="${2:-$GITHUB_TOKEN}"
+is_fork="${3:-$IS_FORK}"
 if [[ -z "$repository" || -z "$token" ]]; then
 	echo "Usage: $0 <repository> <token>"
 	exit 1
 fi
 
-main "$repository" "$token"
+main "$repository" "$token" "$is_fork"
