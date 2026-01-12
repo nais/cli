@@ -79,6 +79,8 @@ output() {
 	fi
 }
 
+echo "generate release info"
+
 repository="${1:-$GITHUB_REPOSITORY}"
 token="${2:-$GITHUB_TOKEN}"
 is_fork="${3:-$IS_FORK}"
@@ -86,5 +88,8 @@ if [[ -z "$repository" || -z "$token" ]]; then
 	echo "Usage: $0 <repository> <token>"
 	exit 1
 fi
+
+echo "repo: $repository"
+echo "fork: $is_fork"
 
 main "$repository" "$token" "$is_fork"
