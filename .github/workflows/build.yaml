@@ -28,6 +28,7 @@ jobs:
         run: mise run ci:release-info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name == github.repository }} && "false" || "true"
   checks:
     strategy:
       matrix:
@@ -188,4 +189,3 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
         run: mise run ci:create-package-manager-pr "${{ matrix.target.repo }}" "${{ matrix.target.file }}"
-
