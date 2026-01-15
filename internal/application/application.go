@@ -11,8 +11,6 @@ import (
 	alpha "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
 	"github.com/nais/cli/internal/auth"
-	"github.com/nais/cli/internal/auth/login"
-	"github.com/nais/cli/internal/auth/logout"
 	debug "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
 	issues "github.com/nais/cli/internal/issues/command"
@@ -56,8 +54,6 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	}
 	cmds := []*naistrix.Command{
 		auth.Auth(globalFlags),
-		login.LoginDeprecated(globalFlags),
-		logout.LogoutDeprecated(globalFlags),
 		appCommand.App(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
