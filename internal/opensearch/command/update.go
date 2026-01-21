@@ -8,6 +8,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -26,7 +27,10 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
-
+			err := validation.CheckEnvironment(string(flags.Environment))
+			if err != nil {
+				return err
+			}
 			return validateArgs(args)
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
@@ -111,11 +115,11 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if flags.MajorVersion != "" && string(flags.MajorVersion) != string(existing.Version.DesiredMajor) {
 				data.Version = gql.OpenSearchMajorVersion(flags.MajorVersion)
 				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing major version from %q to %q\n", existing.Version.DesiredMajor, data.Version)
+					pterm.Info.Printf("Changing version from %q to %q\n", existing.Version.DesiredMajor, data.Version)
 				}
 				newMajorVersion = string(data.Version)
 			}
-			outData = append(outData, []string{"Major version", string(existing.Version.DesiredMajor), newMajorVersion})
+			outData = append(outData, []string{"Version", string(existing.Version.DesiredMajor), newMajorVersion})
 
 			newStorageGB := "(unchanged)"
 			if flags.StorageGB > 0 && flags.StorageGB != existing.StorageGB {

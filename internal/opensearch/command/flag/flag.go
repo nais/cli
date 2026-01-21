@@ -38,7 +38,7 @@ func (c *Create) Validate() error {
 		return fmt.Errorf("invalid tier %q, must be one of: %v", c.Tier, gql.AllOpenSearchTier)
 	}
 	if c.Version != "" && !c.Version.IsValid() {
-		return fmt.Errorf("invalid major version %q, must be one of: %v", c.Version, gql.AllOpenSearchMajorVersion)
+		return fmt.Errorf("invalid version %q, must be one of: %v", c.Version, gql.AllOpenSearchMajorVersion)
 	}
 	return nil
 }
@@ -105,7 +105,7 @@ func (u *Update) Validate() error {
 		return fmt.Errorf("invalid tier %q, must be one of: %v", u.Tier, gql.AllOpenSearchTier)
 	}
 	if u.MajorVersion != "" && !u.MajorVersion.IsValid() {
-		return fmt.Errorf("invalid major version %q, must be one of: %v", u.MajorVersion, gql.AllOpenSearchMajorVersion)
+		return fmt.Errorf("invalid version %q, must be one of: %v", u.MajorVersion, gql.AllOpenSearchMajorVersion)
 	}
 	return nil
 }
@@ -161,7 +161,7 @@ func (v *Version) AutoComplete(context.Context, *naistrix.Arguments, string, any
 	for _, version := range gql.AllOpenSearchMajorVersion {
 		versions = append(versions, string(version))
 	}
-	return versions, "Available OpenSearch major versions."
+	return versions, "Available OpenSearch versions."
 }
 
 func (v *Version) IsValid() bool {
