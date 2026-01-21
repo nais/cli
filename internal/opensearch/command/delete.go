@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -22,6 +23,10 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 			{Name: "name"},
 		},
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			err := validation.CheckEnvironment(string(flags.Environment))
+			if err != nil {
+				return err
+			}
 			return validateArgs(args)
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {

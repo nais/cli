@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -25,7 +26,10 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if err := flags.Validate(); err != nil {
 				return err
 			}
-
+			err := validation.CheckEnvironment(string(flags.Environment))
+			if err != nil {
+				return err
+			}
 			return validateArgs(args)
 		},
 		Examples: []naistrix.Example{
@@ -92,7 +96,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				{"Tier", string(data.Tier)},
 				{"Memory", string(data.Memory)},
 				{"Storage", fmt.Sprintf("%d GB", data.StorageGB)},
-				{"Major version", string(data.Version)},
+				{"Version", string(data.Version)},
 			}
 
 			pterm.Info.Println("You are about to create an OpenSearch instance with the following configuration:")
