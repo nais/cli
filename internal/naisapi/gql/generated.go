@@ -5609,13 +5609,19 @@ var AllJobState = []JobState{
 type OpenSearchMajorVersion string
 
 const (
-	// OpenSearch Version 2.x
+	// OpenSearch Version 3.3.x
+	OpenSearchMajorVersionV33 OpenSearchMajorVersion = "V3_3"
+	// OpenSearch Version 2.19.x
+	OpenSearchMajorVersionV219 OpenSearchMajorVersion = "V2_19"
+	// OpenSearch Version 2.17.x
 	OpenSearchMajorVersionV2 OpenSearchMajorVersion = "V2"
-	// OpenSearch Version 1.x
+	// OpenSearch Version 1.3.x
 	OpenSearchMajorVersionV1 OpenSearchMajorVersion = "V1"
 )
 
 var AllOpenSearchMajorVersion = []OpenSearchMajorVersion{
+	OpenSearchMajorVersionV33,
+	OpenSearchMajorVersionV219,
 	OpenSearchMajorVersionV2,
 	OpenSearchMajorVersionV1,
 }

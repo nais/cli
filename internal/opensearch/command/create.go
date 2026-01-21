@@ -42,8 +42,8 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "some-opensearch --tier SINGLE_NODE",
 			},
 			{
-				Description: "Create an OpenSearch instance named some-opensearch with the specified major |VERSION|.",
-				Command:     "some-opensearch --version V2",
+				Description: "Create an OpenSearch instance named some-opensearch with the specified |VERSION|.",
+				Command:     "some-opensearch --version V3_3",
 			},
 			{
 				Description: "Create an OpenSearch instance named some-opensearch with the specified |STORAGE-GB|.",
@@ -62,7 +62,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Tier:      gql.OpenSearchTierSingleNode,
 				Memory:    gql.OpenSearchMemoryGb4,
 				StorageGB: 0,
-				Version:   gql.OpenSearchMajorVersionV2,
+				Version:   gql.OpenSearchMajorVersionV33,
 			}
 
 			if flags.Tier != "" {

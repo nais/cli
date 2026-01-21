@@ -13,8 +13,8 @@ type OpenSearch struct {
 	Memory gql.OpenSearchMemory `json:"memory" toml:"memory" jsonschema:"enum=GB_2,enum=GB_4,enum=GB_8,enum=GB_16,enum=GB_32,enum=GB_64"`
 	// Tier is the tier of the OpenSearch instance.
 	Tier gql.OpenSearchTier `json:"tier" toml:"tier" jsonschema:"enum=SINGLE_NODE,enum=HIGH_AVAILABILITY"`
-	// Version is the major version of OpenSearch.
-	Version gql.OpenSearchMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V2"`
+	// Version is the version of OpenSearch.
+	Version gql.OpenSearchMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V2,enum=V2_19,enum=V3_3"`
 	// StorageGB is the storage capacity in GB for the OpenSearch instance.
 	StorageGB int `json:"storageGB,omitempty" toml:"storageGB,omitempty"`
 }

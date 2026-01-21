@@ -57,12 +57,12 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 				Command:     "some-opensearch --storage-gb 1000",
 			},
 			{
-				Description: "Upgrade the major |VERSION| for an OpenSearch instance named some-opensearch.",
-				Command:     "some-opensearch --version V2",
+				Description: "Upgrade the |VERSION| for an OpenSearch instance named some-opensearch.",
+				Command:     "some-opensearch --version V3_3",
 			},
 			{
 				Description: "Set all available options for an OpenSearch instance named some-opensearch.",
-				Command:     "some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V2 --storage-gb 1000",
+				Command:     "some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V3_3 --storage-gb 1000",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

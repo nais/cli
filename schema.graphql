@@ -83,6 +83,10 @@ Activity log entry for team deploy key updates.
 """
 	TEAM_DEPLOY_KEY_UPDATED
 """
+Elevation was created.
+"""
+	ELEVATION_CREATED
+"""
 Activity log entries related to job deletion.
 """
 	JOB_DELETED
@@ -179,6 +183,10 @@ Service account token was deleted.
 """
 	SERVICE_ACCOUNT_TOKEN_DELETED
 """
+A user was granted access to a postgres cluster
+"""
+	POSTGRES_GRANT_ACCESS
+"""
 Team was created.
 """
 	TEAM_CREATED
@@ -218,6 +226,10 @@ Unleash instance was created.
 Unleash instance was updated.
 """
 	UNLEASH_INSTANCE_UPDATED
+"""
+Unleash instance was deleted.
+"""
+	UNLEASH_INSTANCE_DELETED
 """
 Valkey was created.
 """
@@ -331,6 +343,10 @@ All activity log entries related to deploy keys will use this resource type.
 """
 	DEPLOY_KEY
 """
+All activity log entries related to elevations will use this resource type.
+"""
+	ELEVATION
+"""
 All activity log entries related to jobs will use this resource type.
 """
 	JOB
@@ -351,6 +367,10 @@ All activity log entries related to secrets will use this resource type.
 """
 	SECRET
 	SERVICE_ACCOUNT
+"""
+All activity log entries related to postgres clusters will use this resource type.
+"""
+	POSTGRES
 """
 All activity log entries related to teams will use this resource type.
 """
@@ -1264,6 +1284,105 @@ The threshold that must be met for the scaling to trigger.
 	threshold: Int!
 }
 
+type CVE implements Node{
+"""
+The globally unique ID of the CVE.
+"""
+	id: ID!
+"""
+The unique identifier of the CVE. E.g. CVE-****-****.
+"""
+	identifier: String!
+"""
+Severity of the CVE.
+"""
+	severity: ImageVulnerabilitySeverity!
+"""
+Title of the CVE
+"""
+	title: String!
+"""
+Description of the CVE.
+"""
+	description: String!
+"""
+Link to the CVE details.
+"""
+	detailsLink: String!
+"""
+CVSS score of the CVE.
+"""
+	cvssScore: Float
+"""
+Affected workloads
+"""
+	workloads(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WorkloadWithVulnerabilityConnection!
+}
+
+type CVEConnection {
+"""
+Information to aid in pagination.
+"""
+	pageInfo: PageInfo!
+"""
+List of edges.
+"""
+	edges: [CVEEdge!]!
+"""
+List of nodes.
+"""
+	nodes: [CVE!]!
+}
+
+type CVEEdge {
+"""
+A cursor for use in pagination.
+"""
+	cursor: Cursor!
+"""
+The CVE.
+"""
+	node: CVE!
+}
+
+"""
+Ordering options when fetching CVEs.
+"""
+input CVEOrder {
+"""
+Ordering options when fetching CVEs.
+"""
+	field: CVEOrderField!
+"""
+Ordering options when fetching CVEs.
+"""
+	direction: OrderDirection!
+}
+
+enum CVEOrderField {
+	IDENTIFIER
+	SEVERITY
+	CVSS_SCORE
+	AFFECTED_WORKLOADS_COUNT
+}
+
 input ChangeDeploymentKeyInput {
 	teamSlug: Slug!
 }
@@ -1483,6 +1602,46 @@ The cost series.
 	series: [ServiceCostSeries!]!
 }
 
+"""
+Input for creating an elevation.
+"""
+input CreateElevationInput {
+"""
+Input for creating an elevation.
+"""
+	type: ElevationType!
+"""
+Input for creating an elevation.
+"""
+	team: Slug!
+"""
+Input for creating an elevation.
+"""
+	environmentName: String!
+"""
+Input for creating an elevation.
+"""
+	resourceName: String!
+"""
+Input for creating an elevation.
+"""
+	reason: String!
+"""
+Input for creating an elevation.
+"""
+	durationMinutes: Int!
+}
+
+"""
+Payload returned when creating an elevation.
+"""
+type CreateElevationPayload {
+"""
+The created elevation.
+"""
+	elevation: Elevation!
+}
+
 input CreateOpenSearchInput {
 	name: String!
 	environmentName: String!
@@ -1571,6 +1730,7 @@ The newly created team.
 
 input CreateUnleashForTeamInput {
 	teamSlug: Slug!
+	releaseChannel: String
 }
 
 type CreateUnleashForTeamPayload {
@@ -1704,6 +1864,17 @@ The service account that the token belonged to.
 Whether or not the service account token was deleted.
 """
 	serviceAccountTokenDeleted: Boolean
+}
+
+input DeleteUnleashInstanceInput {
+	teamSlug: Slug!
+}
+
+type DeleteUnleashInstancePayload {
+"""
+Whether the Unleash instance was successfully deleted.
+"""
+	unleashDeleted: Boolean
 }
 
 input DeleteValkeyInput {
@@ -1868,6 +2039,11 @@ The deployment.
 	node: Deployment!
 }
 
+input DeploymentFilter {
+	from: Time
+	environments: [String!]
+}
+
 """
 Deployment key type.
 """
@@ -2014,6 +2190,156 @@ type DeprecatedRegistryIssue implements Issue & Node{
 
 input DisableReconcilerInput {
 	name: String!
+}
+
+"""
+An active elevation grants temporary elevated privileges to a specific resource.
+"""
+type Elevation implements Node{
+"""
+Unique ID of the elevation.
+"""
+	id: ID!
+"""
+Type of elevation.
+"""
+	type: ElevationType!
+"""
+Team that owns the resource.
+"""
+	team: Team!
+"""
+Environment where the resource is located.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+Name of the resource being elevated to.
+"""
+	resourceName: String!
+"""
+User who requested the elevation.
+"""
+	user: User!
+"""
+Reason provided for the elevation.
+"""
+	reason: String!
+"""
+When the elevation was created.
+"""
+	createdAt: Time!
+"""
+When the elevation will expire.
+"""
+	expiresAt: Time!
+}
+
+"""
+Activity log entry for elevation creation.
+"""
+type ElevationCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who created the elevation.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Resource type (ELEVATION).
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the elevation resource.
+"""
+	resourceName: String!
+"""
+The team slug.
+"""
+	teamSlug: Slug!
+"""
+The environment name.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: ElevationCreatedActivityLogEntryData!
+}
+
+"""
+Data associated with an elevation creation activity log entry.
+"""
+type ElevationCreatedActivityLogEntryData {
+"""
+Type of elevation that was created.
+"""
+	elevationType: ElevationType!
+"""
+Target resource name that was elevated to.
+"""
+	targetResourceName: String!
+"""
+Reason provided for the elevation.
+"""
+	reason: String!
+"""
+When the elevation will expire.
+"""
+	expiresAt: Time!
+}
+
+"""
+Input for looking up an existing elevation.
+"""
+input ElevationInput {
+"""
+Input for looking up an existing elevation.
+"""
+	type: ElevationType!
+"""
+Input for looking up an existing elevation.
+"""
+	team: Slug!
+"""
+Input for looking up an existing elevation.
+"""
+	environmentName: String!
+"""
+Input for looking up an existing elevation.
+"""
+	resourceName: String!
+}
+
+"""
+Type of elevation that can be requested.
+"""
+enum ElevationType {
+"""
+Access to read secrets in plain text.
+"""
+	SECRET
+"""
+Access to execute commands in an instance.
+"""
+	INSTANCE_EXEC
+"""
+Access to port-forward to an instance.
+"""
+	INSTANCE_PORT_FORWARD
+"""
+Access to debug an instance with ephemeral containers.
+"""
+	INSTANCE_DEBUG
 }
 
 input EnableReconcilerInput {
@@ -2264,6 +2590,18 @@ The `Float` scalar type represents signed double-precision fractional values as 
 """
 scalar Float
 
+input GrantPostgresAccessInput {
+	clusterName: String!
+	teamSlug: Slug!
+	environmentName: String!
+	grantee: String!
+	duration: String!
+}
+
+type GrantPostgresAccessPayload {
+	error: String
+}
+
 """
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as "4") or integer (such as 4) input value will be accepted as an ID.
 """
@@ -2311,6 +2649,10 @@ Timestamp of when the vulnerability got its current severity.
 Link to the vulnerability details.
 """
 	vulnerabilityDetailsLink: String!
+"""
+CVSS score of the vulnerability.
+"""
+	cvssScore: Float
 }
 
 type ImageVulnerabilityConnection {
@@ -3322,6 +3664,17 @@ interface LogDestination {
 	id: ID!
 }
 
+type LogDestinationGeneric implements LogDestination & Node{
+"""
+The globally unique ID of the log destination.
+"""
+	id: ID!
+"""
+Name defined in the manifest
+"""
+	name: String!
+}
+
 type LogDestinationLoki implements LogDestination & Node{
 """
 The globally unique ID of the log destination.
@@ -3553,6 +3906,13 @@ Update the deploy key of a team. Returns the updated deploy key.
 		input: ChangeDeploymentKeyInput!
 	): ChangeDeploymentKeyPayload!
 """
+Create a temporary elevation of privileges for a specific resource.
+The elevation expires automatically after the specified duration.
+"""
+	createElevation(
+		input: CreateElevationInput!
+	): CreateElevationPayload!
+"""
 Delete a job.
 """
 	deleteJob(
@@ -3714,6 +4074,12 @@ Start maintenance updates for an OpenSearch instance.
 		input: StartOpenSearchMaintenanceInput!
 	): StartOpenSearchMaintenancePayload
 """
+Grant access to this postgres cluster
+"""
+	grantPostgresAccess(
+		input: GrantPostgresAccessInput!
+	): GrantPostgresAccessPayload!
+"""
 Create a new Nais team
 
 The user creating the team will be granted team ownership, unless the user is a service account, in which case the
@@ -3798,10 +4164,21 @@ Create a new Unleash instance.
 
 This mutation will create a new Unleash instance for the given team. The team
 will be set as owner of the Unleash instance and will be able to manage it.
+
+By default, instances are created with the default version.
+Optionally specify a releaseChannel to subscribe to automatic version updates.
 """
 	createUnleashForTeam(
 		input: CreateUnleashForTeamInput!
 	): CreateUnleashForTeamPayload!
+"""
+Update an Unleash instance's release channel.
+
+Use this mutation to change to a different release channel.
+"""
+	updateUnleashInstance(
+		input: UpdateUnleashInstanceInput!
+	): UpdateUnleashInstancePayload!
 """
 Add team to the list of teams that can access the Unleash instance.
 """
@@ -3814,6 +4191,15 @@ Remove team from the list of teams that can access the Unleash instance.
 	revokeTeamAccessToUnleash(
 		input: RevokeTeamAccessToUnleashInput!
 	): RevokeTeamAccessToUnleashPayload!
+"""
+Delete an Unleash instance.
+
+The Unleash instance can only be deleted if no other teams have access to it.
+Revoke access for all other teams before deleting the instance.
+"""
+	deleteUnleashInstance(
+		input: DeleteUnleashInstanceInput!
+	): DeleteUnleashInstancePayload!
 """
 Create a new Valkey instance.
 """
@@ -4157,11 +4543,19 @@ The OpenSearchMaintenanceUpdate.
 
 enum OpenSearchMajorVersion {
 """
-OpenSearch Version 2.x
+OpenSearch Version 3.3.x
+"""
+	V3_3
+"""
+OpenSearch Version 2.19.x
+"""
+	V2_19
+"""
+OpenSearch Version 2.17.x
 """
 	V2
 """
-OpenSearch Version 1.x
+OpenSearch Version 1.3.x
 """
 	V1
 }
@@ -4335,6 +4729,58 @@ interface Persistence {
 	teamEnvironment: TeamEnvironment!
 }
 
+type Postgres implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+	teamEnvironment: TeamEnvironment!
+}
+
+type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: PostgresGrantAccessActivityLogEntryData!
+}
+
+type PostgresGrantAccessActivityLogEntryData {
+	grantee: String!
+	until: Time!
+}
+
 type Price {
 	value: Float!
 }
@@ -4452,6 +4898,31 @@ End month of the period, inclusive.
 """
 		to: Date!
 	): CostMonthlySummary!
+"""
+Get a list of deployments.
+"""
+	deployments(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter options for the deployments returned from the connection.
+"""
+		filter: DeploymentFilter
+	): DeploymentConnection!
 """
 Get a list of environments.
 """
@@ -4590,6 +5061,11 @@ Get a team by its slug.
 		slug: Slug!
 	): Team!
 """
+Get a list of available release channels for Unleash instances.
+Release channels provide automatic version updates based on the channel's update policy.
+"""
+	unleashReleaseChannels: [UnleashReleaseChannel!]!
+"""
 Get a list of users.
 """
 	users(
@@ -4667,6 +5143,37 @@ Get the mean time to fix history for all teams.
 	vulnerabilityFixHistory(
 		from: Date!
 	): VulnerabilityFixHistory!
+"""
+Get a specific CVE by its identifier.
+"""
+	cve(
+		identifier: String!
+	): CVE!
+"""
+List active CVEs for workloads in all environments.
+"""
+	cves(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: CVEOrder
+	): CVEConnection!
 }
 
 """
@@ -5450,7 +5957,7 @@ Search filter for filtering search results.
 """
 Types that can be searched for.
 """
-union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | SqlInstance | Valkey
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Valkey
 
 """
 Search node connection.
@@ -5501,6 +6008,7 @@ Search for applications.
 	JOB
 	KAFKA_TOPIC
 	OPENSEARCH
+	POSTGRES
 	SQL_INSTANCE
 	VALKEY
 }
@@ -5706,6 +6214,10 @@ The Secret.
 Input for filtering the secrets of a team.
 """
 input SecretFilter {
+"""
+Input for filtering the secrets of a team.
+"""
+	name: String
 """
 Input for filtering the secrets of a team.
 """
@@ -7187,6 +7699,12 @@ Get vulnerability summary from given date until today.
 """
 		from: Date!
 	): ImageVulnerabilityHistory!
+"""
+Get the mean time to fix history for a team.
+"""
+	vulnerabilityFixHistory(
+		from: Date!
+	): VulnerabilityFixHistory!
 	vulnerabilitySummary(
 		filter: TeamVulnerabilitySummaryFilter
 	): TeamVulnerabilitySummary!
@@ -7219,12 +7737,6 @@ Ordering options for items returned from the connection.
 """
 		orderBy: VulnerabilitySummaryOrder
 	): WorkloadVulnerabilitySummaryConnection!
-"""
-Get the mean time to fix history for a team.
-"""
-	vulnerabilityFixHistory(
-		from: Date!
-	): VulnerabilityFixHistory!
 """
 Nais workloads owned by the team.
 """
@@ -8489,9 +9001,54 @@ Get items before this cursor.
 	apiIngress: String!
 	metrics: UnleashInstanceMetrics!
 	ready: Boolean!
+"""
+Release channel name if using channel-based version management.
+Populated from CRD spec.releaseChannel.name field.
+"""
+	releaseChannelName: String
+"""
+Release channel details if using channel-based version management.
+Returns the full release channel object with current version and update policy.
+"""
+	releaseChannel: UnleashReleaseChannel
 }
 
 type UnleashInstanceCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
+type UnleashInstanceDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
 """
@@ -8583,6 +9140,36 @@ Revoked team slug.
 Allowed team slug.
 """
 	allowedTeamSlug: Slug
+"""
+Updated release channel.
+"""
+	updatedReleaseChannel: String
+}
+
+"""
+UnleashReleaseChannel represents an available release channel for Unleash instances.
+Release channels provide automatic version updates based on the channel's update policy.
+"""
+type UnleashReleaseChannel {
+"""
+Unique name of the release channel (e.g., 'stable', 'rapid', 'regular').
+"""
+	name: String!
+"""
+Current Unleash version on this channel.
+"""
+	currentVersion: String!
+"""
+Rollout strategy type for version updates:
+- 'sequential': Updates instances one-by-one in order
+- 'canary': Gradual rollout with canary deployment
+- 'parallel': Updates multiple instances simultaneously
+"""
+	type: String!
+"""
+When the channel version was last updated.
+"""
+	lastUpdated: Time
 }
 
 input UpdateImageVulnerabilityInput {
@@ -8689,6 +9276,15 @@ The updated team.
 	team: Team
 }
 
+input UpdateUnleashInstanceInput {
+	teamSlug: Slug!
+	releaseChannel: String
+}
+
+type UpdateUnleashInstancePayload {
+	unleash: UnleashInstance
+}
+
 input UpdateValkeyInput {
 	name: String!
 	environmentName: String!
@@ -8755,6 +9351,13 @@ Ordering options for items returned from the connection.
 True if the user is global admin.
 """
 	isAdmin: Boolean!
+"""
+Get active elevations for this user matching the given parameters.
+Returns an empty list if no active elevations match.
+"""
+	elevations(
+		input: ElevationInput!
+	): [Elevation!]!
 }
 
 """
@@ -10115,6 +10718,37 @@ A cursor for use in pagination.
 The workload vulnerability summary.
 """
 	node: WorkloadVulnerabilitySummary!
+}
+
+type WorkloadWithVulnerability {
+	vulnerability: ImageVulnerability!
+	workload: Workload!
+}
+
+type WorkloadWithVulnerabilityConnection {
+"""
+Information to aid in pagination.
+"""
+	pageInfo: PageInfo!
+"""
+List of edges.
+"""
+	edges: [WorkloadWithVulnerabilityEdge!]!
+"""
+List of nodes.
+"""
+	nodes: [WorkloadWithVulnerability!]!
+}
+
+type WorkloadWithVulnerabilityEdge {
+"""
+A cursor for use in pagination.
+"""
+	cursor: Cursor!
+"""
+The vulnerability.
+"""
+	node: WorkloadWithVulnerability!
 }
 
 
