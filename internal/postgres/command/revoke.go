@@ -42,7 +42,7 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema)
+			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, out)
 		},
 	}
 }

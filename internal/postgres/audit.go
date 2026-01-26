@@ -13,10 +13,18 @@ import (
 )
 
 func EnableAuditLogging(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (hardcoded reason for administrative operation)
+	if err := EnsureSecretAccess(ctx, appName, namespace, cluster, ReasonEnableAudit, out); err != nil {
+		return err
+	}
 	return enableAuditAsAppUser(ctx, appName, namespace, cluster, out)
 }
 
 func VerifyAuditLogging(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (hardcoded reason for administrative operation)
+	if err := EnsureSecretAccess(ctx, appName, namespace, cluster, ReasonVerifyAudit, out); err != nil {
+		return err
+	}
 	_, err := verifyAuditAsAppUser(ctx, appName, namespace, cluster, out)
 	return err
 }

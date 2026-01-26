@@ -11,7 +11,12 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, out *naistrix.OutputWriter) error {
+func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, reason string, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (user must provide reason)
+	if err := EnsureSecretAccessWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
+		return err
+	}
+
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err

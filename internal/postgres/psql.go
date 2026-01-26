@@ -11,7 +11,12 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, reason string, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (user must provide reason)
+	if err := EnsureSecretAccessWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
+		return err
+	}
+
 	psqlPath, err := exec.LookPath("psql")
 	if err != nil {
 		return err
