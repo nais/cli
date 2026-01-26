@@ -209,6 +209,158 @@ var AllApplicationState = []ApplicationState{
 	ApplicationStateUnknown,
 }
 
+// CreateElevationCreateElevationCreateElevationPayload includes the requested fields of the GraphQL type CreateElevationPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload returned when creating an elevation.
+type CreateElevationCreateElevationCreateElevationPayload struct {
+	// The created elevation.
+	Elevation CreateElevationCreateElevationCreateElevationPayloadElevation `json:"elevation"`
+}
+
+// GetElevation returns CreateElevationCreateElevationCreateElevationPayload.Elevation, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayload) GetElevation() CreateElevationCreateElevationCreateElevationPayloadElevation {
+	return v.Elevation
+}
+
+// CreateElevationCreateElevationCreateElevationPayloadElevation includes the requested fields of the GraphQL type Elevation.
+// The GraphQL type's documentation follows.
+//
+// An active elevation grants temporary elevated privileges to a specific resource.
+type CreateElevationCreateElevationCreateElevationPayloadElevation struct {
+	// Unique ID of the elevation.
+	Id string `json:"id"`
+	// Type of elevation.
+	Type ElevationType `json:"type"`
+	// Team that owns the resource.
+	Team CreateElevationCreateElevationCreateElevationPayloadElevationTeam `json:"team"`
+	// Environment where the resource is located.
+	TeamEnvironment CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment `json:"teamEnvironment"`
+	// Name of the resource being elevated to.
+	ResourceName string `json:"resourceName"`
+	// Reason provided for the elevation.
+	Reason string `json:"reason"`
+}
+
+// GetId returns CreateElevationCreateElevationCreateElevationPayloadElevation.Id, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetId() string { return v.Id }
+
+// GetType returns CreateElevationCreateElevationCreateElevationPayloadElevation.Type, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetType() ElevationType {
+	return v.Type
+}
+
+// GetTeam returns CreateElevationCreateElevationCreateElevationPayloadElevation.Team, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetTeam() CreateElevationCreateElevationCreateElevationPayloadElevationTeam {
+	return v.Team
+}
+
+// GetTeamEnvironment returns CreateElevationCreateElevationCreateElevationPayloadElevation.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetTeamEnvironment() CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetResourceName returns CreateElevationCreateElevationCreateElevationPayloadElevation.ResourceName, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetReason returns CreateElevationCreateElevationCreateElevationPayloadElevation.Reason, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetReason() string {
+	return v.Reason
+}
+
+// CreateElevationCreateElevationCreateElevationPayloadElevationTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type CreateElevationCreateElevationCreateElevationPayloadElevationTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns CreateElevationCreateElevationCreateElevationPayloadElevationTeam.Slug, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeam) GetSlug() string {
+	return v.Slug
+}
+
+// CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment struct {
+	// Get the environment.
+	Environment CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment) GetEnvironment() CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// Input for creating an elevation.
+type CreateElevationInput struct {
+	// Input for creating an elevation.
+	Type ElevationType `json:"type"`
+	// Input for creating an elevation.
+	Team string `json:"team"`
+	// Input for creating an elevation.
+	EnvironmentName string `json:"environmentName"`
+	// Input for creating an elevation.
+	ResourceName string `json:"resourceName"`
+	// Input for creating an elevation.
+	Reason string `json:"reason"`
+	// Input for creating an elevation.
+	DurationMinutes int `json:"durationMinutes"`
+}
+
+// GetType returns CreateElevationInput.Type, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetType() ElevationType { return v.Type }
+
+// GetTeam returns CreateElevationInput.Team, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetTeam() string { return v.Team }
+
+// GetEnvironmentName returns CreateElevationInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetResourceName returns CreateElevationInput.ResourceName, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetResourceName() string { return v.ResourceName }
+
+// GetReason returns CreateElevationInput.Reason, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetReason() string { return v.Reason }
+
+// GetDurationMinutes returns CreateElevationInput.DurationMinutes, and is useful for accessing the field via an interface.
+func (v *CreateElevationInput) GetDurationMinutes() int { return v.DurationMinutes }
+
+// CreateElevationResponse is returned by CreateElevation on success.
+type CreateElevationResponse struct {
+	// Create a temporary elevation of privileges for a specific resource.
+	// The elevation expires automatically after the specified duration.
+	CreateElevation CreateElevationCreateElevationCreateElevationPayload `json:"createElevation"`
+}
+
+// GetCreateElevation returns CreateElevationResponse.CreateElevation, and is useful for accessing the field via an interface.
+func (v *CreateElevationResponse) GetCreateElevation() CreateElevationCreateElevationCreateElevationPayload {
+	return v.CreateElevation
+}
+
 // CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload includes the requested fields of the GraphQL type CreateOpenSearchPayload.
 type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload struct {
 	// OpenSearch instance that was created.
@@ -321,6 +473,27 @@ type DeleteValkeyResponse struct {
 // GetDeleteValkey returns DeleteValkeyResponse.DeleteValkey, and is useful for accessing the field via an interface.
 func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteValkeyPayload {
 	return v.DeleteValkey
+}
+
+// Type of elevation that can be requested.
+type ElevationType string
+
+const (
+	// Access to read secrets in plain text.
+	ElevationTypeSecret ElevationType = "SECRET"
+	// Access to execute commands in an instance.
+	ElevationTypeInstanceExec ElevationType = "INSTANCE_EXEC"
+	// Access to port-forward to an instance.
+	ElevationTypeInstancePortForward ElevationType = "INSTANCE_PORT_FORWARD"
+	// Access to debug an instance with ephemeral containers.
+	ElevationTypeInstanceDebug ElevationType = "INSTANCE_DEBUG"
+)
+
+var AllElevationType = []ElevationType{
+	ElevationTypeSecret,
+	ElevationTypeInstanceExec,
+	ElevationTypeInstancePortForward,
+	ElevationTypeInstanceDebug,
 }
 
 // EnvironmentsEnvironmentsEnvironmentConnection includes the requested fields of the GraphQL type EnvironmentConnection.
@@ -7466,6 +7639,14 @@ func (v *__ApplicationEnvironmentsInput) GetTeam() string { return v.Team }
 // GetFilter returns __ApplicationEnvironmentsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ApplicationEnvironmentsInput) GetFilter() TeamApplicationsFilter { return v.Filter }
 
+// __CreateElevationInput is used internally by genqlient
+type __CreateElevationInput struct {
+	Input CreateElevationInput `json:"input"`
+}
+
+// GetInput returns __CreateElevationInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreateElevationInput) GetInput() CreateElevationInput { return v.Input }
+
 // __CreateOpenSearchInput is used internally by genqlient
 type __CreateOpenSearchInput struct {
 	Name            string                 `json:"name,omitempty"`
@@ -7888,6 +8069,53 @@ func ApplicationEnvironments(
 	}
 
 	data_ = &ApplicationEnvironmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateElevation.
+const CreateElevation_Operation = `
+mutation CreateElevation ($input: CreateElevationInput!) {
+	createElevation(input: $input) {
+		elevation {
+			id
+			type
+			team {
+				slug
+			}
+			teamEnvironment {
+				environment {
+					name
+				}
+			}
+			resourceName
+			reason
+		}
+	}
+}
+`
+
+func CreateElevation(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input CreateElevationInput,
+) (data_ *CreateElevationResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateElevation",
+		Query:  CreateElevation_Operation,
+		Variables: &__CreateElevationInput{
+			Input: input,
+		},
+	}
+
+	data_ = &CreateElevationResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

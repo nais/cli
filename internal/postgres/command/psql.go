@@ -19,7 +19,7 @@ func psqlCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.RunPSQL(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
+			return postgres.RunPSQL(ctx, args.Get("app_name"), flags.Context, flags.Namespace, flags.Reason, out)
 		},
 	}
 }

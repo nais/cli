@@ -7,6 +7,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/naistrix"
 )
 
 var grantAllPrivs = `ALTER DEFAULT PRIVILEGES IN SCHEMA $schema GRANT ALL ON TABLES TO cloudsqliamuser;
@@ -33,7 +34,12 @@ var (
 	revokeUsage = `REVOKE USAGE ON SCHEMA $schema FROM cloudsqliamuser;`
 )
 
-func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, allPrivs bool) error {
+func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, allPrivs bool, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (hardcoded reason for administrative operation)
+	if err := EnsureSecretAccess(ctx, appName, namespace, cluster, ReasonPrepareAccess, out); err != nil {
+		return err
+	}
+
 	prependUsageIfNotPublic := func(statement string) string {
 		if schema != "public" {
 			return grantUsage + "\n" + statement
@@ -48,7 +54,12 @@ func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace
 	}
 }
 
-func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string) error {
+func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, out *naistrix.OutputWriter) error {
+	// Ensure we have elevated access to read the database secret (hardcoded reason for administrative operation)
+	if err := EnsureSecretAccess(ctx, appName, namespace, cluster, ReasonRevokeAccess, out); err != nil {
+		return err
+	}
+
 	q := revokeAllPrivs
 	if schema != "public" {
 		q += "\n" + revokeUsage

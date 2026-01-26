@@ -45,7 +45,7 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges)
+			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges, out)
 		},
 	}
 }
