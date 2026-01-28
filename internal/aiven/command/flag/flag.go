@@ -21,3 +21,12 @@ type CreateOpenSearch struct {
 	Instance string `name:"instance" short:"i" usage:"The name of the OpenSearch |INSTANCE|."`
 	Access   string `name:"access" short:"a" usage:"The access |LEVEL|."`
 }
+
+type GrantAccess struct {
+	*Aiven
+}
+
+type GrantAccessStream struct {
+	*GrantAccess
+	Namespace string `namespace:"namespace" short:"n" usage:"|NAMESPACE| of the Stream.kafka.nais.io's |NAMESPACE|."`
+}
