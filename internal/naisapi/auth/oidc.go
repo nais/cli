@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
+	"github.com/nais/cli/internal/keyring"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/nais/naistrix"
 	oidcclient "github.com/zitadel/oidc/v3/pkg/client"
@@ -105,8 +106,8 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 
 // OIDCLogout deletes the user's secret from the system keyring and triggers logout at the identity provider.
 func OIDCLogout(ctx context.Context, out *naistrix.OutputWriter) error {
-	err := deleteKeyringSecret()
-	if err != nil && !errors.Is(err, errSecretNotFound) {
+	err := keyring.Delete()
+	if err != nil && !errors.Is(err, keyring.ErrSecretNotFound) {
 		return fmt.Errorf("delete user secret: %w", err)
 	}
 
@@ -127,79 +128,6 @@ func OIDCLogout(ctx context.Context, out *naistrix.OutputWriter) error {
 	out.Println()
 
 	return nil
-}
-
-// oidcUser defines the data to marshal to and from the system keyring.
-type oidcUser struct {
-	oauth2.Token
-	IDToken     string `json:"id_token"`
-	ConsoleHost string `json:"console_host"`
-}
-
-func (u *oidcUser) Refresh(ctx context.Context) (*oidcUser, error) {
-	client, err := newOidcClient(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get oauth config: %w", err)
-	}
-
-	tok, err := client.oauth2.TokenSource(ctx, &u.Token).Token()
-	if err != nil {
-		return nil, ErrNeedsOIDCLogin
-	}
-
-	user, err := storeOIDCUser(tok, u.ConsoleHost)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %+v", ErrNeedsOIDCLogin, err)
-	}
-
-	return user, nil
-}
-
-func getOIDCUser(ctx context.Context) (*oidcUser, error) {
-	secret, err := getKeyringSecret()
-	if err != nil {
-		if errors.Is(err, errSecretNotFound) {
-			return nil, ErrNeedsOIDCLogin
-		}
-		return nil, fmt.Errorf("get oidc user: %w", err)
-	}
-
-	var user oidcUser
-	err = json.Unmarshal([]byte(secret), &user)
-	if err != nil {
-		return nil, fmt.Errorf("unmarshal data from keyring")
-	}
-
-	if !user.Valid() {
-		return user.Refresh(ctx)
-	}
-
-	return &user, nil
-}
-
-func storeOIDCUser(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
-	idToken, ok := tok.Extra("id_token").(string)
-	if !ok {
-		return nil, fmt.Errorf("missing id_token")
-	}
-
-	sec := &oidcUser{
-		Token:       *tok,
-		IDToken:     idToken,
-		ConsoleHost: consoleURL,
-	}
-
-	secret, err := json.Marshal(sec)
-	if err != nil {
-		return nil, fmt.Errorf("marshal token: %w", err)
-	}
-
-	err = setKeyringSecret(string(secret))
-	if err != nil {
-		return nil, fmt.Errorf("set keyring secret: %w", err)
-	}
-
-	return sec, nil
 }
 
 type oidcClient struct {
