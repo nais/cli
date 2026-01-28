@@ -21,3 +21,9 @@ type CreateOpenSearch struct {
 	Instance string `name:"instance" short:"i" usage:"The name of the OpenSearch |INSTANCE|."`
 	Access   string `name:"access" short:"a" usage:"The access |LEVEL|."`
 }
+
+type CreateStream struct {
+	*Create
+	Namespace int    `namespace:"namespace" short:"n" usage:"|NAME| of the application's namespace that owns the Kafka Stream."`
+	Pool      string `name:"pool" short:"p" usage:"The |NAME| of the pool the Stream's Kafka instance belongs to."`
+}

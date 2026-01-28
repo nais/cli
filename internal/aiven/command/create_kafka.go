@@ -53,7 +53,6 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 			if err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_create_generating_aivenapplication_error_total")
 				return fmt.Errorf("an error occurred generating 'AivenApplication': %v", err)
-
 			}
 
 			out.Printf("Use the following command to generate configuration secrets:\n\tnais aiven get %v %v %v\n", service.Name(), aivenApp.Spec.Kafka.SecretName, aivenApp.Namespace)
