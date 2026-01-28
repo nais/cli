@@ -22,8 +22,11 @@ type CreateOpenSearch struct {
 	Access   string `name:"access" short:"a" usage:"The access |LEVEL|."`
 }
 
-type CreateStream struct {
-	*Create
-	Namespace int    `namespace:"namespace" short:"n" usage:"|NAME| of the application's namespace that owns the Kafka Stream."`
-	Pool      string `name:"pool" short:"p" usage:"The |NAME| of the pool the Stream's Kafka instance belongs to."`
+type GrantAccess struct {
+	*Aiven
+}
+
+type GrantAccessStream struct {
+	*GrantAccess
+	Namespace string `namespace:"namespace" short:"n" usage:"|NAMESPACE| of the Stream.kafka.nais.io's |NAMESPACE|."`
 }
