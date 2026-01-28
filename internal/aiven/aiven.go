@@ -95,23 +95,24 @@ func (a Aiven) createOrUpdate(aivenApp *aiven_nais_io_v1.AivenApplication, out *
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			err = a.Client.Create(a.Ctx, aivenApp)
-			if err != nil {
-				return err
+			if err == nil {
+				out.Printf("AivenApplication: '%v' created.", aivenApp.Name)
 			}
-			out.Printf("AivenApplication: '%v' created.", aivenApp.Name)
-		}
-	} else {
-		if len(existingAivenApp.GetObjectMeta().GetOwnerReferences()) > 0 {
-			return fmt.Errorf("username '%s' is owned by another resource; overwrite is not allowed", a.Properties.Username)
-		}
-
-		aivenApp.SetResourceVersion(existingAivenApp.GetResourceVersion())
-		err = a.Client.Update(a.Ctx, aivenApp)
-		if err != nil {
 			return err
 		}
-		out.Printf("AivenApplication: '%v' updated.", aivenApp.Name)
+		return err
 	}
+
+	if len(existingAivenApp.GetObjectMeta().GetOwnerReferences()) > 0 {
+		return fmt.Errorf("username '%s' is owned by another resource; overwrite is not allowed", a.Properties.Username)
+	}
+
+	aivenApp.SetResourceVersion(existingAivenApp.GetResourceVersion())
+	err = a.Client.Update(a.Ctx, aivenApp)
+	if err != nil {
+		return err
+	}
+	out.Printf("AivenApplication: '%v' updated.", aivenApp.Name)
 	return nil
 }
 
