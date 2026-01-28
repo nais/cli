@@ -16,6 +16,7 @@ func Aiven(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			create(aivenFlags),
 			get(aivenFlags),
 			tidy(aivenFlags),
+			grantAccess(aivenFlags),
 		},
 	}
 }
