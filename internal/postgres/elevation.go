@@ -23,15 +23,34 @@ const (
 	ReasonVerifyAudit    = "Verifying audit configuration via nais CLI"
 )
 
-// EnsureSecretAccess creates an elevation to allow reading the database secret.
-// This is required because users don't have direct access to secrets without elevation.
-// The elevation is logged for audit purposes.
-func EnsureSecretAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
-	if reason == "" {
-		return fmt.Errorf("reason is required for accessing database secrets")
-	}
+// SecretValues holds the secret values retrieved from the API
+type SecretValues struct {
+	values map[string]string
+}
 
-	// Load kubeconfig to get defaults for namespace and context if not provided
+// Get returns the value for a given key, or empty string if not found
+func (s *SecretValues) Get(key string) string {
+	if s == nil || s.values == nil {
+		return ""
+	}
+	return s.values[key]
+}
+
+// GetBySuffix returns the value for a key that ends with the given suffix
+func (s *SecretValues) GetBySuffix(suffix string) string {
+	if s == nil || s.values == nil {
+		return ""
+	}
+	for k, v := range s.values {
+		if strings.HasSuffix(k, suffix) {
+			return v
+		}
+	}
+	return ""
+}
+
+// resolveTeamAndEnvironment extracts team and environment from namespace and cluster flags
+func resolveTeamAndEnvironment(namespace flag.Namespace, cluster flag.Context) (team, environment string, err error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(cluster),
@@ -39,60 +58,101 @@ func EnsureSecretAccess(ctx context.Context, appName string, namespace flag.Name
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 
 	// Determine team slug from namespace
-	team := string(namespace)
+	team = string(namespace)
 	if team == "" {
 		ns, _, err := kubeConfig.Namespace()
 		if err != nil {
-			return fmt.Errorf("unable to get namespace from kubeconfig: %w", err)
+			return "", "", fmt.Errorf("unable to get namespace from kubeconfig: %w", err)
 		}
 		team = ns
 	}
 	if team == "" {
-		return fmt.Errorf("namespace is required to determine team (use --namespace flag or set in kubeconfig)")
+		return "", "", fmt.Errorf("namespace is required to determine team (use --namespace flag or set in kubeconfig)")
 	}
 
 	// Determine environment from kubeconfig context
-	environmentName := string(cluster)
-	if environmentName == "" {
+	environment = string(cluster)
+	if environment == "" {
 		rawConfig, err := kubeConfig.RawConfig()
 		if err != nil {
-			return fmt.Errorf("unable to get kubeconfig: %w", err)
+			return "", "", fmt.Errorf("unable to get kubeconfig: %w", err)
 		}
-		environmentName = rawConfig.CurrentContext
+		environment = rawConfig.CurrentContext
 	}
-	if environmentName == "" {
-		return fmt.Errorf("kubeconfig context is required to determine environment (use --context flag or set current-context in kubeconfig)")
+	if environment == "" {
+		return "", "", fmt.Errorf("kubeconfig context is required to determine environment (use --context flag or set current-context in kubeconfig)")
+	}
+
+	return team, environment, nil
+}
+
+// GetSecretValues retrieves the values of a database secret via the API.
+// This is the preferred method for accessing secret values as it combines
+// authorization, logging, and value retrieval in a single operation.
+// The access is logged for audit purposes.
+func GetSecretValues(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
+	if reason == "" {
+		return nil, fmt.Errorf("reason is required for accessing database secrets")
+	}
+
+	team, environmentName, err := resolveTeamAndEnvironment(namespace, cluster)
+	if err != nil {
+		return nil, err
 	}
 
 	// The secret name follows the pattern "google-sql-<appname>"
 	secretName := "google-sql-" + appName
 
-	out.Debugf("Requesting elevated access to secret %q for database connection...\n", secretName)
+	out.Debugf("Requesting access to secret %q for database connection...\n", secretName)
 
-	_, err := naisapi.CreateElevation(ctx, team, environmentName, secretName, reason, 5)
+	values, err := naisapi.ViewSecretValues(ctx, team, environmentName, secretName, reason)
 	if err != nil {
 		// Check if the error indicates the user is not authorized
 		if strings.Contains(err.Error(), "not authorized") || strings.Contains(err.Error(), "Not authorized") {
-			return fmt.Errorf("you are not authorized to access this database. Make sure you are a member of team %q", team)
+			return nil, fmt.Errorf("you are not authorized to access this database. Make sure you are a member of team %q", team)
 		}
-		return fmt.Errorf("creating elevation for secret access: %w", err)
+		return nil, fmt.Errorf("viewing secret values: %w", err)
 	}
 
 	out.Debugf("✅ Access granted.\n")
-	return nil
+
+	// Convert to SecretValues
+	result := &SecretValues{
+		values: make(map[string]string, len(values)),
+	}
+	for _, v := range values {
+		result.values[v.Name] = v.Value
+	}
+
+	return result, nil
 }
 
-// EnsureSecretAccessWithUserReason creates an elevation with a user-provided reason.
+// GetSecretValuesWithUserReason retrieves secret values with a user-provided reason.
 // This should be used for interactive operations like proxy and psql where the user
 // should provide justification for accessing the database.
-func EnsureSecretAccessWithUserReason(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
+func GetSecretValuesWithUserReason(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
 	if reason == "" {
-		return fmt.Errorf("reason is required for accessing database secrets (use --reason flag)")
+		return nil, fmt.Errorf("reason is required for accessing database secrets (use --reason flag)")
 	}
 
 	if len(reason) < 10 {
-		return fmt.Errorf("reason must be at least 10 characters")
+		return nil, fmt.Errorf("reason must be at least 10 characters")
 	}
 
-	return EnsureSecretAccess(ctx, appName, namespace, cluster, reason, out)
+	return GetSecretValues(ctx, appName, namespace, cluster, reason, out)
+}
+
+// EnsureSecretAccess is deprecated. Use GetSecretValues instead.
+// This function is kept for backward compatibility and now calls ViewSecretValues internally.
+// Deprecated: Use GetSecretValues instead which returns the secret values directly.
+func EnsureSecretAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
+	_, err := GetSecretValues(ctx, appName, namespace, cluster, reason, out)
+	return err
+}
+
+// EnsureSecretAccessWithUserReason is deprecated. Use GetSecretValuesWithUserReason instead.
+// Deprecated: Use GetSecretValuesWithUserReason instead which returns the secret values directly.
+func EnsureSecretAccessWithUserReason(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
+	_, err := GetSecretValuesWithUserReason(ctx, appName, namespace, cluster, reason, out)
+	return err
 }
