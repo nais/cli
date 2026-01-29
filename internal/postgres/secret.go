@@ -141,18 +141,3 @@ func GetSecretValuesWithUserReason(ctx context.Context, appName string, namespac
 
 	return GetSecretValues(ctx, appName, namespace, cluster, reason, out)
 }
-
-// EnsureSecretAccess is deprecated. Use GetSecretValues instead.
-// This function is kept for backward compatibility and now calls ViewSecretValues internally.
-// Deprecated: Use GetSecretValues instead which returns the secret values directly.
-func EnsureSecretAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
-	_, err := GetSecretValues(ctx, appName, namespace, cluster, reason, out)
-	return err
-}
-
-// EnsureSecretAccessWithUserReason is deprecated. Use GetSecretValuesWithUserReason instead.
-// Deprecated: Use GetSecretValuesWithUserReason instead which returns the secret values directly.
-func EnsureSecretAccessWithUserReason(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) error {
-	_, err := GetSecretValuesWithUserReason(ctx, appName, namespace, cluster, reason, out)
-	return err
-}
