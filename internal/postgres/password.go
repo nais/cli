@@ -18,8 +18,8 @@ import (
 )
 
 func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
-	// Ensure we have elevated access to read the database secret (hardcoded reason for administrative operation)
-	if err := EnsureSecretAccess(ctx, appName, namespace, cluster, ReasonPasswordRotate, out); err != nil {
+	// Get secret values (access is logged for audit purposes)
+	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonPasswordRotate, out); err != nil {
 		return err
 	}
 

@@ -12,8 +12,8 @@ import (
 )
 
 func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, reason string, out *naistrix.OutputWriter) error {
-	// Ensure we have elevated access to read the database secret (user must provide reason)
-	if err := EnsureSecretAccessWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
+	// Get secret values with user-provided reason (access is logged for audit purposes)
+	if _, err := GetSecretValuesWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
 		return err
 	}
 

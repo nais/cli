@@ -234,8 +234,6 @@ type CreateElevationCreateElevationCreateElevationPayloadElevation struct {
 	Type ElevationType `json:"type"`
 	// Team that owns the resource.
 	Team CreateElevationCreateElevationCreateElevationPayloadElevationTeam `json:"team"`
-	// Environment where the resource is located.
-	TeamEnvironment CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment `json:"teamEnvironment"`
 	// Name of the resource being elevated to.
 	ResourceName string `json:"resourceName"`
 	// Reason provided for the elevation.
@@ -253,11 +251,6 @@ func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetType(
 // GetTeam returns CreateElevationCreateElevationCreateElevationPayloadElevation.Team, and is useful for accessing the field via an interface.
 func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetTeam() CreateElevationCreateElevationCreateElevationPayloadElevationTeam {
 	return v.Team
-}
-
-// GetTeamEnvironment returns CreateElevationCreateElevationCreateElevationPayloadElevation.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *CreateElevationCreateElevationCreateElevationPayloadElevation) GetTeamEnvironment() CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment {
-	return v.TeamEnvironment
 }
 
 // GetResourceName returns CreateElevationCreateElevationCreateElevationPayloadElevation.ResourceName, and is useful for accessing the field via an interface.
@@ -286,33 +279,6 @@ type CreateElevationCreateElevationCreateElevationPayloadElevationTeam struct {
 // GetSlug returns CreateElevationCreateElevationCreateElevationPayloadElevationTeam.Slug, and is useful for accessing the field via an interface.
 func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeam) GetSlug() string {
 	return v.Slug
-}
-
-// CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment struct {
-	// Get the environment.
-	Environment CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironment) GetEnvironment() CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment {
-	return v.Environment
-}
-
-// CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
-// The GraphQL type's documentation follows.
-//
-// An environment represents a runtime environment for workloads.
-//
-// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment struct {
-	// Unique name of the environment.
-	Name string `json:"name"`
-}
-
-// GetName returns CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *CreateElevationCreateElevationCreateElevationPayloadElevationTeamEnvironmentEnvironment) GetName() string {
-	return v.Name
 }
 
 // Input for creating an elevation.
@@ -6092,9 +6058,9 @@ func (v *TeamApplicationsFilter) GetEnvironments() []string { return v.Environme
 type TeamMemberRole string
 
 const (
-	// Regular member, read only access.
+	// Member, full access including elevation.
 	TeamMemberRoleMember TeamMemberRole = "MEMBER"
-	// Team owner, full access to the team.
+	// Team owner, full access to the team including member management.
 	TeamMemberRoleOwner TeamMemberRole = "OWNER"
 )
 
@@ -7611,6 +7577,74 @@ var AllValkeyTier = []ValkeyTier{
 	ValkeyTierHighAvailability,
 }
 
+// Input for viewing secret values.
+type ViewSecretValuesInput struct {
+	// Input for viewing secret values.
+	Name string `json:"name"`
+	// Input for viewing secret values.
+	Environment string `json:"environment"`
+	// Input for viewing secret values.
+	Team string `json:"team"`
+	// Input for viewing secret values.
+	Reason string `json:"reason"`
+}
+
+// GetName returns ViewSecretValuesInput.Name, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesInput) GetName() string { return v.Name }
+
+// GetEnvironment returns ViewSecretValuesInput.Environment, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns ViewSecretValuesInput.Team, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesInput) GetTeam() string { return v.Team }
+
+// GetReason returns ViewSecretValuesInput.Reason, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesInput) GetReason() string { return v.Reason }
+
+// ViewSecretValuesResponse is returned by ViewSecretValues on success.
+type ViewSecretValuesResponse struct {
+	// View the values of a secret. Requires team membership and a reason for access.
+	// This creates a temporary elevation and logs the access for auditing purposes.
+	ViewSecretValues ViewSecretValuesViewSecretValuesViewSecretValuesPayload `json:"viewSecretValues"`
+}
+
+// GetViewSecretValues returns ViewSecretValuesResponse.ViewSecretValues, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesResponse) GetViewSecretValues() ViewSecretValuesViewSecretValuesViewSecretValuesPayload {
+	return v.ViewSecretValues
+}
+
+// ViewSecretValuesViewSecretValuesViewSecretValuesPayload includes the requested fields of the GraphQL type ViewSecretValuesPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload returned when viewing secret values.
+type ViewSecretValuesViewSecretValuesViewSecretValuesPayload struct {
+	// The secret values.
+	Values []ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue `json:"values"`
+}
+
+// GetValues returns ViewSecretValuesViewSecretValuesViewSecretValuesPayload.Values, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayload) GetValues() []ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue {
+	return v.Values
+}
+
+// ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue includes the requested fields of the GraphQL type SecretValue.
+type ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue struct {
+	// The name of the secret value.
+	Name string `json:"name"`
+	// The secret value itself.
+	Value string `json:"value"`
+}
+
+// GetName returns ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue.Name, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue) GetName() string {
+	return v.Name
+}
+
+// GetValue returns ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue.Value, and is useful for accessing the field via an interface.
+func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue) GetValue() string {
+	return v.Value
+}
+
 // __AddTeamMemberInput is used internally by genqlient
 type __AddTeamMemberInput struct {
 	Slug  string         `json:"slug"`
@@ -7995,6 +8029,14 @@ func (v *__UpdateValkeyInput) GetTier() ValkeyTier { return v.Tier }
 // GetMaxMemoryPolicy returns __UpdateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
 func (v *__UpdateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
 
+// __ViewSecretValuesInput is used internally by genqlient
+type __ViewSecretValuesInput struct {
+	Input ViewSecretValuesInput `json:"input"`
+}
+
+// GetInput returns __ViewSecretValuesInput.Input, and is useful for accessing the field via an interface.
+func (v *__ViewSecretValuesInput) GetInput() ViewSecretValuesInput { return v.Input }
+
 // The mutation executed by AddTeamMember.
 const AddTeamMember_Operation = `
 mutation AddTeamMember ($slug: Slug!, $email: String!, $role: TeamMemberRole!) {
@@ -8089,11 +8131,6 @@ mutation CreateElevation ($input: CreateElevationInput!) {
 			type
 			team {
 				slug
-			}
-			teamEnvironment {
-				environment {
-					name
-				}
 			}
 			resourceName
 			reason
@@ -9465,6 +9502,43 @@ func Users(
 	}
 
 	data_ = &UsersResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by ViewSecretValues.
+const ViewSecretValues_Operation = `
+mutation ViewSecretValues ($input: ViewSecretValuesInput!) {
+	viewSecretValues(input: $input) {
+		values {
+			name
+			value
+		}
+	}
+}
+`
+
+func ViewSecretValues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input ViewSecretValuesInput,
+) (data_ *ViewSecretValuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ViewSecretValues",
+		Query:  ViewSecretValues_Operation,
+		Variables: &__ViewSecretValuesInput{
+			Input: input,
+		},
+	}
+
+	data_ = &ViewSecretValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
