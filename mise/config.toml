@@ -1,6 +1,6 @@
 [tools]
 git-cliff = "2.10.1"
-go = "1.25.5"
+go = "1.25.6"
 yamlfmt = "0.17.2"
 
 [settings]

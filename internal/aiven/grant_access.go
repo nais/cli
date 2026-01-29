@@ -10,14 +10,12 @@ import (
 )
 
 type GrantAccessResult struct {
-	Added     bool
-	Namespace string
-	Name      string
-	Kind      string
-	Detail    string
+	AlreadyAdded bool
+	Namespace    string
+	Name         string
 }
 
-func GrantAccessToTopic(ctx context.Context, namespace, topicName string, acl nais_kafka.TopicACL) (*GrantAccessResult, error) {
+func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl nais_kafka.TopicACL) (*GrantAccessResult, error) {
 	client := k8s.SetupControllerRuntimeClient()
 
 	if err := validateNamespace(ctx, client, namespace); err != nil {
@@ -26,37 +24,26 @@ func GrantAccessToTopic(ctx context.Context, namespace, topicName string, acl na
 
 	var topic nais_kafka.Topic
 	if err := client.Get(ctx, ctrl.ObjectKey{Name: topicName, Namespace: namespace}, &topic); err != nil {
-		return nil, fmt.Errorf("validate topic: %w", err)
+		return nil, fmt.Errorf("get topic: %w", err)
 	}
 
-	// Default to read access if not specified
-	if acl.Access == "" {
-		acl.Access = "read"
-	}
-
-	newACLs, added := ensureTopicACL(topic.Spec.ACL, acl)
-	if !added {
+	if checkIfAclInList(topic.Spec.ACL, newAcl) {
 		return &GrantAccessResult{
-			Added:     false,
-			Namespace: namespace,
-			Name:      topic.Name,
-			Kind:      topic.Kind,
-			Detail:    acl.Access,
+			AlreadyAdded: true,
+			Namespace:    namespace,
+			Name:         topicName,
 		}, nil
 	}
-
-	topic.Spec.ACL = newACLs
+	topic.Spec.ACL = append(topic.Spec.ACL, newAcl)
 
 	if err := client.Update(ctx, &topic); err != nil {
 		return nil, fmt.Errorf("update topic: %w", err)
 	}
 
 	return &GrantAccessResult{
-		Added:     true,
-		Namespace: namespace,
-		Name:      topic.Name,
-		Kind:      topic.Kind,
-		Detail:    acl.Access,
+		AlreadyAdded: false,
+		Namespace:    namespace,
+		Name:         topicName,
 	}, nil
 }
 
@@ -69,49 +56,43 @@ func GrantAccessToStream(ctx context.Context, namespace, streamName, userName st
 
 	var stream nais_kafka.Stream
 	if err := client.Get(ctx, ctrl.ObjectKey{Name: streamName, Namespace: namespace}, &stream); err != nil {
-		return nil, fmt.Errorf("validate stream: %w", err)
+		return nil, fmt.Errorf("get stream: %w", err)
 	}
 
-	newUsers, added := ensureAdditionalStreamUser(stream.Spec.AdditionalUsers, userName)
-	if !added {
+	if checkIfUserInList(stream.Spec.AdditionalUsers, userName) {
 		return &GrantAccessResult{
-			Added:     false,
-			Namespace: namespace,
-			Name:      stream.Name,
-			Kind:      stream.Kind,
-			Detail:    userName,
+			AlreadyAdded: true,
+			Namespace:    namespace,
+			Name:         streamName,
 		}, nil
 	}
-
-	stream.Spec.AdditionalUsers = newUsers
+	stream.Spec.AdditionalUsers = append(stream.Spec.AdditionalUsers, nais_kafka.AdditionalStreamUser{Username: userName})
 
 	if err := client.Update(ctx, &stream); err != nil {
 		return nil, fmt.Errorf("update stream: %w", err)
 	}
 
 	return &GrantAccessResult{
-		Added:     true,
-		Namespace: namespace,
-		Name:      stream.Name,
-		Kind:      stream.Kind,
-		Detail:    userName,
+		AlreadyAdded: false,
+		Namespace:    namespace,
+		Name:         streamName,
 	}, nil
 }
 
-func ensureTopicACL(existing []nais_kafka.TopicACL, wanted nais_kafka.TopicACL) ([]nais_kafka.TopicACL, bool) {
+func checkIfAclInList(existing []nais_kafka.TopicACL, wanted nais_kafka.TopicACL) bool {
 	for _, e := range existing {
 		if e.Team == wanted.Team && e.Application == wanted.Application && e.Access == wanted.Access {
-			return existing, false
+			return true
 		}
 	}
-	return append(existing, wanted), true
+	return false
 }
 
-func ensureAdditionalStreamUser(existing []nais_kafka.AdditionalStreamUser, userName string) ([]nais_kafka.AdditionalStreamUser, bool) {
+func checkIfUserInList(existing []nais_kafka.AdditionalStreamUser, userName string) bool {
 	for _, u := range existing {
 		if u.Username == userName {
-			return existing, false
+			return true
 		}
 	}
-	return append(existing, nais_kafka.AdditionalStreamUser{Username: userName}), true
+	return false
 }
