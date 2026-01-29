@@ -33,6 +33,6 @@ type GrantAccessStream struct {
 
 type GrantAccessTopic struct {
 	*GrantAccess
-	Access    string `name:"access" short:"x" usage:"Access |LEVEL| (readwrite, read and write)."`
+	Access    string `name:"access" short:"a" usage:"Access |LEVEL| (readwrite, read and write)."`
 	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the topic.kafka.nais.io resource."`
 }
