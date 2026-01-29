@@ -151,6 +151,10 @@ Secret was deleted.
 """
 	SECRET_DELETED
 """
+Secret values were viewed.
+"""
+	SECRET_VALUES_VIEWED
+"""
 Service account was created.
 """
 	SERVICE_ACCOUNT_CREATED
@@ -4007,6 +4011,13 @@ Delete a secret, and the values it contains.
 		input: DeleteSecretInput!
 	): DeleteSecretPayload!
 """
+View the values of a secret. Requires team membership and a reason for access.
+This creates a temporary elevation and logs the access for auditing purposes.
+"""
+	viewSecretValues(
+		input: ViewSecretValuesInput!
+	): ViewSecretValuesPayload!
+"""
 Create a service account.
 """
 	createServiceAccount(
@@ -6038,9 +6049,13 @@ The team that owns the secret.
 """
 	team: Team!
 """
-The secret values contained within the secret.
+The names of the keys in the secret. This does not require elevation to access.
 """
-	values: [SecretValue!]!
+	keys: [String!]!
+"""
+The secret values contained within the secret. Requires elevation to access the values. Returns null if not authorized.
+"""
+	values: [SecretValue!]
 """
 Applications that use the secret.
 """
@@ -6396,6 +6411,58 @@ type SecretValueUpdatedActivityLogEntryData {
 The name of the updated value.
 """
 	valueName: String!
+}
+
+"""
+Activity log entry for viewing secret values.
+"""
+type SecretValuesViewedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: SecretValuesViewedActivityLogEntryData!
+}
+
+"""
+Data associated with a secret values viewed activity log entry.
+"""
+type SecretValuesViewedActivityLogEntryData {
+"""
+The reason provided for viewing the secret values.
+"""
+	reason: String!
 }
 
 """
@@ -7299,6 +7366,10 @@ Whether or not the viewer is an owner of the team.
 Whether or not the viewer is a member of the team.
 """
 	viewerIsMember: Boolean!
+"""
+Whether or not the viewer can create elevations for the team.
+"""
+	viewerCanElevate: Boolean!
 """
 Environments for the team.
 """
@@ -8583,11 +8654,11 @@ Team member roles.
 """
 enum TeamMemberRole {
 """
-Regular member, read only access.
+Member, full access including elevation.
 """
 	MEMBER
 """
-Team owner, full access to the team.
+Team owner, full access to the team including member management.
 """
 	OWNER
 }
@@ -10043,6 +10114,38 @@ The old value of the field.
 The new value of the field.
 """
 	newValue: String
+}
+
+"""
+Input for viewing secret values.
+"""
+input ViewSecretValuesInput {
+"""
+Input for viewing secret values.
+"""
+	name: String!
+"""
+Input for viewing secret values.
+"""
+	environment: String!
+"""
+Input for viewing secret values.
+"""
+	team: Slug!
+"""
+Input for viewing secret values.
+"""
+	reason: String!
+}
+
+"""
+Payload returned when viewing secret values.
+"""
+type ViewSecretValuesPayload {
+"""
+The secret values.
+"""
+	values: [SecretValue!]!
 }
 
 type VulnerabilityActivityLogEntryData {

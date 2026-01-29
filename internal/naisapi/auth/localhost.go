@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -28,6 +29,11 @@ func Localhost() (*LocalhostUser, bool) {
 			}),
 		},
 	}, true
+}
+
+// APIURL overrides the parent method to use HTTP instead of HTTPS for local development
+func (l *LocalhostUser) APIURL() string {
+	return fmt.Sprintf("http://%s/graphql", l.ConsoleHost())
 }
 
 func (l *LocalhostUser) HTTPClient(_ context.Context) *http.Client {
