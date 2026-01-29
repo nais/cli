@@ -6,6 +6,7 @@ package keyring
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/zalando/go-keyring"
@@ -16,7 +17,10 @@ const (
 	keyringUser = "nais-user"
 )
 
-var ErrSecretNotFound = errors.New("secret not found in keyring")
+var (
+	ErrSecretNotFound = errors.New("secret not found in keyring")
+	ErrInvalidData    = errors.New("invalid data stored in keyring")
+)
 
 type TimeoutError struct {
 	message string
@@ -55,7 +59,12 @@ func GetBytes() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return base64.StdEncoding.DecodeString(encoded)
+
+	bytes, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return nil, fmt.Errorf("%w: decode base64: %+v", ErrInvalidData, err)
+	}
+	return bytes, nil
 }
 
 func Set(value string) error {
