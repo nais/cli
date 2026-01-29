@@ -6,12 +6,12 @@
   outputs = { nixpkgs, ... }:
     let
       goOverlay = final: prev: let
-        version = "1.25.5";
+        version = "1.25.6";
         newerGoVersion = prev.go.overrideAttrs (old: {
           inherit version;
           src = prev.fetchurl {
             url = "https://go.dev/dl/go${version}.src.tar.gz";
-            hash = ""; # TODO: if `version` is changed in the future
+            hash = "sha256-WMv3ceRNdt5vVtGeM7d9dFoeSJNAkih15GWFuXXCsFk=";
           };
         });
         nixpkgsVersion = prev.go.version;

@@ -24,10 +24,15 @@ type CreateOpenSearch struct {
 
 type GrantAccess struct {
 	*Aiven
-	Access string `name:"access" short:"x" usage:"Access |LEVEL| (readwrite, read and write)."`
 }
 
-type GrantAccessCommon struct {
+type GrantAccessStream struct {
 	*GrantAccess
-	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the Stream.kafka.nais.io's |NAMESPACE|."`
+	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the stream.kafka.nais.io resource."`
+}
+
+type GrantAccessTopic struct {
+	*GrantAccess
+	Access    string `name:"access" short:"x" usage:"Access |LEVEL| (readwrite, read and write)."`
+	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the topic.kafka.nais.io resource."`
 }

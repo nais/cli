@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/command/flag"
@@ -9,7 +10,7 @@ import (
 )
 
 func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
-	grantAccessStreamFlags := &flag.GrantAccessCommon{GrantAccess: parentFlags}
+	grantAccessStreamFlags := &flag.GrantAccessStream{GrantAccess: parentFlags}
 
 	return &naistrix.Command{
 		Name:  "stream",
@@ -19,8 +20,15 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 			{Name: "username"},
 			{Name: "stream"},
 		},
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			if grantAccessStreamFlags.Namespace == "" {
+				return fmt.Errorf("--namespace is required\n\tPS: Check `nais config set`")
+			}
+
+			return nil
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			namespace := args.Get("namespace")
+			namespace := grantAccessStreamFlags.Namespace
 			userName := args.Get("username")
 			stream := args.Get("stream")
 
@@ -29,7 +37,7 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 				return err
 			}
 
-			if !accessResult.Added {
+			if accessResult.AlreadyAdded {
 				out.Printf("Username '%s' already listed in Stream '%s/%s' ACLs.", userName, namespace, stream)
 				return nil
 			}
