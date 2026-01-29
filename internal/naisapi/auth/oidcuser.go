@@ -44,7 +44,7 @@ func (u *oidcUser) Refresh(ctx context.Context) (*oidcUser, error) {
 func getOIDCUser(ctx context.Context) (*oidcUser, error) {
 	encryptionKey, err := keyring.GetBytes()
 	if err != nil {
-		if errors.Is(err, keyring.ErrSecretNotFound) {
+		if errors.Is(err, keyring.ErrSecretNotFound) || errors.Is(err, keyring.ErrInvalidData) {
 			return nil, ErrNeedsOIDCLogin
 		}
 		return nil, fmt.Errorf("get encryption key: %w", err)
