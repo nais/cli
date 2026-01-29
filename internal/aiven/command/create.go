@@ -25,7 +25,6 @@ func create(parentFlags *flag.Aiven) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			createKafka(createFlags),
 			createOpenSearch(createFlags),
-			createStream(createFlags),
 		},
 	}
 }

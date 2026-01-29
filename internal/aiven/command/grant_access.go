@@ -14,6 +14,7 @@ func grantAccess(parentFlags *flag.Aiven) *naistrix.Command {
 		StickyFlags: grantAccessFlags,
 		SubCommands: []*naistrix.Command{
 			grantAccessStream(grantAccessFlags),
+			grantAccessTopic(grantAccessFlags),
 		},
 	}
 }
