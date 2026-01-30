@@ -11,8 +11,6 @@ import (
 
 type GrantAccessResult struct {
 	AlreadyAdded bool
-	Namespace    string
-	Name         string
 }
 
 func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl nais_kafka.TopicACL) (*GrantAccessResult, error) {
@@ -30,8 +28,6 @@ func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl
 	if checkIfAclInList(topic.Spec.ACL, newAcl) {
 		return &GrantAccessResult{
 			AlreadyAdded: true,
-			Namespace:    namespace,
-			Name:         topicName,
 		}, nil
 	}
 	topic.Spec.ACL = append(topic.Spec.ACL, newAcl)
@@ -42,8 +38,6 @@ func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl
 
 	return &GrantAccessResult{
 		AlreadyAdded: false,
-		Namespace:    namespace,
-		Name:         topicName,
 	}, nil
 }
 
@@ -62,8 +56,6 @@ func GrantAccessToStream(ctx context.Context, namespace, streamName, userName st
 	if checkIfUserInList(stream.Spec.AdditionalUsers, userName) {
 		return &GrantAccessResult{
 			AlreadyAdded: true,
-			Namespace:    namespace,
-			Name:         streamName,
 		}, nil
 	}
 	stream.Spec.AdditionalUsers = append(stream.Spec.AdditionalUsers, nais_kafka.AdditionalStreamUser{Username: userName})
@@ -74,8 +66,6 @@ func GrantAccessToStream(ctx context.Context, namespace, streamName, userName st
 
 	return &GrantAccessResult{
 		AlreadyAdded: false,
-		Namespace:    namespace,
-		Name:         streamName,
 	}, nil
 }
 
@@ -95,4 +85,13 @@ func checkIfUserInList(existing []nais_kafka.AdditionalStreamUser, userName stri
 		}
 	}
 	return false
+}
+
+func ValidAclPermission(access string) error {
+	switch access {
+	case "read", "write", "readwrite":
+		return nil
+	default:
+		return fmt.Errorf("invalid access type: %s (valid: read, write, readwrite)", access)
+	}
 }

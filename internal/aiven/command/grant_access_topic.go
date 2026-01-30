@@ -34,6 +34,10 @@ func grantAccessTopic(parentFlags *flag.GrantAccess) *naistrix.Command {
 			topicName := args.Get("topic")
 			username := args.Get("username")
 
+			if err := aiven.ValidAclPermission(access); err != nil {
+				return err
+			}
+
 			newAcl := nais_kafka.TopicACL{
 				Team:        namespace,
 				Application: username,
@@ -45,14 +49,14 @@ func grantAccessTopic(parentFlags *flag.GrantAccess) *naistrix.Command {
 			}
 
 			if accessResult.AlreadyAdded {
-				out.Printf("An ACL already exists for user/access '%s' on topic '%s/%s'.",
+				out.Printf("ACL entry already exists for '%s/%s' on topic %s/%s.",
 					newAcl.Application, newAcl.Access, namespace, topicName,
 				)
 				return nil
 			}
 
-			out.Printf("ACL added for team '%s', application '%s', access '%s' on topic '%s/%s'.",
-				newAcl.Team, newAcl.Application, newAcl.Access, namespace, topicName,
+			out.Printf("ACL added for '%s', with access '%s' on topic '%s/%s'.",
+				newAcl.Application, newAcl.Access, namespace, topicName,
 			)
 			return nil
 		},

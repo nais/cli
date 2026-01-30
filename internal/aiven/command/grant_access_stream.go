@@ -38,7 +38,7 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 			}
 
 			if accessResult.AlreadyAdded {
-				out.Printf("Username '%s' already listed in Stream '%s/%s' ACLs.", userName, namespace, stream)
+				out.Printf("Username '%s' already exists in Stream '%s/%s' ACLs.", userName, namespace, stream)
 				return nil
 			}
 
