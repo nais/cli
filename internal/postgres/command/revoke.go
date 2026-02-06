@@ -1,17 +1,15 @@
 package command
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
@@ -35,14 +33,12 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			out.Println("", "Are you sure you want to continue (y/N): ")
-			input := bufio.NewScanner(os.Stdin)
-			input.Scan()
-			if !strings.EqualFold(strings.TrimSpace(input.Text()), "y") {
+			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+			if !result {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, out)
+			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags, out)
 		},
 	}
 }
