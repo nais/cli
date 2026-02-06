@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 // Hardcoded reasons for administrative operations
@@ -49,55 +48,32 @@ func (s *SecretValues) GetBySuffix(suffix string) string {
 	return ""
 }
 
-// resolveTeamAndEnvironment extracts team and environment from namespace and cluster flags
-func resolveTeamAndEnvironment(namespace flag.Namespace, cluster flag.Context) (team, environment string, err error) {
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-	configOverrides := &clientcmd.ConfigOverrides{
-		CurrentContext: string(cluster),
-	}
-	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-
-	// Determine team slug from namespace
-	team = string(namespace)
-	if team == "" {
-		ns, _, err := kubeConfig.Namespace()
-		if err != nil {
-			return "", "", fmt.Errorf("unable to get namespace from kubeconfig: %w", err)
-		}
-		team = ns
-	}
-	if team == "" {
-		return "", "", fmt.Errorf("namespace is required to determine team (use --namespace flag or set in kubeconfig)")
-	}
-
-	// Determine environment from kubeconfig context
-	environment = string(cluster)
-	if environment == "" {
-		rawConfig, err := kubeConfig.RawConfig()
-		if err != nil {
-			return "", "", fmt.Errorf("unable to get kubeconfig: %w", err)
-		}
-		environment = rawConfig.CurrentContext
-	}
-	if environment == "" {
-		return "", "", fmt.Errorf("kubeconfig context is required to determine environment (use --context flag or set current-context in kubeconfig)")
-	}
-
-	return team, environment, nil
-}
-
 // GetSecretValues retrieves the values of a database secret via the API.
 // This is the preferred method for accessing secret values as it combines
 // authorization, logging, and value retrieval in a single operation.
 // The access is logged for audit purposes.
-func GetSecretValues(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
+func GetSecretValues(ctx context.Context, appName string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
 	if reason == "" {
-		return nil, fmt.Errorf("reason is required for accessing database secrets")
+		reason = fl.Reason
+		if reason == "" {
+			return nil, fmt.Errorf("reason is required for accessing database secrets")
+		}
 	}
 
-	team, environmentName, err := resolveTeamAndEnvironment(namespace, cluster)
-	if err != nil {
-		return nil, err
+	team := fl.Team
+	if team == "" {
+		team = string(fl.Namespace)
+		if team == "" {
+			return nil, fmt.Errorf("team is required")
+		}
+	}
+
+	environment := string(fl.Environment)
+	if environment == "" {
+		environment = string(fl.Context)
+		if environment == "" {
+			return nil, fmt.Errorf("environment is required")
+		}
 	}
 
 	// The secret name follows the pattern "google-sql-<appname>"
@@ -105,7 +81,7 @@ func GetSecretValues(ctx context.Context, appName string, namespace flag.Namespa
 
 	out.Debugf("Requesting access to secret %q for database connection...\n", secretName)
 
-	values, err := naisapi.ViewSecretValues(ctx, team, environmentName, secretName, reason)
+	values, err := naisapi.ViewSecretValues(ctx, team, environment, secretName, reason)
 	if err != nil {
 		// Check if the error indicates the user is not authorized
 		if strings.Contains(err.Error(), "not authorized") || strings.Contains(err.Error(), "Not authorized") {
@@ -130,14 +106,17 @@ func GetSecretValues(ctx context.Context, appName string, namespace flag.Namespa
 // GetSecretValuesWithUserReason retrieves secret values with a user-provided reason.
 // This should be used for interactive operations like proxy and psql where the user
 // should provide justification for accessing the database.
-func GetSecretValuesWithUserReason(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
+func GetSecretValuesWithUserReason(ctx context.Context, appName string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
 	if reason == "" {
-		return nil, fmt.Errorf("reason is required for accessing database secrets (use --reason flag)")
+		reason = fl.Reason
+		if reason == "" {
+			return nil, fmt.Errorf("reason is required for accessing database secrets (use --reason flag)")
+		}
 	}
 
 	if len(reason) < 10 {
 		return nil, fmt.Errorf("reason must be at least 10 characters")
 	}
 
-	return GetSecretValues(ctx, appName, namespace, cluster, reason, out)
+	return GetSecretValues(ctx, appName, fl, reason, out)
 }

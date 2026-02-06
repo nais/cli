@@ -34,37 +34,37 @@ var (
 	revokeUsage = `REVOKE USAGE ON SCHEMA $schema FROM cloudsqliamuser;`
 )
 
-func PrepareAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, allPrivs bool, out *naistrix.OutputWriter) error {
+func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonPrepareAccess, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPrepareAccess, out); err != nil {
 		return err
 	}
 
 	prependUsageIfNotPublic := func(statement string) string {
-		if schema != "public" {
+		if fl.Schema != "public" {
 			return grantUsage + "\n" + statement
 		}
 		return statement
 	}
 
-	if allPrivs {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, prependUsageIfNotPublic(grantAllPrivs))
+	if fl.AllPrivileges {
+		return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, prependUsageIfNotPublic(grantAllPrivs))
 	} else {
-		return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, prependUsageIfNotPublic(grantSelectPrivs))
+		return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs))
 	}
 }
 
-func RevokeAccess(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema string, out *naistrix.OutputWriter) error {
+func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonRevokeAccess, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonRevokeAccess, out); err != nil {
 		return err
 	}
 
 	q := revokeAllPrivs
-	if schema != "public" {
+	if fl.Schema != "public" {
 		q += "\n" + revokeUsage
 	}
-	return sqlExecAsAppUser(ctx, appName, namespace, cluster, schema, q)
+	return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, q)
 }
 
 func sqlExecAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema, statement string) error {

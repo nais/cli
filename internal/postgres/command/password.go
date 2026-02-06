@@ -23,7 +23,7 @@ func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 					{Name: "app_name"},
 				},
 				RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-					return postgres.RotatePassword(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
+					return postgres.RotatePassword(ctx, args.Get("app_name"), flags, out)
 				},
 			},
 		},

@@ -38,7 +38,7 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 		},
 		Flags: userAddFlags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.AddUser(ctx, args.Get("app_name"), args.Get("username"), args.Get("password"), userAddFlags.Context, userAddFlags.Namespace, userAddFlags.Privilege, out)
+			return postgres.AddUser(ctx, args.Get("app_name"), args.Get("username"), args.Get("password"), userAddFlags, out)
 		},
 	}
 }
@@ -53,7 +53,7 @@ func listCommand(parentFlags *flag.User) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.ListUsers(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
+			return postgres.ListUsers(ctx, args.Get("app_name"), flags, out)
 		},
 	}
 }
@@ -70,7 +70,7 @@ func dropCommand(parentFlags *flag.User) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.DropUser(ctx, args.Get("app_name"), args.Get("username"), flags.Context, flags.Namespace, out)
+			return postgres.DropUser(ctx, args.Get("app_name"), args.Get("username"), flags, out)
 		},
 	}
 }
