@@ -4,9 +4,10 @@ import "github.com/nais/cli/internal/flags"
 
 type Postgres struct {
 	*flags.GlobalFlags
-	Namespace Namespace `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
-	Context   Context   `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
-	Reason    string    `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
+	Namespace   Namespace   `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
+	Context     Context     `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
+	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use. Defaults to same as context."`
+	Reason      string      `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
 }
 
 type Migrate struct {

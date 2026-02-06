@@ -12,20 +12,20 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func EnableAuditLogging(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func EnableAuditLogging(ctx context.Context, appName string, fl *flag.EnableAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonEnableAudit, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonEnableAudit, out); err != nil {
 		return err
 	}
-	return enableAuditAsAppUser(ctx, appName, namespace, cluster, out)
+	return enableAuditAsAppUser(ctx, appName, fl.Namespace, fl.Context, out)
 }
 
-func VerifyAuditLogging(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonVerifyAudit, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonVerifyAudit, out); err != nil {
 		return err
 	}
-	_, err := verifyAuditAsAppUser(ctx, appName, namespace, cluster, out)
+	_, err := verifyAuditAsAppUser(ctx, appName, fl.Namespace, fl.Context, out)
 	return err
 }
 
@@ -166,23 +166,23 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 		return dbFlags, fmt.Errorf("GetDBInstance: expected one sqlinstance for app %q in %q, got %d", info.appName, info.namespace, len(sqlInstances.Items))
 	}
 
-	spec, ok := sqlInstances.Items[0].Object["spec"].(map[string]interface{})
+	spec, ok := sqlInstances.Items[0].Object["spec"].(map[string]any)
 	if !ok {
 		return dbFlags, fmt.Errorf("GetDBInstance: error accessing spec for app %q in %q", info.appName, info.namespace)
 	}
 
-	settings, ok := spec["settings"].(map[string]interface{})
+	settings, ok := spec["settings"].(map[string]any)
 	if !ok {
 		return dbFlags, fmt.Errorf("GetDBInstance: error accessing settings for app %q in %q", info.appName, info.namespace)
 	}
 
-	databaseFlags, ok := settings["databaseFlags"].([]interface{})
+	databaseFlags, ok := settings["databaseFlags"].([]any)
 	if !ok {
 		return dbFlags, fmt.Errorf("GetDBInstance: error accessing databaseFlags for app %q in %q", info.appName, info.namespace)
 	}
 
 	for _, flag := range databaseFlags {
-		f, ok := flag.(map[string]interface{})
+		f, ok := flag.(map[string]any)
 		if !ok {
 			return dbFlags, fmt.Errorf("GetDBInstance: error accessing databaseFlags for app %q in %q", info.appName, info.namespace)
 		}

@@ -16,6 +16,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		GlobalFlags: parentFlags,
 		Namespace:   flag.Namespace(defaultNamespace),
 		Context:     flag.Context(defaultContext),
+		Environment: flag.Environment(defaultContext),
 	}
 
 	return &naistrix.Command{

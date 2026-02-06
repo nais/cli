@@ -11,18 +11,18 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunProxy(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, host string, port uint, verbose bool, reason string, out *naistrix.OutputWriter) error {
+func RunProxy(ctx context.Context, appName string, fl *flag.Proxy, out *naistrix.OutputWriter) error {
 	// Get secret values with user-provided reason (access is logged for audit purposes)
-	if _, err := GetSecretValuesWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
+	if _, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out); err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}
 
-	return dbInfo.RunProxy(ctx, host, &port, make(chan<- int, 1), out, true)
+	return dbInfo.RunProxy(ctx, fl.Host, &fl.Port, make(chan<- int, 1), out, true)
 }
 
 func copy(closer chan struct{}, dst io.Writer, src io.Reader) {

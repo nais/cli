@@ -17,13 +17,13 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func RotatePassword(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func RotatePassword(ctx context.Context, appName string, fl *flag.Password, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonPasswordRotate, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPasswordRotate, out); err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}

@@ -211,13 +211,13 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonListUsers, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonListUsers, out); err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}
@@ -255,18 +255,18 @@ func ListUsers(ctx context.Context, appName string, cluster flag.Context, namesp
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password string, cluster flag.Context, namespace flag.Namespace, privilege string, out *naistrix.OutputWriter) error {
-	err := validateSQLVariables(username, password, privilege)
+func AddUser(ctx context.Context, appName, username, password string, fl *flag.UserAdd, out *naistrix.OutputWriter) error {
+	err := validateSQLVariables(username, password, fl.Privilege)
 	if err != nil {
 		return err
 	}
 
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonAddUser, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonAddUser, out); err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}
@@ -287,12 +287,12 @@ func AddUser(ctx context.Context, appName, username, password string, cluster fl
 	}
 	out.Printf("Created user: %v", username)
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf(`alter default privileges in schema public grant %v on tables to %q;`, privilege, username))
+	_, err = db.ExecContext(ctx, fmt.Sprintf(`alter default privileges in schema public grant %v on tables to %q;`, fl.Privilege, username))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
 
-	_, err = db.ExecContext(ctx, fmt.Sprintf(`grant %v on all tables in schema public to %q;`, privilege, username))
+	_, err = db.ExecContext(ctx, fmt.Sprintf(`grant %v on all tables in schema public to %q;`, fl.Privilege, username))
 	if err != nil {
 		return formatInvalidGrantError(err)
 	}
@@ -300,13 +300,13 @@ func AddUser(ctx context.Context, appName, username, password string, cluster fl
 	return nil
 }
 
-func DropUser(ctx context.Context, appName string, username string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func DropUser(ctx context.Context, appName string, username string, fl *flag.UserDrop, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, namespace, cluster, ReasonDropUser, out); err != nil {
+	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonDropUser, out); err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}

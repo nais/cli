@@ -1,17 +1,15 @@
 package command
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
@@ -35,17 +33,12 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			out.Println("", "Are you sure you want to continue (y/N): ")
-			i, err := bufio.NewReader(os.Stdin).ReadString('\n')
-			if err != nil {
-				return fmt.Errorf("failed to read input: %w", err)
-			}
-
-			if !strings.EqualFold(strings.TrimSpace(i), "y") {
+			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
+			if !result {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Namespace, flags.Context, flags.Schema, flags.AllPrivileges, out)
+			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags, out)
 		},
 	}
 }

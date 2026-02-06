@@ -11,9 +11,9 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, reason string, out *naistrix.OutputWriter) error {
+func RunPSQL(ctx context.Context, appName string, fl *flag.Psql, out *naistrix.OutputWriter) error {
 	// Get secret values with user-provided reason (access is logged for audit purposes)
-	if _, err := GetSecretValuesWithUserReason(ctx, appName, namespace, cluster, reason, out); err != nil {
+	if _, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out); err != nil {
 		return err
 	}
 
@@ -22,7 +22,7 @@ func RunPSQL(ctx context.Context, appName string, cluster flag.Context, namespac
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
 	if err != nil {
 		return err
 	}
