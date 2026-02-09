@@ -27,27 +27,6 @@ type SecretValues struct {
 	values map[string]string
 }
 
-// Get returns the value for a given key, or empty string if not found
-func (s *SecretValues) Get(key string) string {
-	if s == nil || s.values == nil {
-		return ""
-	}
-	return s.values[key]
-}
-
-// GetBySuffix returns the value for a key that ends with the given suffix
-func (s *SecretValues) GetBySuffix(suffix string) string {
-	if s == nil || s.values == nil {
-		return ""
-	}
-	for k, v := range s.values {
-		if strings.HasSuffix(k, suffix) {
-			return v
-		}
-	}
-	return ""
-}
-
 // GetSecretValues retrieves the values of a database secret via the API.
 // This is the preferred method for accessing secret values as it combines
 // authorization, logging, and value retrieval in a single operation.
