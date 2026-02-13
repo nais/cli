@@ -8,6 +8,7 @@ import (
 	"io"
 	"maps"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/goccy/go-yaml"
@@ -22,7 +23,7 @@ import (
 type TemplateVariables map[string]interface{}
 
 func TemplateVariablesFromFile(path string) (TemplateVariables, error) {
-	file, err := os.ReadFile(path)
+	file, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}

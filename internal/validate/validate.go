@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/nais/naistrix"
@@ -78,7 +79,7 @@ func (v Validate) loadFile(name string, out *naistrix.OutputWriter) ([]json.RawM
 		return nil, fmt.Errorf("file %s does not exist", name)
 	}
 
-	raw, err := os.ReadFile(name)
+	raw, err := os.ReadFile(filepath.Clean(name))
 	if err != nil {
 		return nil, fmt.Errorf("reading file %s: %w", name, err)
 	}

@@ -134,7 +134,7 @@ func readCredentialsFile(encryptionKey []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	ciphertext, err := os.ReadFile(credentialsPath)
+	ciphertext, err := os.ReadFile(filepath.Clean(credentialsPath))
 	if err != nil {
 		return nil, fmt.Errorf("read credentials file: %w", err)
 	}

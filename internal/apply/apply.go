@@ -22,9 +22,9 @@ type Apply struct {
 	OpenSearch map[string]*opensearch.OpenSearch `json:"openSearch,omitempty" toml:"openSearch,omitempty"`
 }
 
-func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, out *naistrix.OutputWriter) error {
+func Run(ctx context.Context, environment, filename string, flags *flag.Apply, out *naistrix.OutputWriter) error {
 	a := &Apply{}
-	if err := decodeFile(filePath, a); err != nil {
+	if err := decodeFile(filename, a); err != nil {
 		return err
 	}
 
@@ -34,8 +34,8 @@ func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, o
 		}
 	} else {
 		// auto-detect mixin if not provided
-		ext := filepath.Ext(filePath)
-		mixinPath := strings.TrimSuffix(filePath, ext) + "." + environment + ext
+		ext := filepath.Ext(filename)
+		mixinPath := strings.TrimSuffix(filename, ext) + "." + environment + ext
 		_, err := os.Stat(mixinPath)
 		if err == nil {
 			if flags.IsVerbose() {
@@ -78,16 +78,16 @@ func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, o
 	return nil
 }
 
-func decodeFile(filePath string, v any) error {
-	if filePath == "" {
+func decodeFile(filename string, v any) error {
+	if filename == "" {
 		return fmt.Errorf("file path cannot be empty")
 	}
 
-	ext := strings.TrimLeft(filepath.Ext(filePath), ".")
+	ext := strings.TrimLeft(filepath.Ext(filename), ".")
 
-	f, err := os.OpenFile(filePath, os.O_RDONLY, 0o600)
+	f, err := os.OpenFile(filepath.Clean(filename), os.O_RDONLY, 0o600)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %w", filePath, err)
+		return fmt.Errorf("failed to open file %s: %w", filename, err)
 	}
 	defer f.Close()
 
@@ -96,6 +96,6 @@ func decodeFile(filePath string, v any) error {
 		decoder := toml.NewDecoder(f)
 		return decoder.DisallowUnknownFields().Decode(v)
 	default:
-		return fmt.Errorf("unsupported file extension %s for file %s", ext, filePath)
+		return fmt.Errorf("unsupported file extension %s for file %s", ext, filename)
 	}
 }

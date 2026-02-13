@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -120,7 +121,7 @@ func removeBuiltinScalars(schema string) string {
 func (t *toolContext) getSchema(reqCtx context.Context) (string, error) {
 	// Check for local schema file override
 	if schemaFile := os.Getenv("NAIS_SCHEMA_FILE"); schemaFile != "" {
-		data, err := os.ReadFile(schemaFile)
+		data, err := os.ReadFile(filepath.Clean(schemaFile))
 		if err != nil {
 			return "", fmt.Errorf("failed to read schema file %s: %w", schemaFile, err)
 		}
