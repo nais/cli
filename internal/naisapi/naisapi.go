@@ -64,9 +64,15 @@ func StartProxy(ctx context.Context, out *naistrix.OutputWriter, flags *flag.Pro
 
 	out.Println("Forwarding requests from", "http://"+flags.ListenAddr, "to", target.String())
 	// Start the server
-	http.Handle("/graphql", proxy)
-	http.Handle("/", playground.Handler("Nais API playground", "/graphql"))
-	if err := http.ListenAndServe(flags.ListenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	mux := http.NewServeMux()
+	mux.Handle("/graphql", proxy)
+	mux.Handle("/", playground.Handler("Nais API playground", "/graphql"))
+	server := &http.Server{
+		Addr:              flags.ListenAddr,
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 	return nil

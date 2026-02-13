@@ -209,7 +209,12 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFu
 			ConsoleURL string `json:"consoleUrl"`
 		}
 		u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-		res, err := http.Get(u)
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, u, nil)
+		if err != nil {
+			http.Error(w, "Failed to create request: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			http.Error(w, "Failed to get tenant data: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -243,8 +248,9 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFu
 	})
 
 	return &http.Server{
-		Addr:    ":8865",
-		Handler: mux,
+		Addr:              ":8865",
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 }
 
