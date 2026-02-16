@@ -149,14 +149,14 @@ func (m *Migrator) deleteMigrationConfig(ctx context.Context, cfgMap *corev1.Con
 
 func (m *Migrator) LookupGcpProjectId(ctx context.Context) (string, error) {
 	ns := &corev1.Namespace{}
-	err := m.client.Get(ctx, ctrl.ObjectKey{Name: string(m.cfg.Namespace)}, ns)
+	err := m.client.Get(ctx, ctrl.ObjectKey{Name: m.cfg.Team}, ns)
 	if err != nil {
 		return "", fmt.Errorf("failed to get namespace: %w", err)
 	}
 	if gcpProjectId, ok := ns.Annotations["cnrm.cloud.google.com/project-id"]; ok {
 		return gcpProjectId, nil
 	}
-	return "", fmt.Errorf("namespace %s does not have a GCP project ID annotation", m.cfg.Namespace)
+	return "", fmt.Errorf("namespace %s does not have a GCP project ID annotation", m.cfg.Team)
 }
 
 func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName string, logChannel chan<- string) error {
@@ -207,7 +207,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 			continue
 		}
 
-		logs, err := m.clientset.CoreV1().Pods(string(m.cfg.Namespace)).GetLogs(pod.Name, &corev1.PodLogOptions{
+		logs, err := m.clientset.CoreV1().Pods(m.cfg.Team).GetLogs(pod.Name, &corev1.PodLogOptions{
 			Container: jobName,
 			Follow:    true,
 		}).Stream(ctx)
@@ -237,7 +237,7 @@ func (m *Migrator) getJobLogs(ctx context.Context, command Command, jobName stri
 
 // findLatestPod returns the latest pod for the given command. If no pods are found, nil is returned.
 func (m *Migrator) findLatestPod(ctx context.Context, command Command) (*corev1.Pod, error) {
-	pods, err := m.clientset.CoreV1().Pods(string(m.cfg.Namespace)).List(ctx, metav1.ListOptions{
+	pods, err := m.clientset.CoreV1().Pods(m.cfg.Team).List(ctx, metav1.ListOptions{
 		LabelSelector: m.kubectlLabelSelector(command),
 	})
 	if err != nil {
@@ -286,7 +286,7 @@ func (m *Migrator) waitForJobCompletion(ctx context.Context, jobName string, com
 	go renderJobLogs(ctx, logChannel, logOutput, progress)
 
 	if m.dryRun {
-		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Namespace, jobName))
+		logOutput.Info(fmt.Sprintf("Dry run: Artificial waiting for job %s/%s to complete, 5 seconds\n", m.cfg.Team, jobName))
 		time.Sleep(5 * time.Second)
 		return nil
 	}
@@ -336,7 +336,7 @@ func (m *Migrator) waitForStartingMessage(ctx context.Context, logChannel <-chan
 
 func (m *Migrator) pollJobCompletion(ctx context.Context, jobName string, command Command) error {
 	listOptions := []ctrl.ListOption{
-		ctrl.InNamespace(m.cfg.Namespace),
+		ctrl.InNamespace(m.cfg.Team),
 		ctrl.MatchingLabels{
 			"migrator.nais.io/migration-name": m.cfg.MigrationName(),
 			"migrator.nais.io/command":        string(command),
@@ -354,21 +354,21 @@ func (m *Migrator) pollJobCompletion(ctx context.Context, jobName string, comman
 			return retry.RetryableError(fmt.Errorf("no jobs found"))
 		}
 		if len(jobs.Items) > 1 {
-			return fmt.Errorf("multiple jobs found %s/%s, contact nais team", m.cfg.Namespace, jobName)
+			return fmt.Errorf("multiple jobs found %s/%s, contact nais team", m.cfg.Team, jobName)
 		}
 		for _, job := range jobs.Items {
 			if job.Status.Succeeded == 1 {
 				return nil
 			}
 		}
-		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Namespace, jobName))
+		return retry.RetryableError(fmt.Errorf("job %s/%s has not completed yet", m.cfg.Team, jobName))
 	})
 }
 
 func (m *Migrator) printConfig() {
 	pterm.DefaultSection.Println("Migration configuration")
 	pterm.Printfln("Application: %s", m.cfg.AppName)
-	pterm.Printfln("Namespace: %s", m.cfg.Namespace)
+	pterm.Printfln("Namespace: %s", m.cfg.Team)
 	pterm.DefaultSection.Println("Instance configuration")
 	sourceDiskSize := "<nais default>"
 	m.cfg.Source.DiskSize.Do(func(diskSize int) {
@@ -433,7 +433,7 @@ func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 	return &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cfg.MigrationName(),
-			Namespace: string(cfg.Namespace),
+			Namespace: cfg.Team,
 		},
 		Subjects: []rbacv1.Subject{
 			{
@@ -465,7 +465,7 @@ func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v
 	return &nais_io_v1.Naisjob{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      command.JobName(cfg),
-			Namespace: string(cfg.Namespace),
+			Namespace: cfg.Team,
 			Labels: map[string]string{
 				"apiserver-access": "enabled",
 			},

@@ -30,7 +30,7 @@ type DBInfo struct {
 	k8sClient     kubernetes.Interface
 	dynamicClient dynamic.Interface
 	config        clientcmd.ClientConfig
-	namespace     flag.Namespace
+	namespace     string
 	appName       string
 }
 
@@ -38,7 +38,7 @@ func (d *DBInfo) AppName() string {
 	return d.appName
 }
 
-func NewDBInfo(ctx context.Context, appName string, namespace flag.Namespace, context flag.Context) (DB, error) {
+func NewDBInfo(ctx context.Context, appName string, namespace string, context flag.Environment) (DB, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),
@@ -54,7 +54,7 @@ func NewDBInfo(ctx context.Context, appName string, namespace flag.Namespace, co
 		if err != nil {
 			return nil, fmt.Errorf("NewDBInfo: unable to get namespace: %w", err)
 		}
-		namespace = flag.Namespace(ns)
+		namespace = ns
 	}
 
 	k8sClient, err := kubernetes.NewForConfig(config)

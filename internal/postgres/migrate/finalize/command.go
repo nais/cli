@@ -19,10 +19,14 @@ func Run(ctx context.Context, applicationName, targetInstanceName string, flags 
 		},
 	}
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(flags.Context)))
-	cfg.Namespace = flag.Namespace(client.CurrentNamespace)
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(flags.Environment)))
+	team, err := flags.RequiredTeam()
+	if err != nil {
+		return err
+	}
+	cfg.Team = team
 
-	clientSet, err := k8s.SetupClientGo(string(flags.Context))
+	clientSet, err := k8s.SetupClientGo(string(flags.Environment))
 	if err != nil {
 		return err
 	}

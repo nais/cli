@@ -17,7 +17,7 @@ func EnableAuditLogging(ctx context.Context, appName string, fl *flag.EnableAudi
 	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonEnableAudit, out); err != nil {
 		return err
 	}
-	return enableAuditAsAppUser(ctx, appName, fl.Namespace, fl.Context, out)
+	return enableAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, out)
 }
 
 func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudit, out *naistrix.OutputWriter) error {
@@ -25,11 +25,11 @@ func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudi
 	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonVerifyAudit, out); err != nil {
 		return err
 	}
-	_, err := verifyAuditAsAppUser(ctx, appName, fl.Namespace, fl.Context, out)
+	_, err := verifyAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, out)
 	return err
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, out *naistrix.OutputWriter) error {
+func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -197,7 +197,7 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 	return dbFlags, nil
 }
 
-func verifyAuditAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, out *naistrix.OutputWriter) (bool, error) {
+func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, out *naistrix.OutputWriter) (bool, error) {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return false, err

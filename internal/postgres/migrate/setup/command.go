@@ -19,25 +19,25 @@ func Run(ctx context.Context, applicationName, targetInstanceName string, flags 
 		},
 	}
 
-	cluster := flags.Context
+	environment := flags.Environment
 	tier := flags.Tier
 	diskAutoresize := flags.DiskAutoResize
 	diskSize := flags.DiskSize
 	instanceType := flags.InstanceType
-	namespace := flags.Namespace
+	team, err := flags.RequiredTeam()
+	if err != nil {
+		return err
+	}
 
 	cfg.Target.Tier = isSet(tier)
 	cfg.Target.DiskAutoresize = isSetBool(diskAutoresize)
 	cfg.Target.DiskSize = isSetInt(diskSize)
 	cfg.Target.Type = isSet(instanceType)
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(cluster)))
-	cfg.Namespace = flag.Namespace(client.CurrentNamespace)
-	if namespace != "" {
-		cfg.Namespace = namespace
-	}
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(environment)))
+	cfg.Team = team
 
-	clientSet, err := k8s.SetupClientGo(string(cluster))
+	clientSet, err := k8s.SetupClientGo(string(environment))
 	if err != nil {
 		return err
 	}

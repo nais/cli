@@ -47,20 +47,16 @@ func GetSecretValues(ctx context.Context, appName string, fl *flag.Postgres, rea
 		}
 	}
 
-	// Use --team flag, fall back to --namespace if not set
-	team := fl.Team
-	if team == "" {
-		team = string(fl.Namespace)
-		if team == "" {
-			return nil, fmt.Errorf("team is required (use --team or --namespace flag)")
-		}
+	team, err := fl.RequiredTeam()
+	if err != nil {
+		return nil, err
 	}
 
 	out.Printf("Using team %q\n", team)
 
 	environment := string(fl.Environment)
 	if environment == "" {
-		environment = string(fl.Context)
+		environment = string(fl.Environment)
 		if environment == "" {
 			return nil, fmt.Errorf("environment is required")
 		}
@@ -101,7 +97,7 @@ func GetSecretValuesWithUserReason(ctx context.Context, appName string, fl *flag
 func isCloudSQLDatabase(ctx context.Context, appName string, fl *flag.Postgres) (bool, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	// Use Context if set, otherwise fall back to Environment (they often map to the same thing)
-	kubeContext := string(fl.Context)
+	kubeContext := string(fl.Environment)
 	if kubeContext == "" {
 		kubeContext = string(fl.Environment)
 	}
@@ -110,11 +106,7 @@ func isCloudSQLDatabase(ctx context.Context, appName string, fl *flag.Postgres) 
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 
-	// Use namespace for Kubernetes operations, fall back to team
-	ns := string(fl.Namespace)
-	if ns == "" {
-		ns = fl.Team
-	}
+	ns := fl.Team
 
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
@@ -174,7 +166,7 @@ func getCloudSQLSecretValues(ctx context.Context, appName, team, environment, re
 func getPostgresClusterName(ctx context.Context, appName string, fl *flag.Postgres) (string, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	// Use Context if set, otherwise fall back to Environment (they often map to the same thing)
-	kubeContext := string(fl.Context)
+	kubeContext := string(fl.Environment)
 	if kubeContext == "" {
 		kubeContext = string(fl.Environment)
 	}
@@ -183,11 +175,7 @@ func getPostgresClusterName(ctx context.Context, appName string, fl *flag.Postgr
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 
-	// Use namespace for Kubernetes operations, fall back to team
-	ns := string(fl.Namespace)
-	if ns == "" {
-		ns = fl.Team
-	}
+	ns := fl.Team
 
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
