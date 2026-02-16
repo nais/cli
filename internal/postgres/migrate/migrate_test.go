@@ -35,8 +35,8 @@ func TestCommand(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			cfg := config.Config{
-				AppName:   "some-app",
-				Namespace: "test-namespace",
+				AppName: "some-app",
+				Team:    "test-namespace",
 				Target: config.InstanceConfig{
 					InstanceName: option.Some("target-instance"),
 				},

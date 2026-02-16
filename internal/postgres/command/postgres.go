@@ -11,11 +11,9 @@ import (
 )
 
 func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	defaultContext, defaultNamespace := k8s.GetDefaultContextAndNamespace()
+	defaultContext, _ := k8s.GetDefaultContextAndNamespace()
 	flags := &flag.Postgres{
 		GlobalFlags: parentFlags,
-		Namespace:   flag.Namespace(defaultNamespace),
-		Context:     flag.Context(defaultContext),
 		Environment: flag.Environment(defaultContext),
 	}
 
@@ -37,6 +35,9 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			revokeCommand(flags),
 		},
 		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
+			if err := flags.UsesDeprecatedFlags(); err != nil {
+				return err
+			}
 			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)
 			return err
 		},

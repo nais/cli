@@ -48,9 +48,9 @@ func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *n
 	}
 
 	if fl.AllPrivileges {
-		return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, prependUsageIfNotPublic(grantAllPrivs))
+		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantAllPrivs))
 	} else {
-		return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs))
+		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs))
 	}
 }
 
@@ -64,10 +64,10 @@ func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *nai
 	if fl.Schema != "public" {
 		q += "\n" + revokeUsage
 	}
-	return sqlExecAsAppUser(ctx, appName, fl.Namespace, fl.Context, fl.Schema, q)
+	return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, q)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName string, namespace flag.Namespace, cluster flag.Context, schema, statement string) error {
+func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, schema, statement string) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err

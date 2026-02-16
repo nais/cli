@@ -19,7 +19,7 @@ func grantCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.GrantAndCreateSQLUser(ctx, args.Get("app_name"), flags.Context, flags.Namespace, out)
+			return postgres.GrantAndCreateSQLUser(ctx, args.Get("app_name"), flags.Environment, flags.Team, out)
 		},
 	}
 }

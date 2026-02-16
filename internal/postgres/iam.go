@@ -17,7 +17,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Context, namespace flag.Namespace, out *naistrix.OutputWriter) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Environment, namespace string, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -217,7 +217,7 @@ func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *nais
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
 	if err != nil {
 		return err
 	}
@@ -266,7 +266,7 @@ func AddUser(ctx context.Context, appName, username, password string, fl *flag.U
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
 	if err != nil {
 		return err
 	}
@@ -306,7 +306,7 @@ func DropUser(ctx context.Context, appName string, username string, fl *flag.Use
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
 	if err != nil {
 		return err
 	}
