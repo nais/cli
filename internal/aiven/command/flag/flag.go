@@ -6,11 +6,14 @@ import (
 	"github.com/nais/cli/internal/flags"
 )
 
-type Aiven struct{ *flags.GlobalFlags }
+type Aiven struct {
+	*flags.GlobalFlags
+	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use."`
+}
 
 type Create struct {
 	*Aiven
-	Expire uint   `name:"expire" short:"e" usage:"Number of |DAYS| until the generated credentials expire."`
+	Expire uint   `name:"expire" usage:"Number of |DAYS| until the generated credentials expire."`
 	Secret string `name:"secret" short:"s" usage:"|NAME| of the Kubernetes secret to store the credentials in. Will be generated if not provided."`
 }
 

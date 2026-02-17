@@ -42,7 +42,7 @@ func grantAccessTopic(parentFlags *flag.GrantAccess) *naistrix.Command {
 				Application: username,
 				Access:      access,
 			}
-			accessResult, err := aiven.GrantAccessToTopic(ctx, namespace, topicName, newAcl)
+			accessResult, err := aiven.GrantAccessToTopic(ctx, namespace, topicName, string(grantAccessTopicFlags.Environment), newAcl)
 			if err != nil {
 				return err
 			}

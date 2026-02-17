@@ -13,8 +13,8 @@ type GrantAccessResult struct {
 	AlreadyAdded bool
 }
 
-func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl nais_kafka.TopicACL) (*GrantAccessResult, error) {
-	client := k8s.SetupControllerRuntimeClient()
+func GrantAccessToTopic(ctx context.Context, namespace, topicName, environment string, newAcl nais_kafka.TopicACL) (*GrantAccessResult, error) {
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
 
 	if err := validateNamespace(ctx, client, namespace); err != nil {
 		return nil, err
@@ -41,8 +41,8 @@ func GrantAccessToTopic(ctx context.Context, namespace, topicName string, newAcl
 	}, nil
 }
 
-func GrantAccessToStream(ctx context.Context, namespace, streamName, userName string) (*GrantAccessResult, error) {
-	client := k8s.SetupControllerRuntimeClient()
+func GrantAccessToStream(ctx context.Context, namespace, streamName, userName, environment string) (*GrantAccessResult, error) {
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
 
 	if err := validateNamespace(ctx, client, namespace); err != nil {
 		return nil, err

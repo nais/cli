@@ -44,7 +44,7 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 			service := &aiven_services.OpenSearch{}
 			aivenConfig := aiven.Setup(
 				ctx,
-				k8s.SetupControllerRuntimeClient(),
+				k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(createOpenSearchFlags.Environment))),
 				service,
 				args.Get("username"),
 				args.Get("namespace"),

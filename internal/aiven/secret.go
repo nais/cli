@@ -30,8 +30,8 @@ type Secret struct {
 
 var ErrUnsuitableSecret = errors.New("unsuitable secret")
 
-func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName string, out *naistrix.OutputWriter) error {
-	aivenClient := k8s.SetupControllerRuntimeClient()
+func ExtractAndGenerateConfig(ctx context.Context, service aiven_services.Service, secretName, namespaceName, environment string, out *naistrix.OutputWriter) error {
+	aivenClient := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
 
 	if err := validateNamespace(ctx, aivenClient, namespaceName); err != nil {
 		return fmt.Errorf("validate namespace: %w", err)
