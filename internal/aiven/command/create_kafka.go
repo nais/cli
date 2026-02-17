@@ -39,7 +39,7 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 
 			aivenConfig := aiven.Setup(
 				ctx,
-				k8s.SetupControllerRuntimeClient(),
+				k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(createKafkaFlags.Environment))),
 				service,
 				args.Get("username"),
 				args.Get("namespace"),

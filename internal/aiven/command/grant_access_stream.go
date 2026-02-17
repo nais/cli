@@ -31,7 +31,7 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 			userName := args.Get("username")
 			stream := args.Get("stream")
 
-			accessResult, err := aiven.GrantAccessToStream(ctx, namespace, stream, userName)
+			accessResult, err := aiven.GrantAccessToStream(ctx, namespace, stream, userName, string(grantAccessStreamFlags.Environment))
 			if err != nil {
 				return err
 			}

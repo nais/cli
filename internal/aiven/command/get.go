@@ -12,7 +12,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func get(_ *flag.Aiven) *naistrix.Command {
+func get(aivenFlags *flag.Aiven) *naistrix.Command {
 	return &naistrix.Command{
 		Name:  "get",
 		Title: "Generate preferred config format to '/tmp' folder.",
@@ -35,7 +35,7 @@ func get(_ *flag.Aiven) *naistrix.Command {
 
 			username := args.Get("username")
 			namespace := args.Get("namespace")
-			if err := aiven.ExtractAndGenerateConfig(ctx, service, username, namespace, out); err != nil {
+			if err := aiven.ExtractAndGenerateConfig(ctx, service, username, namespace, string(aivenFlags.Environment), out); err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "aiven_get_secret_and_config_error_total")
 
 				switch {
