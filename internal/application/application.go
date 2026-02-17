@@ -20,6 +20,7 @@ import (
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/naisapi"
+	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	validate "github.com/nais/cli/internal/validate/command"
@@ -54,6 +55,9 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		GlobalFlags:     f,
 		AdditionalFlags: additional,
 	}
+
+	naisapiauth.ConfigFilePath = &f.Config
+
 	cmds := []*naistrix.Command{
 		auth.Auth(globalFlags),
 		login.LoginDeprecated(globalFlags),

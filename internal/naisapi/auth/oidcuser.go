@@ -8,12 +8,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/nais/cli/internal/keyring"
 	"golang.org/x/crypto/chacha20poly1305"
 	"golang.org/x/oauth2"
 )
+
+// ConfigFilePath is a pointer to the global config file path flag.
+// It must be set during application initialization (e.g. in application.go)
+// so that credentials are stored in the same directory as the config file.
+var ConfigFilePath *string
 
 // oidcUser represents a user's session, authenticated via OpenID Connect.
 type oidcUser struct {
@@ -102,25 +106,19 @@ func storeOIDCUser(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
 	return user, nil
 }
 
+func configDir() string {
+	return filepath.Dir(*ConfigFilePath)
+}
+
 func getCredentialsFilePath() (string, error) {
-	const (
-		naisConfigDir       = "nais"
-		credentialsFileName = "nais-credentials.json.enc"
-	)
+	const credentialsFileName = "nais-credentials.json.enc"
 
-	userConfigDir, err := os.UserConfigDir()
-	if err != nil {
-		return "", fmt.Errorf("get user config dir: %w", err)
+	dir := configDir()
+	if dir == "" {
+		return "", fmt.Errorf("config directory is not set")
 	}
 
-	if runtime.GOOS == "darwin" {
-		// Respect XDG spec on macOS as os.UserConfigDir does not.
-		if dir, ok := os.LookupEnv("XDG_CONFIG_HOME"); ok && dir != "" {
-			userConfigDir = dir
-		}
-	}
-
-	return filepath.Join(userConfigDir, naisConfigDir, credentialsFileName), nil
+	return filepath.Join(dir, credentialsFileName), nil
 }
 
 func readCredentialsFile(encryptionKey []byte) ([]byte, error) {
