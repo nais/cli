@@ -1,6 +1,10 @@
 package flag
 
-import "github.com/nais/cli/internal/flags"
+import (
+	"fmt"
+
+	"github.com/nais/cli/internal/flags"
+)
 
 type Aiven struct{ *flags.GlobalFlags }
 
@@ -24,7 +28,14 @@ type CreateOpenSearch struct {
 
 type GrantAccess struct {
 	*Aiven
-	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the *.kafka.nais.io resource."`
+	Namespace string `name:"namespace" short:"n" usage:"REMOVED, see --team."`
+}
+
+func (g GrantAccess) UsesRemovedFlags() error {
+	if g.Namespace != "" {
+		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
+	}
+	return nil
 }
 
 type GrantAccessStream struct {

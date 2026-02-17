@@ -9,12 +9,12 @@ import (
 type Postgres struct {
 	*flags.GlobalFlags
 	Namespace   string      `name:"namespace" short:"n" usage:"REMOVED, see --team."`
-	Context     Context     `name:"context" short:"c" usage:"REMOVED, see --environment."`
+	Context     string      `name:"context" short:"c" usage:"REMOVED, see --environment."`
 	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use. Defaults to same as context."`
 	Reason      string      `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
 }
 
-func (p Postgres) UsesDeprecatedFlags() error {
+func (p Postgres) UsesRemovedFlags() error {
 	if p.Namespace != "" {
 		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
 	}
