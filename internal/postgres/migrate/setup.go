@@ -34,14 +34,11 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			pterm.Println()
-			pterm.Error.Printfln("Application %s not found in namespace %s", m.cfg.AppName, m.cfg.Team)
+			pterm.Error.Printfln("Application %s not found for team %s", m.cfg.AppName, m.cfg.Team)
 			pterm.Println()
-			pterm.Println("Set the correct namespace in your kubeconfig context, using this command:")
-			ui.CmdStyle.Printfln("\tkubectl config set-context --current --namespace=<namespace>")
+			pterm.Println("Make sure you have specified the correct team with the --team flag")
 			pterm.Println()
-			pterm.Println("Or specify the namespace with the --namespace flag")
-			pterm.Println()
-			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Team)
+			return fmt.Errorf("app %s not found for team %s", m.cfg.AppName, m.cfg.Team)
 		} else if errors.Is(err, config.ErrMissingSqlInstance) {
 			pterm.Println()
 			pterm.Error.Printfln("The Application %s does not have any SQL instances defined in the spec", m.cfg.AppName)

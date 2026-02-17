@@ -10,10 +10,10 @@ type (
 	Environment string
 	DebugSticky struct {
 		*flags.GlobalFlags
-		Environment Environment `name:"environment" short:"e" usage:"The environment to use."`
 		Copy        bool        `name:"copy" usage:"Create a copy of the pod with a debug container. The original pod remains running and unaffected."`
-		Namespace   string      `name:"namespace" short:"n" usage:"REMOVED, see --team."`
+		Environment Environment `name:"environment" short:"e" usage:"The environment to use."`
 		Context     string      `name:"context" short:"c" usage:"REMOVED, see --environment."`
+		Namespace   string      `name:"namespace" short:"n" usage:"REMOVED, see --team."`
 	}
 )
 

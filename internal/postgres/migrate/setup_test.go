@@ -40,7 +40,7 @@ func TestMigrator_Setup(t *testing.T) {
 	}{
 		"return an error if application is not found": {
 			appName:     "no-such-app",
-			errContains: "not found in namespace",
+			errContains: "not found for team",
 		},
 		"return an error if application has no sql instance": {
 			appName:     "no-instance",
