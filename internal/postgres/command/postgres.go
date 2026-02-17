@@ -35,7 +35,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			revokeCommand(flags),
 		},
 		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
-			if err := flags.UsesDeprecatedFlags(); err != nil {
+			if err := flags.UsesRemovedFlags(); err != nil {
 				return err
 			}
 			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)

@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/command/flag"
@@ -21,14 +20,14 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 			{Name: "stream"},
 		},
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			if grantAccessStreamFlags.Namespace == "" {
-				return fmt.Errorf("--namespace is required\n\tPS: Check `nais config set`")
+			if err := grantAccessStreamFlags.UsesRemovedFlags(); err != nil {
+				return err
 			}
-
-			return nil
+			_, err := grantAccessStreamFlags.RequiredTeam()
+			return err
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			namespace := grantAccessStreamFlags.Namespace
+			namespace := grantAccessStreamFlags.Team
 			userName := args.Get("username")
 			stream := args.Get("stream")
 

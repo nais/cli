@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/aiven/command/flag"
@@ -22,15 +21,15 @@ func grantAccessTopic(parentFlags *flag.GrantAccess) *naistrix.Command {
 			{Name: "topic"},
 		},
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			if grantAccessTopicFlags.Namespace == "" {
-				return fmt.Errorf("--namespace is required\n\tPS: Check `nais config set`")
+			if err := grantAccessTopicFlags.UsesRemovedFlags(); err != nil {
+				return err
 			}
-
-			return nil
+			_, err := grantAccessTopicFlags.RequiredTeam()
+			return err
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			access := grantAccessTopicFlags.Access
-			namespace := grantAccessTopicFlags.Namespace
+			namespace := grantAccessTopicFlags.Team
 			topicName := args.Get("topic")
 			username := args.Get("username")
 

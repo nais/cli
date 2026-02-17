@@ -45,11 +45,11 @@ func (d *Debug) getPodsForWorkload() (*core_v1.PodList, error) {
 	pterm.Info.Println("Fetching workload...")
 	var podList *core_v1.PodList
 	var err error
-	podList, err = d.client.CoreV1().Pods(d.flags.Namespace).List(d.ctx, metav1.ListOptions{
+	podList, err = d.client.CoreV1().Pods(d.flags.Team).List(d.ctx, metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("app.kubernetes.io/name=%s", d.workloadName),
 	})
 	if len(podList.Items) == 0 {
-		podList, err = d.client.CoreV1().Pods(d.flags.Namespace).List(d.ctx, metav1.ListOptions{
+		podList, err = d.client.CoreV1().Pods(d.flags.Team).List(d.ctx, metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("app=%s", d.workloadName),
 		})
 	}
@@ -69,14 +69,14 @@ func (d *Debug) debugPod(podName string) error {
 
 	if d.flags.Copy {
 		pN := debuggerContainerName(podName)
-		_, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
+		_, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, pN, metav1.GetOptions{})
 		if err == nil {
 			pterm.Info.Printf("%s already exists, trying to attach...\n", pN)
 
 			// Polling loop to check if the debugger container is running
 			for i := 0; i < maxRetries; i++ {
 				pterm.Info.Printf("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
-				pod, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, pN, metav1.GetOptions{})
+				pod, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, pN, metav1.GetOptions{})
 				if err != nil {
 					return fmt.Errorf("failed to get debug pod copy %s: %v", pN, err)
 				}
@@ -96,7 +96,7 @@ func (d *Debug) debugPod(podName string) error {
 			return fmt.Errorf("failed to check for existing debug pod copy %s: %v", pN, err)
 		}
 	} else {
-		pod, err := d.client.CoreV1().Pods(d.flags.Namespace).Get(d.ctx, podName, metav1.GetOptions{})
+		pod, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, podName, metav1.GetOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to get pod %s: %v", podName, err)
 		}
@@ -114,15 +114,15 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	cmd := exec.Command(
 		"kubectl",
 		"attach",
-		"-n", d.flags.Namespace,
+		"-n", d.flags.Team,
 		fmt.Sprintf("pod/%s", podName),
 		"-c", debuggerContainerDefaultName,
 		"-i",
 		"-t",
 	)
 
-	if d.flags.Context != "" {
-		cmd.Args = append(cmd.Args, "--context", string(d.flags.Context))
+	if d.flags.Environment != "" {
+		cmd.Args = append(cmd.Args, "--context", string(d.flags.Environment))
 	}
 
 	cmd.Stdin = os.Stdin
@@ -144,7 +144,7 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 func (d *Debug) createDebugPod(podName string) error {
 	args := []string{
 		"debug",
-		"-n", d.flags.Namespace,
+		"-n", d.flags.Team,
 		fmt.Sprintf("pod/%s", podName),
 		"-it",
 		"--stdin",
@@ -154,8 +154,8 @@ func (d *Debug) createDebugPod(podName string) error {
 		"--image", d.debugImage,
 	}
 
-	if d.flags.Context != "" {
-		args = append(args, "--context", string(d.flags.Context))
+	if d.flags.Environment != "" {
+		args = append(args, "--context", string(d.flags.Environment))
 	}
 
 	if d.flags.Copy {
