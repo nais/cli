@@ -102,12 +102,12 @@ func storeOIDCUser(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
 	return user, nil
 }
 
-func getCredentialsFilePath() (string, error) {
-	const (
-		naisConfigDir       = "nais"
-		credentialsFileName = "nais-credentials.json.enc"
-	)
+const (
+	naisConfigDir       = "nais"
+	credentialsFileName = "nais-credentials.json.enc"
+)
 
+func getCredentialsFilePath() (string, error) {
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", fmt.Errorf("get user config dir: %w", err)
@@ -129,14 +129,15 @@ func readCredentialsFile(encryptionKey []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	_, err = os.Stat(credentialsPath)
+	ciphertext, err := os.ReadFile(credentialsPath)
+	if errors.Is(err, os.ErrNotExist) && runtime.GOOS == "darwin" {
+		// Fallback for macOS: credentials may have been written by a process
+		// with a different XDG_CONFIG_HOME setting (e.g. shell vs MCP server).
+		home, _ := os.UserHomeDir()
+		ciphertext, err = os.ReadFile(filepath.Join(home, ".config", naisConfigDir, credentialsFileName))
+	}
 	if err != nil {
 		return nil, err
-	}
-
-	ciphertext, err := os.ReadFile(credentialsPath)
-	if err != nil {
-		return nil, fmt.Errorf("read credentials file: %w", err)
 	}
 
 	plaintext, err := decryptCredentials(ciphertext, encryptionKey)
