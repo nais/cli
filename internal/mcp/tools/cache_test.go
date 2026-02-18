@@ -118,15 +118,13 @@ func TestSchemaCaching_Concurrent(t *testing.T) {
 	var wg sync.WaitGroup
 	numGoroutines := 10
 
-	for i := 0; i < numGoroutines; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range numGoroutines {
+		wg.Go(func() {
 			_, err := ctx.getCachedSchema(reqCtx)
 			if err != nil {
 				t.Errorf("concurrent call failed: %v", err)
 			}
-		}()
+		})
 	}
 
 	wg.Wait()

@@ -20,7 +20,6 @@ import (
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/utils/ptr"
 )
 
 type CloudSQLDBInfo struct {
@@ -153,7 +152,7 @@ func (d *CloudSQLDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 	}
 
 	if port == nil {
-		port = ptr.To(uint(0))
+		port = new(uint(0))
 	}
 	address := fmt.Sprintf("%s:%d", host, *port)
 
@@ -248,9 +247,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		}
 
 		out.Infof("New connection %s\n", conn.RemoteAddr())
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
@@ -274,7 +271,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 			go copy(closer, conn, conn2)
 			<-closer
 			out.Infof("Connection complete %s\n", conn.RemoteAddr())
-		}()
+		})
 	}
 
 	out.Infof("Waiting for connections to close\n")

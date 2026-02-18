@@ -74,7 +74,7 @@ func (d *Debug) debugPod(podName string) error {
 			pterm.Info.Printf("%s already exists, trying to attach...\n", pN)
 
 			// Polling loop to check if the debugger container is running
-			for i := 0; i < maxRetries; i++ {
+			for i := range maxRetries {
 				pterm.Info.Printf("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
 				pod, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, pN, metav1.GetOptions{})
 				if err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -20,7 +21,8 @@ const (
 )
 
 func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
-	configFile := fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace)
+	var configFile strings.Builder
+	configFile.WriteString(fmt.Sprintf("# nais %s\n# kcat -F %s -t %s.your.topic\n", time.Now().Truncate(time.Minute), KafkaCatConfigName, secret.Namespace))
 	envsToFile := map[string]string{
 		KafkaCatBootstrapServers:       string(secret.Data[KafkaBrokersKey]),
 		KafkaSecurityProtocolLocation:  "ssl",
@@ -29,10 +31,10 @@ func WriteKCatConfigToFile(secret *v1.Secret, destinationPath string) error {
 		KafkaCatSslCaLocation:          filepath.Join(destinationPath, KafkaCACrtFile),
 	}
 	for key, value := range envsToFile {
-		configFile += fmt.Sprintf("%s=%s\n", key, value)
+		configFile.WriteString(fmt.Sprintf("%s=%s\n", key, value))
 	}
 
-	err := os.WriteFile(filepath.Join(destinationPath, KafkaCatConfigName), []byte(configFile), FilePermission)
+	err := os.WriteFile(filepath.Join(destinationPath, KafkaCatConfigName), []byte(configFile.String()), FilePermission)
 	if err != nil {
 		return fmt.Errorf("write to file: %s", err)
 	}

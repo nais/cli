@@ -85,13 +85,13 @@ func updateKubernetesSecret(ctx context.Context, dbInfo *CloudSQLDBInfo, dbConne
 		if strings.HasSuffix(key, "_PASSWORD") {
 			secret.Data[key] = []byte(dbConnectionInfo.password)
 		}
-		if strings.HasSuffix(key, "_URL") {
+		if before, ok := strings.CutSuffix(key, "_URL"); ok {
 			if strings.HasSuffix(key, "_JDBC_URL") && dbConnectionInfo.jdbcUrl != nil {
 				secret.Data[key] = []byte(dbConnectionInfo.jdbcUrl.String())
 				jdbcUrlSet = true
 			} else if dbConnectionInfo.url != nil {
 				secret.Data[key] = []byte(dbConnectionInfo.url.String())
-				prefix = strings.TrimSuffix(key, "_URL")
+				prefix = before
 			}
 		}
 	}

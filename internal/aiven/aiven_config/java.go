@@ -29,8 +29,9 @@ ssl.truststore.type=JKS
 )
 
 func NewJavaConfig(secret *v1.Secret, destinationPath string) error {
-	properties := fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute))
-	properties += fmt.Sprintf(FileHeader, secret.Namespace, secret.Data[KafkaBrokersKey], filepath.Join(destinationPath, KafkaJavaConfigName))
+	var properties strings.Builder
+	properties.WriteString(fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)))
+	properties.WriteString(fmt.Sprintf(FileHeader, secret.Namespace, secret.Data[KafkaBrokersKey], filepath.Join(destinationPath, KafkaJavaConfigName)))
 
 	envsToFile := map[string]string{
 		KeyPassProp:            string(secret.Data[KafkaCredStorePasswordKey]),
@@ -41,10 +42,10 @@ func NewJavaConfig(secret *v1.Secret, destinationPath string) error {
 	}
 
 	for key, value := range envsToFile {
-		properties += fmt.Sprintf("%s=%s\n", key, value)
+		properties.WriteString(fmt.Sprintf("%s=%s\n", key, value))
 	}
 
-	err := os.WriteFile(filepath.Join(destinationPath, KafkaJavaConfigName), []byte(properties), FilePermission)
+	err := os.WriteFile(filepath.Join(destinationPath, KafkaJavaConfigName), []byte(properties.String()), FilePermission)
 	if err != nil {
 		return fmt.Errorf("write envs to file: %s", err)
 	}

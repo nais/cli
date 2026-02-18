@@ -194,9 +194,9 @@ func getPostgresClusterName(ctx context.Context, appName string, fl *flag.Postgr
 		Resource: "applications",
 	}).Namespace(ns).Get(ctx, appName, v1.GetOptions{})
 	if err == nil {
-		spec, ok := unstructuredApp.Object["spec"].(map[string]interface{})
+		spec, ok := unstructuredApp.Object["spec"].(map[string]any)
 		if ok {
-			postgres, ok := spec["postgres"].(map[string]interface{})
+			postgres, ok := spec["postgres"].(map[string]any)
 			if ok {
 				clusterName, ok := postgres["clusterName"].(string)
 				if ok && clusterName != "" {

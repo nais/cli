@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -48,21 +49,22 @@ func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error 
 }
 
 func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave map[string]fileTuple) error {
-	envsToFile := fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute))
+	var envsToFile strings.Builder
+	envsToFile.WriteString(fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)))
 	for fileName, tuple := range secretFilesToSave {
 		err := os.WriteFile(filepath.Join(destinationPath, fileName), secret.Data[tuple.Key], FilePermission)
 		if err != nil {
 			return err
 		}
 
-		envsToFile += fmt.Sprintf("%s=\"%s\"\n", tuple.PathKey, filepath.Join(destinationPath, fileName))
+		envsToFile.WriteString(fmt.Sprintf("%s=\"%s\"\n", tuple.PathKey, filepath.Join(destinationPath, fileName)))
 	}
 
 	for _, key := range envsToSave {
-		envsToFile += fmt.Sprintf("%s=\"%s\"\n", key, string(secret.Data[key]))
+		envsToFile.WriteString(fmt.Sprintf("%s=\"%s\"\n", key, string(secret.Data[key])))
 	}
 
-	err := os.WriteFile(filepath.Join(destinationPath, destinationFilename), []byte(envsToFile), FilePermission)
+	err := os.WriteFile(filepath.Join(destinationPath, destinationFilename), []byte(envsToFile.String()), FilePermission)
 	if err != nil {
 		return err
 	}

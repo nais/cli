@@ -532,7 +532,7 @@ func getLatestImageTag() (string, error) {
 	}
 
 	decoder := json.NewDecoder(resp.Body)
-	v := map[string]interface{}{}
+	v := map[string]any{}
 	err = decoder.Decode(&v)
 	if err != nil {
 		return "", err

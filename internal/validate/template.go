@@ -19,7 +19,7 @@ import (
 
 // Most of this file is copied from https://github.com/nais/deploy/blob/b3ee57a58e6ffbc7dc0586f3781a41e807eda467/pkg/deployclient/template.go for parity.
 
-type TemplateVariables map[string]interface{}
+type TemplateVariables map[string]any
 
 func TemplateVariablesFromFile(path string) (TemplateVariables, error) {
 	file, err := os.ReadFile(path)

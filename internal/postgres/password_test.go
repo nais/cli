@@ -147,11 +147,11 @@ func AddPassword(secret *corev1.Secret) {
 }
 
 func AddUrl(secret *corev1.Secret) {
-	secret.Data["DB_URL"] = []byte(fmt.Sprintf(pgUrlTmpl, oldPassword))
+	secret.Data["DB_URL"] = fmt.Appendf(nil, pgUrlTmpl, oldPassword)
 }
 
 func AddJdbcUrl(secret *corev1.Secret) {
-	secret.Data["DB_JDBC_URL"] = []byte(fmt.Sprintf(jdbcUrlTmpl, oldPassword))
+	secret.Data["DB_JDBC_URL"] = fmt.Appendf(nil, jdbcUrlTmpl, oldPassword)
 }
 
 type AssertSecret func(t *testing.T, actual *corev1.Secret)
