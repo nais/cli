@@ -248,7 +248,6 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 
 		out.Infof("New connection %s\n", conn.RemoteAddr())
 		wg.Go(func() {
-
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
 
