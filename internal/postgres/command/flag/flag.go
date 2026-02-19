@@ -1,13 +1,27 @@
 package flag
 
-import "github.com/nais/cli/internal/flags"
+import (
+	"fmt"
+
+	"github.com/nais/cli/internal/flags"
+)
 
 type Postgres struct {
 	*flags.GlobalFlags
-	Namespace   Namespace   `name:"namespace" short:"n" usage:"The kubernetes |NAMESPACE| to use. Defaults to current namespace."`
-	Context     Context     `name:"context" short:"c" usage:"The kubeconfig |CONTEXT| to use. Defaults to current context."`
-	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use. Defaults to same as context."`
+	Namespace   string      `name:"namespace" short:"n" usage:"REMOVED, see --team."`
+	Context     string      `name:"context" short:"c" usage:"REMOVED, see --environment."`
+	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use."`
 	Reason      string      `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
+}
+
+func (p Postgres) UsesRemovedFlags() error {
+	if p.Namespace != "" {
+		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
+	}
+	if p.Context != "" {
+		return fmt.Errorf("the --context (-c) flag is replaced with the --environment (-e) flag")
+	}
+	return nil
 }
 
 type Migrate struct {

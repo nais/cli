@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
@@ -359,11 +360,8 @@ func (t *toolContext) handleSchemaGetType(
 	if def.Kind == ast.Interface {
 		var implementedBy []string
 		for typeName, typeDef := range explorer.schema.Types {
-			for _, iface := range typeDef.Interfaces {
-				if iface == args.Name {
-					implementedBy = append(implementedBy, typeName)
-					break
-				}
+			if slices.Contains(typeDef.Interfaces, args.Name) {
+				implementedBy = append(implementedBy, typeName)
 			}
 		}
 		sort.Strings(implementedBy)
@@ -699,14 +697,11 @@ func (t *toolContext) handleSchemaGetImplementors(
 
 	var implementors []SchemaImplementorInfo
 	for typeName, typeDef := range explorer.schema.Types {
-		for _, iface := range typeDef.Interfaces {
-			if iface == args.Interface {
-				implementors = append(implementors, SchemaImplementorInfo{
-					Name:        typeName,
-					Description: truncate(typeDef.Description, 100),
-				})
-				break
-			}
+		if slices.Contains(typeDef.Interfaces, args.Interface) {
+			implementors = append(implementors, SchemaImplementorInfo{
+				Name:        typeName,
+				Description: truncate(typeDef.Description, 100),
+			})
 		}
 	}
 

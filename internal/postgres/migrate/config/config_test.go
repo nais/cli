@@ -283,8 +283,8 @@ func TestConfig(t *testing.T) {
 		t.Run("migration name", func(t *testing.T) {
 			getConfig := func() config.Config {
 				return config.Config{
-					AppName:   "some-app",
-					Namespace: "test-namespace",
+					AppName: "some-app",
+					Team:    "test-namespace",
 					Target: config.InstanceConfig{
 						InstanceName: option.Some("target-instance"),
 					},

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -291,13 +292,7 @@ func TestMCPServer_Integration(t *testing.T) {
 		}
 
 		for _, expected := range expectedTools {
-			found := false
-			for _, tool := range tools {
-				if tool == expected {
-					found = true
-					break
-				}
-			}
+			found := slices.Contains(tools, expected)
 			if !found {
 				t.Errorf("expected tool %q not found in %v", expected, tools)
 			}

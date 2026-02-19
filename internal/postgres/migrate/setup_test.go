@@ -40,7 +40,7 @@ func TestMigrator_Setup(t *testing.T) {
 	}{
 		"return an error if application is not found": {
 			appName:     "no-such-app",
-			errContains: "not found in namespace",
+			errContains: "not found for team",
 		},
 		"return an error if application has no sql instance": {
 			appName:     "no-instance",
@@ -62,10 +62,10 @@ func TestMigrator_Setup(t *testing.T) {
 			clientset := fake.NewClientset()
 
 			cfg := config.Config{
-				Namespace: namespace,
-				Source:    config.InstanceConfig{},
-				Target:    config.InstanceConfig{InstanceName: option.Some(targetName)},
-				AppName:   tc.appName,
+				Team:    namespace,
+				Source:  config.InstanceConfig{},
+				Target:  config.InstanceConfig{InstanceName: option.Some(targetName)},
+				AppName: tc.appName,
 			}
 			noInstanceApp := &nais_io_v1alpha1.Application{
 				ObjectMeta: metav1.ObjectMeta{
@@ -166,8 +166,8 @@ func TestConfigureTarget_instance_type(t *testing.T) {
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			cfg := config.Config{
-				Namespace: namespace,
-				Source:    tc.instance,
+				Team:   namespace,
+				Source: tc.instance,
 			}
 			migratorBuilder := migrate.NewMigrator(client, clientset, cfg, true, true)
 

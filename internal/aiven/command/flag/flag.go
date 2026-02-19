@@ -1,12 +1,19 @@
 package flag
 
-import "github.com/nais/cli/internal/flags"
+import (
+	"fmt"
 
-type Aiven struct{ *flags.GlobalFlags }
+	"github.com/nais/cli/internal/flags"
+)
+
+type Aiven struct {
+	*flags.GlobalFlags
+	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use."`
+}
 
 type Create struct {
 	*Aiven
-	Expire uint   `name:"expire" short:"e" usage:"Number of |DAYS| until the generated credentials expire."`
+	Expire uint   `name:"expire" usage:"Number of |DAYS| until the generated credentials expire."`
 	Secret string `name:"secret" short:"s" usage:"|NAME| of the Kubernetes secret to store the credentials in. Will be generated if not provided."`
 }
 
@@ -24,7 +31,14 @@ type CreateOpenSearch struct {
 
 type GrantAccess struct {
 	*Aiven
-	Namespace string `name:"namespace" short:"n" usage:"|NAMESPACE| of the *.kafka.nais.io resource."`
+	Namespace string `name:"namespace" short:"n" usage:"REMOVED, see --team."`
+}
+
+func (g GrantAccess) UsesRemovedFlags() error {
+	if g.Namespace != "" {
+		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
+	}
+	return nil
 }
 
 type GrantAccessStream struct {

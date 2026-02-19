@@ -18,7 +18,7 @@ import (
 func (m *Migrator) Setup(ctx context.Context) error {
 	cfgMapList := &v1.ConfigMapList{}
 	listOptions := []client.ListOption{
-		client.InNamespace(m.cfg.Namespace),
+		client.InNamespace(m.cfg.Team),
 		client.MatchingLabels{"migrator.nais.io/app-name": m.cfg.AppName},
 	}
 	err := m.client.List(ctx, cfgMapList, listOptions...)
@@ -30,18 +30,15 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return fmt.Errorf("migration config already exists for this application")
 	}
 
-	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
+	err = m.cfg.Source.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Team)
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			pterm.Println()
-			pterm.Error.Printfln("Application %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
+			pterm.Error.Printfln("Application %s not found for team %s", m.cfg.AppName, m.cfg.Team)
 			pterm.Println()
-			pterm.Println("Set the correct namespace in your kubeconfig context, using this command:")
-			ui.CmdStyle.Printfln("\tkubectl config set-context --current --namespace=<namespace>")
+			pterm.Println("Make sure you have specified the correct team with the --team flag")
 			pterm.Println()
-			pterm.Println("Or specify the namespace with the --namespace flag")
-			pterm.Println()
-			return fmt.Errorf("app %s not found in namespace %s", m.cfg.AppName, m.cfg.Namespace)
+			return fmt.Errorf("app %s not found for team %s", m.cfg.AppName, m.cfg.Team)
 		} else if errors.Is(err, config.ErrMissingSqlInstance) {
 			pterm.Println()
 			pterm.Error.Printfln("The Application %s does not have any SQL instances defined in the spec", m.cfg.AppName)
@@ -52,7 +49,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 
 	m.ConfigureTarget()
 
-	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Namespace)
+	err = m.cfg.Target.Resolve(ctx, m.client, m.cfg.AppName, m.cfg.Team)
 	if err != nil {
 		return err
 	}

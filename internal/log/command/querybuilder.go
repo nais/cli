@@ -79,11 +79,12 @@ func (qb *QueryBuilder) Build() string {
 		filters = append(filters, fmt.Sprintf("k8s_pod_name=~%q", strings.Join(qb.pods, "|")))
 	}
 
-	query := fmt.Sprintf("{%s}", strings.Join(selectors, ","))
+	var query strings.Builder
+	query.WriteString(fmt.Sprintf("{%s}", strings.Join(selectors, ",")))
 
 	for _, filter := range filters {
-		query += " | " + filter
+		query.WriteString(" | " + filter)
 	}
 
-	return query
+	return query.String()
 }

@@ -259,6 +259,7 @@ func (c *oidcClient) ParseIDToken(ctx context.Context, token string) (*IDToken, 
 		jwt.WithIssuer(c.oidc.Issuer),
 		jwt.WithAudience(c.oauth2.ClientID),
 		jwt.WithClaimValue("email_verified", true),
+		jwt.WithAcceptableSkew(10*time.Second),
 		jwt.WithValidate(true),
 	)
 	if err != nil {

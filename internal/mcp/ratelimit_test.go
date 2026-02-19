@@ -10,7 +10,7 @@ func TestRateLimiter_Unlimited(t *testing.T) {
 	// A rate limit of 0 should allow unlimited requests
 	rl := NewRateLimiter(0)
 
-	for i := 0; i < 1000; i++ {
+	for i := range 1000 {
 		if !rl.Allow() {
 			t.Errorf("unlimited rate limiter should allow all requests, blocked at request %d", i)
 		}
@@ -31,7 +31,7 @@ func TestRateLimiter_NegativeLimit(t *testing.T) {
 	// A negative rate limit should also be treated as unlimited
 	rl := NewRateLimiter(-5)
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if !rl.Allow() {
 			t.Errorf("negative rate limit should allow all requests, blocked at request %d", i)
 		}
@@ -50,7 +50,7 @@ func TestRateLimiter_BasicLimit(t *testing.T) {
 
 	// Use all tokens
 	allowed := 0
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		if rl.Allow() {
 			allowed++
 		}
@@ -126,12 +126,10 @@ func TestRateLimiter_Concurrent(t *testing.T) {
 	allowed := make(chan bool, 200)
 
 	// Spawn 200 goroutines, each trying to make a request
-	for i := 0; i < 200; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range 200 {
+		wg.Go(func() {
 			allowed <- rl.Allow()
-		}()
+		})
 	}
 
 	wg.Wait()

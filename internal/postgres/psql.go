@@ -22,7 +22,7 @@ func RunPSQL(ctx context.Context, appName string, fl *flag.Psql, out *naistrix.O
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Namespace, fl.Context)
+	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
 	if err != nil {
 		return err
 	}

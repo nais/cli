@@ -38,13 +38,14 @@ func (f workloadsWithIssues) String() string {
 		return "No issues detected"
 	}
 
-	issues := fmt.Sprintf("%v workloads with issues\n\n", len(f))
+	var issues strings.Builder
+	issues.WriteString(fmt.Sprintf("%v workloads with issues\n\n", len(f)))
 	for _, w := range f {
-		issues += fmt.Sprintf("%s (%s): %s\n", w.Kind, w.Environment, w.Name)
-		issues += formatErrorTypes(w.ErrorTypes) + "\n\n"
+		issues.WriteString(fmt.Sprintf("%s (%s): %s\n", w.Kind, w.Environment, w.Name))
+		issues.WriteString(formatErrorTypes(w.ErrorTypes) + "\n\n")
 	}
 
-	return strings.TrimRight(issues, "\n")
+	return strings.TrimRight(issues.String(), "\n")
 }
 
 type statusEntry struct {
