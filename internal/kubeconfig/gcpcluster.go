@@ -104,14 +104,16 @@ func getGCPClusters(ctx context.Context, project project, options filterOptions,
 			case "nais-prod":
 				name = "prod-gcp"
 			}
+		} else {
+			name = strings.ReplaceAll(name, "nais-", "")
 		}
 
 		if options.prefixWithTenants {
-			name = project.Tenant + "-" + strings.ReplaceAll(cluster.Name, "nais-", "")
+			name = project.Tenant + "-" + name
+		}
 
-			if cluster.Name == "nais-io" {
-				name = "nais-io" // ReplaceAll vil fjerne 'nais-' fra 'nais-io'
-			}
+		if cluster.Name == "nais-io" {
+			name = "nais-io" // ReplaceAll vil fjerne 'nais-' fra 'nais-io'
 		}
 
 		clusters = append(clusters, k8sCluster{
