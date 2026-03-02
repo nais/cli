@@ -114,7 +114,7 @@ jobs:
       - uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # ratchet:softprops/action-gh-release@v2.4.2
         id: release
         with:
-          tag_name: ${{ needs.release-info.outputs.version }}
+          tag_name: v${{ needs.release-info.outputs.version }}
           body: ${{ needs.release-info.outputs.changelog }}
           prerelease: false
           files: ./release_artifacts/*
@@ -131,8 +131,8 @@ jobs:
           path: ./template.vars
           if-no-files-found: error
       - run: |
-          echo "## :rocket: Release ${{ needs.release-info.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "A new release is available over at https://github.com/${{ github.repository }}/releases/tag/${{ needs.release-info.outputs.version }}." >> $GITHUB_STEP_SUMMARY
+          echo "## :rocket: Release v${{ needs.release-info.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "A new release is available over at https://github.com/${{ github.repository }}/releases/tag/v${{ needs.release-info.outputs.version }}." >> $GITHUB_STEP_SUMMARY
   release-gar:
     if: github.ref == 'refs/heads/main'
     needs: [release-github]
