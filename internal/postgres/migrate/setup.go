@@ -62,7 +62,7 @@ func (m *Migrator) Setup(ctx context.Context) error {
 	}
 
 	m.printConfig()
-	pterm.Warning.Println("Do not make structural database changes during migration!\nThis is not supported, and will cause problems!")
+	pterm.Warning.Println("Do not make structural database changes during migration!\nDo not deploy the application unless instructed to do so by the tool!\nThis is not supported, and will cause problems!")
 	err = confirmContinue()
 	if err != nil {
 		return err

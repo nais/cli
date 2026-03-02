@@ -30,8 +30,8 @@ while read -r hash file; do
 	key=${base^^}
 	key=${key//[^A-Z0-9]/_}
 
-	# normalize hash: uppercase
-	hash16=${hash^^}
+	# normalize hash: lowercase
+	hash16=${hash,,}
 
 	url=$(jq -r --arg file "$basename" '.[] | select(.name == $file) | .browser_download_url' "$assets_json")
 
