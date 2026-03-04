@@ -9,11 +9,11 @@ import (
 	"github.com/nais/cli/internal/mcp/client"
 	"github.com/nais/cli/internal/mcp/resources"
 	"github.com/nais/cli/internal/mcp/tools"
+	"github.com/nais/cli/internal/version"
 )
 
 const (
-	serverName    = "nais-mcp"
-	serverVersion = "0.1.0"
+	serverName = "nais-mcp"
 )
 
 // Server wraps the MCP server with Nais-specific configuration.
@@ -34,7 +34,7 @@ func NewServer(opts ...Option) (*Server, error) {
 	// Create the MCP server with capabilities
 	mcpServer := server.NewMCPServer(
 		serverName,
-		serverVersion,
+		version.Version,
 		server.WithToolCapabilities(true),
 		server.WithResourceCapabilities(true, false), // resources enabled, no subscriptions
 		server.WithRecovery(),
