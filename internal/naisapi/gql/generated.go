@@ -4627,6 +4627,182 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Name
 }
 
+// GetTeamJobsResponse is returned by GetTeamJobs on success.
+type GetTeamJobsResponse struct {
+	// Get a team by its slug.
+	Team GetTeamJobsTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamJobsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsResponse) GetTeam() GetTeamJobsTeam { return v.Team }
+
+// GetTeamJobsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamJobsTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetTeamJobsTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetTeamJobsTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeam) GetJobs() GetTeamJobsTeamJobsJobConnection { return v.Jobs }
+
+// GetTeamJobsTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetTeamJobsTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetTeamJobsTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetTeamJobsTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnection) GetNodes() []GetTeamJobsTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetTeamJobsTeamJobsJobConnectionNodesJob struct {
+	// The name of the job.
+	Name string `json:"name"`
+	// The team environment for the job.
+	TeamEnvironment GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
+	// The state of the Job
+	State JobState `json:"state"`
+	// Optional schedule for the job. Jobs with no schedule are run once.
+	Schedule GetTeamJobsTeamJobsJobConnectionNodesJobSchedule `json:"schedule"`
+	// The job runs.
+	Runs GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
+	// Issues that affects the workload.
+	Issues GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection `json:"issues"`
+}
+
+// GetName returns GetTeamJobsTeamJobsJobConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns GetTeamJobsTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetTeamEnvironment() GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetState returns GetTeamJobsTeamJobsJobConnectionNodesJob.State, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetState() JobState { return v.State }
+
+// GetSchedule returns GetTeamJobsTeamJobsJobConnectionNodesJob.Schedule, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetSchedule() GetTeamJobsTeamJobsJobConnectionNodesJobSchedule {
+	return v.Schedule
+}
+
+// GetRuns returns GetTeamJobsTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetRuns() GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection {
+	return v.Runs
+}
+
+// GetIssues returns GetTeamJobsTeamJobsJobConnectionNodesJob.Issues, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJob) GetIssues() GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection {
+	return v.Issues
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection struct {
+	// Pagination information.
+	PageInfo GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetPageInfo returns GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnection) GetPageInfo() GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo struct {
+	// The total amount of items in the connection.
+	TotalCount int `json:"totalCount"`
+}
+
+// GetTotalCount returns GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobIssuesIssueConnectionPageInfo) GetTotalCount() int {
+	return v.TotalCount
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
+type GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
+	// List of nodes.
+	Nodes []GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
+}
+
+// GetNodes returns GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
+	return v.Nodes
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
+type GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
+	// The status of the job run.
+	Status GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus `json:"status"`
+}
+
+// GetStatus returns GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Status, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStatus() GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus {
+	return v.Status
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus includes the requested fields of the GraphQL type JobRunStatus.
+type GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus struct {
+	// The state of the job run.
+	State JobRunState `json:"state"`
+}
+
+// GetState returns GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus.State, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus) GetState() JobRunState {
+	return v.State
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobSchedule includes the requested fields of the GraphQL type JobSchedule.
+type GetTeamJobsTeamJobsJobConnectionNodesJobSchedule struct {
+	// The cron expression for the job.
+	Expression string `json:"expression"`
+}
+
+// GetExpression returns GetTeamJobsTeamJobsJobConnectionNodesJobSchedule.Expression, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobSchedule) GetExpression() string {
+	return v.Expression
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment struct {
+	// Get the environment.
+	Environment GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironment) GetEnvironment() GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -5632,6 +5808,63 @@ var AllIssueType = []IssueType{
 	IssueTypeInvalidSpec,
 	IssueTypeMissingSbom,
 	IssueTypeVulnerableImage,
+}
+
+type JobOrder struct {
+	Field     JobOrderField  `json:"field"`
+	Direction OrderDirection `json:"direction"`
+}
+
+// GetField returns JobOrder.Field, and is useful for accessing the field via an interface.
+func (v *JobOrder) GetField() JobOrderField { return v.Field }
+
+// GetDirection returns JobOrder.Direction, and is useful for accessing the field via an interface.
+func (v *JobOrder) GetDirection() OrderDirection { return v.Direction }
+
+type JobOrderField string
+
+const (
+	// Order jobs by name.
+	JobOrderFieldName JobOrderField = "NAME"
+	// Order jobs by the name of the environment.
+	JobOrderFieldEnvironment JobOrderField = "ENVIRONMENT"
+	// Order by state.
+	JobOrderFieldState JobOrderField = "STATE"
+	// Order applications by the deployment time.
+	JobOrderFieldDeploymentTime JobOrderField = "DEPLOYMENT_TIME"
+	// Order jobs by issue severity
+	JobOrderFieldIssues JobOrderField = "ISSUES"
+)
+
+var AllJobOrderField = []JobOrderField{
+	JobOrderFieldName,
+	JobOrderFieldEnvironment,
+	JobOrderFieldState,
+	JobOrderFieldDeploymentTime,
+	JobOrderFieldIssues,
+}
+
+type JobRunState string
+
+const (
+	// Job run is pending.
+	JobRunStatePending JobRunState = "PENDING"
+	// Job run is running.
+	JobRunStateRunning JobRunState = "RUNNING"
+	// Job run is succeeded.
+	JobRunStateSucceeded JobRunState = "SUCCEEDED"
+	// Job run is failed.
+	JobRunStateFailed JobRunState = "FAILED"
+	// Job run is unknown.
+	JobRunStateUnknown JobRunState = "UNKNOWN"
+)
+
+var AllJobRunState = []JobRunState{
+	JobRunStatePending,
+	JobRunStateRunning,
+	JobRunStateSucceeded,
+	JobRunStateFailed,
+	JobRunStateUnknown,
 }
 
 type JobState string
@@ -7770,6 +8003,18 @@ func (v *__GetTeamApplicationsInput) GetOrderBy() ApplicationOrder { return v.Or
 // GetFilter returns __GetTeamApplicationsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamApplicationsInput) GetFilter() TeamApplicationsFilter { return v.Filter }
 
+// __GetTeamJobsInput is used internally by genqlient
+type __GetTeamJobsInput struct {
+	Team    string   `json:"team"`
+	OrderBy JobOrder `json:"orderBy"`
+}
+
+// GetTeam returns __GetTeamJobsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamJobsInput) GetTeam() string { return v.Team }
+
+// GetOrderBy returns __GetTeamJobsInput.OrderBy, and is useful for accessing the field via an interface.
+func (v *__GetTeamJobsInput) GetOrderBy() JobOrder { return v.OrderBy }
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -8719,6 +8964,67 @@ func GetTeamApplications(
 	}
 
 	data_ = &GetTeamApplicationsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTeamJobs.
+const GetTeamJobs_Operation = `
+query GetTeamJobs ($team: Slug!, $orderBy: JobOrder) {
+	team(slug: $team) {
+		jobs(first: 1000, orderBy: $orderBy) {
+			nodes {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				state
+				schedule {
+					expression
+				}
+				runs(first: 1) {
+					nodes {
+						status {
+							state
+						}
+					}
+				}
+				issues {
+					pageInfo {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetTeamJobs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	orderBy JobOrder,
+) (data_ *GetTeamJobsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamJobs",
+		Query:  GetTeamJobs_Operation,
+		Variables: &__GetTeamJobsInput{
+			Team:    team,
+			OrderBy: orderBy,
+		},
+	}
+
+	data_ = &GetTeamJobsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
