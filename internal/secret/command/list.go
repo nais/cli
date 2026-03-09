@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
@@ -14,11 +13,11 @@ import (
 )
 
 type SecretSummary struct {
-	Name         string `heading:"Name"`
-	Environment  string `heading:"Environment"`
-	Keys         string `heading:"Keys"`
-	Workloads    string `heading:"Workloads"`
-	LastModified string `heading:"Last Modified"`
+	Name         string              `heading:"Name"`
+	Environment  string              `heading:"Environment"`
+	Keys         string              `heading:"Keys"`
+	Workloads    string              `heading:"Workloads"`
+	LastModified secret.LastModified `heading:"Last Modified"`
 }
 
 const maxListItems = 3
@@ -38,10 +37,6 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 			{
 				Description: "List secrets in a specific environment.",
 				Command:     "--environment dev",
-			},
-			{
-				Description: "List only secrets that are in use by workloads.",
-				Command:     "--in-use",
 			},
 		},
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -63,16 +58,6 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 					continue
 				}
 
-				workloadCount := len(s.Workloads.Nodes)
-				if f.InUse && workloadCount == 0 {
-					continue
-				}
-
-				lastModified := ""
-				if !s.LastModifiedAt.IsZero() {
-					lastModified = s.LastModifiedAt.Format(time.DateTime)
-				}
-
 				var workloadNames []string
 				for _, w := range s.Workloads.Nodes {
 					workloadNames = append(workloadNames, w.GetName())
@@ -83,7 +68,7 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 					Environment:  envName,
 					Keys:         summarizeList(s.Keys),
 					Workloads:    summarizeList(workloadNames),
-					LastModified: lastModified,
+					LastModified: secret.LastModified(s.LastModifiedAt),
 				})
 			}
 

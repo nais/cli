@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/secret"
 	"github.com/nais/naistrix"
 )
 
@@ -18,6 +19,32 @@ type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
 	return autoCompleteEnvironments(ctx)
+}
+
+// GetEnv is like Env but provides context-aware autocomplete: when a secret
+// name argument has been provided, only environments where that secret exists
+// are suggested.
+type GetEnv string
+
+func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
+	if args.Len() == 0 {
+		return autoCompleteEnvironments(ctx)
+	}
+
+	type teamProvider interface {
+		GetTeam() string
+	}
+
+	tp, ok := flags.(teamProvider)
+	if !ok || tp.GetTeam() == "" {
+		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	envs, err := secret.SecretEnvironments(ctx, tp.GetTeam(), args.Get("name"))
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
 }
 
 func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
@@ -43,14 +70,16 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 type List struct {
 	*Secret
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-	InUse       bool         `name:"in-use" usage:"Only show secrets that are in use by workloads."`
 	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 type Get struct {
 	*Secret
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
+
+func (g *Get) GetTeam() string { return string(g.Team) }
 
 type Create struct {
 	*Secret
@@ -58,24 +87,36 @@ type Create struct {
 
 type Delete struct {
 	*Secret
-	Yes bool `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 }
+
+func (d *Delete) GetTeam() string { return string(d.Team) }
 
 type Set struct {
 	*Secret
+	Environment    GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
 	Key            string `name:"key" usage:"Name of the key to set."`
 	Value          string `name:"value" usage:"Value to set."`
 	ValueFromStdin bool   `name:"value-from-stdin" usage:"Read value from stdin."`
 }
 
+func (s *Set) GetTeam() string { return string(s.Team) }
+
 type Unset struct {
 	*Secret
-	Key string `name:"key" usage:"Name of the key to unset."`
-	Yes bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Key         string `name:"key" usage:"Name of the key to unset."`
+	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 }
+
+func (u *Unset) GetTeam() string { return string(u.Team) }
 
 type ViewValues struct {
 	*Secret
-	Reason string `name:"reason" usage:"Reason for accessing secret values (min 10 chars)."`
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Reason      string `name:"reason" usage:"Reason for accessing secret values (min 10 chars)."`
+	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
+
+func (v *ViewValues) GetTeam() string { return string(v.Team) }
