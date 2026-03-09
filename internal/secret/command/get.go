@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
@@ -14,12 +13,12 @@ import (
 )
 
 type SecretDetail struct {
-	Name         string   `json:"name"`
-	Environment  string   `json:"environment"`
-	Keys         []string `json:"keys"`
-	LastModified string   `json:"lastModified,omitempty"`
-	ModifiedBy   string   `json:"modifiedBy,omitempty"`
-	Workloads    []string `json:"workloads,omitempty"`
+	Name         string              `json:"name"`
+	Environment  string              `json:"environment"`
+	Keys         []string            `json:"keys"`
+	LastModified secret.LastModified `json:"lastModified,omitempty"`
+	ModifiedBy   string              `json:"modifiedBy,omitempty"`
+	Workloads    []string            `json:"workloads,omitempty"`
 }
 
 func get(parentFlags *flag.Secret) *naistrix.Command {
@@ -58,12 +57,10 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 
 			if f.Output == "json" {
 				detail := SecretDetail{
-					Name:        existing.Name,
-					Environment: existing.TeamEnvironment.Environment.Name,
-					Keys:        existing.Keys,
-				}
-				if !existing.LastModifiedAt.IsZero() {
-					detail.LastModified = existing.LastModifiedAt.Format(time.RFC3339)
+					Name:         existing.Name,
+					Environment:  existing.TeamEnvironment.Environment.Name,
+					Keys:         existing.Keys,
+					LastModified: secret.LastModified(existing.LastModifiedAt),
 				}
 				if existing.LastModifiedBy.Email != "" {
 					detail.ModifiedBy = existing.LastModifiedBy.Email

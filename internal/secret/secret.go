@@ -20,6 +20,56 @@ type Metadata struct {
 	Name string
 }
 
+// LastModified is a time.Time that renders as human-readable relative time in
+// table output (e.g. "3h", "7d") and as RFC3339 in JSON output.
+type LastModified time.Time
+
+func (t LastModified) String() string {
+	v := time.Time(t)
+	if v.IsZero() {
+		return ""
+	}
+
+	d := time.Since(v)
+	if seconds := int(d.Seconds()); seconds < -1 {
+		return "<invalid>"
+	} else if seconds < 0 {
+		return "0s"
+	} else if seconds < 60 {
+		return fmt.Sprintf("%vs", seconds)
+	} else if minutes := int(d.Minutes()); minutes < 60 {
+		return fmt.Sprintf("%vm", minutes)
+	} else if hours := int(d.Hours()); hours < 24 {
+		return fmt.Sprintf("%vh", hours)
+	} else if hours < 24*365 {
+		return fmt.Sprintf("%vd", hours/24)
+	}
+	return fmt.Sprintf("%vy", int(d.Hours()/24/365))
+}
+
+func (t LastModified) MarshalJSON() ([]byte, error) {
+	v := time.Time(t)
+	if v.IsZero() {
+		return []byte(`""`), nil
+	}
+	return fmt.Appendf(nil, "%q", v.Format(time.RFC3339)), nil
+}
+
+// SecretEnvironments returns the environments where a secret with the given name exists.
+func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
+	all, err := GetAll(ctx, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+	var envs []string
+	for _, s := range all {
+		if s.Name == name {
+			envs = append(envs, s.TeamEnvironment.Environment.Name)
+		}
+	}
+	return envs, nil
+}
+
 // GetAll retrieves all secrets for a team.
 func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllSecretsTeamSecretsSecretConnectionNodesSecret, error) {
 	_ = `# @genqlient
@@ -250,7 +300,7 @@ func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][
 	}
 
 	if !s.LastModifiedAt.IsZero() {
-		data = append(data, []string{"Last Modified", s.LastModifiedAt.Format(time.RFC3339)})
+		data = append(data, []string{"Last Modified", LastModified(s.LastModifiedAt).String()})
 	}
 	if s.LastModifiedBy.Email != "" {
 		data = append(data, []string{"Modified By", s.LastModifiedBy.Email})
