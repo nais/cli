@@ -49,6 +49,12 @@ type Activity struct {
 	Limit  int    `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
 }
 
+type Trigger struct {
+	*Job
+	Environment Env    `name:"environment" short:"e" usage:"Filter by environment."`
+	RunName     string `name:"run-name" usage:"Custom run name. Defaults to a generated value."`
+}
+
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {

@@ -22,6 +22,7 @@ func Job(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			list(flags),
 			activity(flags),
+			trigger(flags),
 			issues(flags),
 			log(flags),
 		},
