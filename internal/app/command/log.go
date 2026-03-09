@@ -68,7 +68,14 @@ func log(parentFlags *flag.App) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				apps, err := app.GetApplicationNames(ctx, flags.Team)
+				if len(flags.Team) == 0 {
+					return nil, "Please provide team to auto-complete application names. 'nais config set team <team>', or '--team <team>' flag."
+				}
+				if flags.Environment == "" {
+					return nil, "Please provide environment to auto-complete application names. '--environment <environment>' flag."
+				}
+
+				apps, err := app.GetApplicationNames(ctx, flags.Team, []string{string(flags.Environment)})
 				if err != nil {
 					return nil, "Unable to fetch application names."
 				}
