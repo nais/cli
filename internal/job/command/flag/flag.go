@@ -43,6 +43,12 @@ type Issues struct {
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
+type Activity struct {
+	*Job
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Limit  int    `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
+}
+
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
