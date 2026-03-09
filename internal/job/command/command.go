@@ -21,6 +21,7 @@ func Job(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			list(flags),
+			issues(flags),
 		},
 	}
 }

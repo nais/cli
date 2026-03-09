@@ -36,3 +36,8 @@ type List struct {
 	*Job
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
+
+type Issues struct {
+	*Job
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}

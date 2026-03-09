@@ -4186,6 +4186,771 @@ func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Name
 }
 
+// GetJobIssuesResponse is returned by GetJobIssues on success.
+type GetJobIssuesResponse struct {
+	// Get a team by its slug.
+	Team GetJobIssuesTeam `json:"team"`
+}
+
+// GetTeam returns GetJobIssuesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesResponse) GetTeam() GetJobIssuesTeam { return v.Team }
+
+// GetJobIssuesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetJobIssuesTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetJobIssuesTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetJobIssuesTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeam) GetJobs() GetJobIssuesTeamJobsJobConnection { return v.Jobs }
+
+// GetJobIssuesTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetJobIssuesTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetJobIssuesTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetJobIssuesTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnection) GetNodes() []GetJobIssuesTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetJobIssuesTeamJobsJobConnectionNodesJob struct {
+	// The team environment for the job.
+	TeamEnvironment GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
+	// Issues that affects the workload.
+	Issues GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection `json:"issues"`
+}
+
+// GetTeamEnvironment returns GetJobIssuesTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJob) GetTeamEnvironment() GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetIssues returns GetJobIssuesTeamJobsJobConnectionNodesJob.Issues, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJob) GetIssues() GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection {
+	return v.Issues
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection struct {
+	// List of nodes.
+	Nodes []GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue `json:"-"`
+}
+
+// GetNodes returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection) GetNodes() []GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection) __premarshalJSON() (*__premarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection, error) {
+	var retval __premarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL interface Issue.
+//
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue is implemented by the following types:
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue interface {
+	implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetSeverity returns the interface-field "severity" from its implementation.
+	GetSeverity() Severity
+	// GetMessage returns the interface-field "message" from its implementation.
+	GetMessage() string
+}
+
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+
+func __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue(b []byte, v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "DeprecatedIngressIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedRegistryIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedSynchronizationIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue)
+		return json.Unmarshal(b, *v)
+	case "InvalidSpecIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue)
+		return json.Unmarshal(b, *v)
+	case "MissingSbomIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue)
+		return json.Unmarshal(b, *v)
+	case "NoRunningInstancesIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceStateIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Issue.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue(v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue:
+		typename = "MissingSbomIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue:
+		typename = "OpenSearchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue: "%T"`, v)
+	}
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesValkeyIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesVulnerableImageIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment struct {
+	// Get the environment.
+	Environment GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironment) GetEnvironment() GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetJobNamesResponse is returned by GetJobNames on success.
+type GetJobNamesResponse struct {
+	// Get a team by its slug.
+	Team GetJobNamesTeam `json:"team"`
+}
+
+// GetTeam returns GetJobNamesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobNamesResponse) GetTeam() GetJobNamesTeam { return v.Team }
+
+// GetJobNamesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetJobNamesTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetJobNamesTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetJobNamesTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeam) GetJobs() GetJobNamesTeamJobsJobConnection { return v.Jobs }
+
+// GetJobNamesTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetJobNamesTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetJobNamesTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetJobNamesTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeamJobsJobConnection) GetNodes() []GetJobNamesTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetJobNamesTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetJobNamesTeamJobsJobConnectionNodesJob struct {
+	// The name of the job.
+	Name string `json:"name"`
+}
+
+// GetName returns GetJobNamesTeamJobsJobConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeamJobsJobConnectionNodesJob) GetName() string { return v.Name }
+
 // GetOpenSearchResponse is returned by GetOpenSearch on success.
 type GetOpenSearchResponse struct {
 	// Get a team by its slug.
@@ -9162,6 +9927,30 @@ type __GetApplicationNamesInput struct {
 // GetTeam returns __GetApplicationNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetApplicationNamesInput) GetTeam() string { return v.Team }
 
+// __GetJobIssuesInput is used internally by genqlient
+type __GetJobIssuesInput struct {
+	Team string   `json:"team"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetTeam returns __GetJobIssuesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobIssuesInput) GetTeam() string { return v.Team }
+
+// GetName returns __GetJobIssuesInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetJobIssuesInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetJobIssuesInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetJobIssuesInput) GetEnv() []string { return v.Env }
+
+// __GetJobNamesInput is used internally by genqlient
+type __GetJobNamesInput struct {
+	Team string `json:"team"`
+}
+
+// GetTeam returns __GetJobNamesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobNamesInput) GetTeam() string { return v.Team }
+
 // __GetOpenSearchInput is used internally by genqlient
 type __GetOpenSearchInput struct {
 	Name            string `json:"name"`
@@ -10256,6 +11045,97 @@ func GetApplicationNames(
 	}
 
 	data_ = &GetApplicationNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobIssues.
+const GetJobIssues_Operation = `
+query GetJobIssues ($team: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $team) {
+		jobs(filter: {name:$name,environments:$env}) {
+			nodes {
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				issues(first: 500) {
+					nodes {
+						__typename
+						severity
+						message
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetJobIssues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env []string,
+) (data_ *GetJobIssuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobIssues",
+		Query:  GetJobIssues_Operation,
+		Variables: &__GetJobIssuesInput{
+			Team: team,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetJobIssuesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobNames.
+const GetJobNames_Operation = `
+query GetJobNames ($team: Slug!) {
+	team(slug: $team) {
+		jobs(first: 1000) {
+			nodes {
+				name
+			}
+		}
+	}
+}
+`
+
+func GetJobNames(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+) (data_ *GetJobNamesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobNames",
+		Query:  GetJobNames_Operation,
+		Variables: &__GetJobNamesInput{
+			Team: team,
+		},
+	}
+
+	data_ = &GetJobNamesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

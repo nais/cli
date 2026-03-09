@@ -59,6 +59,43 @@ func (s Schedule) String() string {
 	return string(s)
 }
 
+func GetJobNames(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query GetJobNames($team: Slug!) {
+			team(slug: $team) {
+				jobs(first: 1000) {
+					nodes {
+						name
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetJobNames(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+
+	uniq := make(map[string]struct{})
+	for _, j := range resp.Team.Jobs.Nodes {
+		uniq[j.Name] = struct{}{}
+	}
+
+	ret := make([]string, 0, len(uniq))
+	for name := range uniq {
+		ret = append(ret, name)
+	}
+	sort.Strings(ret)
+
+	return ret, nil
+}
+
 func GetTeamJobs(ctx context.Context, team string, environments []string) ([]Job, error) {
 	_ = `# @genqlient
 		query GetTeamJobs($team: Slug!, $orderBy: JobOrder) {
