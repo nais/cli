@@ -9,6 +9,7 @@ operations:
   - internal/app/**/*.go
   - internal/job/**/*.go
   - internal/postgres/**/*.go
+  - internal/secret/**/*.go
 bindings:
   Slug:
     type: string
