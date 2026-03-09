@@ -22,6 +22,7 @@ import (
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
+	secrets "github.com/nais/cli/internal/secret/command"
 	validate "github.com/nais/cli/internal/validate/command"
 	"github.com/nais/cli/internal/version"
 	"github.com/nais/naistrix"
@@ -68,6 +69,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		postgres.Postgres(globalFlags),
 		debug.Debug(globalFlags),
 		kubeconfig.Kubeconfig(globalFlags),
+		secrets.Secrets(globalFlags),
 		validate.Validate(globalFlags),
 		issues.Issues(globalFlags),
 	}

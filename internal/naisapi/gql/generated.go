@@ -12,6 +12,45 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// AddSecretValueAddSecretValueAddSecretValuePayload includes the requested fields of the GraphQL type AddSecretValuePayload.
+type AddSecretValueAddSecretValueAddSecretValuePayload struct {
+	// The updated secret.
+	Secret AddSecretValueAddSecretValueAddSecretValuePayloadSecret `json:"secret"`
+}
+
+// GetSecret returns AddSecretValueAddSecretValueAddSecretValuePayload.Secret, and is useful for accessing the field via an interface.
+func (v *AddSecretValueAddSecretValueAddSecretValuePayload) GetSecret() AddSecretValueAddSecretValueAddSecretValuePayloadSecret {
+	return v.Secret
+}
+
+// AddSecretValueAddSecretValueAddSecretValuePayloadSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type AddSecretValueAddSecretValueAddSecretValuePayloadSecret struct {
+	// The globally unique ID of the secret.
+	Id string `json:"id"`
+	// The name of the secret.
+	Name string `json:"name"`
+}
+
+// GetId returns AddSecretValueAddSecretValueAddSecretValuePayloadSecret.Id, and is useful for accessing the field via an interface.
+func (v *AddSecretValueAddSecretValueAddSecretValuePayloadSecret) GetId() string { return v.Id }
+
+// GetName returns AddSecretValueAddSecretValueAddSecretValuePayloadSecret.Name, and is useful for accessing the field via an interface.
+func (v *AddSecretValueAddSecretValueAddSecretValuePayloadSecret) GetName() string { return v.Name }
+
+// AddSecretValueResponse is returned by AddSecretValue on success.
+type AddSecretValueResponse struct {
+	// Add a secret value to a secret.
+	AddSecretValue AddSecretValueAddSecretValueAddSecretValuePayload `json:"addSecretValue"`
+}
+
+// GetAddSecretValue returns AddSecretValueResponse.AddSecretValue, and is useful for accessing the field via an interface.
+func (v *AddSecretValueResponse) GetAddSecretValue() AddSecretValueAddSecretValueAddSecretValuePayload {
+	return v.AddSecretValue
+}
+
 // AddTeamMemberAddTeamMemberAddTeamMemberPayload includes the requested fields of the GraphQL type AddTeamMemberPayload.
 type AddTeamMemberAddTeamMemberAddTeamMemberPayload struct {
 	// The added team member.
@@ -247,6 +286,45 @@ func (v *CreateOpenSearchResponse) GetCreateOpenSearch() CreateOpenSearchCreateO
 	return v.CreateOpenSearch
 }
 
+// CreateSecretCreateSecretCreateSecretPayload includes the requested fields of the GraphQL type CreateSecretPayload.
+type CreateSecretCreateSecretCreateSecretPayload struct {
+	// The created secret.
+	Secret CreateSecretCreateSecretCreateSecretPayloadSecret `json:"secret"`
+}
+
+// GetSecret returns CreateSecretCreateSecretCreateSecretPayload.Secret, and is useful for accessing the field via an interface.
+func (v *CreateSecretCreateSecretCreateSecretPayload) GetSecret() CreateSecretCreateSecretCreateSecretPayloadSecret {
+	return v.Secret
+}
+
+// CreateSecretCreateSecretCreateSecretPayloadSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type CreateSecretCreateSecretCreateSecretPayloadSecret struct {
+	// The globally unique ID of the secret.
+	Id string `json:"id"`
+	// The name of the secret.
+	Name string `json:"name"`
+}
+
+// GetId returns CreateSecretCreateSecretCreateSecretPayloadSecret.Id, and is useful for accessing the field via an interface.
+func (v *CreateSecretCreateSecretCreateSecretPayloadSecret) GetId() string { return v.Id }
+
+// GetName returns CreateSecretCreateSecretCreateSecretPayloadSecret.Name, and is useful for accessing the field via an interface.
+func (v *CreateSecretCreateSecretCreateSecretPayloadSecret) GetName() string { return v.Name }
+
+// CreateSecretResponse is returned by CreateSecret on success.
+type CreateSecretResponse struct {
+	// Create a new secret.
+	CreateSecret CreateSecretCreateSecretCreateSecretPayload `json:"createSecret"`
+}
+
+// GetCreateSecret returns CreateSecretResponse.CreateSecret, and is useful for accessing the field via an interface.
+func (v *CreateSecretResponse) GetCreateSecret() CreateSecretCreateSecretCreateSecretPayload {
+	return v.CreateSecret
+}
+
 // CreateValkeyCreateValkeyCreateValkeyPayload includes the requested fields of the GraphQL type CreateValkeyPayload.
 type CreateValkeyCreateValkeyCreateValkeyPayload struct {
 	// Valkey instance that was created.
@@ -301,6 +379,26 @@ type DeleteOpenSearchResponse struct {
 // GetDeleteOpenSearch returns DeleteOpenSearchResponse.DeleteOpenSearch, and is useful for accessing the field via an interface.
 func (v *DeleteOpenSearchResponse) GetDeleteOpenSearch() DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload {
 	return v.DeleteOpenSearch
+}
+
+// DeleteSecretDeleteSecretDeleteSecretPayload includes the requested fields of the GraphQL type DeleteSecretPayload.
+type DeleteSecretDeleteSecretDeleteSecretPayload struct {
+	// The deleted secret.
+	SecretDeleted bool `json:"secretDeleted"`
+}
+
+// GetSecretDeleted returns DeleteSecretDeleteSecretDeleteSecretPayload.SecretDeleted, and is useful for accessing the field via an interface.
+func (v *DeleteSecretDeleteSecretDeleteSecretPayload) GetSecretDeleted() bool { return v.SecretDeleted }
+
+// DeleteSecretResponse is returned by DeleteSecret on success.
+type DeleteSecretResponse struct {
+	// Delete a secret, and the values it contains.
+	DeleteSecret DeleteSecretDeleteSecretDeleteSecretPayload `json:"deleteSecret"`
+}
+
+// GetDeleteSecret returns DeleteSecretResponse.DeleteSecret, and is useful for accessing the field via an interface.
+func (v *DeleteSecretResponse) GetDeleteSecret() DeleteSecretDeleteSecretDeleteSecretPayload {
+	return v.DeleteSecret
 }
 
 // DeleteValkeyDeleteValkeyDeleteValkeyPayload includes the requested fields of the GraphQL type DeleteValkeyPayload.
@@ -2757,6 +2855,337 @@ func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVe
 	return v.Actual
 }
 
+// GetAllSecretsResponse is returned by GetAllSecrets on success.
+type GetAllSecretsResponse struct {
+	// Get a team by its slug.
+	Team GetAllSecretsTeam `json:"team"`
+}
+
+// GetTeam returns GetAllSecretsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsResponse) GetTeam() GetAllSecretsTeam { return v.Team }
+
+// GetAllSecretsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllSecretsTeam struct {
+	// Secrets owned by the team.
+	Secrets GetAllSecretsTeamSecretsSecretConnection `json:"secrets"`
+}
+
+// GetSecrets returns GetAllSecretsTeam.Secrets, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeam) GetSecrets() GetAllSecretsTeamSecretsSecretConnection { return v.Secrets }
+
+// GetAllSecretsTeamSecretsSecretConnection includes the requested fields of the GraphQL type SecretConnection.
+type GetAllSecretsTeamSecretsSecretConnection struct {
+	// List of nodes.
+	Nodes []GetAllSecretsTeamSecretsSecretConnectionNodesSecret `json:"nodes"`
+}
+
+// GetNodes returns GetAllSecretsTeamSecretsSecretConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnection) GetNodes() []GetAllSecretsTeamSecretsSecretConnectionNodesSecret {
+	return v.Nodes
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecret struct {
+	// The name of the secret.
+	Name string `json:"name"`
+	// The names of the keys in the secret. This does not require elevation to access.
+	Keys []string `json:"keys"`
+	// The environment the secret exists in.
+	TeamEnvironment GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment `json:"teamEnvironment"`
+	// Workloads that use the secret.
+	Workloads GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection `json:"workloads"`
+	// Last time the secret was modified.
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
+	// User who last modified the secret.
+	LastModifiedBy GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser `json:"lastModifiedBy"`
+}
+
+// GetName returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.Name, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetName() string { return v.Name }
+
+// GetKeys returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.Keys, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetKeys() []string { return v.Keys }
+
+// GetTeamEnvironment returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetTeamEnvironment() GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetWorkloads returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.Workloads, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetWorkloads() GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetLastModifiedAt returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.LastModifiedAt, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetLastModifiedAt() time.Time {
+	return v.LastModifiedAt
+}
+
+// GetLastModifiedBy returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.LastModifiedBy, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetLastModifiedBy() GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser {
+	return v.LastModifiedBy
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser struct {
+	// The email address of the user.
+	Email string `json:"email"`
+}
+
+// GetEmail returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser.Email, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser) GetEmail() string {
+	return v.Email
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment) GetEnvironment() GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection) GetNodes() []GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication
+// GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload(v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
+
 // GetAllValkeysResponse is returned by GetAllValkeys on success.
 type GetAllValkeysResponse struct {
 	// Get a team by its slug.
@@ -4125,6 +4554,329 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetActual() string { ret
 // GetDesiredMajor returns GetOpenSearchTeamEnvironmentOpenSearchVersion.DesiredMajor, and is useful for accessing the field via an interface.
 func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetDesiredMajor() OpenSearchMajorVersion {
 	return v.DesiredMajor
+}
+
+// GetSecretResponse is returned by GetSecret on success.
+type GetSecretResponse struct {
+	// Get a team by its slug.
+	Team GetSecretTeam `json:"team"`
+}
+
+// GetTeam returns GetSecretResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetSecretResponse) GetTeam() GetSecretTeam { return v.Team }
+
+// GetSecretTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetSecretTeam struct {
+	// Get a specific environment for the team.
+	Environment GetSecretTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetSecretTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetSecretTeam) GetEnvironment() GetSecretTeamEnvironment { return v.Environment }
+
+// GetSecretTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetSecretTeamEnvironment struct {
+	// Get a secret by name.
+	Secret GetSecretTeamEnvironmentSecret `json:"secret"`
+}
+
+// GetSecret returns GetSecretTeamEnvironment.Secret, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironment) GetSecret() GetSecretTeamEnvironmentSecret { return v.Secret }
+
+// GetSecretTeamEnvironmentSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type GetSecretTeamEnvironmentSecret struct {
+	// The name of the secret.
+	Name string `json:"name"`
+	// The names of the keys in the secret. This does not require elevation to access.
+	Keys []string `json:"keys"`
+	// The environment the secret exists in.
+	TeamEnvironment GetSecretTeamEnvironmentSecretTeamEnvironment `json:"teamEnvironment"`
+	// Workloads that use the secret.
+	Workloads GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection `json:"workloads"`
+	// Last time the secret was modified.
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
+	// User who last modified the secret.
+	LastModifiedBy GetSecretTeamEnvironmentSecretLastModifiedByUser `json:"lastModifiedBy"`
+}
+
+// GetName returns GetSecretTeamEnvironmentSecret.Name, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetName() string { return v.Name }
+
+// GetKeys returns GetSecretTeamEnvironmentSecret.Keys, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetKeys() []string { return v.Keys }
+
+// GetTeamEnvironment returns GetSecretTeamEnvironmentSecret.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetTeamEnvironment() GetSecretTeamEnvironmentSecretTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetWorkloads returns GetSecretTeamEnvironmentSecret.Workloads, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetWorkloads() GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetLastModifiedAt returns GetSecretTeamEnvironmentSecret.LastModifiedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetLastModifiedAt() time.Time { return v.LastModifiedAt }
+
+// GetLastModifiedBy returns GetSecretTeamEnvironmentSecret.LastModifiedBy, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecret) GetLastModifiedBy() GetSecretTeamEnvironmentSecretLastModifiedByUser {
+	return v.LastModifiedBy
+}
+
+// GetSecretTeamEnvironmentSecretLastModifiedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type GetSecretTeamEnvironmentSecretLastModifiedByUser struct {
+	// The email address of the user.
+	Email string `json:"email"`
+}
+
+// GetEmail returns GetSecretTeamEnvironmentSecretLastModifiedByUser.Email, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretLastModifiedByUser) GetEmail() string { return v.Email }
+
+// GetSecretTeamEnvironmentSecretTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetSecretTeamEnvironmentSecretTeamEnvironment struct {
+	// Get the environment.
+	Environment GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetSecretTeamEnvironmentSecretTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretTeamEnvironment) GetEnvironment() GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment) GetName() string { return v.Name }
+
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) GetNodes() []GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob struct {
+	// Interface for workloads.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication
+// GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload(v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
 }
 
 // GetTeamApplicationsResponse is returned by GetTeamApplications on success.
@@ -6200,6 +6952,49 @@ var AllOrderDirection = []OrderDirection{
 	OrderDirectionDesc,
 }
 
+// RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload includes the requested fields of the GraphQL type RemoveSecretValuePayload.
+type RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload struct {
+	// The updated secret.
+	Secret RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret `json:"secret"`
+}
+
+// GetSecret returns RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload.Secret, and is useful for accessing the field via an interface.
+func (v *RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload) GetSecret() RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret {
+	return v.Secret
+}
+
+// RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret struct {
+	// The globally unique ID of the secret.
+	Id string `json:"id"`
+	// The name of the secret.
+	Name string `json:"name"`
+}
+
+// GetId returns RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret.Id, and is useful for accessing the field via an interface.
+func (v *RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret) GetId() string {
+	return v.Id
+}
+
+// GetName returns RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret.Name, and is useful for accessing the field via an interface.
+func (v *RemoveSecretValueRemoveSecretValueRemoveSecretValuePayloadSecret) GetName() string {
+	return v.Name
+}
+
+// RemoveSecretValueResponse is returned by RemoveSecretValue on success.
+type RemoveSecretValueResponse struct {
+	// Remove a secret value from a secret.
+	RemoveSecretValue RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload `json:"removeSecretValue"`
+}
+
+// GetRemoveSecretValue returns RemoveSecretValueResponse.RemoveSecretValue, and is useful for accessing the field via an interface.
+func (v *RemoveSecretValueResponse) GetRemoveSecretValue() RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload {
+	return v.RemoveSecretValue
+}
+
 // RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload includes the requested fields of the GraphQL type RemoveTeamMemberPayload.
 type RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload struct {
 	// The team that the member was removed from.
@@ -6297,6 +7092,17 @@ type RestartAppRestartApplicationRestartApplicationPayloadApplication struct {
 func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetName() string {
 	return v.Name
 }
+
+type SecretValueInput struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+// GetName returns SecretValueInput.Name, and is useful for accessing the field via an interface.
+func (v *SecretValueInput) GetName() string { return v.Name }
+
+// GetValue returns SecretValueInput.Value, and is useful for accessing the field via an interface.
+func (v *SecretValueInput) GetValue() string { return v.Value }
 
 // SetRoleResponse is returned by SetRole on success.
 type SetRoleResponse struct {
@@ -7610,6 +8416,49 @@ func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetN
 	return v.Name
 }
 
+// UpdateSecretValueResponse is returned by UpdateSecretValue on success.
+type UpdateSecretValueResponse struct {
+	// Update a secret value within a secret.
+	UpdateSecretValue UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload `json:"updateSecretValue"`
+}
+
+// GetUpdateSecretValue returns UpdateSecretValueResponse.UpdateSecretValue, and is useful for accessing the field via an interface.
+func (v *UpdateSecretValueResponse) GetUpdateSecretValue() UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload {
+	return v.UpdateSecretValue
+}
+
+// UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload includes the requested fields of the GraphQL type UpdateSecretValuePayload.
+type UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload struct {
+	// The updated secret.
+	Secret UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret `json:"secret"`
+}
+
+// GetSecret returns UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload.Secret, and is useful for accessing the field via an interface.
+func (v *UpdateSecretValueUpdateSecretValueUpdateSecretValuePayload) GetSecret() UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret {
+	return v.Secret
+}
+
+// UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret struct {
+	// The globally unique ID of the secret.
+	Id string `json:"id"`
+	// The name of the secret.
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret.Id, and is useful for accessing the field via an interface.
+func (v *UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret) GetId() string {
+	return v.Id
+}
+
+// GetName returns UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret.Name, and is useful for accessing the field via an interface.
+func (v *UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret) GetName() string {
+	return v.Name
+}
+
 // UpdateValkeyResponse is returned by UpdateValkey on success.
 type UpdateValkeyResponse struct {
 	// Update an existing Valkey instance.
@@ -8065,6 +8914,26 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 	return v.Value
 }
 
+// __AddSecretValueInput is used internally by genqlient
+type __AddSecretValueInput struct {
+	Name        string           `json:"name"`
+	Environment string           `json:"environment"`
+	Team        string           `json:"team"`
+	Value       SecretValueInput `json:"value"`
+}
+
+// GetName returns __AddSecretValueInput.Name, and is useful for accessing the field via an interface.
+func (v *__AddSecretValueInput) GetName() string { return v.Name }
+
+// GetEnvironment returns __AddSecretValueInput.Environment, and is useful for accessing the field via an interface.
+func (v *__AddSecretValueInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns __AddSecretValueInput.Team, and is useful for accessing the field via an interface.
+func (v *__AddSecretValueInput) GetTeam() string { return v.Team }
+
+// GetValue returns __AddSecretValueInput.Value, and is useful for accessing the field via an interface.
+func (v *__AddSecretValueInput) GetValue() SecretValueInput { return v.Value }
+
 // __AddTeamMemberInput is used internally by genqlient
 type __AddTeamMemberInput struct {
 	Slug  string         `json:"slug"`
@@ -8125,6 +8994,22 @@ func (v *__CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v
 // GetStorageGB returns __CreateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
 func (v *__CreateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
 
+// __CreateSecretInput is used internally by genqlient
+type __CreateSecretInput struct {
+	Name        string `json:"name"`
+	Environment string `json:"environment"`
+	Team        string `json:"team"`
+}
+
+// GetName returns __CreateSecretInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateSecretInput) GetName() string { return v.Name }
+
+// GetEnvironment returns __CreateSecretInput.Environment, and is useful for accessing the field via an interface.
+func (v *__CreateSecretInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns __CreateSecretInput.Team, and is useful for accessing the field via an interface.
+func (v *__CreateSecretInput) GetTeam() string { return v.Team }
+
 // __CreateValkeyInput is used internally by genqlient
 type __CreateValkeyInput struct {
 	Name            string                `json:"name,omitempty"`
@@ -8169,6 +9054,22 @@ func (v *__DeleteOpenSearchInput) GetEnvironmentName() string { return v.Environ
 // GetTeamSlug returns __DeleteOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __DeleteSecretInput is used internally by genqlient
+type __DeleteSecretInput struct {
+	Name        string `json:"name"`
+	Environment string `json:"environment"`
+	Team        string `json:"team"`
+}
+
+// GetName returns __DeleteSecretInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteSecretInput) GetName() string { return v.Name }
+
+// GetEnvironment returns __DeleteSecretInput.Environment, and is useful for accessing the field via an interface.
+func (v *__DeleteSecretInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns __DeleteSecretInput.Team, and is useful for accessing the field via an interface.
+func (v *__DeleteSecretInput) GetTeam() string { return v.Team }
+
 // __DeleteValkeyInput is used internally by genqlient
 type __DeleteValkeyInput struct {
 	Name            string `json:"name"`
@@ -8204,6 +9105,14 @@ type __GetAllOpenSearchesInput struct {
 
 // GetTeamSlug returns __GetAllOpenSearchesInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllOpenSearchesInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __GetAllSecretsInput is used internally by genqlient
+type __GetAllSecretsInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllSecretsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllSecretsInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __GetAllValkeysInput is used internally by genqlient
 type __GetAllValkeysInput struct {
@@ -8269,6 +9178,22 @@ func (v *__GetOpenSearchInput) GetEnvironmentName() string { return v.Environmen
 // GetTeamSlug returns __GetOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetSecretInput is used internally by genqlient
+type __GetSecretInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __GetSecretInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetSecretInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __GetSecretInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetSecretInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __GetSecretInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetSecretInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetTeamApplicationsInput is used internally by genqlient
 type __GetTeamApplicationsInput struct {
 	Team    string                 `json:"team"`
@@ -8328,6 +9253,26 @@ type __GrantPostgresAccessInput struct {
 
 // GetInput returns __GrantPostgresAccessInput.Input, and is useful for accessing the field via an interface.
 func (v *__GrantPostgresAccessInput) GetInput() GrantPostgresAccessInput { return v.Input }
+
+// __RemoveSecretValueInput is used internally by genqlient
+type __RemoveSecretValueInput struct {
+	SecretName  string `json:"secretName"`
+	Environment string `json:"environment"`
+	Team        string `json:"team"`
+	ValueName   string `json:"valueName"`
+}
+
+// GetSecretName returns __RemoveSecretValueInput.SecretName, and is useful for accessing the field via an interface.
+func (v *__RemoveSecretValueInput) GetSecretName() string { return v.SecretName }
+
+// GetEnvironment returns __RemoveSecretValueInput.Environment, and is useful for accessing the field via an interface.
+func (v *__RemoveSecretValueInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns __RemoveSecretValueInput.Team, and is useful for accessing the field via an interface.
+func (v *__RemoveSecretValueInput) GetTeam() string { return v.Team }
+
+// GetValueName returns __RemoveSecretValueInput.ValueName, and is useful for accessing the field via an interface.
+func (v *__RemoveSecretValueInput) GetValueName() string { return v.ValueName }
 
 // __RemoveTeamMemberInput is used internally by genqlient
 type __RemoveTeamMemberInput struct {
@@ -8433,6 +9378,26 @@ func (v *__UpdateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v
 // GetStorageGB returns __UpdateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
 func (v *__UpdateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
 
+// __UpdateSecretValueInput is used internally by genqlient
+type __UpdateSecretValueInput struct {
+	Name        string           `json:"name"`
+	Environment string           `json:"environment"`
+	Team        string           `json:"team"`
+	Value       SecretValueInput `json:"value"`
+}
+
+// GetName returns __UpdateSecretValueInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateSecretValueInput) GetName() string { return v.Name }
+
+// GetEnvironment returns __UpdateSecretValueInput.Environment, and is useful for accessing the field via an interface.
+func (v *__UpdateSecretValueInput) GetEnvironment() string { return v.Environment }
+
+// GetTeam returns __UpdateSecretValueInput.Team, and is useful for accessing the field via an interface.
+func (v *__UpdateSecretValueInput) GetTeam() string { return v.Team }
+
+// GetValue returns __UpdateSecretValueInput.Value, and is useful for accessing the field via an interface.
+func (v *__UpdateSecretValueInput) GetValue() SecretValueInput { return v.Value }
+
 // __UpdateValkeyInput is used internally by genqlient
 type __UpdateValkeyInput struct {
 	Name            string                `json:"name,omitempty"`
@@ -8468,6 +9433,49 @@ type __ViewSecretValuesInput struct {
 
 // GetInput returns __ViewSecretValuesInput.Input, and is useful for accessing the field via an interface.
 func (v *__ViewSecretValuesInput) GetInput() ViewSecretValuesInput { return v.Input }
+
+// The mutation executed by AddSecretValue.
+const AddSecretValue_Operation = `
+mutation AddSecretValue ($name: String!, $environment: String!, $team: Slug!, $value: SecretValueInput!) {
+	addSecretValue(input: {name:$name,environment:$environment,team:$team,value:$value}) {
+		secret {
+			id
+			name
+		}
+	}
+}
+`
+
+func AddSecretValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environment string,
+	team string,
+	value SecretValueInput,
+) (data_ *AddSecretValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "AddSecretValue",
+		Query:  AddSecretValue_Operation,
+		Variables: &__AddSecretValueInput{
+			Name:        name,
+			Environment: environment,
+			Team:        team,
+			Value:       value,
+		},
+	}
+
+	data_ = &AddSecretValueResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
 
 // The mutation executed by AddTeamMember.
 const AddTeamMember_Operation = `
@@ -8603,6 +9611,47 @@ func CreateOpenSearch(
 	return data_, err_
 }
 
+// The mutation executed by CreateSecret.
+const CreateSecret_Operation = `
+mutation CreateSecret ($name: String!, $environment: String!, $team: Slug!) {
+	createSecret(input: {name:$name,environment:$environment,team:$team}) {
+		secret {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateSecret(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environment string,
+	team string,
+) (data_ *CreateSecretResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateSecret",
+		Query:  CreateSecret_Operation,
+		Variables: &__CreateSecretInput{
+			Name:        name,
+			Environment: environment,
+			Team:        team,
+		},
+	}
+
+	data_ = &CreateSecretResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by CreateValkey.
 const CreateValkey_Operation = `
 mutation CreateValkey ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: ValkeyMemory!, $tier: ValkeyTier!, $maxMemoryPolicy: ValkeyMaxMemoryPolicy) {
@@ -8677,6 +9726,44 @@ func DeleteOpenSearch(
 	}
 
 	data_ = &DeleteOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeleteSecret.
+const DeleteSecret_Operation = `
+mutation DeleteSecret ($name: String!, $environment: String!, $team: Slug!) {
+	deleteSecret(input: {name:$name,environment:$environment,team:$team}) {
+		secretDeleted
+	}
+}
+`
+
+func DeleteSecret(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environment string,
+	team string,
+) (data_ *DeleteSecretResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteSecret",
+		Query:  DeleteSecret_Operation,
+		Variables: &__DeleteSecretInput{
+			Name:        name,
+			Environment: environment,
+			Team:        team,
+		},
+	}
+
+	data_ = &DeleteSecretResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -8935,6 +10022,60 @@ func GetAllOpenSearches(
 	return data_, err_
 }
 
+// The query executed by GetAllSecrets.
+const GetAllSecrets_Operation = `
+query GetAllSecrets ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		secrets(first: 1000, orderBy: {field:NAME,direction:ASC}) {
+			nodes {
+				name
+				keys
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				workloads(first: 1000) {
+					nodes {
+						name
+						__typename
+					}
+				}
+				lastModifiedAt
+				lastModifiedBy {
+					email
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllSecrets(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllSecretsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllSecrets",
+		Query:  GetAllSecrets_Operation,
+		Variables: &__GetAllSecretsInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllSecretsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetAllValkeys.
 const GetAllValkeys_Operation = `
 query GetAllValkeys ($teamSlug: Slug!) {
@@ -9180,6 +10321,64 @@ func GetOpenSearch(
 	}
 
 	data_ = &GetOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetSecret.
+const GetSecret_Operation = `
+query GetSecret ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		environment(name: $environmentName) {
+			secret(name: $name) {
+				name
+				keys
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				workloads(first: 1000) {
+					nodes {
+						name
+						__typename
+					}
+				}
+				lastModifiedAt
+				lastModifiedBy {
+					email
+				}
+			}
+		}
+	}
+}
+`
+
+func GetSecret(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *GetSecretResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetSecret",
+		Query:  GetSecret_Operation,
+		Variables: &__GetSecretInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &GetSecretResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -9495,6 +10694,49 @@ func IsAdmin(
 	}
 
 	data_ = &IsAdminResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by RemoveSecretValue.
+const RemoveSecretValue_Operation = `
+mutation RemoveSecretValue ($secretName: String!, $environment: String!, $team: Slug!, $valueName: String!) {
+	removeSecretValue(input: {secretName:$secretName,environment:$environment,team:$team,valueName:$valueName}) {
+		secret {
+			id
+			name
+		}
+	}
+}
+`
+
+func RemoveSecretValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	secretName string,
+	environment string,
+	team string,
+	valueName string,
+) (data_ *RemoveSecretValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "RemoveSecretValue",
+		Query:  RemoveSecretValue_Operation,
+		Variables: &__RemoveSecretValueInput{
+			SecretName:  secretName,
+			Environment: environment,
+			Team:        team,
+			ValueName:   valueName,
+		},
+	}
+
+	data_ = &RemoveSecretValueResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -9866,6 +11108,49 @@ func UpdateOpenSearch(
 	}
 
 	data_ = &UpdateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateSecretValue.
+const UpdateSecretValue_Operation = `
+mutation UpdateSecretValue ($name: String!, $environment: String!, $team: Slug!, $value: SecretValueInput!) {
+	updateSecretValue(input: {name:$name,environment:$environment,team:$team,value:$value}) {
+		secret {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateSecretValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environment string,
+	team string,
+	value SecretValueInput,
+) (data_ *UpdateSecretValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateSecretValue",
+		Query:  UpdateSecretValue_Operation,
+		Variables: &__UpdateSecretValueInput{
+			Name:        name,
+			Environment: environment,
+			Team:        team,
+			Value:       value,
+		},
+	}
+
+	data_ = &UpdateSecretValueResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
