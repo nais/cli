@@ -775,6 +775,40 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorklo
 	return v.Typename
 }
 
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+	Typename        string                                                         `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Id, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetId() string {
+	return v.Id
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	Typename        string                                                                       `json:"__typename"`
@@ -1254,6 +1288,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob) 
 // GetAllIssuesTeamIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue
@@ -1262,6 +1297,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob) 
 // GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue
 type GetAllIssuesTeamIssuesIssueConnectionNodesIssue interface {
@@ -1282,6 +1318,8 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) imple
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
@@ -1297,6 +1335,8 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) implementsGr
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -1323,6 +1363,9 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 	case "DeprecatedRegistryIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
@@ -1346,6 +1389,9 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceVersionIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
 		return json.Unmarshal(b, *v)
 	case "ValkeyIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue)
@@ -1385,6 +1431,14 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 			TypeName string `json:"__typename"`
 			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
 		}{typename, premarshaled}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
 		typename = "FailedSynchronizationIssue"
@@ -1464,6 +1518,14 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue:
@@ -2212,6 +2274,40 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssueSqlIns
 // GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssueSqlInstance.Typename, and is useful for accessing the field via an interface.
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssueSqlInstance) GetTypename() string {
 	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename        string                                                         `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Id, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetId() string {
+	return v.Id
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetMessage() string {
+	return v.Message
 }
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
@@ -3068,6 +3164,28 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 	return v.Message
 }
 
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	Typename string   `json:"__typename"`
@@ -3117,6 +3235,7 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesLastRunFailedIssue
@@ -3125,6 +3244,7 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue interface {
@@ -3141,6 +3261,8 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
@@ -3156,6 +3278,8 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -3182,6 +3306,9 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 	case "DeprecatedRegistryIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
@@ -3205,6 +3332,9 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceVersionIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
 		return json.Unmarshal(b, *v)
 	case "ValkeyIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue)
@@ -3239,6 +3369,14 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -3303,6 +3441,14 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue:
@@ -3458,6 +3604,28 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -4225,6 +4393,22 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Severity
 }
 
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+}
+
+// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	Typename string   `json:"__typename"`
@@ -4262,6 +4446,7 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesLastRunFailedIssue
@@ -4270,6 +4455,7 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesVulnerableImageIssue
 type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue interface {
@@ -4283,6 +4469,8 @@ type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIss
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -4299,6 +4487,8 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -4325,6 +4515,9 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 	case "DeprecatedRegistryIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
@@ -4348,6 +4541,9 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceVersionIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
 		return json.Unmarshal(b, *v)
 	case "ValkeyIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue)
@@ -4382,6 +4578,14 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -4446,6 +4650,14 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesValkeyIssue:
@@ -4565,6 +4777,22 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 
 // GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue.Severity, and is useful for accessing the field via an interface.
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+}
+
+// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetSeverity() Severity {
 	return v.Severity
 }
 
@@ -5569,7 +5797,7 @@ func (v *GrantPostgresAccessInput) GetDuration() string { return v.Duration }
 
 // GrantPostgresAccessResponse is returned by GrantPostgresAccess on success.
 type GrantPostgresAccessResponse struct {
-	// Grant access to this postgres cluster
+	// Grant temporary access to a Postgres cluster.
 	GrantPostgresAccess GrantPostgresAccessGrantPostgresAccessGrantPostgresAccessPayload `json:"grantPostgresAccess"`
 }
 
@@ -5781,18 +6009,20 @@ func (v *IssueFilter) GetIssueType() IssueType { return v.IssueType }
 type IssueType string
 
 const (
-	IssueTypeOpensearch            IssueType = "OPENSEARCH"
-	IssueTypeValkey                IssueType = "VALKEY"
-	IssueTypeSqlinstanceState      IssueType = "SQLINSTANCE_STATE"
-	IssueTypeSqlinstanceVersion    IssueType = "SQLINSTANCE_VERSION"
-	IssueTypeDeprecatedIngress     IssueType = "DEPRECATED_INGRESS"
-	IssueTypeDeprecatedRegistry    IssueType = "DEPRECATED_REGISTRY"
-	IssueTypeNoRunningInstances    IssueType = "NO_RUNNING_INSTANCES"
-	IssueTypeLastRunFailed         IssueType = "LAST_RUN_FAILED"
-	IssueTypeFailedSynchronization IssueType = "FAILED_SYNCHRONIZATION"
-	IssueTypeInvalidSpec           IssueType = "INVALID_SPEC"
-	IssueTypeMissingSbom           IssueType = "MISSING_SBOM"
-	IssueTypeVulnerableImage       IssueType = "VULNERABLE_IMAGE"
+	IssueTypeOpensearch                           IssueType = "OPENSEARCH"
+	IssueTypeValkey                               IssueType = "VALKEY"
+	IssueTypeSqlinstanceState                     IssueType = "SQLINSTANCE_STATE"
+	IssueTypeSqlinstanceVersion                   IssueType = "SQLINSTANCE_VERSION"
+	IssueTypeDeprecatedIngress                    IssueType = "DEPRECATED_INGRESS"
+	IssueTypeDeprecatedRegistry                   IssueType = "DEPRECATED_REGISTRY"
+	IssueTypeNoRunningInstances                   IssueType = "NO_RUNNING_INSTANCES"
+	IssueTypeLastRunFailed                        IssueType = "LAST_RUN_FAILED"
+	IssueTypeFailedSynchronization                IssueType = "FAILED_SYNCHRONIZATION"
+	IssueTypeInvalidSpec                          IssueType = "INVALID_SPEC"
+	IssueTypeMissingSbom                          IssueType = "MISSING_SBOM"
+	IssueTypeVulnerableImage                      IssueType = "VULNERABLE_IMAGE"
+	IssueTypeExternalIngressCriticalVulnerability IssueType = "EXTERNAL_INGRESS_CRITICAL_VULNERABILITY"
+	IssueTypeUnleashReleaseChannel                IssueType = "UNLEASH_RELEASE_CHANNEL"
 )
 
 var AllIssueType = []IssueType{
@@ -5808,6 +6038,8 @@ var AllIssueType = []IssueType{
 	IssueTypeInvalidSpec,
 	IssueTypeMissingSbom,
 	IssueTypeVulnerableImage,
+	IssueTypeExternalIngressCriticalVulnerability,
+	IssueTypeUnleashReleaseChannel,
 }
 
 type JobOrder struct {
@@ -6016,6 +6248,7 @@ const (
 	ResourceTypeSqlinstance ResourceType = "SQLINSTANCE"
 	ResourceTypeApplication ResourceType = "APPLICATION"
 	ResourceTypeJob         ResourceType = "JOB"
+	ResourceTypeUnleash     ResourceType = "UNLEASH"
 )
 
 var AllResourceType = []ResourceType{
@@ -6024,6 +6257,7 @@ var AllResourceType = []ResourceType{
 	ResourceTypeSqlinstance,
 	ResourceTypeApplication,
 	ResourceTypeJob,
+	ResourceTypeUnleash,
 }
 
 // RestartAppResponse is returned by RestartApp on success.
@@ -6807,6 +7041,16 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 	return v.Typename
 }
 
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
 	Typename string `json:"__typename"`
@@ -6832,6 +7076,7 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue is implemented by the following types:
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesInvalidSpecIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesLastRunFailedIssue
@@ -6840,6 +7085,7 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesOpenSearchIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesVulnerableImageIssue
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue interface {
@@ -6851,6 +7097,8 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
@@ -6867,6 +7115,8 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
+}
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesIssue() {
 }
@@ -6893,6 +7143,9 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 	case "DeprecatedRegistryIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue)
 		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue)
 		return json.Unmarshal(b, *v)
@@ -6916,6 +7169,9 @@ func __unmarshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWork
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceVersionIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
 		return json.Unmarshal(b, *v)
 	case "ValkeyIssue":
 		*v = new(TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue)
@@ -6950,6 +7206,14 @@ func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorklo
 		result := struct {
 			TypeName string `json:"__typename"`
 			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -7014,6 +7278,14 @@ func __marshalTeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorklo
 		result := struct {
 			TypeName string `json:"__typename"`
 			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesValkeyIssue:
@@ -7097,6 +7369,16 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 
 // GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
 func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTypename() string {
+	return v.Typename
+}
+
+// TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() string {
 	return v.Typename
 }
 

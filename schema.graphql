@@ -83,10 +83,6 @@ Activity log entry for team deploy key updates.
 """
 	TEAM_DEPLOY_KEY_UPDATED
 """
-Elevation was created.
-"""
-	ELEVATION_CREATED
-"""
 Activity log entries related to job deletion.
 """
 	JOB_DELETED
@@ -110,6 +106,10 @@ OpenSearch was deleted.
 Started service maintenance on OpenSearch instance.
 """
 	OPENSEARCH_MAINTENANCE_STARTED
+"""
+A user was granted access to a Postgres cluster
+"""
+	POSTGRES_GRANT_ACCESS
 """
 Reconciler enabled activity log entry.
 """
@@ -186,10 +186,6 @@ Service account token was updated.
 Service account token was deleted.
 """
 	SERVICE_ACCOUNT_TOKEN_DELETED
-"""
-A user was granted access to a postgres cluster
-"""
-	POSTGRES_GRANT_ACCESS
 """
 Team was created.
 """
@@ -347,10 +343,6 @@ All activity log entries related to deploy keys will use this resource type.
 """
 	DEPLOY_KEY
 """
-All activity log entries related to elevations will use this resource type.
-"""
-	ELEVATION
-"""
 All activity log entries related to jobs will use this resource type.
 """
 	JOB
@@ -358,6 +350,10 @@ All activity log entries related to jobs will use this resource type.
 All activity log entries related to OpenSearches will use this resource type.
 """
 	OPENSEARCH
+"""
+All activity log entries related to Postgres clusters will use this resource type.
+"""
+	POSTGRES
 """
 All activity log entries related to reconcilers will use this resource type.
 """
@@ -371,10 +367,6 @@ All activity log entries related to secrets will use this resource type.
 """
 	SECRET
 	SERVICE_ACCOUNT
-"""
-All activity log entries related to postgres clusters will use this resource type.
-"""
-	POSTGRES
 """
 All activity log entries related to teams will use this resource type.
 """
@@ -761,6 +753,15 @@ Network policies for the application.
 OpenSearch instance referenced by the workload.
 """
 	openSearch: OpenSearch
+"""
+Postgres instances referenced by the application. This does not currently support pagination, but will return all available Postgres instances.
+"""
+	postgresInstances(
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: PostgresInstanceOrder
+	): PostgresInstanceConnection!
 """
 Secrets used by the application.
 """
@@ -1606,46 +1607,6 @@ The cost series.
 	series: [ServiceCostSeries!]!
 }
 
-"""
-Input for creating an elevation.
-"""
-input CreateElevationInput {
-"""
-Input for creating an elevation.
-"""
-	type: ElevationType!
-"""
-Input for creating an elevation.
-"""
-	team: Slug!
-"""
-Input for creating an elevation.
-"""
-	environmentName: String!
-"""
-Input for creating an elevation.
-"""
-	resourceName: String!
-"""
-Input for creating an elevation.
-"""
-	reason: String!
-"""
-Input for creating an elevation.
-"""
-	durationMinutes: Int!
-}
-
-"""
-Payload returned when creating an elevation.
-"""
-type CreateElevationPayload {
-"""
-The created elevation.
-"""
-	elevation: Elevation!
-}
-
 input CreateOpenSearchInput {
 	name: String!
 	environmentName: String!
@@ -2070,6 +2031,21 @@ The date the deployment key expires.
 	expires: Time!
 }
 
+input DeploymentOrder {
+	field: DeploymentOrderField!
+	direction: OrderDirection!
+}
+
+"""
+Possible fields to order deployments by.
+"""
+enum DeploymentOrderField {
+"""
+The time the deployment was created at.
+"""
+	CREATED_AT
+}
+
 """
 Resource connected to a deployment.
 """
@@ -2194,156 +2170,6 @@ type DeprecatedRegistryIssue implements Issue & Node{
 
 input DisableReconcilerInput {
 	name: String!
-}
-
-"""
-An active elevation grants temporary elevated privileges to a specific resource.
-"""
-type Elevation implements Node{
-"""
-Unique ID of the elevation.
-"""
-	id: ID!
-"""
-Type of elevation.
-"""
-	type: ElevationType!
-"""
-Team that owns the resource.
-"""
-	team: Team!
-"""
-Environment where the resource is located.
-"""
-	teamEnvironment: TeamEnvironment!
-"""
-Name of the resource being elevated to.
-"""
-	resourceName: String!
-"""
-User who requested the elevation.
-"""
-	user: User!
-"""
-Reason provided for the elevation.
-"""
-	reason: String!
-"""
-When the elevation was created.
-"""
-	createdAt: Time!
-"""
-When the elevation will expire.
-"""
-	expiresAt: Time!
-}
-
-"""
-Activity log entry for elevation creation.
-"""
-type ElevationCreatedActivityLogEntry implements ActivityLogEntry & Node{
-"""
-ID of the entry.
-"""
-	id: ID!
-"""
-The identity of the actor who created the elevation.
-"""
-	actor: String!
-"""
-Creation time of the entry.
-"""
-	createdAt: Time!
-"""
-Message that summarizes the entry.
-"""
-	message: String!
-"""
-Resource type (ELEVATION).
-"""
-	resourceType: ActivityLogEntryResourceType!
-"""
-Name of the elevation resource.
-"""
-	resourceName: String!
-"""
-The team slug.
-"""
-	teamSlug: Slug!
-"""
-The environment name.
-"""
-	environmentName: String
-"""
-Data associated with the entry.
-"""
-	data: ElevationCreatedActivityLogEntryData!
-}
-
-"""
-Data associated with an elevation creation activity log entry.
-"""
-type ElevationCreatedActivityLogEntryData {
-"""
-Type of elevation that was created.
-"""
-	elevationType: ElevationType!
-"""
-Target resource name that was elevated to.
-"""
-	targetResourceName: String!
-"""
-Reason provided for the elevation.
-"""
-	reason: String!
-"""
-When the elevation will expire.
-"""
-	expiresAt: Time!
-}
-
-"""
-Input for looking up an existing elevation.
-"""
-input ElevationInput {
-"""
-Input for looking up an existing elevation.
-"""
-	type: ElevationType!
-"""
-Input for looking up an existing elevation.
-"""
-	team: Slug!
-"""
-Input for looking up an existing elevation.
-"""
-	environmentName: String!
-"""
-Input for looking up an existing elevation.
-"""
-	resourceName: String!
-}
-
-"""
-Type of elevation that can be requested.
-"""
-enum ElevationType {
-"""
-Access to read secrets in plain text.
-"""
-	SECRET
-"""
-Access to execute commands in an instance.
-"""
-	INSTANCE_EXEC
-"""
-Access to port-forward to an instance.
-"""
-	INSTANCE_PORT_FORWARD
-"""
-Access to debug an instance with ephemeral containers.
-"""
-	INSTANCE_DEBUG
 }
 
 input EnableReconcilerInput {
@@ -2497,6 +2323,16 @@ Order by team slug.
 Order by the deployment time.
 """
 	DEPLOYMENT_TIME
+}
+
+type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+	cvssScore: Float!
+	ingresses: [String!]!
 }
 
 type ExternalNetworkPolicyHost implements ExternalNetworkPolicyTarget{
@@ -2985,6 +2821,8 @@ enum IssueType {
 	INVALID_SPEC
 	MISSING_SBOM
 	VULNERABLE_IMAGE
+	EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
+	UNLEASH_RELEASE_CHANNEL
 }
 
 type Job implements Node & Workload & ActivityLogger{
@@ -3175,6 +3013,15 @@ Network policies for the job.
 OpenSearch instance referenced by the workload.
 """
 	openSearch: OpenSearch
+"""
+Postgres instances referenced by the job. This does not currently support pagination, but will return all available Postgres instances.
+"""
+	postgresInstances(
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: PostgresInstanceOrder
+	): PostgresInstanceConnection!
 """
 Secrets used by the job.
 """
@@ -3910,13 +3757,6 @@ Update the deploy key of a team. Returns the updated deploy key.
 		input: ChangeDeploymentKeyInput!
 	): ChangeDeploymentKeyPayload!
 """
-Create a temporary elevation of privileges for a specific resource.
-The elevation expires automatically after the specified duration.
-"""
-	createElevation(
-		input: CreateElevationInput!
-	): CreateElevationPayload!
-"""
 Delete a job.
 """
 	deleteJob(
@@ -3946,6 +3786,12 @@ Delete an existing OpenSearch instance.
 	deleteOpenSearch(
 		input: DeleteOpenSearchInput!
 	): DeleteOpenSearchPayload!
+"""
+Grant temporary access to a Postgres cluster.
+"""
+	grantPostgresAccess(
+		input: GrantPostgresAccessInput!
+	): GrantPostgresAccessPayload!
 """
 Enable a reconciler
 
@@ -4084,12 +3930,6 @@ Start maintenance updates for an OpenSearch instance.
 	startOpenSearchMaintenance(
 		input: StartOpenSearchMaintenanceInput!
 	): StartOpenSearchMaintenancePayload
-"""
-Grant access to this postgres cluster
-"""
-	grantPostgresAccess(
-		input: GrantPostgresAccessInput!
-	): GrantPostgresAccessPayload!
 """
 Create a new Nais team
 
@@ -4740,14 +4580,6 @@ interface Persistence {
 	teamEnvironment: TeamEnvironment!
 }
 
-type Postgres implements Persistence & Node{
-	id: ID!
-	name: String!
-	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-	teamEnvironment: TeamEnvironment!
-}
-
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -4790,6 +4622,112 @@ Data associated with the update.
 type PostgresGrantAccessActivityLogEntryData {
 	grantee: String!
 	until: Time!
+}
+
+type PostgresInstance implements Persistence & Node{
+	id: ID!
+	name: String!
+	team: Team!
+	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
+	teamEnvironment: TeamEnvironment!
+"""
+Workloads that reference the Postgres instance.
+"""
+	workloads(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WorkloadConnection!
+"""
+Resource allocation for the Postgres cluster.
+"""
+	resources: PostgresInstanceResources!
+"""
+Major version of PostgreSQL.
+"""
+	majorVersion: String!
+"""
+Audit logging configuration for the Postgres cluster.
+"""
+	audit: PostgresInstanceAudit!
+"""
+Indicates whether the Postgres cluster is configured for high availability.
+"""
+	highAvailability: Boolean!
+"""
+Current state of the Postgres cluster.
+"""
+	state: PostgresInstanceState!
+"""
+Maintenance window for the Postgres cluster, if configured.
+"""
+	maintenanceWindow: PostgresInstanceMaintenanceWindow
+}
+
+type PostgresInstanceAudit {
+"""
+Indicates whether audit logging is enabled for the Postgres cluster.
+"""
+	enabled: Boolean!
+"""
+URL for accessing the audit logs.
+"""
+	url: String
+"""
+List of statement classes that are being logged, such as `ddl`, `dml`, and `read`.
+"""
+	statementClasses: [String!]
+}
+
+type PostgresInstanceConnection {
+	pageInfo: PageInfo!
+	nodes: [PostgresInstance!]!
+	edges: [PostgresInstanceEdge!]!
+}
+
+type PostgresInstanceEdge {
+	cursor: Cursor!
+	node: PostgresInstance!
+}
+
+type PostgresInstanceMaintenanceWindow {
+	day: Int!
+	hour: Int!
+}
+
+input PostgresInstanceOrder {
+	field: PostgresInstanceOrderField!
+	direction: OrderDirection!
+}
+
+enum PostgresInstanceOrderField {
+	NAME
+	ENVIRONMENT
+}
+
+type PostgresInstanceResources {
+	cpu: String!
+	memory: String!
+	diskSize: String!
+}
+
+enum PostgresInstanceState {
+	AVAILABLE
+	PROGRESSING
+	DEGRADED
 }
 
 type Price {
@@ -4929,6 +4867,10 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: DeploymentOrder
 """
 Filter options for the deployments returned from the connection.
 """
@@ -5698,6 +5640,7 @@ enum ResourceType {
 	SQLINSTANCE
 	APPLICATION
 	JOB
+	UNLEASH
 }
 
 input RestartApplicationInput {
@@ -5968,7 +5911,7 @@ Search filter for filtering search results.
 """
 Types that can be searched for.
 """
-union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | Postgres | SqlInstance | Valkey
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresInstance | SqlInstance | Valkey
 
 """
 Search node connection.
@@ -6027,7 +5970,7 @@ Search for applications.
 """
 A secret is a collection of secret values.
 """
-type Secret implements Node{
+type Secret implements Node & ActivityLogger{
 """
 The globally unique ID of the secret.
 """
@@ -6052,10 +5995,6 @@ The team that owns the secret.
 The names of the keys in the secret. This does not require elevation to access.
 """
 	keys: [String!]!
-"""
-The secret values contained within the secret. Requires elevation to access the values. Returns null if not authorized.
-"""
-	values: [SecretValue!]
 """
 Applications that use the secret.
 """
@@ -6127,6 +6066,31 @@ Last time the secret was modified.
 User who last modified the secret.
 """
 	lastModifiedBy: User
+"""
+Activity log associated with the secret.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 }
 
 type SecretConnection {
@@ -7367,10 +7331,6 @@ Whether or not the viewer is a member of the team.
 """
 	viewerIsMember: Boolean!
 """
-Whether or not the viewer can create elevations for the team.
-"""
-	viewerCanElevate: Boolean!
-"""
 Environments for the team.
 """
 	environments: [TeamEnvironment!]!
@@ -7654,6 +7614,31 @@ Ordering options for items returned from the connection.
 """
 		orderBy: OpenSearchOrder
 	): OpenSearchConnection!
+"""
+Postgres instances owned by the team.
+"""
+	postgresInstances(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: PostgresInstanceOrder
+	): PostgresInstanceConnection!
 	repositories(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -8227,6 +8212,12 @@ OpenSearch instance in the team environment.
 		name: String!
 	): OpenSearch!
 """
+Postgres instance in the team environment.
+"""
+	postgresInstance(
+		name: String!
+	): PostgresInstance!
+"""
 Get a secret by name.
 """
 	secret(
@@ -8439,6 +8430,23 @@ Total number of OpenSearch instances.
 	total: Int!
 }
 
+type TeamInventoryCountPostgresInstances {
+"""
+Total number of Postgres instances.
+"""
+	total: Int!
+}
+
+"""
+Secret inventory count for a team.
+"""
+type TeamInventoryCountSecrets {
+"""
+Total number of secrets.
+"""
+	total: Int!
+}
+
 type TeamInventoryCountSqlInstances {
 """
 Total number of SQL instances.
@@ -8463,6 +8471,11 @@ Application inventory count for a team.
 	jobs: TeamInventoryCountJobs!
 	kafkaTopics: TeamInventoryCountKafkaTopics!
 	openSearches: TeamInventoryCountOpenSearches!
+	postgresInstances: TeamInventoryCountPostgresInstances!
+"""
+Secret inventory count for a team.
+"""
+	secrets: TeamInventoryCountSecrets!
 	sqlInstances: TeamInventoryCountSqlInstances!
 	valkeys: TeamInventoryCountValkeys!
 }
@@ -9073,12 +9086,11 @@ Get items before this cursor.
 	metrics: UnleashInstanceMetrics!
 	ready: Boolean!
 """
-Release channel name if using channel-based version management.
-Populated from CRD spec.releaseChannel.name field.
+Release channel name for automatic version updates.
 """
-	releaseChannelName: String
+	releaseChannelName: String!
 """
-Release channel details if using channel-based version management.
+Release channel details.
 Returns the full release channel object with current version and update policy.
 """
 	releaseChannel: UnleashReleaseChannel
@@ -9241,6 +9253,26 @@ Rollout strategy type for version updates:
 When the channel version was last updated.
 """
 	lastUpdated: Time
+}
+
+type UnleashReleaseChannelIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	unleash: UnleashInstance!
+"""
+The name of the release channel the instance is on.
+"""
+	channelName: String!
+"""
+The major version of Unleash the instance is running.
+"""
+	majorVersion: Int!
+"""
+The current major version of Unleash available.
+"""
+	currentMajorVersion: Int!
 }
 
 input UpdateImageVulnerabilityInput {
@@ -9422,13 +9454,6 @@ Ordering options for items returned from the connection.
 True if the user is global admin.
 """
 	isAdmin: Boolean!
-"""
-Get active elevations for this user matching the given parameters.
-Returns an empty list if no active elevations match.
-"""
-	elevations(
-		input: ElevationInput!
-	): [Elevation!]!
 }
 
 """
@@ -10451,6 +10476,12 @@ Interface for workloads.
 Interface for workloads.
 """
 	openSearch: OpenSearch
+"""
+Interface for workloads.
+"""
+	postgresInstances(
+		orderBy: PostgresInstanceOrder
+	): PostgresInstanceConnection!
 """
 Interface for workloads.
 """
