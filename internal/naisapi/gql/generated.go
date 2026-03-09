@@ -11976,6 +11976,53 @@ func (v *TeamsTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
 // GetPurpose returns TeamsTeamsTeamConnectionNodesTeam.Purpose, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionNodesTeam) GetPurpose() string { return v.Purpose }
 
+// TriggerJobResponse is returned by TriggerJob on success.
+type TriggerJobResponse struct {
+	// Trigger a job
+	TriggerJob TriggerJobTriggerJobTriggerJobPayload `json:"triggerJob"`
+}
+
+// GetTriggerJob returns TriggerJobResponse.TriggerJob, and is useful for accessing the field via an interface.
+func (v *TriggerJobResponse) GetTriggerJob() TriggerJobTriggerJobTriggerJobPayload {
+	return v.TriggerJob
+}
+
+// TriggerJobTriggerJobTriggerJobPayload includes the requested fields of the GraphQL type TriggerJobPayload.
+type TriggerJobTriggerJobTriggerJobPayload struct {
+	// The job that was triggered.
+	Job TriggerJobTriggerJobTriggerJobPayloadJob `json:"job"`
+	// The new job run.
+	JobRun TriggerJobTriggerJobTriggerJobPayloadJobRun `json:"jobRun"`
+}
+
+// GetJob returns TriggerJobTriggerJobTriggerJobPayload.Job, and is useful for accessing the field via an interface.
+func (v *TriggerJobTriggerJobTriggerJobPayload) GetJob() TriggerJobTriggerJobTriggerJobPayloadJob {
+	return v.Job
+}
+
+// GetJobRun returns TriggerJobTriggerJobTriggerJobPayload.JobRun, and is useful for accessing the field via an interface.
+func (v *TriggerJobTriggerJobTriggerJobPayload) GetJobRun() TriggerJobTriggerJobTriggerJobPayloadJobRun {
+	return v.JobRun
+}
+
+// TriggerJobTriggerJobTriggerJobPayloadJob includes the requested fields of the GraphQL type Job.
+type TriggerJobTriggerJobTriggerJobPayloadJob struct {
+	// The name of the job.
+	Name string `json:"name"`
+}
+
+// GetName returns TriggerJobTriggerJobTriggerJobPayloadJob.Name, and is useful for accessing the field via an interface.
+func (v *TriggerJobTriggerJobTriggerJobPayloadJob) GetName() string { return v.Name }
+
+// TriggerJobTriggerJobTriggerJobPayloadJobRun includes the requested fields of the GraphQL type JobRun.
+type TriggerJobTriggerJobTriggerJobPayloadJobRun struct {
+	// The name of the job run.
+	Name string `json:"name"`
+}
+
+// GetName returns TriggerJobTriggerJobTriggerJobPayloadJobRun.Name, and is useful for accessing the field via an interface.
+func (v *TriggerJobTriggerJobTriggerJobPayloadJobRun) GetName() string { return v.Name }
+
 // UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
 type UpdateOpenSearchResponse struct {
 	// Update an existing OpenSearch instance.
@@ -13003,6 +13050,26 @@ type __TeamMembersInput struct {
 
 // GetSlug returns __TeamMembersInput.Slug, and is useful for accessing the field via an interface.
 func (v *__TeamMembersInput) GetSlug() string { return v.Slug }
+
+// __TriggerJobInput is used internally by genqlient
+type __TriggerJobInput struct {
+	Team    string `json:"team"`
+	Name    string `json:"name"`
+	Env     string `json:"env"`
+	RunName string `json:"runName"`
+}
+
+// GetTeam returns __TriggerJobInput.Team, and is useful for accessing the field via an interface.
+func (v *__TriggerJobInput) GetTeam() string { return v.Team }
+
+// GetName returns __TriggerJobInput.Name, and is useful for accessing the field via an interface.
+func (v *__TriggerJobInput) GetName() string { return v.Name }
+
+// GetEnv returns __TriggerJobInput.Env, and is useful for accessing the field via an interface.
+func (v *__TriggerJobInput) GetEnv() string { return v.Env }
+
+// GetRunName returns __TriggerJobInput.RunName, and is useful for accessing the field via an interface.
+func (v *__TriggerJobInput) GetRunName() string { return v.RunName }
 
 // __UpdateOpenSearchInput is used internally by genqlient
 type __UpdateOpenSearchInput struct {
@@ -14923,6 +14990,51 @@ func Teams(
 	}
 
 	data_ = &TeamsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by TriggerJob.
+const TriggerJob_Operation = `
+mutation TriggerJob ($team: Slug!, $name: String!, $env: String!, $runName: String!) {
+	triggerJob(input: {teamSlug:$team,name:$name,environmentName:$env,runName:$runName}) {
+		job {
+			name
+		}
+		jobRun {
+			name
+		}
+	}
+}
+`
+
+func TriggerJob(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env string,
+	runName string,
+) (data_ *TriggerJobResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TriggerJob",
+		Query:  TriggerJob_Operation,
+		Variables: &__TriggerJobInput{
+			Team:    team,
+			Name:    name,
+			Env:     env,
+			RunName: runName,
+		},
+	}
+
+	data_ = &TriggerJobResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
