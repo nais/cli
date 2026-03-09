@@ -37,7 +37,10 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				jobs, err := job.GetJobNames(ctx, flags.Team)
+				if len(flags.Team) == 0 {
+					return nil, "Please provide team to auto-complete job names. 'nais config set team <team>', or '--team <team>' flag."
+				}
+				jobs, err := job.GetJobNames(ctx, flags.Team, flags.Environment)
 				if err != nil {
 					return nil, "Unable to fetch job names."
 				}

@@ -4179,10 +4179,44 @@ func (v *GetApplicationNamesTeamApplicationsApplicationConnection) GetNodes() []
 type GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication struct {
 	// The name of the application.
 	Name string `json:"name"`
+	// The team environment for the application.
+	TeamEnvironment GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
 }
 
 // GetName returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
 func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
@@ -4946,10 +4980,124 @@ func (v *GetJobNamesTeamJobsJobConnection) GetNodes() []GetJobNamesTeamJobsJobCo
 type GetJobNamesTeamJobsJobConnectionNodesJob struct {
 	// The name of the job.
 	Name string `json:"name"`
+	// The team environment for the job.
+	TeamEnvironment GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
 }
 
 // GetName returns GetJobNamesTeamJobsJobConnectionNodesJob.Name, and is useful for accessing the field via an interface.
 func (v *GetJobNamesTeamJobsJobConnectionNodesJob) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns GetJobNamesTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeamJobsJobConnectionNodesJob) GetTeamEnvironment() GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment struct {
+	// Get the environment.
+	Environment GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironment) GetEnvironment() GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetLatestJobRunStateResponse is returned by GetLatestJobRunState on success.
+type GetLatestJobRunStateResponse struct {
+	// Get a team by its slug.
+	Team GetLatestJobRunStateTeam `json:"team"`
+}
+
+// GetTeam returns GetLatestJobRunStateResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateResponse) GetTeam() GetLatestJobRunStateTeam { return v.Team }
+
+// GetLatestJobRunStateTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetLatestJobRunStateTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetLatestJobRunStateTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetLatestJobRunStateTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeam) GetJobs() GetLatestJobRunStateTeamJobsJobConnection { return v.Jobs }
+
+// GetLatestJobRunStateTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetLatestJobRunStateTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetLatestJobRunStateTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetLatestJobRunStateTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeamJobsJobConnection) GetNodes() []GetLatestJobRunStateTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetLatestJobRunStateTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetLatestJobRunStateTeamJobsJobConnectionNodesJob struct {
+	// The job runs.
+	Runs GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
+}
+
+// GetRuns returns GetLatestJobRunStateTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeamJobsJobConnectionNodesJob) GetRuns() GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection {
+	return v.Runs
+}
+
+// GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
+type GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
+	// List of nodes.
+	Nodes []GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
+}
+
+// GetNodes returns GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
+	return v.Nodes
+}
+
+// GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
+type GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
+	// The status of the job run.
+	Status GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus `json:"status"`
+}
+
+// GetStatus returns GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Status, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStatus() GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus {
+	return v.Status
+}
+
+// GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus includes the requested fields of the GraphQL type JobRunStatus.
+type GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus struct {
+	// The state of the job run.
+	State JobRunState `json:"state"`
+}
+
+// GetState returns GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus.State, and is useful for accessing the field via an interface.
+func (v *GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus) GetState() JobRunState {
+	return v.State
+}
 
 // GetOpenSearchResponse is returned by GetOpenSearch on success.
 type GetOpenSearchResponse struct {
@@ -9951,6 +10099,22 @@ type __GetJobNamesInput struct {
 // GetTeam returns __GetJobNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetJobNamesInput) GetTeam() string { return v.Team }
 
+// __GetLatestJobRunStateInput is used internally by genqlient
+type __GetLatestJobRunStateInput struct {
+	Team string   `json:"team"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetTeam returns __GetLatestJobRunStateInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetLatestJobRunStateInput) GetTeam() string { return v.Team }
+
+// GetName returns __GetLatestJobRunStateInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetLatestJobRunStateInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetLatestJobRunStateInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetLatestJobRunStateInput) GetEnv() []string { return v.Env }
+
 // __GetOpenSearchInput is used internally by genqlient
 type __GetOpenSearchInput struct {
 	Name            string `json:"name"`
@@ -11025,6 +11189,11 @@ query GetApplicationNames ($team: Slug!) {
 		applications(first: 1000) {
 			nodes {
 				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 			}
 		}
 	}
@@ -11116,6 +11285,11 @@ query GetJobNames ($team: Slug!) {
 		jobs(first: 1000) {
 			nodes {
 				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 			}
 		}
 	}
@@ -11136,6 +11310,54 @@ func GetJobNames(
 	}
 
 	data_ = &GetJobNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetLatestJobRunState.
+const GetLatestJobRunState_Operation = `
+query GetLatestJobRunState ($team: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $team) {
+		jobs(filter: {name:$name,environments:$env}) {
+			nodes {
+				runs(first: 1) {
+					nodes {
+						status {
+							state
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetLatestJobRunState(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env []string,
+) (data_ *GetLatestJobRunStateResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetLatestJobRunState",
+		Query:  GetLatestJobRunState_Operation,
+		Variables: &__GetLatestJobRunStateInput{
+			Team: team,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetLatestJobRunStateResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

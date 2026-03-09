@@ -59,13 +59,18 @@ func (s Schedule) String() string {
 	return string(s)
 }
 
-func GetJobNames(ctx context.Context, team string) ([]string, error) {
+func GetJobNames(ctx context.Context, team string, environments []string) ([]string, error) {
 	_ = `# @genqlient
 		query GetJobNames($team: Slug!) {
 			team(slug: $team) {
 				jobs(first: 1000) {
 					nodes {
 						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
 					}
 				}
 			}
@@ -84,6 +89,10 @@ func GetJobNames(ctx context.Context, team string) ([]string, error) {
 
 	uniq := make(map[string]struct{})
 	for _, j := range resp.Team.Jobs.Nodes {
+		env := j.TeamEnvironment.Environment.Name
+		if len(environments) > 0 && !slices.Contains(environments, env) {
+			continue
+		}
 		uniq[j.Name] = struct{}{}
 	}
 
