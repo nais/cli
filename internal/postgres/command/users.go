@@ -17,7 +17,7 @@ func usersCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			addCommand(flags),
 			dropCommand(flags),
-			listCommand(flags),
+			listUsersCommand(flags),
 		},
 	}
 }
@@ -43,7 +43,7 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 	}
 }
 
-func listCommand(parentFlags *flag.User) *naistrix.Command {
+func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserList{User: parentFlags}
 	return &naistrix.Command{
 		Name:  "list",

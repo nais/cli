@@ -108,3 +108,7 @@ type Revoke struct {
 	*Postgres
 	Schema string `name:"schema" usage:"The schema to revoke privileges from."`
 }
+
+type List struct {
+	*Postgres
+}
