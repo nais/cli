@@ -100,19 +100,17 @@ func TestFormatDetails(t *testing.T) {
 	}
 }
 
-func TestFormatKeys(t *testing.T) {
+func TestFormatData(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name   string
-		secret *gql.GetSecretTeamEnvironmentSecret
-		want   [][]string
+		name string
+		keys []string
+		want [][]string
 	}{
 		{
 			name: "multiple keys",
-			secret: &gql.GetSecretTeamEnvironmentSecret{
-				Keys: []string{"DATABASE_URL", "API_KEY", "SECRET_TOKEN"},
-			},
+			keys: []string{"DATABASE_URL", "API_KEY", "SECRET_TOKEN"},
 			want: [][]string{
 				{"Key"},
 				{"DATABASE_URL"},
@@ -121,17 +119,15 @@ func TestFormatKeys(t *testing.T) {
 			},
 		},
 		{
-			name:   "no keys",
-			secret: &gql.GetSecretTeamEnvironmentSecret{},
+			name: "no keys",
+			keys: nil,
 			want: [][]string{
 				{"Key"},
 			},
 		},
 		{
 			name: "single key",
-			secret: &gql.GetSecretTeamEnvironmentSecret{
-				Keys: []string{"ONLY_KEY"},
-			},
+			keys: []string{"ONLY_KEY"},
 			want: [][]string{
 				{"Key"},
 				{"ONLY_KEY"},
@@ -142,9 +138,59 @@ func TestFormatKeys(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got := FormatKeys(tt.secret)
+			got := FormatData(tt.keys)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FormatKeys() =\n  %v\nwant\n  %v", got, tt.want)
+				t.Errorf("FormatData() =\n  %v\nwant\n  %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatDataWithValues(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		entries []Entry
+		want    [][]string
+	}{
+		{
+			name: "multiple entries",
+			entries: []Entry{
+				{Key: "DATABASE_URL", Value: "postgres://localhost/db"},
+				{Key: "API_KEY", Value: "sk-1234"},
+			},
+			want: [][]string{
+				{"Key", "Value"},
+				{"DATABASE_URL", "postgres://localhost/db"},
+				{"API_KEY", "sk-1234"},
+			},
+		},
+		{
+			name:    "no entries",
+			entries: nil,
+			want: [][]string{
+				{"Key", "Value"},
+			},
+		},
+		{
+			name: "entry with empty value",
+			entries: []Entry{
+				{Key: "EMPTY_KEY", Value: ""},
+			},
+			want: [][]string{
+				{"Key", "Value"},
+				{"EMPTY_KEY", ""},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := FormatDataWithValues(tt.entries)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FormatDataWithValues() =\n  %v\nwant\n  %v", got, tt.want)
 			}
 		})
 	}
