@@ -149,28 +149,34 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			Severity:    Severity(issue.GetSeverity()),
 			Message:     issue.GetMessage(),
 		}
+		setWorkloadResource := func(workload interface {
+			GetName() string
+			GetTypename() string
+		},
+		) {
+			if workload == nil {
+				return
+			}
+			i.ResourceName = workload.GetName()
+			i.ResourceType = workload.GetTypename()
+		}
 		switch c := issue.(type) {
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
 			i.ResourceName = c.Application.GetName()
 			i.ResourceType = c.Application.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue:
 			i.ResourceName = c.Job.GetName()
 			i.ResourceType = c.Job.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue:
 			i.ResourceName = c.OpenSearch.GetName()
 			i.ResourceType = c.OpenSearch.GetTypename()
@@ -184,11 +190,9 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			i.ResourceName = c.Valkey.GetName()
 			i.ResourceType = c.Valkey.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
-			i.ResourceName = c.GetWorkload().GetName()
-			i.ResourceType = c.GetWorkload().GetTypename()
+			setWorkloadResource(c.GetWorkload())
 		}
 		ret = append(ret, i)
 
