@@ -23,6 +23,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Aliases:     []string{"pg"},
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
+			listCommand(flags),
 			migrateCommand(flags),
 			passwordCommand(flags),
 			usersCommand(flags),
