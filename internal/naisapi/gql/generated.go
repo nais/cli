@@ -2584,11 +2584,12 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssueSqlIns
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
-	Typename        string                                                         `json:"__typename"`
-	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
-	Id              string                                                         `json:"id"`
-	Severity        Severity                                                       `json:"severity"`
-	Message         string                                                         `json:"message"`
+	Typename        string                                                                                     `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment                             `json:"teamEnvironment"`
+	Id              string                                                                                     `json:"id"`
+	Severity        Severity                                                                                   `json:"severity"`
+	Message         string                                                                                     `json:"message"`
+	Unleash         GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance `json:"unleash"`
 }
 
 // GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
@@ -2614,6 +2615,27 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) G
 // GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetMessage() string {
 	return v.Message
+}
+
+// GetUnleash returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Unleash, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetUnleash() GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance {
+	return v.Unleash
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance includes the requested fields of the GraphQL type UnleashInstance.
+type GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance struct {
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssueUnleashUnleashInstance) GetTypename() string {
+	return v.Typename
 }
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
@@ -13861,6 +13883,12 @@ query GetAllIssues ($teamSlug: Slug!, $filter: IssueFilter) {
 				}
 				... on ValkeyIssue {
 					valkey {
+						name
+						__typename
+					}
+				}
+				... on UnleashReleaseChannelIssue {
+					unleash {
 						name
 						__typename
 					}

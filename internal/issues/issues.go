@@ -118,6 +118,12 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 				__typename
 			  }
 			}
+			... on UnleashReleaseChannelIssue {
+			  unleash {
+				name
+				__typename
+			  }
+			}
 			... on VulnerableImageIssue {
 			  workload {
 				name
@@ -189,6 +195,9 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue:
 			i.ResourceName = c.Valkey.GetName()
 			i.ResourceType = c.Valkey.GetTypename()
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+			i.ResourceName = c.Unleash.GetName()
+			i.ResourceType = c.Unleash.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:

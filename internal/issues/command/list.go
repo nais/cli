@@ -6,9 +6,23 @@ import (
 
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/savioxavier/termlink"
 )
+
+type resourceName struct {
+	Name string `json:"resource_name" heading:"Resource Name"`
+	URL  string `json:"url" hidden:"true"`
+}
+
+func (r resourceName) String() string {
+	if r.URL == "" {
+		return r.Name
+	}
+	return termlink.Link(r.Name, r.URL)
+}
 
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 	flags := &flag.List{Issues: parentFlags}
@@ -27,21 +41,69 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 			if err != nil {
 				return fmt.Errorf("parse filter: %w", err)
 			}
-			issues, err := issues.GetAll(ctx, flags.Team, filters)
+			ret, err := issues.GetAll(ctx, flags.Team, filters)
 			if err != nil {
 				return fmt.Errorf("fetching issues: %w", err)
 			}
 
-			if len(issues) == 0 {
+			if len(ret) == 0 {
 				out.Infoln("No issues found")
 				return nil
 			}
 
 			if flags.Output == "json" {
-				return out.JSON(output.JSONWithPrettyOutput()).Render(issues)
+				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
-			return out.Table().Render(issues)
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return err
+			}
+
+			type entry struct {
+				ID           string          `json:"id" hidden:"true"`
+				Severity     issues.Severity `json:"severity"`
+				Environment  string          `json:"environment"`
+				ResourceName resourceName    `json:"resource_name" heading:"Resource Name"`
+				ResourceType string          `json:"resource_type" heading:"Resource Type"`
+				Message      string          `json:"message"`
+			}
+
+			entries := make([]entry, 0, len(ret))
+			for _, i := range ret {
+				entries = append(entries, entry{
+					ID:          i.ID,
+					Severity:    i.Severity,
+					Environment: i.Environment,
+					ResourceName: resourceName{
+						Name: i.ResourceName,
+						URL:  issueResourceURL(user.ConsoleHost(), flags.Team, i.Environment, i.ResourceType, i.ResourceName),
+					},
+					ResourceType: i.ResourceType,
+					Message:      i.Message,
+				})
+			}
+
+			return out.Table().Render(entries)
 		},
+	}
+}
+
+func issueResourceURL(host, team, environment, resourceType, resourceName string) string {
+	switch resourceType {
+	case "Application":
+		return fmt.Sprintf("https://%s/team/%s/%s/app/%s", host, team, environment, resourceName)
+	case "Job":
+		return fmt.Sprintf("https://%s/team/%s/%s/job/%s", host, team, environment, resourceName)
+	case "OpenSearch":
+		return fmt.Sprintf("https://%s/team/%s/%s/opensearch/%s", host, team, environment, resourceName)
+	case "SqlInstance":
+		return fmt.Sprintf("https://%s/team/%s/%s/postgres/%s", host, team, environment, resourceName)
+	case "Valkey":
+		return fmt.Sprintf("https://%s/team/%s/%s/valkey/%s", host, team, environment, resourceName)
+	case "Unleash", "UnleashInstance":
+		return fmt.Sprintf("https://%s/team/%s/unleash", host, team)
+	default:
+		return ""
 	}
 }
