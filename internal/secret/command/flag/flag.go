@@ -77,6 +77,8 @@ type Get struct {
 	*Secret
 	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
 	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	WithValues  bool   `name:"with-values" usage:"Also fetch and display secret values (access is logged)."`
+	Reason      string `name:"reason" usage:"Reason for accessing secret values (min 10 chars). Used with --with-values."`
 }
 
 func (g *Get) GetTeam() string { return string(g.Team) }
@@ -111,12 +113,3 @@ type Unset struct {
 }
 
 func (u *Unset) GetTeam() string { return string(u.Team) }
-
-type ViewValues struct {
-	*Secret
-	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
-	Reason      string `name:"reason" usage:"Reason for accessing secret values (min 10 chars)."`
-	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
-}
-
-func (v *ViewValues) GetTeam() string { return string(v.Team) }
