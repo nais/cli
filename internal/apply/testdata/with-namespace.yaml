@@ -1,0 +1,8 @@
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: with-ns
+  namespace: my-namespace
+spec:
+  tier: SingleNode
+  memory: 4GB

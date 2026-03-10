@@ -1,0 +1,7 @@
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: sessions
+spec:
+  tier: HighAvailability
+  memory: 28GB

@@ -17,26 +17,27 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 		Name:  "apply",
 		Title: "Apply resources.",
 		Args: []naistrix.Argument{
-			{Name: "environment"},
 			{Name: "file"},
 		},
-		AutoCompleteExtensions: []string{"toml"},
+		AutoCompleteExtensions: []string{"yaml", "yml"},
 		Flags:                  flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if args.Get("environment") == "" {
-				return fmt.Errorf("environment cannot be empty")
-			}
 			if args.Get("file") == "" {
 				return fmt.Errorf("file cannot be empty")
 			}
 
-			return validation.CheckTeam(flags.Team)
+			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
+				return err
+			}
+
+			if err := validation.CheckTeam(flags.Team); err != nil {
+				return err
+			}
+
+			return nil
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			environment := args.Get("environment")
-			filePath := args.Get("file")
-
-			return apply.Run(ctx, environment, filePath, flags, out)
+			return apply.Run(ctx, string(flags.Environment), args.Get("file"), flags, out)
 		},
 	}
 }

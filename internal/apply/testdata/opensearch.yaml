@@ -1,0 +1,9 @@
+apiVersion: nais.io/v1
+kind: OpenSearch
+metadata:
+  name: myindex
+spec:
+  tier: SingleNode
+  memory: 4GB
+  version: "2"
+  storageGB: 50
