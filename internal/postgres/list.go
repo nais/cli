@@ -68,9 +68,9 @@ func (s State) String() string {
 
 func GetTeamPostgresInstances(ctx context.Context, team string, environments []string) ([]Instance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgresInstances($team: Slug!, $pgOrderBy: PostgresInstanceOrder, $sqlOrderBy: SqlInstanceOrder) {
+		query GetTeamPostgresInstances($team: Slug!) {
 			team(slug: $team) {
-				postgresInstances(first: 1000, orderBy: $pgOrderBy) {
+				postgresInstances(first: 1000) {
 					nodes {
 						name
 						teamEnvironment {
@@ -86,7 +86,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 						state
 					}
 				}
-				sqlInstances(first: 1000, orderBy: $sqlOrderBy) {
+				sqlInstances(first: 1000) {
 					nodes {
 						name
 						teamEnvironment {
@@ -112,16 +112,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		return nil, err
 	}
 
-	resp, err := gql.GetTeamPostgresInstances(ctx, client, team,
-		gql.PostgresInstanceOrder{
-			Field:     gql.PostgresInstanceOrderFieldName,
-			Direction: gql.OrderDirectionAsc,
-		},
-		gql.SqlInstanceOrder{
-			Field:     gql.SqlInstanceOrderFieldName,
-			Direction: gql.OrderDirectionAsc,
-		},
-	)
+	resp, err := gql.GetTeamPostgresInstances(ctx, client, team)
 	if err != nil {
 		return nil, err
 	}

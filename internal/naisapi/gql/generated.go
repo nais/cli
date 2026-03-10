@@ -11075,29 +11075,6 @@ var AllOrderDirection = []OrderDirection{
 	OrderDirectionDesc,
 }
 
-type PostgresInstanceOrder struct {
-	Field     PostgresInstanceOrderField `json:"field"`
-	Direction OrderDirection             `json:"direction"`
-}
-
-// GetField returns PostgresInstanceOrder.Field, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceOrder) GetField() PostgresInstanceOrderField { return v.Field }
-
-// GetDirection returns PostgresInstanceOrder.Direction, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceOrder) GetDirection() OrderDirection { return v.Direction }
-
-type PostgresInstanceOrderField string
-
-const (
-	PostgresInstanceOrderFieldName        PostgresInstanceOrderField = "NAME"
-	PostgresInstanceOrderFieldEnvironment PostgresInstanceOrderField = "ENVIRONMENT"
-)
-
-var AllPostgresInstanceOrderField = []PostgresInstanceOrderField{
-	PostgresInstanceOrderFieldName,
-	PostgresInstanceOrderFieldEnvironment,
-}
-
 type PostgresInstanceState string
 
 const (
@@ -11332,44 +11309,6 @@ var AllSeverity = []Severity{
 	SeverityCritical,
 	SeverityWarning,
 	SeverityTodo,
-}
-
-type SqlInstanceOrder struct {
-	Field     SqlInstanceOrderField `json:"field"`
-	Direction OrderDirection        `json:"direction"`
-}
-
-// GetField returns SqlInstanceOrder.Field, and is useful for accessing the field via an interface.
-func (v *SqlInstanceOrder) GetField() SqlInstanceOrderField { return v.Field }
-
-// GetDirection returns SqlInstanceOrder.Direction, and is useful for accessing the field via an interface.
-func (v *SqlInstanceOrder) GetDirection() OrderDirection { return v.Direction }
-
-type SqlInstanceOrderField string
-
-const (
-	SqlInstanceOrderFieldName              SqlInstanceOrderField = "NAME"
-	SqlInstanceOrderFieldVersion           SqlInstanceOrderField = "VERSION"
-	SqlInstanceOrderFieldEnvironment       SqlInstanceOrderField = "ENVIRONMENT"
-	SqlInstanceOrderFieldCost              SqlInstanceOrderField = "COST"
-	SqlInstanceOrderFieldCpuUtilization    SqlInstanceOrderField = "CPU_UTILIZATION"
-	SqlInstanceOrderFieldMemoryUtilization SqlInstanceOrderField = "MEMORY_UTILIZATION"
-	SqlInstanceOrderFieldDiskUtilization   SqlInstanceOrderField = "DISK_UTILIZATION"
-	SqlInstanceOrderFieldState             SqlInstanceOrderField = "STATE"
-	// Order SqlInstances by issue severity
-	SqlInstanceOrderFieldIssues SqlInstanceOrderField = "ISSUES"
-)
-
-var AllSqlInstanceOrderField = []SqlInstanceOrderField{
-	SqlInstanceOrderFieldName,
-	SqlInstanceOrderFieldVersion,
-	SqlInstanceOrderFieldEnvironment,
-	SqlInstanceOrderFieldCost,
-	SqlInstanceOrderFieldCpuUtilization,
-	SqlInstanceOrderFieldMemoryUtilization,
-	SqlInstanceOrderFieldDiskUtilization,
-	SqlInstanceOrderFieldState,
-	SqlInstanceOrderFieldIssues,
 }
 
 type SqlInstanceState string
@@ -13561,19 +13500,11 @@ func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
 
 // __GetTeamPostgresInstancesInput is used internally by genqlient
 type __GetTeamPostgresInstancesInput struct {
-	Team       string                `json:"team"`
-	PgOrderBy  PostgresInstanceOrder `json:"pgOrderBy"`
-	SqlOrderBy SqlInstanceOrder      `json:"sqlOrderBy"`
+	Team string `json:"team"`
 }
 
 // GetTeam returns __GetTeamPostgresInstancesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetTeamPostgresInstancesInput) GetTeam() string { return v.Team }
-
-// GetPgOrderBy returns __GetTeamPostgresInstancesInput.PgOrderBy, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresInstancesInput) GetPgOrderBy() PostgresInstanceOrder { return v.PgOrderBy }
-
-// GetSqlOrderBy returns __GetTeamPostgresInstancesInput.SqlOrderBy, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresInstancesInput) GetSqlOrderBy() SqlInstanceOrder { return v.SqlOrderBy }
 
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
@@ -15153,9 +15084,9 @@ func GetTeamKafkaTopics(
 
 // The query executed by GetTeamPostgresInstances.
 const GetTeamPostgresInstances_Operation = `
-query GetTeamPostgresInstances ($team: Slug!, $pgOrderBy: PostgresInstanceOrder, $sqlOrderBy: SqlInstanceOrder) {
+query GetTeamPostgresInstances ($team: Slug!) {
 	team(slug: $team) {
-		postgresInstances(first: 1000, orderBy: $pgOrderBy) {
+		postgresInstances(first: 1000) {
 			nodes {
 				name
 				teamEnvironment {
@@ -15171,7 +15102,7 @@ query GetTeamPostgresInstances ($team: Slug!, $pgOrderBy: PostgresInstanceOrder,
 				state
 			}
 		}
-		sqlInstances(first: 1000, orderBy: $sqlOrderBy) {
+		sqlInstances(first: 1000) {
 			nodes {
 				name
 				teamEnvironment {
@@ -15195,16 +15126,12 @@ func GetTeamPostgresInstances(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
-	pgOrderBy PostgresInstanceOrder,
-	sqlOrderBy SqlInstanceOrder,
 ) (data_ *GetTeamPostgresInstancesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamPostgresInstances",
 		Query:  GetTeamPostgresInstances_Operation,
 		Variables: &__GetTeamPostgresInstancesInput{
-			Team:       team,
-			PgOrderBy:  pgOrderBy,
-			SqlOrderBy: sqlOrderBy,
+			Team: team,
 		},
 	}
 
