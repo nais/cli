@@ -9611,6 +9611,86 @@ func (v *GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) Get
 	return v.Name
 }
 
+// GetTeamKafkaTopicsResponse is returned by GetTeamKafkaTopics on success.
+type GetTeamKafkaTopicsResponse struct {
+	// Get a team by its slug.
+	Team GetTeamKafkaTopicsTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamKafkaTopicsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsResponse) GetTeam() GetTeamKafkaTopicsTeam { return v.Team }
+
+// GetTeamKafkaTopicsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamKafkaTopicsTeam struct {
+	// Kafka topics owned by the team.
+	KafkaTopics GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
+}
+
+// GetKafkaTopics returns GetTeamKafkaTopicsTeam.KafkaTopics, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeam) GetKafkaTopics() GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection {
+	return v.KafkaTopics
+}
+
+// GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection includes the requested fields of the GraphQL type KafkaTopicConnection.
+type GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection struct {
+	Nodes []GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic `json:"nodes"`
+}
+
+// GetNodes returns GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection) GetNodes() []GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic {
+	return v.Nodes
+}
+
+// GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic struct {
+	Name            string                                                                              `json:"name"`
+	TeamEnvironment GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetName returns GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic) GetTeamEnvironment() GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment struct {
+	// Get the environment.
+	Environment GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironment) GetEnvironment() GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -13157,6 +13237,14 @@ func (v *__GetTeamJobsInput) GetTeam() string { return v.Team }
 // GetOrderBy returns __GetTeamJobsInput.OrderBy, and is useful for accessing the field via an interface.
 func (v *__GetTeamJobsInput) GetOrderBy() JobOrder { return v.OrderBy }
 
+// __GetTeamKafkaTopicsInput is used internally by genqlient
+type __GetTeamKafkaTopicsInput struct {
+	Team string `json:"team"`
+}
+
+// GetTeam returns __GetTeamKafkaTopicsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -14679,6 +14767,49 @@ func GetTeamJobs(
 	}
 
 	data_ = &GetTeamJobsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTeamKafkaTopics.
+const GetTeamKafkaTopics_Operation = `
+query GetTeamKafkaTopics ($team: Slug!) {
+	team(slug: $team) {
+		kafkaTopics(first: 1000) {
+			nodes {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetTeamKafkaTopics(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+) (data_ *GetTeamKafkaTopicsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamKafkaTopics",
+		Query:  GetTeamKafkaTopics_Operation,
+		Variables: &__GetTeamKafkaTopicsInput{
+			Team: team,
+		},
+	}
+
+	data_ = &GetTeamKafkaTopicsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
