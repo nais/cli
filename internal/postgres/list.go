@@ -29,6 +29,7 @@ type Instance struct {
 	Environment      string       `json:"environment"`
 	Version          string       `heading:"Version" json:"version"`
 	HighAvailability bool         `heading:"HA" json:"high_availability"`
+	Audit            bool         `json:"audit"`
 	State            State        `json:"state"`
 }
 
@@ -108,6 +109,9 @@ func getPostgresInstances(ctx context.Context, client graphql.Client, team strin
 						}
 						majorVersion
 						highAvailability
+						audit {
+							enabled
+						}
 						state
 					}
 				}
@@ -139,6 +143,7 @@ func getPostgresInstances(ctx context.Context, client graphql.Client, team strin
 			Environment:      env,
 			Version:          p.MajorVersion,
 			HighAvailability: p.HighAvailability,
+			Audit:            p.Audit.Enabled,
 			State:            State(p.State),
 		})
 	}
@@ -160,6 +165,10 @@ func getSqlInstances(ctx context.Context, client graphql.Client, team string, en
 						}
 						version
 						highAvailability
+						# @genqlient(pointer: true)
+						auditLog {
+							logUrl
+						}
 						state
 					}
 				}
@@ -191,6 +200,7 @@ func getSqlInstances(ctx context.Context, client graphql.Client, team string, en
 			Environment:      env,
 			Version:          s.Version,
 			HighAvailability: s.HighAvailability,
+			Audit:            s.AuditLog != nil,
 			State:            State(s.State),
 		})
 	}

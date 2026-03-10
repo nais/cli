@@ -9736,6 +9736,8 @@ type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNode
 	MajorVersion string `json:"majorVersion"`
 	// Indicates whether the Postgres cluster is configured for high availability.
 	HighAvailability bool `json:"highAvailability"`
+	// Audit logging configuration for the Postgres cluster.
+	Audit GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit `json:"audit"`
 	// Current state of the Postgres cluster.
 	State PostgresInstanceState `json:"state"`
 }
@@ -9760,9 +9762,25 @@ func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection
 	return v.HighAvailability
 }
 
+// GetAudit returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.Audit, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetAudit() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit {
+	return v.Audit
+}
+
 // GetState returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.State, and is useful for accessing the field via an interface.
 func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetState() PostgresInstanceState {
 	return v.State
+}
+
+// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit includes the requested fields of the GraphQL type PostgresInstanceAudit.
+type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit struct {
+	// Indicates whether audit logging is enabled for the Postgres cluster.
+	Enabled bool `json:"enabled"`
+}
+
+// GetEnabled returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit.Enabled, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit) GetEnabled() bool {
+	return v.Enabled
 }
 
 // GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -9835,7 +9853,9 @@ type GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance st
 	TeamEnvironment  GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment `json:"teamEnvironment"`
 	Version          string                                                                                  `json:"version"`
 	HighAvailability bool                                                                                    `json:"highAvailability"`
-	State            SqlInstanceState                                                                        `json:"state"`
+	// Indicates whether audit logging is enabled for this SQL instance and provides a link to the logs if set.
+	AuditLog *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog `json:"auditLog"`
+	State    SqlInstanceState                                                                  `json:"state"`
 }
 
 // GetName returns GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.Name, and is useful for accessing the field via an interface.
@@ -9858,9 +9878,25 @@ func (v *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanc
 	return v.HighAvailability
 }
 
+// GetAuditLog returns GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.AuditLog, and is useful for accessing the field via an interface.
+func (v *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetAuditLog() *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog {
+	return v.AuditLog
+}
+
 // GetState returns GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.State, and is useful for accessing the field via an interface.
 func (v *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetState() SqlInstanceState {
 	return v.State
+}
+
+// GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog includes the requested fields of the GraphQL type AuditLog.
+type GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog struct {
+	// Link to the audit log for this SQL instance.
+	LogUrl string `json:"logUrl"`
+}
+
+// GetLogUrl returns GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog.LogUrl, and is useful for accessing the field via an interface.
+func (v *GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog) GetLogUrl() string {
+	return v.LogUrl
 }
 
 // GetTeamSqlInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -15157,6 +15193,9 @@ query GetTeamPostgresInstances ($team: Slug!, $orderBy: PostgresInstanceOrder) {
 				}
 				majorVersion
 				highAvailability
+				audit {
+					enabled
+				}
 				state
 			}
 		}
@@ -15205,6 +15244,9 @@ query GetTeamSqlInstances ($team: Slug!, $orderBy: SqlInstanceOrder) {
 				}
 				version
 				highAvailability
+				auditLog {
+					logUrl
+				}
 				state
 			}
 		}
