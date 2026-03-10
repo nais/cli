@@ -6,7 +6,6 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/savioxavier/termlink"
@@ -68,38 +67,10 @@ func (s State) String() string {
 }
 
 func GetTeamPostgresInstances(ctx context.Context, team string, environments []string) ([]Instance, error) {
-	client, err := naisapi.GraphqlClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	pgInstances, err := getPostgresInstances(ctx, client, team, environments)
-	if err != nil {
-		return nil, fmt.Errorf("fetching postgres instances: %w", err)
-	}
-
-	sqlInstances, err := getSqlInstances(ctx, client, team, environments)
-	if err != nil {
-		return nil, fmt.Errorf("fetching sql instances: %w", err)
-	}
-
-	ret := append(pgInstances, sqlInstances...)
-
-	sort.Slice(ret, func(i, j int) bool {
-		if ret[i].Environment == ret[j].Environment {
-			return ret[i].Name.Name < ret[j].Name.Name
-		}
-		return ret[i].Environment < ret[j].Environment
-	})
-
-	return ret, nil
-}
-
-func getPostgresInstances(ctx context.Context, client graphql.Client, team string, environments []string) ([]Instance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgresInstances($team: Slug!, $orderBy: PostgresInstanceOrder) {
+		query GetTeamPostgresInstances($team: Slug!, $pgOrderBy: PostgresInstanceOrder, $sqlOrderBy: SqlInstanceOrder) {
 			team(slug: $team) {
-				postgresInstances(first: 1000, orderBy: $orderBy) {
+				postgresInstances(first: 1000, orderBy: $pgOrderBy) {
 					nodes {
 						name
 						teamEnvironment {
@@ -115,47 +86,7 @@ func getPostgresInstances(ctx context.Context, client graphql.Client, team strin
 						state
 					}
 				}
-			}
-		}
-	`
-
-	resp, err := gql.GetTeamPostgresInstances(ctx, client, team, gql.PostgresInstanceOrder{
-		Field:     gql.PostgresInstanceOrderFieldName,
-		Direction: gql.OrderDirectionAsc,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	var ret []Instance
-	for _, p := range resp.Team.PostgresInstances.Nodes {
-		env := p.TeamEnvironment.Environment.Name
-		if len(environments) > 0 && !slices.Contains(environments, env) {
-			continue
-		}
-
-		ret = append(ret, Instance{
-			Name: InstanceName{
-				Name: p.Name,
-				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Name),
-			},
-			Type:             "PostgreSQL",
-			Environment:      env,
-			Version:          p.MajorVersion,
-			HighAvailability: p.HighAvailability,
-			Audit:            p.Audit.Enabled,
-			State:            State(p.State),
-		})
-	}
-
-	return ret, nil
-}
-
-func getSqlInstances(ctx context.Context, client graphql.Client, team string, environments []string) ([]Instance, error) {
-	_ = `# @genqlient
-		query GetTeamSqlInstances($team: Slug!, $orderBy: SqlInstanceOrder) {
-			team(slug: $team) {
-				sqlInstances(first: 1000, orderBy: $orderBy) {
+				sqlInstances(first: 1000, orderBy: $sqlOrderBy) {
 					nodes {
 						name
 						teamEnvironment {
@@ -176,15 +107,47 @@ func getSqlInstances(ctx context.Context, client graphql.Client, team string, en
 		}
 	`
 
-	resp, err := gql.GetTeamSqlInstances(ctx, client, team, gql.SqlInstanceOrder{
-		Field:     gql.SqlInstanceOrderFieldName,
-		Direction: gql.OrderDirectionAsc,
-	})
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetTeamPostgresInstances(ctx, client, team,
+		gql.PostgresInstanceOrder{
+			Field:     gql.PostgresInstanceOrderFieldName,
+			Direction: gql.OrderDirectionAsc,
+		},
+		gql.SqlInstanceOrder{
+			Field:     gql.SqlInstanceOrderFieldName,
+			Direction: gql.OrderDirectionAsc,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	var ret []Instance
+
+	for _, p := range resp.Team.PostgresInstances.Nodes {
+		env := p.TeamEnvironment.Environment.Name
+		if len(environments) > 0 && !slices.Contains(environments, env) {
+			continue
+		}
+
+		ret = append(ret, Instance{
+			Name: InstanceName{
+				Name: p.Name,
+				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Name),
+			},
+			Type:             "PostgreSQL",
+			Environment:      env,
+			Version:          p.MajorVersion,
+			HighAvailability: p.HighAvailability,
+			Audit:            p.Audit.Enabled,
+			State:            State(p.State),
+		})
+	}
+
 	for _, s := range resp.Team.SqlInstances.Nodes {
 		env := s.TeamEnvironment.Environment.Name
 		if len(environments) > 0 && !slices.Contains(environments, env) {
@@ -204,6 +167,13 @@ func getSqlInstances(ctx context.Context, client graphql.Client, team string, en
 			State:            State(s.State),
 		})
 	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		if ret[i].Environment == ret[j].Environment {
+			return ret[i].Name.Name < ret[j].Name.Name
+		}
+		return ret[i].Environment < ret[j].Environment
+	})
 
 	return ret, nil
 }
