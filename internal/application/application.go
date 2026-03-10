@@ -14,6 +14,7 @@ import (
 	debug "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
 	issues "github.com/nais/cli/internal/issues/command"
+	jobCommand "github.com/nais/cli/internal/job/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
@@ -21,6 +22,7 @@ import (
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
+	secrets "github.com/nais/cli/internal/secret/command"
 	validate "github.com/nais/cli/internal/validate/command"
 	"github.com/nais/cli/internal/version"
 	"github.com/nais/naistrix"
@@ -59,6 +61,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	cmds := []*naistrix.Command{
 		auth.Auth(globalFlags),
 		appCommand.App(globalFlags),
+		jobCommand.Job(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
 		aiven.Aiven(globalFlags),
@@ -66,6 +69,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		postgres.Postgres(globalFlags),
 		debug.Debug(globalFlags),
 		kubeconfig.Kubeconfig(globalFlags),
+		secrets.Secrets(globalFlags),
 		validate.Validate(globalFlags),
 		issues.Issues(globalFlags),
 	}

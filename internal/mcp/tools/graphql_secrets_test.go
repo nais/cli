@@ -60,15 +60,17 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
-			name: "block query accessing Secret.values field",
+			name: "block query accessing Secret metadata field",
 			query: `
-				query GetSecretValues($slug: Slug!) {
+				query GetSecretMetadata($slug: Slug!) {
 					team(slug: $slug) {
 						secrets(first: 1) {
 							nodes {
 								name
-								values {
-									name
+								teamEnvironment {
+									environment {
+										name
+									}
 								}
 							}
 						}
@@ -79,15 +81,16 @@ func TestCheckForSecrets_WithRealSchema(t *testing.T) {
 			expectedError: "MCP security policy: field 'secrets' returns type 'SecretConnection' which contains sensitive data that cannot be accessed via this interface. Use the Nais Console or CLI to manage secrets directly.",
 		},
 		{
-			name: "block query accessing SecretValue.value field",
+			name: "block query accessing Secret.applications field",
 			query: `
-				query GetSecretValue($slug: Slug!) {
+				query GetSecretApplications($slug: Slug!) {
 					team(slug: $slug) {
 						secrets(first: 1) {
 							nodes {
-								values {
-									name
-									value
+								applications(first: 1) {
+									nodes {
+										name
+									}
 								}
 							}
 						}

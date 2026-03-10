@@ -3,31 +3,29 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/app"
-	"github.com/nais/cli/internal/app/command/flag"
+	"github.com/nais/cli/internal/job"
+	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
 
-func issues(parentFlags *flag.App) *naistrix.Command {
-	flags := &flag.Issues{
-		App: parentFlags,
-	}
+func issues(parentFlags *flag.Job) *naistrix.Command {
+	flags := &flag.Issues{Job: parentFlags}
 
 	return &naistrix.Command{
 		Name:  "issues",
-		Title: "Show issues for an application.",
+		Title: "Show issues for a job.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.GetApplicationIssues(ctx, flags.Team, args.Get("name"), flags.Environment)
+			ret, err := job.GetJobIssues(ctx, flags.Team, args.Get("name"), flags.Environment)
 			if err != nil {
 				return err
 			}
 			if len(ret) == 0 {
-				out.Println("No issues found for application.")
+				out.Println("No issues found for job.")
 				return nil
 			}
 
@@ -40,13 +38,13 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete application names. 'nais config set team <team>', or '--team <team>' flag."
+					return nil, "Please provide team to auto-complete job names. 'nais config set team <team>', or '--team <team>' flag."
 				}
-				apps, err := app.GetApplicationNames(ctx, flags.Team, flags.Environment)
+				jobs, err := job.GetJobNames(ctx, flags.Team, flags.Environment)
 				if err != nil {
-					return nil, "Unable to fetch application names."
+					return nil, "Unable to fetch job names."
 				}
-				return apps, "Select an application."
+				return jobs, "Select a job."
 			}
 			return nil, ""
 		},

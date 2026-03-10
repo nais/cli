@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"slices"
+	"sort"
 	"time"
 
 	"github.com/nais/cli/internal/formatting"
@@ -78,13 +80,18 @@ func (a LastUpdated) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", time.Time(a).Format(time.RFC3339)), nil
 }
 
-func GetApplicationNames(ctx context.Context, team string) ([]string, error) {
+func GetApplicationNames(ctx context.Context, team string, environments []string) ([]string, error) {
 	_ = `# @genqlient
 		query GetApplicationNames($team: Slug!) {
 		  team(slug: $team) {
 			  applications(first: 1000) {
 		      nodes {
 		        name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
 		      }
 		    }
 		  }
@@ -100,11 +107,22 @@ func GetApplicationNames(ctx context.Context, team string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ret := make([]string, 0)
+	uniq := make(map[string]struct{})
 
 	for _, app := range resp.Team.Applications.Nodes {
-		ret = append(ret, app.Name)
+		env := app.TeamEnvironment.Environment.Name
+		if len(environments) > 0 && !slices.Contains(environments, env) {
+			continue
+		}
+		uniq[app.Name] = struct{}{}
 	}
+
+	ret := make([]string, 0, len(uniq))
+	for name := range uniq {
+		ret = append(ret, name)
+	}
+	sort.Strings(ret)
+
 	return ret, nil
 }
 
