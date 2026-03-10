@@ -309,17 +309,33 @@ func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][
 	return data
 }
 
-// FormatKeys formats the keys of a secret for pterm table rendering.
-func FormatKeys(s *gql.GetSecretTeamEnvironmentSecret) [][]string {
-	keys := [][]string{
+// Entry represents a key-value pair in a secret. When values have not been
+// fetched, Value is empty.
+type Entry struct {
+	Key   string
+	Value string
+}
+
+// FormatData formats secret keys as a key-only table for pterm rendering.
+func FormatData(keys []string) [][]string {
+	data := [][]string{
 		{"Key"},
 	}
-
-	for _, k := range s.Keys {
-		keys = append(keys, []string{k})
+	for _, k := range keys {
+		data = append(data, []string{k})
 	}
+	return data
+}
 
-	return keys
+// FormatDataWithValues formats key-value pairs as a two-column table for pterm rendering.
+func FormatDataWithValues(entries []Entry) [][]string {
+	data := [][]string{
+		{"Key", "Value"},
+	}
+	for _, e := range entries {
+		data = append(data, []string{e.Key, e.Value})
+	}
+	return data
 }
 
 // FormatWorkloads formats the workloads using a secret for pterm table rendering.

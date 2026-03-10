@@ -28,7 +28,6 @@ func Secrets(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			deleteSecret(f),
 			set(f),
 			unset(f),
-			viewValues(f),
 		},
 	}
 }
