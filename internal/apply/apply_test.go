@@ -3,7 +3,6 @@ package apply
 import (
 	"testing"
 
-	"github.com/nais/cli/internal/naisapi/gql"
 	pgratorv1 "github.com/nais/pgrator/pkg/api/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -94,7 +93,6 @@ func TestLoadManifests_NamespacePreserved(t *testing.T) {
 func TestValkeyFromCRD(t *testing.T) {
 	for name, tc := range map[string]struct {
 		obj     *pgratorv1.Valkey
-		want    *gql.ValkeyTier
 		wantErr bool
 	}{
 		"single node no policy": {

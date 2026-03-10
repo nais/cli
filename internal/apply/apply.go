@@ -1,7 +1,9 @@
 package apply
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -100,13 +102,13 @@ func loadManifests(filePath string) ([]runtime.Object, error) {
 	}
 
 	var objects []runtime.Object
-	decoder := yaml.NewDecoder(strings.NewReader(string(data)))
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
 	deserializer := codecs.UniversalDeserializer()
 
 	for {
 		var raw map[string]any
 		if err := decoder.Decode(&raw); err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 			return nil, fmt.Errorf("failed to decode YAML from %s: %w", filePath, err)
