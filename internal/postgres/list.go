@@ -9,15 +9,27 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/savioxavier/termlink"
 )
 
+const consoleBaseURL = "https://console.nav.cloud.nais.io"
+
+type InstanceName struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+func (n InstanceName) String() string {
+	return termlink.Link(n.Name, n.URL)
+}
+
 type Instance struct {
-	Name             string `json:"name"`
-	Type             string `json:"type"`
-	Environment      string `json:"environment"`
-	Version          string `heading:"Version" json:"version"`
-	HighAvailability bool   `heading:"HA" json:"high_availability"`
-	State            State  `json:"state"`
+	Name             InstanceName `json:"name"`
+	Type             string       `json:"type"`
+	Environment      string       `json:"environment"`
+	Version          string       `heading:"Version" json:"version"`
+	HighAvailability bool         `heading:"HA" json:"high_availability"`
+	State            State        `json:"state"`
 }
 
 type State string
@@ -74,7 +86,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 
 	sort.Slice(ret, func(i, j int) bool {
 		if ret[i].Environment == ret[j].Environment {
-			return ret[i].Name < ret[j].Name
+			return ret[i].Name.Name < ret[j].Name.Name
 		}
 		return ret[i].Environment < ret[j].Environment
 	})
@@ -119,7 +131,10 @@ func getPostgresInstances(ctx context.Context, client graphql.Client, team strin
 		}
 
 		ret = append(ret, Instance{
-			Name:             p.Name,
+			Name: InstanceName{
+				Name: p.Name,
+				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Name),
+			},
 			Type:             "Postgres",
 			Environment:      env,
 			Version:          p.MajorVersion,
@@ -168,7 +183,10 @@ func getSqlInstances(ctx context.Context, client graphql.Client, team string, en
 		}
 
 		ret = append(ret, Instance{
-			Name:             s.Name,
+			Name: InstanceName{
+				Name: s.Name,
+				URL:  fmt.Sprintf("%s/team/%s/%s/cloudsql/%s", consoleBaseURL, team, env, s.Name),
+			},
 			Type:             "SQL",
 			Environment:      env,
 			Version:          s.Version,
