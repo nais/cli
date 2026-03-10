@@ -8,6 +8,7 @@ operations:
   - internal/naisapi/**/*.go
   - internal/app/**/*.go
   - internal/job/**/*.go
+  - internal/kafka/**/*.go
   - internal/postgres/**/*.go
   - internal/secret/**/*.go
 bindings:

@@ -15,6 +15,7 @@ import (
 	"github.com/nais/cli/internal/flags"
 	issues "github.com/nais/cli/internal/issues/command"
 	jobCommand "github.com/nais/cli/internal/job/command"
+	kafkaCommand "github.com/nais/cli/internal/kafka/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
@@ -62,6 +63,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		auth.Auth(globalFlags),
 		appCommand.App(globalFlags),
 		jobCommand.Job(globalFlags),
+		kafkaCommand.Kafka(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
 		aiven.Aiven(globalFlags),
