@@ -1,0 +1,17 @@
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: cache
+spec:
+  tier: SingleNode
+  memory: 1GB
+---
+apiVersion: nais.io/v1
+kind: OpenSearch
+metadata:
+  name: search
+spec:
+  tier: HighAvailability
+  memory: 8GB
+  version: "2.19"
+  storageGB: 100
