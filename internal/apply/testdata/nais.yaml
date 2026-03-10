@@ -1,0 +1,8 @@
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: foo
+spec:
+  tier: SingleNode
+  memory: 4GB
+  maxMemoryPolicy: allkeys-lru

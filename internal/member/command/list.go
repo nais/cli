@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/member"
@@ -10,7 +11,6 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"k8s.io/utils/strings/slices"
 )
 
 func list(parentFlags *flag.Member) *naistrix.Command {
@@ -70,8 +70,8 @@ func list(parentFlags *flag.Member) *naistrix.Command {
 				return nil, "Unable to fetch team slugs."
 			}
 
-			return slices.Filter([]string{}, slugs, func(slug string) bool {
-				return strings.HasPrefix(slug, toComplete)
+			return slices.DeleteFunc(slugs, func(slug string) bool {
+				return !strings.HasPrefix(slug, toComplete)
 			}), "Choose a team to list members of."
 		},
 	}

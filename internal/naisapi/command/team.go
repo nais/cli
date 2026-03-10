@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -12,7 +13,6 @@ import (
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"github.com/savioxavier/termlink"
-	"k8s.io/utils/strings/slices"
 )
 
 type teamWorkload struct {
@@ -124,8 +124,8 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				return nil, "Unable to fetch team slugs."
 			}
 
-			return slices.Filter([]string{}, slugs, func(slug string) bool {
-				return strings.HasPrefix(slug, toComplete)
+			return slices.DeleteFunc(slugs, func(slug string) bool {
+				return !strings.HasPrefix(slug, toComplete)
 			}), "Choose a team to list the workloads of."
 		},
 	}

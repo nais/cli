@@ -1,57 +1,82 @@
-# nais apply poc
+# nais apply
 
-notes from poc experiments
+Apply Valkey and OpenSearch resources to a Nais environment.
 
-## arguments
-
-- `environment` is required for all commands
-    - (should be a configuration from the user's profile and moved to being a flag instead)
-- `file` points to a base `nais.toml` configuration file
-
-## flags
-
-- `team` is required for all commands
-    - (should be a configuration from the user's profile)
-- `mixin` is optional
-    - auto-detected if matching `*<environment>.toml` existing next to the base config file
-    - e.g. `nais apply dev nais.toml --team devteam` will use `nais.dev.toml` if it exists
-
-## usage
+## Usage
 
 ```shell
-nais alpha apply <environment> <config-file> --team <team> [--mixin <override-file>]
+nais alpha apply <config-file> --environment <env> --team <team>
 ```
 
-```shell
-nais alpha apply dev nais.toml --mixin nais.dev.toml --team devteam
+## Arguments
+
+- `config-file` — path to a YAML manifest file (`.yaml` or `.yml`)
+
+## Flags
+
+- `--environment` (`-e`) — target environment, e.g. `dev` or `prod` (required, tab-completion supported)
+- `--team` (`-t`) — team slug (required)
+
+## Manifest format
+
+Each file is a standard Kubernetes CRD manifest (`apiVersion: nais.io/v1`).
+Multiple resources can be placed in the same file separated by `---`.
+
+### Valkey
+
+```yaml
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: my-cache
+spec:
+  tier: SingleNode          # SingleNode | HighAvailability
+  memory: 4GB               # 1GB | 4GB | 8GB | 14GB | 28GB | 56GB | 112GB | 200GB
+  maxMemoryPolicy: allkeys-lru  # optional; see below
 ```
 
-```shell
-nais alpha apply prod nais.toml --mixin nais.prod.toml --team devteam
+**maxMemoryPolicy values:** `allkeys-lfu`, `allkeys-lru`, `allkeys-random`,
+`noeviction`, `volatile-lfu`, `volatile-lru`, `volatile-random`, `volatile-ttl`
+
+### OpenSearch
+
+```yaml
+apiVersion: nais.io/v1
+kind: OpenSearch
+metadata:
+  name: my-index
+spec:
+  tier: SingleNode          # SingleNode | HighAvailability
+  memory: 4GB               # 2GB | 4GB | 8GB | 16GB | 32GB | 64GB
+  version: "2"              # "1" | "2" | "2.19" | "3.3"
+  storageGB: 50
 ```
 
-## schema
+### Multi-resource file
 
-uses jsonschema for validation, though tooling support for various IDEs and editors is kinda iffy?
-
-## possible future additions?
-
-```shell
-nais alpha apply dev nais.toml --mixin nais.dev.toml --team devteam --set application.bar.image=example.com/app:1.2.3
+```yaml
+apiVersion: nais.io/v1
+kind: Valkey
+metadata:
+  name: sessions
+spec:
+  tier: HighAvailability
+  memory: 28GB
+---
+apiVersion: nais.io/v1
+kind: OpenSearch
+metadata:
+  name: search
+spec:
+  tier: SingleNode
+  memory: 8GB
+  version: "2.19"
+  storageGB: 100
 ```
 
-```shell
-nais alpha apply prod nais.toml --mixin nais.prod.toml --team devteam --set application.bar.image=example.com/app:1.2.3
-```
+## Examples
 
 ```shell
-nais <resource> set image <environment> <name> <image>
-```
-
-```shell
-nais application set image dev bar example.com/app:1.2.3
-```
-
-```shell
-nais job set image dev bar example.com/app:1.2.3
+nais alpha apply nais.yaml --environment dev --team myteam
+nais alpha apply nais.prod.yaml --environment prod --team myteam
 ```

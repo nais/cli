@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"maps"
 	"os"
-	"slices"
 
 	"github.com/go-logr/logr"
 	liberatorscheme "github.com/nais/liberator/pkg/scheme"
@@ -116,17 +114,4 @@ func GetDefaultContextAndNamespace() (defaultContext string, defaultNamespace st
 	}
 
 	return defaultContext, defaultNamespace
-}
-
-func GetAllContexts() ([]string, error) {
-	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		clientcmd.NewDefaultClientConfigLoadingRules(),
-		nil,
-	)
-	rawConfig, err := kubeConfig.RawConfig()
-	if err != nil {
-		return nil, fmt.Errorf("unable to get kubeconfig: %w", err)
-	}
-
-	return slices.Collect(maps.Keys(rawConfig.Contexts)), nil
 }

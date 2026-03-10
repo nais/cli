@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/member"
@@ -9,7 +10,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
-	"k8s.io/utils/strings/slices"
 )
 
 func add(parentFlags *flag.Member) *naistrix.Command {
@@ -59,8 +59,8 @@ func add(parentFlags *flag.Member) *naistrix.Command {
 				return nil, "Unable to fetch user emails."
 			}
 
-			return slices.Filter([]string{}, emails, func(email string) bool {
-				return strings.HasPrefix(email, toComplete)
+			return slices.DeleteFunc(emails, func(email string) bool {
+				return !strings.HasPrefix(email, toComplete)
 			}), "Choose the email address of the user to add to the team."
 		},
 	}
