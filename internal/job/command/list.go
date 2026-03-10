@@ -2,12 +2,24 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/savioxavier/termlink"
 )
+
+type jobName struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+func (j jobName) String() string {
+	return termlink.Link(j.Name, j.URL)
+}
 
 func list(parentFlags *flag.Job) *naistrix.Command {
 	flags := &flag.List{Job: parentFlags}
@@ -31,7 +43,42 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 				return nil
 			}
 
-			return out.Table().Render(ret)
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return err
+			}
+
+			type entry struct {
+				Name        jobName          `json:"name"`
+				Environment string           `json:"environment"`
+				Schedule    job.Schedule     `json:"schedule"`
+				LastRun     job.LastRunState `heading:"Last Run" json:"last_run"`
+				State       job.State        `json:"state"`
+				Issues      int              `json:"issues"`
+			}
+
+			entries := make([]entry, 0, len(ret))
+			for _, j := range ret {
+				entries = append(entries, entry{
+					Name: jobName{
+						Name: j.Name,
+						URL: fmt.Sprintf(
+							"https://%s/team/%s/%s/job/%s",
+							user.ConsoleHost(),
+							flags.Team,
+							j.Environment,
+							j.Name,
+						),
+					},
+					Environment: j.Environment,
+					Schedule:    j.Schedule,
+					LastRun:     j.LastRun,
+					State:       j.State,
+					Issues:      j.Issues,
+				})
+			}
+
+			return out.Table().Render(entries)
 		},
 	}
 }
