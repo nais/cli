@@ -160,10 +160,10 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 	}
 
 	sort.Slice(ret, func(i, j int) bool {
-		if ret[i].Environment == ret[j].Environment {
-			return ret[i].Name.Name < ret[j].Name.Name
+		if ret[i].Name.Name == ret[j].Name.Name {
+			return ret[i].Environment < ret[j].Environment
 		}
-		return ret[i].Environment < ret[j].Environment
+		return ret[i].Name.Name < ret[j].Name.Name
 	})
 
 	return ret, nil
