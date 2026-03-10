@@ -121,7 +121,7 @@ func removeBuiltinScalars(schema string) string {
 func (t *toolContext) getSchema(reqCtx context.Context) (string, error) {
 	// Check for local schema file override
 	if schemaFile := os.Getenv("NAIS_SCHEMA_FILE"); schemaFile != "" {
-		data, err := os.ReadFile(schemaFile)
+		data, err := os.ReadFile(schemaFile) // #nosec G703 -- schemaFile comes from NAIS_SCHEMA_FILE env var set by the developer; path traversal risk is acceptable
 		if err != nil {
 			return "", fmt.Errorf("failed to read schema file %s: %w", schemaFile, err)
 		}

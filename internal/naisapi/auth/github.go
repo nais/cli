@@ -42,7 +42,7 @@ func GithubActions(ctx context.Context) (*AuthenticatedUser, bool, error) {
 
 func githubTokenSource(ctx context.Context, requestURL, requestToken string) oauth2.TokenSource {
 	return tokenSourceFunc(func() (*oauth2.Token, error) {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil) // #nosec G704 -- requestURL comes from ACTIONS_ID_TOKEN_REQUEST_URL env var set by GitHub Actions; SSRF risk is acceptable
 		if err != nil {
 			return nil, fmt.Errorf("creating request: %w", err)
 		}
@@ -53,7 +53,7 @@ func githubTokenSource(ctx context.Context, requestURL, requestToken string) oau
 		req.URL.RawQuery = q.Encode()
 		req.Header.Set("Authorization", "bearer "+requestToken)
 
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := http.DefaultClient.Do(req) // #nosec G704 -- request URL originates from ACTIONS_ID_TOKEN_REQUEST_URL; SSRF risk is acceptable
 		if err != nil {
 			return nil, fmt.Errorf("fetching token: %w", err)
 		}

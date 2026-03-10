@@ -209,7 +209,7 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFu
 			ConsoleURL string `json:"consoleUrl"`
 		}
 		u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-		res, err := http.Get(u)
+		res, err := http.Get(u) // #nosec G704 -- URL is constructed from a domain-only segment appended to a fixed GCS base URL; SSRF risk is acceptable
 		if err != nil {
 			http.Error(w, "Failed to get tenant data: "+err.Error(), http.StatusInternalServerError)
 			return
