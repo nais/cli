@@ -46,6 +46,12 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			id
 			severity
 			message
+			... on ExternalIngressCriticalVulnerabilityIssue {
+				workload {
+					name
+					__typename
+				}
+			}
 			... on DeprecatedIngressIssue {
 			  application {
 				name
@@ -178,6 +184,9 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			i.ResourceName = c.Valkey.GetName()
 			i.ResourceType = c.Valkey.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
+			i.ResourceName = c.GetWorkload().GetName()
+			i.ResourceType = c.GetWorkload().GetTypename()
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
 			i.ResourceName = c.GetWorkload().GetName()
 			i.ResourceType = c.GetWorkload().GetTypename()
 		}

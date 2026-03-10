@@ -661,7 +661,7 @@ The application state.
 """
 	state: ApplicationState!
 """
-Issues that affects the workload.
+Issues that affect the application.
 """
 	issues(
 """
@@ -2921,7 +2921,7 @@ The state of the Job
 """
 	state: JobState!
 """
-Issues that affects the workload.
+Issues that affect the job.
 """
 	issues(
 """
@@ -3167,7 +3167,7 @@ Order by state.
 """
 	STATE
 """
-Order applications by the deployment time.
+Order jobs by the deployment time.
 """
 	DEPLOYMENT_TIME
 """
