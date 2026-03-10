@@ -2,13 +2,25 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/savioxavier/termlink"
 )
+
+type appName struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+func (a appName) String() string {
+	return termlink.Link(a.Name, a.URL)
+}
 
 func list(parentFlags *flag.App) *naistrix.Command {
 	flags := &flag.List{
@@ -32,7 +44,42 @@ func list(parentFlags *flag.App) *naistrix.Command {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
-			return out.Table().Render(ret)
+			user, err := naisapi.GetAuthenticatedUser(ctx)
+			if err != nil {
+				return err
+			}
+
+			type entry struct {
+				State         app.State          `json:"state"`
+				Name          appName            `json:"name"`
+				Environment   string             `json:"environment"`
+				InstancesInfo *app.InstancesInfo `heading:"Running" json:"running"`
+				IssueInfo     *app.IssueInfo     `heading:"Issues" json:"issue_info"`
+				LastUpdated   app.LastUpdated    `heading:"Last Updated" json:"last_updated"`
+			}
+
+			entries := make([]entry, 0, len(ret))
+			for _, a := range ret {
+				entries = append(entries, entry{
+					State: a.State,
+					Name: appName{
+						Name: a.Name,
+						URL: fmt.Sprintf(
+							"https://%s/team/%s/%s/app/%s",
+							user.ConsoleHost(),
+							flags.Team,
+							a.Environment,
+							a.Name,
+						),
+					},
+					Environment:   a.Environment,
+					InstancesInfo: a.InstancesInfo,
+					IssueInfo:     a.IssueInfo,
+					LastUpdated:   a.LastUpdated,
+				})
+			}
+
+			return out.Table().Render(entries)
 		},
 	}
 }
