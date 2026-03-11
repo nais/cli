@@ -25,7 +25,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 type Create struct {
 	*OpenSearch
 	Memory    Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance. Defaults to |GB_4|."`
-	Tier      Tier    `name:"tier" short:"t" usage:"|TIER| of the OpenSearch instance. Defaults to |SINGLE_NODE|."`
+	Tier      Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance. Defaults to |SINGLE_NODE|."`
 	Version   Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance. Defaults to |V2|."`
 	StorageGB int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
 }
@@ -92,7 +92,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 type Update struct {
 	*OpenSearch
 	Memory       Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance."`
-	Tier         Tier    `name:"tier" short:"t" usage:"|TIER| of the OpenSearch instance."`
+	Tier         Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance."`
 	MajorVersion Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance."`
 	StorageGB    int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
 }

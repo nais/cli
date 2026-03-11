@@ -19,7 +19,7 @@ type Create struct {
 
 type CreateKafka struct {
 	*Create
-	Test int    `name:"test" short:"t" usage:"Create a test Kafka topic with the given |NAME|."`
+	Test int    `name:"test" usage:"Create a test Kafka topic with the given |NAME|."`
 	Pool string `name:"pool" short:"p" usage:"The |NAME| of the pool to create the Kafka instance in."`
 }
 
