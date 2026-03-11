@@ -33,7 +33,7 @@ type Create struct {
 	*Valkey
 	Yes             bool            `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 	Memory          Memory          `name:"memory" short:"m" usage:"|MEMORY| of the Valkey instance. Defaults to |GB_1|."`
-	Tier            Tier            `name:"tier" short:"t" usage:"|TIER| of the Valkey instance. Defaults to |HIGH_AVAILABILITY|."`
+	Tier            Tier            `name:"tier" usage:"|TIER| of the Valkey instance. Defaults to |HIGH_AVAILABILITY|."`
 	MaxMemoryPolicy MaxMemoryPolicy `name:"max-memory-policy" usage:"|MAX_MEMORY_POLICY| for the Valkey instance. Defaults to |NO_EVICTION|."`
 }
 
@@ -82,7 +82,7 @@ type Update struct {
 	*Valkey
 	Yes             bool            `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 	Memory          Memory          `name:"memory" short:"m" usage:"|MEMORY| of the Valkey instance."`
-	Tier            Tier            `name:"tier" short:"t" usage:"|TIER| of the Valkey instance."`
+	Tier            Tier            `name:"tier" usage:"|TIER| of the Valkey instance."`
 	MaxMemoryPolicy MaxMemoryPolicy `name:"max-memory-policy" usage:"|MAX_MEMORY_POLICY| for the Valkey instance."`
 }
 
