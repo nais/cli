@@ -26,6 +26,7 @@ import (
 	secrets "github.com/nais/cli/internal/secret/command"
 	validate "github.com/nais/cli/internal/validate/command"
 	"github.com/nais/cli/internal/version"
+	vulnerabilities "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -72,6 +73,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		debug.Debug(globalFlags),
 		kubeconfig.Kubeconfig(globalFlags),
 		secrets.Secrets(globalFlags),
+		vulnerabilities.Vulnerabilities(globalFlags),
 		validate.Validate(globalFlags),
 		issues.Issues(globalFlags),
 	}
