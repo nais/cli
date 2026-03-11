@@ -646,6 +646,16 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 	//
 	// Interface for workloads.
 	GetName() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment
 }
 
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) implementsGraphQLInterfaceFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkload() {
@@ -720,6 +730,10 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
+	// Interface for workloads.
+	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
 // GetTypename returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication.Typename, and is useful for accessing the field via an interface.
@@ -732,11 +746,25 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 	return v.Name
 }
 
+// GetTeam returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) GetTeam() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam {
+	return v.Team
+}
+
+// GetTeamEnvironment returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication) GetTeamEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob includes the requested fields of the GraphQL type Job.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob struct {
 	Typename string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
+	// Interface for workloads.
+	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
 // GetTypename returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.Typename, and is useful for accessing the field via an interface.
@@ -746,6 +774,61 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 
 // GetName returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.Name, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) GetTeam() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam {
+	return v.Team
+}
+
+// GetTeamEnvironment returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob) GetTeamEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam) GetSlug() string {
+	return v.Slug
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment) GetEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
@@ -10202,6 +10285,96 @@ func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlIn
 	return v.Name
 }
 
+// GetTeamVulnerabilitySummaryResponse is returned by GetTeamVulnerabilitySummary on success.
+type GetTeamVulnerabilitySummaryResponse struct {
+	// Get a team by its slug.
+	Team GetTeamVulnerabilitySummaryTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamVulnerabilitySummaryResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryResponse) GetTeam() GetTeamVulnerabilitySummaryTeam {
+	return v.Team
+}
+
+// GetTeamVulnerabilitySummaryTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamVulnerabilitySummaryTeam struct {
+	VulnerabilitySummary GetTeamVulnerabilitySummaryTeamVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+// GetVulnerabilitySummary returns GetTeamVulnerabilitySummaryTeam.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeam) GetVulnerabilitySummary() GetTeamVulnerabilitySummaryTeamVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// GetTeamVulnerabilitySummaryTeamVulnerabilitySummary includes the requested fields of the GraphQL type TeamVulnerabilitySummary.
+type GetTeamVulnerabilitySummaryTeamVulnerabilitySummary struct {
+	// Risk score of the team.
+	RiskScore int `json:"riskScore"`
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+	// Number of workloads with a software bill of materials (SBOM) attached.
+	SbomCount int `json:"sbomCount"`
+	// Coverage of the team.
+	Coverage float64 `json:"coverage"`
+	// Trend of vulnerability status for the team.
+	RiskScoreTrend TeamVulnerabilityRiskScoreTrend `json:"riskScoreTrend"`
+	// Timestamp of the last update of the vulnerability summary.
+	LastUpdated time.Time `json:"lastUpdated"`
+}
+
+// GetRiskScore returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetRiskScore() int { return v.RiskScore }
+
+// GetCritical returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Critical, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetCritical() int { return v.Critical }
+
+// GetHigh returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.High, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetHigh() int { return v.High }
+
+// GetMedium returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Medium, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetMedium() int { return v.Medium }
+
+// GetLow returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Low, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetLow() int { return v.Low }
+
+// GetUnassigned returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetSbomCount returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.SbomCount, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetSbomCount() int { return v.SbomCount }
+
+// GetCoverage returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Coverage, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetCoverage() float64 {
+	return v.Coverage
+}
+
+// GetRiskScoreTrend returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.RiskScoreTrend, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetRiskScoreTrend() TeamVulnerabilityRiskScoreTrend {
+	return v.RiskScoreTrend
+}
+
+// GetLastUpdated returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.LastUpdated, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetLastUpdated() time.Time {
+	return v.LastUpdated
+}
+
 // GetTeamWorkloadsResponse is returned by GetTeamWorkloads on success.
 type GetTeamWorkloadsResponse struct {
 	// Get a team by its slug.
@@ -11322,6 +11495,740 @@ var AllJobState = []JobState{
 	JobStateRunning,
 	JobStateFailed,
 	JobStateUnknown,
+}
+
+// ListCVEsResponse is returned by ListCVEs on success.
+type ListCVEsResponse struct {
+	// Get a team by its slug.
+	Team ListCVEsTeam `json:"team"`
+}
+
+// GetTeam returns ListCVEsResponse.Team, and is useful for accessing the field via an interface.
+func (v *ListCVEsResponse) GetTeam() ListCVEsTeam { return v.Team }
+
+// ListCVEsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListCVEsTeam struct {
+	// Nais workloads owned by the team.
+	Workloads ListCVEsTeamWorkloadsWorkloadConnection `json:"workloads"`
+}
+
+// GetWorkloads returns ListCVEsTeam.Workloads, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeam) GetWorkloads() ListCVEsTeamWorkloadsWorkloadConnection { return v.Workloads }
+
+// ListCVEsTeamWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type ListCVEsTeamWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns ListCVEsTeamWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnection) GetNodes() []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListCVEsTeamWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListCVEsTeamWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal ListCVEsTeamWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListCVEsTeamWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalListCVEsTeamWorkloadsWorkloadConnection, error) {
+	var retval __premarshalListCVEsTeamWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal ListCVEsTeamWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+	// Interface for workloads.
+	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
+}
+
+// GetTypename returns ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetTeamEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetImage returns ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication.Image, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetImage() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage {
+	return v.Image
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesJob struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
+	// Interface for workloads.
+	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
+}
+
+// GetTypename returns ListCVEsTeamWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob) GetTypename() string { return v.Typename }
+
+// GetName returns ListCVEsTeamWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns ListCVEsTeamWorkloadsWorkloadConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob) GetTeamEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetImage returns ListCVEsTeamWorkloadsWorkloadConnectionNodesJob.Image, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob) GetImage() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage {
+	return v.Image
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
+	// GetImage returns the interface-field "image" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetImage() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(ListCVEsTeamWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListCVEsTeamWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListCVEsTeamWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage struct {
+	// Get the vulnerabilities of the image.
+	Vulnerabilities ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+}
+
+// GetVulnerabilities returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetVulnerabilities() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection {
+	return v.Vulnerabilities
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
+	// List of nodes.
+	Nodes []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability `json:"nodes"`
+}
+
+// GetNodes returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability {
+	return v.Nodes
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
+	// The unique identifier of the vulnerability. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Severity of the vulnerability.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// CVSS score of the vulnerability.
+	CvssScore float64 `json:"cvssScore"`
+	// Package name of the vulnerability.
+	Package     string                                                                                                                                               `json:"package"`
+	Suppression ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
+	// Timestamp of when the vulnerability got its current severity.
+	SeveritySince time.Time `json:"severitySince"`
+	// Link to the vulnerability details.
+	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+}
+
+// GetIdentifier returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetSeverity returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetCvssScore returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.CvssScore, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetCvssScore() float64 {
+	return v.CvssScore
+}
+
+// GetPackage returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetPackage() string {
+	return v.Package
+}
+
+// GetSuppression returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// GetSeveritySince returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeveritySince() time.Time {
+	return v.SeveritySince
+}
+
+// GetVulnerabilityDetailsLink returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
+	return v.VulnerabilityDetailsLink
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetState returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment) GetEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// ListWorkloadVulnerabilitySummariesResponse is returned by ListWorkloadVulnerabilitySummaries on success.
+type ListWorkloadVulnerabilitySummariesResponse struct {
+	// Get a team by its slug.
+	Team ListWorkloadVulnerabilitySummariesTeam `json:"team"`
+}
+
+// GetTeam returns ListWorkloadVulnerabilitySummariesResponse.Team, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesResponse) GetTeam() ListWorkloadVulnerabilitySummariesTeam {
+	return v.Team
+}
+
+// ListWorkloadVulnerabilitySummariesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListWorkloadVulnerabilitySummariesTeam struct {
+	// Fetch vulnerability summaries for workloads in the team.
+	VulnerabilitySummaries ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection `json:"vulnerabilitySummaries"`
+}
+
+// GetVulnerabilitySummaries returns ListWorkloadVulnerabilitySummariesTeam.VulnerabilitySummaries, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeam) GetVulnerabilitySummaries() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection {
+	return v.VulnerabilitySummaries
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection includes the requested fields of the GraphQL type WorkloadVulnerabilitySummaryConnection.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection struct {
+	// List of nodes.
+	Nodes []ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary `json:"nodes"`
+}
+
+// GetNodes returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection) GetNodes() []ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary {
+	return v.Nodes
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
+	// True if the workload has a software bill of materials (SBOM) attached.
+	HasSBOM bool `json:"hasSBOM"`
+	// The vulnerability summary for the workload.
+	Summary ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
+	// The workload
+	Workload ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload `json:"-"`
+}
+
+// GetHasSBOM returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.HasSBOM, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetHasSBOM() bool {
+	return v.HasSBOM
+}
+
+// GetSummary returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Summary, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetSummary() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetWorkload returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetWorkload() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload {
+	return v.Workload
+}
+
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
+	HasSBOM bool `json:"hasSBOM"`
+
+	Summary ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) __premarshalJSON() (*__premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary, error) {
+	var retval __premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary
+
+	retval.HasSBOM = v.HasSBOM
+	retval.Summary = v.Summary
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary struct {
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+}
+
+// GetRiskScore returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCritical returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Critical, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.High, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Medium, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Low, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Unassigned, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetTotal returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload is implemented by the following types:
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload interface {
+	implementsGraphQLInterfaceListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment
+}
+
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) implementsGraphQLInterfaceListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload() {
+}
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) implementsGraphQLInterfaceListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload() {
+}
+
+func __unmarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(b []byte, v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload: "%T"`, v)
+	}
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob includes the requested fields of the GraphQL type Job.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob struct {
+	Typename string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetName returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment) GetEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
 }
 
 type OpenSearchMajorVersion string
@@ -12834,6 +13741,41 @@ func (v *TeamStatusResponse) __premarshalJSON() (*__premarshalTeamStatusResponse
 	return &retval, nil
 }
 
+type TeamVulnerabilityRiskScoreTrend string
+
+const (
+	// Risk score is increasing.
+	TeamVulnerabilityRiskScoreTrendUp TeamVulnerabilityRiskScoreTrend = "UP"
+	// Risk score is decreasing.
+	TeamVulnerabilityRiskScoreTrendDown TeamVulnerabilityRiskScoreTrend = "DOWN"
+	// Risk score is not changing.
+	TeamVulnerabilityRiskScoreTrendFlat TeamVulnerabilityRiskScoreTrend = "FLAT"
+)
+
+var AllTeamVulnerabilityRiskScoreTrend = []TeamVulnerabilityRiskScoreTrend{
+	TeamVulnerabilityRiskScoreTrendUp,
+	TeamVulnerabilityRiskScoreTrendDown,
+	TeamVulnerabilityRiskScoreTrendFlat,
+}
+
+// Input for filtering team workloads.
+type TeamVulnerabilitySummaryFilter struct {
+	// Input for filtering team workloads.
+	Environments []string `json:"environments"`
+}
+
+// GetEnvironments returns TeamVulnerabilitySummaryFilter.Environments, and is useful for accessing the field via an interface.
+func (v *TeamVulnerabilitySummaryFilter) GetEnvironments() []string { return v.Environments }
+
+// Input for filtering team workloads.
+type TeamWorkloadsFilter struct {
+	// Input for filtering team workloads.
+	Environments []string `json:"environments"`
+}
+
+// GetEnvironments returns TeamWorkloadsFilter.Environments, and is useful for accessing the field via an interface.
+func (v *TeamWorkloadsFilter) GetEnvironments() []string { return v.Environments }
+
 // TeamsResponse is returned by Teams on success.
 type TeamsResponse struct {
 	// Get a list of teams.
@@ -13848,6 +14790,20 @@ type __GetTeamPostgresInstancesInput struct {
 // GetTeam returns __GetTeamPostgresInstancesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetTeamPostgresInstancesInput) GetTeam() string { return v.Team }
 
+// __GetTeamVulnerabilitySummaryInput is used internally by genqlient
+type __GetTeamVulnerabilitySummaryInput struct {
+	Team   string                         `json:"team"`
+	Filter TeamVulnerabilitySummaryFilter `json:"filter"`
+}
+
+// GetTeam returns __GetTeamVulnerabilitySummaryInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamVulnerabilitySummaryInput) GetTeam() string { return v.Team }
+
+// GetFilter returns __GetTeamVulnerabilitySummaryInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetTeamVulnerabilitySummaryInput) GetFilter() TeamVulnerabilitySummaryFilter {
+	return v.Filter
+}
+
 // __GetTeamWorkloadsInput is used internally by genqlient
 type __GetTeamWorkloadsInput struct {
 	Slug string `json:"slug"`
@@ -13879,6 +14835,32 @@ type __GrantPostgresAccessInput struct {
 
 // GetInput returns __GrantPostgresAccessInput.Input, and is useful for accessing the field via an interface.
 func (v *__GrantPostgresAccessInput) GetInput() GrantPostgresAccessInput { return v.Input }
+
+// __ListCVEsInput is used internally by genqlient
+type __ListCVEsInput struct {
+	Team   string              `json:"team"`
+	Filter TeamWorkloadsFilter `json:"filter"`
+}
+
+// GetTeam returns __ListCVEsInput.Team, and is useful for accessing the field via an interface.
+func (v *__ListCVEsInput) GetTeam() string { return v.Team }
+
+// GetFilter returns __ListCVEsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListCVEsInput) GetFilter() TeamWorkloadsFilter { return v.Filter }
+
+// __ListWorkloadVulnerabilitySummariesInput is used internally by genqlient
+type __ListWorkloadVulnerabilitySummariesInput struct {
+	Team   string                         `json:"team"`
+	Filter TeamVulnerabilitySummaryFilter `json:"filter"`
+}
+
+// GetTeam returns __ListWorkloadVulnerabilitySummariesInput.Team, and is useful for accessing the field via an interface.
+func (v *__ListWorkloadVulnerabilitySummariesInput) GetTeam() string { return v.Team }
+
+// GetFilter returns __ListWorkloadVulnerabilitySummariesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() TeamVulnerabilitySummaryFilter {
+	return v.Filter
+}
 
 // __RemoveSecretValueInput is used internally by genqlient
 type __RemoveSecretValueInput struct {
@@ -14502,7 +15484,7 @@ query FindWorkloadsForCve ($identifier: String!) {
 		description
 		detailsLink
 		cvssScore
-		workloads {
+		workloads(first: 1000) {
 			nodes {
 				vulnerability {
 					package
@@ -14513,6 +15495,14 @@ query FindWorkloadsForCve ($identifier: String!) {
 				workload {
 					__typename
 					name
+					team {
+						slug
+					}
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
 				}
 			}
 		}
@@ -15543,6 +16533,53 @@ func GetTeamPostgresInstances(
 	return data_, err_
 }
 
+// The query executed by GetTeamVulnerabilitySummary.
+const GetTeamVulnerabilitySummary_Operation = `
+query GetTeamVulnerabilitySummary ($team: Slug!, $filter: TeamVulnerabilitySummaryFilter) {
+	team(slug: $team) {
+		vulnerabilitySummary(filter: $filter) {
+			riskScore
+			critical
+			high
+			medium
+			low
+			unassigned
+			sbomCount
+			coverage
+			riskScoreTrend
+			lastUpdated
+		}
+	}
+}
+`
+
+func GetTeamVulnerabilitySummary(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	filter TeamVulnerabilitySummaryFilter,
+) (data_ *GetTeamVulnerabilitySummaryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamVulnerabilitySummary",
+		Query:  GetTeamVulnerabilitySummary_Operation,
+		Variables: &__GetTeamVulnerabilitySummaryInput{
+			Team:   team,
+			Filter: filter,
+		},
+	}
+
+	data_ = &GetTeamVulnerabilitySummaryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetTeamWorkloads.
 const GetTeamWorkloads_Operation = `
 query GetTeamWorkloads ($slug: Slug!) {
@@ -15720,6 +16757,125 @@ func IsAdmin(
 	}
 
 	data_ = &IsAdminResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListCVEs.
+const ListCVEs_Operation = `
+query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter) {
+	team(slug: $team) {
+		workloads(first: 1000, filter: $filter) {
+			nodes {
+				__typename
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				image {
+					vulnerabilities(first: 1000, orderBy: {field:SEVERITY,direction:DESC}) {
+						nodes {
+							identifier
+							severity
+							cvssScore
+							package
+							suppression {
+								state
+							}
+							severitySince
+							vulnerabilityDetailsLink
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func ListCVEs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	filter TeamWorkloadsFilter,
+) (data_ *ListCVEsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListCVEs",
+		Query:  ListCVEs_Operation,
+		Variables: &__ListCVEsInput{
+			Team:   team,
+			Filter: filter,
+		},
+	}
+
+	data_ = &ListCVEsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListWorkloadVulnerabilitySummaries.
+const ListWorkloadVulnerabilitySummaries_Operation = `
+query ListWorkloadVulnerabilitySummaries ($team: Slug!, $filter: TeamVulnerabilitySummaryFilter) {
+	team(slug: $team) {
+		vulnerabilitySummaries(filter: $filter, first: 1000, orderBy: {field:VULNERABILITY_RISK_SCORE,direction:DESC}) {
+			nodes {
+				hasSBOM
+				summary {
+					riskScore
+					critical
+					high
+					medium
+					low
+					unassigned
+					total
+				}
+				workload {
+					__typename
+					name
+					teamEnvironment {
+						environment {
+							name
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func ListWorkloadVulnerabilitySummaries(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	filter TeamVulnerabilitySummaryFilter,
+) (data_ *ListWorkloadVulnerabilitySummariesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListWorkloadVulnerabilitySummaries",
+		Query:  ListWorkloadVulnerabilitySummaries_Operation,
+		Variables: &__ListWorkloadVulnerabilitySummariesInput{
+			Team:   team,
+			Filter: filter,
+		},
+	}
+
+	data_ = &ListWorkloadVulnerabilitySummariesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
