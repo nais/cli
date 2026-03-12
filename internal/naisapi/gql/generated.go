@@ -477,7 +477,7 @@ type FindWorkloadsForCveCveCVE struct {
 	// Link to the CVE details.
 	DetailsLink string `json:"detailsLink"`
 	// CVSS score of the CVE.
-	CvssScore float64 `json:"cvssScore"`
+	CvssScore *float64 `json:"cvssScore"`
 	// Affected workloads
 	Workloads FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection `json:"workloads"`
 }
@@ -501,7 +501,7 @@ func (v *FindWorkloadsForCveCveCVE) GetDescription() string { return v.Descripti
 func (v *FindWorkloadsForCveCveCVE) GetDetailsLink() string { return v.DetailsLink }
 
 // GetCvssScore returns FindWorkloadsForCveCveCVE.CvssScore, and is useful for accessing the field via an interface.
-func (v *FindWorkloadsForCveCveCVE) GetCvssScore() float64 { return v.CvssScore }
+func (v *FindWorkloadsForCveCveCVE) GetCvssScore() *float64 { return v.CvssScore }
 
 // GetWorkloads returns FindWorkloadsForCveCveCVE.Workloads, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVE) GetWorkloads() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection {
