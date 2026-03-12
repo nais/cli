@@ -11795,10 +11795,10 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVuln
 	// Severity of the vulnerability.
 	Severity ImageVulnerabilitySeverity `json:"severity"`
 	// CVSS score of the vulnerability.
-	CvssScore float64 `json:"cvssScore"`
+	CvssScore *float64 `json:"cvssScore"`
 	// Package name of the vulnerability.
-	Package     string                                                                                                                                               `json:"package"`
-	Suppression ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
+	Package     string                                                                                                                                                `json:"package"`
+	Suppression *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
 	// Timestamp of when the vulnerability got its current severity.
 	SeveritySince time.Time `json:"severitySince"`
 	// Link to the vulnerability details.
@@ -11816,7 +11816,7 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 }
 
 // GetCvssScore returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.CvssScore, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetCvssScore() float64 {
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetCvssScore() *float64 {
 	return v.CvssScore
 }
 
@@ -11826,7 +11826,7 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 }
 
 // GetSuppression returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
 	return v.Suppression
 }
 
