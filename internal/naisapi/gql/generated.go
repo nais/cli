@@ -604,8 +604,8 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability struct {
 	// Package name of the vulnerability.
-	Package     string                                                                                                                                        `json:"package"`
-	Suppression FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
+	Package     string                                                                                                                                         `json:"package"`
+	Suppression *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
 }
 
 // GetPackage returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Package, and is useful for accessing the field via an interface.
@@ -614,7 +614,7 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 }
 
 // GetSuppression returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
-func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetSuppression() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression {
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetSuppression() *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression {
 	return v.Suppression
 }
 
