@@ -3,6 +3,9 @@ package command
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
+	"strings"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -49,6 +52,94 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 		EnvironmentName: environment,
 		Name:            args.Get("name"),
 	}
+}
+
+func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
+	if team == "" {
+		return nil, "Please provide team to auto-complete OpenSearch instance names. 'nais config set team <team>', or '--team <team>' flag."
+	}
+
+	if environment == "" {
+		envs := environmentValuesFromCLIArgs()
+		if len(envs) > 1 {
+			return nil, "Please specify exactly one environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
+		}
+		if len(envs) == 1 {
+			environment = envs[0]
+		}
+	}
+
+	if requireEnvironment && environment == "" {
+		return nil, "Please provide environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
+	}
+
+	instances, err := opensearch.GetAll(ctx, team)
+	if err != nil {
+		return nil, "Unable to fetch OpenSearch instances."
+	}
+
+	seen := make(map[string]struct{})
+	var names []string
+	for _, instance := range instances {
+		if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
+			continue
+		}
+		if _, ok := seen[instance.Name]; ok {
+			continue
+		}
+		seen[instance.Name] = struct{}{}
+		names = append(names, instance.Name)
+	}
+
+	sort.Strings(names)
+	if len(names) == 0 && environment != "" {
+		return nil, fmt.Sprintf("No OpenSearch instances found in environment %q.", environment)
+	}
+
+	return names, "Select an OpenSearch instance."
+}
+
+func environmentValuesFromCLIArgs() []string {
+	seen := map[string]struct{}{}
+	environments := make([]string, 0)
+	args := os.Args
+
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		switch {
+		case arg == "-e" || arg == "--environment":
+			if i+1 >= len(args) {
+				continue
+			}
+			next := args[i+1]
+			if strings.HasPrefix(next, "-") || next == "" {
+				continue
+			}
+			if _, ok := seen[next]; !ok {
+				seen[next] = struct{}{}
+				environments = append(environments, next)
+			}
+			i++
+		case strings.HasPrefix(arg, "--environment="):
+			env := strings.TrimPrefix(arg, "--environment=")
+			if env != "" {
+				if _, ok := seen[env]; !ok {
+					seen[env] = struct{}{}
+					environments = append(environments, env)
+				}
+			}
+		case strings.HasPrefix(arg, "-e="):
+			env := strings.TrimPrefix(arg, "-e=")
+			if env != "" {
+				if _, ok := seen[env]; !ok {
+					seen[env] = struct{}{}
+					environments = append(environments, env)
+				}
+			}
+		}
+	}
+
+	return environments
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {

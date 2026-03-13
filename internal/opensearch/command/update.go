@@ -35,15 +35,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				instances, err := opensearch.GetAll(ctx, flags.Team)
-				if err != nil {
-					return nil, "Unable to fetch OpenSearch instances."
-				}
-				var names []string
-				for _, instance := range instances {
-					names = append(names, instance.Name)
-				}
-				return names, "Select an OpenSearch instance."
+				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
 			}
 			return nil, ""
 		},
