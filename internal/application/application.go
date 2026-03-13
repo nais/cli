@@ -84,7 +84,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		return nil, nil, err
 	}
 
-	return &Application{Application: app}, globalFlags, nil
+	return &Application{Application: app, Commands: cmds}, globalFlags, nil
 }
 
 func Run(ctx context.Context, w io.Writer) error {
