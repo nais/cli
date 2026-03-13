@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -51,4 +52,38 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 		EnvironmentName: environment,
 		Name:            args.Get("name"),
 	}
+}
+
+func autoCompleteValkeyNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
+	if team == "" {
+		return nil, "Please provide team to auto-complete Valkey instance names. 'nais config set team <team>', or '--team <team>' flag."
+	}
+	if requireEnvironment && environment == "" {
+		return nil, "Please provide environment to auto-complete Valkey instance names. '--environment <environment>' flag."
+	}
+
+	instances, err := valkey.GetAll(ctx, team)
+	if err != nil {
+		return nil, "Unable to fetch Valkey instances."
+	}
+
+	seen := make(map[string]struct{})
+	var names []string
+	for _, instance := range instances {
+		if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
+			continue
+		}
+		if _, ok := seen[instance.Name]; ok {
+			continue
+		}
+		seen[instance.Name] = struct{}{}
+		names = append(names, instance.Name)
+	}
+
+	sort.Strings(names)
+	if len(names) == 0 && environment != "" {
+		return nil, fmt.Sprintf("No Valkey instances found in environment %q.", environment)
+	}
+
+	return names, "Select a Valkey instance."
 }

@@ -2,10 +2,12 @@ package command
 
 import (
 	"context"
+	"os"
 
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -54,7 +56,15 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 				if len(flags.Team) == 0 {
 					return nil, "Please provide team to auto-complete application names. 'nais config set team <team>', or '--team <team>' flag."
 				}
-				apps, err := app.GetApplicationNames(ctx, flags.Team, flags.Environment)
+				environments := flags.Environment
+				if len(environments) == 0 {
+					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
+				}
+				if len(environments) == 0 {
+					return nil, "Please provide environment to auto-complete application names. '--environment <environment>' flag."
+				}
+
+				apps, err := app.GetApplicationNames(ctx, flags.Team, environments)
 				if err != nil {
 					return nil, "Unable to fetch application names."
 				}

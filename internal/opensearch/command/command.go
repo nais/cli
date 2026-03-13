@@ -3,8 +3,11 @@ package command
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
@@ -49,6 +52,55 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 		EnvironmentName: environment,
 		Name:            args.Get("name"),
 	}
+}
+
+func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
+	if team == "" {
+		return nil, "Please provide team to auto-complete OpenSearch instance names. 'nais config set team <team>', or '--team <team>' flag."
+	}
+
+	if environment == "" {
+		envs := environmentValuesFromCLIArgs()
+		if len(envs) > 1 {
+			return nil, "Please specify exactly one environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
+		}
+		if len(envs) == 1 {
+			environment = envs[0]
+		}
+	}
+
+	if requireEnvironment && environment == "" {
+		return nil, "Please provide environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
+	}
+
+	instances, err := opensearch.GetAll(ctx, team)
+	if err != nil {
+		return nil, "Unable to fetch OpenSearch instances."
+	}
+
+	seen := make(map[string]struct{})
+	var names []string
+	for _, instance := range instances {
+		if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
+			continue
+		}
+		if _, ok := seen[instance.Name]; ok {
+			continue
+		}
+		seen[instance.Name] = struct{}{}
+		names = append(names, instance.Name)
+	}
+
+	sort.Strings(names)
+	if len(names) == 0 && environment != "" {
+		return nil, fmt.Sprintf("No OpenSearch instances found in environment %q.", environment)
+	}
+
+	return names, "Select an OpenSearch instance."
+}
+
+func environmentValuesFromCLIArgs() []string {
+	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {
