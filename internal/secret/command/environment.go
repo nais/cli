@@ -11,13 +11,24 @@ import (
 )
 
 func resolveSecretEnvironment(ctx context.Context, team, name, provided string) (string, error) {
-	if provided != "" {
-		return provided, nil
-	}
-
 	envs, err := secret.SecretEnvironments(ctx, team, name)
 	if err != nil {
 		return "", fmt.Errorf("fetching environments for secret %q: %w", name, err)
+	}
+
+	if provided != "" {
+		for _, env := range envs {
+			if env == provided {
+				return provided, nil
+			}
+		}
+
+		if len(envs) == 0 {
+			return "", fmt.Errorf("secret %q not found in team %q", name, team)
+		}
+
+		sort.Strings(envs)
+		return "", fmt.Errorf("secret %q does not exist in environment %q; available environments: %s", name, provided, strings.Join(envs, ", "))
 	}
 
 	switch len(envs) {
