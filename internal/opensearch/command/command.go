@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
@@ -100,46 +100,7 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 }
 
 func environmentValuesFromCLIArgs() []string {
-	seen := map[string]struct{}{}
-	environments := make([]string, 0)
-	args := os.Args
-
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		switch {
-		case arg == "-e" || arg == "--environment":
-			if i+1 >= len(args) {
-				continue
-			}
-			next := args[i+1]
-			if strings.HasPrefix(next, "-") || next == "" {
-				continue
-			}
-			if _, ok := seen[next]; !ok {
-				seen[next] = struct{}{}
-				environments = append(environments, next)
-			}
-			i++
-		case strings.HasPrefix(arg, "--environment="):
-			env := strings.TrimPrefix(arg, "--environment=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		case strings.HasPrefix(arg, "-e="):
-			env := strings.TrimPrefix(arg, "-e=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		}
-	}
-
-	return environments
+	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {

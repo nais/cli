@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/secret"
 )
 
@@ -50,75 +51,9 @@ func validateSingleEnvironmentFlagUsage() error {
 }
 
 func countEnvironmentFlagsInCLIArgs() int {
-	count := 0
-	args := os.Args
-
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		switch {
-		case arg == "-e" || arg == "--environment":
-			if i+1 >= len(args) {
-				continue
-			}
-			next := args[i+1]
-			if strings.HasPrefix(next, "-") || next == "" {
-				continue
-			}
-			count++
-			i++
-		case strings.HasPrefix(arg, "--environment="):
-			if strings.TrimPrefix(arg, "--environment=") != "" {
-				count++
-			}
-		case strings.HasPrefix(arg, "-e="):
-			if strings.TrimPrefix(arg, "-e=") != "" {
-				count++
-			}
-		}
-	}
-
-	return count
+	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
 
 func environmentValuesFromCLIArgs() []string {
-	seen := map[string]struct{}{}
-	environments := make([]string, 0)
-	args := os.Args
-
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		switch {
-		case arg == "-e" || arg == "--environment":
-			if i+1 >= len(args) {
-				continue
-			}
-			next := args[i+1]
-			if strings.HasPrefix(next, "-") || next == "" {
-				continue
-			}
-			if _, ok := seen[next]; !ok {
-				seen[next] = struct{}{}
-				environments = append(environments, next)
-			}
-			i++
-		case strings.HasPrefix(arg, "--environment="):
-			env := strings.TrimPrefix(arg, "--environment=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		case strings.HasPrefix(arg, "-e="):
-			env := strings.TrimPrefix(arg, "-e=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		}
-	}
-
-	return environments
+	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 }
