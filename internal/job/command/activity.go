@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 	"os"
-	"strings"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/naistrix"
@@ -48,7 +48,7 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 				}
 				environments := flags.Environment
 				if len(environments) == 0 {
-					environments = environmentsFromCLIArgs()
+					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 				}
 				if len(environments) == 0 {
 					return nil, "Please provide environment to auto-complete job names. '--environment <environment>' flag."
@@ -63,47 +63,4 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 			return nil, ""
 		},
 	}
-}
-
-func environmentsFromCLIArgs() []string {
-	seen := map[string]struct{}{}
-	environments := make([]string, 0)
-	args := os.Args
-
-	for i := 0; i < len(args); i++ {
-		arg := args[i]
-		switch {
-		case arg == "-e" || arg == "--environment":
-			if i+1 >= len(args) {
-				continue
-			}
-			next := args[i+1]
-			if strings.HasPrefix(next, "-") || next == "" {
-				continue
-			}
-			if _, ok := seen[next]; !ok {
-				seen[next] = struct{}{}
-				environments = append(environments, next)
-			}
-			i++
-		case strings.HasPrefix(arg, "--environment="):
-			env := strings.TrimPrefix(arg, "--environment=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		case strings.HasPrefix(arg, "-e="):
-			env := strings.TrimPrefix(arg, "-e=")
-			if env != "" {
-				if _, ok := seen[env]; !ok {
-					seen[env] = struct{}{}
-					environments = append(environments, env)
-				}
-			}
-		}
-	}
-
-	return environments
 }
