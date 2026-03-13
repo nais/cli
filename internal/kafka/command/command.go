@@ -21,6 +21,7 @@ func Kafka(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			return validation.CheckTeam(flags.Team)
 		},
 		SubCommands: []*naistrix.Command{
+			credentials(flags),
 			list(flags),
 		},
 	}

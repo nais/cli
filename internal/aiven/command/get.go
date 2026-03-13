@@ -14,8 +14,9 @@ import (
 
 func get(aivenFlags *flag.Aiven) *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "get",
-		Title: "Generate preferred config format to '/tmp' folder.",
+		Name:       "get",
+		Title:      "Generate preferred config format to '/tmp' folder.",
+		Deprecated: naistrix.DeprecatedWithoutReplacement(),
 		Args: []naistrix.Argument{
 			{Name: "service"},
 			{Name: "username"},
