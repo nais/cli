@@ -7,7 +7,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"github.com/pterm/pterm"
@@ -38,7 +37,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		Flags:       f,
 		Args:        defaultArgs,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
 				return err
 			}
 			if err := validateArgs(args); err != nil {
@@ -54,7 +53,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteSecretNames(ctx, parentFlags)
+				return autoCompleteSecretNames(ctx, f.Team, string(f.Environment), true)
 			}
 			return nil, ""
 		},
@@ -73,110 +72,115 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			metadata := metadataFromArgs(args, f.Team, string(f.Environment))
-
-			existing, err := secret.Get(ctx, metadata)
+			environment, err := resolveSecretEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
 			if err != nil {
-				return fmt.Errorf("fetching secret: %w", err)
+				return err
 			}
 
-			// Build entries from keys (without values by default).
-			entries := make([]Entry, len(existing.Keys))
-			for i, k := range existing.Keys {
-				entries[i] = Entry{Key: k}
-			}
-
-			// If --with-values, fetch actual values and merge them in.
-			if f.WithValues {
-				reason := f.Reason
-				if reason == "" {
-					pterm.Warning.Println("Viewing secret values is logged for auditing purposes.")
-					result, _ := pterm.DefaultInteractiveTextInput.
-						WithDefaultText("Reason for accessing secret values (min 10 chars)").
-						Show()
-					if len(result) < 10 {
-						return fmt.Errorf("reason must be at least 10 characters")
-					}
-					reason = result
-				}
-
-				values, err := naisapi.ViewSecretValues(ctx, metadata.TeamSlug, metadata.EnvironmentName, metadata.Name, reason)
-				if err != nil {
-					return fmt.Errorf("viewing secret values: %w", err)
-				}
-
-				// Build a lookup map from the fetched values.
-				valueMap := make(map[string]string, len(values))
-				for _, v := range values {
-					valueMap[v.Name] = v.Value
-				}
-
-				for i := range entries {
-					entries[i].Value = valueMap[entries[i].Key]
-				}
-			}
-
-			if f.Output == "json" {
-				detail := SecretDetail{
-					Name:         existing.Name,
-					Environment:  existing.TeamEnvironment.Environment.Name,
-					Data:         entries,
-					LastModified: secret.LastModified(existing.LastModifiedAt),
-				}
-				if existing.LastModifiedBy.Email != "" {
-					detail.ModifiedBy = existing.LastModifiedBy.Email
-				}
-				for _, w := range existing.Workloads.Nodes {
-					detail.Workloads = append(detail.Workloads, w.GetName())
-				}
-				return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
-			}
-
-			pterm.DefaultSection.Println("Secret details")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(secret.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
-				return fmt.Errorf("rendering table: %w", err)
-			}
-
-			pterm.DefaultSection.Println("Data")
-			if len(entries) > 0 {
-				var data [][]string
-				if f.WithValues {
-					secretEntries := make([]secret.Entry, len(entries))
-					for i, e := range entries {
-						secretEntries[i] = secret.Entry{Key: e.Key, Value: e.Value}
-					}
-					data = secret.FormatDataWithValues(secretEntries)
-				} else {
-					data = secret.FormatData(existing.Keys)
-				}
-				err = pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(data).
-					Render()
-				if err != nil {
-					return fmt.Errorf("rendering data table: %w", err)
-				}
-			} else {
-				pterm.Info.Println("This secret has no keys.")
-			}
-
-			if len(existing.Workloads.Nodes) > 0 {
-				pterm.DefaultSection.Println("Workloads using this secret")
-				return pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(secret.FormatWorkloads(existing)).
-					Render()
-			}
-
-			pterm.Info.Println("No workloads are using this secret.")
-			return nil
+			return runGetCommand(ctx, args, out, f.Team, environment, f.Output, f.WithValues, f.Reason)
 		},
 	}
+}
+
+func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, team, environment string, outputFormat flag.Output, withValues bool, reason string) error {
+	metadata := metadataFromArgs(args, team, environment)
+
+	existing, err := secret.Get(ctx, metadata)
+	if err != nil {
+		return fmt.Errorf("fetching secret: %w", err)
+	}
+
+	entries := make([]Entry, len(existing.Keys))
+	for i, k := range existing.Keys {
+		entries[i] = Entry{Key: k}
+	}
+
+	if withValues {
+		if reason == "" {
+			pterm.Warning.Println("Viewing secret values is logged for auditing purposes.")
+			result, _ := pterm.DefaultInteractiveTextInput.
+				WithDefaultText("Reason for accessing secret values (min 10 chars)").
+				Show()
+			if len(result) < 10 {
+				return fmt.Errorf("reason must be at least 10 characters")
+			}
+			reason = result
+		}
+
+		values, err := naisapi.ViewSecretValues(ctx, metadata.TeamSlug, metadata.EnvironmentName, metadata.Name, reason)
+		if err != nil {
+			return fmt.Errorf("viewing secret values: %w", err)
+		}
+
+		valueMap := make(map[string]string, len(values))
+		for _, v := range values {
+			valueMap[v.Name] = v.Value
+		}
+
+		for i := range entries {
+			entries[i].Value = valueMap[entries[i].Key]
+		}
+	}
+
+	if outputFormat == "json" {
+		detail := SecretDetail{
+			Name:         existing.Name,
+			Environment:  existing.TeamEnvironment.Environment.Name,
+			Data:         entries,
+			LastModified: secret.LastModified(existing.LastModifiedAt),
+		}
+		if existing.LastModifiedBy.Email != "" {
+			detail.ModifiedBy = existing.LastModifiedBy.Email
+		}
+		for _, w := range existing.Workloads.Nodes {
+			detail.Workloads = append(detail.Workloads, w.GetName())
+		}
+		return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
+	}
+
+	pterm.DefaultSection.Println("Secret details")
+	err = pterm.DefaultTable.
+		WithHasHeader().
+		WithHeaderRowSeparator("-").
+		WithData(secret.FormatDetails(metadata, existing)).
+		Render()
+	if err != nil {
+		return fmt.Errorf("rendering table: %w", err)
+	}
+
+	pterm.DefaultSection.Println("Data")
+	if len(entries) > 0 {
+		var data [][]string
+		if withValues {
+			secretEntries := make([]secret.Entry, len(entries))
+			for i, e := range entries {
+				secretEntries[i] = secret.Entry{Key: e.Key, Value: e.Value}
+			}
+			data = secret.FormatDataWithValues(secretEntries)
+		} else {
+			data = secret.FormatData(existing.Keys)
+		}
+		err = pterm.DefaultTable.
+			WithHasHeader().
+			WithHeaderRowSeparator("-").
+			WithData(data).
+			Render()
+		if err != nil {
+			return fmt.Errorf("rendering data table: %w", err)
+		}
+	} else {
+		pterm.Info.Println("This secret has no keys.")
+	}
+
+	if len(existing.Workloads.Nodes) > 0 {
+		pterm.DefaultSection.Println("Workloads using this secret")
+		return pterm.DefaultTable.
+			WithHasHeader().
+			WithHeaderRowSeparator("-").
+			WithData(secret.FormatWorkloads(existing)).
+			Render()
+	}
+
+	pterm.Info.Println("No workloads are using this secret.")
+	return nil
 }
