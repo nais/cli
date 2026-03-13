@@ -21,6 +21,7 @@ func App(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			list(flags),
+			activity(flags),
 			issues(flags),
 			restart(flags),
 			log(flags),

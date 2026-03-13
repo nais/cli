@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/naistrix"
 )
@@ -71,6 +72,28 @@ type List struct {
 	*Secret
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
 	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+type Activity struct {
+	*Secret
+	Environment  Environments  `name:"environment" short:"e" usage:"Filter by environment."`
+	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
+	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
+	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
+}
+
+type ActivityTypes []string
+
+func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return toStrings(gql.AllActivityLogActivityType), "Available activity types"
+}
+
+func toStrings[T ~string](in []T) []string {
+	ret := make([]string, len(in))
+	for i, s := range in {
+		ret[i] = string(s)
+	}
+	return ret
 }
 
 type Get struct {

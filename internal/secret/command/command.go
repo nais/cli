@@ -23,6 +23,7 @@ func Secrets(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		},
 		SubCommands: []*naistrix.Command{
 			list(f),
+			activity(f),
 			get(f),
 			create(f),
 			deleteSecret(f),
