@@ -16,6 +16,19 @@ type SecretActivity struct {
 	Message     string    `json:"message"`
 }
 
+type secretActivityEntry struct {
+	CreatedAt       time.Time
+	Actor           string
+	Message         string
+	EnvironmentName string
+}
+
+type secretActivityResource struct {
+	Name           string
+	DefaultEnvName string
+	Entries        []secretActivityEntry
+}
+
 func GetActivity(ctx context.Context, team, name string, environments []string, activityTypes []gql.ActivityLogActivityType, limit int) ([]SecretActivity, bool, error) {
 	_ = `# @genqlient
 		query GetSecretActivity($team: Slug!, $name: String!, $activityTypes: [ActivityLogActivityType!], $first: Int) {
@@ -52,33 +65,57 @@ func GetActivity(ctx context.Context, team, name string, environments []string, 
 		return nil, false, err
 	}
 
-	found := false
-
-	ret := make([]SecretActivity, 0)
+	resources := make([]secretActivityResource, 0, len(resp.Team.Secrets.Nodes))
 	for _, s := range resp.Team.Secrets.Nodes {
+		entries := make([]secretActivityEntry, 0, len(s.ActivityLog.Nodes))
+		for _, entry := range s.ActivityLog.Nodes {
+			entries = append(entries, secretActivityEntry{
+				CreatedAt:       entry.GetCreatedAt(),
+				Actor:           entry.GetActor(),
+				Message:         entry.GetMessage(),
+				EnvironmentName: entry.GetEnvironmentName(),
+			})
+		}
+
+		resources = append(resources, secretActivityResource{
+			Name:           s.Name,
+			DefaultEnvName: s.TeamEnvironment.Environment.Name,
+			Entries:        entries,
+		})
+	}
+
+	ret, found := buildSecretActivity(resources, name, environments)
+	return ret, found, nil
+}
+
+func buildSecretActivity(resources []secretActivityResource, name string, environments []string) ([]SecretActivity, bool) {
+	found := false
+	ret := make([]SecretActivity, 0)
+
+	for _, s := range resources {
 		if s.Name != name {
 			continue
 		}
 
 		found = true
-		defaultEnv := s.TeamEnvironment.Environment.Name
+		defaultEnv := s.DefaultEnvName
 		if len(environments) > 0 && !slices.Contains(environments, defaultEnv) {
 			continue
 		}
 
-		for _, entry := range s.ActivityLog.Nodes {
+		for _, entry := range s.Entries {
 			env := defaultEnv
-			if entry.GetEnvironmentName() != "" {
-				env = entry.GetEnvironmentName()
+			if entry.EnvironmentName != "" {
+				env = entry.EnvironmentName
 			}
 			ret = append(ret, SecretActivity{
-				CreatedAt:   entry.GetCreatedAt(),
-				Actor:       entry.GetActor(),
+				CreatedAt:   entry.CreatedAt,
+				Actor:       entry.Actor,
 				Environment: env,
-				Message:     entry.GetMessage(),
+				Message:     entry.Message,
 			})
 		}
 	}
 
-	return ret, found, nil
+	return ret, found
 }
