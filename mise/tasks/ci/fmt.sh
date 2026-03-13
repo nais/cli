@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Ensure all code is formatted"
-#MISE depends=["fmt"]
+#MISE depends=["fmt", "fix"]
 set -euo pipefail
 
 if ! git diff --exit-code --name-only; then
