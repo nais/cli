@@ -69,10 +69,7 @@ func autoGenerateRunName(jobName string) string {
 		base = "job"
 	}
 
-	maxBaseLen := validation.DNS1123LabelMaxLength - len(suffix)
-	if maxBaseLen < 1 {
-		maxBaseLen = 1
-	}
+	maxBaseLen := max(validation.DNS1123LabelMaxLength-len(suffix), 1)
 	if len(base) > maxBaseLen {
 		base = strings.TrimRight(base[:maxBaseLen], "-")
 		if base == "" {

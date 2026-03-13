@@ -24,7 +24,7 @@ type SecretDetail struct {
 	Name         string              `json:"name"`
 	Environment  string              `json:"environment"`
 	Data         []Entry             `json:"data"`
-	LastModified secret.LastModified `json:"lastModified,omitempty"`
+	LastModified secret.LastModified `json:"lastModified"`
 	ModifiedBy   string              `json:"modifiedBy,omitempty"`
 	Workloads    []string            `json:"workloads,omitempty"`
 }
