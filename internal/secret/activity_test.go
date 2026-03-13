@@ -37,7 +37,7 @@ func TestBuildSecretActivity(t *testing.T) {
 			},
 		},
 		{
-			name:       "found true but filtered out by environment",
+			name:       "not found in requested environment",
 			secretName: "db-credentials",
 			resources: []secretActivityResource{
 				{
@@ -49,7 +49,7 @@ func TestBuildSecretActivity(t *testing.T) {
 				},
 			},
 			environments: []string{"prod-gcp"},
-			wantFound:    true,
+			wantFound:    false,
 			want:         []SecretActivity{},
 		},
 		{
