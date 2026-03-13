@@ -12,9 +12,10 @@ func grantAccessStream(parentFlags *flag.GrantAccess) *naistrix.Command {
 	grantAccessStreamFlags := &flag.GrantAccessStream{GrantAccess: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "stream",
-		Title: "Grant a user's service-user access to a Kafka Stream.",
-		Flags: grantAccessStreamFlags,
+		Name:       "stream",
+		Title:      "Grant a user's service-user access to a Kafka Stream.",
+		Flags:      grantAccessStreamFlags,
+		Deprecated: naistrix.DeprecatedWithoutReplacement(),
 		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "stream"},

@@ -13,9 +13,10 @@ func grantAccessTopic(parentFlags *flag.GrantAccess) *naistrix.Command {
 	grantAccessTopicFlags := &flag.GrantAccessTopic{GrantAccess: parentFlags, Access: "read"}
 
 	return &naistrix.Command{
-		Name:  "topic",
-		Title: "Grant a user's service-user access to a Kafka Topic.",
-		Flags: grantAccessTopicFlags,
+		Name:       "topic",
+		Title:      "Grant a user's service-user access to a Kafka Topic.",
+		Flags:      grantAccessTopicFlags,
+		Deprecated: naistrix.DeprecatedWithReplacement([]string{"kafka", "credentials"}),
 		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "topic"},

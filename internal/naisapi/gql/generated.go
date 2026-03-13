@@ -291,6 +291,23 @@ func (v *AddTeamMemberResponse) GetAddTeamMember() AddTeamMemberAddTeamMemberAdd
 	return v.AddTeamMember
 }
 
+// Permission level for OpenSearch and Valkey credentials.
+type AivenPermission string
+
+const (
+	AivenPermissionRead      AivenPermission = "READ"
+	AivenPermissionWrite     AivenPermission = "WRITE"
+	AivenPermissionReadwrite AivenPermission = "READWRITE"
+	AivenPermissionAdmin     AivenPermission = "ADMIN"
+)
+
+var AllAivenPermission = []AivenPermission{
+	AivenPermissionRead,
+	AivenPermissionWrite,
+	AivenPermissionReadwrite,
+	AivenPermissionAdmin,
+}
+
 // ApplicationEnvironmentsResponse is returned by ApplicationEnvironments on success.
 type ApplicationEnvironmentsResponse struct {
 	// Get a team by its slug.
@@ -453,6 +470,67 @@ var AllApplicationState = []ApplicationState{
 	ApplicationStateUnknown,
 }
 
+// CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload includes the requested fields of the GraphQL type CreateKafkaCredentialsPayload.
+type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload struct {
+	// The generated credentials.
+	Credentials CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials `json:"credentials"`
+}
+
+// GetCredentials returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload.Credentials, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload) GetCredentials() CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials {
+	return v.Credentials
+}
+
+// CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials includes the requested fields of the GraphQL type KafkaCredentials.
+type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials struct {
+	// Client certificate in PEM format.
+	AccessCert string `json:"accessCert"`
+	// Client private key in PEM format.
+	AccessKey string `json:"accessKey"`
+	// CA certificate in PEM format.
+	CaCert string `json:"caCert"`
+	// Comma-separated list of broker addresses.
+	Brokers string `json:"brokers"`
+	// Schema registry URL.
+	SchemaRegistry string `json:"schemaRegistry"`
+}
+
+// GetAccessCert returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.AccessCert, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetAccessCert() string {
+	return v.AccessCert
+}
+
+// GetAccessKey returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.AccessKey, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetAccessKey() string {
+	return v.AccessKey
+}
+
+// GetCaCert returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.CaCert, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetCaCert() string {
+	return v.CaCert
+}
+
+// GetBrokers returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.Brokers, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetBrokers() string {
+	return v.Brokers
+}
+
+// GetSchemaRegistry returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.SchemaRegistry, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetSchemaRegistry() string {
+	return v.SchemaRegistry
+}
+
+// CreateKafkaCredentialsResponse is returned by CreateKafkaCredentials on success.
+type CreateKafkaCredentialsResponse struct {
+	// Create temporary credentials for Kafka.
+	CreateKafkaCredentials CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload `json:"createKafkaCredentials"`
+}
+
+// GetCreateKafkaCredentials returns CreateKafkaCredentialsResponse.CreateKafkaCredentials, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsResponse) GetCreateKafkaCredentials() CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload {
+	return v.CreateKafkaCredentials
+}
+
 // CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload includes the requested fields of the GraphQL type CreateOpenSearchPayload.
 type CreateOpenSearchCreateOpenSearchCreateOpenSearchPayload struct {
 	// OpenSearch instance that was created.
@@ -478,6 +556,67 @@ func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetI
 // GetName returns CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch.Name, and is useful for accessing the field via an interface.
 func (v *CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch) GetName() string {
 	return v.Name
+}
+
+// CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload includes the requested fields of the GraphQL type CreateOpenSearchCredentialsPayload.
+type CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload struct {
+	// The generated credentials.
+	Credentials CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials `json:"credentials"`
+}
+
+// GetCredentials returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload.Credentials, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload) GetCredentials() CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials {
+	return v.Credentials
+}
+
+// CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials includes the requested fields of the GraphQL type OpenSearchCredentials.
+type CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials struct {
+	// Username for the OpenSearch instance.
+	Username string `json:"username"`
+	// Password for the OpenSearch instance.
+	Password string `json:"password"`
+	// Hostname of the OpenSearch instance.
+	Host string `json:"host"`
+	// Port of the OpenSearch instance.
+	Port int `json:"port"`
+	// Full connection URI for the OpenSearch instance.
+	Uri string `json:"uri"`
+}
+
+// GetUsername returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials.Username, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials) GetUsername() string {
+	return v.Username
+}
+
+// GetPassword returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials.Password, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials) GetPassword() string {
+	return v.Password
+}
+
+// GetHost returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials.Host, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials) GetHost() string {
+	return v.Host
+}
+
+// GetPort returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials.Port, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials) GetPort() int {
+	return v.Port
+}
+
+// GetUri returns CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials.Uri, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials) GetUri() string {
+	return v.Uri
+}
+
+// CreateOpenSearchCredentialsResponse is returned by CreateOpenSearchCredentials on success.
+type CreateOpenSearchCredentialsResponse struct {
+	// Create temporary credentials for an OpenSearch instance.
+	CreateOpenSearchCredentials CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload `json:"createOpenSearchCredentials"`
+}
+
+// GetCreateOpenSearchCredentials returns CreateOpenSearchCredentialsResponse.CreateOpenSearchCredentials, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchCredentialsResponse) GetCreateOpenSearchCredentials() CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayload {
+	return v.CreateOpenSearchCredentials
 }
 
 // CreateOpenSearchResponse is returned by CreateOpenSearch on success.
@@ -552,6 +691,67 @@ func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetId() string { ret
 
 // GetName returns CreateValkeyCreateValkeyCreateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
 func (v *CreateValkeyCreateValkeyCreateValkeyPayloadValkey) GetName() string { return v.Name }
+
+// CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload includes the requested fields of the GraphQL type CreateValkeyCredentialsPayload.
+type CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload struct {
+	// The generated credentials.
+	Credentials CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials `json:"credentials"`
+}
+
+// GetCredentials returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload.Credentials, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload) GetCredentials() CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials {
+	return v.Credentials
+}
+
+// CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials includes the requested fields of the GraphQL type ValkeyCredentials.
+type CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials struct {
+	// Username for the Valkey instance.
+	Username string `json:"username"`
+	// Password for the Valkey instance.
+	Password string `json:"password"`
+	// Hostname of the Valkey instance.
+	Host string `json:"host"`
+	// Port of the Valkey instance.
+	Port int `json:"port"`
+	// Full connection URI for the Valkey instance.
+	Uri string `json:"uri"`
+}
+
+// GetUsername returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials.Username, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials) GetUsername() string {
+	return v.Username
+}
+
+// GetPassword returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials.Password, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials) GetPassword() string {
+	return v.Password
+}
+
+// GetHost returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials.Host, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials) GetHost() string {
+	return v.Host
+}
+
+// GetPort returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials.Port, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials) GetPort() int {
+	return v.Port
+}
+
+// GetUri returns CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials.Uri, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials) GetUri() string {
+	return v.Uri
+}
+
+// CreateValkeyCredentialsResponse is returned by CreateValkeyCredentials on success.
+type CreateValkeyCredentialsResponse struct {
+	// Create temporary credentials for a Valkey instance.
+	CreateValkeyCredentials CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload `json:"createValkeyCredentials"`
+}
+
+// GetCreateValkeyCredentials returns CreateValkeyCredentialsResponse.CreateValkeyCredentials, and is useful for accessing the field via an interface.
+func (v *CreateValkeyCredentialsResponse) GetCreateValkeyCredentials() CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayload {
+	return v.CreateValkeyCredentials
+}
 
 // CreateValkeyResponse is returned by CreateValkey on success.
 type CreateValkeyResponse struct {
@@ -23347,6 +23547,46 @@ func (v *__ApplicationEnvironmentsInput) GetTeam() string { return v.Team }
 // GetFilter returns __ApplicationEnvironmentsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ApplicationEnvironmentsInput) GetFilter() TeamApplicationsFilter { return v.Filter }
 
+// __CreateKafkaCredentialsInput is used internally by genqlient
+type __CreateKafkaCredentialsInput struct {
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+	Ttl             string `json:"ttl"`
+}
+
+// GetTeamSlug returns __CreateKafkaCredentialsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateKafkaCredentialsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __CreateKafkaCredentialsInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateKafkaCredentialsInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTtl returns __CreateKafkaCredentialsInput.Ttl, and is useful for accessing the field via an interface.
+func (v *__CreateKafkaCredentialsInput) GetTtl() string { return v.Ttl }
+
+// __CreateOpenSearchCredentialsInput is used internally by genqlient
+type __CreateOpenSearchCredentialsInput struct {
+	TeamSlug        string          `json:"teamSlug"`
+	EnvironmentName string          `json:"environmentName"`
+	InstanceName    string          `json:"instanceName"`
+	Permission      AivenPermission `json:"permission"`
+	Ttl             string          `json:"ttl"`
+}
+
+// GetTeamSlug returns __CreateOpenSearchCredentialsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchCredentialsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __CreateOpenSearchCredentialsInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchCredentialsInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetInstanceName returns __CreateOpenSearchCredentialsInput.InstanceName, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchCredentialsInput) GetInstanceName() string { return v.InstanceName }
+
+// GetPermission returns __CreateOpenSearchCredentialsInput.Permission, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchCredentialsInput) GetPermission() AivenPermission { return v.Permission }
+
+// GetTtl returns __CreateOpenSearchCredentialsInput.Ttl, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchCredentialsInput) GetTtl() string { return v.Ttl }
+
 // __CreateOpenSearchInput is used internally by genqlient
 type __CreateOpenSearchInput struct {
 	Name            string                 `json:"name,omitempty"`
@@ -23394,6 +23634,30 @@ func (v *__CreateSecretInput) GetEnvironment() string { return v.Environment }
 
 // GetTeam returns __CreateSecretInput.Team, and is useful for accessing the field via an interface.
 func (v *__CreateSecretInput) GetTeam() string { return v.Team }
+
+// __CreateValkeyCredentialsInput is used internally by genqlient
+type __CreateValkeyCredentialsInput struct {
+	TeamSlug        string          `json:"teamSlug"`
+	EnvironmentName string          `json:"environmentName"`
+	InstanceName    string          `json:"instanceName"`
+	Permission      AivenPermission `json:"permission"`
+	Ttl             string          `json:"ttl"`
+}
+
+// GetTeamSlug returns __CreateValkeyCredentialsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyCredentialsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __CreateValkeyCredentialsInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyCredentialsInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetInstanceName returns __CreateValkeyCredentialsInput.InstanceName, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyCredentialsInput) GetInstanceName() string { return v.InstanceName }
+
+// GetPermission returns __CreateValkeyCredentialsInput.Permission, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyCredentialsInput) GetPermission() AivenPermission { return v.Permission }
+
+// GetTtl returns __CreateValkeyCredentialsInput.Ttl, and is useful for accessing the field via an interface.
+func (v *__CreateValkeyCredentialsInput) GetTtl() string { return v.Ttl }
 
 // __CreateValkeyInput is used internally by genqlient
 type __CreateValkeyInput struct {
@@ -24155,6 +24419,50 @@ func ApplicationEnvironments(
 	return data_, err_
 }
 
+// The mutation executed by CreateKafkaCredentials.
+const CreateKafkaCredentials_Operation = `
+mutation CreateKafkaCredentials ($teamSlug: Slug!, $environmentName: String!, $ttl: String!) {
+	createKafkaCredentials(input: {teamSlug:$teamSlug,environmentName:$environmentName,ttl:$ttl}) {
+		credentials {
+			accessCert
+			accessKey
+			caCert
+			brokers
+			schemaRegistry
+		}
+	}
+}
+`
+
+func CreateKafkaCredentials(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+	environmentName string,
+	ttl string,
+) (data_ *CreateKafkaCredentialsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateKafkaCredentials",
+		Query:  CreateKafkaCredentials_Operation,
+		Variables: &__CreateKafkaCredentialsInput{
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			Ttl:             ttl,
+		},
+	}
+
+	data_ = &CreateKafkaCredentialsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by CreateOpenSearch.
 const CreateOpenSearch_Operation = `
 mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: OpenSearchMemory!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion!, $storageGB: Int!) {
@@ -24193,6 +24501,54 @@ func CreateOpenSearch(
 	}
 
 	data_ = &CreateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateOpenSearchCredentials.
+const CreateOpenSearchCredentials_Operation = `
+mutation CreateOpenSearchCredentials ($teamSlug: Slug!, $environmentName: String!, $instanceName: String!, $permission: AivenPermission!, $ttl: String!) {
+	createOpenSearchCredentials(input: {teamSlug:$teamSlug,environmentName:$environmentName,instanceName:$instanceName,permission:$permission,ttl:$ttl}) {
+		credentials {
+			username
+			password
+			host
+			port
+			uri
+		}
+	}
+}
+`
+
+func CreateOpenSearchCredentials(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+	environmentName string,
+	instanceName string,
+	permission AivenPermission,
+	ttl string,
+) (data_ *CreateOpenSearchCredentialsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateOpenSearchCredentials",
+		Query:  CreateOpenSearchCredentials_Operation,
+		Variables: &__CreateOpenSearchCredentialsInput{
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			InstanceName:    instanceName,
+			Permission:      permission,
+			Ttl:             ttl,
+		},
+	}
+
+	data_ = &CreateOpenSearchCredentialsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -24281,6 +24637,54 @@ func CreateValkey(
 	}
 
 	data_ = &CreateValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateValkeyCredentials.
+const CreateValkeyCredentials_Operation = `
+mutation CreateValkeyCredentials ($teamSlug: Slug!, $environmentName: String!, $instanceName: String!, $permission: AivenPermission!, $ttl: String!) {
+	createValkeyCredentials(input: {teamSlug:$teamSlug,environmentName:$environmentName,instanceName:$instanceName,permission:$permission,ttl:$ttl}) {
+		credentials {
+			username
+			password
+			host
+			port
+			uri
+		}
+	}
+}
+`
+
+func CreateValkeyCredentials(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+	environmentName string,
+	instanceName string,
+	permission AivenPermission,
+	ttl string,
+) (data_ *CreateValkeyCredentialsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateValkeyCredentials",
+		Query:  CreateValkeyCredentials_Operation,
+		Variables: &__CreateValkeyCredentialsInput{
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			InstanceName:    instanceName,
+			Permission:      permission,
+			Ttl:             ttl,
+		},
+	}
+
+	data_ = &CreateValkeyCredentialsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
