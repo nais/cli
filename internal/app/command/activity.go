@@ -2,12 +2,10 @@ package command
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
+	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
-	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -27,7 +25,7 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			activityTypes, err := parseActivityTypes(flags.ActivityType)
+			activityTypes, err := activityutil.ParseActivityTypes(flags.ActivityType)
 			if err != nil {
 				return err
 			}
@@ -65,23 +63,4 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 			return nil, ""
 		},
 	}
-}
-
-func parseActivityTypes(in []string) ([]gql.ActivityLogActivityType, error) {
-	ret := make([]gql.ActivityLogActivityType, 0, len(in))
-	allowed := make(map[string]gql.ActivityLogActivityType, len(gql.AllActivityLogActivityType))
-	for _, v := range gql.AllActivityLogActivityType {
-		allowed[string(v)] = v
-	}
-
-	for _, t := range in {
-		normalized := strings.ToUpper(strings.TrimSpace(t))
-		v, ok := allowed[normalized]
-		if !ok {
-			return nil, fmt.Errorf("invalid activity type %q", t)
-		}
-		ret = append(ret, v)
-	}
-
-	return ret, nil
 }
