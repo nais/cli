@@ -20,6 +20,9 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 		Flags:       f,
 		Args:        defaultArgs,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
+				return err
+			}
 			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
 				return err
 			}
@@ -27,7 +30,7 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteSecretNames(ctx, parentFlags)
+				return autoCompleteSecretNames(ctx, f.Team, string(f.Environment), true)
 			}
 			return nil, ""
 		},
