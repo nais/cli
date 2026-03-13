@@ -1,5 +1,6 @@
 schema: schema.graphql
 operations:
+  - internal/activity/**/*.go
   - internal/apply/**/*.go
   - internal/valkey/**/*.go
   - internal/opensearch/**/*.go

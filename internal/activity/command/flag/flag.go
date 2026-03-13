@@ -1,0 +1,47 @@
+package flag
+
+import (
+	"context"
+
+	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
+)
+
+type Activity struct {
+	*flags.GlobalFlags
+}
+
+type Output string
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
+}
+
+type List struct {
+	*Activity
+	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
+	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
+	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
+	ResourceType ResourceTypes `name:"resource-type" usage:"Filter by resource type. Can be repeated."`
+}
+
+type ActivityTypes []string
+
+func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return toStrings(gql.AllActivityLogActivityType), "Available activity types"
+}
+
+type ResourceTypes []string
+
+func (r *ResourceTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return toStrings(gql.AllActivityLogEntryResourceType), "Available resource types"
+}
+
+func toStrings[T ~string](in []T) []string {
+	ret := make([]string, len(in))
+	for i, s := range in {
+		ret[i] = string(s)
+	}
+	return ret
+}

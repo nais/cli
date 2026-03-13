@@ -7,6 +7,7 @@ import (
 	"os"
 	"slices"
 
+	activity "github.com/nais/cli/internal/activity/command"
 	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
@@ -62,6 +63,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 
 	cmds := []*naistrix.Command{
 		auth.Auth(globalFlags),
+		activity.Activity(globalFlags),
 		appCommand.App(globalFlags),
 		jobCommand.Job(globalFlags),
 		kafkaCommand.Kafka(globalFlags),
