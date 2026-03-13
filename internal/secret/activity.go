@@ -97,11 +97,12 @@ func buildSecretActivity(resources []secretActivityResource, name string, enviro
 			continue
 		}
 
-		found = true
 		defaultEnv := s.DefaultEnvName
 		if len(environments) > 0 && !slices.Contains(environments, defaultEnv) {
 			continue
 		}
+
+		found = true
 
 		for _, entry := range s.Entries {
 			env := defaultEnv
