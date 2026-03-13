@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
@@ -18,10 +19,8 @@ func resolveSecretEnvironment(ctx context.Context, team, name, provided string) 
 	}
 
 	if provided != "" {
-		for _, env := range envs {
-			if env == provided {
-				return provided, nil
-			}
+		if slices.Contains(envs, provided) {
+			return provided, nil
 		}
 
 		if len(envs) == 0 {
