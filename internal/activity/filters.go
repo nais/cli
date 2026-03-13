@@ -15,6 +15,14 @@ func ParseResourceTypes(in []string) ([]gql.ActivityLogEntryResourceType, error)
 	return parseEnum[gql.ActivityLogEntryResourceType](in, gql.AllActivityLogEntryResourceType, "resource type")
 }
 
+func EnumStrings[T ~string](in []T) []string {
+	ret := make([]string, len(in))
+	for i, s := range in {
+		ret[i] = string(s)
+	}
+	return ret
+}
+
 func parseEnum[T ~string](in []string, allowedValues []T, label string) ([]T, error) {
 	ret := make([]T, 0, len(in))
 	allowed := make(map[string]T, len(allowedValues))

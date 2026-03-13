@@ -3,6 +3,7 @@ package flag
 import (
 	"context"
 
+	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
@@ -29,19 +30,11 @@ type List struct {
 type ActivityTypes []string
 
 func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	return toStrings(gql.AllActivityLogActivityType), "Available activity types"
+	return activityutil.EnumStrings(gql.AllActivityLogActivityType), "Available activity types"
 }
 
 type ResourceTypes []string
 
 func (r *ResourceTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	return toStrings(gql.AllActivityLogEntryResourceType), "Available resource types"
-}
-
-func toStrings[T ~string](in []T) []string {
-	ret := make([]string, len(in))
-	for i, s := range in {
-		ret[i] = string(s)
-	}
-	return ret
+	return activityutil.EnumStrings(gql.AllActivityLogEntryResourceType), "Available resource types"
 }
