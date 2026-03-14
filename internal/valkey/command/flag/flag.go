@@ -161,3 +161,21 @@ func (m *MaxMemoryPolicy) IsValid() bool {
 	}
 	return false
 }
+
+type Credentials struct {
+	*Valkey
+	Permission Permission `name:"permission" short:"p" usage:"Permission level for the credentials (READ, WRITE, READWRITE, ADMIN)."`
+	TTL        string     `name:"ttl" usage:"Time-to-live for the credentials (e.g. '1d', '7d'). Maximum 30 days."`
+}
+
+type Permission string
+
+var _ naistrix.FlagAutoCompleter = (*Permission)(nil)
+
+func (p *Permission) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	perms := make([]string, 0, len(gql.AllAivenPermission))
+	for _, perm := range gql.AllAivenPermission {
+		perms = append(perms, string(perm))
+	}
+	return perms, "Available permission levels."
+}

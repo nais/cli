@@ -24,6 +24,7 @@ func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
 		},
 		SubCommands: []*naistrix.Command{
 			create(flags),
+			credentials(flags),
 			delete(flags),
 			get(flags),
 			list(flags),
