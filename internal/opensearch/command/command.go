@@ -6,8 +6,8 @@ import (
 	"os"
 	"sort"
 
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/cliflags"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
@@ -15,8 +15,8 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func OpenSearch(parentFlags *alpha.Alpha) *naistrix.Command {
-	flags := &flag.OpenSearch{Alpha: parentFlags}
+func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
+	flags := &flag.OpenSearch{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "opensearch",
 		Aliases:     []string{"opensearches", "os"},

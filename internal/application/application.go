@@ -23,9 +23,11 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisdevice "github.com/nais/cli/internal/naisdevice/command"
+	opensearchCommand "github.com/nais/cli/internal/opensearch/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	secrets "github.com/nais/cli/internal/secret/command"
 	validate "github.com/nais/cli/internal/validate/command"
+	valkeyCommand "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/cli/internal/version"
 	vulnerabilities "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
@@ -66,6 +68,8 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		activity.Activity(globalFlags),
 		appCommand.App(globalFlags),
 		jobCommand.Job(globalFlags),
+		valkeyCommand.Valkey(globalFlags),
+		opensearchCommand.OpenSearch(globalFlags),
 		kafkaCommand.Kafka(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
