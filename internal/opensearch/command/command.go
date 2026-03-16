@@ -59,11 +59,12 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 		return nil, "Please provide team to auto-complete OpenSearch instance names. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
+	if environmentFlagOccurrencesFromCLIArgs() > 1 {
+		return nil, "Please specify exactly one environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
+	}
+
 	if environment == "" {
 		envs := environmentValuesFromCLIArgs()
-		if len(envs) > 1 {
-			return nil, "Please specify exactly one environment to auto-complete OpenSearch instance names. '--environment <environment>' flag."
-		}
 		if len(envs) == 1 {
 			environment = envs[0]
 		}
@@ -101,6 +102,10 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 
 func environmentValuesFromCLIArgs() []string {
 	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
+}
+
+func environmentFlagOccurrencesFromCLIArgs() int {
+	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {
