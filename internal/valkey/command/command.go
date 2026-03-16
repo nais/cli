@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"sort"
 
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func Valkey(parentFlags *alpha.Alpha) *naistrix.Command {
-	flags := &flag.Valkey{Alpha: parentFlags}
+func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
+	flags := &flag.Valkey{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "valkey",
 		Aliases:     []string{"valkeys"},

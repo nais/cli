@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
@@ -12,7 +12,7 @@ import (
 )
 
 type OpenSearch struct {
-	*alpha.Alpha
+	*flags.GlobalFlags
 	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
