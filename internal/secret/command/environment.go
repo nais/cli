@@ -22,7 +22,6 @@ func resolveSecretEnvironment(ctx context.Context, team, name, provided string) 
 }
 
 func selectSecretEnvironment(team, name, provided string, envs []string) (string, error) {
-
 	if provided != "" {
 		if slices.Contains(envs, provided) {
 			return provided, nil

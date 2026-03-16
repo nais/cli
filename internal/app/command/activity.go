@@ -60,9 +60,6 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 				if len(environments) == 0 {
 					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 				}
-				if len(environments) == 0 {
-					return nil, "Please provide environment to auto-complete application names. '--environment <environment>' flag."
-				}
 
 				apps, err := app.GetApplicationNames(ctx, flags.Team, environments)
 				if err != nil {
