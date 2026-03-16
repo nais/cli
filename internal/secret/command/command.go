@@ -58,6 +58,17 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 }
 
 func autoCompleteSecretNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
+	if countEnvironmentFlagsInCLIArgs() > 1 {
+		return nil, "Only one --environment/-e flag may be provided."
+	}
+
+	if environment == "" {
+		envs := environmentValuesFromCLIArgs()
+		if len(envs) == 1 {
+			environment = envs[0]
+		}
+	}
+
 	environments := []string{}
 	if environment != "" {
 		environments = append(environments, environment)
