@@ -3,6 +3,8 @@ package command
 import (
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -56,9 +58,17 @@ func TestWriteCertFiles(t *testing.T) {
 }
 
 func TestWindowsify(t *testing.T) {
-	// On non-Windows, windowsify should be a no-op
 	input := "/tmp/nais-kafka-123/kafka-certificate.crt"
 	got := windowsify(input)
+
+	if runtime.GOOS == "windows" {
+		want := strings.ReplaceAll(input, "/", "\\")
+		if got != want {
+			t.Errorf("windowsify(%q) = %q, want %q", input, got, want)
+		}
+		return
+	}
+
 	if got != input {
 		t.Errorf("windowsify(%q) = %q, want %q", input, got, input)
 	}

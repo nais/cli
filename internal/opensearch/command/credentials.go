@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
@@ -31,6 +32,9 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if flags.Permission == "" {
 				return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
 			}
+			if !isValidAivenPermission(gql.AivenPermission(flags.Permission)) {
+				return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllAivenPermission)
+			}
 			if flags.TTL == "" {
 				return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
 			}
@@ -42,10 +46,15 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 				if err != nil {
 					return nil, "Unable to fetch OpenSearch instances."
 				}
+				environment := string(flags.Environment)
 				var names []string
 				for _, instance := range instances {
+					if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
+						continue
+					}
 					names = append(names, instance.Name)
 				}
+				sort.Strings(names)
 				return names, "Select an OpenSearch instance."
 			}
 			return nil, ""
@@ -77,4 +86,13 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			return nil
 		},
 	}
+}
+
+func isValidAivenPermission(permission gql.AivenPermission) bool {
+	for _, p := range gql.AllAivenPermission {
+		if p == permission {
+			return true
+		}
+	}
+	return false
 }
