@@ -18,6 +18,11 @@ func resolveSecretEnvironment(ctx context.Context, team, name, provided string) 
 		return "", fmt.Errorf("fetching environments for secret %q: %w", name, err)
 	}
 
+	return selectSecretEnvironment(team, name, provided, envs)
+}
+
+func selectSecretEnvironment(team, name, provided string, envs []string) (string, error) {
+
 	if provided != "" {
 		if slices.Contains(envs, provided) {
 			return provided, nil
