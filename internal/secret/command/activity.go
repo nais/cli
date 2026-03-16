@@ -58,7 +58,7 @@ func activity(parentFlags *flag.Secret) *naistrix.Command {
 				if f.Team == "" {
 					return nil, "Please provide team to auto-complete secret names. 'nais config set team <team>', or '--team <team>' flag."
 				}
-				environments := f.Environment
+				environments := []string(f.Environment)
 				if len(environments) == 0 {
 					environments = environmentValuesFromCLIArgs()
 				}
