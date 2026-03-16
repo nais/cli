@@ -26,6 +26,7 @@ func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		},
 		SubCommands: []*naistrix.Command{
 			create(f),
+			credentials(f),
 			delete(f),
 			get(f),
 			list(f),

@@ -16,8 +16,9 @@ func createOpenSearch(parentFlags *flag.Create) *naistrix.Command {
 	createOpenSearchFlags := &flag.CreateOpenSearch{Create: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "opensearch",
-		Title: "Grant a user access to an OpenSearch instance.",
+		Name:       "opensearch",
+		Title:      "Grant a user access to an OpenSearch instance.",
+		Deprecated: naistrix.DeprecatedWithReplacement([]string{"opensearch", "credentials"}),
 		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "namespace"},
