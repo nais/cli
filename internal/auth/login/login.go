@@ -2,11 +2,14 @@ package login
 
 import (
 	"context"
+	"os"
 
 	"github.com/nais/cli/internal/auth/flag"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
+	"golang.org/x/term"
 )
 
 type loginFlags struct {
@@ -36,7 +39,22 @@ func Login(parentFlags *flag.Auth) *naistrix.Command {
 				return naisapi.Login(ctx, out)
 			}
 
-			return gcloud.Login(ctx, out, flags.IsVerbose())
+			if err := gcloud.Login(ctx, out, flags.IsVerbose()); err != nil {
+				return err
+			}
+
+			if term.IsTerminal(int(os.Stdin.Fd())) {
+				pterm.Println()
+				pterm.Println("Many Nais commands require you to be logged in to both Google and Nais.")
+				result, _ := pterm.DefaultInteractiveConfirm.
+					WithDefaultValue(true).
+					Show("Would you like to also log in to Nais?")
+				if result {
+					return naisapi.Login(ctx, out)
+				}
+			}
+
+			return nil
 		},
 	}
 }
