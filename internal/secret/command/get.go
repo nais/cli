@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"github.com/pterm/pterm"
@@ -39,6 +40,11 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if err := validateSingleEnvironmentFlagUsage(); err != nil {
 				return err
+			}
+			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
+				if err := validation.CheckEnvironment(providedEnvironment); err != nil {
+					return err
+				}
 			}
 			if err := validateArgs(args); err != nil {
 				return err
