@@ -18,6 +18,7 @@ func CreateCredentials(ctx context.Context, teamSlug, environmentName, ttl strin
 		    input: { teamSlug: $teamSlug, environmentName: $environmentName, ttl: $ttl }
 		  ) {
 		    credentials {
+		      username
 		      accessCert
 		      accessKey
 		      caCert

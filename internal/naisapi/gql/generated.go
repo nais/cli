@@ -483,6 +483,8 @@ func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPaylo
 
 // CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials includes the requested fields of the GraphQL type KafkaCredentials.
 type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials struct {
+	// Username for the Kafka broker.
+	Username string `json:"username"`
 	// Client certificate in PEM format.
 	AccessCert string `json:"accessCert"`
 	// Client private key in PEM format.
@@ -493,6 +495,11 @@ type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCr
 	Brokers string `json:"brokers"`
 	// Schema registry URL.
 	SchemaRegistry string `json:"schemaRegistry"`
+}
+
+// GetUsername returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.Username, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) GetUsername() string {
+	return v.Username
 }
 
 // GetAccessCert returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials.AccessCert, and is useful for accessing the field via an interface.
@@ -24424,6 +24431,7 @@ const CreateKafkaCredentials_Operation = `
 mutation CreateKafkaCredentials ($teamSlug: Slug!, $environmentName: String!, $ttl: String!) {
 	createKafkaCredentials(input: {teamSlug:$teamSlug,environmentName:$environmentName,ttl:$ttl}) {
 		credentials {
+			username
 			accessCert
 			accessKey
 			caCert

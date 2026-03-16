@@ -128,6 +128,7 @@ func writeCertFiles(creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreat
 
 func writeKafkaEnv(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) error {
 	out.Println(fmt.Sprintf("KAFKA_BROKERS=%q", creds.Brokers))
+	out.Println(fmt.Sprintf("KAFKA_USERNAME=%q", creds.Username))
 	out.Println(fmt.Sprintf("KAFKA_SCHEMA_REGISTRY=%q", creds.SchemaRegistry))
 	out.Println(fmt.Sprintf("KAFKA_CERTIFICATE=%q", creds.AccessCert))
 	out.Println(fmt.Sprintf("KAFKA_PRIVATE_KEY=%q", creds.AccessKey))
@@ -147,12 +148,17 @@ func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	config.WriteString(fmt.Sprintf("# nais %s\n# kcat -F %s -t your.topic\n",
 		time.Now().Truncate(time.Minute), configFile))
 	config.WriteString(fmt.Sprintf("bootstrap.servers=%s\n", creds.Brokers))
+	config.WriteString(fmt.Sprintf("# username=%s\n", creds.Username))
 	config.WriteString("security.protocol=ssl\n")
 	config.WriteString(fmt.Sprintf("ssl.certificate.location=%s\n", files.cert))
 	config.WriteString(fmt.Sprintf("ssl.key.location=%s\n", files.key))
 	config.WriteString(fmt.Sprintf("ssl.ca.location=%s\n", files.ca))
 
 	if err := os.WriteFile(configFile, []byte(config.String()), 0o600); err != nil {
+		dir := filepath.Dir(files.cert)
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			return fmt.Errorf("writing kcat config: %w (failed cleaning temp directory: %v)", err, removeErr)
+		}
 		return fmt.Errorf("writing kcat config: %w", err)
 	}
 
@@ -173,6 +179,7 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	properties.WriteString(fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)))
 	properties.WriteString(fmt.Sprintf("# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s\n",
 		creds.Brokers, configFile))
+	properties.WriteString(fmt.Sprintf("# username=%s\n", creds.Username))
 	properties.WriteString("security.protocol=SSL\n")
 	properties.WriteString("ssl.protocol=TLS\n")
 	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", filepath.ToSlash(files.ca)))
@@ -181,6 +188,10 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	properties.WriteString("ssl.keystore.type=PEM\n")
 
 	if err := os.WriteFile(configFile, []byte(properties.String()), 0o600); err != nil {
+		dir := filepath.Dir(files.cert)
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			return fmt.Errorf("writing Java config: %w (failed cleaning temp directory: %v)", err, removeErr)
+		}
 		return fmt.Errorf("writing Java config: %w", err)
 	}
 
