@@ -109,3 +109,10 @@ func environmentValuesFromCLIArgs() []string {
 func environmentFlagOccurrencesFromCLIArgs() int {
 	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
+
+func validateSingleEnvironmentFlagUsage() error {
+	if environmentFlagOccurrencesFromCLIArgs() > 1 {
+		return fmt.Errorf("only one --environment/-e flag may be provided")
+	}
+	return nil
+}

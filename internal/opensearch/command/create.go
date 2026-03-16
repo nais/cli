@@ -23,6 +23,9 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 			{Name: "name"},
 		},
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
+				return err
+			}
 			if err := flags.Validate(); err != nil {
 				return err
 			}
