@@ -45,7 +45,7 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 			if args.Len() != 0 {
 				return nil, ""
 			}
-			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), false)
+			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
 		},
 		Examples: []naistrix.Example{
 			{

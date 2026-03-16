@@ -47,7 +47,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if args.Len() != 0 {
 				return nil, ""
 			}
-			return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), false)
+			return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
 		},
 		Examples: []naistrix.Example{
 			{
