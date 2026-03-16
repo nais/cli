@@ -3,7 +3,6 @@ package command
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -55,22 +54,5 @@ func TestWriteCertFiles(t *testing.T) {
 				t.Errorf("permissions = %o, want 0600", perm)
 			}
 		})
-	}
-}
-
-func TestWindowsify(t *testing.T) {
-	input := "/tmp/nais-kafka-123/kafka-certificate.crt"
-	got := windowsify(input)
-
-	if runtime.GOOS == "windows" {
-		want := strings.ReplaceAll(input, "/", "\\")
-		if got != want {
-			t.Errorf("windowsify(%q) = %q, want %q", input, got, want)
-		}
-		return
-	}
-
-	if got != input {
-		t.Errorf("windowsify(%q) = %q, want %q", input, got, input)
 	}
 }

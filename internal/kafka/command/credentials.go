@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/kafka/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -25,6 +25,9 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if len(flags.Environment) != 1 {
 				return fmt.Errorf("exactly one environment is required, set using --environment/-e flag")
+			}
+			if err := validation.CheckEnvironment(flags.Environment[0]); err != nil {
+				return err
 			}
 			if flags.TTL == "" {
 				return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
@@ -172,9 +175,9 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 		creds.Brokers, configFile))
 	properties.WriteString("security.protocol=SSL\n")
 	properties.WriteString("ssl.protocol=TLS\n")
-	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", windowsify(files.ca)))
+	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", filepath.ToSlash(files.ca)))
 	properties.WriteString("ssl.truststore.type=PEM\n")
-	properties.WriteString(fmt.Sprintf("ssl.keystore.location=%s\n", windowsify(files.keystore)))
+	properties.WriteString(fmt.Sprintf("ssl.keystore.location=%s\n", filepath.ToSlash(files.keystore)))
 	properties.WriteString("ssl.keystore.type=PEM\n")
 
 	if err := os.WriteFile(configFile, []byte(properties.String()), 0o600); err != nil {
@@ -184,11 +187,4 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	out.Println(fmt.Sprintf("Kafka Java configuration written to: %s", filepath.Dir(files.cert)))
 	out.Println(fmt.Sprintf("Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s", creds.Brokers, configFile))
 	return nil
-}
-
-func windowsify(path string) string {
-	if runtime.GOOS == "windows" {
-		return strings.ReplaceAll(path, "/", "\\")
-	}
-	return path
 }
