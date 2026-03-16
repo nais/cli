@@ -81,7 +81,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 
 // kafkaCertFiles holds the paths to the TLS certificate files written to disk.
 type kafkaCertFiles struct {
-	cert, key, ca string
+	cert, key, ca, keystore string
 }
 
 // writeCertFiles writes the Kafka TLS credentials to a temporary directory
@@ -92,10 +92,18 @@ func writeCertFiles(creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreat
 		return kafkaCertFiles{}, fmt.Errorf("creating temp directory: %w", err)
 	}
 
+	cleanupDir := func(cause error) (kafkaCertFiles, error) {
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			return kafkaCertFiles{}, fmt.Errorf("%w (failed cleaning temp directory: %v)", cause, removeErr)
+		}
+		return kafkaCertFiles{}, cause
+	}
+
 	files := kafkaCertFiles{
-		cert: filepath.Join(dir, "kafka-certificate.crt"),
-		key:  filepath.Join(dir, "kafka-private-key.pem"),
-		ca:   filepath.Join(dir, "kafka-ca.pem"),
+		cert:     filepath.Join(dir, "kafka-certificate.crt"),
+		key:      filepath.Join(dir, "kafka-private-key.pem"),
+		ca:       filepath.Join(dir, "kafka-ca.pem"),
+		keystore: filepath.Join(dir, "kafka-keystore.pem"),
 	}
 
 	for _, f := range []struct {
@@ -105,9 +113,10 @@ func writeCertFiles(creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreat
 		{files.cert, creds.AccessCert},
 		{files.key, creds.AccessKey},
 		{files.ca, creds.CaCert},
+		{files.keystore, strings.TrimSpace(creds.AccessCert) + "\n" + strings.TrimSpace(creds.AccessKey) + "\n"},
 	} {
 		if err := os.WriteFile(f.path, []byte(f.content), 0o600); err != nil {
-			return kafkaCertFiles{}, fmt.Errorf("writing %s: %w", filepath.Base(f.path), err)
+			return cleanupDir(fmt.Errorf("writing %s: %w", filepath.Base(f.path), err))
 		}
 	}
 
@@ -165,9 +174,8 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	properties.WriteString("ssl.protocol=TLS\n")
 	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", windowsify(files.ca)))
 	properties.WriteString("ssl.truststore.type=PEM\n")
-	properties.WriteString(fmt.Sprintf("ssl.keystore.location=%s\n", windowsify(files.cert)))
+	properties.WriteString(fmt.Sprintf("ssl.keystore.location=%s\n", windowsify(files.keystore)))
 	properties.WriteString("ssl.keystore.type=PEM\n")
-	properties.WriteString(fmt.Sprintf("ssl.key.location=%s\n", windowsify(files.key)))
 
 	if err := os.WriteFile(configFile, []byte(properties.String()), 0o600); err != nil {
 		return fmt.Errorf("writing Java config: %w", err)

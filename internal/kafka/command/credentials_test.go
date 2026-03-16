@@ -36,6 +36,7 @@ func TestWriteCertFiles(t *testing.T) {
 		{"cert", files.cert, creds.AccessCert},
 		{"key", files.key, creds.AccessKey},
 		{"ca", files.ca, creds.CaCert},
+		{"keystore", files.keystore, strings.TrimSpace(creds.AccessCert) + "\n" + strings.TrimSpace(creds.AccessKey) + "\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := os.ReadFile(tc.path)

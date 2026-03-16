@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"sort"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
@@ -22,6 +21,9 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 		Flags:       flags,
 		Args:        defaultArgs,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
+				return err
+			}
 			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
 				return err
 			}
@@ -40,23 +42,10 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 			return nil
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				instances, err := valkey.GetAll(ctx, flags.Team)
-				if err != nil {
-					return nil, "Unable to fetch Valkey instances."
-				}
-				environment := string(flags.Environment)
-				var names []string
-				for _, instance := range instances {
-					if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
-						continue
-					}
-					names = append(names, instance.Name)
-				}
-				sort.Strings(names)
-				return names, "Select a Valkey instance."
+			if args.Len() != 0 {
+				return nil, ""
 			}
-			return nil, ""
+			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), false)
 		},
 		Examples: []naistrix.Example{
 			{
