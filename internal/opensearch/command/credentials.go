@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -89,10 +90,5 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 }
 
 func isValidAivenPermission(permission gql.AivenPermission) bool {
-	for _, p := range gql.AllAivenPermission {
-		if p == permission {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(gql.AllAivenPermission, permission)
 }
