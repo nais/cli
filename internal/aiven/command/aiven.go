@@ -15,7 +15,8 @@ func Aiven(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	}
 	return &naistrix.Command{
 		Name:        "aiven",
-		Title:       "Manage Aiven services. (Deprecated: use 'nais opensearch credentials', 'nais valkey credentials', or 'nais kafka credentials' instead)",
+		Title:       "Manage Aiven services.",
+		Deprecated:  naistrix.DeprecatedWithoutReplacement(),
 		StickyFlags: aivenFlags,
 		SubCommands: []*naistrix.Command{
 			create(aivenFlags),
