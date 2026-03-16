@@ -15,21 +15,21 @@ import (
 )
 
 func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &flag.Valkey{GlobalFlags: parentFlags}
+	f := &flag.Valkey{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "valkey",
 		Aliases:     []string{"valkeys"},
 		Title:       "Manage Valkey instances.",
-		StickyFlags: flags,
+		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
+			return validation.CheckTeam(f.Team)
 		},
 		SubCommands: []*naistrix.Command{
-			create(flags),
-			delete(flags),
-			get(flags),
-			list(flags),
-			updateValkey(flags),
+			create(f),
+			delete(f),
+			get(f),
+			list(f),
+			updateValkey(f),
 		},
 	}
 }

@@ -16,21 +16,21 @@ import (
 )
 
 func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	flags := &flag.OpenSearch{GlobalFlags: parentFlags}
+	f := &flag.OpenSearch{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "opensearch",
 		Aliases:     []string{"opensearches", "os"},
 		Title:       "Manage OpenSearch instances.",
-		StickyFlags: flags,
+		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
+			return validation.CheckTeam(f.Team)
 		},
 		SubCommands: []*naistrix.Command{
-			create(flags),
-			delete(flags),
-			get(flags),
-			list(flags),
-			update(flags),
+			create(f),
+			delete(f),
+			get(f),
+			list(f),
+			update(f),
 		},
 	}
 }

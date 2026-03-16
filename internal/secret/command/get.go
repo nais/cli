@@ -72,6 +72,10 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
+				return runGetCommand(ctx, args, out, f.Team, providedEnvironment, f.Output, f.WithValues, f.Reason)
+			}
+
 			environment, err := resolveSecretEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
 			if err != nil {
 				return err
