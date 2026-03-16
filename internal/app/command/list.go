@@ -31,7 +31,7 @@ func list(parentFlags *flag.App) *naistrix.Command {
 		Name:  "list",
 		Title: "List applications in a team.",
 		Flags: flags,
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if flags.Team == "" {
 					return nil, "Please provide team. 'nais config set team <team>', or '--team <team>' flag."
