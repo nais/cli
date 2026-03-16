@@ -85,6 +85,13 @@ func TestUniqueFlagValues(t *testing.T) {
 			long:     "--environment",
 			wantVals: []string{},
 		},
+		{
+			name:     "flags after end-of-flags marker are ignored",
+			args:     []string{"cmd", "--", "-e", "dev-gcp", "--environment=prod-gcp"},
+			short:    "-e",
+			long:     "--environment",
+			wantVals: []string{},
+		},
 	}
 
 	for _, tt := range tests {
@@ -133,6 +140,13 @@ func TestCountFlagOccurrences(t *testing.T) {
 		{
 			name:      "missing and invalid values ignored",
 			args:      []string{"cmd", "-e", "--environment", "--environment=", "-e=", "--environment", "--team", "nais"},
+			short:     "-e",
+			long:      "--environment",
+			wantCount: 0,
+		},
+		{
+			name:      "flags after end-of-flags marker are ignored",
+			args:      []string{"cmd", "--", "-e", "dev-gcp", "--environment=prod-gcp"},
 			short:     "-e",
 			long:      "--environment",
 			wantCount: 0,

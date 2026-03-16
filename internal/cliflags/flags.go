@@ -10,6 +10,9 @@ func UniqueFlagValues(args []string, shortFlag, longFlag string) []string {
 
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
+		if arg == "--" {
+			break
+		}
 		switch {
 		case arg == shortFlag || arg == longFlag:
 			if i+1 >= len(args) {
@@ -52,6 +55,9 @@ func CountFlagOccurrences(args []string, shortFlag, longFlag string) int {
 
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
+		if arg == "--" {
+			break
+		}
 		switch {
 		case arg == shortFlag || arg == longFlag:
 			if i+1 >= len(args) {
