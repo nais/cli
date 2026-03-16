@@ -44,7 +44,7 @@ func resolveSecretEnvironment(ctx context.Context, team, name, provided string) 
 
 func validateSingleEnvironmentFlagUsage() error {
 	if countEnvironmentFlagsInCLIArgs() > 1 {
-		return fmt.Errorf("exactly one environment must be specified")
+		return fmt.Errorf("only one --environment/-e flag may be provided")
 	}
 	return nil
 }
