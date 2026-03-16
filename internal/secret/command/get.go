@@ -98,9 +98,12 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 	if withValues {
 		if reason == "" {
 			pterm.Warning.Println("Viewing secret values is logged for auditing purposes.")
-			result, _ := pterm.DefaultInteractiveTextInput.
+			result, err := pterm.DefaultInteractiveTextInput.
 				WithDefaultText("Reason for accessing secret values (min 10 chars)").
 				Show()
+			if err != nil {
+				return fmt.Errorf("prompting for reason: %w", err)
+			}
 			if len(result) < 10 {
 				return fmt.Errorf("reason must be at least 10 characters")
 			}
