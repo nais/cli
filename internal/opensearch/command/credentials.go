@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strconv"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
@@ -70,7 +71,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 
 			out.Println(fmt.Sprintf("OPEN_SEARCH_URI=%q", creds.Uri))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_HOST=%q", creds.Host))
-			out.Println(fmt.Sprintf(`OPEN_SEARCH_PORT="%d"`, creds.Port))
+			out.Println(fmt.Sprintf("OPEN_SEARCH_PORT=%q", strconv.Itoa(int(creds.Port))))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_USERNAME=%q", creds.Username))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_PASSWORD=%q", creds.Password))
 			return nil

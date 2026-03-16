@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strconv"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
@@ -68,7 +69,7 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 
 			out.Println(fmt.Sprintf("VALKEY_URI=%q", creds.Uri))
 			out.Println(fmt.Sprintf("VALKEY_HOST=%q", creds.Host))
-			out.Println(fmt.Sprintf(`VALKEY_PORT="%d"`, creds.Port))
+			out.Println(fmt.Sprintf("VALKEY_PORT=%q", strconv.Itoa(int(creds.Port))))
 			out.Println(fmt.Sprintf("VALKEY_USERNAME=%q", creds.Username))
 			out.Println(fmt.Sprintf("VALKEY_PASSWORD=%q", creds.Password))
 			return nil

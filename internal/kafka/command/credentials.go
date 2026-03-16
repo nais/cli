@@ -130,10 +130,17 @@ func writeKafkaEnv(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredentials
 	out.Println(fmt.Sprintf("KAFKA_BROKERS=%q", creds.Brokers))
 	out.Println(fmt.Sprintf("KAFKA_USERNAME=%q", creds.Username))
 	out.Println(fmt.Sprintf("KAFKA_SCHEMA_REGISTRY=%q", creds.SchemaRegistry))
-	out.Println(fmt.Sprintf("KAFKA_CERTIFICATE=%q", creds.AccessCert))
-	out.Println(fmt.Sprintf("KAFKA_PRIVATE_KEY=%q", creds.AccessKey))
-	out.Println(fmt.Sprintf("KAFKA_CA=%q", creds.CaCert))
+	printMultilineEnvVar(out, "KAFKA_CERTIFICATE", creds.AccessCert, "NAIS_KAFKA_CERT_EOF")
+	printMultilineEnvVar(out, "KAFKA_PRIVATE_KEY", creds.AccessKey, "NAIS_KAFKA_KEY_EOF")
+	printMultilineEnvVar(out, "KAFKA_CA", creds.CaCert, "NAIS_KAFKA_CA_EOF")
 	return nil
+}
+
+func printMultilineEnvVar(out *naistrix.OutputWriter, name, value, marker string) {
+	out.Println(fmt.Sprintf("%s=$(cat <<'%s'", name, marker))
+	out.Println(value)
+	out.Println(marker)
+	out.Println(")")
 }
 
 func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) error {
@@ -143,9 +150,10 @@ func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	}
 
 	configFile := filepath.Join(filepath.Dir(files.cert), "kcat.conf")
+	dir := filepath.Dir(files.cert)
 
 	var config strings.Builder
-	config.WriteString(fmt.Sprintf("# nais %s\n# kcat -F %s -t your.topic\n",
+	config.WriteString(fmt.Sprintf("# nais-cli %s\n# kcat -F %s -t your.topic\n",
 		time.Now().Truncate(time.Minute), configFile))
 	config.WriteString(fmt.Sprintf("bootstrap.servers=%s\n", creds.Brokers))
 	config.WriteString(fmt.Sprintf("# username=%s\n", creds.Username))
@@ -155,14 +163,14 @@ func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	config.WriteString(fmt.Sprintf("ssl.ca.location=%s\n", files.ca))
 
 	if err := os.WriteFile(configFile, []byte(config.String()), 0o600); err != nil {
-		dir := filepath.Dir(files.cert)
 		if removeErr := os.RemoveAll(dir); removeErr != nil {
 			return fmt.Errorf("writing kcat config: %w (failed cleaning temp directory: %v)", err, removeErr)
 		}
 		return fmt.Errorf("writing kcat config: %w", err)
 	}
 
-	out.Println(fmt.Sprintf("Kafka kcat configuration written to: %s", filepath.Dir(files.cert)))
+	out.Println(fmt.Sprintf("Kafka kcat configuration written to: %s", dir))
+	out.Println(fmt.Sprintf("Warning: %s contains sensitive credentials. Remove it when finished (e.g. rm -rf %s).", dir, dir))
 	out.Println(fmt.Sprintf("Usage: kcat -F %s -t your.topic", configFile))
 	return nil
 }
@@ -174,6 +182,7 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	}
 
 	configFile := filepath.Join(filepath.Dir(files.cert), "kafka.properties")
+	dir := filepath.Dir(files.cert)
 
 	var properties strings.Builder
 	properties.WriteString(fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)))
@@ -188,14 +197,14 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	properties.WriteString("ssl.keystore.type=PEM\n")
 
 	if err := os.WriteFile(configFile, []byte(properties.String()), 0o600); err != nil {
-		dir := filepath.Dir(files.cert)
 		if removeErr := os.RemoveAll(dir); removeErr != nil {
 			return fmt.Errorf("writing Java config: %w (failed cleaning temp directory: %v)", err, removeErr)
 		}
 		return fmt.Errorf("writing Java config: %w", err)
 	}
 
-	out.Println(fmt.Sprintf("Kafka Java configuration written to: %s", filepath.Dir(files.cert)))
+	out.Println(fmt.Sprintf("Kafka Java configuration written to: %s", dir))
+	out.Println(fmt.Sprintf("Warning: %s contains sensitive credentials. Remove it when finished (e.g. rm -rf %s).", dir, dir))
 	out.Println(fmt.Sprintf("Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s", creds.Brokers, configFile))
 	return nil
 }
