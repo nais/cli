@@ -1,22 +1,43 @@
 package command
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
 )
 
-func TestWriteCertFiles(t *testing.T) {
-	creds := &gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials{
+func newTestOutputWriter(buf *bytes.Buffer) *naistrix.OutputWriter {
+	level := naistrix.OutputVerbosityLevelNormal
+	return naistrix.NewOutputWriter(buf, &level)
+}
+
+func testKafkaCreds() *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials {
+	return &gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials{
+		Username:       "alice",
 		AccessCert:     "-----BEGIN CERTIFICATE-----\ntest-cert\n-----END CERTIFICATE-----",
 		AccessKey:      "-----BEGIN PRIVATE KEY-----\ntest-key\n-----END PRIVATE KEY-----",
 		CaCert:         "-----BEGIN CERTIFICATE-----\ntest-ca\n-----END CERTIFICATE-----",
 		Brokers:        "broker1:9092,broker2:9092",
 		SchemaRegistry: "https://schema-registry:8081",
 	}
+}
+
+func lineValue(output, prefix string) string {
+	for line := range strings.SplitSeq(output, "\n") {
+		if after, ok := strings.CutPrefix(line, prefix); ok {
+			return strings.TrimSpace(after)
+		}
+	}
+	return ""
+}
+
+func TestWriteCertFiles(t *testing.T) {
+	creds := testKafkaCreds()
 
 	files, err := writeCertFiles(creds)
 	if err != nil {
@@ -54,5 +75,112 @@ func TestWriteCertFiles(t *testing.T) {
 				t.Errorf("permissions = %o, want 0600", perm)
 			}
 		})
+	}
+}
+
+func TestWriteKafkaEnv(t *testing.T) {
+	var buf bytes.Buffer
+	out := newTestOutputWriter(&buf)
+	creds := testKafkaCreds()
+
+	if err := writeKafkaEnv(out, creds); err != nil {
+		t.Fatal(err)
+	}
+
+	got := buf.String()
+	for _, want := range []string{
+		`KAFKA_BROKERS="broker1:9092,broker2:9092"`,
+		`KAFKA_USERNAME="alice"`,
+		`KAFKA_SCHEMA_REGISTRY="https://schema-registry:8081"`,
+		`KAFKA_SCHEMA_REGISTRY_USER="alice"`,
+		"KAFKA_CERTIFICATE=$(cat <<'NAIS_KAFKA_CERT_EOF'",
+		"KAFKA_PRIVATE_KEY=$(cat <<'NAIS_KAFKA_KEY_EOF'",
+		"KAFKA_CA=$(cat <<'NAIS_KAFKA_CA_EOF'",
+		creds.AccessCert,
+		creds.AccessKey,
+		creds.CaCert,
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("env output missing %q\n%s", want, got)
+		}
+	}
+}
+
+func TestWriteKafkaKcat(t *testing.T) {
+	var buf bytes.Buffer
+	out := newTestOutputWriter(&buf)
+	creds := testKafkaCreds()
+
+	if err := writeKafkaKcat(out, creds); err != nil {
+		t.Fatal(err)
+	}
+
+	got := buf.String()
+	dir := lineValue(got, "Kafka kcat configuration written to: ")
+	if dir == "" {
+		t.Fatalf("missing output dir in:\n%s", got)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
+
+	if !strings.Contains(got, "Warning: ") {
+		t.Fatalf("missing warning in output:\n%s", got)
+	}
+
+	configFile := filepath.Join(dir, "kcat.conf")
+	content, err := os.ReadFile(configFile)
+	if err != nil {
+		t.Fatalf("reading kcat config: %v", err)
+	}
+
+	text := string(content)
+	for _, want := range []string{
+		"# nais-cli ",
+		"bootstrap.servers=broker1:9092,broker2:9092",
+		"# username=alice",
+		"security.protocol=ssl",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("kcat config missing %q\n%s", want, text)
+		}
+	}
+}
+
+func TestWriteKafkaJava(t *testing.T) {
+	var buf bytes.Buffer
+	out := newTestOutputWriter(&buf)
+	creds := testKafkaCreds()
+
+	if err := writeKafkaJava(out, creds); err != nil {
+		t.Fatal(err)
+	}
+
+	got := buf.String()
+	dir := lineValue(got, "Kafka Java configuration written to: ")
+	if dir == "" {
+		t.Fatalf("missing output dir in:\n%s", got)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(dir) })
+
+	if !strings.Contains(got, "Warning: ") {
+		t.Fatalf("missing warning in output:\n%s", got)
+	}
+
+	configFile := filepath.Join(dir, "kafka.properties")
+	content, err := os.ReadFile(configFile)
+	if err != nil {
+		t.Fatalf("reading Java config: %v", err)
+	}
+
+	text := string(content)
+	for _, want := range []string{
+		"# nais-cli ",
+		"# username=alice",
+		"security.protocol=SSL",
+		"ssl.truststore.type=PEM",
+		"ssl.keystore.type=PEM",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("Java config missing %q\n%s", want, text)
+		}
 	}
 }

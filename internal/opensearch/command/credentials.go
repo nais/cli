@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strconv"
 
+	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
@@ -36,7 +36,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if flags.Permission == "" {
 				return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
 			}
-			if !isValidAivenPermission(gql.AivenPermission(flags.Permission)) {
+			if !aiven.IsValidPermission(gql.AivenPermission(flags.Permission)) {
 				return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllAivenPermission)
 			}
 			if flags.TTL == "" {
@@ -71,14 +71,10 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 
 			out.Println(fmt.Sprintf("OPEN_SEARCH_URI=%q", creds.Uri))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_HOST=%q", creds.Host))
-			out.Println(fmt.Sprintf("OPEN_SEARCH_PORT=%q", strconv.Itoa(int(creds.Port))))
+			out.Println(fmt.Sprintf("OPEN_SEARCH_PORT=%q", strconv.Itoa(creds.Port)))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_USERNAME=%q", creds.Username))
 			out.Println(fmt.Sprintf("OPEN_SEARCH_PASSWORD=%q", creds.Password))
 			return nil
 		},
 	}
-}
-
-func isValidAivenPermission(permission gql.AivenPermission) bool {
-	return slices.Contains(gql.AllAivenPermission, permission)
 }

@@ -130,6 +130,7 @@ func writeKafkaEnv(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredentials
 	out.Println(fmt.Sprintf("KAFKA_BROKERS=%q", creds.Brokers))
 	out.Println(fmt.Sprintf("KAFKA_USERNAME=%q", creds.Username))
 	out.Println(fmt.Sprintf("KAFKA_SCHEMA_REGISTRY=%q", creds.SchemaRegistry))
+	out.Println(fmt.Sprintf("KAFKA_SCHEMA_REGISTRY_USER=%q", creds.Username))
 	printMultilineEnvVar(out, "KAFKA_CERTIFICATE", creds.AccessCert, "NAIS_KAFKA_CERT_EOF")
 	printMultilineEnvVar(out, "KAFKA_PRIVATE_KEY", creds.AccessKey, "NAIS_KAFKA_KEY_EOF")
 	printMultilineEnvVar(out, "KAFKA_CA", creds.CaCert, "NAIS_KAFKA_CA_EOF")
