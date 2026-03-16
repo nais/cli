@@ -21,6 +21,9 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 		Flags:       flags,
 		Args:        defaultArgs,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
+				return err
+			}
 			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
 				return err
 			}

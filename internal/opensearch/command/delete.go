@@ -23,6 +23,9 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 			{Name: "name"},
 		},
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if err := validateSingleEnvironmentFlagUsage(); err != nil {
+				return err
+			}
 			err := validation.CheckEnvironment(string(flags.Environment))
 			if err != nil {
 				return err
