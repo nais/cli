@@ -50,9 +50,6 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 				if len(environments) == 0 {
 					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 				}
-				if len(environments) == 0 {
-					return nil, "Please provide environment to auto-complete job names. '--environment <environment>' flag."
-				}
 
 				jobs, err := job.GetJobNames(ctx, flags.Team, environments)
 				if err != nil {
