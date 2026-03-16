@@ -3,8 +3,10 @@ package command
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
@@ -58,6 +60,18 @@ func autoCompleteValkeyNames(ctx context.Context, team, environment string, requ
 	if team == "" {
 		return nil, "Please provide team to auto-complete Valkey instance names. 'nais config set team <team>', or '--team <team>' flag."
 	}
+
+	if environmentFlagOccurrencesFromCLIArgs() > 1 {
+		return nil, "Please specify exactly one environment to auto-complete Valkey instance names. '--environment <environment>' flag."
+	}
+
+	if environment == "" {
+		envs := environmentValuesFromCLIArgs()
+		if len(envs) == 1 {
+			environment = envs[0]
+		}
+	}
+
 	if requireEnvironment && environment == "" {
 		return nil, "Please provide environment to auto-complete Valkey instance names. '--environment <environment>' flag."
 	}
@@ -86,4 +100,12 @@ func autoCompleteValkeyNames(ctx context.Context, team, environment string, requ
 	}
 
 	return names, "Select a Valkey instance."
+}
+
+func environmentValuesFromCLIArgs() []string {
+	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
+}
+
+func environmentFlagOccurrencesFromCLIArgs() int {
+	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
