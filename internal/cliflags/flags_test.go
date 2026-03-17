@@ -386,11 +386,11 @@ func TestPositionalArgAfterSubcommand(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name            string
-		args            []string
-		subcommand      string
-		valueFlags      []string
-		wantPositional  string
+		name           string
+		args           []string
+		subcommand     string
+		valueFlags     []string
+		wantPositional string
 	}{
 		{
 			name:           "returns positional after subcommand",
