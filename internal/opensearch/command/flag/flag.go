@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/flags"
@@ -30,7 +29,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 		team = f.Team
 	}
 
-	if team != "" && isCredentialsCompletionFromCLIArgs() {
+	if team != "" && isInstanceEnvironmentCompletionFromCLIArgs() {
 		envs, err := opensearchCredentialEnvironments(ctx, team)
 		if err == nil {
 			return envs, "Available environments with OpenSearch instances"
@@ -39,8 +38,13 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 	return autoCompleteEnvironments(ctx)
 }
 
-func isCredentialsCompletionFromCLIArgs() bool {
-	return slices.Contains(os.Args, "credentials")
+func isInstanceEnvironmentCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "credentials" || arg == "delete" || arg == "get" || arg == "list" || arg == "update" {
+			return true
+		}
+	}
+	return false
 }
 
 func opensearchCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
@@ -92,13 +96,17 @@ type Delete struct {
 type GetEnv string
 
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	if args.Len() == 0 {
-		return autoCompleteEnvironments(ctx)
-	}
-
 	f := flags.(*Get)
 	if len(f.Team) == 0 {
 		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	if args.Len() == 0 {
+		envs, err := opensearchCredentialEnvironments(ctx, f.Team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments with OpenSearch instances"
+		}
+		return autoCompleteEnvironments(ctx)
 	}
 
 	envs, err := opensearch.OpenSearchEnvironments(ctx, f.Team, args.Get("name"))
@@ -118,6 +126,14 @@ type Output string
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	f, ok := flags.(*List)
+	if ok && f.Team != "" {
+		envs, err := opensearchCredentialEnvironments(ctx, f.Team)
+		if err == nil {
+			return envs, "Available environments with OpenSearch instances"
+		}
+	}
+
 	return autoCompleteEnvironments(ctx)
 }
 
