@@ -49,19 +49,28 @@ type GetEnv string
 
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	tp, ok := flags.(teamProvider)
-	if !ok || tp.GetTeam() == "" {
+	if !ok {
+		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	team := tp.GetTeam()
+	if cliTeam := cliflags.FirstFlagValue(os.Args, "-t", "--team"); cliTeam != "" {
+		team = cliTeam
+	}
+
+	if team == "" {
 		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
 	}
 
 	if args.Len() == 0 {
-		envs, err := secret.TeamSecretEnvironments(ctx, tp.GetTeam())
+		envs, err := secret.TeamSecretEnvironments(ctx, team)
 		if err == nil && len(envs) > 0 {
 			return envs, "Available environments with secrets"
 		}
 		return autoCompleteEnvironments(ctx)
 	}
 
-	envs, err := secret.SecretEnvironments(ctx, tp.GetTeam(), args.Get("name"))
+	envs, err := secret.SecretEnvironments(ctx, team, args.Get("name"))
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
 	}
