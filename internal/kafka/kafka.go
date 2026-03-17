@@ -66,23 +66,6 @@ func GetTeamTopics(ctx context.Context, team string, environments []string) ([]T
 }
 
 func TeamTopicEnvironments(ctx context.Context, team string) ([]string, error) {
-	_ = `# @genqlient
-		query GetTeamKafkaTopics($team: Slug!) {
-			team(slug: $team) {
-				kafkaTopics(first: 1000) {
-					nodes {
-						name
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-				}
-			}
-		}
-	`
-
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err

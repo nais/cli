@@ -106,23 +106,6 @@ func GetJobNames(ctx context.Context, team string, environments []string) ([]str
 }
 
 func TeamJobEnvironments(ctx context.Context, team string) ([]string, error) {
-	_ = `# @genqlient
-		query GetJobNames($team: Slug!) {
-			team(slug: $team) {
-				jobs(first: 1000) {
-					nodes {
-						name
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-				}
-			}
-		}
-	`
-
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err
@@ -149,23 +132,6 @@ func TeamJobEnvironments(ctx context.Context, team string) ([]string, error) {
 }
 
 func JobEnvironments(ctx context.Context, team, jobName string) ([]string, error) {
-	_ = `# @genqlient
-		query GetJobNames($team: Slug!) {
-			team(slug: $team) {
-				jobs(first: 1000) {
-					nodes {
-						name
-						teamEnvironment {
-							environment {
-								name
-							}
-						}
-					}
-				}
-			}
-		}
-	`
-
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err
