@@ -30,7 +30,7 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 			if len(flags.Team) == 0 {
 				return nil, "Please provide team to auto-complete application names. 'nais config set team <team>', or '--team <team>' flag."
 			}
-			envs := flags.Environment
+			envs := []string(flags.Environment)
 			if len(envs) != 1 {
 				envs = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
 			}

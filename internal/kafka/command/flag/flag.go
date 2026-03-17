@@ -54,6 +54,9 @@ func kafkaTeamFromFlags(flags any) string {
 func teamFromCLIArgs(argv []string) string {
 	for i := range argv {
 		arg := argv[i]
+		if arg == "--" {
+			break
+		}
 
 		if after, ok := strings.CutPrefix(arg, "--team="); ok {
 			return after
@@ -64,7 +67,10 @@ func teamFromCLIArgs(argv []string) string {
 
 		if arg == "-t" || arg == "--team" {
 			if i+1 < len(argv) {
-				return argv[i+1]
+				next := argv[i+1]
+				if next != "" && !strings.HasPrefix(next, "-") {
+					return next
+				}
 			}
 			return ""
 		}
