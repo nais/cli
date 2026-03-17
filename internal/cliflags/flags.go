@@ -112,7 +112,7 @@ func FirstFlagValue(args []string, shortFlag, longFlag string) string {
 					return next
 				}
 			}
-			return ""
+			continue
 		}
 	}
 

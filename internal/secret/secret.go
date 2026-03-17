@@ -73,7 +73,7 @@ func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, e
 
 // TeamSecretEnvironments returns unique environments where the team has one or more secrets.
 func TeamSecretEnvironments(ctx context.Context, teamSlug string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug)
+	all, err := getAllSecretEnvironments(ctx, teamSlug)
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +91,36 @@ func TeamSecretEnvironments(ctx context.Context, teamSlug string) ([]string, err
 
 	sort.Strings(ret)
 	return ret, nil
+}
+
+func getAllSecretEnvironments(ctx context.Context, teamSlug string) ([]gql.GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret, error) {
+	_ = `# @genqlient
+		query GetAllSecretEnvironments($teamSlug: Slug!) {
+		  team(slug: $teamSlug) {
+			secrets(first: 1000, orderBy: {field: NAME, direction: ASC}) {
+			  nodes {
+				teamEnvironment {
+				  environment {
+					name
+				  }
+				}
+			  }
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetAllSecretEnvironments(ctx, client, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Team.Secrets.Nodes, nil
 }
 
 // GetAll retrieves all secrets for a team.

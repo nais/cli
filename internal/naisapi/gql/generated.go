@@ -3882,6 +3882,85 @@ func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVe
 	return v.Actual
 }
 
+// GetAllSecretEnvironmentsResponse is returned by GetAllSecretEnvironments on success.
+type GetAllSecretEnvironmentsResponse struct {
+	// Get a team by its slug.
+	Team GetAllSecretEnvironmentsTeam `json:"team"`
+}
+
+// GetTeam returns GetAllSecretEnvironmentsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsResponse) GetTeam() GetAllSecretEnvironmentsTeam { return v.Team }
+
+// GetAllSecretEnvironmentsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllSecretEnvironmentsTeam struct {
+	// Secrets owned by the team.
+	Secrets GetAllSecretEnvironmentsTeamSecretsSecretConnection `json:"secrets"`
+}
+
+// GetSecrets returns GetAllSecretEnvironmentsTeam.Secrets, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsTeam) GetSecrets() GetAllSecretEnvironmentsTeamSecretsSecretConnection {
+	return v.Secrets
+}
+
+// GetAllSecretEnvironmentsTeamSecretsSecretConnection includes the requested fields of the GraphQL type SecretConnection.
+type GetAllSecretEnvironmentsTeamSecretsSecretConnection struct {
+	// List of nodes.
+	Nodes []GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret `json:"nodes"`
+}
+
+// GetNodes returns GetAllSecretEnvironmentsTeamSecretsSecretConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsTeamSecretsSecretConnection) GetNodes() []GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret {
+	return v.Nodes
+}
+
+// GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret struct {
+	// The environment the secret exists in.
+	TeamEnvironment GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTeamEnvironment returns GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret) GetTeamEnvironment() GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironment) GetEnvironment() GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecretTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // GetAllSecretsResponse is returned by GetAllSecrets on success.
 type GetAllSecretsResponse struct {
 	// Get a team by its slug.
@@ -24086,6 +24165,14 @@ type __GetAllOpenSearchesInput struct {
 // GetTeamSlug returns __GetAllOpenSearchesInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllOpenSearchesInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetAllSecretEnvironmentsInput is used internally by genqlient
+type __GetAllSecretEnvironmentsInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllSecretEnvironmentsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllSecretEnvironmentsInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetAllSecretsInput is used internally by genqlient
 type __GetAllSecretsInput struct {
 	TeamSlug string `json:"teamSlug"`
@@ -25414,6 +25501,48 @@ func GetAllOpenSearches(
 	}
 
 	data_ = &GetAllOpenSearchesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllSecretEnvironments.
+const GetAllSecretEnvironments_Operation = `
+query GetAllSecretEnvironments ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		secrets(first: 1000, orderBy: {field:NAME,direction:ASC}) {
+			nodes {
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllSecretEnvironments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllSecretEnvironmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllSecretEnvironments",
+		Query:  GetAllSecretEnvironments_Operation,
+		Variables: &__GetAllSecretEnvironmentsInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllSecretEnvironmentsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

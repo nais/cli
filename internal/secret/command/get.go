@@ -41,10 +41,12 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			if err := validateSingleEnvironmentFlagUsage(); err != nil {
 				return err
 			}
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				if err := validation.CheckEnvironment(providedEnvironment); err != nil {
-					return err
-				}
+			providedEnvironment := string(f.Environment)
+			if providedEnvironment == "" {
+				return fmt.Errorf("exactly one environment must be specified")
+			}
+			if err := validation.CheckEnvironment(providedEnvironment); err != nil {
+				return err
 			}
 			if err := validateArgs(args); err != nil {
 				return err
@@ -78,16 +80,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				return runGetCommand(ctx, args, out, f.Team, providedEnvironment, f.Output, f.WithValues, f.Reason)
-			}
-
-			environment, err := resolveSecretEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
-			if err != nil {
-				return err
-			}
-
-			return runGetCommand(ctx, args, out, f.Team, environment, f.Output, f.WithValues, f.Reason)
+			return runGetCommand(ctx, args, out, f.Team, string(f.Environment), f.Output, f.WithValues, f.Reason)
 		},
 	}
 }
