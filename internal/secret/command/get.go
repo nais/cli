@@ -34,7 +34,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "get",
 		Title:       "Get details about a secret.",
-		Description: "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
+		Description: "This command shows details about a secret, including its keys, workloads using it, and last modification info. The --environment/-e flag is required. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
 		Flags:       f,
 		Args:        defaultArgs,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
