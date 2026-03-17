@@ -118,3 +118,45 @@ func FirstFlagValue(args []string, shortFlag, longFlag string) string {
 
 	return ""
 }
+
+// HasSubCommandPath reports whether args contain a command path where `parent`
+// is followed by one of the provided subcommands as the next non-flag token.
+func HasSubCommandPath(args []string, parent string, subcommands ...string) bool {
+	if len(subcommands) == 0 {
+		return false
+	}
+
+	allowed := make(map[string]struct{}, len(subcommands))
+	for _, sub := range subcommands {
+		allowed[sub] = struct{}{}
+	}
+
+	for i := range args {
+		if args[i] == "--" {
+			break
+		}
+		if args[i] != parent {
+			continue
+		}
+
+		for j := i + 1; j < len(args); j++ {
+			next := args[j]
+			if next == "--" {
+				break
+			}
+			if strings.HasPrefix(next, "-") {
+				if !strings.Contains(next, "=") && j+1 < len(args) {
+					value := args[j+1]
+					if value != "" && !strings.HasPrefix(value, "-") {
+						j++
+					}
+				}
+				continue
+			}
+			_, ok := allowed[next]
+			return ok
+		}
+	}
+
+	return false
+}

@@ -112,28 +112,7 @@ func appNameForEnvironmentCompletion(args *naistrix.Arguments) string {
 }
 
 func isRestartCompletionFromCLIArgs() bool {
-	return hasSubCommandPath(os.Args, "app", "restart")
-}
-
-func hasSubCommandPath(argv []string, parent, sub string) bool {
-	for i := range argv {
-		if argv[i] != parent {
-			continue
-		}
-
-		for j := i + 1; j < len(argv); j++ {
-			next := argv[j]
-			if next == "--" {
-				break
-			}
-			if strings.HasPrefix(next, "-") {
-				continue
-			}
-			return next == sub
-		}
-	}
-
-	return false
+	return cliflags.HasSubCommandPath(os.Args, "app", "restart")
 }
 
 func appNameFromCLIArgs(argv []string) string {

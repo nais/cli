@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -104,12 +105,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 }
 
 func isInstanceEnvironmentCompletionFromCLIArgs() bool {
-	for _, arg := range os.Args {
-		if arg == "credentials" || arg == "delete" || arg == "get" || arg == "list" || arg == "update" {
-			return true
-		}
-	}
-	return false
+	return cliflags.HasSubCommandPath(os.Args, "valkey", "credentials", "delete", "get", "list", "update")
 }
 
 func valkeyCredentialEnvironments(ctx context.Context, team string) ([]string, error) {

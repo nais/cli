@@ -272,3 +272,76 @@ func TestFirstFlagValue(t *testing.T) {
 		})
 	}
 }
+
+func TestHasSubCommandPath(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		args    []string
+		parent  string
+		subs    []string
+		wantHas bool
+	}{
+		{
+			name:    "matches parent and subcommand",
+			args:    []string{"nais", "app", "restart"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: true,
+		},
+		{
+			name:    "matches with flag between parent and subcommand",
+			args:    []string{"nais", "job", "--team", "my-team", "trigger"},
+			parent:  "job",
+			subs:    []string{"trigger"},
+			wantHas: true,
+		},
+		{
+			name:    "matches one of many subcommands",
+			args:    []string{"nais", "valkey", "list"},
+			parent:  "valkey",
+			subs:    []string{"credentials", "delete", "get", "list", "update"},
+			wantHas: true,
+		},
+		{
+			name:    "returns false for different subcommand",
+			args:    []string{"nais", "app", "list"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: false,
+		},
+		{
+			name:    "returns false when token appears as positional argument",
+			args:    []string{"nais", "opensearch", "create", "delete"},
+			parent:  "opensearch",
+			subs:    []string{"credentials", "delete", "get", "list", "update"},
+			wantHas: false,
+		},
+		{
+			name:    "stops at end of flags marker",
+			args:    []string{"nais", "app", "--", "restart"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: false,
+		},
+		{
+			name:    "returns false with no subcommands provided",
+			args:    []string{"nais", "app", "restart"},
+			parent:  "app",
+			subs:    nil,
+			wantHas: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := HasSubCommandPath(tt.args, tt.parent, tt.subs...)
+			if got != tt.wantHas {
+				t.Fatalf("HasSubCommandPath() = %v, want %v", got, tt.wantHas)
+			}
+		})
+	}
+}
