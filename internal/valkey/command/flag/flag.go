@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/flags"
@@ -22,6 +21,14 @@ type Valkey struct {
 }
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	f, ok := flags.(*List)
+	if ok && f.Team != "" {
+		envs, err := valkeyCredentialEnvironments(ctx, f.Team)
+		if err == nil {
+			return envs, "Available environments with Valkey instances"
+		}
+	}
+
 	return autoCompleteEnvironments(ctx)
 }
 
@@ -87,7 +94,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 		team = f.Team
 	}
 
-	if team != "" && isCredentialsCompletionFromCLIArgs() {
+	if team != "" && isInstanceEnvironmentCompletionFromCLIArgs() {
 		envs, err := valkeyCredentialEnvironments(ctx, team)
 		if err == nil {
 			return envs, "Available environments with Valkey instances"
@@ -96,8 +103,13 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 	return autoCompleteEnvironments(ctx)
 }
 
-func isCredentialsCompletionFromCLIArgs() bool {
-	return slices.Contains(os.Args, "credentials")
+func isInstanceEnvironmentCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "credentials" || arg == "delete" || arg == "get" || arg == "list" || arg == "update" {
+			return true
+		}
+	}
+	return false
 }
 
 func valkeyCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
