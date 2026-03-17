@@ -1,7 +1,6 @@
 package command
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"slices"
@@ -9,17 +8,7 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/cliflags"
-	"github.com/nais/cli/internal/secret"
 )
-
-func resolveSecretEnvironment(ctx context.Context, team, name, provided string) (string, error) {
-	envs, err := secret.SecretEnvironments(ctx, team, name)
-	if err != nil {
-		return "", fmt.Errorf("fetching environments for secret %q: %w", name, err)
-	}
-
-	return selectSecretEnvironment(team, name, provided, envs)
-}
 
 func selectSecretEnvironment(team, name, provided string, envs []string) (string, error) {
 	if provided != "" {
