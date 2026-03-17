@@ -13,7 +13,8 @@ import (
 
 func RunProxy(ctx context.Context, appName string, fl *flag.Proxy, out *naistrix.OutputWriter) error {
 	// Get secret values with user-provided reason (access is logged for audit purposes)
-	if _, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out); err != nil {
+	sv, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out)
+	if err != nil {
 		return err
 	}
 
@@ -21,6 +22,8 @@ func RunProxy(ctx context.Context, appName string, fl *flag.Proxy, out *naistrix
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	return dbInfo.RunProxy(ctx, fl.Host, &fl.Port, make(chan<- int, 1), out, true)
 }

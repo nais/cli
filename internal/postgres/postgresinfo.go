@@ -184,6 +184,10 @@ func (p *postgresDBInfo) ToCloudSQLDBInfo() (*CloudSQLDBInfo, error) {
 	return nil, fmt.Errorf("not a CloudSQL instance")
 }
 
+func (p *postgresDBInfo) SetSecretValues(_ *SecretValues) {
+	// No-op for in-cluster postgres; authentication uses OAuth tokens
+}
+
 func (p *postgresDBInfo) fetchClusterInfo(ctx context.Context) error {
 	unstructuredApp, err := p.dynamicClient.Resource(schema.GroupVersionResource{
 		Group:    "nais.io",

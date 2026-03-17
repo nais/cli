@@ -213,7 +213,8 @@ func formatCondition(expr, title string) string {
 
 func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonListUsers, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonListUsers, out)
+	if err != nil {
 		return err
 	}
 
@@ -221,6 +222,8 @@ func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *nais
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
@@ -262,7 +265,8 @@ func AddUser(ctx context.Context, appName, username, password string, fl *flag.U
 	}
 
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonAddUser, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonAddUser, out)
+	if err != nil {
 		return err
 	}
 
@@ -270,6 +274,8 @@ func AddUser(ctx context.Context, appName, username, password string, fl *flag.U
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
@@ -302,7 +308,8 @@ func AddUser(ctx context.Context, appName, username, password string, fl *flag.U
 
 func DropUser(ctx context.Context, appName string, username string, fl *flag.UserDrop, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonDropUser, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonDropUser, out)
+	if err != nil {
 		return err
 	}
 
@@ -310,6 +317,8 @@ func DropUser(ctx context.Context, appName string, username string, fl *flag.Use
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {

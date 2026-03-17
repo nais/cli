@@ -35,6 +35,17 @@ type SecretValues struct {
 	values map[string]string
 }
 
+// Get returns the value for a key with the given suffix (e.g. "_PASSWORD", "_USERNAME").
+// Keys are matched by suffix to handle prefixed key names like "NAIS_DATABASE_MYAPP_PASSWORD".
+func (s *SecretValues) Get(suffix string) string {
+	for name, val := range s.values {
+		if strings.HasSuffix(name, suffix) {
+			return val
+		}
+	}
+	return ""
+}
+
 // GetSecretValues retrieves the values of a database secret via the API.
 // For CloudSQL databases, this retrieves the secret values directly.
 // For in-cluster postgres, this grants temporary access to the database.

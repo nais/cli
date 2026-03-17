@@ -19,7 +19,8 @@ import (
 
 func RotatePassword(ctx context.Context, appName string, fl *flag.Password, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPasswordRotate, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPasswordRotate, out)
+	if err != nil {
 		return err
 	}
 
@@ -27,6 +28,8 @@ func RotatePassword(ctx context.Context, appName string, fl *flag.Password, out 
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	cloudSQLDBInfo, err := dbInfo.ToCloudSQLDBInfo()
 	if err != nil {

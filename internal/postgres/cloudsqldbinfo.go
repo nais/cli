@@ -26,10 +26,15 @@ type CloudSQLDBInfo struct {
 	*DBInfo
 	projectID      string
 	connectionName string
+	secretValues   *SecretValues
 }
 
 func (i *CloudSQLDBInfo) ToCloudSQLDBInfo() (*CloudSQLDBInfo, error) {
 	return i, nil
+}
+
+func (i *CloudSQLDBInfo) SetSecretValues(sv *SecretValues) {
+	i.secretValues = sv
 }
 
 func (i *CloudSQLDBInfo) ProjectID(ctx context.Context) (string, error) {
@@ -53,9 +58,8 @@ func (i *CloudSQLDBInfo) ConnectionName(ctx context.Context) (string, error) {
 }
 
 func (i *CloudSQLDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, error) {
-	secret, err := i.k8sClient.CoreV1().Secrets(string(i.namespace)).Get(ctx, "google-sql-"+i.appName, meta_v1.GetOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("unable to get database password from %q in %q: %w", "google-sql-"+i.appName, i.namespace, err)
+	if i.secretValues == nil {
+		return nil, fmt.Errorf("secret values not set for %q; call SetSecretValues before DBConnection", i.appName)
 	}
 
 	connectionName, err := i.ConnectionName(ctx)
@@ -63,7 +67,41 @@ func (i *CloudSQLDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 		return nil, err
 	}
 
-	return createConnectionInfo(ctx, *secret, connectionName)
+	return createConnectionInfoFromSecretValues(ctx, i.secretValues, connectionName)
+}
+
+func createConnectionInfoFromSecretValues(ctx context.Context, sv *SecretValues, instance string) (*ConnectionInfo, error) {
+	var pgUrl *url.URL
+	var jdbcUrl *url.URL
+	for name, val := range sv.values {
+		if strings.HasSuffix(name, "_URL") {
+			u, err := url.Parse(val)
+			if err != nil {
+				continue
+			}
+			if strings.HasSuffix(name, "_JDBC_URL") {
+				jdbcUrl = u
+			} else {
+				pgUrl = u
+			}
+		}
+	}
+
+	email, err := currentEmail(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ConnectionInfo{
+		username: sv.Get("_USERNAME"),
+		email:    email,
+		password: sv.Get("_PASSWORD"),
+		dbName:   sv.Get("_DATABASE"),
+		port:     sv.Get("_PORT"),
+		url:      pgUrl,
+		jdbcUrl:  jdbcUrl,
+		instance: instance,
+	}, nil
 }
 
 func createConnectionInfo(ctx context.Context, secret core_v1.Secret, instance string) (*ConnectionInfo, error) {

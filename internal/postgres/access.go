@@ -36,7 +36,8 @@ var (
 
 func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPrepareAccess, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPrepareAccess, out)
+	if err != nil {
 		return err
 	}
 
@@ -48,15 +49,16 @@ func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *n
 	}
 
 	if fl.AllPrivileges {
-		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantAllPrivs))
+		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantAllPrivs), sv)
 	} else {
-		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs))
+		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs), sv)
 	}
 }
 
 func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonRevokeAccess, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonRevokeAccess, out)
+	if err != nil {
 		return err
 	}
 
@@ -64,14 +66,16 @@ func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *nai
 	if fl.Schema != "public" {
 		q += "\n" + revokeUsage
 	}
-	return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, q)
+	return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, q, sv)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, schema, statement string) error {
+func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, schema, statement string, sv *SecretValues) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
