@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"sort"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -68,6 +69,28 @@ func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, e
 		}
 	}
 	return envs, nil
+}
+
+// TeamSecretEnvironments returns unique environments where the team has one or more secrets.
+func TeamSecretEnvironments(ctx context.Context, teamSlug string) ([]string, error) {
+	all, err := GetAll(ctx, teamSlug)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	ret := make([]string, 0)
+	for _, s := range all {
+		env := s.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		ret = append(ret, env)
+	}
+
+	sort.Strings(ret)
+	return ret, nil
 }
 
 // GetAll retrieves all secrets for a team.

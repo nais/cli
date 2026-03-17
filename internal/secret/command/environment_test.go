@@ -57,7 +57,7 @@ func TestSelectSecretEnvironment(t *testing.T) {
 			team:      "nais",
 			secret:    "my-secret",
 			envs:      []string{"prod-gcp", "dev-gcp"},
-			wantError: "secret \"my-secret\" exists in multiple environments (dev-gcp, prod-gcp); specify --environment/-e",
+			wantError: "secret \"my-secret\" exists in multiple environments (dev-gcp, prod-gcp); specify --environment/-e on the command, e.g. nais secrets get -t nais my-secret -e <dev-gcp>",
 		},
 	}
 

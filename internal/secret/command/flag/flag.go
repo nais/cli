@@ -3,6 +3,8 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
 
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/flags"
@@ -19,7 +21,19 @@ type Secret struct {
 
 type Env string
 
-func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
+
+func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
+	team := secretTeamFromFlags(flags)
+	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+		team = cliTeam
+	}
+	if team != "" {
+		envs, err := secret.TeamSecretEnvironments(ctx, team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments with secrets"
+		}
+	}
+
 	return autoCompleteEnvironments(ctx)
 }
 
@@ -29,10 +43,6 @@ func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string,
 type GetEnv string
 
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
-	if args.Len() == 0 {
-		return autoCompleteEnvironments(ctx)
-	}
-
 	type teamProvider interface {
 		GetTeam() string
 	}
@@ -40,6 +50,14 @@ func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ s
 	tp, ok := flags.(teamProvider)
 	if !ok || tp.GetTeam() == "" {
 		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	if args.Len() == 0 {
+		envs, err := secret.TeamSecretEnvironments(ctx, tp.GetTeam())
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments with secrets"
+		}
+		return autoCompleteEnvironments(ctx)
 	}
 
 	envs, err := secret.SecretEnvironments(ctx, tp.GetTeam(), args.Get("name"))
@@ -59,8 +77,63 @@ func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
 
 type Environments []string
 
-func (e *Environments) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
+
+func (e *Environments) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
+	team := secretTeamFromFlags(flags)
+	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+		team = cliTeam
+	}
+	if team != "" {
+		envs, err := secret.TeamSecretEnvironments(ctx, team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments with secrets"
+		}
+	}
+
 	return autoCompleteEnvironments(ctx)
+}
+
+func secretTeamFromFlags(flags any) string {
+	switch f := flags.(type) {
+	case *Get:
+		return string(f.Team)
+	case *Delete:
+		return string(f.Team)
+	case *Set:
+		return string(f.Team)
+	case *Unset:
+		return string(f.Team)
+	case *List:
+		return string(f.Team)
+	case *Activity:
+		return string(f.Team)
+	case *Secret:
+		return string(f.Team)
+	default:
+		return ""
+	}
+}
+
+func teamFromCLIArgs(argv []string) string {
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if strings.HasPrefix(arg, "--team=") {
+			return strings.TrimPrefix(arg, "--team=")
+		}
+		if strings.HasPrefix(arg, "-t=") {
+			return strings.TrimPrefix(arg, "-t=")
+		}
+
+		if arg == "-t" || arg == "--team" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+	}
+
+	return ""
 }
 
 type Output string

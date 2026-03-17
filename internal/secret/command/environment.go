@@ -42,7 +42,7 @@ func selectSecretEnvironment(team, name, provided string, envs []string) (string
 		return envs[0], nil
 	default:
 		sort.Strings(envs)
-		return "", fmt.Errorf("secret %q exists in multiple environments (%s); specify --environment/-e", name, strings.Join(envs, ", "))
+		return "", fmt.Errorf("secret %q exists in multiple environments (%s); specify --environment/-e on the command, e.g. nais secrets get -t %s %s -e <%s>", name, strings.Join(envs, ", "), team, name, envs[0])
 	}
 }
 
