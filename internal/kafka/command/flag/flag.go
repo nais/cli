@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/naisapi"
@@ -21,7 +21,7 @@ type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
 	team := kafkaTeamFromFlags(flags)
-	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+	if cliTeam := cliflags.FirstFlagValue(os.Args, "-t", "--team"); cliTeam != "" {
 		team = cliTeam
 	}
 	if team != "" {
@@ -49,34 +49,6 @@ func kafkaTeamFromFlags(flags any) string {
 	default:
 		return ""
 	}
-}
-
-func teamFromCLIArgs(argv []string) string {
-	for i := range argv {
-		arg := argv[i]
-		if arg == "--" {
-			break
-		}
-
-		if after, ok := strings.CutPrefix(arg, "--team="); ok {
-			return after
-		}
-		if after, ok := strings.CutPrefix(arg, "-t="); ok {
-			return after
-		}
-
-		if arg == "-t" || arg == "--team" {
-			if i+1 < len(argv) {
-				next := argv[i+1]
-				if next != "" && !strings.HasPrefix(next, "-") {
-					return next
-				}
-			}
-			return ""
-		}
-	}
-
-	return ""
 }
 
 type Output string

@@ -164,3 +164,97 @@ func TestCountFlagOccurrences(t *testing.T) {
 		})
 	}
 }
+
+func TestFirstFlagValue(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		args     []string
+		short    string
+		long     string
+		want     string
+	}{
+		{
+			name:  "no matching flag",
+			args:  []string{"cmd", "sub"},
+			short: "-t",
+			long:  "--team",
+			want:  "",
+		},
+		{
+			name:  "short flag with separate value",
+			args:  []string{"cmd", "-t", "nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "long flag with separate value",
+			args:  []string{"cmd", "--team", "nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "short equals form",
+			args:  []string{"cmd", "-t=nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "long equals form",
+			args:  []string{"cmd", "--team=nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "first occurrence wins",
+			args:  []string{"cmd", "--team=nais", "-t", "other"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "missing value returns empty",
+			args:  []string{"cmd", "--team"},
+			short: "-t",
+			long:  "--team",
+			want:  "",
+		},
+		{
+			name:  "flag-like next arg returns empty",
+			args:  []string{"cmd", "--team", "--environment", "dev"},
+			short: "-t",
+			long:  "--team",
+			want:  "",
+		},
+		{
+			name:  "empty equals value ignored and later value used",
+			args:  []string{"cmd", "--team=", "-t", "nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "nais",
+		},
+		{
+			name:  "flags after end-of-flags marker ignored",
+			args:  []string{"cmd", "--", "--team", "nais"},
+			short: "-t",
+			long:  "--team",
+			want:  "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := FirstFlagValue(tt.args, tt.short, tt.long)
+			if got != tt.want {
+				t.Fatalf("FirstFlagValue() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}

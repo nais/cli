@@ -82,3 +82,39 @@ func CountFlagOccurrences(args []string, shortFlag, longFlag string) int {
 
 	return count
 }
+
+// FirstFlagValue returns the first valid value for a short/long CLI flag from args.
+// It supports forms: -t value, --team value, -t=value, --team=value.
+func FirstFlagValue(args []string, shortFlag, longFlag string) string {
+	for i := range args {
+		arg := args[i]
+		if arg == "--" {
+			break
+		}
+
+		if after, ok := strings.CutPrefix(arg, longFlag+"="); ok {
+			if after != "" {
+				return after
+			}
+			continue
+		}
+		if after, ok := strings.CutPrefix(arg, shortFlag+"="); ok {
+			if after != "" {
+				return after
+			}
+			continue
+		}
+
+		if arg == shortFlag || arg == longFlag {
+			if i+1 < len(args) {
+				next := args[i+1]
+				if next != "" && !strings.HasPrefix(next, "-") {
+					return next
+				}
+			}
+			return ""
+		}
+	}
+
+	return ""
+}
