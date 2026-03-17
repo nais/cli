@@ -7,13 +7,13 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func CreateCredentials(ctx context.Context, teamSlug, environmentName, instanceName string, permission gql.AivenPermission, ttl string) (*gql.CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials, error) {
+func CreateCredentials(ctx context.Context, teamSlug, environmentName, instanceName string, permission gql.CredentialPermission, ttl string) (*gql.CreateOpenSearchCredentialsCreateOpenSearchCredentialsCreateOpenSearchCredentialsPayloadCredentialsOpenSearchCredentials, error) {
 	_ = `# @genqlient
 		mutation CreateOpenSearchCredentials(
 		  $teamSlug: Slug!,
 		  $environmentName: String!,
 		  $instanceName: String!,
-		  $permission: AivenPermission!,
+		  $permission: CredentialPermission!,
 		  $ttl: String!,
 		) {
 		  createOpenSearchCredentials(
