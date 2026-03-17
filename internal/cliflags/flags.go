@@ -181,3 +181,53 @@ func HasSubCommandPathWithValueFlags(args []string, parent string, valueTakingFl
 
 	return false
 }
+
+// PositionalArgAfterSubcommand returns the first positional argument after a
+// specific subcommand, skipping known value-taking flags and their values.
+func PositionalArgAfterSubcommand(args []string, subcommand string, valueTakingFlags []string) string {
+	consumesValue := make(map[string]struct{}, len(valueTakingFlags))
+	for _, f := range valueTakingFlags {
+		consumesValue[f] = struct{}{}
+	}
+
+	seenSubcommand := false
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+
+		if arg == subcommand {
+			seenSubcommand = true
+			continue
+		}
+		if !seenSubcommand {
+			continue
+		}
+
+		if arg == "--" {
+			if i+1 < len(args) {
+				return args[i+1]
+			}
+			return ""
+		}
+
+		for f := range consumesValue {
+			if strings.HasPrefix(arg, f+"=") {
+				goto nextArg
+			}
+		}
+
+		if _, ok := consumesValue[arg]; ok {
+			i++
+			continue
+		}
+
+		if strings.HasPrefix(arg, "-") {
+			continue
+		}
+
+		return arg
+
+	nextArg:
+	}
+
+	return ""
+}

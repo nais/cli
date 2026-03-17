@@ -381,3 +381,62 @@ func TestHasSubCommandPathWithValueFlags(t *testing.T) {
 		}
 	})
 }
+
+func TestPositionalArgAfterSubcommand(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name            string
+		args            []string
+		subcommand      string
+		valueFlags      []string
+		wantPositional  string
+	}{
+		{
+			name:           "returns positional after subcommand",
+			args:           []string{"nais", "app", "restart", "my-app"},
+			subcommand:     "restart",
+			valueFlags:     []string{"-t", "--team", "-e", "--environment", "--config"},
+			wantPositional: "my-app",
+		},
+		{
+			name:           "skips value-taking flags and values",
+			args:           []string{"nais", "job", "trigger", "--run-name", "manual", "my-job"},
+			subcommand:     "trigger",
+			valueFlags:     []string{"-t", "--team", "-e", "--environment", "--config", "--run-name"},
+			wantPositional: "my-job",
+		},
+		{
+			name:           "skips equals form for value-taking flags",
+			args:           []string{"nais", "job", "trigger", "--run-name=manual", "my-job"},
+			subcommand:     "trigger",
+			valueFlags:     []string{"--run-name"},
+			wantPositional: "my-job",
+		},
+		{
+			name:           "supports end-of-flags marker",
+			args:           []string{"nais", "app", "restart", "--", "my-app"},
+			subcommand:     "restart",
+			valueFlags:     []string{"-t", "--team", "-e", "--environment", "--config"},
+			wantPositional: "my-app",
+		},
+		{
+			name:           "returns empty when none found",
+			args:           []string{"nais", "app", "restart", "--team", "nais"},
+			subcommand:     "restart",
+			valueFlags:     []string{"--team"},
+			wantPositional: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := PositionalArgAfterSubcommand(tt.args, tt.subcommand, tt.valueFlags)
+			if got != tt.wantPositional {
+				t.Fatalf("PositionalArgAfterSubcommand() = %q, want %q", got, tt.wantPositional)
+			}
+		})
+	}
+}

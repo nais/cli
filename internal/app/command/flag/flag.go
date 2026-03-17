@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	activityutil "github.com/nais/cli/internal/activity"
@@ -28,7 +27,7 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 		team = cliTeam
 	}
 	if team == "" {
-		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
+		return autoCompleteEnvironments(ctx)
 	}
 
 	if appName := appNameForEnvironmentCompletion(args); appName != "" {
@@ -101,43 +100,11 @@ func isRestartCompletionFromCLIArgs() bool {
 }
 
 func appNameFromCLIArgs(argv []string) string {
-	seenRestart := false
-
-	for i := 0; i < len(argv); i++ {
-		arg := argv[i]
-
-		if arg == "restart" {
-			seenRestart = true
-			continue
-		}
-		if !seenRestart {
-			continue
-		}
-
-		if arg == "--" {
-			if i+1 < len(argv) {
-				return argv[i+1]
-			}
-			return ""
-		}
-
-		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") {
-			continue
-		}
-
-		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" {
-			i++
-			continue
-		}
-
-		if strings.HasPrefix(arg, "-") {
-			continue
-		}
-
-		return arg
-	}
-
-	return ""
+	return cliflags.PositionalArgAfterSubcommand(
+		argv,
+		"restart",
+		[]string{"-t", "--team", "-e", "--environment", "--config"},
+	)
 }
 
 type instances []string

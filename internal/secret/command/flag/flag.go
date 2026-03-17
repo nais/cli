@@ -19,6 +19,12 @@ type Secret struct {
 	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
+type teamProvider interface {
+	GetTeam() string
+}
+
+func (s *Secret) GetTeam() string { return string(s.Team) }
+
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
@@ -42,10 +48,6 @@ func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string,
 type GetEnv string
 
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
-	type teamProvider interface {
-		GetTeam() string
-	}
-
 	tp, ok := flags.(teamProvider)
 	if !ok || tp.GetTeam() == "" {
 		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
@@ -92,24 +94,11 @@ func (e *Environments) AutoComplete(ctx context.Context, _ *naistrix.Arguments, 
 }
 
 func secretTeamFromFlags(flags any) string {
-	switch f := flags.(type) {
-	case *Get:
-		return string(f.Team)
-	case *Delete:
-		return string(f.Team)
-	case *Set:
-		return string(f.Team)
-	case *Unset:
-		return string(f.Team)
-	case *List:
-		return string(f.Team)
-	case *Activity:
-		return string(f.Team)
-	case *Secret:
-		return string(f.Team)
-	default:
+	tp, ok := flags.(teamProvider)
+	if !ok {
 		return ""
 	}
+	return tp.GetTeam()
 }
 
 type Output string

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/cliflags"
@@ -27,7 +26,11 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 		team = cliTeam
 	}
 	if team == "" {
-		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
+		envs, err := naisapi.GetAllEnvironments(ctx)
+		if err != nil {
+			return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+		}
+		return envs, "Available environments"
 	}
 
 	if jobName := jobNameForEnvironmentCompletion(args); jobName != "" {
@@ -96,43 +99,11 @@ func isTriggerCompletionFromCLIArgs() bool {
 }
 
 func jobNameFromCLIArgs(argv []string) string {
-	seenTrigger := false
-
-	for i := 0; i < len(argv); i++ {
-		arg := argv[i]
-
-		if arg == "trigger" {
-			seenTrigger = true
-			continue
-		}
-		if !seenTrigger {
-			continue
-		}
-
-		if arg == "--" {
-			if i+1 < len(argv) {
-				return argv[i+1]
-			}
-			return ""
-		}
-
-		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") || strings.HasPrefix(arg, "--run-name=") {
-			continue
-		}
-
-		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" || arg == "--run-name" {
-			i++
-			continue
-		}
-
-		if strings.HasPrefix(arg, "-") {
-			continue
-		}
-
-		return arg
-	}
-
-	return ""
+	return cliflags.PositionalArgAfterSubcommand(
+		argv,
+		"trigger",
+		[]string{"-t", "--team", "-e", "--environment", "--config", "--run-name"},
+	)
 }
 
 type Output string
