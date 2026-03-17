@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/flags"
@@ -96,12 +97,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 }
 
 func isCredentialsCompletionFromCLIArgs() bool {
-	for _, arg := range os.Args {
-		if arg == "credentials" {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(os.Args, "credentials")
 }
 
 func valkeyCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
