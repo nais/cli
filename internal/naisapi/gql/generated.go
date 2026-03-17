@@ -21956,6 +21956,92 @@ type TailLogResponse struct {
 // GetLog returns TailLogResponse.Log, and is useful for accessing the field via an interface.
 func (v *TailLogResponse) GetLog() TailLogLogLogLine { return v.Log }
 
+// TeamApplicationEnvironmentsResponse is returned by TeamApplicationEnvironments on success.
+type TeamApplicationEnvironmentsResponse struct {
+	// Get a team by its slug.
+	Team TeamApplicationEnvironmentsTeam `json:"team"`
+}
+
+// GetTeam returns TeamApplicationEnvironmentsResponse.Team, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsResponse) GetTeam() TeamApplicationEnvironmentsTeam {
+	return v.Team
+}
+
+// TeamApplicationEnvironmentsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type TeamApplicationEnvironmentsTeam struct {
+	// Nais applications owned by the team.
+	Applications TeamApplicationEnvironmentsTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns TeamApplicationEnvironmentsTeam.Applications, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsTeam) GetApplications() TeamApplicationEnvironmentsTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// TeamApplicationEnvironmentsTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type TeamApplicationEnvironmentsTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns TeamApplicationEnvironmentsTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsTeamApplicationsApplicationConnection) GetNodes() []TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The team environment for the application.
+	TeamEnvironment TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTeamEnvironment returns TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *TeamApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
 // Input for filtering the applications of a team.
 type TeamApplicationsFilter struct {
 	// Input for filtering the applications of a team.
@@ -24411,6 +24497,14 @@ func (v *__TailLogInput) GetLimit() int { return v.Limit }
 
 // GetStart returns __TailLogInput.Start, and is useful for accessing the field via an interface.
 func (v *__TailLogInput) GetStart() time.Time { return v.Start }
+
+// __TeamApplicationEnvironmentsInput is used internally by genqlient
+type __TeamApplicationEnvironmentsInput struct {
+	Team string `json:"team"`
+}
+
+// GetTeam returns __TeamApplicationEnvironmentsInput.Team, and is useful for accessing the field via an interface.
+func (v *__TeamApplicationEnvironmentsInput) GetTeam() string { return v.Team }
 
 // __TeamMembersInput is used internally by genqlient
 type __TeamMembersInput struct {
@@ -26887,6 +26981,48 @@ func TailLogForwardData(interfaceChan interface{}, jsonRawMsg json.RawMessage) e
 	}
 	dataChan_ <- wsResp
 	return nil
+}
+
+// The query executed by TeamApplicationEnvironments.
+const TeamApplicationEnvironments_Operation = `
+query TeamApplicationEnvironments ($team: Slug!) {
+	team(slug: $team) {
+		applications(first: 1000) {
+			nodes {
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func TeamApplicationEnvironments(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+) (data_ *TeamApplicationEnvironmentsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "TeamApplicationEnvironments",
+		Query:  TeamApplicationEnvironments_Operation,
+		Variables: &__TeamApplicationEnvironmentsInput{
+			Team: team,
+		},
+	}
+
+	data_ = &TeamApplicationEnvironmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
 }
 
 // The query executed by TeamMembers.

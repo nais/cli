@@ -3,6 +3,9 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"reflect"
+	"strings"
 	"time"
 
 	activityutil "github.com/nais/cli/internal/activity"
@@ -20,11 +23,166 @@ type App struct {
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	envs, err := naisapi.GetAllEnvironments(ctx)
-	if err != nil {
-		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	team := appTeamFromFlags(flags)
+	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+		team = cliTeam
 	}
-	return envs, "Available environments"
+	if team == "" {
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
+	}
+
+	if team != "" {
+		if appName := appNameForEnvironmentCompletion(args); appName != "" {
+			envs, err := app.ApplicationEnvironments(ctx, team, appName)
+			if err == nil && len(envs) > 0 {
+				return envs, "Available environments"
+			}
+		}
+
+		envs, err := app.TeamApplicationEnvironments(ctx, team)
+		if err != nil {
+			return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+		}
+		if len(envs) > 0 {
+			return envs, "Available environments"
+		}
+
+		return nil, "No environments with applications found for this team."
+	}
+
+	return nil, "No environments available"
+}
+
+func appTeamFromFlags(flags any) string {
+	switch f := flags.(type) {
+	case *Activity:
+		if f.App != nil && f.App.Team != "" {
+			return string(f.App.Team)
+		}
+		return string(f.Team)
+	case *Issues:
+		if f.App != nil && f.App.Team != "" {
+			return string(f.App.Team)
+		}
+		return string(f.Team)
+	case *List:
+		if f.App != nil && f.App.Team != "" {
+			return string(f.App.Team)
+		}
+		return string(f.Team)
+	case *Restart:
+		return string(f.Team)
+	case *App:
+		return string(f.Team)
+	default:
+		v := reflect.ValueOf(flags)
+		if !v.IsValid() {
+			return ""
+		}
+		if v.Kind() == reflect.Ptr {
+			if v.IsNil() {
+				return ""
+			}
+			v = v.Elem()
+		}
+		if v.Kind() != reflect.Struct {
+			return ""
+		}
+
+		teamField := v.FieldByName("Team")
+		if teamField.IsValid() && teamField.Kind() == reflect.String {
+			return teamField.String()
+		}
+
+		return ""
+	}
+}
+
+func appNameForEnvironmentCompletion(args *naistrix.Arguments) string {
+	if args.Len() > 0 {
+		if name := args.Get("name"); name != "" {
+			return name
+		}
+	}
+
+	// Some command/flag combinations (for example app restart with parent sticky flags)
+	// do not expose positional args through naistrix during completion.
+	if !isRestartCompletionFromCLIArgs() {
+		return ""
+	}
+
+	return appNameFromCLIArgs(os.Args)
+}
+
+func isRestartCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "restart" {
+			return true
+		}
+	}
+	return false
+}
+
+func appNameFromCLIArgs(argv []string) string {
+	seenRestart := false
+
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if arg == "restart" {
+			seenRestart = true
+			continue
+		}
+		if !seenRestart {
+			continue
+		}
+
+		if arg == "--" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+
+		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") {
+			continue
+		}
+
+		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" {
+			i++
+			continue
+		}
+
+		if strings.HasPrefix(arg, "-") {
+			continue
+		}
+
+		return arg
+	}
+
+	return ""
+}
+
+func teamFromCLIArgs(argv []string) string {
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if strings.HasPrefix(arg, "--team=") {
+			return strings.TrimPrefix(arg, "--team=")
+		}
+		if strings.HasPrefix(arg, "-t=") {
+			return strings.TrimPrefix(arg, "-t=")
+		}
+
+		if arg == "-t" || arg == "--team" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+	}
+
+	return ""
 }
 
 type instances []string
@@ -87,13 +245,17 @@ func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, strin
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	if args.Len() == 0 {
-		return autoCompleteEnvironments(ctx)
-	}
-
 	f := flags.(*Log)
 	if len(f.Team) == 0 {
 		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	if args.Len() == 0 {
+		envs, err := app.TeamApplicationEnvironments(ctx, f.Team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments"
+		}
+		return autoCompleteEnvironments(ctx)
 	}
 
 	envs, err := app.ApplicationEnvironments(ctx, f.Team, args.Get("name"))

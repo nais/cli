@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -107,5 +108,47 @@ func ApplicationEnvironments(ctx context.Context, team, appName string) ([]strin
 			ret = append(ret, app.TeamEnvironment.Environment.Name)
 		}
 	}
+	return ret, nil
+}
+
+func TeamApplicationEnvironments(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query TeamApplicationEnvironments($team: Slug!) {
+		  team(slug: $team) {
+			  applications(first: 1000) {
+		      nodes {
+		        teamEnvironment {
+		          environment {
+		            name
+		          }
+		        }
+		      }
+		    }
+		  }
+		}
+		`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.TeamApplicationEnvironments(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	ret := make([]string, 0)
+	for _, node := range resp.Team.Applications.Nodes {
+		env := node.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		ret = append(ret, env)
+	}
+
+	sort.Strings(ret)
 	return ret, nil
 }
