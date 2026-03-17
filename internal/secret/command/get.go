@@ -42,9 +42,6 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 				return err
 			}
 			providedEnvironment := string(f.Environment)
-			if providedEnvironment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
-			}
 			if err := validation.CheckEnvironment(providedEnvironment); err != nil {
 				return err
 			}

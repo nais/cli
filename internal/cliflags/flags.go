@@ -2,6 +2,15 @@ package cliflags
 
 import "strings"
 
+var valueTakingFlags = map[string]struct{}{
+	"-t":            {},
+	"--team":        {},
+	"-e":            {},
+	"--environment": {},
+	"--config":      {},
+	"--run-name":    {},
+}
+
 // UniqueFlagValues returns unique values for a short/long CLI flag from args.
 // It supports forms: -e value, --environment value, -e=value, --environment=value.
 func UniqueFlagValues(args []string, shortFlag, longFlag string) []string {
@@ -145,7 +154,8 @@ func HasSubCommandPath(args []string, parent string, subcommands ...string) bool
 				break
 			}
 			if strings.HasPrefix(next, "-") {
-				if !strings.Contains(next, "=") && j+1 < len(args) {
+				_, takesValue := valueTakingFlags[next]
+				if takesValue && !strings.Contains(next, "=") && j+1 < len(args) {
 					value := args[j+1]
 					if value != "" && !strings.HasPrefix(value, "-") {
 						j++

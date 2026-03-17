@@ -131,11 +131,11 @@ func jobNameFromCLIArgs(argv []string) string {
 			return ""
 		}
 
-		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") {
+		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") || strings.HasPrefix(arg, "--run-name=") {
 			continue
 		}
 
-		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" {
+		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" || arg == "--run-name" {
 			i++
 			continue
 		}

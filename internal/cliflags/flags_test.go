@@ -298,6 +298,13 @@ func TestHasSubCommandPath(t *testing.T) {
 			wantHas: true,
 		},
 		{
+			name:    "matches with boolean flag between parent and subcommand",
+			args:    []string{"nais", "app", "--verbose", "restart"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: true,
+		},
+		{
 			name:    "matches one of many subcommands",
 			args:    []string{"nais", "valkey", "list"},
 			parent:  "valkey",
@@ -331,6 +338,13 @@ func TestHasSubCommandPath(t *testing.T) {
 			parent:  "app",
 			subs:    nil,
 			wantHas: false,
+		},
+		{
+			name:    "unknown flag does not consume following token",
+			args:    []string{"nais", "app", "--unknown", "restart"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: true,
 		},
 	}
 
