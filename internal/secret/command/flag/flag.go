@@ -21,7 +21,6 @@ type Secret struct {
 
 type Env string
 
-
 func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	team := secretTeamFromFlags(flags)
 	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
@@ -77,7 +76,6 @@ func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
 
 type Environments []string
 
-
 func (e *Environments) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	team := secretTeamFromFlags(flags)
 	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
@@ -115,14 +113,14 @@ func secretTeamFromFlags(flags any) string {
 }
 
 func teamFromCLIArgs(argv []string) string {
-	for i := 0; i < len(argv); i++ {
+	for i := range argv {
 		arg := argv[i]
 
-		if strings.HasPrefix(arg, "--team=") {
-			return strings.TrimPrefix(arg, "--team=")
+		if after, ok := strings.CutPrefix(arg, "--team="); ok {
+			return after
 		}
-		if strings.HasPrefix(arg, "-t=") {
-			return strings.TrimPrefix(arg, "-t=")
+		if after, ok := strings.CutPrefix(arg, "-t="); ok {
+			return after
 		}
 
 		if arg == "-t" || arg == "--team" {

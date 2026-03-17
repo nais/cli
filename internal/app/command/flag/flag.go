@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -79,7 +80,7 @@ func appTeamFromFlags(flags any) string {
 		if !v.IsValid() {
 			return ""
 		}
-		if v.Kind() == reflect.Ptr {
+		if v.Kind() == reflect.Pointer {
 			if v.IsNil() {
 				return ""
 			}
@@ -115,12 +116,7 @@ func appNameForEnvironmentCompletion(args *naistrix.Arguments) string {
 }
 
 func isRestartCompletionFromCLIArgs() bool {
-	for _, arg := range os.Args {
-		if arg == "restart" {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(os.Args, "restart")
 }
 
 func appNameFromCLIArgs(argv []string) string {
@@ -164,14 +160,14 @@ func appNameFromCLIArgs(argv []string) string {
 }
 
 func teamFromCLIArgs(argv []string) string {
-	for i := 0; i < len(argv); i++ {
+	for i := range argv {
 		arg := argv[i]
 
-		if strings.HasPrefix(arg, "--team=") {
-			return strings.TrimPrefix(arg, "--team=")
+		if after, ok := strings.CutPrefix(arg, "--team="); ok {
+			return after
 		}
-		if strings.HasPrefix(arg, "-t=") {
-			return strings.TrimPrefix(arg, "-t=")
+		if after, ok := strings.CutPrefix(arg, "-t="); ok {
+			return after
 		}
 
 		if arg == "-t" || arg == "--team" {

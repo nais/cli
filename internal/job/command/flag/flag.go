@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -72,7 +73,7 @@ func jobTeamFromFlags(flags any) string {
 		if !v.IsValid() {
 			return ""
 		}
-		if v.Kind() == reflect.Ptr {
+		if v.Kind() == reflect.Pointer {
 			if v.IsNil() {
 				return ""
 			}
@@ -106,12 +107,7 @@ func jobNameForEnvironmentCompletion(args *naistrix.Arguments) string {
 }
 
 func isTriggerCompletionFromCLIArgs() bool {
-	for _, arg := range os.Args {
-		if arg == "trigger" {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(os.Args, "trigger")
 }
 
 func jobNameFromCLIArgs(argv []string) string {
@@ -155,14 +151,14 @@ func jobNameFromCLIArgs(argv []string) string {
 }
 
 func teamFromCLIArgs(argv []string) string {
-	for i := 0; i < len(argv); i++ {
+	for i := range argv {
 		arg := argv[i]
 
-		if strings.HasPrefix(arg, "--team=") {
-			return strings.TrimPrefix(arg, "--team=")
+		if after, ok := strings.CutPrefix(arg, "--team="); ok {
+			return after
 		}
-		if strings.HasPrefix(arg, "-t=") {
-			return strings.TrimPrefix(arg, "-t=")
+		if after, ok := strings.CutPrefix(arg, "-t="); ok {
+			return after
 		}
 
 		if arg == "-t" || arg == "--team" {
