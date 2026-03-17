@@ -36,3 +36,17 @@ type List struct {
 	*Kafka
 	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
+
+type CredentialsOutput string
+
+var _ naistrix.FlagAutoCompleter = (*CredentialsOutput)(nil)
+
+func (o *CredentialsOutput) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"env", "kcat", "java"}, "Available output formats."
+}
+
+type Credentials struct {
+	*Kafka
+	TTL    string            `name:"ttl" usage:"Time-to-live for the credentials (e.g. '1d', '7d'). Maximum 30 days."`
+	Output CredentialsOutput `name:"output" short:"o" usage:"Output format (env, kcat, java). Defaults to env."`
+}
