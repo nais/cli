@@ -21,6 +21,7 @@ type DB interface {
 	RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, out *naistrix.OutputWriter, printInstructions bool) error
 
 	AppName() string
+	SetSecretValues(sv *SecretValues)
 
 	// TODO: Remove when interface migration complete
 	ToCloudSQLDBInfo() (*CloudSQLDBInfo, error)

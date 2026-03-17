@@ -14,26 +14,30 @@ import (
 
 func EnableAuditLogging(ctx context.Context, appName string, fl *flag.EnableAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonEnableAudit, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonEnableAudit, out)
+	if err != nil {
 		return err
 	}
-	return enableAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, out)
+	return enableAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, sv, out)
 }
 
 func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	if _, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonVerifyAudit, out); err != nil {
+	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonVerifyAudit, out)
+	if err != nil {
 		return err
 	}
-	_, err := verifyAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, out)
+	_, err = verifyAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, sv, out)
 	return err
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, out *naistrix.OutputWriter) error {
+func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, sv *SecretValues, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
@@ -197,11 +201,13 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 	return dbFlags, nil
 }
 
-func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, out *naistrix.OutputWriter) (bool, error) {
+func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, sv *SecretValues, out *naistrix.OutputWriter) (bool, error) {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return false, err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {

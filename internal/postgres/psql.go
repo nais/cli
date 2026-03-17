@@ -13,7 +13,8 @@ import (
 
 func RunPSQL(ctx context.Context, appName string, fl *flag.Psql, out *naistrix.OutputWriter) error {
 	// Get secret values with user-provided reason (access is logged for audit purposes)
-	if _, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out); err != nil {
+	sv, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out)
+	if err != nil {
 		return err
 	}
 
@@ -26,6 +27,8 @@ func RunPSQL(ctx context.Context, appName string, fl *flag.Psql, out *naistrix.O
 	if err != nil {
 		return err
 	}
+
+	dbInfo.SetSecretValues(sv)
 
 	connectionInfo, err := dbInfo.DBConnection(ctx)
 	if err != nil {
