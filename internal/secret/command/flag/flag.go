@@ -135,8 +135,6 @@ type Get struct {
 	Reason      string `name:"reason" usage:"Reason for accessing secret values (min 10 chars). Used with --with-values."`
 }
 
-func (g *Get) GetTeam() string { return string(g.Team) }
-
 type Create struct {
 	*Secret
 }
@@ -147,8 +145,6 @@ type Delete struct {
 	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 }
 
-func (d *Delete) GetTeam() string { return string(d.Team) }
-
 type Set struct {
 	*Secret
 	Environment    GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
@@ -157,13 +153,9 @@ type Set struct {
 	ValueFromStdin bool   `name:"value-from-stdin" usage:"Read value from stdin."`
 }
 
-func (s *Set) GetTeam() string { return string(s.Team) }
-
 type Unset struct {
 	*Secret
 	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
 	Key         string `name:"key" usage:"Name of the key to unset."`
 	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
 }
-
-func (u *Unset) GetTeam() string { return string(u.Team) }

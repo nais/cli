@@ -106,32 +106,14 @@ func GetJobNames(ctx context.Context, team string, environments []string) ([]str
 }
 
 func TeamJobEnvironments(ctx context.Context, team string) ([]string, error) {
-	client, err := naisapi.GraphqlClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := gql.GetJobNames(ctx, client, team)
-	if err != nil {
-		return nil, err
-	}
-
-	seen := make(map[string]struct{})
-	ret := make([]string, 0)
-	for _, j := range resp.Team.Jobs.Nodes {
-		env := j.TeamEnvironment.Environment.Name
-		if _, ok := seen[env]; ok {
-			continue
-		}
-		seen[env] = struct{}{}
-		ret = append(ret, env)
-	}
-
-	sort.Strings(ret)
-	return ret, nil
+	return jobEnvironments(ctx, team, "")
 }
 
 func JobEnvironments(ctx context.Context, team, jobName string) ([]string, error) {
+	return jobEnvironments(ctx, team, jobName)
+}
+
+func jobEnvironments(ctx context.Context, team, jobName string) ([]string, error) {
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err
@@ -145,7 +127,7 @@ func JobEnvironments(ctx context.Context, team, jobName string) ([]string, error
 	seen := make(map[string]struct{})
 	ret := make([]string, 0)
 	for _, j := range resp.Team.Jobs.Nodes {
-		if j.Name != jobName {
+		if jobName != "" && j.Name != jobName {
 			continue
 		}
 		env := j.TeamEnvironment.Environment.Name
