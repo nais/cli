@@ -40,7 +40,12 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 }
 
 func isInstanceEnvironmentCompletionFromCLIArgs() bool {
-	return cliflags.HasSubCommandPath(os.Args, "opensearch", "credentials", "delete", "get", "list", "update")
+	return cliflags.HasSubCommandPathWithValueFlags(
+		os.Args,
+		"opensearch",
+		[]string{"-t", "--team", "-e", "--environment", "--config"},
+		"credentials", "delete", "get", "list", "update",
+	)
 }
 
 func opensearchCredentialEnvironments(ctx context.Context, team string) ([]string, error) {

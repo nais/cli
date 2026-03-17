@@ -359,3 +359,25 @@ func TestHasSubCommandPath(t *testing.T) {
 		})
 	}
 }
+
+func TestHasSubCommandPathWithValueFlags(t *testing.T) {
+	t.Parallel()
+
+	t.Run("consumes only configured value-taking flags", func(t *testing.T) {
+		t.Parallel()
+
+		args := []string{"nais", "job", "--run-name", "manual-run", "trigger"}
+		if !HasSubCommandPathWithValueFlags(args, "job", []string{"--run-name"}, "trigger") {
+			t.Fatalf("expected true when --run-name is configured as value-taking flag")
+		}
+	})
+
+	t.Run("does not consume unknown boolean flag", func(t *testing.T) {
+		t.Parallel()
+
+		args := []string{"nais", "app", "--verbose", "restart"}
+		if !HasSubCommandPathWithValueFlags(args, "app", []string{"--team"}, "restart") {
+			t.Fatalf("expected true when unknown flag does not consume next token")
+		}
+	})
+}

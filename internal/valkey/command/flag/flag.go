@@ -105,7 +105,12 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 }
 
 func isInstanceEnvironmentCompletionFromCLIArgs() bool {
-	return cliflags.HasSubCommandPath(os.Args, "valkey", "credentials", "delete", "get", "list", "update")
+	return cliflags.HasSubCommandPathWithValueFlags(
+		os.Args,
+		"valkey",
+		[]string{"-t", "--team", "-e", "--environment", "--config"},
+		"credentials", "delete", "get", "list", "update",
+	)
 }
 
 func valkeyCredentialEnvironments(ctx context.Context, team string) ([]string, error) {

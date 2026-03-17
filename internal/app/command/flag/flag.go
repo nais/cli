@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
@@ -72,25 +71,6 @@ func appTeamFromFlags(flags any) string {
 	case *App:
 		return string(f.Team)
 	default:
-		v := reflect.ValueOf(flags)
-		if !v.IsValid() {
-			return ""
-		}
-		if v.Kind() == reflect.Pointer {
-			if v.IsNil() {
-				return ""
-			}
-			v = v.Elem()
-		}
-		if v.Kind() != reflect.Struct {
-			return ""
-		}
-
-		teamField := v.FieldByName("Team")
-		if teamField.IsValid() && teamField.Kind() == reflect.String {
-			return teamField.String()
-		}
-
 		return ""
 	}
 }
@@ -112,7 +92,12 @@ func appNameForEnvironmentCompletion(args *naistrix.Arguments) string {
 }
 
 func isRestartCompletionFromCLIArgs() bool {
-	return cliflags.HasSubCommandPath(os.Args, "app", "restart")
+	return cliflags.HasSubCommandPathWithValueFlags(
+		os.Args,
+		"app",
+		[]string{"-t", "--team", "-e", "--environment", "--config"},
+		"restart",
+	)
 }
 
 func appNameFromCLIArgs(argv []string) string {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
@@ -69,25 +68,6 @@ func jobTeamFromFlags(flags any) string {
 	case *Job:
 		return string(f.Team)
 	default:
-		v := reflect.ValueOf(flags)
-		if !v.IsValid() {
-			return ""
-		}
-		if v.Kind() == reflect.Pointer {
-			if v.IsNil() {
-				return ""
-			}
-			v = v.Elem()
-		}
-		if v.Kind() != reflect.Struct {
-			return ""
-		}
-
-		teamField := v.FieldByName("Team")
-		if teamField.IsValid() && teamField.Kind() == reflect.String {
-			return teamField.String()
-		}
-
 		return ""
 	}
 }
@@ -107,7 +87,12 @@ func jobNameForEnvironmentCompletion(args *naistrix.Arguments) string {
 }
 
 func isTriggerCompletionFromCLIArgs() bool {
-	return cliflags.HasSubCommandPath(os.Args, "job", "trigger")
+	return cliflags.HasSubCommandPathWithValueFlags(
+		os.Args,
+		"job",
+		[]string{"-t", "--team", "-e", "--environment", "--config", "--run-name"},
+		"trigger",
+	)
 }
 
 func jobNameFromCLIArgs(argv []string) string {

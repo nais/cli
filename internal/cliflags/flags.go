@@ -2,13 +2,13 @@ package cliflags
 
 import "strings"
 
-var valueTakingFlags = map[string]struct{}{
-	"-t":            {},
-	"--team":        {},
-	"-e":            {},
-	"--environment": {},
-	"--config":      {},
-	"--run-name":    {},
+var defaultValueTakingFlags = []string{
+	"-t",
+	"--team",
+	"-e",
+	"--environment",
+	"--config",
+	"--run-name",
 }
 
 // UniqueFlagValues returns unique values for a short/long CLI flag from args.
@@ -131,6 +131,12 @@ func FirstFlagValue(args []string, shortFlag, longFlag string) string {
 // HasSubCommandPath reports whether args contain a command path where `parent`
 // is followed by one of the provided subcommands as the next non-flag token.
 func HasSubCommandPath(args []string, parent string, subcommands ...string) bool {
+	return HasSubCommandPathWithValueFlags(args, parent, defaultValueTakingFlags, subcommands...)
+}
+
+// HasSubCommandPathWithValueFlags is like HasSubCommandPath, but lets callers
+// define which flags consume the next token as a value.
+func HasSubCommandPathWithValueFlags(args []string, parent string, valueTakingFlags []string, subcommands ...string) bool {
 	if len(subcommands) == 0 {
 		return false
 	}
@@ -138,6 +144,11 @@ func HasSubCommandPath(args []string, parent string, subcommands ...string) bool
 	allowed := make(map[string]struct{}, len(subcommands))
 	for _, sub := range subcommands {
 		allowed[sub] = struct{}{}
+	}
+
+	consumesValue := make(map[string]struct{}, len(valueTakingFlags))
+	for _, f := range valueTakingFlags {
+		consumesValue[f] = struct{}{}
 	}
 
 	for i := range args {
@@ -154,7 +165,7 @@ func HasSubCommandPath(args []string, parent string, subcommands ...string) bool
 				break
 			}
 			if strings.HasPrefix(next, "-") {
-				_, takesValue := valueTakingFlags[next]
+				_, takesValue := consumesValue[next]
 				if takesValue && !strings.Contains(next, "=") && j+1 < len(args) {
 					value := args[j+1]
 					if value != "" && !strings.HasPrefix(value, "-") {
