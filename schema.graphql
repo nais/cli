@@ -250,6 +250,10 @@ Started service maintenance on Valkey instance.
 Activity log entry for when a vulnerability is updated.
 """
 	VULNERABILITY_UPDATED
+"""
+Filter for credential creation events.
+"""
+	CREDENTIALS_CREATE
 }
 
 """
@@ -383,6 +387,10 @@ All activity log entries related to Valkeys will use this resource type.
 All activity log entries related to vulnerabilities will use this resource type.
 """
 	VULNERABILITY
+"""
+All activity log entries related to credential creation will use this resource type.
+"""
+	CREDENTIALS
 }
 
 input ActivityLogFilter {
@@ -10906,7 +10914,7 @@ The vulnerability.
 """
 Permission level for OpenSearch and Valkey credentials.
 """
-enum AivenPermission {
+enum CredentialPermission {
 	READ
 	WRITE
 	READWRITE
@@ -10929,7 +10937,7 @@ input CreateOpenSearchCredentialsInput {
 	"""
 	Permission level for the credentials.
 	"""
-	permission: AivenPermission!
+	permission: CredentialPermission!
 	"""
 	Time-to-live for the credentials (e.g. '1d', '7d'). Maximum 30 days.
 	"""
@@ -10982,7 +10990,7 @@ input CreateValkeyCredentialsInput {
 	"""
 	Permission level for the credentials.
 	"""
-	permission: AivenPermission!
+	permission: CredentialPermission!
 	"""
 	Time-to-live for the credentials (e.g. '1d', '7d'). Maximum 30 days.
 	"""
@@ -11066,5 +11074,63 @@ type CreateKafkaCredentialsPayload {
 	The generated credentials.
 	"""
 	credentials: KafkaCredentials!
+}
+
+type CredentialsActivityLogEntry implements ActivityLogEntry & Node {
+	"""
+	ID of the entry.
+	"""
+	id: ID!
+	"""
+	The identity of the actor who performed the action.
+	"""
+	actor: String!
+	"""
+	Creation time of the entry.
+	"""
+	createdAt: Time!
+	"""
+	Message that summarizes the entry.
+	"""
+	message: String!
+	"""
+	Type of the resource that was affected by the action.
+	"""
+	resourceType: ActivityLogEntryResourceType!
+	"""
+	Name of the resource that was affected by the action.
+	"""
+	resourceName: String!
+	"""
+	The team slug that the entry belongs to.
+	"""
+	teamSlug: Slug
+	"""
+	The environment name that the entry belongs to.
+	"""
+	environmentName: String
+	"""
+	Data associated with the credential creation.
+	"""
+	data: CredentialsActivityLogEntryData!
+}
+
+type CredentialsActivityLogEntryData {
+	"""
+	The service type (OPENSEARCH, VALKEY, KAFKA).
+	"""
+	serviceType: String!
+	"""
+	The instance name, if applicable.
+	"""
+	instanceName: String
+	"""
+	The permission level, if applicable.
+	"""
+	permission: String
+	"""
+	The TTL that was requested for the credentials.
+	"""
+	ttl: String!
 }
 
