@@ -3,9 +3,13 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"reflect"
+	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
@@ -18,11 +22,158 @@ type Job struct {
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	envs, err := naisapi.GetAllEnvironments(ctx)
+	team := jobTeamFromFlags(flags)
+	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+		team = cliTeam
+	}
+	if team == "" {
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
+	}
+
+	if jobName := jobNameForEnvironmentCompletion(args); jobName != "" {
+		envs, err := job.JobEnvironments(ctx, team, jobName)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments"
+		}
+	}
+
+	envs, err := job.TeamJobEnvironments(ctx, team)
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
 	}
-	return envs, "Available environments"
+	if len(envs) > 0 {
+		return envs, "Available environments"
+	}
+
+	return nil, "No environments with jobs found for this team."
+}
+
+func jobTeamFromFlags(flags any) string {
+	switch f := flags.(type) {
+	case *Activity:
+		if f.Job != nil && f.Job.Team != "" {
+			return string(f.Job.Team)
+		}
+		return string(f.Team)
+	case *Issues:
+		if f.Job != nil && f.Job.Team != "" {
+			return string(f.Job.Team)
+		}
+		return string(f.Team)
+	case *List:
+		if f.Job != nil && f.Job.Team != "" {
+			return string(f.Job.Team)
+		}
+		return string(f.Team)
+	case *Job:
+		return string(f.Team)
+	default:
+		v := reflect.ValueOf(flags)
+		if !v.IsValid() {
+			return ""
+		}
+		if v.Kind() == reflect.Ptr {
+			if v.IsNil() {
+				return ""
+			}
+			v = v.Elem()
+		}
+		if v.Kind() != reflect.Struct {
+			return ""
+		}
+
+		teamField := v.FieldByName("Team")
+		if teamField.IsValid() && teamField.Kind() == reflect.String {
+			return teamField.String()
+		}
+
+		return ""
+	}
+}
+
+func jobNameForEnvironmentCompletion(args *naistrix.Arguments) string {
+	if args.Len() > 0 {
+		if name := args.Get("name"); name != "" {
+			return name
+		}
+	}
+
+	if !isTriggerCompletionFromCLIArgs() {
+		return ""
+	}
+
+	return jobNameFromCLIArgs(os.Args)
+}
+
+func isTriggerCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "trigger" {
+			return true
+		}
+	}
+	return false
+}
+
+func jobNameFromCLIArgs(argv []string) string {
+	seenTrigger := false
+
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if arg == "trigger" {
+			seenTrigger = true
+			continue
+		}
+		if !seenTrigger {
+			continue
+		}
+
+		if arg == "--" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+
+		if strings.HasPrefix(arg, "--team=") || strings.HasPrefix(arg, "--environment=") || strings.HasPrefix(arg, "--config=") {
+			continue
+		}
+
+		if arg == "-t" || arg == "--team" || arg == "-e" || arg == "--environment" || arg == "--config" {
+			i++
+			continue
+		}
+
+		if strings.HasPrefix(arg, "-") {
+			continue
+		}
+
+		return arg
+	}
+
+	return ""
+}
+
+func teamFromCLIArgs(argv []string) string {
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if strings.HasPrefix(arg, "--team=") {
+			return strings.TrimPrefix(arg, "--team=")
+		}
+		if strings.HasPrefix(arg, "-t=") {
+			return strings.TrimPrefix(arg, "-t=")
+		}
+
+		if arg == "-t" || arg == "--team" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+	}
+
+	return ""
 }
 
 type Output string
@@ -58,7 +209,35 @@ type Trigger struct {
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	envs, err := naisapi.GetAllEnvironments(ctx)
+	var team string
+	switch t := flags.(type) {
+	case *Log:
+		team = string(t.Team)
+	case *Trigger:
+		team = string(t.Team)
+	}
+	if team == "" {
+		if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+			team = cliTeam
+		}
+	}
+	if team == "" {
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
+	}
+
+	if args.Len() == 0 {
+		envs, err := job.TeamJobEnvironments(ctx, team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments"
+		}
+		envs, err = naisapi.GetAllEnvironments(ctx)
+		if err != nil {
+			return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+		}
+		return envs, "Available environments"
+	}
+
+	envs, err := job.JobEnvironments(ctx, team, args.Get("name"))
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
 	}

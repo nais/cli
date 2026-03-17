@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"sync/atomic"
 	"time"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	logs "github.com/nais/cli/internal/log/command"
@@ -99,10 +101,14 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 				if len(flags.Team) == 0 {
 					return nil, "Please provide team to auto-complete job names. 'nais config set team <team>', or '--team <team>' flag."
 				}
+				envs := []string{string(flags.Environment)}
 				if flags.Environment == "" {
+					envs = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
+				}
+				if len(envs) != 1 {
 					return nil, "Please provide environment to auto-complete job names. '--environment <environment>' flag."
 				}
-				jobs, err := job.GetJobNames(ctx, flags.Team, []string{string(flags.Environment)})
+				jobs, err := job.GetJobNames(ctx, flags.Team, envs)
 				if err != nil {
 					return nil, "Unable to fetch job names."
 				}

@@ -2,7 +2,9 @@ package command
 
 import (
 	"context"
+	"os"
 
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/naistrix"
@@ -40,7 +42,12 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 				if len(flags.Team) == 0 {
 					return nil, "Please provide team to auto-complete job names. 'nais config set team <team>', or '--team <team>' flag."
 				}
-				jobs, err := job.GetJobNames(ctx, flags.Team, flags.Environment)
+				environments := []string(flags.Environment)
+				if len(environments) == 0 {
+					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
+				}
+
+				jobs, err := job.GetJobNames(ctx, flags.Team, environments)
 				if err != nil {
 					return nil, "Unable to fetch job names."
 				}

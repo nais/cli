@@ -105,6 +105,95 @@ func GetJobNames(ctx context.Context, team string, environments []string) ([]str
 	return ret, nil
 }
 
+func TeamJobEnvironments(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query GetJobNames($team: Slug!) {
+			team(slug: $team) {
+				jobs(first: 1000) {
+					nodes {
+						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetJobNames(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	ret := make([]string, 0)
+	for _, j := range resp.Team.Jobs.Nodes {
+		env := j.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		ret = append(ret, env)
+	}
+
+	sort.Strings(ret)
+	return ret, nil
+}
+
+func JobEnvironments(ctx context.Context, team, jobName string) ([]string, error) {
+	_ = `# @genqlient
+		query GetJobNames($team: Slug!) {
+			team(slug: $team) {
+				jobs(first: 1000) {
+					nodes {
+						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetJobNames(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	ret := make([]string, 0)
+	for _, j := range resp.Team.Jobs.Nodes {
+		if j.Name != jobName {
+			continue
+		}
+		env := j.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		ret = append(ret, env)
+	}
+
+	sort.Strings(ret)
+	return ret, nil
+}
+
 func GetTeamJobs(ctx context.Context, team string, environments []string) ([]Job, error) {
 	_ = `# @genqlient
 		query GetTeamJobs($team: Slug!, $orderBy: JobOrder) {
