@@ -33,7 +33,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type List struct {
 	*Issues
-	Environment  Environment  `name:"environment" usage:"Filter issues by environment"`
+	Environment  Environment  `name:"environment" short:"e" usage:"Filter issues by environment"`
 	IssueType    IssueType    `name:"issuetype" usage:"Filter issues by issue type"`
 	ResourceName ResourceName `name:"resourcename" usage:"Filter issues by resource name"`
 	ResourceType ResourceType `name:"resourcetype" usage:"Filter issues by resource type"`
