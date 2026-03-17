@@ -10,8 +10,8 @@ import (
 	"time"
 
 	activityutil "github.com/nais/cli/internal/activity"
-	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/app"
+	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"

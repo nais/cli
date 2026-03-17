@@ -169,11 +169,11 @@ func TestFirstFlagValue(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
-		args     []string
-		short    string
-		long     string
-		want     string
+		name  string
+		args  []string
+		short string
+		long  string
+		want  string
 	}{
 		{
 			name:  "no matching flag",
