@@ -64,3 +64,46 @@ func GetTeamTopics(ctx context.Context, team string, environments []string) ([]T
 
 	return ret, nil
 }
+
+func TeamTopicEnvironments(ctx context.Context, team string) ([]string, error) {
+	_ = `# @genqlient
+		query GetTeamKafkaTopics($team: Slug!) {
+			team(slug: $team) {
+				kafkaTopics(first: 1000) {
+					nodes {
+						name
+						teamEnvironment {
+							environment {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetTeamKafkaTopics(ctx, client, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	ret := make([]string, 0)
+	for _, topic := range resp.Team.KafkaTopics.Nodes {
+		env := topic.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		ret = append(ret, env)
+	}
+
+	sort.Strings(ret)
+	return ret, nil
+}

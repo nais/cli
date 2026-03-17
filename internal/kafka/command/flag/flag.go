@@ -3,8 +3,11 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
@@ -17,11 +20,57 @@ type Kafka struct {
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	team := kafkaTeamFromFlags(flags)
+	if cliTeam := teamFromCLIArgs(os.Args); cliTeam != "" {
+		team = cliTeam
+	}
+	if team != "" {
+		envs, err := kafka.TeamTopicEnvironments(ctx, team)
+		if err == nil && len(envs) > 0 {
+			return envs, "Available environments"
+		}
+	}
+
 	envs, err := naisapi.GetAllEnvironments(ctx)
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
 	}
 	return envs, "Available environments"
+}
+
+func kafkaTeamFromFlags(flags any) string {
+	switch f := flags.(type) {
+	case *List:
+		return string(f.Team)
+	case *Credentials:
+		return string(f.Team)
+	case *Kafka:
+		return string(f.Team)
+	default:
+		return ""
+	}
+}
+
+func teamFromCLIArgs(argv []string) string {
+	for i := 0; i < len(argv); i++ {
+		arg := argv[i]
+
+		if strings.HasPrefix(arg, "--team=") {
+			return strings.TrimPrefix(arg, "--team=")
+		}
+		if strings.HasPrefix(arg, "-t=") {
+			return strings.TrimPrefix(arg, "-t=")
+		}
+
+		if arg == "-t" || arg == "--team" {
+			if i+1 < len(argv) {
+				return argv[i+1]
+			}
+			return ""
+		}
+	}
+
+	return ""
 }
 
 type Output string
