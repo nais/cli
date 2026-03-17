@@ -32,26 +32,22 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
-	if team != "" {
-		if appName := appNameForEnvironmentCompletion(args); appName != "" {
-			envs, err := app.ApplicationEnvironments(ctx, team, appName)
-			if err == nil && len(envs) > 0 {
-				return envs, "Available environments"
-			}
-		}
-
-		envs, err := app.TeamApplicationEnvironments(ctx, team)
-		if err != nil {
-			return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
-		}
-		if len(envs) > 0 {
+	if appName := appNameForEnvironmentCompletion(args); appName != "" {
+		envs, err := app.ApplicationEnvironments(ctx, team, appName)
+		if err == nil && len(envs) > 0 {
 			return envs, "Available environments"
 		}
-
-		return nil, "No environments with applications found for this team."
 	}
 
-	return nil, "No environments available"
+	envs, err := app.TeamApplicationEnvironments(ctx, team)
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	if len(envs) > 0 {
+		return envs, "Available environments"
+	}
+
+	return nil, "No environments with applications found for this team."
 }
 
 func appTeamFromFlags(flags any) string {
@@ -80,7 +76,7 @@ func appTeamFromFlags(flags any) string {
 		if !v.IsValid() {
 			return ""
 		}
-		if v.Kind() == reflect.Pointer {
+		if v.Kind() == reflect.Ptr {
 			if v.IsNil() {
 				return ""
 			}

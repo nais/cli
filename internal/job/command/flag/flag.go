@@ -73,7 +73,7 @@ func jobTeamFromFlags(flags any) string {
 		if !v.IsValid() {
 			return ""
 		}
-		if v.Kind() == reflect.Pointer {
+		if v.Kind() == reflect.Ptr {
 			if v.IsNil() {
 				return ""
 			}
