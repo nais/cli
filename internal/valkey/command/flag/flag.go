@@ -3,10 +3,13 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/naistrix"
 )
 
@@ -75,7 +78,51 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 }
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	var team string
+	switch f := flags.(type) {
+	case *Credentials:
+		team = f.Team
+	case *Valkey:
+		team = f.Team
+	}
+
+	if team != "" && isCredentialsCompletionFromCLIArgs() {
+		envs, err := valkeyCredentialEnvironments(ctx, team)
+		if err == nil {
+			return envs, "Available environments with Valkey instances"
+		}
+	}
 	return autoCompleteEnvironments(ctx)
+}
+
+func isCredentialsCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "credentials" {
+			return true
+		}
+	}
+	return false
+}
+
+func valkeyCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
+	instances, err := valkey.GetAll(ctx, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	var envs []string
+	for _, instance := range instances {
+		env := instance.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		envs = append(envs, env)
+	}
+
+	sort.Strings(envs)
+	return envs, nil
 }
 
 type Update struct {

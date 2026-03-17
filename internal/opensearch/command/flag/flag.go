@@ -3,6 +3,8 @@ package flag
 import (
 	"context"
 	"fmt"
+	"os"
+	"sort"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
@@ -19,7 +21,51 @@ type OpenSearch struct {
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+	var team string
+	switch f := flags.(type) {
+	case *Credentials:
+		team = f.Team
+	case *OpenSearch:
+		team = f.Team
+	}
+
+	if team != "" && isCredentialsCompletionFromCLIArgs() {
+		envs, err := opensearchCredentialEnvironments(ctx, team)
+		if err == nil {
+			return envs, "Available environments with OpenSearch instances"
+		}
+	}
 	return autoCompleteEnvironments(ctx)
+}
+
+func isCredentialsCompletionFromCLIArgs() bool {
+	for _, arg := range os.Args {
+		if arg == "credentials" {
+			return true
+		}
+	}
+	return false
+}
+
+func opensearchCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
+	instances, err := opensearch.GetAll(ctx, team)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	var envs []string
+	for _, instance := range instances {
+		env := instance.TeamEnvironment.Environment.Name
+		if _, ok := seen[env]; ok {
+			continue
+		}
+		seen[env] = struct{}{}
+		envs = append(envs, env)
+	}
+
+	sort.Strings(envs)
+	return envs, nil
 }
 
 type Create struct {
