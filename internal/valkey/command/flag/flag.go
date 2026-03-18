@@ -25,7 +25,7 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 	f, ok := flags.(*List)
 	if ok && f.Team != "" {
 		envs, err := valkeyCredentialEnvironments(ctx, f.Team)
-		if err == nil {
+		if err == nil && len(envs) > 0 {
 			return envs, "Available environments with Valkey instances"
 		}
 	}

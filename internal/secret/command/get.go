@@ -13,17 +13,10 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// Entry represents a key-value pair in a secret. When values are not fetched,
-// the Value field is empty and omitted from JSON output.
-type Entry struct {
-	Key   string `json:"key"`
-	Value string `json:"value,omitempty"`
-}
-
 type SecretDetail struct {
 	Name         string              `json:"name"`
 	Environment  string              `json:"environment"`
-	Data         []Entry             `json:"data"`
+	Data         []secret.Entry      `json:"data"`
 	LastModified secret.LastModified `json:"lastModified"`
 	ModifiedBy   string              `json:"modifiedBy,omitempty"`
 	Workloads    []string            `json:"workloads,omitempty"`
@@ -90,9 +83,9 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		return fmt.Errorf("fetching secret: %w", err)
 	}
 
-	entries := make([]Entry, len(existing.Keys))
+	entries := make([]secret.Entry, len(existing.Keys))
 	for i, k := range existing.Keys {
-		entries[i] = Entry{Key: k}
+		entries[i] = secret.Entry{Key: k}
 	}
 
 	if withValues {
@@ -155,11 +148,7 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 	if len(entries) > 0 {
 		var data [][]string
 		if withValues {
-			secretEntries := make([]secret.Entry, len(entries))
-			for i, e := range entries {
-				secretEntries[i] = secret.Entry{Key: e.Key, Value: e.Value}
-			}
-			data = secret.FormatDataWithValues(secretEntries)
+			data = secret.FormatDataWithValues(entries)
 		} else {
 			data = secret.FormatData(existing.Keys)
 		}

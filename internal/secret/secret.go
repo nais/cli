@@ -365,8 +365,8 @@ func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][
 // Entry represents a key-value pair in a secret. When values have not been
 // fetched, Value is empty.
 type Entry struct {
-	Key   string
-	Value string
+	Key   string `json:"key"`
+	Value string `json:"value,omitempty"`
 }
 
 // FormatData formats secret keys as a key-only table for pterm rendering.

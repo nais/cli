@@ -8,7 +8,6 @@ var defaultValueTakingFlags = []string{
 	"-e",
 	"--environment",
 	"--config",
-	"--run-name",
 }
 
 // UniqueFlagValues returns unique values for a short/long CLI flag from args.
@@ -191,6 +190,7 @@ func PositionalArgAfterSubcommand(args []string, subcommand string, valueTakingF
 	}
 
 	seenSubcommand := false
+outer:
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 
@@ -211,7 +211,7 @@ func PositionalArgAfterSubcommand(args []string, subcommand string, valueTakingF
 
 		for f := range consumesValue {
 			if strings.HasPrefix(arg, f+"=") {
-				goto nextArg
+				continue outer
 			}
 		}
 
@@ -225,8 +225,6 @@ func PositionalArgAfterSubcommand(args []string, subcommand string, valueTakingF
 		}
 
 		return arg
-
-	nextArg:
 	}
 
 	return ""

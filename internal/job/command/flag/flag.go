@@ -18,6 +18,13 @@ type Job struct {
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
+func (j *Job) GetTeam() string {
+	if j == nil {
+		return ""
+	}
+	return string(j.Team)
+}
+
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
@@ -51,28 +58,16 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 	return nil, "No environments with jobs found for this team."
 }
 
+type teamProvider interface {
+	GetTeam() string
+}
+
 func jobTeamFromFlags(flags any) string {
-	switch f := flags.(type) {
-	case *Activity:
-		if f.Job != nil && f.Job.Team != "" {
-			return string(f.Job.Team)
-		}
-		return string(f.Team)
-	case *Issues:
-		if f.Job != nil && f.Job.Team != "" {
-			return string(f.Job.Team)
-		}
-		return string(f.Team)
-	case *List:
-		if f.Job != nil && f.Job.Team != "" {
-			return string(f.Job.Team)
-		}
-		return string(f.Team)
-	case *Job:
-		return string(f.Team)
-	default:
+	tp, ok := flags.(teamProvider)
+	if !ok {
 		return ""
 	}
+	return tp.GetTeam()
 }
 
 func jobNameForEnvironmentCompletion(args *naistrix.Arguments) string {

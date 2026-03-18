@@ -19,6 +19,14 @@ type App struct {
 	*flags.GlobalFlags
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
 }
+
+func (a *App) GetTeam() string {
+	if a == nil {
+		return ""
+	}
+	return string(a.Team)
+}
+
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
@@ -48,30 +56,16 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 	return nil, "No environments with applications found for this team."
 }
 
+type teamProvider interface {
+	GetTeam() string
+}
+
 func appTeamFromFlags(flags any) string {
-	switch f := flags.(type) {
-	case *Activity:
-		if f.App != nil && f.App.Team != "" {
-			return string(f.App.Team)
-		}
-		return string(f.Team)
-	case *Issues:
-		if f.App != nil && f.App.Team != "" {
-			return string(f.App.Team)
-		}
-		return string(f.Team)
-	case *List:
-		if f.App != nil && f.App.Team != "" {
-			return string(f.App.Team)
-		}
-		return string(f.Team)
-	case *Restart:
-		return string(f.Team)
-	case *App:
-		return string(f.Team)
-	default:
+	tp, ok := flags.(teamProvider)
+	if !ok {
 		return ""
 	}
+	return tp.GetTeam()
 }
 
 func appNameForEnvironmentCompletion(args *naistrix.Arguments) string {
