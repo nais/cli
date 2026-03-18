@@ -3,6 +3,7 @@ package secret
 import (
 	"context"
 	"slices"
+	"sort"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -117,6 +118,10 @@ func buildSecretActivity(resources []secretActivityResource, name string, enviro
 			})
 		}
 	}
+
+	sort.SliceStable(ret, func(i, j int) bool {
+		return ret[i].CreatedAt.After(ret[j].CreatedAt)
+	})
 
 	return ret, found
 }

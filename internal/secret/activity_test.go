@@ -64,6 +64,31 @@ func TestBuildSecretActivity(t *testing.T) {
 			wantFound: false,
 			want:      []SecretActivity{},
 		},
+		{
+			name:       "sorted by created time descending",
+			secretName: "db-credentials",
+			resources: []secretActivityResource{
+				{
+					Name:           "db-credentials",
+					DefaultEnvName: "dev-gcp",
+					Entries: []secretActivityEntry{
+						{CreatedAt: now.Add(-2 * time.Hour), Actor: "alice@example.com", Message: "Older event", EnvironmentName: ""},
+					},
+				},
+				{
+					Name:           "db-credentials",
+					DefaultEnvName: "prod-gcp",
+					Entries: []secretActivityEntry{
+						{CreatedAt: now, Actor: "bob@example.com", Message: "Newest event", EnvironmentName: ""},
+					},
+				},
+			},
+			wantFound: true,
+			want: []SecretActivity{
+				{CreatedAt: now, Actor: "bob@example.com", Environment: "prod-gcp", Message: "Newest event"},
+				{CreatedAt: now.Add(-2 * time.Hour), Actor: "alice@example.com", Environment: "dev-gcp", Message: "Older event"},
+			},
+		},
 	}
 
 	for _, tt := range tests {
