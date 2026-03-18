@@ -298,3 +298,49 @@ func TestLastModified_MarshalJSON(t *testing.T) {
 		t.Errorf("MarshalJSON() zero = %s, want %q", data, "")
 	}
 }
+
+func TestUniqueSortedEnvironments(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		envs []string
+		want []string
+	}{
+		{
+			name: "deduplicates and sorts",
+			envs: []string{"prod-gcp", "dev-gcp", "prod-gcp", "staging", "dev-gcp"},
+			want: []string{"dev-gcp", "prod-gcp", "staging"},
+		},
+		{
+			name: "empty input returns empty slice",
+			envs: []string{},
+			want: []string{},
+		},
+		{
+			name: "single entry",
+			envs: []string{"dev-gcp"},
+			want: []string{"dev-gcp"},
+		},
+		{
+			name: "all duplicates",
+			envs: []string{"dev-gcp", "dev-gcp", "dev-gcp"},
+			want: []string{"dev-gcp"},
+		},
+		{
+			name: "already sorted unique",
+			envs: []string{"dev-gcp", "prod-gcp", "staging"},
+			want: []string{"dev-gcp", "prod-gcp", "staging"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := uniqueSortedEnvironments(tt.envs)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("uniqueSortedEnvironments() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

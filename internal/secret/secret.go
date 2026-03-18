@@ -71,26 +71,33 @@ func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, e
 	return envs, nil
 }
 
-// TeamSecretEnvironments returns unique environments where the team has one or more secrets.
+// TeamSecretEnvironments returns unique sorted environments where the team has one or more secrets.
 func TeamSecretEnvironments(ctx context.Context, teamSlug string) ([]string, error) {
 	all, err := getAllSecretEnvironments(ctx, teamSlug)
 	if err != nil {
 		return nil, err
 	}
 
-	seen := make(map[string]struct{})
-	ret := make([]string, 0)
+	names := make([]string, 0, len(all))
 	for _, s := range all {
-		env := s.TeamEnvironment.Environment.Name
+		names = append(names, s.TeamEnvironment.Environment.Name)
+	}
+	return uniqueSortedEnvironments(names), nil
+}
+
+// uniqueSortedEnvironments returns a deduplicated, sorted slice of environment names.
+func uniqueSortedEnvironments(envs []string) []string {
+	seen := make(map[string]struct{})
+	ret := make([]string, 0, len(envs))
+	for _, env := range envs {
 		if _, ok := seen[env]; ok {
 			continue
 		}
 		seen[env] = struct{}{}
 		ret = append(ret, env)
 	}
-
 	sort.Strings(ret)
-	return ret, nil
+	return ret
 }
 
 func getAllSecretEnvironments(ctx context.Context, teamSlug string) ([]gql.GetAllSecretEnvironmentsTeamSecretsSecretConnectionNodesSecret, error) {

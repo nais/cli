@@ -113,6 +113,9 @@ func JobEnvironments(ctx context.Context, team, jobName string) ([]string, error
 	return jobEnvironments(ctx, team, jobName)
 }
 
+// jobEnvironments fetches all jobs for the team and returns the unique sorted
+// environments, optionally filtered to a specific job name client-side.
+// Server-side name filtering is not currently supported by the API.
 func jobEnvironments(ctx context.Context, team, jobName string) ([]string, error) {
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {

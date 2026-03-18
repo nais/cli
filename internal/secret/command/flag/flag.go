@@ -42,9 +42,11 @@ func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string,
 	return autoCompleteEnvironments(ctx)
 }
 
-// GetEnv is like Env but provides context-aware autocomplete: when a secret
-// name argument has been provided, only environments where that secret exists
-// are suggested.
+// GetEnv is like Env but provides context-aware autocomplete:
+//   - when no secret name argument is provided, environments where the team has
+//     at least one secret are suggested (falling back to all platform environments)
+//   - when a secret name argument has been provided, only environments where
+//     that specific secret exists are suggested.
 type GetEnv string
 
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
