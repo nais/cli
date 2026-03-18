@@ -15,6 +15,8 @@ import (
 type ActivityLogActivityType string
 
 const (
+	// Filter for credential creation events.
+	ActivityLogActivityTypeCredentialsCreate ActivityLogActivityType = "CREDENTIALS_CREATE"
 	// An application was deleted.
 	ActivityLogActivityTypeApplicationDeleted ActivityLogActivityType = "APPLICATION_DELETED"
 	// An application was restarted.
@@ -23,14 +25,18 @@ const (
 	ActivityLogActivityTypeApplicationScaled ActivityLogActivityType = "APPLICATION_SCALED"
 	// All activity log entries related to direct cluster changes.
 	ActivityLogActivityTypeClusterAudit ActivityLogActivityType = "CLUSTER_AUDIT"
+	// Config was created.
+	ActivityLogActivityTypeConfigCreated ActivityLogActivityType = "CONFIG_CREATED"
+	// Config was updated.
+	ActivityLogActivityTypeConfigUpdated ActivityLogActivityType = "CONFIG_UPDATED"
+	// Config was deleted.
+	ActivityLogActivityTypeConfigDeleted ActivityLogActivityType = "CONFIG_DELETED"
 	// Activity log entry for deployment activity.
 	ActivityLogActivityTypeDeployment ActivityLogActivityType = "DEPLOYMENT"
 	// Activity log entry for team deploy key updates.
 	ActivityLogActivityTypeTeamDeployKeyUpdated ActivityLogActivityType = "TEAM_DEPLOY_KEY_UPDATED"
 	// Activity log entries related to job deletion.
 	ActivityLogActivityTypeJobDeleted ActivityLogActivityType = "JOB_DELETED"
-	// Activity log entries related to job run deletion.
-	ActivityLogActivityTypeJobRunDeleted ActivityLogActivityType = "JOB_RUN_DELETED"
 	// Activity log entries related to job triggering.
 	ActivityLogActivityTypeJobTriggered ActivityLogActivityType = "JOB_TRIGGERED"
 	// OpenSearch was created.
@@ -113,19 +119,20 @@ const (
 	ActivityLogActivityTypeValkeyMaintenanceStarted ActivityLogActivityType = "VALKEY_MAINTENANCE_STARTED"
 	// Activity log entry for when a vulnerability is updated.
 	ActivityLogActivityTypeVulnerabilityUpdated ActivityLogActivityType = "VULNERABILITY_UPDATED"
-	// Filter for credential creation events.
-	ActivityLogActivityTypeCredentialsCreate ActivityLogActivityType = "CREDENTIALS_CREATE"
 )
 
 var AllActivityLogActivityType = []ActivityLogActivityType{
+	ActivityLogActivityTypeCredentialsCreate,
 	ActivityLogActivityTypeApplicationDeleted,
 	ActivityLogActivityTypeApplicationRestarted,
 	ActivityLogActivityTypeApplicationScaled,
 	ActivityLogActivityTypeClusterAudit,
+	ActivityLogActivityTypeConfigCreated,
+	ActivityLogActivityTypeConfigUpdated,
+	ActivityLogActivityTypeConfigDeleted,
 	ActivityLogActivityTypeDeployment,
 	ActivityLogActivityTypeTeamDeployKeyUpdated,
 	ActivityLogActivityTypeJobDeleted,
-	ActivityLogActivityTypeJobRunDeleted,
 	ActivityLogActivityTypeJobTriggered,
 	ActivityLogActivityTypeOpensearchCreated,
 	ActivityLogActivityTypeOpensearchUpdated,
@@ -167,7 +174,6 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeValkeyDeleted,
 	ActivityLogActivityTypeValkeyMaintenanceStarted,
 	ActivityLogActivityTypeVulnerabilityUpdated,
-	ActivityLogActivityTypeCredentialsCreate,
 }
 
 // The type of the resource that was affected by the activity.
@@ -176,10 +182,14 @@ type ActivityLogEntryResourceType string
 const (
 	// Unknown type.
 	ActivityLogEntryResourceTypeUnknown ActivityLogEntryResourceType = "UNKNOWN"
+	// All activity log entries related to credential creation will use this resource type.
+	ActivityLogEntryResourceTypeCredentials ActivityLogEntryResourceType = "CREDENTIALS"
 	// All activity log entries related to applications will use this resource type.
 	ActivityLogEntryResourceTypeApp ActivityLogEntryResourceType = "APP"
 	// All activity log entries related to direct cluster changes.
 	ActivityLogEntryResourceTypeClusterAudit ActivityLogEntryResourceType = "CLUSTER_AUDIT"
+	// All activity log entries related to configs will use this resource type.
+	ActivityLogEntryResourceTypeConfig ActivityLogEntryResourceType = "CONFIG"
 	// All activity log entries related to deploy keys will use this resource type.
 	ActivityLogEntryResourceTypeDeployKey ActivityLogEntryResourceType = "DEPLOY_KEY"
 	// All activity log entries related to jobs will use this resource type.
@@ -203,14 +213,14 @@ const (
 	ActivityLogEntryResourceTypeValkey ActivityLogEntryResourceType = "VALKEY"
 	// All activity log entries related to vulnerabilities will use this resource type.
 	ActivityLogEntryResourceTypeVulnerability ActivityLogEntryResourceType = "VULNERABILITY"
-	// All activity log entries related to credential creation will use this resource type.
-	ActivityLogEntryResourceTypeCredentials ActivityLogEntryResourceType = "CREDENTIALS"
 )
 
 var AllActivityLogEntryResourceType = []ActivityLogEntryResourceType{
 	ActivityLogEntryResourceTypeUnknown,
+	ActivityLogEntryResourceTypeCredentials,
 	ActivityLogEntryResourceTypeApp,
 	ActivityLogEntryResourceTypeClusterAudit,
+	ActivityLogEntryResourceTypeConfig,
 	ActivityLogEntryResourceTypeDeployKey,
 	ActivityLogEntryResourceTypeJob,
 	ActivityLogEntryResourceTypeOpensearch,
@@ -223,7 +233,45 @@ var AllActivityLogEntryResourceType = []ActivityLogEntryResourceType{
 	ActivityLogEntryResourceTypeUnleash,
 	ActivityLogEntryResourceTypeValkey,
 	ActivityLogEntryResourceTypeVulnerability,
-	ActivityLogEntryResourceTypeCredentials,
+}
+
+// AddConfigValueAddConfigValueAddConfigValuePayload includes the requested fields of the GraphQL type AddConfigValuePayload.
+type AddConfigValueAddConfigValueAddConfigValuePayload struct {
+	// The updated config.
+	Config AddConfigValueAddConfigValueAddConfigValuePayloadConfig `json:"config"`
+}
+
+// GetConfig returns AddConfigValueAddConfigValueAddConfigValuePayload.Config, and is useful for accessing the field via an interface.
+func (v *AddConfigValueAddConfigValueAddConfigValuePayload) GetConfig() AddConfigValueAddConfigValueAddConfigValuePayloadConfig {
+	return v.Config
+}
+
+// AddConfigValueAddConfigValueAddConfigValuePayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type AddConfigValueAddConfigValueAddConfigValuePayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns AddConfigValueAddConfigValueAddConfigValuePayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *AddConfigValueAddConfigValueAddConfigValuePayloadConfig) GetId() string { return v.Id }
+
+// GetName returns AddConfigValueAddConfigValueAddConfigValuePayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *AddConfigValueAddConfigValueAddConfigValuePayloadConfig) GetName() string { return v.Name }
+
+// AddConfigValueResponse is returned by AddConfigValue on success.
+type AddConfigValueResponse struct {
+	// Add a value to a config.
+	AddConfigValue AddConfigValueAddConfigValueAddConfigValuePayload `json:"addConfigValue"`
+}
+
+// GetAddConfigValue returns AddConfigValueResponse.AddConfigValue, and is useful for accessing the field via an interface.
+func (v *AddConfigValueResponse) GetAddConfigValue() AddConfigValueAddConfigValueAddConfigValuePayload {
+	return v.AddConfigValue
 }
 
 // AddSecretValueAddSecretValueAddSecretValuePayload includes the requested fields of the GraphQL type AddSecretValuePayload.
@@ -409,9 +457,9 @@ var AllApplicationInstanceState = []ApplicationInstanceState{
 
 // Ordering options when fetching applications.
 type ApplicationOrder struct {
-	// Ordering options when fetching applications.
+	// The field to order items by.
 	Field ApplicationOrderField `json:"field"`
-	// Ordering options when fetching applications.
+	// The direction to order items by.
 	Direction OrderDirection `json:"direction"`
 }
 
@@ -460,6 +508,58 @@ var AllApplicationState = []ApplicationState{
 	ApplicationStateRunning,
 	ApplicationStateNotRunning,
 	ApplicationStateUnknown,
+}
+
+type ConfigValueInput struct {
+	// The name of the config value.
+	Name string `json:"name"`
+	// The value to set.
+	Value string `json:"value"`
+}
+
+// GetName returns ConfigValueInput.Name, and is useful for accessing the field via an interface.
+func (v *ConfigValueInput) GetName() string { return v.Name }
+
+// GetValue returns ConfigValueInput.Value, and is useful for accessing the field via an interface.
+func (v *ConfigValueInput) GetValue() string { return v.Value }
+
+// CreateConfigCreateConfigCreateConfigPayload includes the requested fields of the GraphQL type CreateConfigPayload.
+type CreateConfigCreateConfigCreateConfigPayload struct {
+	// The created config.
+	Config CreateConfigCreateConfigCreateConfigPayloadConfig `json:"config"`
+}
+
+// GetConfig returns CreateConfigCreateConfigCreateConfigPayload.Config, and is useful for accessing the field via an interface.
+func (v *CreateConfigCreateConfigCreateConfigPayload) GetConfig() CreateConfigCreateConfigCreateConfigPayloadConfig {
+	return v.Config
+}
+
+// CreateConfigCreateConfigCreateConfigPayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type CreateConfigCreateConfigCreateConfigPayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns CreateConfigCreateConfigCreateConfigPayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *CreateConfigCreateConfigCreateConfigPayloadConfig) GetId() string { return v.Id }
+
+// GetName returns CreateConfigCreateConfigCreateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *CreateConfigCreateConfigCreateConfigPayloadConfig) GetName() string { return v.Name }
+
+// CreateConfigResponse is returned by CreateConfig on success.
+type CreateConfigResponse struct {
+	// Create a new config.
+	CreateConfig CreateConfigCreateConfigCreateConfigPayload `json:"createConfig"`
+}
+
+// GetCreateConfig returns CreateConfigResponse.CreateConfig, and is useful for accessing the field via an interface.
+func (v *CreateConfigResponse) GetCreateConfig() CreateConfigCreateConfigCreateConfigPayload {
+	return v.CreateConfig
 }
 
 // CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload includes the requested fields of the GraphQL type CreateKafkaCredentialsPayload.
@@ -780,24 +880,24 @@ var AllCredentialPermission = []CredentialPermission{
 	CredentialPermissionAdmin,
 }
 
-// DeleteJobRunDeleteJobRunDeleteJobRunPayload includes the requested fields of the GraphQL type DeleteJobRunPayload.
-type DeleteJobRunDeleteJobRunDeleteJobRunPayload struct {
-	// Whether or not the run was deleted.
-	Success bool `json:"success"`
+// DeleteConfigDeleteConfigDeleteConfigPayload includes the requested fields of the GraphQL type DeleteConfigPayload.
+type DeleteConfigDeleteConfigDeleteConfigPayload struct {
+	// The deleted config.
+	ConfigDeleted bool `json:"configDeleted"`
 }
 
-// GetSuccess returns DeleteJobRunDeleteJobRunDeleteJobRunPayload.Success, and is useful for accessing the field via an interface.
-func (v *DeleteJobRunDeleteJobRunDeleteJobRunPayload) GetSuccess() bool { return v.Success }
+// GetConfigDeleted returns DeleteConfigDeleteConfigDeleteConfigPayload.ConfigDeleted, and is useful for accessing the field via an interface.
+func (v *DeleteConfigDeleteConfigDeleteConfigPayload) GetConfigDeleted() bool { return v.ConfigDeleted }
 
-// DeleteJobRunResponse is returned by DeleteJobRun on success.
-type DeleteJobRunResponse struct {
-	// Delete a job run.
-	DeleteJobRun DeleteJobRunDeleteJobRunDeleteJobRunPayload `json:"deleteJobRun"`
+// DeleteConfigResponse is returned by DeleteConfig on success.
+type DeleteConfigResponse struct {
+	// Delete a config, and the values it contains.
+	DeleteConfig DeleteConfigDeleteConfigDeleteConfigPayload `json:"deleteConfig"`
 }
 
-// GetDeleteJobRun returns DeleteJobRunResponse.DeleteJobRun, and is useful for accessing the field via an interface.
-func (v *DeleteJobRunResponse) GetDeleteJobRun() DeleteJobRunDeleteJobRunDeleteJobRunPayload {
-	return v.DeleteJobRun
+// GetDeleteConfig returns DeleteConfigResponse.DeleteConfig, and is useful for accessing the field via an interface.
+func (v *DeleteConfigResponse) GetDeleteConfig() DeleteConfigDeleteConfigDeleteConfigPayload {
+	return v.DeleteConfig
 }
 
 // DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload includes the requested fields of the GraphQL type DeleteOpenSearchPayload.
@@ -1085,17 +1185,17 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team that owns the workload.
 	GetTeam() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team environment for the workload.
 	GetTeamEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment
 }
 
@@ -1169,11 +1269,11 @@ func __marshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnect
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -1200,11 +1300,11 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob includes the requested fields of the GraphQL type Job.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -1281,6 +1381,357 @@ type FindWorkloadsForCveResponse struct {
 
 // GetCve returns FindWorkloadsForCveResponse.Cve, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveResponse) GetCve() FindWorkloadsForCveCveCVE { return v.Cve }
+
+// GetAllConfigsResponse is returned by GetAllConfigs on success.
+type GetAllConfigsResponse struct {
+	// Get a team by its slug.
+	Team GetAllConfigsTeam `json:"team"`
+}
+
+// GetTeam returns GetAllConfigsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsResponse) GetTeam() GetAllConfigsTeam { return v.Team }
+
+// GetAllConfigsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetAllConfigsTeam struct {
+	// Configs owned by the team.
+	Configs GetAllConfigsTeamConfigsConfigConnection `json:"configs"`
+}
+
+// GetConfigs returns GetAllConfigsTeam.Configs, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeam) GetConfigs() GetAllConfigsTeamConfigsConfigConnection { return v.Configs }
+
+// GetAllConfigsTeamConfigsConfigConnection includes the requested fields of the GraphQL type ConfigConnection.
+type GetAllConfigsTeamConfigsConfigConnection struct {
+	// List of nodes.
+	Nodes []GetAllConfigsTeamConfigsConfigConnectionNodesConfig `json:"nodes"`
+}
+
+// GetNodes returns GetAllConfigsTeamConfigsConfigConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnection) GetNodes() []GetAllConfigsTeamConfigsConfigConnectionNodesConfig {
+	return v.Nodes
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfig struct {
+	// The name of the config.
+	Name string `json:"name"`
+	// The values stored in the config.
+	Values []GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue `json:"values"`
+	// The environment the config exists in.
+	TeamEnvironment GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment `json:"teamEnvironment"`
+	// Workloads that use the config.
+	Workloads GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection `json:"workloads"`
+	// Last time the config was modified.
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
+	// User who last modified the config.
+	LastModifiedBy GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser `json:"lastModifiedBy"`
+}
+
+// GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.Name, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetName() string { return v.Name }
+
+// GetValues returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.Values, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetValues() []GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue {
+	return v.Values
+}
+
+// GetTeamEnvironment returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetTeamEnvironment() GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetWorkloads returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.Workloads, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetWorkloads() GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetLastModifiedAt returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.LastModifiedAt, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetLastModifiedAt() time.Time {
+	return v.LastModifiedAt
+}
+
+// GetLastModifiedBy returns GetAllConfigsTeamConfigsConfigConnectionNodesConfig.LastModifiedBy, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfig) GetLastModifiedBy() GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser {
+	return v.LastModifiedBy
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser struct {
+	// The email address of the user.
+	Email string `json:"email"`
+}
+
+// GetEmail returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser.Email, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigLastModifiedByUser) GetEmail() string {
+	return v.Email
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment struct {
+	// Get the environment.
+	Environment GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironment) GetEnvironment() GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue includes the requested fields of the GraphQL type ConfigValue.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue struct {
+	// The name of the config value.
+	Name string `json:"name"`
+	// The config value itself.
+	Value string `json:"value"`
+}
+
+// GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue.Name, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue) GetName() string {
+	return v.Name
+}
+
+// GetValue returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue.Value, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue) GetValue() string {
+	return v.Value
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection) GetNodes() []GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication struct {
+	// The name of the workload.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob struct {
+	// The name of the workload.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication
+// GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The name of the workload.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload(v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
 
 // GetAllIssuesResponse is returned by GetAllIssues on success.
 type GetAllIssuesResponse struct {
@@ -1586,7 +2037,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkload i
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -1661,7 +2112,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueW
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -1678,7 +2129,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorklo
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -1824,7 +2275,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabil
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -1899,7 +2350,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalV
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -1916,7 +2367,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2062,7 +2513,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloa
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2137,7 +2588,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIss
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2154,7 +2605,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWor
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2298,7 +2749,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkload interfac
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2373,7 +2824,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkload
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2390,7 +2841,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadAppli
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2893,7 +3344,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkload interfac
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2968,7 +3419,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkload
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2985,7 +3436,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadAppli
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3131,7 +3582,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkload i
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -3206,7 +3657,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueW
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3223,7 +3674,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorklo
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3637,7 +4088,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload inte
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -3712,7 +4163,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWork
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3729,7 +4180,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadA
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4123,7 +4574,7 @@ func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadCon
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4140,7 +4591,7 @@ func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadCon
 
 // GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4168,7 +4619,7 @@ type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnect
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -4538,10 +4989,12 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -4593,22 +5046,22 @@ type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplication
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	GetEnvironmentName() string
 }
 
@@ -4620,13 +5073,17 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
-}
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -4737,6 +5194,15 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 	case "ClusterAuditActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "CredentialsActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -4745,9 +5211,6 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
-		return json.Unmarshal(b, *v)
-	case "JobRunDeletedActivityLogEntry":
-		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -4917,6 +5380,30 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry:
 		typename = "CredentialsActivityLogEntry"
 
@@ -4939,14 +5426,6 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
-		typename = "JobRunDeletedActivityLogEntry"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -5288,13 +5767,13 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5326,13 +5805,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5364,13 +5843,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5402,13 +5881,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5437,16 +5916,130 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 	return v.EnvironmentName
 }
 
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5478,13 +6071,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5516,13 +6109,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5551,54 +6144,16 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 	return v.EnvironmentName
 }
 
-// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
-type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
-	Typename string `json:"__typename"`
-	// Interface for activity log entries.
-	Actor string `json:"actor"`
-	// Interface for activity log entries.
-	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
-	Message string `json:"message"`
-	// Interface for activity log entries.
-	EnvironmentName string `json:"environmentName"`
-}
-
-// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
-	return v.Typename
-}
-
-// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
-	return v.Actor
-}
-
-// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
-	return v.CreatedAt
-}
-
-// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
-	return v.Message
-}
-
-// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
-	return v.EnvironmentName
-}
-
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5630,13 +6185,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5668,13 +6223,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5706,13 +6261,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5744,13 +6299,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5782,13 +6337,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5820,13 +6375,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5858,13 +6413,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5896,13 +6451,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5934,13 +6489,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5972,13 +6527,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6010,13 +6565,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6048,13 +6603,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6086,13 +6641,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6124,13 +6679,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6162,13 +6717,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6200,13 +6755,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6241,13 +6796,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // Activity log entry for viewing secret values.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6279,13 +6834,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6317,13 +6872,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6355,13 +6910,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6393,13 +6948,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6431,13 +6986,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6469,13 +7024,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6507,13 +7062,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6545,13 +7100,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6583,13 +7138,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6621,13 +7176,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6659,13 +7214,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6697,13 +7252,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6735,13 +7290,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6773,13 +7328,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6811,13 +7366,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6849,13 +7404,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6887,13 +7442,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6925,13 +7480,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6963,13 +7518,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7001,13 +7556,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7039,13 +7594,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7077,13 +7632,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7115,13 +7670,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -8076,6 +8631,3248 @@ func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Name
 }
 
+// GetConfigActivityResponse is returned by GetConfigActivity on success.
+type GetConfigActivityResponse struct {
+	// Get a team by its slug.
+	Team GetConfigActivityTeam `json:"team"`
+}
+
+// GetTeam returns GetConfigActivityResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityResponse) GetTeam() GetConfigActivityTeam { return v.Team }
+
+// GetConfigActivityTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetConfigActivityTeam struct {
+	// Configs owned by the team.
+	Configs GetConfigActivityTeamConfigsConfigConnection `json:"configs"`
+}
+
+// GetConfigs returns GetConfigActivityTeam.Configs, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeam) GetConfigs() GetConfigActivityTeamConfigsConfigConnection {
+	return v.Configs
+}
+
+// GetConfigActivityTeamConfigsConfigConnection includes the requested fields of the GraphQL type ConfigConnection.
+type GetConfigActivityTeamConfigsConfigConnection struct {
+	// List of nodes.
+	Nodes []GetConfigActivityTeamConfigsConfigConnectionNodesConfig `json:"nodes"`
+}
+
+// GetNodes returns GetConfigActivityTeamConfigsConfigConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnection) GetNodes() []GetConfigActivityTeamConfigsConfigConnectionNodesConfig {
+	return v.Nodes
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfig struct {
+	// The name of the config.
+	Name string `json:"name"`
+	// The environment the config exists in.
+	TeamEnvironment GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment `json:"teamEnvironment"`
+	// Activity log associated with the config.
+	ActivityLog GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection `json:"activityLog"`
+}
+
+// GetName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfig.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfig) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns GetConfigActivityTeamConfigsConfigConnectionNodesConfig.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfig) GetTeamEnvironment() GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetActivityLog returns GetConfigActivityTeamConfigsConfigConnectionNodesConfig.ActivityLog, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfig) GetActivityLog() GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection {
+	return v.ActivityLog
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection includes the requested fields of the GraphQL type ActivityLogEntryConnection.
+// The GraphQL type's documentation follows.
+//
+// Activity log connection.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection struct {
+	// List of nodes.
+	Nodes []GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry `json:"-"`
+}
+
+// GetNodes returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection) GetNodes() []GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry {
+	return v.Nodes
+}
+
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection) __premarshalJSON() (*__premarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection, error) {
+	var retval __premarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry includes the requested fields of the GraphQL interface ActivityLogEntry.
+//
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry is implemented by the following types:
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
+// The GraphQL type's documentation follows.
+//
+// Interface for activity log entries.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry interface {
+	implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+	// GetActor returns the interface-field "actor" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	GetActor() string
+	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Creation time of the entry.
+	GetCreatedAt() time.Time
+	// GetMessage returns the interface-field "message" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Message that summarizes the entry.
+	GetMessage() string
+	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The environment name that the entry belongs to.
+	GetEnvironmentName() string
+}
+
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+
+func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry(b []byte, v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "ApplicationDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRestartedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationScaledActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ClusterAuditActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "CredentialsActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "DeploymentActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobTriggeredActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresGrantAccessActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerConfiguredActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerDisabledActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerEnabledActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RepositoryAddedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RepositoryRemovedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleAssignedToServiceAccountActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleRevokedFromServiceAccountActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueAddedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueRemovedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValuesViewedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceMaintenanceActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamConfirmDeleteKeyActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreateDeleteKeyActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamDeployKeyUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamEnvironmentUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberAddedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberRemovedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberSetRoleActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilityUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing ActivityLogEntry.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry(v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry:
+		typename = "ApplicationDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry:
+		typename = "ApplicationRestartedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry:
+		typename = "ApplicationScaledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry:
+		typename = "ClusterAuditActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry:
+		typename = "CredentialsActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry:
+		typename = "DeploymentActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry:
+		typename = "JobDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
+		typename = "JobTriggeredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
+		typename = "OpenSearchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry:
+		typename = "OpenSearchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry:
+		typename = "OpenSearchUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry:
+		typename = "PostgresGrantAccessActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
+		typename = "ReconcilerConfiguredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry:
+		typename = "ReconcilerDisabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry:
+		typename = "ReconcilerEnabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry:
+		typename = "RepositoryAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry:
+		typename = "RepositoryRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry:
+		typename = "RoleAssignedToServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry:
+		typename = "RoleRevokedFromServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry:
+		typename = "SecretCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry:
+		typename = "SecretDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry:
+		typename = "SecretValueAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry:
+		typename = "SecretValueRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry:
+		typename = "SecretValueUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry:
+		typename = "SecretValuesViewedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry:
+		typename = "ServiceAccountCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry:
+		typename = "ServiceAccountDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry:
+		typename = "ServiceAccountTokenCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry:
+		typename = "ServiceAccountTokenDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry:
+		typename = "ServiceAccountTokenUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry:
+		typename = "ServiceAccountUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
+		typename = "ServiceMaintenanceActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry:
+		typename = "TeamConfirmDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry:
+		typename = "TeamCreateDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry:
+		typename = "TeamCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry:
+		typename = "TeamDeployKeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry:
+		typename = "TeamEnvironmentUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry:
+		typename = "TeamMemberAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry:
+		typename = "TeamMemberRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry:
+		typename = "TeamMemberSetRoleActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry:
+		typename = "TeamUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry:
+		typename = "UnleashInstanceCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry:
+		typename = "UnleashInstanceDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry:
+		typename = "UnleashInstanceUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry:
+		typename = "ValkeyCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry:
+		typename = "ValkeyDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry:
+		typename = "ValkeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
+		typename = "VulnerabilityUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry: "%T"`, v)
+	}
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry includes the requested fields of the GraphQL type SecretValuesViewedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for viewing secret values.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment struct {
+	// Get the environment.
+	Environment GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironment) GetEnvironment() GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetConfigResponse is returned by GetConfig on success.
+type GetConfigResponse struct {
+	// Get a team by its slug.
+	Team GetConfigTeam `json:"team"`
+}
+
+// GetTeam returns GetConfigResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetConfigResponse) GetTeam() GetConfigTeam { return v.Team }
+
+// GetConfigTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetConfigTeam struct {
+	// Get a specific environment for the team.
+	Environment GetConfigTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetConfigTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetConfigTeam) GetEnvironment() GetConfigTeamEnvironment { return v.Environment }
+
+// GetConfigTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetConfigTeamEnvironment struct {
+	// Get a config by name.
+	Config GetConfigTeamEnvironmentConfig `json:"config"`
+}
+
+// GetConfig returns GetConfigTeamEnvironment.Config, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironment) GetConfig() GetConfigTeamEnvironmentConfig { return v.Config }
+
+// GetConfigTeamEnvironmentConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type GetConfigTeamEnvironmentConfig struct {
+	// The name of the config.
+	Name string `json:"name"`
+	// The values stored in the config.
+	Values []GetConfigTeamEnvironmentConfigValuesConfigValue `json:"values"`
+	// The environment the config exists in.
+	TeamEnvironment GetConfigTeamEnvironmentConfigTeamEnvironment `json:"teamEnvironment"`
+	// Workloads that use the config.
+	Workloads GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection `json:"workloads"`
+	// Last time the config was modified.
+	LastModifiedAt time.Time `json:"lastModifiedAt"`
+	// User who last modified the config.
+	LastModifiedBy GetConfigTeamEnvironmentConfigLastModifiedByUser `json:"lastModifiedBy"`
+}
+
+// GetName returns GetConfigTeamEnvironmentConfig.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetName() string { return v.Name }
+
+// GetValues returns GetConfigTeamEnvironmentConfig.Values, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetValues() []GetConfigTeamEnvironmentConfigValuesConfigValue {
+	return v.Values
+}
+
+// GetTeamEnvironment returns GetConfigTeamEnvironmentConfig.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetTeamEnvironment() GetConfigTeamEnvironmentConfigTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetWorkloads returns GetConfigTeamEnvironmentConfig.Workloads, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetWorkloads() GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetLastModifiedAt returns GetConfigTeamEnvironmentConfig.LastModifiedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetLastModifiedAt() time.Time { return v.LastModifiedAt }
+
+// GetLastModifiedBy returns GetConfigTeamEnvironmentConfig.LastModifiedBy, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfig) GetLastModifiedBy() GetConfigTeamEnvironmentConfigLastModifiedByUser {
+	return v.LastModifiedBy
+}
+
+// GetConfigTeamEnvironmentConfigLastModifiedByUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type GetConfigTeamEnvironmentConfigLastModifiedByUser struct {
+	// The email address of the user.
+	Email string `json:"email"`
+}
+
+// GetEmail returns GetConfigTeamEnvironmentConfigLastModifiedByUser.Email, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigLastModifiedByUser) GetEmail() string { return v.Email }
+
+// GetConfigTeamEnvironmentConfigTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetConfigTeamEnvironmentConfigTeamEnvironment struct {
+	// Get the environment.
+	Environment GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetConfigTeamEnvironmentConfigTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigTeamEnvironment) GetEnvironment() GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment) GetName() string { return v.Name }
+
+// GetConfigTeamEnvironmentConfigValuesConfigValue includes the requested fields of the GraphQL type ConfigValue.
+type GetConfigTeamEnvironmentConfigValuesConfigValue struct {
+	// The name of the config value.
+	Name string `json:"name"`
+	// The config value itself.
+	Value string `json:"value"`
+}
+
+// GetName returns GetConfigTeamEnvironmentConfigValuesConfigValue.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigValuesConfigValue) GetName() string { return v.Name }
+
+// GetValue returns GetConfigTeamEnvironmentConfigValuesConfigValue.Value, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigValuesConfigValue) GetValue() string { return v.Value }
+
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetNodes returns GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection) GetNodes() []GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication struct {
+	// The name of the workload.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication) GetTypename() string {
+	return v.Typename
+}
+
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob struct {
+	// The name of the workload.
+	Name     string `json:"name"`
+	Typename string `json:"__typename"`
+}
+
+// GetName returns GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob) GetTypename() string {
+	return v.Typename
+}
+
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication
+// GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// The name of the workload.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload(v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
+
 // GetJobActivityResponse is returned by GetJobActivity on success.
 type GetJobActivityResponse struct {
 	// Get a team by its slug.
@@ -8226,10 +12023,12 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -8281,22 +12080,22 @@ type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConne
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	GetEnvironmentName() string
 }
 
@@ -8308,13 +12107,17 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
-}
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -8425,6 +12228,15 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 	case "ClusterAuditActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "CredentialsActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -8433,9 +12245,6 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
-		return json.Unmarshal(b, *v)
-	case "JobRunDeletedActivityLogEntry":
-		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -8605,6 +12414,30 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry:
 		typename = "CredentialsActivityLogEntry"
 
@@ -8627,14 +12460,6 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
-		typename = "JobRunDeletedActivityLogEntry"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -8976,13 +12801,13 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9014,13 +12839,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9052,13 +12877,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9090,13 +12915,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9125,16 +12950,130 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 	return v.EnvironmentName
 }
 
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9166,13 +13105,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9204,13 +13143,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9239,54 +13178,16 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 	return v.EnvironmentName
 }
 
-// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
-type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
-	Typename string `json:"__typename"`
-	// Interface for activity log entries.
-	Actor string `json:"actor"`
-	// Interface for activity log entries.
-	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
-	Message string `json:"message"`
-	// Interface for activity log entries.
-	EnvironmentName string `json:"environmentName"`
-}
-
-// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
-	return v.Typename
-}
-
-// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
-	return v.Actor
-}
-
-// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
-	return v.CreatedAt
-}
-
-// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
-	return v.Message
-}
-
-// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
-	return v.EnvironmentName
-}
-
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9318,13 +13219,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9356,13 +13257,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9394,13 +13295,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9432,13 +13333,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9470,13 +13371,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9508,13 +13409,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9546,13 +13447,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9584,13 +13485,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9622,13 +13523,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9660,13 +13561,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9698,13 +13599,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9736,13 +13637,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9774,13 +13675,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9812,13 +13713,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9850,13 +13751,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9888,13 +13789,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9929,13 +13830,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // Activity log entry for viewing secret values.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9967,13 +13868,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10005,13 +13906,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10043,13 +13944,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10081,13 +13982,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10119,13 +14020,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10157,13 +14058,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10195,13 +14096,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10233,13 +14134,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10271,13 +14172,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10309,13 +14210,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10347,13 +14248,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10385,13 +14286,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10423,13 +14324,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10461,13 +14362,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10499,13 +14400,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10537,13 +14438,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10575,13 +14476,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10613,13 +14514,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10651,13 +14552,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10689,13 +14590,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10727,13 +14628,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10765,13 +14666,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10803,13 +14704,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11664,234 +15565,6 @@ func (v *GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) Get
 	return v.Name
 }
 
-// GetJobRunNamesResponse is returned by GetJobRunNames on success.
-type GetJobRunNamesResponse struct {
-	// Get a team by its slug.
-	Team GetJobRunNamesTeam `json:"team"`
-}
-
-// GetTeam returns GetJobRunNamesResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesResponse) GetTeam() GetJobRunNamesTeam { return v.Team }
-
-// GetJobRunNamesTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetJobRunNamesTeam struct {
-	// Nais jobs owned by the team.
-	Jobs GetJobRunNamesTeamJobsJobConnection `json:"jobs"`
-}
-
-// GetJobs returns GetJobRunNamesTeam.Jobs, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeam) GetJobs() GetJobRunNamesTeamJobsJobConnection { return v.Jobs }
-
-// GetJobRunNamesTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
-type GetJobRunNamesTeamJobsJobConnection struct {
-	// List of nodes.
-	Nodes []GetJobRunNamesTeamJobsJobConnectionNodesJob `json:"nodes"`
-}
-
-// GetNodes returns GetJobRunNamesTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnection) GetNodes() []GetJobRunNamesTeamJobsJobConnectionNodesJob {
-	return v.Nodes
-}
-
-// GetJobRunNamesTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
-type GetJobRunNamesTeamJobsJobConnectionNodesJob struct {
-	// The team environment for the job.
-	TeamEnvironment GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
-	// The job runs.
-	Runs GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
-}
-
-// GetTeamEnvironment returns GetJobRunNamesTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJob) GetTeamEnvironment() GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment {
-	return v.TeamEnvironment
-}
-
-// GetRuns returns GetJobRunNamesTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJob) GetRuns() GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection {
-	return v.Runs
-}
-
-// GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
-type GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
-	// List of nodes.
-	Nodes []GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
-}
-
-// GetNodes returns GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
-	return v.Nodes
-}
-
-// GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
-type GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
-	// The name of the job run.
-	Name string `json:"name"`
-}
-
-// GetName returns GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Name, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetName() string {
-	return v.Name
-}
-
-// GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment struct {
-	// Get the environment.
-	Environment GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment) GetEnvironment() GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment {
-	return v.Environment
-}
-
-// GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
-// The GraphQL type's documentation follows.
-//
-// An environment represents a runtime environment for workloads.
-//
-// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
-	// Unique name of the environment.
-	Name string `json:"name"`
-}
-
-// GetName returns GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
-	return v.Name
-}
-
-// GetJobRunsResponse is returned by GetJobRuns on success.
-type GetJobRunsResponse struct {
-	// Get a team by its slug.
-	Team GetJobRunsTeam `json:"team"`
-}
-
-// GetTeam returns GetJobRunsResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetJobRunsResponse) GetTeam() GetJobRunsTeam { return v.Team }
-
-// GetJobRunsTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetJobRunsTeam struct {
-	// Nais jobs owned by the team.
-	Jobs GetJobRunsTeamJobsJobConnection `json:"jobs"`
-}
-
-// GetJobs returns GetJobRunsTeam.Jobs, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeam) GetJobs() GetJobRunsTeamJobsJobConnection { return v.Jobs }
-
-// GetJobRunsTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
-type GetJobRunsTeamJobsJobConnection struct {
-	// List of nodes.
-	Nodes []GetJobRunsTeamJobsJobConnectionNodesJob `json:"nodes"`
-}
-
-// GetNodes returns GetJobRunsTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnection) GetNodes() []GetJobRunsTeamJobsJobConnectionNodesJob {
-	return v.Nodes
-}
-
-// GetJobRunsTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
-type GetJobRunsTeamJobsJobConnectionNodesJob struct {
-	// The job runs.
-	Runs GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
-}
-
-// GetRuns returns GetJobRunsTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJob) GetRuns() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection {
-	return v.Runs
-}
-
-// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
-type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
-	// List of nodes.
-	Nodes []GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
-}
-
-// GetNodes returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
-	return v.Nodes
-}
-
-// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
-type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
-	// The name of the job run.
-	Name string `json:"name"`
-	// The start time of the job.
-	StartTime time.Time `json:"startTime"`
-	// Duration of the job in seconds.
-	Duration int `json:"duration"`
-	// The status of the job run.
-	Status  GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus  `json:"status"`
-	Trigger GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger `json:"trigger"`
-}
-
-// GetName returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Name, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetName() string {
-	return v.Name
-}
-
-// GetStartTime returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.StartTime, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStartTime() time.Time {
-	return v.StartTime
-}
-
-// GetDuration returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Duration, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetDuration() int {
-	return v.Duration
-}
-
-// GetStatus returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Status, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStatus() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus {
-	return v.Status
-}
-
-// GetTrigger returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Trigger, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetTrigger() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger {
-	return v.Trigger
-}
-
-// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus includes the requested fields of the GraphQL type JobRunStatus.
-type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus struct {
-	// The state of the job run.
-	State JobRunState `json:"state"`
-}
-
-// GetState returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus.State, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus) GetState() JobRunState {
-	return v.State
-}
-
-// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger includes the requested fields of the GraphQL type JobRunTrigger.
-type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger struct {
-	// The type of trigger that started the job.
-	Type JobRunTriggerType `json:"type"`
-	// The actor/user who triggered the job run manually, if applicable.
-	Actor string `json:"actor"`
-}
-
-// GetType returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger.Type, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger) GetType() JobRunTriggerType {
-	return v.Type
-}
-
-// GetActor returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger.Actor, and is useful for accessing the field via an interface.
-func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger) GetActor() string {
-	return v.Actor
-}
-
 // GetLatestJobRunStateResponse is returned by GetLatestJobRunState on success.
 type GetLatestJobRunStateResponse struct {
 	// Get a team by its slug.
@@ -12163,19 +15836,19 @@ type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdges
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team that owns the workload.
 	GetTeam() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam
 }
 
@@ -12248,12 +15921,12 @@ func __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnec
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication struct {
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	Id string `json:"id"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
 }
 
@@ -12279,12 +15952,12 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionE
 
 // GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob struct {
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	Id string `json:"id"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
 }
 
@@ -12502,10 +16175,12 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -12557,22 +16232,22 @@ type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityL
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	GetEnvironmentName() string
 }
 
@@ -12584,13 +16259,17 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
-}
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -12701,6 +16380,15 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 	case "ClusterAuditActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "CredentialsActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -12709,9 +16397,6 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
-		return json.Unmarshal(b, *v)
-	case "JobRunDeletedActivityLogEntry":
-		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -12881,6 +16566,30 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry:
 		typename = "CredentialsActivityLogEntry"
 
@@ -12903,14 +16612,6 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
-		typename = "JobRunDeletedActivityLogEntry"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -13252,13 +16953,13 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13290,13 +16991,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13328,13 +17029,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13366,13 +17067,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13401,16 +17102,130 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 	return v.EnvironmentName
 }
 
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13442,13 +17257,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13480,13 +17295,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13515,54 +17330,16 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 	return v.EnvironmentName
 }
 
-// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
-type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
-	Typename string `json:"__typename"`
-	// Interface for activity log entries.
-	Actor string `json:"actor"`
-	// Interface for activity log entries.
-	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
-	Message string `json:"message"`
-	// Interface for activity log entries.
-	EnvironmentName string `json:"environmentName"`
-}
-
-// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
-	return v.Typename
-}
-
-// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
-	return v.Actor
-}
-
-// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
-	return v.CreatedAt
-}
-
-// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
-	return v.Message
-}
-
-// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
-	return v.EnvironmentName
-}
-
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13594,13 +17371,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13632,13 +17409,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13670,13 +17447,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13708,13 +17485,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13746,13 +17523,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13784,13 +17561,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13822,13 +17599,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13860,13 +17637,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13898,13 +17675,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13936,13 +17713,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13974,13 +17751,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14012,13 +17789,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14050,13 +17827,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14088,13 +17865,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14126,13 +17903,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14164,13 +17941,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14205,13 +17982,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // Activity log entry for viewing secret values.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14243,13 +18020,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14281,13 +18058,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14319,13 +18096,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14357,13 +18134,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14395,13 +18172,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14433,13 +18210,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14471,13 +18248,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14509,13 +18286,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14547,13 +18324,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14585,13 +18362,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14623,13 +18400,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14661,13 +18438,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14699,13 +18476,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14737,13 +18514,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14775,13 +18552,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14813,13 +18590,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14851,13 +18628,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14889,13 +18666,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14927,13 +18704,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14965,13 +18742,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -15003,13 +18780,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -15041,13 +18818,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -15079,13 +18856,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -15351,7 +19128,7 @@ func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) __premarshal
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -15368,7 +19145,7 @@ func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplicati
 
 // GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob struct {
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -15396,7 +19173,7 @@ type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload inte
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -15587,10 +19364,12 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -15642,32 +19421,32 @@ type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEnt
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	GetEnvironmentName() string
 	// GetResourceType returns the interface-field "resourceType" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	GetResourceType() ActivityLogEntryResourceType
 	// GetResourceName returns the interface-field "resourceName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	GetResourceName() string
 }
 
@@ -15679,13 +19458,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
-}
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -15796,6 +19579,15 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 	case "ClusterAuditActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "CredentialsActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -15804,9 +19596,6 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
-		return json.Unmarshal(b, *v)
-	case "JobRunDeletedActivityLogEntry":
-		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -15976,6 +19765,30 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry:
 		typename = "CredentialsActivityLogEntry"
 
@@ -15998,14 +19811,6 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
-		typename = "JobRunDeletedActivityLogEntry"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -16347,17 +20152,17 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16399,17 +20204,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16451,17 +20256,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16503,17 +20308,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16552,20 +20357,176 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAud
 	return v.ResourceName
 }
 
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+	// Type of the resource that was affected by the action.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Name of the resource that was affected by the action.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+	// Type of the resource that was affected by the action.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Name of the resource that was affected by the action.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	Actor string `json:"actor"`
+	// Creation time of the entry.
+	CreatedAt time.Time `json:"createdAt"`
+	// Message that summarizes the entry.
+	Message string `json:"message"`
+	// The environment name that the entry belongs to.
+	EnvironmentName string `json:"environmentName"`
+	// Type of the resource that was affected by the action.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Name of the resource that was affected by the action.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16607,17 +20568,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredential
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16659,17 +20620,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeployment
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16708,72 +20669,20 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeleted
 	return v.ResourceName
 }
 
-// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
-type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
-	Typename string `json:"__typename"`
-	// Interface for activity log entries.
-	Actor string `json:"actor"`
-	// Interface for activity log entries.
-	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
-	Message string `json:"message"`
-	// Interface for activity log entries.
-	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
-	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
-	ResourceName string `json:"resourceName"`
-}
-
-// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
-	return v.Typename
-}
-
-// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
-	return v.Actor
-}
-
-// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
-	return v.CreatedAt
-}
-
-// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
-	return v.Message
-}
-
-// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
-	return v.EnvironmentName
-}
-
-// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
-	return v.ResourceType
-}
-
-// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
-func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetResourceName() string {
-	return v.ResourceName
-}
-
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16815,17 +20724,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTrigger
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16867,17 +20776,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16919,17 +20828,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -16971,17 +20880,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17023,17 +20932,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGr
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17075,17 +20984,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17127,17 +21036,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17179,17 +21088,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17231,17 +21140,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepository
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17283,17 +21192,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepository
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17335,17 +21244,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssign
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17387,17 +21296,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevoke
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17439,17 +21348,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCrea
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17491,17 +21400,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDele
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17543,17 +21452,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17595,17 +21504,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17650,17 +21559,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // Activity log entry for viewing secret values.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17702,17 +21611,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17754,17 +21663,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17806,17 +21715,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17858,17 +21767,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17910,17 +21819,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -17962,17 +21871,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18014,17 +21923,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18066,17 +21975,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMai
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18118,17 +22027,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfir
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18170,17 +22079,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18222,17 +22131,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18274,17 +22183,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeploy
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18326,17 +22235,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnviro
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18378,17 +22287,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18430,17 +22339,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18482,17 +22391,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18534,17 +22443,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18586,17 +22495,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18638,17 +22547,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18690,17 +22599,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18742,17 +22651,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCrea
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18794,17 +22703,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDele
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -18846,17 +22755,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpda
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// Interface for activity log entries.
+	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
 	Actor string `json:"actor"`
-	// Interface for activity log entries.
+	// Creation time of the entry.
 	CreatedAt time.Time `json:"createdAt"`
-	// Interface for activity log entries.
+	// Message that summarizes the entry.
 	Message string `json:"message"`
-	// Interface for activity log entries.
+	// The environment name that the entry belongs to.
 	EnvironmentName string `json:"environmentName"`
-	// Interface for activity log entries.
+	// Type of the resource that was affected by the action.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Interface for activity log entries.
+	// Name of the resource that was affected by the action.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20308,15 +24217,15 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*_
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
 	// The application state.
 	ApplicationState ApplicationState `json:"applicationState"`
-	// Interface for workloads.
+	// Issues that affect the workload.
 	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
-	// Interface for workloads.
+	// The container image of the workload.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -20353,15 +24262,15 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetTea
 // GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
 	// The state of the Job
 	JobState JobState `json:"jobState"`
-	// Interface for workloads.
+	// Issues that affect the workload.
 	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
-	// Interface for workloads.
+	// The container image of the workload.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -20408,22 +24317,22 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTotalIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// Issues that affect the workload.
 	GetTotalIssues() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection
 	// GetImage returns the interface-field "image" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The container image of the workload.
 	GetImage() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team environment for the workload.
 	GetTeamEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 }
 
@@ -20752,19 +24661,19 @@ type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccess
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team that owns the workload.
 	GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam
 }
 
@@ -20837,12 +24746,12 @@ func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesVal
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication struct {
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	Id string `json:"id"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
 }
 
@@ -20868,12 +24777,12 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 
 // GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob struct {
-	// Interface for workloads.
+	// The globally unique ID of the workload.
 	Id string `json:"id"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The team that owns the workload.
 	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
 }
 
@@ -20930,7 +24839,8 @@ type GrantPostgresAccessInput struct {
 	TeamSlug        string `json:"teamSlug"`
 	EnvironmentName string `json:"environmentName"`
 	Grantee         string `json:"grantee"`
-	Duration        string `json:"duration"`
+	// Duration of the access grant (maximum 4 hours).
+	Duration string `json:"duration"`
 }
 
 // GetClusterName returns GrantPostgresAccessInput.ClusterName, and is useful for accessing the field via an interface.
@@ -21175,11 +25085,16 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 }
 
 type IssueFilter struct {
-	ResourceName string       `json:"resourceName,omitempty"`
+	// Filter by resource name.
+	ResourceName string `json:"resourceName,omitempty"`
+	// Filter by resource type.
 	ResourceType ResourceType `json:"resourceType,omitempty"`
-	Environments []string     `json:"environments,omitempty"`
-	Severity     Severity     `json:"severity,omitempty"`
-	IssueType    IssueType    `json:"issueType,omitempty"`
+	// Filter by environment.
+	Environments []string `json:"environments,omitempty"`
+	// Filter by severity.
+	Severity Severity `json:"severity,omitempty"`
+	// Filter by issue type.
+	IssueType IssueType `json:"issueType,omitempty"`
 }
 
 // GetResourceName returns IssueFilter.ResourceName, and is useful for accessing the field via an interface.
@@ -21234,7 +25149,9 @@ var AllIssueType = []IssueType{
 }
 
 type JobOrder struct {
-	Field     JobOrderField  `json:"field"`
+	// The field to order items by.
+	Field JobOrderField `json:"field"`
+	// The direction to order items by.
 	Direction OrderDirection `json:"direction"`
 }
 
@@ -21288,18 +25205,6 @@ var AllJobRunState = []JobRunState{
 	JobRunStateSucceeded,
 	JobRunStateFailed,
 	JobRunStateUnknown,
-}
-
-type JobRunTriggerType string
-
-const (
-	JobRunTriggerTypeAutomatic JobRunTriggerType = "AUTOMATIC"
-	JobRunTriggerTypeManual    JobRunTriggerType = "MANUAL"
-)
-
-var AllJobRunTriggerType = []JobRunTriggerType{
-	JobRunTriggerTypeAutomatic,
-	JobRunTriggerTypeManual,
 }
 
 type JobState string
@@ -21440,11 +25345,11 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premars
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Interface for workloads.
+	// The container image of the workload.
 	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 }
 
@@ -21469,11 +25374,11 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetImage() Lis
 // ListCVEsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Interface for workloads.
+	// The container image of the workload.
 	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 }
 
@@ -21508,17 +25413,17 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team environment for the workload.
 	GetTeamEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 	// GetImage returns the interface-field "image" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The container image of the workload.
 	GetImage() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 }
 
@@ -21901,12 +25806,12 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team environment for the workload.
 	GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment
 }
 
@@ -21980,9 +25885,9 @@ func __marshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorklo
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -22004,9 +25909,9 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob includes the requested fields of the GraphQL type Job.
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -22151,6 +26056,49 @@ var AllPostgresInstanceState = []PostgresInstanceState{
 	PostgresInstanceStateDegraded,
 }
 
+// RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload includes the requested fields of the GraphQL type RemoveConfigValuePayload.
+type RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload struct {
+	// The updated config.
+	Config RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig `json:"config"`
+}
+
+// GetConfig returns RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload.Config, and is useful for accessing the field via an interface.
+func (v *RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload) GetConfig() RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig {
+	return v.Config
+}
+
+// RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig) GetId() string {
+	return v.Id
+}
+
+// GetName returns RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *RemoveConfigValueRemoveConfigValueRemoveConfigValuePayloadConfig) GetName() string {
+	return v.Name
+}
+
+// RemoveConfigValueResponse is returned by RemoveConfigValue on success.
+type RemoveConfigValueResponse struct {
+	// Remove a value from a config.
+	RemoveConfigValue RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload `json:"removeConfigValue"`
+}
+
+// GetRemoveConfigValue returns RemoveConfigValueResponse.RemoveConfigValue, and is useful for accessing the field via an interface.
+func (v *RemoveConfigValueResponse) GetRemoveConfigValue() RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload {
+	return v.RemoveConfigValue
+}
+
 // RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload includes the requested fields of the GraphQL type RemoveSecretValuePayload.
 type RemoveSecretValueRemoveSecretValueRemoveSecretValuePayload struct {
 	// The updated secret.
@@ -22293,7 +26241,9 @@ func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetNa
 }
 
 type SecretValueInput struct {
-	Name  string `json:"name"`
+	// The name of the secret value.
+	Name string `json:"name"`
+	// The secret value to set.
 	Value string `json:"value"`
 }
 
@@ -22443,9 +26393,9 @@ func (v *TailLogResponse) GetLog() TailLogLogLogLine { return v.Log }
 
 // Input for filtering the applications of a team.
 type TeamApplicationsFilter struct {
-	// Input for filtering the applications of a team.
+	// Filter by the name of the application.
 	Name string `json:"name"`
-	// Input for filtering the applications of a team.
+	// Filter by the name of the environment.
 	Environments []string `json:"environments"`
 }
 
@@ -22804,11 +26754,11 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Interface for workloads.
+	// Issues that affect the workload.
 	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
@@ -22835,11 +26785,11 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// Interface for workloads.
+	// The name of the workload.
 	Name string `json:"name"`
-	// Interface for workloads.
+	// The team environment for the workload.
 	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Interface for workloads.
+	// Issues that affect the workload.
 	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
@@ -22878,17 +26828,17 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The name of the workload.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// The team environment for the workload.
 	GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 	// GetIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Interface for workloads.
+	// Issues that affect the workload.
 	GetIssues() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection
 }
 
@@ -23579,18 +27529,24 @@ var AllTeamVulnerabilityRiskScoreTrend = []TeamVulnerabilityRiskScoreTrend{
 	TeamVulnerabilityRiskScoreTrendFlat,
 }
 
-// Input for filtering team workloads.
+// Input for filtering team vulnerability summaries.
 type TeamVulnerabilitySummaryFilter struct {
-	// Input for filtering team workloads.
+	// Only return vulnerability summaries for the given environment.
+	EnvironmentName string `json:"environmentName"`
+	// Deprecated: use environmentName instead.
+	// Only one environment is supported if this list is used.
 	Environments []string `json:"environments"`
 }
+
+// GetEnvironmentName returns TeamVulnerabilitySummaryFilter.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *TeamVulnerabilitySummaryFilter) GetEnvironmentName() string { return v.EnvironmentName }
 
 // GetEnvironments returns TeamVulnerabilitySummaryFilter.Environments, and is useful for accessing the field via an interface.
 func (v *TeamVulnerabilitySummaryFilter) GetEnvironments() []string { return v.Environments }
 
 // Input for filtering team workloads.
 type TeamWorkloadsFilter struct {
-	// Input for filtering team workloads.
+	// Only return workloads from the given named environments.
 	Environments []string `json:"environments"`
 }
 
@@ -23682,6 +27638,49 @@ type TriggerJobTriggerJobTriggerJobPayloadJobRun struct {
 
 // GetName returns TriggerJobTriggerJobTriggerJobPayloadJobRun.Name, and is useful for accessing the field via an interface.
 func (v *TriggerJobTriggerJobTriggerJobPayloadJobRun) GetName() string { return v.Name }
+
+// UpdateConfigValueResponse is returned by UpdateConfigValue on success.
+type UpdateConfigValueResponse struct {
+	// Update a value within a config.
+	UpdateConfigValue UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload `json:"updateConfigValue"`
+}
+
+// GetUpdateConfigValue returns UpdateConfigValueResponse.UpdateConfigValue, and is useful for accessing the field via an interface.
+func (v *UpdateConfigValueResponse) GetUpdateConfigValue() UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload {
+	return v.UpdateConfigValue
+}
+
+// UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload includes the requested fields of the GraphQL type UpdateConfigValuePayload.
+type UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload struct {
+	// The updated config.
+	Config UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig `json:"config"`
+}
+
+// GetConfig returns UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload.Config, and is useful for accessing the field via an interface.
+func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayload) GetConfig() UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig {
+	return v.Config
+}
+
+// UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetId() string {
+	return v.Id
+}
+
+// GetName returns UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetName() string {
+	return v.Name
+}
 
 // UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
 type UpdateOpenSearchResponse struct {
@@ -24153,13 +28152,13 @@ var AllValkeyTier = []ValkeyTier{
 
 // Input for viewing secret values.
 type ViewSecretValuesInput struct {
-	// Input for viewing secret values.
+	// The name of the secret.
 	Name string `json:"name"`
-	// Input for viewing secret values.
+	// The environment the secret exists in.
 	Environment string `json:"environment"`
-	// Input for viewing secret values.
+	// The team that owns the secret.
 	Team string `json:"team"`
-	// Input for viewing secret values.
+	// Reason for viewing the secret values. Must be at least 10 characters.
 	Reason string `json:"reason"`
 }
 
@@ -24219,6 +28218,26 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 	return v.Value
 }
 
+// __AddConfigValueInput is used internally by genqlient
+type __AddConfigValueInput struct {
+	Name            string           `json:"name"`
+	EnvironmentName string           `json:"environmentName"`
+	TeamSlug        string           `json:"teamSlug"`
+	Value           ConfigValueInput `json:"value"`
+}
+
+// GetName returns __AddConfigValueInput.Name, and is useful for accessing the field via an interface.
+func (v *__AddConfigValueInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __AddConfigValueInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__AddConfigValueInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __AddConfigValueInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__AddConfigValueInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetValue returns __AddConfigValueInput.Value, and is useful for accessing the field via an interface.
+func (v *__AddConfigValueInput) GetValue() ConfigValueInput { return v.Value }
+
 // __AddSecretValueInput is used internally by genqlient
 type __AddSecretValueInput struct {
 	Name        string           `json:"name"`
@@ -24266,6 +28285,22 @@ func (v *__ApplicationEnvironmentsInput) GetTeam() string { return v.Team }
 
 // GetFilter returns __ApplicationEnvironmentsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ApplicationEnvironmentsInput) GetFilter() TeamApplicationsFilter { return v.Filter }
+
+// __CreateConfigInput is used internally by genqlient
+type __CreateConfigInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __CreateConfigInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateConfigInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateConfigInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateConfigInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateConfigInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateConfigInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __CreateKafkaCredentialsInput is used internally by genqlient
 type __CreateKafkaCredentialsInput struct {
@@ -24409,21 +28444,21 @@ func (v *__CreateValkeyInput) GetTier() ValkeyTier { return v.Tier }
 // GetMaxMemoryPolicy returns __CreateValkeyInput.MaxMemoryPolicy, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetMaxMemoryPolicy() ValkeyMaxMemoryPolicy { return v.MaxMemoryPolicy }
 
-// __DeleteJobRunInput is used internally by genqlient
-type __DeleteJobRunInput struct {
-	Team    string `json:"team"`
-	Env     string `json:"env"`
-	RunName string `json:"runName"`
+// __DeleteConfigInput is used internally by genqlient
+type __DeleteConfigInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
 }
 
-// GetTeam returns __DeleteJobRunInput.Team, and is useful for accessing the field via an interface.
-func (v *__DeleteJobRunInput) GetTeam() string { return v.Team }
+// GetName returns __DeleteConfigInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteConfigInput) GetName() string { return v.Name }
 
-// GetEnv returns __DeleteJobRunInput.Env, and is useful for accessing the field via an interface.
-func (v *__DeleteJobRunInput) GetEnv() string { return v.Env }
+// GetEnvironmentName returns __DeleteConfigInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__DeleteConfigInput) GetEnvironmentName() string { return v.EnvironmentName }
 
-// GetRunName returns __DeleteJobRunInput.RunName, and is useful for accessing the field via an interface.
-func (v *__DeleteJobRunInput) GetRunName() string { return v.RunName }
+// GetTeamSlug returns __DeleteConfigInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__DeleteConfigInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __DeleteOpenSearchInput is used internally by genqlient
 type __DeleteOpenSearchInput struct {
@@ -24480,6 +28515,14 @@ type __FindWorkloadsForCveInput struct {
 
 // GetIdentifier returns __FindWorkloadsForCveInput.Identifier, and is useful for accessing the field via an interface.
 func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifier }
+
+// __GetAllConfigsInput is used internally by genqlient
+type __GetAllConfigsInput struct {
+	TeamSlug string `json:"teamSlug"`
+}
+
+// GetTeamSlug returns __GetAllConfigsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetAllConfigsInput) GetTeamSlug() string { return v.TeamSlug }
 
 // __GetAllIssuesInput is used internally by genqlient
 type __GetAllIssuesInput struct {
@@ -24583,6 +28626,44 @@ type __GetApplicationNamesInput struct {
 // GetTeam returns __GetApplicationNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetApplicationNamesInput) GetTeam() string { return v.Team }
 
+// __GetConfigActivityInput is used internally by genqlient
+type __GetConfigActivityInput struct {
+	Team          string                    `json:"team"`
+	Name          string                    `json:"name"`
+	ActivityTypes []ActivityLogActivityType `json:"activityTypes"`
+	First         int                       `json:"first"`
+}
+
+// GetTeam returns __GetConfigActivityInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetConfigActivityInput) GetTeam() string { return v.Team }
+
+// GetName returns __GetConfigActivityInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetConfigActivityInput) GetName() string { return v.Name }
+
+// GetActivityTypes returns __GetConfigActivityInput.ActivityTypes, and is useful for accessing the field via an interface.
+func (v *__GetConfigActivityInput) GetActivityTypes() []ActivityLogActivityType {
+	return v.ActivityTypes
+}
+
+// GetFirst returns __GetConfigActivityInput.First, and is useful for accessing the field via an interface.
+func (v *__GetConfigActivityInput) GetFirst() int { return v.First }
+
+// __GetConfigInput is used internally by genqlient
+type __GetConfigInput struct {
+	Name            string `json:"name"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+}
+
+// GetName returns __GetConfigInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetConfigInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __GetConfigInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetConfigInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __GetConfigInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetConfigInput) GetTeamSlug() string { return v.TeamSlug }
+
 // __GetJobActivityInput is used internally by genqlient
 type __GetJobActivityInput struct {
 	Team  string   `json:"team"`
@@ -24626,30 +28707,6 @@ type __GetJobNamesInput struct {
 
 // GetTeam returns __GetJobNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetJobNamesInput) GetTeam() string { return v.Team }
-
-// __GetJobRunNamesInput is used internally by genqlient
-type __GetJobRunNamesInput struct {
-	Team string `json:"team"`
-}
-
-// GetTeam returns __GetJobRunNamesInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetJobRunNamesInput) GetTeam() string { return v.Team }
-
-// __GetJobRunsInput is used internally by genqlient
-type __GetJobRunsInput struct {
-	Team string   `json:"team"`
-	Name string   `json:"name"`
-	Env  []string `json:"env"`
-}
-
-// GetTeam returns __GetJobRunsInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetJobRunsInput) GetTeam() string { return v.Team }
-
-// GetName returns __GetJobRunsInput.Name, and is useful for accessing the field via an interface.
-func (v *__GetJobRunsInput) GetName() string { return v.Name }
-
-// GetEnv returns __GetJobRunsInput.Env, and is useful for accessing the field via an interface.
-func (v *__GetJobRunsInput) GetEnv() []string { return v.Env }
 
 // __GetLatestJobRunStateInput is used internally by genqlient
 type __GetLatestJobRunStateInput struct {
@@ -24853,6 +28910,26 @@ func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() TeamVulnerabilit
 	return v.Filter
 }
 
+// __RemoveConfigValueInput is used internally by genqlient
+type __RemoveConfigValueInput struct {
+	ConfigName      string `json:"configName"`
+	EnvironmentName string `json:"environmentName"`
+	TeamSlug        string `json:"teamSlug"`
+	ValueName       string `json:"valueName"`
+}
+
+// GetConfigName returns __RemoveConfigValueInput.ConfigName, and is useful for accessing the field via an interface.
+func (v *__RemoveConfigValueInput) GetConfigName() string { return v.ConfigName }
+
+// GetEnvironmentName returns __RemoveConfigValueInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__RemoveConfigValueInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __RemoveConfigValueInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__RemoveConfigValueInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetValueName returns __RemoveConfigValueInput.ValueName, and is useful for accessing the field via an interface.
+func (v *__RemoveConfigValueInput) GetValueName() string { return v.ValueName }
+
 // __RemoveSecretValueInput is used internally by genqlient
 type __RemoveSecretValueInput struct {
 	SecretName  string `json:"secretName"`
@@ -24965,6 +29042,26 @@ func (v *__TriggerJobInput) GetEnv() string { return v.Env }
 // GetRunName returns __TriggerJobInput.RunName, and is useful for accessing the field via an interface.
 func (v *__TriggerJobInput) GetRunName() string { return v.RunName }
 
+// __UpdateConfigValueInput is used internally by genqlient
+type __UpdateConfigValueInput struct {
+	Name            string           `json:"name"`
+	EnvironmentName string           `json:"environmentName"`
+	TeamSlug        string           `json:"teamSlug"`
+	Value           ConfigValueInput `json:"value"`
+}
+
+// GetName returns __UpdateConfigValueInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigValueInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateConfigValueInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigValueInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateConfigValueInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigValueInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetValue returns __UpdateConfigValueInput.Value, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigValueInput) GetValue() ConfigValueInput { return v.Value }
+
 // __UpdateOpenSearchInput is used internally by genqlient
 type __UpdateOpenSearchInput struct {
 	Name            string                 `json:"name,omitempty"`
@@ -25052,6 +29149,49 @@ type __ViewSecretValuesInput struct {
 
 // GetInput returns __ViewSecretValuesInput.Input, and is useful for accessing the field via an interface.
 func (v *__ViewSecretValuesInput) GetInput() ViewSecretValuesInput { return v.Input }
+
+// The mutation executed by AddConfigValue.
+const AddConfigValue_Operation = `
+mutation AddConfigValue ($name: String!, $environmentName: String!, $teamSlug: Slug!, $value: ConfigValueInput!) {
+	addConfigValue(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,value:$value}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func AddConfigValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	value ConfigValueInput,
+) (data_ *AddConfigValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "AddConfigValue",
+		Query:  AddConfigValue_Operation,
+		Variables: &__AddConfigValueInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Value:           value,
+		},
+	}
+
+	data_ = &AddConfigValueResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
 
 // The mutation executed by AddSecretValue.
 const AddSecretValue_Operation = `
@@ -25170,6 +29310,47 @@ func ApplicationEnvironments(
 	}
 
 	data_ = &ApplicationEnvironmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateConfig.
+const CreateConfig_Operation = `
+mutation CreateConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	createConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateConfig(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *CreateConfigResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateConfig",
+		Query:  CreateConfig_Operation,
+		Variables: &__CreateConfigInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &CreateConfigResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -25459,33 +29640,33 @@ func CreateValkeyCredentials(
 	return data_, err_
 }
 
-// The mutation executed by DeleteJobRun.
-const DeleteJobRun_Operation = `
-mutation DeleteJobRun ($team: Slug!, $env: String!, $runName: String!) {
-	deleteJobRun(input: {teamSlug:$team,environmentName:$env,runName:$runName}) {
-		success
+// The mutation executed by DeleteConfig.
+const DeleteConfig_Operation = `
+mutation DeleteConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	deleteConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug}) {
+		configDeleted
 	}
 }
 `
 
-func DeleteJobRun(
+func DeleteConfig(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	team string,
-	env string,
-	runName string,
-) (data_ *DeleteJobRunResponse, err_ error) {
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *DeleteConfigResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "DeleteJobRun",
-		Query:  DeleteJobRun_Operation,
-		Variables: &__DeleteJobRunInput{
-			Team:    team,
-			Env:     env,
-			RunName: runName,
+		OpName: "DeleteConfig",
+		Query:  DeleteConfig_Operation,
+		Variables: &__DeleteConfigInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
 		},
 	}
 
-	data_ = &DeleteJobRunResponse{}
+	data_ = &DeleteConfigResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -25694,6 +29875,63 @@ func FindWorkloadsForCve(
 	}
 
 	data_ = &FindWorkloadsForCveResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetAllConfigs.
+const GetAllConfigs_Operation = `
+query GetAllConfigs ($teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		configs(first: 1000, orderBy: {field:NAME,direction:ASC}) {
+			nodes {
+				name
+				values {
+					name
+					value
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				workloads(first: 1000) {
+					nodes {
+						name
+						__typename
+					}
+				}
+				lastModifiedAt
+				lastModifiedBy {
+					email
+				}
+			}
+		}
+	}
+}
+`
+
+func GetAllConfigs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+) (data_ *GetAllConfigsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetAllConfigs",
+		Query:  GetAllConfigs_Operation,
+		Variables: &__GetAllConfigsInput{
+			TeamSlug: teamSlug,
+		},
+	}
+
+	data_ = &GetAllConfigsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -26204,6 +30442,125 @@ func GetApplicationNames(
 	return data_, err_
 }
 
+// The query executed by GetConfig.
+const GetConfig_Operation = `
+query GetConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
+	team(slug: $teamSlug) {
+		environment(name: $environmentName) {
+			config(name: $name) {
+				name
+				values {
+					name
+					value
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				workloads(first: 1000) {
+					nodes {
+						name
+						__typename
+					}
+				}
+				lastModifiedAt
+				lastModifiedBy {
+					email
+				}
+			}
+		}
+	}
+}
+`
+
+func GetConfig(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+) (data_ *GetConfigResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetConfig",
+		Query:  GetConfig_Operation,
+		Variables: &__GetConfigInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+		},
+	}
+
+	data_ = &GetConfigResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetConfigActivity.
+const GetConfigActivity_Operation = `
+query GetConfigActivity ($team: Slug!, $name: String!, $activityTypes: [ActivityLogActivityType!], $first: Int) {
+	team(slug: $team) {
+		configs(filter: {name:$name}, first: 1000) {
+			nodes {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				activityLog(first: $first, filter: {activityTypes:$activityTypes}) {
+					nodes {
+						__typename
+						actor
+						createdAt
+						message
+						environmentName
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetConfigActivity(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	activityTypes []ActivityLogActivityType,
+	first int,
+) (data_ *GetConfigActivityResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetConfigActivity",
+		Query:  GetConfigActivity_Operation,
+		Variables: &__GetConfigActivityInput{
+			Team:          team,
+			Name:          name,
+			ActivityTypes: activityTypes,
+			First:         first,
+		},
+	}
+
+	data_ = &GetConfigActivityResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetJobActivity.
 const GetJobActivity_Operation = `
 query GetJobActivity ($team: Slug!, $name: String!, $env: [String!], $first: Int) {
@@ -26346,108 +30703,6 @@ func GetJobNames(
 	}
 
 	data_ = &GetJobNamesResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetJobRunNames.
-const GetJobRunNames_Operation = `
-query GetJobRunNames ($team: Slug!) {
-	team(slug: $team) {
-		jobs(first: 1000) {
-			nodes {
-				teamEnvironment {
-					environment {
-						name
-					}
-				}
-				runs(first: 100) {
-					nodes {
-						name
-					}
-				}
-			}
-		}
-	}
-}
-`
-
-func GetJobRunNames(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-) (data_ *GetJobRunNamesResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetJobRunNames",
-		Query:  GetJobRunNames_Operation,
-		Variables: &__GetJobRunNamesInput{
-			Team: team,
-		},
-	}
-
-	data_ = &GetJobRunNamesResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetJobRuns.
-const GetJobRuns_Operation = `
-query GetJobRuns ($team: Slug!, $name: String!, $env: [String!]) {
-	team(slug: $team) {
-		jobs(filter: {name:$name,environments:$env}, first: 1) {
-			nodes {
-				runs(first: 100) {
-					nodes {
-						name
-						startTime
-						duration
-						status {
-							state
-						}
-						trigger {
-							type
-							actor
-						}
-					}
-				}
-			}
-		}
-	}
-}
-`
-
-func GetJobRuns(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-	name string,
-	env []string,
-) (data_ *GetJobRunsResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetJobRuns",
-		Query:  GetJobRuns_Operation,
-		Variables: &__GetJobRunsInput{
-			Team: team,
-			Name: name,
-			Env:  env,
-		},
-	}
-
-	data_ = &GetJobRunsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -27325,6 +31580,49 @@ func ListWorkloadVulnerabilitySummaries(
 	return data_, err_
 }
 
+// The mutation executed by RemoveConfigValue.
+const RemoveConfigValue_Operation = `
+mutation RemoveConfigValue ($configName: String!, $environmentName: String!, $teamSlug: Slug!, $valueName: String!) {
+	removeConfigValue(input: {configName:$configName,environmentName:$environmentName,teamSlug:$teamSlug,valueName:$valueName}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func RemoveConfigValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	configName string,
+	environmentName string,
+	teamSlug string,
+	valueName string,
+) (data_ *RemoveConfigValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "RemoveConfigValue",
+		Query:  RemoveConfigValue_Operation,
+		Variables: &__RemoveConfigValueInput{
+			ConfigName:      configName,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			ValueName:       valueName,
+		},
+	}
+
+	data_ = &RemoveConfigValueResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by RemoveSecretValue.
 const RemoveSecretValue_Operation = `
 mutation RemoveSecretValue ($secretName: String!, $environment: String!, $team: Slug!, $valueName: String!) {
@@ -27724,6 +32022,49 @@ func TriggerJob(
 	}
 
 	data_ = &TriggerJobResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateConfigValue.
+const UpdateConfigValue_Operation = `
+mutation UpdateConfigValue ($name: String!, $environmentName: String!, $teamSlug: Slug!, $value: ConfigValueInput!) {
+	updateConfigValue(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,value:$value}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateConfigValue(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	value ConfigValueInput,
+) (data_ *UpdateConfigValueResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateConfigValue",
+		Query:  UpdateConfigValue_Operation,
+		Variables: &__UpdateConfigValueInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Value:           value,
+		},
+	}
+
+	data_ = &UpdateConfigValueResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
