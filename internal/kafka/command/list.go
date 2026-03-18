@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/kafka/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type topicName struct {
@@ -18,7 +18,7 @@ type topicName struct {
 }
 
 func (t topicName) String() string {
-	return termlink.Link(t.Name, t.URL)
+	return formatting.Link(t.Name, t.URL)
 }
 
 func list(parentFlags *flag.Kafka) *naistrix.Command {

@@ -6,13 +6,13 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type teamWorkload struct {
@@ -21,7 +21,7 @@ type teamWorkload struct {
 }
 
 func (tw teamWorkload) String() string {
-	return termlink.Link(tw.Name, tw.Url)
+	return formatting.Link(tw.Name, tw.Url)
 }
 
 func teamCommand(parentFlags *flag.Api) *naistrix.Command {

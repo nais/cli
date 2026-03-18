@@ -6,11 +6,11 @@ import (
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type appName struct {
@@ -19,7 +19,7 @@ type appName struct {
 }
 
 func (a appName) String() string {
-	return termlink.Link(a.Name, a.URL)
+	return formatting.Link(a.Name, a.URL)
 }
 
 func list(parentFlags *flag.App) *naistrix.Command {

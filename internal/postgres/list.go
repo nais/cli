@@ -6,9 +6,9 @@ import (
 	"slices"
 	"sort"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/savioxavier/termlink"
 )
 
 const consoleBaseURL = "https://console.nav.cloud.nais.io"
@@ -19,7 +19,7 @@ type InstanceName struct {
 }
 
 func (n InstanceName) String() string {
-	return termlink.Link(n.Name, n.URL)
+	return formatting.Link(n.Name, n.URL)
 }
 
 type Instance struct {

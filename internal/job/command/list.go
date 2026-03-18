@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type jobName struct {
@@ -18,7 +18,7 @@ type jobName struct {
 }
 
 func (j jobName) String() string {
-	return termlink.Link(j.Name, j.URL)
+	return formatting.Link(j.Name, j.URL)
 }
 
 func list(parentFlags *flag.Job) *naistrix.Command {

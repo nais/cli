@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type resourceName struct {
@@ -18,10 +18,7 @@ type resourceName struct {
 }
 
 func (r resourceName) String() string {
-	if r.URL == "" {
-		return r.Name
-	}
-	return termlink.Link(r.Name, r.URL)
+	return formatting.Link(r.Name, r.URL)
 }
 
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {

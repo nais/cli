@@ -7,12 +7,12 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
 
 type team struct {
@@ -21,7 +21,7 @@ type team struct {
 }
 
 func (t team) String() string {
-	return termlink.Link(t.Slug, t.Url)
+	return formatting.Link(t.Slug, t.Url)
 }
 
 type workload struct {
