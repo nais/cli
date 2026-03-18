@@ -9,17 +9,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
-
-type jobName struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
-func (j jobName) String() string {
-	return termlink.Link(j.Name, j.URL)
-}
 
 func list(parentFlags *flag.Job) *naistrix.Command {
 	flags := &flag.List{Job: parentFlags}
@@ -57,7 +47,7 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 			}
 
 			type entry struct {
-				Name        jobName          `json:"name"`
+				Name        output.Link      `json:"name"`
 				Environment string           `json:"environment"`
 				Schedule    job.Schedule     `json:"schedule"`
 				LastRun     job.LastRunState `heading:"Last Run" json:"last_run"`
@@ -68,7 +58,7 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 			entries := make([]entry, 0, len(ret))
 			for _, j := range ret {
 				entries = append(entries, entry{
-					Name: jobName{
+					Name: output.Link{
 						Name: j.Name,
 						URL: fmt.Sprintf(
 							"https://%s/team/%s/%s/job/%s",

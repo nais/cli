@@ -8,28 +8,19 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/savioxavier/termlink"
+	"github.com/nais/naistrix/output"
 )
 
 const consoleBaseURL = "https://console.nav.cloud.nais.io"
 
-type InstanceName struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
-func (n InstanceName) String() string {
-	return termlink.Link(n.Name, n.URL)
-}
-
 type Instance struct {
-	Name             InstanceName `json:"name"`
-	Type             string       `json:"type"`
-	Environment      string       `json:"environment"`
-	Version          string       `heading:"Version" json:"version"`
-	HighAvailability bool         `heading:"HA" json:"high_availability"`
-	Audit            bool         `json:"audit"`
-	State            State        `json:"state"`
+	Name             output.Link `json:"name"`
+	Type             string      `json:"type"`
+	Environment      string      `json:"environment"`
+	Version          string      `heading:"Version" json:"version"`
+	HighAvailability bool        `heading:"HA" json:"high_availability"`
+	Audit            bool        `json:"audit"`
+	State            State       `json:"state"`
 }
 
 type State string
@@ -126,7 +117,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		}
 
 		ret = append(ret, Instance{
-			Name: InstanceName{
+			Name: output.Link{
 				Name: p.Name,
 				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Name),
 			},
@@ -146,7 +137,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		}
 
 		ret = append(ret, Instance{
-			Name: InstanceName{
+			Name: output.Link{
 				Name: s.Name,
 				URL:  fmt.Sprintf("%s/team/%s/%s/cloudsql/%s", consoleBaseURL, team, env, s.Name),
 			},

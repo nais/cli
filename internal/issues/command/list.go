@@ -9,20 +9,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
-
-type resourceName struct {
-	Name string `json:"resource_name" heading:"Resource Name"`
-	URL  string `json:"url" hidden:"true"`
-}
-
-func (r resourceName) String() string {
-	if r.URL == "" {
-		return r.Name
-	}
-	return termlink.Link(r.Name, r.URL)
-}
 
 func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 	flags := &flag.List{Issues: parentFlags}
@@ -64,7 +51,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 				ID           string          `json:"id" hidden:"true"`
 				Severity     issues.Severity `json:"severity"`
 				Environment  string          `json:"environment"`
-				ResourceName resourceName    `json:"resource_name" heading:"Resource Name"`
+				ResourceName output.Link     `json:"resource_name" heading:"Resource Name"`
 				ResourceType string          `json:"resource_type" heading:"Resource Type"`
 				Message      string          `json:"message"`
 			}
@@ -75,7 +62,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 					ID:          i.ID,
 					Severity:    i.Severity,
 					Environment: i.Environment,
-					ResourceName: resourceName{
+					ResourceName: output.Link{
 						Name: i.ResourceName,
 						URL:  issueResourceURL(user.ConsoleHost(), flags.Team, i.Environment, i.ResourceType, i.ResourceName),
 					},

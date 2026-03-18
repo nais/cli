@@ -12,17 +12,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
-
-type team struct {
-	Slug string `json:"slug"`
-	Url  string `json:"url"`
-}
-
-func (t team) String() string {
-	return termlink.Link(t.Slug, t.Url)
-}
 
 type workload struct {
 	Kind        string   `json:"kind"`
@@ -49,7 +39,7 @@ func (f workloadsWithIssues) String() string {
 }
 
 type statusEntry struct {
-	Team      team                `json:"team"`
+	Team      output.Link         `json:"team"`
 	Workloads int                 `json:"workloads"`
 	NotNais   int                 `heading:"Not Nais" json:"notNais"`
 	Issues    workloadsWithIssues `heading:"Critical Issues" json:"failing"`
@@ -82,9 +72,9 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 				}
 
 				n := statusEntry{
-					Team: team{
-						Slug: t.Team.Slug,
-						Url:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
+					Team: output.Link{
+						Name: t.Team.Slug,
+						URL:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
 					},
 					Workloads: t.Team.Workloads.PageInfo.TotalCount,
 					NotNais:   len(workloadsWithCriticalIssues),
