@@ -4,22 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/kafka/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
-
-type topicName struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
-func (t topicName) String() string {
-	return formatting.Link(t.Name, t.URL)
-}
 
 func list(parentFlags *flag.Kafka) *naistrix.Command {
 	flags := &flag.List{Kafka: parentFlags}
@@ -49,14 +39,14 @@ func list(parentFlags *flag.Kafka) *naistrix.Command {
 			}
 
 			type entry struct {
-				Name        topicName `json:"name"`
-				Environment string    `json:"environment"`
+				Name        output.Link `json:"name"`
+				Environment string      `json:"environment"`
 			}
 
 			entries := make([]entry, 0, len(ret))
 			for _, topic := range ret {
 				entries = append(entries, entry{
-					Name: topicName{
+					Name: output.Link{
 						Name: topic.Name,
 						URL: fmt.Sprintf(
 							"https://%s/team/%s/%s/kafka/%s",

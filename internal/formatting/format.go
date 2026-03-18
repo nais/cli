@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/savioxavier/termlink"
 )
 
 func ColoredSeverityString(s string, severity gql.Severity) string {
@@ -18,12 +17,4 @@ func ColoredSeverityString(s string, severity gql.Severity) string {
 	}
 
 	return fmt.Sprintf("<%v>%v</%v>", level, s, level)
-}
-
-func Link(title, url string) string {
-	if url == "" || !termlink.SupportsHyperlinks() {
-		return title
-	}
-
-	return termlink.Link(title, url)
 }

@@ -27,8 +27,8 @@ func teamsCommand(parentFlags *flag.Api) *naistrix.Command {
 			}
 
 			type entry struct {
-				Team        team   `json:"team"`
-				Description string `json:"description"`
+				Team        output.Link `json:"team"`
+				Description string      `json:"description"`
 			}
 
 			var entries []entry
@@ -41,9 +41,9 @@ func teamsCommand(parentFlags *flag.Api) *naistrix.Command {
 
 				for _, t := range ret.Teams.Nodes {
 					entries = append(entries, entry{
-						Team: team{
-							Slug: t.Slug,
-							Url:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Slug),
+						Team: output.Link{
+							Name: t.Slug,
+							URL:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Slug),
 						},
 						Description: t.Purpose,
 					})
@@ -56,9 +56,9 @@ func teamsCommand(parentFlags *flag.Api) *naistrix.Command {
 
 				for _, t := range userTeams {
 					entries = append(entries, entry{
-						Team: team{
-							Slug: t.Team.Slug,
-							Url:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
+						Team: output.Link{
+							Name: t.Team.Slug,
+							URL:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
 						},
 						Description: t.Team.Purpose,
 					})
