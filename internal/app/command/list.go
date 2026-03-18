@@ -10,17 +10,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
-
-type appName struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-}
-
-func (a appName) String() string {
-	return termlink.Link(a.Name, a.URL)
-}
 
 func list(parentFlags *flag.App) *naistrix.Command {
 	flags := &flag.List{
@@ -59,7 +49,7 @@ func list(parentFlags *flag.App) *naistrix.Command {
 
 			type entry struct {
 				State         app.State          `json:"state"`
-				Name          appName            `json:"name"`
+				Name          output.Link        `json:"name"`
 				Environment   string             `json:"environment"`
 				InstancesInfo *app.InstancesInfo `heading:"Running" json:"running"`
 				IssueInfo     *app.IssueInfo     `heading:"Issues" json:"issue_info"`
@@ -70,7 +60,7 @@ func list(parentFlags *flag.App) *naistrix.Command {
 			for _, a := range ret {
 				entries = append(entries, entry{
 					State: a.State,
-					Name: appName{
+					Name: output.Link{
 						Name: a.Name,
 						URL: fmt.Sprintf(
 							"https://%s/team/%s/%s/app/%s",

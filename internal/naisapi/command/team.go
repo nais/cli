@@ -12,17 +12,7 @@ import (
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/savioxavier/termlink"
 )
-
-type teamWorkload struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-
-func (tw teamWorkload) String() string {
-	return termlink.Link(tw.Name, tw.Url)
-}
 
 func teamCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Team{Api: parentFlags}
@@ -55,12 +45,12 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 			}
 
 			type entry struct {
-				Workload        teamWorkload `json:"workload"`
-				Environment     string       `json:"environment"`
-				Type            string       `json:"type"`
-				State           string       `json:"state"`
-				Vulnerabilities int          `json:"vulnerabilities"`
-				Issues          int          `heading:"Critical Issues" json:"issues"`
+				Workload        output.Link `json:"workload"`
+				Environment     string      `json:"environment"`
+				Type            string      `json:"type"`
+				State           string      `json:"state"`
+				Vulnerabilities int         `json:"vulnerabilities"`
+				Issues          int         `heading:"Critical Issues" json:"issues"`
 			}
 
 			ret, err := naisapi.GetTeamWorkloads(ctx, flags.Team.Team)
@@ -84,9 +74,9 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 				}
 
 				entries[i] = entry{
-					Workload: teamWorkload{
+					Workload: output.Link{
 						Name: w.GetName(),
-						Url: fmt.Sprintf(
+						URL: fmt.Sprintf(
 							"https://%s/team/%s/%s/%s/%s",
 							user.ConsoleHost(),
 							flags.Team.Team,
