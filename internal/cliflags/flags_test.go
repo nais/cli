@@ -346,6 +346,20 @@ func TestHasSubCommandPath(t *testing.T) {
 			subs:    []string{"restart"},
 			wantHas: true,
 		},
+		{
+			name:    "parent token as flag value is not mistaken for command",
+			args:    []string{"nais", "--team", "app", "app", "restart"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: true,
+		},
+		{
+			name:    "returns false when parent only appears as flag value",
+			args:    []string{"nais", "--team", "app", "secret", "list"},
+			parent:  "app",
+			subs:    []string{"restart"},
+			wantHas: false,
+		},
 	}
 
 	for _, tt := range tests {

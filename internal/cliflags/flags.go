@@ -150,9 +150,21 @@ func HasSubCommandPathWithValueFlags(args []string, parent string, valueTakingFl
 		consumesValue[f] = struct{}{}
 	}
 
-	for i := range args {
+	for i := 0; i < len(args); i++ {
 		if args[i] == "--" {
 			break
+		}
+		// Skip value-taking flags and their values so that a flag value equal
+		// to parent is not mistaken for a command token (e.g. --team app app restart).
+		if strings.HasPrefix(args[i], "-") {
+			if _, takesValue := consumesValue[args[i]]; takesValue &&
+				!strings.Contains(args[i], "=") &&
+				i+1 < len(args) &&
+				args[i+1] != "" &&
+				!strings.HasPrefix(args[i+1], "-") {
+				i++ // skip the value token
+			}
+			continue
 		}
 		if args[i] != parent {
 			continue
