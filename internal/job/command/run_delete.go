@@ -39,25 +39,12 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			runName := args.Get("run-name")
 
-			if !flags.Yes {
-				pterm.Warning.Printfln("You are about to delete job run %q in %q for team %q",
-					runName, string(flags.Environment), flags.Team)
-
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
-					return fmt.Errorf("cancelled by user")
-				}
-			}
-
-			deleted, err := job.DeleteJobRun(ctx, flags.Team, string(flags.Environment), runName)
-			if err != nil {
+			if err := job.DeleteJobRun(ctx, flags.Team, string(flags.Environment), runName); err != nil {
 				return fmt.Errorf("deleting job run: %w", err)
 			}
 
-			if deleted {
-				pterm.Success.Printfln("Deleted job run %q from %q for team %q",
-					runName, string(flags.Environment), flags.Team)
-			}
+			pterm.Success.Printfln("Deleted job run %q from %q for team %q",
+				runName, string(flags.Environment), flags.Team)
 
 			return nil
 		},

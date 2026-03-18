@@ -57,8 +57,7 @@ type Trigger struct {
 
 type Delete struct {
 	*Job
-	Environment Env  `name:"environment" short:"e" usage:"Filter by environment."`
-	Yes         bool `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
 type Env string
