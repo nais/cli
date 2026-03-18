@@ -457,9 +457,9 @@ var AllApplicationInstanceState = []ApplicationInstanceState{
 
 // Ordering options when fetching applications.
 type ApplicationOrder struct {
-	// The field to order items by.
+	// Ordering options when fetching applications.
 	Field ApplicationOrderField `json:"field"`
-	// The direction to order items by.
+	// Ordering options when fetching applications.
 	Direction OrderDirection `json:"direction"`
 }
 
@@ -511,9 +511,7 @@ var AllApplicationState = []ApplicationState{
 }
 
 type ConfigValueInput struct {
-	// The name of the config value.
-	Name string `json:"name"`
-	// The value to set.
+	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
@@ -1185,17 +1183,17 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team that owns the workload.
+	// Interface for workloads.
 	GetTeam() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team environment for the workload.
+	// Interface for workloads.
 	GetTeamEnvironment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment
 }
 
@@ -1269,11 +1267,11 @@ func __marshalFindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnect
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadApplication struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -1300,11 +1298,11 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob includes the requested fields of the GraphQL type Job.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadJob struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam `json:"team"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -1620,7 +1618,7 @@ func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadCon
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -1637,7 +1635,7 @@ func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadCon
 
 // GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnectionNodesJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -1665,7 +1663,7 @@ type GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnect
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2037,7 +2035,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkload i
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2112,7 +2110,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueW
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2129,7 +2127,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorklo
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2275,7 +2273,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabil
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2350,7 +2348,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalV
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2367,7 +2365,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2513,7 +2511,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloa
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2588,7 +2586,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIss
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2605,7 +2603,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWor
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2749,7 +2747,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkload interfac
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -2824,7 +2822,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkload
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -2841,7 +2839,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadAppli
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3344,7 +3342,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkload interfac
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -3419,7 +3417,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkload
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3436,7 +3434,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadAppli
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3582,7 +3580,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkload i
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -3657,7 +3655,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueW
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -3674,7 +3672,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorklo
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4088,7 +4086,7 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkload inte
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -4163,7 +4161,7 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWork
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4180,7 +4178,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadA
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssueWorkloadJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4574,7 +4572,7 @@ func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadCon
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4591,7 +4589,7 @@ func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadCon
 
 // GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnectionNodesJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -4619,7 +4617,7 @@ type GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnect
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -5046,22 +5044,22 @@ type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplication
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	GetEnvironmentName() string
 }
 
@@ -5767,13 +5765,13 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5805,13 +5803,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5843,13 +5841,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5881,13 +5879,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5919,13 +5917,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5957,13 +5955,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -5995,13 +5993,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6033,13 +6031,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6071,13 +6069,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6109,13 +6107,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6147,13 +6145,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6185,13 +6183,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6223,13 +6221,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6261,13 +6259,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6299,13 +6297,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6337,13 +6335,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6375,13 +6373,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6413,13 +6411,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6451,13 +6449,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6489,13 +6487,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6527,13 +6525,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6565,13 +6563,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6603,13 +6601,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6641,13 +6639,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6679,13 +6677,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6717,13 +6715,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6755,13 +6753,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6796,13 +6794,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // Activity log entry for viewing secret values.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6834,13 +6832,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6872,13 +6870,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6910,13 +6908,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6948,13 +6946,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -6986,13 +6984,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7024,13 +7022,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7062,13 +7060,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7100,13 +7098,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7138,13 +7136,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7176,13 +7174,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7214,13 +7212,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7252,13 +7250,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7290,13 +7288,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7328,13 +7326,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7366,13 +7364,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7404,13 +7402,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7442,13 +7440,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7480,13 +7478,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7518,13 +7516,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7556,13 +7554,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7594,13 +7592,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7632,13 +7630,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -7670,13 +7668,13 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -8848,22 +8846,22 @@ type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityL
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	GetEnvironmentName() string
 }
 
@@ -9569,13 +9567,13 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9607,13 +9605,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9645,13 +9643,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9683,13 +9681,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9721,13 +9719,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9759,13 +9757,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9797,13 +9795,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9835,13 +9833,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9873,13 +9871,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9911,13 +9909,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9949,13 +9947,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -9987,13 +9985,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10025,13 +10023,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10063,13 +10061,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10101,13 +10099,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10139,13 +10137,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10177,13 +10175,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10215,13 +10213,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10253,13 +10251,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10291,13 +10289,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10329,13 +10327,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10367,13 +10365,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10405,13 +10403,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10443,13 +10441,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10481,13 +10479,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10519,13 +10517,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10557,13 +10555,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10598,13 +10596,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // Activity log entry for viewing secret values.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10636,13 +10634,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10674,13 +10672,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10712,13 +10710,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10750,13 +10748,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10788,13 +10786,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10826,13 +10824,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10864,13 +10862,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10902,13 +10900,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10940,13 +10938,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -10978,13 +10976,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11016,13 +11014,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11054,13 +11052,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11092,13 +11090,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11130,13 +11128,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11168,13 +11166,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11206,13 +11204,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11244,13 +11242,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11282,13 +11280,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11320,13 +11318,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11358,13 +11356,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11396,13 +11394,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11434,13 +11432,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11472,13 +11470,13 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -11760,7 +11758,7 @@ func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection) __premarshal
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -11777,7 +11775,7 @@ func (v *GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesApplicati
 
 // GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -11805,7 +11803,7 @@ type GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWorkload inte
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -12080,22 +12078,22 @@ type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConne
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	GetEnvironmentName() string
 }
 
@@ -12801,13 +12799,13 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -12839,13 +12837,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -12877,13 +12875,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -12915,13 +12913,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -12953,13 +12951,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -12991,13 +12989,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13029,13 +13027,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13067,13 +13065,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13105,13 +13103,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13143,13 +13141,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13181,13 +13179,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13219,13 +13217,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13257,13 +13255,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13295,13 +13293,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13333,13 +13331,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13371,13 +13369,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13409,13 +13407,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13447,13 +13445,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13485,13 +13483,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13523,13 +13521,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13561,13 +13559,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13599,13 +13597,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13637,13 +13635,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13675,13 +13673,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13713,13 +13711,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13751,13 +13749,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13789,13 +13787,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13830,13 +13828,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // Activity log entry for viewing secret values.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13868,13 +13866,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13906,13 +13904,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13944,13 +13942,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -13982,13 +13980,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14020,13 +14018,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14058,13 +14056,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14096,13 +14094,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14134,13 +14132,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14172,13 +14170,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14210,13 +14208,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14248,13 +14246,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14286,13 +14284,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14324,13 +14322,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14362,13 +14360,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14400,13 +14398,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14438,13 +14436,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14476,13 +14474,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14514,13 +14512,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14552,13 +14550,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14590,13 +14588,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14628,13 +14626,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14666,13 +14664,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -14704,13 +14702,13 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -15836,19 +15834,19 @@ type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdges
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team that owns the workload.
+	// Interface for workloads.
 	GetTeam() GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam
 }
 
@@ -15921,12 +15919,12 @@ func __marshalGetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnec
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadApplication struct {
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	Id string `json:"id"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
 }
 
@@ -15952,12 +15950,12 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionE
 
 // GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadJob struct {
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	Id string `json:"id"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam `json:"team"`
 }
 
@@ -16232,22 +16230,22 @@ type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityL
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	GetEnvironmentName() string
 }
 
@@ -16953,13 +16951,13 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -16991,13 +16989,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17029,13 +17027,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17067,13 +17065,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17105,13 +17103,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17143,13 +17141,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17181,13 +17179,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17219,13 +17217,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17257,13 +17255,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17295,13 +17293,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17333,13 +17331,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17371,13 +17369,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17409,13 +17407,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17447,13 +17445,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17485,13 +17483,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17523,13 +17521,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17561,13 +17559,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17599,13 +17597,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17637,13 +17635,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17675,13 +17673,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17713,13 +17711,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17751,13 +17749,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17789,13 +17787,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17827,13 +17825,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17865,13 +17863,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17903,13 +17901,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17941,13 +17939,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -17982,13 +17980,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // Activity log entry for viewing secret values.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18020,13 +18018,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18058,13 +18056,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18096,13 +18094,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18134,13 +18132,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18172,13 +18170,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18210,13 +18208,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18248,13 +18246,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18286,13 +18284,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18324,13 +18322,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18362,13 +18360,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18400,13 +18398,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18438,13 +18436,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18476,13 +18474,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18514,13 +18512,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18552,13 +18550,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18590,13 +18588,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18628,13 +18626,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18666,13 +18664,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18704,13 +18702,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18742,13 +18740,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18780,13 +18778,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18818,13 +18816,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -18856,13 +18854,13 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
 }
 
@@ -19128,7 +19126,7 @@ func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnection) __premarshal
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -19145,7 +19143,7 @@ func (v *GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplicati
 
 // GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob struct {
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
@@ -19173,7 +19171,7 @@ type GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload inte
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
@@ -19421,32 +19419,32 @@ type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEnt
 	// GetActor returns the interface-field "actor" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	GetActor() string
 	// GetCreatedAt returns the interface-field "createdAt" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	GetCreatedAt() time.Time
 	// GetMessage returns the interface-field "message" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	GetMessage() string
 	// GetEnvironmentName returns the interface-field "environmentName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	GetEnvironmentName() string
 	// GetResourceType returns the interface-field "resourceType" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	GetResourceType() ActivityLogEntryResourceType
 	// GetResourceName returns the interface-field "resourceName" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	GetResourceName() string
 }
 
@@ -20152,17 +20150,17 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20204,17 +20202,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationRestartedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20256,17 +20254,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationScaledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20308,17 +20306,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAuditActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20360,17 +20358,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesClusterAud
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20412,17 +20410,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigCrea
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20464,17 +20462,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigDele
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20516,17 +20514,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesConfigUpda
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry includes the requested fields of the GraphQL type CredentialsActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20568,17 +20566,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredential
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20620,17 +20618,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeployment
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20672,17 +20670,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeleted
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20724,17 +20722,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTrigger
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20776,17 +20774,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20828,17 +20826,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20880,17 +20878,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20932,17 +20930,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGr
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -20984,17 +20982,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21036,17 +21034,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21088,17 +21086,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconciler
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21140,17 +21138,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepository
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepositoryRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21192,17 +21190,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRepository
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssignedToServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21244,17 +21242,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleAssign
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevokedFromServiceAccountActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21296,17 +21294,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesRoleRevoke
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21348,17 +21346,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretCrea
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21400,17 +21398,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretDele
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21452,17 +21450,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21504,17 +21502,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValueUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21559,17 +21557,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // Activity log entry for viewing secret values.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValuesViewedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21611,17 +21609,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesSecretValu
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21663,17 +21661,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21715,17 +21713,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21767,17 +21765,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21819,17 +21817,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21871,17 +21869,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21923,17 +21921,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -21975,17 +21973,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMai
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22027,17 +22025,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfir
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22079,17 +22077,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22131,17 +22129,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeployKeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22183,17 +22181,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamDeploy
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnvironmentUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22235,17 +22233,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamEnviro
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberAddedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22287,17 +22285,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberRemovedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22339,17 +22337,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMemberSetRoleActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22391,17 +22389,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamMember
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22443,17 +22441,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamUpdate
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22495,17 +22493,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22547,17 +22545,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashInstanceUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22599,17 +22597,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesUnleashIns
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCreatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22651,17 +22649,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCrea
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22703,17 +22701,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDele
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -22755,17 +22753,17 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpda
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
-	// The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+	// Interface for activity log entries.
 	Actor string `json:"actor"`
-	// Creation time of the entry.
+	// Interface for activity log entries.
 	CreatedAt time.Time `json:"createdAt"`
-	// Message that summarizes the entry.
+	// Interface for activity log entries.
 	Message string `json:"message"`
-	// The environment name that the entry belongs to.
+	// Interface for activity log entries.
 	EnvironmentName string `json:"environmentName"`
-	// Type of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
-	// Name of the resource that was affected by the action.
+	// Interface for activity log entries.
 	ResourceName string `json:"resourceName"`
 }
 
@@ -24217,15 +24215,15 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*_
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
 	// The application state.
 	ApplicationState ApplicationState `json:"applicationState"`
-	// Issues that affect the workload.
+	// Interface for workloads.
 	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
-	// The container image of the workload.
+	// Interface for workloads.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -24262,15 +24260,15 @@ func (v *GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesApplication) GetTea
 // GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
 	// The state of the Job
 	JobState JobState `json:"jobState"`
-	// Issues that affect the workload.
+	// Interface for workloads.
 	TotalIssues GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection `json:"totalIssues"`
-	// The container image of the workload.
+	// Interface for workloads.
 	Image GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -24317,22 +24315,22 @@ type GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTotalIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Issues that affect the workload.
+	// Interface for workloads.
 	GetTotalIssues() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTotalIssuesIssueConnection
 	// GetImage returns the interface-field "image" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The container image of the workload.
+	// Interface for workloads.
 	GetImage() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team environment for the workload.
+	// Interface for workloads.
 	GetTeamEnvironment() GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 }
 
@@ -24661,19 +24659,19 @@ type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccess
 	// GetId returns the interface-field "id" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	GetId() string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 	// GetTeam returns the interface-field "team" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team that owns the workload.
+	// Interface for workloads.
 	GetTeam() GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam
 }
 
@@ -24746,12 +24744,12 @@ func __marshalGetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesVal
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadApplication struct {
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	Id string `json:"id"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
 }
 
@@ -24777,12 +24775,12 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 
 // GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob includes the requested fields of the GraphQL type Job.
 type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadJob struct {
-	// The globally unique ID of the workload.
+	// Interface for workloads.
 	Id string `json:"id"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
-	// The team that owns the workload.
+	// Interface for workloads.
 	Team GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam `json:"team"`
 }
 
@@ -24839,8 +24837,7 @@ type GrantPostgresAccessInput struct {
 	TeamSlug        string `json:"teamSlug"`
 	EnvironmentName string `json:"environmentName"`
 	Grantee         string `json:"grantee"`
-	// Duration of the access grant (maximum 4 hours).
-	Duration string `json:"duration"`
+	Duration        string `json:"duration"`
 }
 
 // GetClusterName returns GrantPostgresAccessInput.ClusterName, and is useful for accessing the field via an interface.
@@ -25085,16 +25082,11 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 }
 
 type IssueFilter struct {
-	// Filter by resource name.
-	ResourceName string `json:"resourceName,omitempty"`
-	// Filter by resource type.
+	ResourceName string       `json:"resourceName,omitempty"`
 	ResourceType ResourceType `json:"resourceType,omitempty"`
-	// Filter by environment.
-	Environments []string `json:"environments,omitempty"`
-	// Filter by severity.
-	Severity Severity `json:"severity,omitempty"`
-	// Filter by issue type.
-	IssueType IssueType `json:"issueType,omitempty"`
+	Environments []string     `json:"environments,omitempty"`
+	Severity     Severity     `json:"severity,omitempty"`
+	IssueType    IssueType    `json:"issueType,omitempty"`
 }
 
 // GetResourceName returns IssueFilter.ResourceName, and is useful for accessing the field via an interface.
@@ -25149,9 +25141,7 @@ var AllIssueType = []IssueType{
 }
 
 type JobOrder struct {
-	// The field to order items by.
-	Field JobOrderField `json:"field"`
-	// The direction to order items by.
+	Field     JobOrderField  `json:"field"`
 	Direction OrderDirection `json:"direction"`
 }
 
@@ -25345,11 +25335,11 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premars
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// The container image of the workload.
+	// Interface for workloads.
 	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 }
 
@@ -25374,11 +25364,11 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesApplication) GetImage() Lis
 // ListCVEsTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// The container image of the workload.
+	// Interface for workloads.
 	Image ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage `json:"image"`
 }
 
@@ -25413,17 +25403,17 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload interface {
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team environment for the workload.
+	// Interface for workloads.
 	GetTeamEnvironment() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 	// GetImage returns the interface-field "image" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The container image of the workload.
+	// Interface for workloads.
 	GetImage() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage
 }
 
@@ -25806,12 +25796,12 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team environment for the workload.
+	// Interface for workloads.
 	GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment
 }
 
@@ -25885,9 +25875,9 @@ func __marshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorklo
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -25909,9 +25899,9 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob includes the requested fields of the GraphQL type Job.
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -26241,9 +26231,7 @@ func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetNa
 }
 
 type SecretValueInput struct {
-	// The name of the secret value.
-	Name string `json:"name"`
-	// The secret value to set.
+	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
@@ -26393,9 +26381,9 @@ func (v *TailLogResponse) GetLog() TailLogLogLogLine { return v.Log }
 
 // Input for filtering the applications of a team.
 type TeamApplicationsFilter struct {
-	// Filter by the name of the application.
+	// Input for filtering the applications of a team.
 	Name string `json:"name"`
-	// Filter by the name of the environment.
+	// Input for filtering the applications of a team.
 	Environments []string `json:"environments"`
 }
 
@@ -26754,11 +26742,11 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesApplication struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Issues that affect the workload.
+	// Interface for workloads.
 	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
@@ -26785,11 +26773,11 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWo
 // TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesJob struct {
 	Typename string `json:"__typename"`
-	// The name of the workload.
+	// Interface for workloads.
 	Name string `json:"name"`
-	// The team environment for the workload.
+	// Interface for workloads.
 	TeamEnvironment TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment `json:"teamEnvironment"`
-	// Issues that affect the workload.
+	// Interface for workloads.
 	Issues TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection `json:"issues"`
 }
 
@@ -26828,17 +26816,17 @@ type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorklo
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The name of the workload.
+	// Interface for workloads.
 	GetName() string
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// The team environment for the workload.
+	// Interface for workloads.
 	GetTeamEnvironment() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment
 	// GetIssues returns the interface-field "issues" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
-	// Issues that affect the workload.
+	// Interface for workloads.
 	GetIssues() TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkloadIssuesIssueConnection
 }
 
@@ -27531,10 +27519,9 @@ var AllTeamVulnerabilityRiskScoreTrend = []TeamVulnerabilityRiskScoreTrend{
 
 // Input for filtering team vulnerability summaries.
 type TeamVulnerabilitySummaryFilter struct {
-	// Only return vulnerability summaries for the given environment.
+	// Input for filtering team vulnerability summaries.
 	EnvironmentName string `json:"environmentName"`
-	// Deprecated: use environmentName instead.
-	// Only one environment is supported if this list is used.
+	// Input for filtering team vulnerability summaries.
 	Environments []string `json:"environments"`
 }
 
@@ -27546,7 +27533,7 @@ func (v *TeamVulnerabilitySummaryFilter) GetEnvironments() []string { return v.E
 
 // Input for filtering team workloads.
 type TeamWorkloadsFilter struct {
-	// Only return workloads from the given named environments.
+	// Input for filtering team workloads.
 	Environments []string `json:"environments"`
 }
 
@@ -28152,13 +28139,13 @@ var AllValkeyTier = []ValkeyTier{
 
 // Input for viewing secret values.
 type ViewSecretValuesInput struct {
-	// The name of the secret.
+	// Input for viewing secret values.
 	Name string `json:"name"`
-	// The environment the secret exists in.
+	// Input for viewing secret values.
 	Environment string `json:"environment"`
-	// The team that owns the secret.
+	// Input for viewing secret values.
 	Team string `json:"team"`
-	// Reason for viewing the secret values. Must be at least 10 characters.
+	// Input for viewing secret values.
 	Reason string `json:"reason"`
 }
 
