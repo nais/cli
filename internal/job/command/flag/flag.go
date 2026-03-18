@@ -60,6 +60,12 @@ type Delete struct {
 	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
+type RunList struct {
+	*Job
+	Environment Env    `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {

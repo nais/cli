@@ -10,6 +10,7 @@ func run(parentFlags *flag.Job) *naistrix.Command {
 		Name:  "run",
 		Title: "Manage job runs.",
 		SubCommands: []*naistrix.Command{
+			listRuns(parentFlags),
 			deleteRun(parentFlags),
 		},
 	}
