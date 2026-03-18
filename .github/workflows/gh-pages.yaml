@@ -21,12 +21,11 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
           cache-version: 0
+          working-directory: docs
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # ratchet:actions/configure-pages@v5
       - run: mise run generate:docs
-      - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697 # ratchet:actions/jekyll-build-pages@v1
-        with:
-          source: ./docs
-          destination: ./_site
+      - run: bundle exec jekyll build --destination ../_site
+        working-directory: docs
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # ratchet:actions/upload-pages-artifact@v3
   deploy:
     environment:
