@@ -39,7 +39,7 @@ type Application struct {
 	Commands []*naistrix.Command
 }
 
-func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
+func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	app, f, err := naistrix.NewApplication(
 		"nais",
 		"Nais CLI",
@@ -92,7 +92,7 @@ func newApplication(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 }
 
 func Run(ctx context.Context, w io.Writer) error {
-	app, f, err := newApplication(w)
+	app, f, err := New(w)
 	if err != nil {
 		return err
 	}
