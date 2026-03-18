@@ -120,7 +120,7 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 	}
 
 	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete instances. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete instances. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
 	instances, err := app.GetApplicationInstances(ctx, string(f.Team), args.Get("name"), string(f.Environment))
@@ -169,7 +169,7 @@ type Env string
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
 	f := flags.(*Log)
 	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
 	if args.Len() == 0 {

@@ -50,7 +50,7 @@ type GetEnv string
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	tp, ok := flags.(teamProvider)
 	if !ok {
-		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
 	team := tp.GetTeam()
@@ -59,7 +59,7 @@ func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ s
 	}
 
 	if team == "" {
-		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
 	if args.Len() == 0 {

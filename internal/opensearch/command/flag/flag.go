@@ -32,7 +32,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 
 	if team != "" && isInstanceEnvironmentCompletionFromCLIArgs() {
 		envs, err := opensearchCredentialEnvironments(ctx, team)
-		if err == nil {
+		if err == nil && len(envs) > 0 {
 			return envs, "Available environments with OpenSearch instances"
 		}
 	}
@@ -99,7 +99,7 @@ type GetEnv string
 func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
 	f := flags.(*Get)
 	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete environments. 'nais config set team <team>', or '--team <team>' flag."
 	}
 
 	if args.Len() == 0 {

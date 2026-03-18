@@ -97,7 +97,7 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 
 	if team != "" && isInstanceEnvironmentCompletionFromCLIArgs() {
 		envs, err := valkeyCredentialEnvironments(ctx, team)
-		if err == nil {
+		if err == nil && len(envs) > 0 {
 			return envs, "Available environments with Valkey instances"
 		}
 	}
