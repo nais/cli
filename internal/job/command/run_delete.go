@@ -27,7 +27,7 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 					return nil, "Please provide team to auto-complete run names. 'nais config set team <team>', or '--team <team>' flag."
 				}
 				if flags.Environment == "" {
-					return nil, "Please provide environment to auto-complete run names. '--environment <environment>' flag."
+					return []string{"--environment"}, ""
 				}
 				names, err := job.GetJobRunNames(ctx, flags.Team, string(flags.Environment))
 				if err != nil {
