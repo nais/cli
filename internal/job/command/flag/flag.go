@@ -55,6 +55,12 @@ type Trigger struct {
 	RunName     string `name:"run-name" usage:"Custom run name. Defaults to a generated value."`
 }
 
+type Delete struct {
+	*Job
+	Environment Env  `name:"environment" short:"e" usage:"Filter by environment."`
+	Yes         bool `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+}
+
 type Env string
 
 func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {

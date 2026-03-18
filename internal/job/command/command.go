@@ -25,6 +25,7 @@ func Job(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			trigger(flags),
 			issues(flags),
 			log(flags),
+			run(flags),
 		},
 	}
 }
