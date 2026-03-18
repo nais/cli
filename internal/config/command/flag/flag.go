@@ -1,0 +1,129 @@
+package flag
+
+import (
+	"context"
+	"fmt"
+
+	activityutil "github.com/nais/cli/internal/activity"
+	"github.com/nais/cli/internal/config"
+	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
+)
+
+type Config struct {
+	*flags.GlobalFlags
+	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
+}
+
+type Env string
+
+func (e *Env) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
+	return autoCompleteEnvironments(ctx)
+}
+
+// GetEnv is like Env but provides context-aware autocomplete: when a config
+// name argument has been provided, only environments where that config exists
+// are suggested.
+type GetEnv string
+
+func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
+	if args.Len() == 0 {
+		return autoCompleteEnvironments(ctx)
+	}
+
+	type teamProvider interface {
+		GetTeam() string
+	}
+
+	tp, ok := flags.(teamProvider)
+	if !ok || tp.GetTeam() == "" {
+		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+	}
+
+	envs, err := config.ConfigEnvironments(ctx, tp.GetTeam(), args.Get("name"))
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
+}
+
+func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
+	envs, err := naisapi.GetAllEnvironments(ctx)
+	if err != nil {
+		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
+	}
+	return envs, "Available environments"
+}
+
+type Environments []string
+
+func (e *Environments) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
+	return autoCompleteEnvironments(ctx)
+}
+
+type Output string
+
+func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
+}
+
+type List struct {
+	*Config
+	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+type Activity struct {
+	*Config
+	Environment  Environments  `name:"environment" short:"e" usage:"Filter by environment."`
+	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
+	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
+	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
+}
+
+type ActivityTypes []string
+
+func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return activityutil.EnumStrings(gql.AllActivityLogActivityType), "Available activity types"
+}
+
+type Get struct {
+	*Config
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+func (g *Get) GetTeam() string { return string(g.Team) }
+
+type Create struct {
+	*Config
+}
+
+type Delete struct {
+	*Config
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+}
+
+func (d *Delete) GetTeam() string { return string(d.Team) }
+
+type Set struct {
+	*Config
+	Environment    GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Key            string `name:"key" usage:"Name of the key to set."`
+	Value          string `name:"value" usage:"Value to set."`
+	ValueFromStdin bool   `name:"value-from-stdin" usage:"Read value from stdin."`
+}
+
+func (s *Set) GetTeam() string { return string(s.Team) }
+
+type Unset struct {
+	*Config
+	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
+	Key         string `name:"key" usage:"Name of the key to unset."`
+	Yes         bool   `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+}
+
+func (u *Unset) GetTeam() string { return string(u.Team) }
