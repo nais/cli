@@ -11,7 +11,7 @@ import (
 
 func TestHelpForAllCommands(t *testing.T) {
 	ctx := context.Background()
-	app, _, err := newApplication(io.Discard)
+	app, _, err := New(io.Discard)
 	if err != nil {
 		t.Fatalf("unable to create application: %v", err)
 	}
