@@ -82,10 +82,12 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 				return fmt.Errorf("deleting config: %w", err)
 			}
 
-			if deleted {
-				pterm.Success.Printfln("Deleted config %q from %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+			if !deleted {
+				pterm.Warning.Printfln("Config %q in %q for team %q was not deleted", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+				return nil
 			}
 
+			pterm.Success.Printfln("Deleted config %q from %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 			return nil
 		},
 	}
