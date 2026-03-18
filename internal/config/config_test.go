@@ -215,16 +215,18 @@ func TestFormatWorkloads(t *testing.T) {
 func TestLastModified_String(t *testing.T) {
 	t.Parallel()
 
+	// Use large enough durations that parallel test scheduling cannot cause
+	// the value to cross a bucket boundary (e.g. 30s drifting to 1m).
 	tests := []struct {
 		name string
 		time time.Time
 		want string
 	}{
 		{name: "zero time", time: time.Time{}, want: ""},
-		{name: "seconds ago", time: time.Now().Add(-30 * time.Second), want: "30s"},
-		{name: "minutes ago", time: time.Now().Add(-5 * time.Minute), want: "5m"},
-		{name: "hours ago", time: time.Now().Add(-3 * time.Hour), want: "3h"},
-		{name: "days ago", time: time.Now().Add(-7 * 24 * time.Hour), want: "7d"},
+		{name: "seconds ago", time: time.Now().Add(-10 * time.Second), want: "10s"},
+		{name: "minutes ago", time: time.Now().Add(-30 * time.Minute), want: "30m"},
+		{name: "hours ago", time: time.Now().Add(-12 * time.Hour), want: "12h"},
+		{name: "days ago", time: time.Now().Add(-100 * 24 * time.Hour), want: "100d"},
 		{name: "years ago", time: time.Now().Add(-400 * 24 * time.Hour), want: "1y"},
 	}
 
