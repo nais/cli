@@ -59,7 +59,7 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 
 func autoCompleteConfigNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
 	if countEnvironmentFlagsInCLIArgs() > 1 {
-		return nil, "Only one --environment/-e flag may be provided."
+		return nil, "Only one -e, --environment flag may be provided."
 	}
 
 	if environment == "" {
@@ -81,7 +81,7 @@ func autoCompleteConfigNamesInEnvironments(ctx context.Context, team string, env
 		return nil, "Please provide team to auto-complete config names. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 	if requireEnvironment && len(environments) == 0 {
-		return nil, "Please provide environment to auto-complete config names. '--environment <environment>' flag."
+		return nil, "Please provide environment to auto-complete config names. '-e, --environment <environment>' flag."
 	}
 
 	environmentFilter := make(map[string]struct{}, len(environments))

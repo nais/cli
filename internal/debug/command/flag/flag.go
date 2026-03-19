@@ -19,10 +19,10 @@ type (
 
 func (d DebugSticky) UsesRemovedFlags() error {
 	if d.Namespace != "" {
-		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
+		return fmt.Errorf("the -n, --namespace flag is replaced with the -t, --team flag")
 	}
 	if d.Context != "" {
-		return fmt.Errorf("the --context (-c) flag is replaced with the --environment (-e) flag")
+		return fmt.Errorf("the -c, --context flag is replaced with the -e, --environment flag")
 	}
 	return nil
 }

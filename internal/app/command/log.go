@@ -72,7 +72,7 @@ func log(parentFlags *flag.App) *naistrix.Command {
 					return nil, "Please provide team to auto-complete application names. 'nais config set team <team>', or '--team <team>' flag."
 				}
 				if flags.Environment == "" {
-					return nil, "Please provide environment to auto-complete application names. '--environment <environment>' flag."
+					return nil, "Please provide environment to auto-complete application names. '-e, --environment <environment>' flag."
 				}
 
 				apps, err := app.GetApplicationNames(ctx, flags.Team, []string{string(flags.Environment)})

@@ -6,7 +6,7 @@ import (
 
 var CheckEnvironment = func(env string) error {
 	if env == "" {
-		return fmt.Errorf("environment cannot be empty, set environment using --environment/-e flag")
+		return fmt.Errorf("environment cannot be empty, set environment using -e, --environment flag")
 	}
 	return nil
 }

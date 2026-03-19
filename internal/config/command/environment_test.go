@@ -57,7 +57,7 @@ func TestSelectConfigEnvironment(t *testing.T) {
 			team:      "nais",
 			config:    "my-config",
 			envs:      []string{"prod-gcp", "dev-gcp"},
-			wantError: "config \"my-config\" exists in multiple environments (dev-gcp, prod-gcp); specify --environment/-e",
+			wantError: "config \"my-config\" exists in multiple environments (dev-gcp, prod-gcp); specify -e, --environment",
 		},
 	}
 

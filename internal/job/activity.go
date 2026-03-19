@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -66,6 +67,10 @@ func GetJobActivity(ctx context.Context, team, name string, environments []strin
 			})
 		}
 	}
+
+	slices.SortFunc(ret, func(i, j JobActivity) int {
+		return j.CreatedAt.Compare(i.CreatedAt)
+	})
 
 	return ret, nil
 }

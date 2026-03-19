@@ -64,7 +64,7 @@ func autoCompleteValkeyNames(ctx context.Context, team, environment string, requ
 	}
 
 	if environmentFlagOccurrencesFromCLIArgs() > 1 {
-		return nil, "Please specify exactly one environment to auto-complete Valkey instance names. '--environment <environment>' flag."
+		return nil, "Please specify exactly one environment to auto-complete Valkey instance names. '-e, --environment <environment>' flag."
 	}
 
 	if environment == "" {
@@ -75,7 +75,7 @@ func autoCompleteValkeyNames(ctx context.Context, team, environment string, requ
 	}
 
 	if requireEnvironment && environment == "" {
-		return nil, "Please provide environment to auto-complete Valkey instance names. '--environment <environment>' flag."
+		return nil, "Please provide environment to auto-complete Valkey instance names. '-e, --environment <environment>' flag."
 	}
 
 	instances, err := valkey.GetAll(ctx, team)
@@ -114,7 +114,7 @@ func environmentFlagOccurrencesFromCLIArgs() int {
 
 func validateSingleEnvironmentFlagUsage() error {
 	if environmentFlagOccurrencesFromCLIArgs() > 1 {
-		return fmt.Errorf("only one --environment/-e flag may be provided")
+		return fmt.Errorf("only one -e, --environment flag may be provided")
 	}
 	return nil
 }
