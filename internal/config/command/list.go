@@ -27,26 +27,26 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 
 	return &naistrix.Command{
 		Name:        "list",
-		Title:       "List configs for a team.",
-		Description: "This command lists all configs for a given team.",
+		Title:       "List config for a team.",
+		Description: "This command lists all config for a given team.",
 		Flags:       f,
 		Examples: []naistrix.Example{
 			{
-				Description: "List all configs for the team.",
+				Description: "List all config for the team.",
 			},
 			{
-				Description: "List configs in a specific environment.",
+				Description: "List config in a specific environment.",
 				Command:     "--environment dev",
 			},
 		},
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			configs, err := config.GetAll(ctx, f.Team)
 			if err != nil {
-				return fmt.Errorf("fetching configs: %w", err)
+				return fmt.Errorf("fetching config: %w", err)
 			}
 
 			if len(configs) == 0 {
-				out.Infoln("No configs found")
+				out.Infoln("No config found")
 				return nil
 			}
 
@@ -78,7 +78,7 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 			}
 
 			if len(summaries) == 0 {
-				out.Infoln("No configs match the given filters")
+				out.Infoln("No config matches the given filters")
 				return nil
 			}
 

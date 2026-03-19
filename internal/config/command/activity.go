@@ -56,7 +56,7 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if f.Team == "" {
-					return nil, "Please provide team to auto-complete config names. 'nais config set team <team>', or '--team <team>' flag."
+					return nil, "Please provide team to auto-complete config names. 'nais defaults set team <team>', or '--team <team>' flag."
 				}
 				environments := []string(f.Environment)
 				if len(environments) == 0 {
