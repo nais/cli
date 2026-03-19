@@ -19,6 +19,7 @@ func Secrets(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "secrets",
 		Aliases:     []string{"secret"},
 		Title:       "Manage secrets for a team.",
+		Description: "Commands for listing, creating, viewing, updating, and deleting secrets for a team across environments.",
 		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(f.Team)

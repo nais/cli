@@ -11,8 +11,9 @@ import (
 
 func get() *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "get",
-		Title: "Get a naisdevice setting.",
+		Name:        "get",
+		Title:       "Get a naisdevice setting.",
+		Description: "Retrieve the current value of a naisdevice configuration setting. Available settings include autoconnect.",
 		Args: []naistrix.Argument{
 			{Name: "setting"},
 		},

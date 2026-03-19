@@ -16,10 +16,11 @@ func createKafka(parentFlags *flag.Create) *naistrix.Command {
 	createKafkaFlags := &flag.CreateKafka{Create: parentFlags, Pool: "nav-dev"}
 
 	return &naistrix.Command{
-		Name:       "kafka",
-		Title:      "Grant a user access to a Kafka topic.",
-		Flags:      createKafkaFlags,
-		Deprecated: naistrix.DeprecatedWithReplacement([]string{"kafka", "credentials"}),
+		Name:        "kafka",
+		Title:       "Grant a user access to a Kafka topic.",
+		Description: "This command is deprecated. Use 'nais kafka credentials' instead.",
+		Flags:       createKafkaFlags,
+		Deprecated:  naistrix.DeprecatedWithReplacement([]string{"kafka", "credentials"}),
 		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "namespace"},

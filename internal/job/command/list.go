@@ -15,9 +15,10 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 	flags := &flag.List{Job: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List jobs in a team.",
-		Flags: flags,
+		Name:        "list",
+		Title:       "List jobs in a team.",
+		Description: "Shows all jobs for the team with their schedule, last run status, state, and issue count. Use --environment to filter by environment.",
+		Flags:       flags,
 		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if flags.Team == "" {

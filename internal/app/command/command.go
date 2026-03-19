@@ -12,9 +12,10 @@ import (
 func App(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.App{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:    "app",
-		Aliases: []string{"apps", "application", "applications"},
-		Title:   "Interact with applications.",
+		Name:        "app",
+		Aliases:     []string{"apps", "application", "applications"},
+		Title:       "Interact with applications.",
+		Description: "Commands for managing and inspecting your team's applications, including listing, viewing activity and issues, restarting, and tailing logs.",
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team)
 		},

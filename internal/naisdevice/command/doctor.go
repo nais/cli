@@ -10,8 +10,9 @@ import (
 
 func doctorcmd() *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "doctor",
-		Title: "Check the health of your naisdevice.",
+		Name:        "doctor",
+		Title:       "Check the health of your naisdevice.",
+		Description: "Run diagnostic checks on your device to verify that required services like Kolide and Osquery are running correctly.",
 		RunFunc: func(_ context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			results := examination(out).Run(out)
 			for key, value := range results {

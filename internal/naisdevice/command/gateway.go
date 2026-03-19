@@ -32,6 +32,7 @@ func gatewaycmd(parentFlags *flag.Device) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "gateway",
 		Title:       "Interact with naisdevice gateways.",
+		Description: "Commands for listing, describing, and granting access to naisdevice gateways.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			listCommand(flags),
@@ -44,9 +45,10 @@ func gatewaycmd(parentFlags *flag.Device) *naistrix.Command {
 func listCommand(parentFlags *flag.Gateway) *naistrix.Command {
 	flags := &flag.List{Gateway: parentFlags}
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List gateways.",
-		Flags: flags,
+		Name:        "list",
+		Title:       "List gateways.",
+		Description: "List all available naisdevice gateways, showing their connection status and whether they require JITA access.",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			allGateways, err := naisdevice.GetGateways(ctx)
 			if err != nil {
@@ -86,9 +88,10 @@ func listCommand(parentFlags *flag.Gateway) *naistrix.Command {
 func describeCommand(parentFlags *flag.Gateway) *naistrix.Command {
 	flags := &flag.Describe{Gateway: parentFlags}
 	return &naistrix.Command{
-		Name:  "describe",
-		Title: "Describe a gateway.",
-		Flags: flags,
+		Name:        "describe",
+		Title:       "Describe a gateway.",
+		Description: "Show detailed information about a specific gateway, including its endpoint, IP addresses, routes, and access group IDs.",
+		Flags:       flags,
 		Args: []naistrix.Argument{
 			{Name: "gateway"},
 		},
@@ -141,9 +144,10 @@ func describeCommand(parentFlags *flag.Gateway) *naistrix.Command {
 func grantAccessCommand(parentFlags *flag.Gateway) *naistrix.Command {
 	flags := &flag.GrantAccess{Gateway: parentFlags}
 	return &naistrix.Command{
-		Name:  "grant-access",
-		Title: "Grant yourself access to a privileged gateway.",
-		Flags: flags,
+		Name:        "grant-access",
+		Title:       "Grant yourself access to a privileged gateway.",
+		Description: "Request just-in-time access (JITA) to one or more privileged gateways. Only gateways that require JITA are affected; non-privileged gateways are already connected automatically.",
+		Flags:       flags,
 		Args: []naistrix.Argument{
 			{Name: "gateway", Repeatable: true},
 		},

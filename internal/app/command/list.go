@@ -18,9 +18,10 @@ func list(parentFlags *flag.App) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List applications in a team.",
-		Flags: flags,
+		Name:        "list",
+		Title:       "List applications in a team.",
+		Description: "Shows all applications for the team with their current state, running instances, issues, and last updated time. Use --environment to filter by environment.",
+		Flags:       flags,
 		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if flags.Team == "" {

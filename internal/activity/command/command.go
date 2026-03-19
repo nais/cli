@@ -15,6 +15,7 @@ func Activity(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "activity",
 		Title:       "List team activity.",
+		Description: "View recent activity across all resources in a team, such as deployments, configuration changes, and other events.",
 		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(f.Team)

@@ -15,6 +15,7 @@ func Issues(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "issues",
 		Aliases:     []string{"issue"},
 		Title:       "Manage issues.",
+		Description: "Commands for listing and managing critical issues detected for your team's workloads.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team)

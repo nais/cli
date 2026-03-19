@@ -18,10 +18,11 @@ func activity(parentFlags *flag.Secret) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "activity",
-		Title: "Show activity for a secret.",
-		Args:  defaultArgs,
-		Flags: f,
+		Name:        "activity",
+		Title:       "Show activity for a secret.",
+		Description: "Show the activity log for a specific secret, including creation, updates, and deletions. Optionally filter by activity type.",
+		Args:        defaultArgs,
+		Flags:       f,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if err := validateArgs(args); err != nil {
 				return err

@@ -20,9 +20,10 @@ func list(parentFlags *flag.Member) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List members of a team.",
-		Flags: flags,
+		Name:        "list",
+		Title:       "List members of a team.",
+		Description: "List all members of a team, showing their name, email, and role (Member or Owner).",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			type teamMember struct {
 				Name  string `json:"name"`

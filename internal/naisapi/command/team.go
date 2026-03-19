@@ -17,8 +17,9 @@ import (
 func teamCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Team{Api: parentFlags}
 	return &naistrix.Command{
-		Name:  "team",
-		Title: "Operations on a team.",
+		Name:        "team",
+		Title:       "Operations on a team.",
+		Description: "Commands for inspecting a specific team, such as listing its workloads.",
 		SubCommands: []*naistrix.Command{
 			listWorkloads(flags),
 		},
@@ -32,9 +33,10 @@ func listWorkloads(parentFlags *flag.Team) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "list-workloads",
-		Title: "List workloads of a team.",
-		Flags: flags,
+		Name:        "list-workloads",
+		Title:       "List workloads of a team.",
+		Description: "List all workloads (applications and jobs) for a team, showing their environment, state, vulnerability count, and critical issues.",
+		Flags:       flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team.Team)
 		},

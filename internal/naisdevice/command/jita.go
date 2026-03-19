@@ -9,8 +9,9 @@ import (
 func jitacmd() *naistrix.Command {
 	// TODO: remove in a future release
 	return &naistrix.Command{
-		Name:  "jita",
-		Title: "Connect to a JITA gateway.",
+		Name:        "jita",
+		Title:       "Connect to a JITA gateway.",
+		Description: "This command is deprecated. Use 'nais device gateway grant-access' instead.",
 		Args: []naistrix.Argument{
 			{Name: "gateway", Repeatable: true},
 		},

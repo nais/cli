@@ -15,9 +15,10 @@ func list(parentFlags *flag.Kafka) *naistrix.Command {
 	flags := &flag.List{Kafka: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List Kafka topics in a team.",
-		Flags: flags,
+		Name:        "list",
+		Title:       "List Kafka topics in a team.",
+		Description: "Shows all Kafka topics owned by the team. Use --environment to filter by environment.",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			ret, err := kafka.GetTeamTopics(ctx, flags.Team, flags.Environment)
 			if err != nil {

@@ -20,6 +20,7 @@ func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "valkey",
 		Aliases:     []string{"valkeys"},
 		Title:       "Manage Valkey instances.",
+		Description: "Commands for creating, updating, deleting, and inspecting Valkey instances and their credentials.",
 		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(f.Team)

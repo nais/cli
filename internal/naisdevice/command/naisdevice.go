@@ -9,8 +9,9 @@ import (
 func Naisdevice(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Device{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:  "device",
-		Title: "Interact with naisdevice",
+		Name:        "device",
+		Title:       "Interact with naisdevice",
+		Description: "Commands for managing your naisdevice connection, gateways, and configuration.",
 		SubCommands: []*naistrix.Command{
 			statuscmd(flags),
 			gatewaycmd(flags),

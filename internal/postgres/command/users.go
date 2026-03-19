@@ -13,6 +13,7 @@ func usersCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "users",
 		Title:       "Manage users in your SQL instance.",
+		Description: "Commands for adding, listing, and dropping users in a Postgres SQL instance.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			addCommand(flags),
@@ -46,8 +47,9 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserList{User: parentFlags}
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List users in a SQL instance database.",
+		Name:        "list",
+		Title:       "List users in a SQL instance database.",
+		Description: "List all users in a Postgres SQL instance database for a given application.",
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
@@ -62,8 +64,9 @@ func dropCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserDrop{User: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "drop",
-		Title: "Drop a user from a SQL instance database.",
+		Name:        "drop",
+		Title:       "Drop a user from a SQL instance database.",
+		Description: "Remove a user from a Postgres SQL instance database.",
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 			{Name: "username"},

@@ -21,6 +21,7 @@ func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "opensearch",
 		Aliases:     []string{"opensearches", "os"},
 		Title:       "Manage OpenSearch instances.",
+		Description: "Commands for creating, updating, deleting, and inspecting OpenSearch instances and their credentials.",
 		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(f.Team)

@@ -16,6 +16,7 @@ func Aiven(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "aiven",
 		Title:       "Manage Aiven services.",
+		Description: "Commands for creating, retrieving, and granting access to Aiven-managed services such as Kafka and OpenSearch.",
 		StickyFlags: aivenFlags,
 		SubCommands: []*naistrix.Command{
 			create(aivenFlags),

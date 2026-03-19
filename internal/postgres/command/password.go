@@ -13,6 +13,7 @@ func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "password",
 		Title:       "Manage SQL instance passwords.",
+		Description: "Commands for managing Postgres instance passwords, including password rotation.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			{

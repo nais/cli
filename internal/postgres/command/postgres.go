@@ -20,6 +20,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "postgres",
 		Title:       "Manage postgres instances.",
+		Description: "Commands for managing Google Cloud SQL Postgres instances, including listing, migration, user management, password rotation, and direct database access.",
 		Aliases:     []string{"pg"},
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{

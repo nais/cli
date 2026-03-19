@@ -18,9 +18,10 @@ func list(parentFlags *flag.Activity) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "list",
-		Title: "List activity for the team.",
-		Flags: f,
+		Name:        "list",
+		Title:       "List activity for the team.",
+		Description: "Shows recent events for the team, including deployments and resource changes. Results can be filtered by activity type and resource type.",
+		Flags:       f,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			activityTypes, err := activity.ParseActivityTypes(f.ActivityType)
 			if err != nil {
