@@ -95,6 +95,8 @@ type Get struct {
 	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
 	WithValues  bool   `name:"with-values" usage:"Also fetch and display secret values (access is logged)."`
 	Reason      string `name:"reason" usage:"Reason for accessing secret values (min 10 chars). Used with --with-values."`
+	ToFile      string `name:"to-file" usage:"Write a single key's value to a file (implies --with-values). Requires --key. Binary values are decoded automatically."`
+	Key         string `name:"key" usage:"Name of the key to extract. Used with --to-file."`
 }
 
 func (g *Get) GetTeam() string { return string(g.Team) }
@@ -117,6 +119,7 @@ type Set struct {
 	Key            string `name:"key" usage:"Name of the key to set."`
 	Value          string `name:"value" usage:"Value to set."`
 	ValueFromStdin bool   `name:"value-from-stdin" usage:"Read value from stdin."`
+	ValueFromFile  string `name:"value-from-file" usage:"Read binary value from file (e.g. keystore.p12, cert.pem). The value is sent as BASE64-encoded."`
 }
 
 func (s *Set) GetTeam() string { return string(s.Team) }

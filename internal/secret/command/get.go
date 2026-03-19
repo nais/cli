@@ -2,9 +2,12 @@ package command
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"os"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -16,8 +19,9 @@ import (
 // Entry represents a key-value pair in a secret. When values are not fetched,
 // the Value field is empty and omitted from JSON output.
 type Entry struct {
-	Key   string `json:"key"`
-	Value string `json:"value,omitempty"`
+	Key      string            `json:"key"`
+	Value    string            `json:"value,omitempty"`
+	Encoding gql.ValueEncoding `json:"encoding,omitempty"`
 }
 
 type SecretDetail struct {
@@ -49,10 +53,16 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			if err := validateArgs(args); err != nil {
 				return err
 			}
-			if f.Reason != "" && !f.WithValues {
-				return fmt.Errorf("--reason can only be used together with --with-values")
+			if f.ToFile != "" && f.Key == "" {
+				return fmt.Errorf("--to-file requires --key to specify which key to extract")
 			}
-			if f.WithValues && f.Reason != "" && len(f.Reason) < 10 {
+			if f.Key != "" && f.ToFile == "" {
+				return fmt.Errorf("--key is only used with --to-file")
+			}
+			if f.Reason != "" && !f.WithValues && f.ToFile == "" {
+				return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
+			}
+			if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
 				return fmt.Errorf("reason must be at least 10 characters")
 			}
 			return nil
@@ -76,10 +86,24 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 				Description: "Get details including secret values with reason provided inline.",
 				Command:     "my-secret --environment dev --with-values --reason \"Debugging production issue #1234\"",
 			},
+			{
+				Description: "Extract a binary value (e.g. keystore) to a file.",
+				Command:     "my-secret --environment prod --key keystore.p12 --to-file ./keystore.p12 --reason \"Need keystore for local testing\"",
+			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			opts := getOptions{
+				team:         f.Team,
+				outputFormat: f.Output,
+				withValues:   f.WithValues || f.ToFile != "",
+				reason:       f.Reason,
+				toFile:       f.ToFile,
+				key:          f.Key,
+			}
+
 			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				return runGetCommand(ctx, args, out, f.Team, providedEnvironment, f.Output, f.WithValues, f.Reason)
+				opts.environment = providedEnvironment
+				return runGetCommand(ctx, args, out, opts)
 			}
 
 			environment, err := resolveSecretEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
@@ -87,13 +111,24 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 				return err
 			}
 
-			return runGetCommand(ctx, args, out, f.Team, environment, f.Output, f.WithValues, f.Reason)
+			opts.environment = environment
+			return runGetCommand(ctx, args, out, opts)
 		},
 	}
 }
 
-func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, team, environment string, outputFormat flag.Output, withValues bool, reason string) error {
-	metadata := metadataFromArgs(args, team, environment)
+type getOptions struct {
+	team         string
+	environment  string
+	outputFormat flag.Output
+	withValues   bool
+	reason       string
+	toFile       string
+	key          string
+}
+
+func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, opts getOptions) error {
+	metadata := metadataFromArgs(args, opts.team, opts.environment)
 
 	existing, err := secret.Get(ctx, metadata)
 	if err != nil {
@@ -105,7 +140,8 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		entries[i] = Entry{Key: k}
 	}
 
-	if withValues {
+	if opts.withValues {
+		reason := opts.reason
 		if reason == "" {
 			pterm.Warning.Println("Viewing secret values is logged for auditing purposes.")
 			result, err := pterm.DefaultInteractiveTextInput.
@@ -125,17 +161,49 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			return fmt.Errorf("viewing secret values: %w", err)
 		}
 
-		valueMap := make(map[string]string, len(values))
+		type valueInfo struct {
+			value    string
+			encoding gql.ValueEncoding
+		}
+		valueMap := make(map[string]valueInfo, len(values))
 		for _, v := range values {
-			valueMap[v.Name] = v.Value
+			valueMap[v.Name] = valueInfo{value: v.Value, encoding: v.Encoding}
 		}
 
 		for i := range entries {
-			entries[i].Value = valueMap[entries[i].Key]
+			if info, ok := valueMap[entries[i].Key]; ok {
+				entries[i].Value = info.value
+				entries[i].Encoding = info.encoding
+			}
+		}
+
+		// Handle --to-file: extract a single key's value to a file
+		if opts.toFile != "" {
+			info, ok := valueMap[opts.key]
+			if !ok {
+				return fmt.Errorf("key %q not found in secret %q", opts.key, metadata.Name)
+			}
+
+			var data []byte
+			if info.encoding == gql.ValueEncodingBase64 {
+				data, err = base64.StdEncoding.DecodeString(info.value)
+				if err != nil {
+					return fmt.Errorf("decoding base64 value for key %q: %w", opts.key, err)
+				}
+			} else {
+				data = []byte(info.value)
+			}
+
+			if err := os.WriteFile(opts.toFile, data, 0o600); err != nil {
+				return fmt.Errorf("writing to file %q: %w", opts.toFile, err)
+			}
+
+			pterm.Success.Printfln("Wrote key %q (%d bytes) to %s", opts.key, len(data), opts.toFile)
+			return nil
 		}
 	}
 
-	if outputFormat == "json" {
+	if opts.outputFormat == "json" {
 		detail := SecretDetail{
 			Name:         existing.Name,
 			Environment:  existing.TeamEnvironment.Environment.Name,
@@ -164,10 +232,10 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 	pterm.DefaultSection.Println("Data")
 	if len(entries) > 0 {
 		var data [][]string
-		if withValues {
+		if opts.withValues {
 			secretEntries := make([]secret.Entry, len(entries))
 			for i, e := range entries {
-				secretEntries[i] = secret.Entry{Key: e.Key, Value: e.Value}
+				secretEntries[i] = secret.Entry{Key: e.Key, Value: e.Value, Encoding: e.Encoding}
 			}
 			data = secret.FormatDataWithValues(secretEntries)
 		} else {
