@@ -7,8 +7,9 @@ import (
 
 func run(parentFlags *flag.Job) *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "run",
-		Title: "Manage job runs.",
+		Name:        "run",
+		Title:       "Manage job runs.",
+		Description: "Commands for listing and deleting individual runs of a job.",
 		SubCommands: []*naistrix.Command{
 			listRuns(parentFlags),
 			deleteRun(parentFlags),

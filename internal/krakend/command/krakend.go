@@ -10,8 +10,9 @@ import (
 
 func Krakend(parentFlags *flag.Alpha) *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "krakend",
-		Title: "Krakend related functionality.",
+		Name:        "krakend",
+		Title:       "Krakend related functionality.",
+		Description: "Commands for working with Krakend API gateway resources, including migration utilities.",
 		SubCommands: []*naistrix.Command{
 			{
 				Name:        "convert",

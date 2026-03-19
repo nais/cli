@@ -11,6 +11,7 @@ func Api(parentFlags *alpha.Alpha) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "api",
 		Title:       "Interact with Nais API.",
+		Description: "Commands for querying the Nais API, including team information, workload status, and GraphQL schema inspection.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			proxyCommand(flags),

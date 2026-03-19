@@ -14,9 +14,10 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "restart",
-		Title: "Restart an application.",
-		Flags: flags,
+		Name:        "restart",
+		Title:       "Restart an application.",
+		Description: "Triggers a rolling restart of the application in the specified environment. Requires exactly one environment to be specified.",
+		Flags:       flags,
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

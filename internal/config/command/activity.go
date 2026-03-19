@@ -18,10 +18,11 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "activity",
-		Title: "Show activity for a config.",
-		Args:  defaultArgs,
-		Flags: f,
+		Name:        "activity",
+		Title:       "Show activity for a config.",
+		Description: "Show the activity log for a specific configuration, including creation, updates, and deletions. Optionally filter by activity type.",
+		Args:        defaultArgs,
+		Flags:       f,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if err := validateArgs(args); err != nil {
 				return err

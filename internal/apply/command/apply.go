@@ -14,8 +14,9 @@ import (
 func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 	flags := &flag.Apply{Alpha: parentFlags}
 	return &naistrix.Command{
-		Name:  "apply",
-		Title: "Apply resources.",
+		Name:        "apply",
+		Title:       "Apply resources.",
+		Description: "Apply a Nais resource manifest (YAML) to a specific team and environment. The manifest file, team, and environment are required.",
 		Args: []naistrix.Argument{
 			{Name: "file"},
 		},

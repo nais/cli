@@ -19,8 +19,9 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "activity",
-		Title: "Show activity for a job.",
+		Name:        "activity",
+		Title:       "Show activity for a job.",
+		Description: "Displays recent events for a specific job, such as triggers, completions, and failures.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

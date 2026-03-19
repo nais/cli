@@ -20,8 +20,9 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "activity",
-		Title: "Show activity for an application.",
+		Name:        "activity",
+		Title:       "Show activity for an application.",
+		Description: "Displays recent events for a specific application, such as deployments and configuration changes. Results can be filtered by activity type.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

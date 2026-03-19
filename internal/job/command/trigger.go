@@ -13,8 +13,9 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 	flags := &flag.Trigger{Job: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "trigger",
-		Title: "Trigger a job manually.",
+		Name:        "trigger",
+		Title:       "Trigger a job manually.",
+		Description: "Creates a new run of the specified job outside of its normal schedule. Requires exactly one environment to be specified.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

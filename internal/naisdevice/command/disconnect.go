@@ -9,8 +9,9 @@ import (
 
 func disconnectcmd() *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "disconnect",
-		Title: "Disconnect your naisdevice.",
+		Name:        "disconnect",
+		Title:       "Disconnect your naisdevice.",
+		Description: "Disconnect from the naisdevice VPN. This will terminate all active gateway connections.",
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return naisdevice.Disconnect(ctx, out)
 		},

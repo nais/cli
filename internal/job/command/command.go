@@ -12,9 +12,10 @@ import (
 func Job(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Job{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:    "job",
-		Aliases: []string{"jobs"},
-		Title:   "Interact with jobs.",
+		Name:        "job",
+		Aliases:     []string{"jobs"},
+		Title:       "Interact with jobs.",
+		Description: "Commands for managing and inspecting your team's jobs, including listing, viewing activity and issues, triggering runs, and tailing logs.",
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team)
 		},

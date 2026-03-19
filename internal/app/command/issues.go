@@ -15,8 +15,9 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "issues",
-		Title: "Show issues for an application.",
+		Name:        "issues",
+		Title:       "Show issues for an application.",
+		Description: "Lists all active issues detected for a specific application, such as missing resources, configuration errors, or runtime problems.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

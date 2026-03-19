@@ -13,8 +13,9 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 	flags := &flag.Issues{Job: parentFlags}
 
 	return &naistrix.Command{
-		Name:  "issues",
-		Title: "Show issues for a job.",
+		Name:        "issues",
+		Title:       "Show issues for a job.",
+		Description: "Lists all active issues detected for a specific job, such as failed runs, configuration errors, or runtime problems.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},

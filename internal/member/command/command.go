@@ -15,6 +15,7 @@ func Members(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "members",
 		Aliases:     []string{"member"},
 		Title:       "Interact with Nais team members.",
+		Description: "Commands for listing, adding, removing, and managing roles of team members.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team)

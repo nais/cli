@@ -17,9 +17,10 @@ func teamsCommand(parentFlags *flag.Api) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:  "teams",
-		Title: "Get a list of your teams.",
-		Flags: flags,
+		Name:        "teams",
+		Title:       "Get a list of your teams.",
+		Description: "List the teams you are a member of. Use --all to list all teams in the organization.",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {

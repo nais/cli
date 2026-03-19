@@ -12,8 +12,9 @@ import (
 func Validate(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Validate{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:  "validate",
-		Title: "Validate one or more Nais manifest files.",
+		Name:        "validate",
+		Title:       "Validate one or more Nais manifest files.",
+		Description: "Validate Nais manifest files (YAML/JSON) against the Nais JSON schema. Accepts one or more file paths.",
 		Args: []naistrix.Argument{
 			{Name: "file", Repeatable: true},
 		},

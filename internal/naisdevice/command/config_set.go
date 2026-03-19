@@ -11,8 +11,9 @@ import (
 
 func set() *naistrix.Command {
 	return &naistrix.Command{
-		Name:  "set",
-		Title: "Set a configuration value.",
+		Name:        "set",
+		Title:       "Set a configuration value.",
+		Description: "Set a naisdevice configuration value. The setting name and a boolean value (true/false) are required.",
 		Args: []naistrix.Argument{
 			{Name: "setting"},
 			{Name: "value"},

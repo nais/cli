@@ -48,9 +48,10 @@ type statusEntry struct {
 func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 	flags := &flag.Status{Api: parentFlags}
 	return &naistrix.Command{
-		Name:  "status",
-		Title: "Get a quick overview of the status of your teams.",
-		Flags: flags,
+		Name:        "status",
+		Title:       "Get a quick overview of the status of your teams.",
+		Description: "Show the status of your teams, including workload counts and critical issues such as missing instances, vulnerabilities, and failed job runs.",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {

@@ -16,6 +16,7 @@ func Kafka(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Name:        "kafka",
 		Aliases:     []string{"kafkas"},
 		Title:       "Interact with Kafka topics.",
+		Description: "Commands for managing Kafka topics and credentials for your team.",
 		StickyFlags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(flags.Team)

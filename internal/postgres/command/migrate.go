@@ -20,6 +20,7 @@ func migrateCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "migrate",
 		Title:       "Migrate to a new SQL instance.",
+		Description: "Commands for migrating a Postgres database to a new Cloud SQL instance, including setup, promotion, finalization, and rollback.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			migrateSetupCommand(flags),

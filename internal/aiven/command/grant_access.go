@@ -11,6 +11,7 @@ func grantAccess(parentFlags *flag.Aiven) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "grant-access",
 		Title:       "Grant a user access to an Aiven service.",
+		Description: "Grant a user's service-user access to Aiven Kafka topics or streams.",
 		StickyFlags: grantAccessFlags,
 		SubCommands: []*naistrix.Command{
 			grantAccessStream(grantAccessFlags),

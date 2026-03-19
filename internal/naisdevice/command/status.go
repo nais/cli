@@ -14,9 +14,10 @@ import (
 func statuscmd(parentFlags *flag.Device) *naistrix.Command {
 	flags := &flag.Status{Device: parentFlags}
 	return &naistrix.Command{
-		Name:  "status",
-		Title: "Show the status of your naisdevice.",
-		Flags: flags,
+		Name:        "status",
+		Title:       "Show the status of your naisdevice.",
+		Description: "Display the current connection state of naisdevice. Use --verbose for detailed gateway information, or --output to get the status in JSON or YAML format.",
+		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			agentStatus, err := naisdevice.GetStatus(ctx)
 			if err != nil {
