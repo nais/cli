@@ -2,11 +2,14 @@ package command
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -35,11 +38,23 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 			if f.Key == "" {
 				return fmt.Errorf("--key is required")
 			}
-			if f.Value == "" && !f.ValueFromStdin {
-				return fmt.Errorf("--value or --value-from-stdin is required")
+
+			// Count the number of value sources provided
+			sources := 0
+			if f.Value != "" {
+				sources++
 			}
-			if f.Value != "" && f.ValueFromStdin {
-				return fmt.Errorf("--value and --value-from-stdin are mutually exclusive")
+			if f.ValueFromStdin {
+				sources++
+			}
+			if f.ValueFromFile != "" {
+				sources++
+			}
+			if sources == 0 {
+				return fmt.Errorf("--value, --value-from-stdin, or --value-from-file is required")
+			}
+			if sources > 1 {
+				return fmt.Errorf("--value, --value-from-stdin, and --value-from-file are mutually exclusive")
 			}
 			return nil
 		},
@@ -58,20 +73,46 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 				Description: "Read value from stdin (useful for multi-line values or avoiding shell history).",
 				Command:     "my-secret --environment dev --key TLS_CERT --value-from-stdin < cert.pem",
 			},
+			{
+				Description: "Upload a file as a secret value. Binary files are automatically Base64-encoded.",
+				Command:     "my-secret --environment prod --key keystore.p12 --value-from-file ./keystore.p12",
+			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args, f.Team, string(f.Environment))
 
-			value := f.Value
-			if f.ValueFromStdin {
+			var value string
+			encoding := gql.ValueEncodingPlainText
+
+			switch {
+			case f.ValueFromFile != "":
+				data, err := os.ReadFile(f.ValueFromFile)
+				if err != nil {
+					return fmt.Errorf("reading file %q: %w", f.ValueFromFile, err)
+				}
+				if utf8.Valid(data) {
+					value = string(data)
+				} else {
+					value = base64.StdEncoding.EncodeToString(data)
+					encoding = gql.ValueEncodingBase64
+				}
+			case f.ValueFromStdin:
 				data, err := io.ReadAll(os.Stdin)
 				if err != nil {
 					return fmt.Errorf("reading from stdin: %w", err)
 				}
 				value = strings.TrimSuffix(string(data), "\n")
+			default:
+				value = f.Value
 			}
 
-			updated, err := secret.SetValue(ctx, metadata, f.Key, value)
+			// Check the value size early to give a clear error message.
+			const maxValueSize = 1 << 20 // 1 MiB
+			if len(value) > maxValueSize {
+				return fmt.Errorf("value too large (%d bytes); maximum size is 1 MiB", len(value))
+			}
+
+			updated, err := secret.SetValue(ctx, metadata, f.Key, value, encoding)
 			if err != nil {
 				return fmt.Errorf("setting secret value: %w", err)
 			}

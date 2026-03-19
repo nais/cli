@@ -2,6 +2,7 @@ package secret
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"slices"
 	"time"
@@ -207,20 +208,20 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 
 // SetValue sets a key-value pair in a secret. If the key already exists, its value is updated.
 // If the key does not exist, it is added.
-func SetValue(ctx context.Context, metadata Metadata, key, value string) (updated bool, err error) {
+func SetValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) (updated bool, err error) {
 	existing, err := Get(ctx, metadata)
 	if err != nil {
 		return false, fmt.Errorf("fetching secret: %w", err)
 	}
 
 	if slices.Contains(existing.Keys, key) {
-		return true, updateValue(ctx, metadata, key, value)
+		return true, updateValue(ctx, metadata, key, value, encoding)
 	}
 
-	return false, addValue(ctx, metadata, key, value)
+	return false, addValue(ctx, metadata, key, value, encoding)
 }
 
-func addValue(ctx context.Context, metadata Metadata, key, value string) error {
+func addValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) error {
 	_ = `# @genqlient
 		mutation AddSecretValue($name: String!, $environment: String!, $team: Slug!, $value: SecretValueInput!) {
 		  addSecretValue(input: {name: $name, environment: $environment, team: $team, value: $value}) {
@@ -238,13 +239,14 @@ func addValue(ctx context.Context, metadata Metadata, key, value string) error {
 	}
 
 	_, err = gql.AddSecretValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.SecretValueInput{
-		Name:  key,
-		Value: value,
+		Name:     key,
+		Value:    value,
+		Encoding: encoding,
 	})
 	return err
 }
 
-func updateValue(ctx context.Context, metadata Metadata, key, value string) error {
+func updateValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) error {
 	_ = `# @genqlient
 		mutation UpdateSecretValue($name: String!, $environment: String!, $team: Slug!, $value: SecretValueInput!) {
 		  updateSecretValue(input: {name: $name, environment: $environment, team: $team, value: $value}) {
@@ -262,8 +264,9 @@ func updateValue(ctx context.Context, metadata Metadata, key, value string) erro
 	}
 
 	_, err = gql.UpdateSecretValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.SecretValueInput{
-		Name:  key,
-		Value: value,
+		Name:     key,
+		Value:    value,
+		Encoding: encoding,
 	})
 	return err
 }
@@ -312,8 +315,9 @@ func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][
 // Entry represents a key-value pair in a secret. When values have not been
 // fetched, Value is empty.
 type Entry struct {
-	Key   string
-	Value string
+	Key      string
+	Value    string
+	Encoding gql.ValueEncoding
 }
 
 // FormatData formats secret keys as a key-only table for pterm rendering.
@@ -328,12 +332,22 @@ func FormatData(keys []string) [][]string {
 }
 
 // FormatDataWithValues formats key-value pairs as a two-column table for pterm rendering.
+// Binary values (BASE64 encoding) are shown as a placeholder with byte count.
 func FormatDataWithValues(entries []Entry) [][]string {
 	data := [][]string{
 		{"Key", "Value"},
 	}
 	for _, e := range entries {
-		data = append(data, []string{e.Key, e.Value})
+		displayValue := e.Value
+		if e.Encoding == gql.ValueEncodingBase64 {
+			raw, err := base64.StdEncoding.DecodeString(e.Value)
+			if err == nil {
+				displayValue = fmt.Sprintf("<binary, %d bytes>", len(raw))
+			} else {
+				displayValue = "<binary>"
+			}
+		}
+		data = append(data, []string{e.Key, displayValue})
 	}
 	return data
 }

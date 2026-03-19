@@ -9,8 +9,9 @@ import (
 
 // SecretValue represents a key-value pair from a secret
 type SecretValue struct {
-	Name  string
-	Value string
+	Name     string
+	Value    string
+	Encoding gql.ValueEncoding
 }
 
 // ViewSecretValues retrieves the values of a secret. This requires team membership
@@ -22,6 +23,7 @@ viewSecretValues(input: $input) {
 values {
 name
 value
+encoding
 }
 }
 }
@@ -45,8 +47,9 @@ value
 	values := make([]SecretValue, len(resp.ViewSecretValues.Values))
 	for i, v := range resp.ViewSecretValues.Values {
 		values[i] = SecretValue{
-			Name:  v.Name,
-			Value: v.Value,
+			Name:     v.Name,
+			Value:    v.Value,
+			Encoding: v.Encoding,
 		}
 	}
 
