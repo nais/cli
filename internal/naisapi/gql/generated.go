@@ -29404,15 +29404,15 @@ func (v *__GetTeamPostgresInstancesInput) GetTeam() string { return v.Team }
 
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
-	Team   string                         `json:"team"`
-	Filter TeamVulnerabilitySummaryFilter `json:"filter"`
+	Team   string                          `json:"team"`
+	Filter *TeamVulnerabilitySummaryFilter `json:"filter"`
 }
 
 // GetTeam returns __GetTeamVulnerabilitySummaryInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetTeamVulnerabilitySummaryInput) GetTeam() string { return v.Team }
 
 // GetFilter returns __GetTeamVulnerabilitySummaryInput.Filter, and is useful for accessing the field via an interface.
-func (v *__GetTeamVulnerabilitySummaryInput) GetFilter() TeamVulnerabilitySummaryFilter {
+func (v *__GetTeamVulnerabilitySummaryInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
 
@@ -31954,7 +31954,7 @@ func GetTeamVulnerabilitySummary(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
-	filter TeamVulnerabilitySummaryFilter,
+	filter *TeamVulnerabilitySummaryFilter,
 ) (data_ *GetTeamVulnerabilitySummaryResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamVulnerabilitySummary",
