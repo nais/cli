@@ -78,7 +78,7 @@ func autoCompleteSecretNames(ctx context.Context, team, environment string, requ
 
 func autoCompleteSecretNamesInEnvironments(ctx context.Context, team string, environments []string, requireEnvironment bool) ([]string, string) {
 	if team == "" {
-		return nil, "Please provide team to auto-complete secret names. 'nais config set team <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete secret names. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 	if requireEnvironment && len(environments) == 0 {
 		return nil, "Please provide environment to auto-complete secret names. '--environment <environment>' flag."

@@ -37,6 +37,8 @@ const (
 	ActivityLogActivityTypeTeamDeployKeyUpdated ActivityLogActivityType = "TEAM_DEPLOY_KEY_UPDATED"
 	// Activity log entries related to job deletion.
 	ActivityLogActivityTypeJobDeleted ActivityLogActivityType = "JOB_DELETED"
+	// Activity log entries related to job run deletion.
+	ActivityLogActivityTypeJobRunDeleted ActivityLogActivityType = "JOB_RUN_DELETED"
 	// Activity log entries related to job triggering.
 	ActivityLogActivityTypeJobTriggered ActivityLogActivityType = "JOB_TRIGGERED"
 	// OpenSearch was created.
@@ -133,6 +135,7 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeDeployment,
 	ActivityLogActivityTypeTeamDeployKeyUpdated,
 	ActivityLogActivityTypeJobDeleted,
+	ActivityLogActivityTypeJobRunDeleted,
 	ActivityLogActivityTypeJobTriggered,
 	ActivityLogActivityTypeOpensearchCreated,
 	ActivityLogActivityTypeOpensearchUpdated,
@@ -896,6 +899,26 @@ type DeleteConfigResponse struct {
 // GetDeleteConfig returns DeleteConfigResponse.DeleteConfig, and is useful for accessing the field via an interface.
 func (v *DeleteConfigResponse) GetDeleteConfig() DeleteConfigDeleteConfigDeleteConfigPayload {
 	return v.DeleteConfig
+}
+
+// DeleteJobRunDeleteJobRunDeleteJobRunPayload includes the requested fields of the GraphQL type DeleteJobRunPayload.
+type DeleteJobRunDeleteJobRunDeleteJobRunPayload struct {
+	// Whether or not the run was deleted.
+	Success bool `json:"success"`
+}
+
+// GetSuccess returns DeleteJobRunDeleteJobRunDeleteJobRunPayload.Success, and is useful for accessing the field via an interface.
+func (v *DeleteJobRunDeleteJobRunDeleteJobRunPayload) GetSuccess() bool { return v.Success }
+
+// DeleteJobRunResponse is returned by DeleteJobRun on success.
+type DeleteJobRunResponse struct {
+	// Delete a job run.
+	DeleteJobRun DeleteJobRunDeleteJobRunDeleteJobRunPayload `json:"deleteJobRun"`
+}
+
+// GetDeleteJobRun returns DeleteJobRunResponse.DeleteJobRun, and is useful for accessing the field via an interface.
+func (v *DeleteJobRunResponse) GetDeleteJobRun() DeleteJobRunDeleteJobRunDeleteJobRunPayload {
+	return v.DeleteJobRun
 }
 
 // DeleteOpenSearchDeleteOpenSearchDeleteOpenSearchPayload includes the requested fields of the GraphQL type DeleteOpenSearchPayload.
@@ -4993,6 +5016,7 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -5082,6 +5106,8 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -5209,6 +5235,9 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -5424,6 +5453,14 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -6139,6 +6176,44 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 
 // GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -8795,6 +8870,7 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -8884,6 +8960,8 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -9011,6 +9089,9 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -9226,6 +9307,14 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -9941,6 +10030,44 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 
 // GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -12027,6 +12154,7 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -12116,6 +12244,8 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -12243,6 +12373,9 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -12458,6 +12591,14 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -13173,6 +13314,44 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 
 // GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -15563,6 +15742,234 @@ func (v *GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) Get
 	return v.Name
 }
 
+// GetJobRunNamesResponse is returned by GetJobRunNames on success.
+type GetJobRunNamesResponse struct {
+	// Get a team by its slug.
+	Team GetJobRunNamesTeam `json:"team"`
+}
+
+// GetTeam returns GetJobRunNamesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesResponse) GetTeam() GetJobRunNamesTeam { return v.Team }
+
+// GetJobRunNamesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetJobRunNamesTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetJobRunNamesTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetJobRunNamesTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeam) GetJobs() GetJobRunNamesTeamJobsJobConnection { return v.Jobs }
+
+// GetJobRunNamesTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetJobRunNamesTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetJobRunNamesTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetJobRunNamesTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnection) GetNodes() []GetJobRunNamesTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetJobRunNamesTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetJobRunNamesTeamJobsJobConnectionNodesJob struct {
+	// The team environment for the job.
+	TeamEnvironment GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
+	// The job runs.
+	Runs GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
+}
+
+// GetTeamEnvironment returns GetJobRunNamesTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJob) GetTeamEnvironment() GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetRuns returns GetJobRunNamesTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJob) GetRuns() GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection {
+	return v.Runs
+}
+
+// GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
+type GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
+	// List of nodes.
+	Nodes []GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
+}
+
+// GetNodes returns GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
+	return v.Nodes
+}
+
+// GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
+type GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
+	// The name of the job run.
+	Name string `json:"name"`
+}
+
+// GetName returns GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetName() string {
+	return v.Name
+}
+
+// GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment struct {
+	// Get the environment.
+	Environment GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironment) GetEnvironment() GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetJobRunsResponse is returned by GetJobRuns on success.
+type GetJobRunsResponse struct {
+	// Get a team by its slug.
+	Team GetJobRunsTeam `json:"team"`
+}
+
+// GetTeam returns GetJobRunsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobRunsResponse) GetTeam() GetJobRunsTeam { return v.Team }
+
+// GetJobRunsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetJobRunsTeam struct {
+	// Nais jobs owned by the team.
+	Jobs GetJobRunsTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetJobs returns GetJobRunsTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeam) GetJobs() GetJobRunsTeamJobsJobConnection { return v.Jobs }
+
+// GetJobRunsTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type GetJobRunsTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []GetJobRunsTeamJobsJobConnectionNodesJob `json:"nodes"`
+}
+
+// GetNodes returns GetJobRunsTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnection) GetNodes() []GetJobRunsTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetJobRunsTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetJobRunsTeamJobsJobConnectionNodesJob struct {
+	// The job runs.
+	Runs GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection `json:"runs"`
+}
+
+// GetRuns returns GetJobRunsTeamJobsJobConnectionNodesJob.Runs, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJob) GetRuns() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection {
+	return v.Runs
+}
+
+// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
+type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection struct {
+	// List of nodes.
+	Nodes []GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
+}
+
+// GetNodes returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnection) GetNodes() []GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun {
+	return v.Nodes
+}
+
+// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
+type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun struct {
+	// The name of the job run.
+	Name string `json:"name"`
+	// The start time of the job.
+	StartTime time.Time `json:"startTime"`
+	// Duration of the job in seconds.
+	Duration int `json:"duration"`
+	// The status of the job run.
+	Status  GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus  `json:"status"`
+	Trigger GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger `json:"trigger"`
+}
+
+// GetName returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetName() string {
+	return v.Name
+}
+
+// GetStartTime returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.StartTime, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStartTime() time.Time {
+	return v.StartTime
+}
+
+// GetDuration returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Duration, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetDuration() int {
+	return v.Duration
+}
+
+// GetStatus returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Status, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetStatus() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus {
+	return v.Status
+}
+
+// GetTrigger returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun.Trigger, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRun) GetTrigger() GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger {
+	return v.Trigger
+}
+
+// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus includes the requested fields of the GraphQL type JobRunStatus.
+type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus struct {
+	// The state of the job run.
+	State JobRunState `json:"state"`
+}
+
+// GetState returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus.State, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunStatus) GetState() JobRunState {
+	return v.State
+}
+
+// GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger includes the requested fields of the GraphQL type JobRunTrigger.
+type GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger struct {
+	// The type of trigger that started the job.
+	Type JobRunTriggerType `json:"type"`
+	// The actor/user who triggered the job run manually, if applicable.
+	Actor string `json:"actor"`
+}
+
+// GetType returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger.Type, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger) GetType() JobRunTriggerType {
+	return v.Type
+}
+
+// GetActor returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger) GetActor() string {
+	return v.Actor
+}
+
 // GetLatestJobRunStateResponse is returned by GetLatestJobRunState on success.
 type GetLatestJobRunStateResponse struct {
 	// Get a team by its slug.
@@ -16179,6 +16586,7 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -16268,6 +16676,8 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -16395,6 +16805,9 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -16610,6 +17023,14 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -17325,6 +17746,44 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 
 // GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -19368,6 +19827,7 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredentialsActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -19467,6 +19927,8 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesCredential
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesDeploymentActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -19594,6 +20056,9 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "JobDeletedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "JobTriggeredActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry)
@@ -19809,6 +20274,14 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry:
@@ -20664,6 +21137,58 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeleted
 
 // GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobDeletedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobRunDeletedActivityLogEntry) GetResourceName() string {
 	return v.ResourceName
 }
 
@@ -25197,6 +25722,18 @@ var AllJobRunState = []JobRunState{
 	JobRunStateUnknown,
 }
 
+type JobRunTriggerType string
+
+const (
+	JobRunTriggerTypeAutomatic JobRunTriggerType = "AUTOMATIC"
+	JobRunTriggerTypeManual    JobRunTriggerType = "MANUAL"
+)
+
+var AllJobRunTriggerType = []JobRunTriggerType{
+	JobRunTriggerTypeAutomatic,
+	JobRunTriggerTypeManual,
+}
+
 type JobState string
 
 const (
@@ -28447,6 +28984,22 @@ func (v *__DeleteConfigInput) GetEnvironmentName() string { return v.Environment
 // GetTeamSlug returns __DeleteConfigInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteConfigInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __DeleteJobRunInput is used internally by genqlient
+type __DeleteJobRunInput struct {
+	Team    string `json:"team"`
+	Env     string `json:"env"`
+	RunName string `json:"runName"`
+}
+
+// GetTeam returns __DeleteJobRunInput.Team, and is useful for accessing the field via an interface.
+func (v *__DeleteJobRunInput) GetTeam() string { return v.Team }
+
+// GetEnv returns __DeleteJobRunInput.Env, and is useful for accessing the field via an interface.
+func (v *__DeleteJobRunInput) GetEnv() string { return v.Env }
+
+// GetRunName returns __DeleteJobRunInput.RunName, and is useful for accessing the field via an interface.
+func (v *__DeleteJobRunInput) GetRunName() string { return v.RunName }
+
 // __DeleteOpenSearchInput is used internally by genqlient
 type __DeleteOpenSearchInput struct {
 	Name            string `json:"name"`
@@ -28694,6 +29247,30 @@ type __GetJobNamesInput struct {
 
 // GetTeam returns __GetJobNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetJobNamesInput) GetTeam() string { return v.Team }
+
+// __GetJobRunNamesInput is used internally by genqlient
+type __GetJobRunNamesInput struct {
+	Team string `json:"team"`
+}
+
+// GetTeam returns __GetJobRunNamesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobRunNamesInput) GetTeam() string { return v.Team }
+
+// __GetJobRunsInput is used internally by genqlient
+type __GetJobRunsInput struct {
+	Team string   `json:"team"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetTeam returns __GetJobRunsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobRunsInput) GetTeam() string { return v.Team }
+
+// GetName returns __GetJobRunsInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetJobRunsInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetJobRunsInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetJobRunsInput) GetEnv() []string { return v.Env }
 
 // __GetLatestJobRunStateInput is used internally by genqlient
 type __GetLatestJobRunStateInput struct {
@@ -29654,6 +30231,44 @@ func DeleteConfig(
 	}
 
 	data_ = &DeleteConfigResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeleteJobRun.
+const DeleteJobRun_Operation = `
+mutation DeleteJobRun ($team: Slug!, $env: String!, $runName: String!) {
+	deleteJobRun(input: {teamSlug:$team,environmentName:$env,runName:$runName}) {
+		success
+	}
+}
+`
+
+func DeleteJobRun(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	env string,
+	runName string,
+) (data_ *DeleteJobRunResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteJobRun",
+		Query:  DeleteJobRun_Operation,
+		Variables: &__DeleteJobRunInput{
+			Team:    team,
+			Env:     env,
+			RunName: runName,
+		},
+	}
+
+	data_ = &DeleteJobRunResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -30690,6 +31305,108 @@ func GetJobNames(
 	}
 
 	data_ = &GetJobNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobRunNames.
+const GetJobRunNames_Operation = `
+query GetJobRunNames ($team: Slug!) {
+	team(slug: $team) {
+		jobs(first: 1000) {
+			nodes {
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				runs(first: 100) {
+					nodes {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetJobRunNames(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+) (data_ *GetJobRunNamesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobRunNames",
+		Query:  GetJobRunNames_Operation,
+		Variables: &__GetJobRunNamesInput{
+			Team: team,
+		},
+	}
+
+	data_ = &GetJobRunNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobRuns.
+const GetJobRuns_Operation = `
+query GetJobRuns ($team: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $team) {
+		jobs(filter: {name:$name,environments:$env}, first: 1) {
+			nodes {
+				runs(first: 100) {
+					nodes {
+						name
+						startTime
+						duration
+						status {
+							state
+						}
+						trigger {
+							type
+							actor
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetJobRuns(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env []string,
+) (data_ *GetJobRunsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobRuns",
+		Query:  GetJobRuns_Operation,
+		Variables: &__GetJobRunsInput{
+			Team: team,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetJobRunsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

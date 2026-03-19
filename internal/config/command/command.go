@@ -13,11 +13,11 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func Configs(parentFlags *flags.GlobalFlags) *naistrix.Command {
+func Config(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Config{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "configs",
-		Title:       "Manage configs for a team.",
+		Name:        "config",
+		Title:       "Manage config for a team.",
 		StickyFlags: f,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			return validation.CheckTeam(f.Team)
@@ -77,7 +77,7 @@ func autoCompleteConfigNames(ctx context.Context, team, environment string, requ
 
 func autoCompleteConfigNamesInEnvironments(ctx context.Context, team string, environments []string, requireEnvironment bool) ([]string, string) {
 	if team == "" {
-		return nil, "Please provide team to auto-complete config names. 'nais config set team <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete config names. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 	if requireEnvironment && len(environments) == 0 {
 		return nil, "Please provide environment to auto-complete config names. '--environment <environment>' flag."
@@ -93,7 +93,7 @@ func autoCompleteConfigNamesInEnvironments(ctx context.Context, team string, env
 
 	configs, err := config.GetAll(ctx, team)
 	if err != nil {
-		return nil, fmt.Sprintf("Unable to fetch configs for auto-completion: %v", err)
+		return nil, fmt.Sprintf("Unable to fetch config for auto-completion: %v", err)
 	}
 
 	seen := make(map[string]struct{})
@@ -119,9 +119,9 @@ func autoCompleteConfigNamesInEnvironments(ctx context.Context, team string, env
 		}
 		sort.Strings(sortedEnvironments)
 		if len(sortedEnvironments) == 1 {
-			return nil, fmt.Sprintf("No configs found in environment %q.", sortedEnvironments[0])
+			return nil, fmt.Sprintf("No config found in environment %q.", sortedEnvironments[0])
 		}
-		return nil, fmt.Sprintf("No configs found in environments: %s.", strings.Join(sortedEnvironments, ", "))
+		return nil, fmt.Sprintf("No config found in environments: %s.", strings.Join(sortedEnvironments, ", "))
 	}
 
 	return names, "Select a config."

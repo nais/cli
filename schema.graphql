@@ -103,6 +103,10 @@ Activity log entries related to job deletion.
 """
 	JOB_DELETED
 """
+Activity log entries related to job run deletion.
+"""
+	JOB_RUN_DELETED
+"""
 Activity log entries related to job triggering.
 """
 	JOB_TRIGGERED
@@ -2304,6 +2308,23 @@ Whether or not the job was deleted.
 	success: Boolean
 }
 
+input DeleteJobRunInput {
+	teamSlug: Slug!
+	environmentName: String!
+	runName: String!
+}
+
+type DeleteJobRunPayload {
+"""
+The job that the run belonged to.
+"""
+	job: Job
+"""
+Whether or not the run was deleted.
+"""
+	success: Boolean
+}
+
 input DeleteOpenSearchInput {
 	name: String!
 	environmentName: String!
@@ -3676,6 +3697,41 @@ The environment name that the entry belongs to.
 	environmentName: String
 }
 
+type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+}
+
 type JobEdge {
 """
 Cursor for this edge that can be used for pagination.
@@ -4383,6 +4439,12 @@ Delete a job.
 	deleteJob(
 		input: DeleteJobInput!
 	): DeleteJobPayload!
+"""
+Delete a job run.
+"""
+	deleteJobRun(
+		input: DeleteJobRunInput!
+	): DeleteJobRunPayload!
 """
 Trigger a job
 """

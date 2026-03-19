@@ -12,7 +12,7 @@ import (
 	alpha "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
 	"github.com/nais/cli/internal/auth"
-	configs "github.com/nais/cli/internal/config/command"
+	configCmd "github.com/nais/cli/internal/config/command"
 	debug "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
 	issues "github.com/nais/cli/internal/issues/command"
@@ -79,7 +79,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		postgres.Postgres(globalFlags),
 		debug.Debug(globalFlags),
 		kubeconfig.Kubeconfig(globalFlags),
-		configs.Configs(globalFlags),
+		configCmd.Config(globalFlags),
 		secrets.Secrets(globalFlags),
 		vulnerabilities.Vulnerabilities(globalFlags),
 		validate.Validate(globalFlags),
