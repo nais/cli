@@ -1,10 +1,10 @@
 title: Nais CLI manual
 description: Nais CLI manual
 theme: just-the-docs
-
 search_enabled: true
 color_scheme: dark
-
+exclude:
+  - README.md
 defaults:
   - scope:
       path: ""
