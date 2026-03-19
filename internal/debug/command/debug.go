@@ -44,7 +44,7 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 				return err
 			}
 			if debugFlags.Environment == "" {
-				return fmt.Errorf("the --environment (-e) flag is required")
+				return fmt.Errorf("the -e, --environment flag is required")
 			}
 			return nil
 		},

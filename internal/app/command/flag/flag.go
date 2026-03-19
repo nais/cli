@@ -36,7 +36,7 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 
 	f := flags.(*Log)
 	if len(f.Environment) == 0 {
-		return nil, "Please provide environment (--environment/-e) to auto-complete instances."
+		return nil, "Please provide environment (-e, --environment) to auto-complete instances."
 	}
 
 	if len(f.Team) == 0 {

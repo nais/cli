@@ -24,7 +24,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 		Flags:       flags,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if len(flags.Environment) != 1 {
-				return fmt.Errorf("exactly one environment is required, set using --environment/-e flag")
+				return fmt.Errorf("exactly one environment is required, set using -e, --environment flag")
 			}
 			if err := validation.CheckEnvironment(flags.Environment[0]); err != nil {
 				return err

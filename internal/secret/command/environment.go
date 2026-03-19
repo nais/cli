@@ -42,13 +42,13 @@ func selectSecretEnvironment(team, name, provided string, envs []string) (string
 		return envs[0], nil
 	default:
 		sort.Strings(envs)
-		return "", fmt.Errorf("secret %q exists in multiple environments (%s); specify --environment/-e", name, strings.Join(envs, ", "))
+		return "", fmt.Errorf("secret %q exists in multiple environments (%s); specify -e, --environment", name, strings.Join(envs, ", "))
 	}
 }
 
 func validateSingleEnvironmentFlagUsage() error {
 	if countEnvironmentFlagsInCLIArgs() > 1 {
-		return fmt.Errorf("only one --environment/-e flag may be provided")
+		return fmt.Errorf("only one -e, --environment flag may be provided")
 	}
 	return nil
 }

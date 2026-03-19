@@ -18,10 +18,10 @@ type Postgres struct {
 
 func (p Postgres) UsesRemovedFlags() error {
 	if p.Namespace != "" {
-		return fmt.Errorf("the --namespace (-n) flag is replaced with the --team (-t) flag")
+		return fmt.Errorf("the -n, --namespace flag is replaced with the -t, --team flag")
 	}
 	if p.Context != "" {
-		return fmt.Errorf("the --context (-c) flag is replaced with the --environment (-e) flag")
+		return fmt.Errorf("the -c, --context flag is replaced with the -e, --environment flag")
 	}
 	return nil
 }

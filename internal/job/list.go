@@ -33,7 +33,7 @@ func (s State) String() string {
 	case State(gql.JobStateFailed):
 		return "<error>Failed</error>"
 	default:
-		return "<info>Unknown</info>"
+		return "<warn>Unknown</warn>"
 	}
 }
 
@@ -48,7 +48,7 @@ func (s LastRunState) String() string {
 	case LastRunState(gql.JobRunStatePending):
 		return "Pending"
 	default:
-		return "<unknown>"
+		return "<warn>Unknown</warn>"
 	}
 }
 

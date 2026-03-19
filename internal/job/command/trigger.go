@@ -41,7 +41,7 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 					return nil, "Please provide team to auto-complete job names. 'nais config set team <team>', or '--team <team>' flag."
 				}
 				if flags.Environment == "" {
-					return nil, "Please provide environment to auto-complete job names. '--environment <environment>' flag."
+					return nil, "Please provide environment to auto-complete job names. '-e, --environment <environment>' flag."
 				}
 				jobs, err := job.GetJobNames(ctx, flags.Team, []string{string(flags.Environment)})
 				if err != nil {

@@ -56,7 +56,7 @@ func (i InstancesInfo) String() string {
 func (a LastUpdated) String() string {
 	t := time.Time(a)
 	if t.IsZero() {
-		return "<unknown>"
+		return "<warn>Unknown</warn>"
 	}
 
 	d := time.Since(time.Time(a))
