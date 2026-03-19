@@ -16,8 +16,8 @@ import (
 func Secrets(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Secret{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "secrets",
-		Aliases:     []string{"secret"},
+		Name:        "secret",
+		Aliases:     []string{"secrets"},
 		Title:       "Manage secrets for a team.",
 		Description: "Commands for listing, creating, viewing, updating, and deleting secrets for a team across environments.",
 		StickyFlags: f,
