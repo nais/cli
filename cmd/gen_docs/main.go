@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/nais/cli/internal/application"
+	"github.com/nais/naistrix"
 )
 
 func main() {
@@ -14,7 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := app.GenerateDocs(); err != nil {
+	if err := app.GenerateDocs(naistrix.GenerateDocsWithStrictMode()); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
