@@ -29462,15 +29462,15 @@ func (v *__ListCVEsInput) GetFilter() TeamWorkloadsFilter { return v.Filter }
 
 // __ListWorkloadVulnerabilitySummariesInput is used internally by genqlient
 type __ListWorkloadVulnerabilitySummariesInput struct {
-	Team   string                         `json:"team"`
-	Filter TeamVulnerabilitySummaryFilter `json:"filter"`
+	Team   string                          `json:"team"`
+	Filter *TeamVulnerabilitySummaryFilter `json:"filter"`
 }
 
 // GetTeam returns __ListWorkloadVulnerabilitySummariesInput.Team, and is useful for accessing the field via an interface.
 func (v *__ListWorkloadVulnerabilitySummariesInput) GetTeam() string { return v.Team }
 
 // GetFilter returns __ListWorkloadVulnerabilitySummariesInput.Filter, and is useful for accessing the field via an interface.
-func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() TeamVulnerabilitySummaryFilter {
+func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
 
@@ -32261,7 +32261,7 @@ func ListWorkloadVulnerabilitySummaries(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
-	filter TeamVulnerabilitySummaryFilter,
+	filter *TeamVulnerabilitySummaryFilter,
 ) (data_ *ListWorkloadVulnerabilitySummariesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ListWorkloadVulnerabilitySummaries",
