@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"slices"
 	"time"
@@ -81,6 +82,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllConfigsTeamConfig
 				values {
 				  name
 				  value
+				  encoding
 				}
 				teamEnvironment {
 				  environment {
@@ -127,6 +129,7 @@ func Get(ctx context.Context, metadata Metadata) (*gql.GetConfigTeamEnvironmentC
 				values {
 				  name
 				  value
+				  encoding
 				}
 				teamEnvironment {
 				  environment {
@@ -213,7 +216,7 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 
 // SetValue sets a key-value pair in a config. If the key already exists, its value is updated.
 // If the key does not exist, it is added.
-func SetValue(ctx context.Context, metadata Metadata, key, value string) (updated bool, err error) {
+func SetValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) (updated bool, err error) {
 	existing, err := Get(ctx, metadata)
 	if err != nil {
 		return false, fmt.Errorf("fetching config: %w", err)
@@ -224,13 +227,13 @@ func SetValue(ctx context.Context, metadata Metadata, key, value string) (update
 	})
 
 	if keyExists {
-		return true, updateValue(ctx, metadata, key, value)
+		return true, updateValue(ctx, metadata, key, value, encoding)
 	}
 
-	return false, addValue(ctx, metadata, key, value)
+	return false, addValue(ctx, metadata, key, value, encoding)
 }
 
-func addValue(ctx context.Context, metadata Metadata, key, value string) error {
+func addValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) error {
 	_ = `# @genqlient
 		mutation AddConfigValue($name: String!, $environmentName: String!, $teamSlug: Slug!, $value: ConfigValueInput!) {
 		  addConfigValue(input: {name: $name, environmentName: $environmentName, teamSlug: $teamSlug, value: $value}) {
@@ -248,13 +251,14 @@ func addValue(ctx context.Context, metadata Metadata, key, value string) error {
 	}
 
 	_, err = gql.AddConfigValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.ConfigValueInput{
-		Name:  key,
-		Value: value,
+		Name:     key,
+		Value:    value,
+		Encoding: encoding,
 	})
 	return err
 }
 
-func updateValue(ctx context.Context, metadata Metadata, key, value string) error {
+func updateValue(ctx context.Context, metadata Metadata, key, value string, encoding gql.ValueEncoding) error {
 	_ = `# @genqlient
 		mutation UpdateConfigValue($name: String!, $environmentName: String!, $teamSlug: Slug!, $value: ConfigValueInput!) {
 		  updateConfigValue(input: {name: $name, environmentName: $environmentName, teamSlug: $teamSlug, value: $value}) {
@@ -272,8 +276,9 @@ func updateValue(ctx context.Context, metadata Metadata, key, value string) erro
 	}
 
 	_, err = gql.UpdateConfigValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.ConfigValueInput{
-		Name:  key,
-		Value: value,
+		Name:     key,
+		Value:    value,
+		Encoding: encoding,
 	})
 	return err
 }
@@ -320,12 +325,22 @@ func FormatDetails(metadata Metadata, c *gql.GetConfigTeamEnvironmentConfig) [][
 }
 
 // FormatData formats config values as a key-value table for pterm rendering.
+// Binary values (BASE64 encoding) are shown as a placeholder with byte count.
 func FormatData(values []gql.GetConfigTeamEnvironmentConfigValuesConfigValue) [][]string {
 	data := [][]string{
 		{"Key", "Value"},
 	}
 	for _, v := range values {
-		data = append(data, []string{v.Name, v.Value})
+		displayValue := v.Value
+		if v.Encoding == gql.ValueEncodingBase64 {
+			raw, err := base64.StdEncoding.DecodeString(v.Value)
+			if err == nil {
+				displayValue = fmt.Sprintf("<binary, %d bytes>", len(raw))
+			} else {
+				displayValue = "<binary>"
+			}
+		}
+		data = append(data, []string{v.Name, displayValue})
 	}
 	return data
 }

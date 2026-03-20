@@ -1831,14 +1831,22 @@ The name of the config value.
 """
 	name: String!
 """
-The config value itself.
+The config value itself. When encoding is BASE64, the value is Base64-encoded binary data.
 """
 	value: String!
+"""
+Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+"""
+	encoding: ValueEncoding!
 }
 
 input ConfigValueInput {
 	name: String!
 	value: String!
+"""
+Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+"""
+	encoding: ValueEncoding = PLAIN_TEXT
 }
 
 input ConfigureReconcilerInput {
