@@ -103,7 +103,7 @@ func Run(ctx context.Context, w io.Writer) error {
 	autoComplete := slices.Contains(os.Args[1:], "__complete")
 
 	if !autoComplete {
-		flushMetrics := metric.Initialize()
+		flushMetrics := metric.Initialize(f.IsTrace())
 		defer func() {
 			if err := recover(); err != nil {
 				handlePanic(err)
