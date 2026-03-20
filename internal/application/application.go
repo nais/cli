@@ -33,6 +33,7 @@ import (
 	vulnerabilities "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
+	"golang.org/x/term"
 )
 
 type Application struct {
@@ -119,8 +120,32 @@ func Run(ctx context.Context, w io.Writer) error {
 
 	if err != nil {
 		if errors.Is(err, naisapi.ErrNeedsLogin) {
-			// TODO(tronghn): If tty; prompt for login (y/n)?
-			pterm.Error.Println("You are not logged in. Please run `nais login --nais` to authenticate.")
+			pterm.Println()
+			pterm.Warning.Println("You must (re-)authenticate to run this command.")
+
+			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) {
+				pterm.Println()
+				result, _ := pterm.DefaultInteractiveConfirm.
+					WithDefaultValue(true).
+					Show("Would you like to log in and re-run the command?")
+
+				if result {
+					pterm.Println()
+					if err := naisapi.Login(ctx, naistrix.NewOutputWriter(w, &f.VerboseLevel)); err != nil {
+						return err
+					}
+
+					pterm.Println()
+					pterm.Info.Printf("Re-running command %s\n", executedCommand)
+
+					pterm.Println()
+					return app.Run(naistrix.RunWithContext(ctx))
+				}
+			}
+
+			pterm.Println()
+			pterm.Error.Println("Please run `nais login --nais` to (re-)authenticate.")
+			return nil
 		}
 
 		return err
