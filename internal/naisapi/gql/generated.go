@@ -516,6 +516,8 @@ var AllApplicationState = []ApplicationState{
 type ConfigValueInput struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
+	// Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+	Encoding ValueEncoding `json:"encoding"`
 }
 
 // GetName returns ConfigValueInput.Name, and is useful for accessing the field via an interface.
@@ -523,6 +525,9 @@ func (v *ConfigValueInput) GetName() string { return v.Name }
 
 // GetValue returns ConfigValueInput.Value, and is useful for accessing the field via an interface.
 func (v *ConfigValueInput) GetValue() string { return v.Value }
+
+// GetEncoding returns ConfigValueInput.Encoding, and is useful for accessing the field via an interface.
+func (v *ConfigValueInput) GetEncoding() ValueEncoding { return v.Encoding }
 
 // CreateConfigCreateConfigCreateConfigPayload includes the requested fields of the GraphQL type CreateConfigPayload.
 type CreateConfigCreateConfigCreateConfigPayload struct {
@@ -1531,8 +1536,10 @@ func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigTeamEnvironmentEnvir
 type GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue struct {
 	// The name of the config value.
 	Name string `json:"name"`
-	// The config value itself.
+	// The config value itself. When encoding is BASE64, the value is Base64-encoded binary data.
 	Value string `json:"value"`
+	// Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+	Encoding ValueEncoding `json:"encoding"`
 }
 
 // GetName returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue.Name, and is useful for accessing the field via an interface.
@@ -1543,6 +1550,11 @@ func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue) G
 // GetValue returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue.Value, and is useful for accessing the field via an interface.
 func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue) GetValue() string {
 	return v.Value
+}
+
+// GetEncoding returns GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue.Encoding, and is useful for accessing the field via an interface.
+func (v *GetAllConfigsTeamConfigsConfigConnectionNodesConfigValuesConfigValue) GetEncoding() ValueEncoding {
+	return v.Encoding
 }
 
 // GetAllConfigsTeamConfigsConfigConnectionNodesConfigWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
@@ -11779,8 +11791,10 @@ func (v *GetConfigTeamEnvironmentConfigTeamEnvironmentEnvironment) GetName() str
 type GetConfigTeamEnvironmentConfigValuesConfigValue struct {
 	// The name of the config value.
 	Name string `json:"name"`
-	// The config value itself.
+	// The config value itself. When encoding is BASE64, the value is Base64-encoded binary data.
 	Value string `json:"value"`
+	// Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+	Encoding ValueEncoding `json:"encoding"`
 }
 
 // GetName returns GetConfigTeamEnvironmentConfigValuesConfigValue.Name, and is useful for accessing the field via an interface.
@@ -11788,6 +11802,11 @@ func (v *GetConfigTeamEnvironmentConfigValuesConfigValue) GetName() string { ret
 
 // GetValue returns GetConfigTeamEnvironmentConfigValuesConfigValue.Value, and is useful for accessing the field via an interface.
 func (v *GetConfigTeamEnvironmentConfigValuesConfigValue) GetValue() string { return v.Value }
+
+// GetEncoding returns GetConfigTeamEnvironmentConfigValuesConfigValue.Encoding, and is useful for accessing the field via an interface.
+func (v *GetConfigTeamEnvironmentConfigValuesConfigValue) GetEncoding() ValueEncoding {
+	return v.Encoding
+}
 
 // GetConfigTeamEnvironmentConfigWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
 // The GraphQL type's documentation follows.
@@ -30525,6 +30544,7 @@ query GetAllConfigs ($teamSlug: Slug!) {
 				values {
 					name
 					value
+					encoding
 				}
 				teamEnvironment {
 					environment {
@@ -31081,6 +31101,7 @@ query GetConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
 				values {
 					name
 					value
+					encoding
 				}
 				teamEnvironment {
 					environment {
