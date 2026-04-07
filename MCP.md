@@ -9,7 +9,7 @@ The Nais MCP (Model Context Protocol) server allows LLMs and AI assistants to in
 Ensure you're authenticated with the Nais CLI:
 
 ```bash
-nais auth login -n
+nais login -n
 ```
 
 ### Configuration
