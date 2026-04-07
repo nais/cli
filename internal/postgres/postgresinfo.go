@@ -152,7 +152,7 @@ func (p *postgresDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 		out.Printf("Starting proxy on %s:%d\n", host, *port)
 		out.Println()
 		out.Println("Before you can connect, you need to request an access token:")
-		out.Println("nais auth login --nais")
+		out.Println("nais login --nais")
 		out.Println("After logging in, you can get the current password using this command:")
 		out.Println("nais auth print-access-token --nais")
 		out.Println()
