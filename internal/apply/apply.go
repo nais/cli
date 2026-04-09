@@ -29,8 +29,24 @@ func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, o
 		}
 	}
 
-	if err := naisapi.ApplyManifests(ctx, flags.Team, string(flags.Environment), manifests); err != nil {
+	resp, err := naisapi.ApplyManifests(ctx, flags.Team, string(flags.Environment), manifests)
+	if err != nil {
 		return fmt.Errorf("failed to apply manifests: %w", err)
+	}
+
+	var errs []string
+	for _, r := range resp.Results {
+		switch r.Status {
+		case "error":
+			out.Warnf("%s: %s\n", r.Resource, r.Error)
+			errs = append(errs, fmt.Sprintf("%s: %s", r.Resource, r.Error))
+		default:
+			out.Printf("%s: %s\n", r.Resource, r.Status)
+		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("apply failed for %d resource(s):\n  %s", len(errs), strings.Join(errs, "\n  "))
 	}
 
 	return nil
