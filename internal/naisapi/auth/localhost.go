@@ -36,10 +36,13 @@ func (l *LocalhostUser) APIURL() string {
 	return fmt.Sprintf("http://%s/graphql", l.ConsoleHost())
 }
 
-func (l *LocalhostUser) HTTPClient(_ context.Context) *http.Client {
-	return &http.Client{
-		Transport: l.RoundTripper(http.DefaultTransport),
+func (l *LocalhostUser) HTTPClient(ctx context.Context) *http.Client {
+	if os.Getenv("NAIS_API_LOCAL_EMAIL") != "" {
+		return &http.Client{
+			Transport: l.RoundTripper(http.DefaultTransport),
+		}
 	}
+	return oauth2.NewClient(ctx, l.ts)
 }
 
 func (l *LocalhostUser) RoundTripper(base http.RoundTripper) http.RoundTripper {
