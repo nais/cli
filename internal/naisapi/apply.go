@@ -5,20 +5,29 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func ApplyManifests(ctx context.Context, teamSlug, environmentName string, manifests []unstructured.Unstructured) error {
+type ApplyResponse struct {
+	Results []ResourceResult `json:"results"`
+}
+
+type ResourceResult struct {
+	Resource        string `json:"resource"`
+	EnvironmentName string `json:"environmentName"`
+	Status          string `json:"status"`
+	Error           string `json:"error,omitempty"`
+}
+
+func ApplyManifests(ctx context.Context, teamSlug, environmentName string, manifests []unstructured.Unstructured) (*ApplyResponse, error) {
 	const url = "%v/api/v1/teams/%v/environments/%v/apply"
 
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get authenticated user: %w", err)
+		return nil, fmt.Errorf("failed to get authenticated user: %w", err)
 	}
 
 	bodyData := struct {
@@ -29,27 +38,29 @@ func ApplyManifests(ctx context.Context, teamSlug, environmentName string, manif
 
 	body := &bytes.Buffer{}
 	if err := json.NewEncoder(body).Encode(bodyData); err != nil {
-		return fmt.Errorf("failed to encode manifests to YAML: %w", err)
+		return nil, fmt.Errorf("failed to encode manifests: %w", err)
 	}
 
 	uri := fmt.Sprintf(url, strings.TrimSuffix(user.APIURL(), "/graphql"), teamSlug, environmentName)
-	fmt.Println(uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, body)
 	if err != nil {
-		return fmt.Errorf("failed to create HTTP request: %w", err)
+		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 
 	resp, err := user.HTTPClient(ctx).Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to send HTTP request: %w", err)
+		return nil, fmt.Errorf("failed to send HTTP request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	for k, v := range req.Header {
-		fmt.Printf("%s: %s\n", k, v)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("apply failed with HTTP status %d", resp.StatusCode)
 	}
 
-	io.Copy(os.Stdout, resp.Body)
+	var applyResp ApplyResponse
+	if err := json.NewDecoder(resp.Body).Decode(&applyResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
 
-	return nil
+	return &applyResp, nil
 }
