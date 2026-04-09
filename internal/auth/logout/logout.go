@@ -11,7 +11,7 @@ import (
 
 type loginFlags struct {
 	*flag.Auth
-	Nais bool `name:"nais" short:"n" usage:"Logout using login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais auth login --nais\"."`
+	Nais bool `name:"nais" short:"n" usage:"Logout using login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais login --nais\"."`
 }
 
 func Logout(parentFlags *flag.Auth) *naistrix.Command {

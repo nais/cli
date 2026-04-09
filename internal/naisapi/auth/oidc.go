@@ -21,7 +21,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais auth login -n`")
+var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais login -n`")
 
 func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	user, err := getOIDCUser(ctx)

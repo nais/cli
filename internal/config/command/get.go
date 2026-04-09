@@ -2,10 +2,13 @@ package command
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"os"
 
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
@@ -14,8 +17,9 @@ import (
 
 // Entry represents a key-value pair in a config.
 type Entry struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key      string            `json:"key"`
+	Value    string            `json:"value"`
+	Encoding gql.ValueEncoding `json:"encoding,omitempty"`
 }
 
 type ConfigDetail struct {
@@ -44,7 +48,16 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 					return err
 				}
 			}
-			return validateArgs(args)
+			if err := validateArgs(args); err != nil {
+				return err
+			}
+			if f.ToFile != "" && f.Key == "" {
+				return fmt.Errorf("--to-file requires --key to specify which key to extract")
+			}
+			if f.Key != "" && f.ToFile == "" {
+				return fmt.Errorf("--key is only used with --to-file")
+			}
+			return nil
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
@@ -57,10 +70,22 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 				Description: "Get details for a config named my-config in environment dev.",
 				Command:     "my-config --environment dev",
 			},
+			{
+				Description: "Extract a binary value (e.g. keystore) to a file.",
+				Command:     "my-config --environment prod --key keystore.p12 --to-file ./keystore.p12",
+			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			opts := getOptions{
+				team:         f.Team,
+				outputFormat: f.Output,
+				toFile:       f.ToFile,
+				key:          f.Key,
+			}
+
 			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				return runGetCommand(ctx, args, out, f.Team, providedEnvironment, f.Output)
+				opts.environment = providedEnvironment
+				return runGetCommand(ctx, args, out, opts)
 			}
 
 			environment, err := resolveConfigEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
@@ -68,13 +93,22 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 				return err
 			}
 
-			return runGetCommand(ctx, args, out, f.Team, environment, f.Output)
+			opts.environment = environment
+			return runGetCommand(ctx, args, out, opts)
 		},
 	}
 }
 
-func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, team, environment string, outputFormat flag.Output) error {
-	metadata := metadataFromArgs(args, team, environment)
+type getOptions struct {
+	team         string
+	environment  string
+	outputFormat flag.Output
+	toFile       string
+	key          string
+}
+
+func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, opts getOptions) error {
+	metadata := metadataFromArgs(args, opts.team, opts.environment)
 
 	existing, err := config.Get(ctx, metadata)
 	if err != nil {
@@ -83,10 +117,41 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 
 	entries := make([]Entry, len(existing.Values))
 	for i, v := range existing.Values {
-		entries[i] = Entry{Key: v.Name, Value: v.Value}
+		entries[i] = Entry{Key: v.Name, Value: v.Value, Encoding: v.Encoding}
 	}
 
-	if outputFormat == "json" {
+	// Handle --to-file: extract a single key's value to a file
+	if opts.toFile != "" {
+		var found *Entry
+		for i := range entries {
+			if entries[i].Key == opts.key {
+				found = &entries[i]
+				break
+			}
+		}
+		if found == nil {
+			return fmt.Errorf("key %q not found in config %q", opts.key, metadata.Name)
+		}
+
+		var data []byte
+		if found.Encoding == gql.ValueEncodingBase64 {
+			data, err = base64.StdEncoding.DecodeString(found.Value)
+			if err != nil {
+				return fmt.Errorf("decoding base64 value for key %q: %w", opts.key, err)
+			}
+		} else {
+			data = []byte(found.Value)
+		}
+
+		if err := os.WriteFile(opts.toFile, data, 0o600); err != nil {
+			return fmt.Errorf("writing to file %q: %w", opts.toFile, err)
+		}
+
+		pterm.Success.Printfln("Wrote key %q (%d bytes) to %s", opts.key, len(data), opts.toFile)
+		return nil
+	}
+
+	if opts.outputFormat == "json" {
 		detail := ConfigDetail{
 			Name:         existing.Name,
 			Environment:  existing.TeamEnvironment.Environment.Name,

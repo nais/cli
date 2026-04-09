@@ -1831,14 +1831,22 @@ The name of the config value.
 """
 	name: String!
 """
-The config value itself.
+The config value itself. When encoding is BASE64, the value is Base64-encoded binary data.
 """
 	value: String!
+"""
+Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+"""
+	encoding: ValueEncoding!
 }
 
 input ConfigValueInput {
 	name: String!
 	value: String!
+"""
+Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+"""
+	encoding: ValueEncoding = PLAIN_TEXT
 }
 
 input ConfigureReconcilerInput {
@@ -6943,15 +6951,33 @@ Order secrets by the last time it was modified.
 	LAST_MODIFIED_AT
 }
 
+"""
+Encoding of a secret or config value.
+"""
+enum ValueEncoding {
+"""
+The value is plain text (UTF-8).
+"""
+	PLAIN_TEXT
+"""
+The value is Base64-encoded binary data.
+"""
+	BASE64
+}
+
 type SecretValue {
 """
 The name of the secret value.
 """
 	name: String!
 """
-The secret value itself.
+The secret value itself. When encoding is BASE64, the value is Base64-encoded binary data.
 """
 	value: String!
+"""
+Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+"""
+	encoding: ValueEncoding!
 }
 
 type SecretValueAddedActivityLogEntry implements ActivityLogEntry & Node{
@@ -7003,6 +7029,10 @@ The name of the added value.
 input SecretValueInput {
 	name: String!
 	value: String!
+"""
+Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
+"""
+	encoding: ValueEncoding = PLAIN_TEXT
 }
 
 type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node{

@@ -1,6 +1,7 @@
 package secret
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"reflect"
 	"testing"
@@ -181,6 +182,28 @@ func TestFormatDataWithValues(t *testing.T) {
 			want: [][]string{
 				{"Key", "Value"},
 				{"EMPTY_KEY", ""},
+			},
+		},
+		{
+			name: "binary value shows placeholder with byte count",
+			entries: []Entry{
+				{Key: "keystore.p12", Value: base64.StdEncoding.EncodeToString([]byte{0x00, 0x01, 0x02, 0xff}), Encoding: gql.ValueEncodingBase64},
+			},
+			want: [][]string{
+				{"Key", "Value"},
+				{"keystore.p12", "<binary, 4 bytes>"},
+			},
+		},
+		{
+			name: "mixed plain text and binary values",
+			entries: []Entry{
+				{Key: "DATABASE_URL", Value: "postgres://localhost/db", Encoding: gql.ValueEncodingPlainText},
+				{Key: "cert.pem", Value: base64.StdEncoding.EncodeToString([]byte("not really binary but marked as such")), Encoding: gql.ValueEncodingBase64},
+			},
+			want: [][]string{
+				{"Key", "Value"},
+				{"DATABASE_URL", "postgres://localhost/db"},
+				{"cert.pem", "<binary, 36 bytes>"},
 			},
 		},
 	}

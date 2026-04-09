@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-logr/logr"
 	"github.com/nais/cli/internal/version"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -22,7 +23,7 @@ const (
 
 var initialized = false
 
-func Initialize() func(verbose bool) {
+func Initialize(verbose bool) func(verbose bool) {
 	if os.Getenv("DO_NOT_TRACK") == "1" || initialized {
 		return func(verbose bool) {
 			if verbose {
@@ -35,6 +36,11 @@ func Initialize() func(verbose bool) {
 
 	provider := newMeterProvider()
 	otel.SetMeterProvider(provider)
+
+	if !verbose {
+		// Suppress internal OpenTelemetry logs to avoid cluttering the CLI output.
+		otel.SetLogger(logr.Discard())
+	}
 
 	return func(trace bool) {
 		if trace {

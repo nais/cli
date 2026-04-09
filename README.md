@@ -2,7 +2,7 @@
 
 This repository contains the source code for the [Nais](https://nais.io) command line interface (CLI).
 
-See Nais doc for usage instructions: [nais-cli](https://docs.nais.io/how-to-guides/nais-cli/install/)
+See the [CLI documentation](https://cli.nais.io) for usage instructions.
 
 ## Local Development
 
