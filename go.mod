@@ -50,6 +50,8 @@ require (
 	golang.org/x/oauth2 v0.35.0
 	golang.org/x/sync v0.20.0
 	golang.org/x/term v0.42.0
+	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb
+	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20241231184526-a9ab2273dd10
 	google.golang.org/api v0.246.0
 	google.golang.org/grpc v1.80.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -189,6 +191,9 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.3.0 // indirect
+	github.com/pion/dtls/v3 v3.1.2 // indirect
+	github.com/pion/logging v0.2.4 // indirect
+	github.com/pion/transport/v4 v4.0.1 // indirect
 	github.com/pjbgf/sha1cd v0.3.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2 // indirect
@@ -220,6 +225,7 @@ require (
 	github.com/valyala/fastjson v1.6.4 // indirect
 	github.com/vbatts/tar-split v0.12.1 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
+	github.com/wlynxg/anet v0.0.5 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
@@ -250,6 +256,7 @@ require (
 	golang.org/x/time v0.14.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect
 	golang.org/x/vuln v1.2.0 // indirect
+	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.5.0 // indirect
 	google.golang.org/genai v1.50.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9 // indirect
@@ -259,6 +266,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gvisor.dev/gvisor v0.0.0-20250503011706-39ed1f5ac29c // indirect
 	honnef.co/go/tools v0.7.0 // indirect
 	k8s.io/apiextensions-apiserver v0.35.2 // indirect
 	k8s.io/kube-openapi v0.0.0-20251125145642-4e65d59e963e // indirect

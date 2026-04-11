@@ -31,6 +31,7 @@ func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			delete(f),
 			get(f),
 			list(f),
+			proxy(f),
 			updateValkey(f),
 		},
 	}
