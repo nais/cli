@@ -107,9 +107,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 					continue
 				}
 
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
+				wg.Go(func() {
 					defer conn.Close()
 
 					remote, err := tunnelInfo.WireGuardTunnel.DialTCP(gatewayAddr)
@@ -129,7 +127,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 						done <- struct{}{}
 					}()
 					<-done
-				}()
+				})
 			}
 
 			drainDone := make(chan struct{})
