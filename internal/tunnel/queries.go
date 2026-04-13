@@ -7,6 +7,7 @@ mutation CreateTunnel($input: CreateTunnelInput!) {
   createTunnel(input: $input) {
     tunnel {
       id
+      name
       phase
       gatewayPublicKey
       gatewaySTUNEndpoint
@@ -17,11 +18,12 @@ mutation CreateTunnel($input: CreateTunnelInput!) {
 `
 
 var _ = `# @genqlient
-query GetTunnel($teamSlug: Slug!, $environmentName: String!, $id: ID!) {
+query GetTunnel($teamSlug: Slug!, $environmentName: String!, $name: String!) {
   team(slug: $teamSlug) {
     environment(name: $environmentName) {
-      tunnel(id: $id) {
+      tunnel(name: $name) {
         id
+        name
         phase
         gatewayPublicKey
         gatewaySTUNEndpoint
@@ -33,18 +35,8 @@ query GetTunnel($teamSlug: Slug!, $environmentName: String!, $id: ID!) {
 `
 
 var _ = `# @genqlient
-mutation UpdateTunnelSTUNEndpoint($tunnelID: ID!, $clientSTUNEndpoint: String!) {
-  updateTunnelSTUNEndpoint(input: { tunnelID: $tunnelID, clientSTUNEndpoint: $clientSTUNEndpoint }) {
-    tunnel {
-      id
-    }
-  }
-}
-`
-
-var _ = `# @genqlient
-mutation DeleteTunnel($tunnelID: ID!) {
-  deleteTunnel(input: { tunnelID: $tunnelID }) {
+mutation DeleteTunnel($teamSlug: Slug!, $environmentName: String!, $tunnelName: String!) {
+  deleteTunnel(input: { teamSlug: $teamSlug, environmentName: $environmentName, tunnelName: $tunnelName }) {
     success
   }
 }
