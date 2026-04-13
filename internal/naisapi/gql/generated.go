@@ -787,6 +787,7 @@ func (v *CreateTunnelCreateTunnelCreateTunnelPayload) GetTunnel() CreateTunnelCr
 // CreateTunnelCreateTunnelCreateTunnelPayloadTunnel includes the requested fields of the GraphQL type Tunnel.
 type CreateTunnelCreateTunnelCreateTunnelPayloadTunnel struct {
 	Id                  string      `json:"id"`
+	Name                string      `json:"name"`
 	Phase               TunnelPhase `json:"phase"`
 	GatewayPublicKey    string      `json:"gatewayPublicKey"`
 	GatewaySTUNEndpoint string      `json:"gatewaySTUNEndpoint"`
@@ -795,6 +796,9 @@ type CreateTunnelCreateTunnelCreateTunnelPayloadTunnel struct {
 
 // GetId returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.Id, and is useful for accessing the field via an interface.
 func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetId() string { return v.Id }
+
+// GetName returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.Name, and is useful for accessing the field via an interface.
+func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetName() string { return v.Name }
 
 // GetPhase returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.Phase, and is useful for accessing the field via an interface.
 func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetPhase() TunnelPhase { return v.Phase }
@@ -813,12 +817,12 @@ func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetGatewaySTUNEndpoi
 func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetMessage() string { return v.Message }
 
 type CreateTunnelInput struct {
-	TeamSlug        string `json:"teamSlug"`
-	EnvironmentName string `json:"environmentName"`
-	InstanceName    string `json:"instanceName"`
-	TargetHost      string `json:"targetHost"`
-	TargetPort      int    `json:"targetPort"`
-	ClientPublicKey string `json:"clientPublicKey"`
+	TeamSlug           string `json:"teamSlug"`
+	EnvironmentName    string `json:"environmentName"`
+	TargetHost         string `json:"targetHost"`
+	TargetPort         int    `json:"targetPort"`
+	ClientPublicKey    string `json:"clientPublicKey"`
+	ClientSTUNEndpoint string `json:"clientSTUNEndpoint"`
 }
 
 // GetTeamSlug returns CreateTunnelInput.TeamSlug, and is useful for accessing the field via an interface.
@@ -826,9 +830,6 @@ func (v *CreateTunnelInput) GetTeamSlug() string { return v.TeamSlug }
 
 // GetEnvironmentName returns CreateTunnelInput.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *CreateTunnelInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetInstanceName returns CreateTunnelInput.InstanceName, and is useful for accessing the field via an interface.
-func (v *CreateTunnelInput) GetInstanceName() string { return v.InstanceName }
 
 // GetTargetHost returns CreateTunnelInput.TargetHost, and is useful for accessing the field via an interface.
 func (v *CreateTunnelInput) GetTargetHost() string { return v.TargetHost }
@@ -838,6 +839,9 @@ func (v *CreateTunnelInput) GetTargetPort() int { return v.TargetPort }
 
 // GetClientPublicKey returns CreateTunnelInput.ClientPublicKey, and is useful for accessing the field via an interface.
 func (v *CreateTunnelInput) GetClientPublicKey() string { return v.ClientPublicKey }
+
+// GetClientSTUNEndpoint returns CreateTunnelInput.ClientSTUNEndpoint, and is useful for accessing the field via an interface.
+func (v *CreateTunnelInput) GetClientSTUNEndpoint() string { return v.ClientSTUNEndpoint }
 
 // CreateTunnelResponse is returned by CreateTunnel on success.
 type CreateTunnelResponse struct {
@@ -25148,6 +25152,7 @@ func (v *GetTunnelTeamEnvironment) GetTunnel() GetTunnelTeamEnvironmentTunnel { 
 // GetTunnelTeamEnvironmentTunnel includes the requested fields of the GraphQL type Tunnel.
 type GetTunnelTeamEnvironmentTunnel struct {
 	Id                  string      `json:"id"`
+	Name                string      `json:"name"`
 	Phase               TunnelPhase `json:"phase"`
 	GatewayPublicKey    string      `json:"gatewayPublicKey"`
 	GatewaySTUNEndpoint string      `json:"gatewaySTUNEndpoint"`
@@ -25156,6 +25161,9 @@ type GetTunnelTeamEnvironmentTunnel struct {
 
 // GetId returns GetTunnelTeamEnvironmentTunnel.Id, and is useful for accessing the field via an interface.
 func (v *GetTunnelTeamEnvironmentTunnel) GetId() string { return v.Id }
+
+// GetName returns GetTunnelTeamEnvironmentTunnel.Name, and is useful for accessing the field via an interface.
+func (v *GetTunnelTeamEnvironmentTunnel) GetName() string { return v.Name }
 
 // GetPhase returns GetTunnelTeamEnvironmentTunnel.Phase, and is useful for accessing the field via an interface.
 func (v *GetTunnelTeamEnvironmentTunnel) GetPhase() TunnelPhase { return v.Phase }
@@ -28483,36 +28491,6 @@ func (v *UpdateSecretValueUpdateSecretValueUpdateSecretValuePayloadSecret) GetNa
 	return v.Name
 }
 
-// UpdateTunnelSTUNEndpointResponse is returned by UpdateTunnelSTUNEndpoint on success.
-type UpdateTunnelSTUNEndpointResponse struct {
-	UpdateTunnelSTUNEndpoint UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload `json:"updateTunnelSTUNEndpoint"`
-}
-
-// GetUpdateTunnelSTUNEndpoint returns UpdateTunnelSTUNEndpointResponse.UpdateTunnelSTUNEndpoint, and is useful for accessing the field via an interface.
-func (v *UpdateTunnelSTUNEndpointResponse) GetUpdateTunnelSTUNEndpoint() UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload {
-	return v.UpdateTunnelSTUNEndpoint
-}
-
-// UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload includes the requested fields of the GraphQL type UpdateTunnelSTUNEndpointPayload.
-type UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload struct {
-	Tunnel UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel `json:"tunnel"`
-}
-
-// GetTunnel returns UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload.Tunnel, and is useful for accessing the field via an interface.
-func (v *UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayload) GetTunnel() UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel {
-	return v.Tunnel
-}
-
-// UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel includes the requested fields of the GraphQL type Tunnel.
-type UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel struct {
-	Id string `json:"id"`
-}
-
-// GetId returns UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel.Id, and is useful for accessing the field via an interface.
-func (v *UpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointUpdateTunnelSTUNEndpointPayloadTunnel) GetId() string {
-	return v.Id
-}
-
 // UpdateValkeyResponse is returned by UpdateValkey on success.
 type UpdateValkeyResponse struct {
 	// Update an existing Valkey instance.
@@ -29290,11 +29268,19 @@ func (v *__DeleteSecretInput) GetTeam() string { return v.Team }
 
 // __DeleteTunnelInput is used internally by genqlient
 type __DeleteTunnelInput struct {
-	TunnelID string `json:"tunnelID"`
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+	TunnelName      string `json:"tunnelName"`
 }
 
-// GetTunnelID returns __DeleteTunnelInput.TunnelID, and is useful for accessing the field via an interface.
-func (v *__DeleteTunnelInput) GetTunnelID() string { return v.TunnelID }
+// GetTeamSlug returns __DeleteTunnelInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__DeleteTunnelInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __DeleteTunnelInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__DeleteTunnelInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTunnelName returns __DeleteTunnelInput.TunnelName, and is useful for accessing the field via an interface.
+func (v *__DeleteTunnelInput) GetTunnelName() string { return v.TunnelName }
 
 // __DeleteValkeyInput is used internally by genqlient
 type __DeleteValkeyInput struct {
@@ -29692,7 +29678,7 @@ func (v *__GetTeamWorkloadsInput) GetSlug() string { return v.Slug }
 type __GetTunnelInput struct {
 	TeamSlug        string `json:"teamSlug"`
 	EnvironmentName string `json:"environmentName"`
-	Id              string `json:"id"`
+	Name            string `json:"name"`
 }
 
 // GetTeamSlug returns __GetTunnelInput.TeamSlug, and is useful for accessing the field via an interface.
@@ -29701,8 +29687,8 @@ func (v *__GetTunnelInput) GetTeamSlug() string { return v.TeamSlug }
 // GetEnvironmentName returns __GetTunnelInput.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *__GetTunnelInput) GetEnvironmentName() string { return v.EnvironmentName }
 
-// GetId returns __GetTunnelInput.Id, and is useful for accessing the field via an interface.
-func (v *__GetTunnelInput) GetId() string { return v.Id }
+// GetName returns __GetTunnelInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetTunnelInput) GetName() string { return v.Name }
 
 // __GetValkeyInput is used internally by genqlient
 type __GetValkeyInput struct {
@@ -29957,18 +29943,6 @@ func (v *__UpdateSecretValueInput) GetTeam() string { return v.Team }
 
 // GetValue returns __UpdateSecretValueInput.Value, and is useful for accessing the field via an interface.
 func (v *__UpdateSecretValueInput) GetValue() SecretValueInput { return v.Value }
-
-// __UpdateTunnelSTUNEndpointInput is used internally by genqlient
-type __UpdateTunnelSTUNEndpointInput struct {
-	TunnelID           string `json:"tunnelID"`
-	ClientSTUNEndpoint string `json:"clientSTUNEndpoint"`
-}
-
-// GetTunnelID returns __UpdateTunnelSTUNEndpointInput.TunnelID, and is useful for accessing the field via an interface.
-func (v *__UpdateTunnelSTUNEndpointInput) GetTunnelID() string { return v.TunnelID }
-
-// GetClientSTUNEndpoint returns __UpdateTunnelSTUNEndpointInput.ClientSTUNEndpoint, and is useful for accessing the field via an interface.
-func (v *__UpdateTunnelSTUNEndpointInput) GetClientSTUNEndpoint() string { return v.ClientSTUNEndpoint }
 
 // __UpdateValkeyInput is used internally by genqlient
 type __UpdateValkeyInput struct {
@@ -30407,6 +30381,7 @@ mutation CreateTunnel ($input: CreateTunnelInput!) {
 	createTunnel(input: $input) {
 		tunnel {
 			id
+			name
 			phase
 			gatewayPublicKey
 			gatewaySTUNEndpoint
@@ -30690,8 +30665,8 @@ func DeleteSecret(
 
 // The mutation executed by DeleteTunnel.
 const DeleteTunnel_Operation = `
-mutation DeleteTunnel ($tunnelID: ID!) {
-	deleteTunnel(input: {tunnelID:$tunnelID}) {
+mutation DeleteTunnel ($teamSlug: Slug!, $environmentName: String!, $tunnelName: String!) {
+	deleteTunnel(input: {teamSlug:$teamSlug,environmentName:$environmentName,tunnelName:$tunnelName}) {
 		success
 	}
 }
@@ -30700,13 +30675,17 @@ mutation DeleteTunnel ($tunnelID: ID!) {
 func DeleteTunnel(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	tunnelID string,
+	teamSlug string,
+	environmentName string,
+	tunnelName string,
 ) (data_ *DeleteTunnelResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "DeleteTunnel",
 		Query:  DeleteTunnel_Operation,
 		Variables: &__DeleteTunnelInput{
-			TunnelID: tunnelID,
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			TunnelName:      tunnelName,
 		},
 	}
 
@@ -32407,11 +32386,12 @@ func GetTeamWorkloads(
 
 // The query executed by GetTunnel.
 const GetTunnel_Operation = `
-query GetTunnel ($teamSlug: Slug!, $environmentName: String!, $id: ID!) {
+query GetTunnel ($teamSlug: Slug!, $environmentName: String!, $name: String!) {
 	team(slug: $teamSlug) {
 		environment(name: $environmentName) {
-			tunnel(id: $id) {
+			tunnel(name: $name) {
 				id
+				name
 				phase
 				gatewayPublicKey
 				gatewaySTUNEndpoint
@@ -32427,7 +32407,7 @@ func GetTunnel(
 	client_ graphql.Client,
 	teamSlug string,
 	environmentName string,
-	id string,
+	name string,
 ) (data_ *GetTunnelResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTunnel",
@@ -32435,7 +32415,7 @@ func GetTunnel(
 		Variables: &__GetTunnelInput{
 			TeamSlug:        teamSlug,
 			EnvironmentName: environmentName,
-			Id:              id,
+			Name:            name,
 		},
 	}
 
@@ -33275,44 +33255,6 @@ func UpdateSecretValue(
 	}
 
 	data_ = &UpdateSecretValueResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The mutation executed by UpdateTunnelSTUNEndpoint.
-const UpdateTunnelSTUNEndpoint_Operation = `
-mutation UpdateTunnelSTUNEndpoint ($tunnelID: ID!, $clientSTUNEndpoint: String!) {
-	updateTunnelSTUNEndpoint(input: {tunnelID:$tunnelID,clientSTUNEndpoint:$clientSTUNEndpoint}) {
-		tunnel {
-			id
-		}
-	}
-}
-`
-
-func UpdateTunnelSTUNEndpoint(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	tunnelID string,
-	clientSTUNEndpoint string,
-) (data_ *UpdateTunnelSTUNEndpointResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "UpdateTunnelSTUNEndpoint",
-		Query:  UpdateTunnelSTUNEndpoint_Operation,
-		Variables: &__UpdateTunnelSTUNEndpointInput{
-			TunnelID:           tunnelID,
-			ClientSTUNEndpoint: clientSTUNEndpoint,
-		},
-	}
-
-	data_ = &UpdateTunnelSTUNEndpointResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

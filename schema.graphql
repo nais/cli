@@ -12298,6 +12298,7 @@ type TunnelTarget {
 
 type Tunnel implements Node {
 	id: ID!
+	name: String!
 	phase: TunnelPhase!
 	gatewayPublicKey: String!
 	gatewaySTUNEndpoint: String!
@@ -12309,27 +12310,20 @@ type Tunnel implements Node {
 input CreateTunnelInput {
 	teamSlug: Slug!
 	environmentName: String!
-	instanceName: String!
 	targetHost: String!
 	targetPort: Int!
 	clientPublicKey: String!
+	clientSTUNEndpoint: String!
 }
 
 type CreateTunnelPayload {
 	tunnel: Tunnel!
 }
 
-input UpdateTunnelSTUNEndpointInput {
-	tunnelID: ID!
-	clientSTUNEndpoint: String!
-}
-
-type UpdateTunnelSTUNEndpointPayload {
-	tunnel: Tunnel!
-}
-
 input DeleteTunnelInput {
-	tunnelID: ID!
+	teamSlug: Slug!
+	environmentName: String!
+	tunnelName: String!
 }
 
 type DeleteTunnelPayload {
@@ -12338,11 +12332,10 @@ type DeleteTunnelPayload {
 
 extend type Mutation {
 	createTunnel(input: CreateTunnelInput!): CreateTunnelPayload!
-	updateTunnelSTUNEndpoint(input: UpdateTunnelSTUNEndpointInput!): UpdateTunnelSTUNEndpointPayload!
 	deleteTunnel(input: DeleteTunnelInput!): DeleteTunnelPayload!
 }
 
 extend type TeamEnvironment {
-	tunnel(id: ID!): Tunnel
+	tunnel(name: String!): Tunnel
 }
 
