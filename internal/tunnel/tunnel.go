@@ -11,7 +11,9 @@ import (
 )
 
 type TunnelInfo struct {
-	TunnelID         string
+	TunnelName       string
+	TeamSlug         string
+	EnvironmentName  string
 	GatewayPublicKey wgtypes.Key
 	GatewayEndpoint  string
 	PrivateKey       wgtypes.Key
@@ -19,12 +21,11 @@ type TunnelInfo struct {
 }
 
 type Config struct {
-	TeamSlug     string
-	Environment  string
-	InstanceName string
-	ListenAddr   string
-	TargetHost   string
-	TargetPort   int
+	TeamSlug    string
+	Environment string
+	ListenAddr  string
+	TargetHost  string
+	TargetPort  int
 }
 
 func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*TunnelInfo, error) {
@@ -34,6 +35,18 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	}
 	publicKey := privateKey.PublicKey()
 
+	progress("Discovering STUN endpoint...")
+	stunEndpoint, stunConn, err := DiscoverSTUNEndpoint(0)
+	if err != nil {
+		return nil, fmt.Errorf("STUN discovery failed: %w", err)
+	}
+	stunConnOwned := true
+	defer func() {
+		if stunConnOwned {
+			_ = stunConn.Close()
+		}
+	}()
+
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get graphql client: %w", err)
@@ -42,17 +55,17 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	progress("Creating tunnel...")
 
 	createResp, err := gql.CreateTunnel(ctx, client, gql.CreateTunnelInput{
-		TeamSlug:        cfg.TeamSlug,
-		EnvironmentName: cfg.Environment,
-		InstanceName:    cfg.InstanceName,
-		TargetHost:      cfg.TargetHost,
-		TargetPort:      cfg.TargetPort,
-		ClientPublicKey: publicKey.String(),
+		TeamSlug:           cfg.TeamSlug,
+		EnvironmentName:    cfg.Environment,
+		TargetHost:         cfg.TargetHost,
+		TargetPort:         cfg.TargetPort,
+		ClientPublicKey:    publicKey.String(),
+		ClientSTUNEndpoint: stunEndpoint,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create tunnel: %w", err)
 	}
-	tunnelID := createResp.CreateTunnel.Tunnel.Id
+	tunnelName := createResp.CreateTunnel.Tunnel.Name
 
 	progress("Gateway starting...")
 
@@ -70,7 +83,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-ticker.C:
-			pollResp, err := gql.GetTunnel(ctx, client, cfg.TeamSlug, cfg.Environment, tunnelID)
+			pollResp, err := gql.GetTunnel(ctx, client, cfg.TeamSlug, cfg.Environment, tunnelName)
 			if err != nil {
 				return nil, fmt.Errorf("poll tunnel status: %w", err)
 			}
@@ -97,23 +110,6 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		}
 	}
 
-	progress("Discovering STUN endpoint...")
-	stunEndpoint, stunConn, err := DiscoverSTUNEndpoint(0)
-	if err != nil {
-		return nil, fmt.Errorf("STUN discovery failed: %w", err)
-	}
-	stunConnOwned := true
-	defer func() {
-		if stunConnOwned {
-			_ = stunConn.Close()
-		}
-	}()
-
-	_, err = gql.UpdateTunnelSTUNEndpoint(ctx, client, tunnelID, stunEndpoint)
-	if err != nil {
-		return nil, fmt.Errorf("update STUN endpoint: %w", err)
-	}
-
 	gwKey, err := wgtypes.ParseKey(gatewayPublicKey)
 	if err != nil {
 		return nil, fmt.Errorf("parse gateway public key: %w", err)
@@ -126,7 +122,9 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	stunConnOwned = false
 
 	return &TunnelInfo{
-		TunnelID:         tunnelID,
+		TunnelName:       tunnelName,
+		TeamSlug:         cfg.TeamSlug,
+		EnvironmentName:  cfg.Environment,
 		GatewayPublicKey: gwKey,
 		GatewayEndpoint:  gatewaySTUNEndpoint,
 		PrivateKey:       privateKey,
@@ -134,11 +132,11 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	}, nil
 }
 
-func DeleteTunnel(ctx context.Context, tunnelID string) error {
+func DeleteTunnel(ctx context.Context, teamSlug, environmentName, tunnelName string) error {
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return fmt.Errorf("get graphql client: %w", err)
 	}
-	_, err = gql.DeleteTunnel(ctx, client, tunnelID)
+	_, err = gql.DeleteTunnel(ctx, client, teamSlug, environmentName, tunnelName)
 	return err
 }

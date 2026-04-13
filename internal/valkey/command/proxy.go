@@ -64,18 +64,17 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			tunnelInfo, err := tunnel.CreateAndConnect(ctx, tunnel.Config{
-				TeamSlug:     flags.Team,
-				Environment:  string(flags.Environment),
-				InstanceName: flags.Instance,
-				ListenAddr:   flags.ListenAddr,
-				TargetHost:   creds.Host,
-				TargetPort:   creds.Port,
+				TeamSlug:    flags.Team,
+				Environment: string(flags.Environment),
+				ListenAddr:  flags.ListenAddr,
+				TargetHost:  creds.Host,
+				TargetPort:  creds.Port,
 			}, func(msg string) { out.Infof("%s\n", msg) })
 			if err != nil {
 				return fmt.Errorf("create tunnel: %w", err)
 			}
 			defer tunnelInfo.WireGuardTunnel.Close()
-			defer tunnel.DeleteTunnel(context.Background(), tunnelInfo.TunnelID) //nolint:errcheck
+			defer tunnel.DeleteTunnel(context.Background(), tunnelInfo.TeamSlug, tunnelInfo.EnvironmentName, tunnelInfo.TunnelName) //nolint:errcheck
 
 			ctx, stop := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
 			defer stop()
