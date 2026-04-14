@@ -15,6 +15,7 @@ import (
 type loginFlags struct {
 	*flag.Auth
 	Nais bool `name:"nais" short:"n" usage:"Login using login.nais.io instead of gcloud."`
+	Yes  bool `name:"yes" short:"y" usage:"Automatically answer yes to all prompts."`
 }
 
 func Login(parentFlags *flag.Auth) *naistrix.Command {
@@ -31,6 +32,10 @@ func Login(parentFlags *flag.Auth) *naistrix.Command {
 				Description: "Log in to the Nais platform using login.nais.io.",
 				Command:     "-n",
 			},
+			{
+				Description: "Log in to the Nais platform using gcloud and login.nais.io without prompts.",
+				Command:     "-y",
+			},
 		},
 		Description: `Uses "gcloud auth login --update-adc" by default.`,
 		Flags:       flags,
@@ -46,6 +51,9 @@ func Login(parentFlags *flag.Auth) *naistrix.Command {
 			if term.IsTerminal(int(os.Stdin.Fd())) {
 				pterm.Println()
 				pterm.Println("Many Nais commands require you to be logged in to both Google and Nais.")
+				if flags.Yes {
+					return naisapi.Login(ctx, out)
+				}
 				result, _ := pterm.DefaultInteractiveConfirm.
 					WithDefaultValue(true).
 					Show("Would you like to also log in to Nais?")
