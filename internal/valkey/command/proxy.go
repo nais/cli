@@ -91,7 +91,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 
 			go func() {
 				<-ctx.Done()
-				listener.Close()
+				listener.Close() // #nosec G104 -- best-effort shutdown on context cancellation
 			}()
 
 			gatewayAddr := fmt.Sprintf("10.0.0.2:%d", creds.Port)
@@ -118,11 +118,11 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 
 					done := make(chan struct{}, 2)
 					go func() {
-						io.Copy(remote, conn) //nolint:errcheck
+						io.Copy(remote, conn) // #nosec G104 //nolint:errcheck
 						done <- struct{}{}
 					}()
 					go func() {
-						io.Copy(conn, remote) //nolint:errcheck
+						io.Copy(conn, remote) // #nosec G104 //nolint:errcheck
 						done <- struct{}{}
 					}()
 					<-done
