@@ -32,7 +32,7 @@ func DiscoverSTUNEndpoint(listenPort int) (endpoint string, conn *net.UDPConn, e
 
 	endpoint, err = discoverFromServers(conn, defaultSTUNServers)
 	if err != nil {
-		conn.Close()
+		conn.Close() // #nosec G104 -- best-effort cleanup on error path
 		return "", nil, err
 	}
 
@@ -59,9 +59,9 @@ func discoverFromServers(conn *net.UDPConn, servers []string) (string, error) {
 		// we have symmetric NAT and cannot hole-punch.
 		if endpoint != firstEndpoint {
 			return "", fmt.Errorf(
-				"Your network uses symmetric NAT which prevents direct tunnel connections. "+
+				"your network uses symmetric NAT which prevents direct tunnel connections. "+
 					"Try from a different network or disable VPN. "+
-					"(Server 1 reported %s, server 2 reported %s)",
+					"(server 1 reported %s, server 2 reported %s)",
 				firstEndpoint, endpoint,
 			)
 		}
