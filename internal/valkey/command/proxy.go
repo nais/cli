@@ -29,18 +29,15 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 		Title:       "Create a proxy to a Valkey instance.",
 		Description: "Allows your user to connect to Valkey instances and starts a proxy.",
 		Flags:       flags,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
-				return err
-			}
-			if flags.Instance == "" {
-				return fmt.Errorf("--instance flag is required")
-			}
-			return nil
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			func(context.Context, *naistrix.Arguments) error {
+				if flags.Instance == "" {
+					return fmt.Errorf("--instance flag is required")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
 		},
@@ -91,7 +88,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 
 			go func() {
 				<-ctx.Done()
-				listener.Close()
+				listener.Close() // #nosec G104 -- best-effort shutdown on context cancellation
 			}()
 
 			gatewayAddr := fmt.Sprintf("10.0.0.2:%d", creds.Port)
@@ -118,11 +115,11 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 
 					done := make(chan struct{}, 2)
 					go func() {
-						io.Copy(remote, conn) //nolint:errcheck
+						io.Copy(remote, conn) // #nosec G104 //nolint:errcheck
 						done <- struct{}{}
 					}()
 					go func() {
-						io.Copy(conn, remote) //nolint:errcheck
+						io.Copy(conn, remote) // #nosec G104 //nolint:errcheck
 						done <- struct{}{}
 					}()
 					<-done

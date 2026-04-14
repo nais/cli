@@ -47,7 +47,7 @@ func (b *STUNBind) Open(port uint16) ([]conn.ReceiveFunc, uint16, error) {
 		return 1, nil
 	}
 
-	return []conn.ReceiveFunc{recv}, uint16(localAddr.Port), nil
+	return []conn.ReceiveFunc{recv}, uint16(localAddr.Port), nil // #nosec G115 -- port is always 0-65535
 }
 
 func (b *STUNBind) Close() error {
