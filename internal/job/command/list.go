@@ -22,7 +22,7 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				if flags.Team == "" {
-					return nil, "Please provide team. 'nais config set team <team>', or '--team <team>' flag."
+					return nil, "Please provide team. 'nais defaults set team <team>', or '--team <team>' flag."
 				}
 			}
 			return nil, ""

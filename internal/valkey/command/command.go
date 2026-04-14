@@ -60,7 +60,7 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 
 func autoCompleteValkeyNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
 	if team == "" {
-		return nil, "Please provide team to auto-complete Valkey instance names. 'nais config set team <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete Valkey instance names. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 
 	if environmentFlagOccurrencesFromCLIArgs() > 1 {
