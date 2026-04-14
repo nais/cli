@@ -41,46 +41,9 @@ func GrantAccessToTopic(ctx context.Context, namespace, topicName, environment s
 	}, nil
 }
 
-func GrantAccessToStream(ctx context.Context, namespace, streamName, userName, environment string) (*GrantAccessResult, error) {
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
-
-	if err := validateNamespace(ctx, client, namespace); err != nil {
-		return nil, err
-	}
-
-	var stream nais_kafka.Stream
-	if err := client.Get(ctx, ctrl.ObjectKey{Name: streamName, Namespace: namespace}, &stream); err != nil {
-		return nil, fmt.Errorf("get stream: %w", err)
-	}
-
-	if checkIfUserInList(stream.Spec.AdditionalUsers, userName) {
-		return &GrantAccessResult{
-			AlreadyAdded: true,
-		}, nil
-	}
-	stream.Spec.AdditionalUsers = append(stream.Spec.AdditionalUsers, nais_kafka.AdditionalStreamUser{Username: userName})
-
-	if err := client.Update(ctx, &stream); err != nil {
-		return nil, fmt.Errorf("update stream: %w", err)
-	}
-
-	return &GrantAccessResult{
-		AlreadyAdded: false,
-	}, nil
-}
-
 func checkIfAclInList(existing []nais_kafka.TopicACL, wanted nais_kafka.TopicACL) bool {
 	for _, e := range existing {
 		if e.Team == wanted.Team && e.Application == wanted.Application && e.Access == wanted.Access {
-			return true
-		}
-	}
-	return false
-}
-
-func checkIfUserInList(existing []nais_kafka.AdditionalStreamUser, userName string) bool {
-	for _, u := range existing {
-		if u.Username == userName {
 			return true
 		}
 	}
