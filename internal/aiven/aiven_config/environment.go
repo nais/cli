@@ -11,24 +11,12 @@ import (
 )
 
 const (
-	KafkaEnvName          = "kafka-secret.env"
-	OpenSearchEnvName     = "opensearch-secret.env"
-	OpenSearchHostKey     = "OPEN_SEARCH_HOST"
-	OpenSearchURIKey      = "OPEN_SEARCH_URI"
-	OpenSearchUsernameKey = "OPEN_SEARCH_USERNAME"
-	OpenSearchPasswordKey = "OPEN_SEARCH_PASSWORD"
+	KafkaEnvName = "kafka-secret.env"
 )
 
 type fileTuple struct {
 	Key     string
 	PathKey string
-}
-
-func WriteOpenSearchEnvConfigToFile(secret *v1.Secret, destinationPath string) error {
-	envsToSaveToFile := []string{
-		OpenSearchURIKey, OpenSearchPasswordKey, OpenSearchUsernameKey,
-	}
-	return writeConfigToFile(secret, destinationPath, OpenSearchEnvName, envsToSaveToFile, map[string]fileTuple{})
 }
 
 func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error {

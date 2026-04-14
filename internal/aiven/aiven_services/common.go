@@ -1,9 +1,6 @@
 package aiven_services
 
 import (
-	"fmt"
-	"strings"
-
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
@@ -36,12 +33,4 @@ func init() {
 	} {
 		Services[svc.Name()] = svc
 	}
-}
-
-func FromString(service string) (Service, error) {
-	svc, ok := Services[strings.ToLower(service)]
-	if !ok {
-		return nil, fmt.Errorf("unknown service: %v", service)
-	}
-	return svc, nil
 }
