@@ -9,15 +9,6 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func TidyLocalSecrets(out *naistrix.OutputWriter) error {
-	aivenSecretFolders, err := findFoldersToRemove()
-	if err != nil {
-		return err
-	}
-
-	return tidy(aivenSecretFolders, out)
-}
-
 func tidy(folders []string, out *naistrix.OutputWriter) error {
 	if len(folders) > 0 {
 		for _, folder := range folders {
