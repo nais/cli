@@ -1,20 +1,10 @@
 package aiven_services
 
 import (
-	"fmt"
-	"strings"
-
 	aiven_nais_io_v1 "github.com/nais/liberator/pkg/apis/aiven.nais.io/v1"
 )
 
 type KafkaPool string
-
-func KafkaPoolFromString(pool string) (KafkaPool, error) {
-	if !strings.Contains(pool, "-") {
-		return "", fmt.Errorf("invalid pool: %v", pool)
-	}
-	return KafkaPool(pool), nil
-}
 
 func (p KafkaPool) String() string {
 	return string(p)
