@@ -8,7 +8,6 @@ import (
 	"slices"
 
 	activity "github.com/nais/cli/internal/activity/command"
-	aiven "github.com/nais/cli/internal/aiven/command"
 	alpha "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
 	"github.com/nais/cli/internal/auth"
@@ -75,7 +74,6 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		valkeyCommand.Valkey(globalFlags),
 		naisdevice.Naisdevice(globalFlags),
 		members.Members(globalFlags),
-		aiven.Aiven(globalFlags),
 		alpha.Alpha(globalFlags),
 		postgres.Postgres(globalFlags),
 		debug.Debug(globalFlags),
