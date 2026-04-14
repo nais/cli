@@ -48,7 +48,7 @@ func Login(parentFlags *flag.Auth) *naistrix.Command {
 				return err
 			}
 
-			if term.IsTerminal(int(os.Stdin.Fd())) {
+			if term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
 				pterm.Println()
 				pterm.Println("Many Nais commands require you to be logged in to both Google and Nais.")
 				if flags.Yes {
