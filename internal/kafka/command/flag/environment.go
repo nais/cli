@@ -10,7 +10,7 @@ import (
 
 type Environment string
 
-func (e *Environment) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
+func (e *Environment) AutoComplete(ctx context.Context, _ *naistrix.Arguments, _ string, _ any) ([]string, string) {
 	return autoCompleteEnvironments(ctx)
 }
 

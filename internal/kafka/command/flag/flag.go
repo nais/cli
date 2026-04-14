@@ -50,3 +50,9 @@ type Credentials struct {
 	TTL    string            `name:"ttl" usage:"Time-to-live for the credentials (e.g. '1d', '7d'). Maximum 30 days."`
 	Output CredentialsOutput `name:"output" short:"o" usage:"Output format (env, kcat, java). Defaults to env."`
 }
+
+type GrantAccess struct {
+	*Kafka
+	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use."`
+	Access      string      `name:"access" short:"a" usage:"Access |LEVEL| (readwrite, read and write)."`
+}
