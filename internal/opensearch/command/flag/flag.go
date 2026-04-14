@@ -98,7 +98,7 @@ func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, str
 
 	f := flags.(*Get)
 	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete environments. 'nais config team set <team>', or '--team <team>' flag."
+		return nil, "Please provide team to auto-complete environments. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 
 	envs, err := opensearch.OpenSearchEnvironments(ctx, f.Team, args.Get("name"))

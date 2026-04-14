@@ -30,7 +30,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 			}
 
 			if len(flags.Team) == 0 {
-				return fmt.Errorf("team cannot be empty, set team using 'nais config set team <team>' or the --team flag")
+				return fmt.Errorf("team cannot be empty, set team using 'nais defaults set team <team>' or the --team flag")
 			}
 
 			return nil
