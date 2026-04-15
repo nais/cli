@@ -115,6 +115,21 @@ type Log struct {
 	Limit          int           `name:"limit" short:"l" usage:"Maximum number of initial log lines."`
 }
 
+type Status struct {
+	*App
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+type EnvVars struct {
+	*App
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
+type Files struct {
+	*App
+	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+}
+
 func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
 	envs, err := naisapi.GetAllEnvironments(ctx)
 	if err != nil {

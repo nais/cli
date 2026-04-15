@@ -880,6 +880,11 @@ Get the mean time to fix history for an application.
 	vulnerabilityFixHistory(
 		from: Date!
 	): VulnerabilityFixHistory!
+"""
+Instance groups for the application. An instance group represents a set of identical instances
+backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
+"""
+	instanceGroups: [InstanceGroup!]!
 }
 
 """
@@ -996,12 +1001,16 @@ enum ApplicationInstanceState {
 	RUNNING
 	STARTING
 	FAILING
+	TERMINATED
 	UNKNOWN
 }
 
 type ApplicationInstanceStatus {
 	state: ApplicationInstanceState!
 	message: String!
+	ready: Boolean!
+	lastExitReason: String
+	lastExitCode: Int
 }
 
 type ApplicationInstanceUtilization {
@@ -1009,6 +1018,158 @@ type ApplicationInstanceUtilization {
 Get the current usage for the requested resource type.
 """
 	current: Float!
+}
+
+"""
+An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
+All instances in the group share the same configuration (environment variables, mounted files, image).
+"""
+type InstanceGroup implements Node {
+"""
+The globally unique ID of the instance group.
+"""
+	id: ID!
+"""
+The name of the instance group.
+"""
+	name: String!
+"""
+The container image used by instances in this group.
+"""
+	image: ContainerImage!
+"""
+The revision number of this instance group. Higher revision numbers are newer.
+"""
+	revision: Int!
+"""
+When the instance group was created.
+"""
+	created: Time!
+"""
+The number of instances that are ready.
+"""
+	readyInstances: Int!
+"""
+The desired number of instances.
+"""
+	desiredInstances: Int!
+"""
+Environment variables configured for instances in this group.
+"""
+	environmentVariables: [InstanceGroupEnvironmentVariable!]!
+"""
+Files mounted into instances in this group from Secrets or ConfigMaps.
+"""
+	mountedFiles: [InstanceGroupMountedFile!]!
+"""
+The application instances belonging to this instance group.
+"""
+	instances: [ApplicationInstance!]!
+"""
+Recent Kubernetes events for this instance group and its instances.
+"""
+	events: [InstanceGroupEvent!]!
+}
+
+"""
+An environment variable configured for an instance group.
+"""
+type InstanceGroupEnvironmentVariable {
+"""
+The name of the environment variable.
+"""
+	name: String!
+"""
+The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
+"""
+	value: String
+"""
+The source of the environment variable value.
+"""
+	source: InstanceGroupValueSource!
+}
+
+"""
+A file mounted into an instance group from a Secret or ConfigMap.
+"""
+type InstanceGroupMountedFile {
+"""
+The file path inside the container.
+"""
+	path: String!
+"""
+The source of the mounted file.
+"""
+	source: InstanceGroupValueSource!
+"""
+The file content. Null for files from Secrets or when the source could not be resolved.
+"""
+	content: String
+"""
+Whether the content is base64-encoded binary data.
+"""
+	isBinary: Boolean!
+"""
+Error message when the source Secret or ConfigMap could not be resolved.
+"""
+	error: String
+}
+
+"""
+Describes the source of a value (environment variable or mounted file).
+"""
+type InstanceGroupValueSource {
+"""
+The kind of source.
+"""
+	kind: InstanceGroupValueSourceKind!
+"""
+The name of the source resource.
+"""
+	name: String!
+}
+
+"""
+The kind of source for an environment variable or mounted file.
+"""
+enum InstanceGroupValueSourceKind {
+	SECRET
+	CONFIG_MAP
+	SPEC
+}
+
+"""
+A Kubernetes event related to an instance group or one of its instances.
+"""
+type InstanceGroupEvent {
+"""
+When the event occurred.
+"""
+	timestamp: Time!
+"""
+The Kubernetes event reason.
+"""
+	reason: String!
+"""
+The event message from Kubernetes.
+"""
+	message: String!
+"""
+The severity of the event.
+"""
+	severity: InstanceGroupEventSeverity!
+"""
+The name of the instance this event relates to, if applicable.
+"""
+	sourceInstance: String
+}
+
+"""
+The severity of an instance group event.
+"""
+enum InstanceGroupEventSeverity {
+	INFO
+	WARNING
 }
 
 """

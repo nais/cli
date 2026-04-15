@@ -445,16 +445,18 @@ func (v *ApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplic
 type ApplicationInstanceState string
 
 const (
-	ApplicationInstanceStateRunning  ApplicationInstanceState = "RUNNING"
-	ApplicationInstanceStateStarting ApplicationInstanceState = "STARTING"
-	ApplicationInstanceStateFailing  ApplicationInstanceState = "FAILING"
-	ApplicationInstanceStateUnknown  ApplicationInstanceState = "UNKNOWN"
+	ApplicationInstanceStateRunning    ApplicationInstanceState = "RUNNING"
+	ApplicationInstanceStateStarting   ApplicationInstanceState = "STARTING"
+	ApplicationInstanceStateFailing    ApplicationInstanceState = "FAILING"
+	ApplicationInstanceStateTerminated ApplicationInstanceState = "TERMINATED"
+	ApplicationInstanceStateUnknown    ApplicationInstanceState = "UNKNOWN"
 )
 
 var AllApplicationInstanceState = []ApplicationInstanceState{
 	ApplicationInstanceStateRunning,
 	ApplicationInstanceStateStarting,
 	ApplicationInstanceStateFailing,
+	ApplicationInstanceStateTerminated,
 	ApplicationInstanceStateUnknown,
 }
 
@@ -7817,6 +7819,271 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 	return v.Name
 }
 
+// GetApplicationEnvVarsResponse is returned by GetApplicationEnvVars on success.
+type GetApplicationEnvVarsResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationEnvVarsTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationEnvVarsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsResponse) GetTeam() GetApplicationEnvVarsTeam { return v.Team }
+
+// GetApplicationEnvVarsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationEnvVarsTeam struct {
+	// Nais applications owned by the team.
+	Applications GetApplicationEnvVarsTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetApplicationEnvVarsTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeam) GetApplications() GetApplicationEnvVarsTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetApplicationEnvVarsTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetApplicationEnvVarsTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationEnvVarsTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnection) GetNodes() []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication struct {
+	// Instance groups for the application. An instance group represents a set of identical instances
+	// backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
+	InstanceGroups []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
+}
+
+// GetInstanceGroups returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication.InstanceGroups, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplication) GetInstanceGroups() []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup {
+	return v.InstanceGroups
+}
+
+// GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup struct {
+	// The revision number of this instance group. Higher revision numbers are newer.
+	Revision int `json:"revision"`
+	// Environment variables configured for instances in this group.
+	EnvironmentVariables []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable `json:"environmentVariables"`
+}
+
+// GetRevision returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Revision, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetRevision() int {
+	return v.Revision
+}
+
+// GetEnvironmentVariables returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.EnvironmentVariables, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetEnvironmentVariables() []GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable {
+	return v.EnvironmentVariables
+}
+
+// GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable includes the requested fields of the GraphQL type InstanceGroupEnvironmentVariable.
+// The GraphQL type's documentation follows.
+//
+// An environment variable configured for an instance group.
+type GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable struct {
+	// The name of the environment variable.
+	Name string `json:"name"`
+	// The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
+	Value string `json:"value"`
+	// The source of the environment variable value.
+	Source GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource `json:"source"`
+}
+
+// GetName returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable) GetName() string {
+	return v.Name
+}
+
+// GetValue returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable.Value, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable) GetValue() string {
+	return v.Value
+}
+
+// GetSource returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable.Source, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariable) GetSource() GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource {
+	return v.Source
+}
+
+// GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource includes the requested fields of the GraphQL type InstanceGroupValueSource.
+// The GraphQL type's documentation follows.
+//
+// Describes the source of a value (environment variable or mounted file).
+type GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource struct {
+	// The kind of source.
+	Kind InstanceGroupValueSourceKind `json:"kind"`
+	// The name of the source resource.
+	Name string `json:"name"`
+}
+
+// GetKind returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource.Kind, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource) GetKind() InstanceGroupValueSourceKind {
+	return v.Kind
+}
+
+// GetName returns GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupEnvironmentVariablesInstanceGroupEnvironmentVariableSourceInstanceGroupValueSource) GetName() string {
+	return v.Name
+}
+
+// GetApplicationFilesResponse is returned by GetApplicationFiles on success.
+type GetApplicationFilesResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationFilesTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationFilesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesResponse) GetTeam() GetApplicationFilesTeam { return v.Team }
+
+// GetApplicationFilesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationFilesTeam struct {
+	// Nais applications owned by the team.
+	Applications GetApplicationFilesTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetApplicationFilesTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeam) GetApplications() GetApplicationFilesTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetApplicationFilesTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetApplicationFilesTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationFilesTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnection) GetNodes() []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication struct {
+	// Instance groups for the application. An instance group represents a set of identical instances
+	// backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
+	InstanceGroups []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
+}
+
+// GetInstanceGroups returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication.InstanceGroups, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplication) GetInstanceGroups() []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup {
+	return v.InstanceGroups
+}
+
+// GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup struct {
+	// The revision number of this instance group. Higher revision numbers are newer.
+	Revision int `json:"revision"`
+	// Files mounted into instances in this group from Secrets or ConfigMaps.
+	MountedFiles []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile `json:"mountedFiles"`
+}
+
+// GetRevision returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Revision, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetRevision() int {
+	return v.Revision
+}
+
+// GetMountedFiles returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.MountedFiles, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetMountedFiles() []GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile {
+	return v.MountedFiles
+}
+
+// GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile includes the requested fields of the GraphQL type InstanceGroupMountedFile.
+// The GraphQL type's documentation follows.
+//
+// A file mounted into an instance group from a Secret or ConfigMap.
+type GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile struct {
+	// The file path inside the container.
+	Path string `json:"path"`
+	// Whether the content is base64-encoded binary data.
+	IsBinary bool `json:"isBinary"`
+	// Error message when the source Secret or ConfigMap could not be resolved.
+	Error string `json:"error"`
+	// The source of the mounted file.
+	Source GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource `json:"source"`
+}
+
+// GetPath returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile.Path, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile) GetPath() string {
+	return v.Path
+}
+
+// GetIsBinary returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile.IsBinary, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile) GetIsBinary() bool {
+	return v.IsBinary
+}
+
+// GetError returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile.Error, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile) GetError() string {
+	return v.Error
+}
+
+// GetSource returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile.Source, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFile) GetSource() GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource {
+	return v.Source
+}
+
+// GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource includes the requested fields of the GraphQL type InstanceGroupValueSource.
+// The GraphQL type's documentation follows.
+//
+// Describes the source of a value (environment variable or mounted file).
+type GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource struct {
+	// The kind of source.
+	Kind InstanceGroupValueSourceKind `json:"kind"`
+	// The name of the source resource.
+	Name string `json:"name"`
+}
+
+// GetKind returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource.Kind, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource) GetKind() InstanceGroupValueSourceKind {
+	return v.Kind
+}
+
+// GetName returns GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationFilesTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupMountedFilesInstanceGroupMountedFileSourceInstanceGroupValueSource) GetName() string {
+	return v.Name
+}
+
 // GetApplicationInstancesResponse is returned by GetApplicationInstances on success.
 type GetApplicationInstancesResponse struct {
 	// Get a team by its slug.
@@ -8713,6 +8980,245 @@ type GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTea
 
 // GetName returns GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *GetApplicationNamesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// GetApplicationStatusResponse is returned by GetApplicationStatus on success.
+type GetApplicationStatusResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationStatusTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationStatusResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusResponse) GetTeam() GetApplicationStatusTeam { return v.Team }
+
+// GetApplicationStatusTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationStatusTeam struct {
+	// Nais applications owned by the team.
+	Applications GetApplicationStatusTeamApplicationsApplicationConnection `json:"applications"`
+}
+
+// GetApplications returns GetApplicationStatusTeam.Applications, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeam) GetApplications() GetApplicationStatusTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type GetApplicationStatusTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+}
+
+// GetNodes returns GetApplicationStatusTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnection) GetNodes() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+	// The team environment for the application.
+	TeamEnvironment GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
+	// Instance groups for the application. An instance group represents a set of identical instances
+	// backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
+	InstanceGroups []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
+}
+
+// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetInstanceGroups returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.InstanceGroups, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetInstanceGroups() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup {
+	return v.InstanceGroups
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup struct {
+	// The name of the instance group.
+	Name string `json:"name"`
+	// The container image used by instances in this group.
+	Image GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage `json:"image"`
+	// The revision number of this instance group. Higher revision numbers are newer.
+	Revision int `json:"revision"`
+	// When the instance group was created.
+	Created time.Time `json:"created"`
+	// The number of instances that are ready.
+	ReadyInstances int `json:"readyInstances"`
+	// The desired number of instances.
+	DesiredInstances int `json:"desiredInstances"`
+	// The application instances belonging to this instance group.
+	Instances []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance `json:"instances"`
+}
+
+// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetName() string {
+	return v.Name
+}
+
+// GetImage returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Image, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetImage() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage {
+	return v.Image
+}
+
+// GetRevision returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Revision, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetRevision() int {
+	return v.Revision
+}
+
+// GetCreated returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Created, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetCreated() time.Time {
+	return v.Created
+}
+
+// GetReadyInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.ReadyInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetReadyInstances() int {
+	return v.ReadyInstances
+}
+
+// GetDesiredInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.DesiredInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetDesiredInstances() int {
+	return v.DesiredInstances
+}
+
+// GetInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Instances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetInstances() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance {
+	return v.Instances
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage struct {
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image.
+	Tag string `json:"tag"`
+}
+
+// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage) GetName() string {
+	return v.Name
+}
+
+// GetTag returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage) GetTag() string {
+	return v.Tag
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance struct {
+	Name     string                                                                                                                                 `json:"name"`
+	Restarts int                                                                                                                                    `json:"restarts"`
+	Created  time.Time                                                                                                                              `json:"created"`
+	Status   GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus `json:"status"`
+}
+
+// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetName() string {
+	return v.Name
+}
+
+// GetRestarts returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Restarts, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetRestarts() int {
+	return v.Restarts
+}
+
+// GetCreated returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Created, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetCreated() time.Time {
+	return v.Created
+}
+
+// GetStatus returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Status, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetStatus() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus {
+	return v.Status
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus includes the requested fields of the GraphQL type ApplicationInstanceStatus.
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus struct {
+	State          ApplicationInstanceState `json:"state"`
+	Message        string                   `json:"message"`
+	Ready          bool                     `json:"ready"`
+	LastExitReason string                   `json:"lastExitReason"`
+	LastExitCode   int                      `json:"lastExitCode"`
+}
+
+// GetState returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.State, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetState() ApplicationInstanceState {
+	return v.State
+}
+
+// GetMessage returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetMessage() string {
+	return v.Message
+}
+
+// GetReady returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Ready, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetReady() bool {
+	return v.Ready
+}
+
+// GetLastExitReason returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitReason, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitReason() string {
+	return v.LastExitReason
+}
+
+// GetLastExitCode returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitCode() int {
+	return v.LastExitCode
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
@@ -25448,6 +25954,21 @@ var AllImageVulnerabilitySuppressionState = []ImageVulnerabilitySuppressionState
 	ImageVulnerabilitySuppressionStateNotAffected,
 }
 
+// The kind of source for an environment variable or mounted file.
+type InstanceGroupValueSourceKind string
+
+const (
+	InstanceGroupValueSourceKindSecret    InstanceGroupValueSourceKind = "SECRET"
+	InstanceGroupValueSourceKindConfigMap InstanceGroupValueSourceKind = "CONFIG_MAP"
+	InstanceGroupValueSourceKindSpec      InstanceGroupValueSourceKind = "SPEC"
+)
+
+var AllInstanceGroupValueSourceKind = []InstanceGroupValueSourceKind{
+	InstanceGroupValueSourceKindSecret,
+	InstanceGroupValueSourceKindConfigMap,
+	InstanceGroupValueSourceKindSpec,
+}
+
 // IsAdminMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // IsAdminMeAuthenticatedUser is implemented by the following types:
@@ -29172,6 +29693,38 @@ func (v *__GetApplicationActivityInput) GetActivityTypes() []ActivityLogActivity
 // GetFirst returns __GetApplicationActivityInput.First, and is useful for accessing the field via an interface.
 func (v *__GetApplicationActivityInput) GetFirst() int { return v.First }
 
+// __GetApplicationEnvVarsInput is used internally by genqlient
+type __GetApplicationEnvVarsInput struct {
+	Slug string   `json:"slug"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetSlug returns __GetApplicationEnvVarsInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEnvVarsInput) GetSlug() string { return v.Slug }
+
+// GetName returns __GetApplicationEnvVarsInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEnvVarsInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetApplicationEnvVarsInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEnvVarsInput) GetEnv() []string { return v.Env }
+
+// __GetApplicationFilesInput is used internally by genqlient
+type __GetApplicationFilesInput struct {
+	Slug string   `json:"slug"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetSlug returns __GetApplicationFilesInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetApplicationFilesInput) GetSlug() string { return v.Slug }
+
+// GetName returns __GetApplicationFilesInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetApplicationFilesInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetApplicationFilesInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetApplicationFilesInput) GetEnv() []string { return v.Env }
+
 // __GetApplicationInstancesInput is used internally by genqlient
 type __GetApplicationInstancesInput struct {
 	Team    string                 `json:"team"`
@@ -29211,6 +29764,22 @@ type __GetApplicationNamesInput struct {
 
 // GetTeam returns __GetApplicationNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetApplicationNamesInput) GetTeam() string { return v.Team }
+
+// __GetApplicationStatusInput is used internally by genqlient
+type __GetApplicationStatusInput struct {
+	Slug string   `json:"slug"`
+	Name string   `json:"name"`
+	Env  []string `json:"env"`
+}
+
+// GetSlug returns __GetApplicationStatusInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetApplicationStatusInput) GetSlug() string { return v.Slug }
+
+// GetName returns __GetApplicationStatusInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetApplicationStatusInput) GetName() string { return v.Name }
+
+// GetEnv returns __GetApplicationStatusInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetApplicationStatusInput) GetEnv() []string { return v.Env }
 
 // __GetConfigActivityInput is used internally by genqlient
 type __GetConfigActivityInput struct {
@@ -30949,6 +31518,111 @@ func GetApplicationActivity(
 	return data_, err_
 }
 
+// The query executed by GetApplicationEnvVars.
+const GetApplicationEnvVars_Operation = `
+query GetApplicationEnvVars ($slug: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $slug) {
+		applications(filter: {name:$name,environments:$env}) {
+			nodes {
+				instanceGroups {
+					revision
+					environmentVariables {
+						name
+						value
+						source {
+							kind
+							name
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetApplicationEnvVars(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+	name string,
+	env []string,
+) (data_ *GetApplicationEnvVarsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationEnvVars",
+		Query:  GetApplicationEnvVars_Operation,
+		Variables: &__GetApplicationEnvVarsInput{
+			Slug: slug,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetApplicationEnvVarsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetApplicationFiles.
+const GetApplicationFiles_Operation = `
+query GetApplicationFiles ($slug: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $slug) {
+		applications(filter: {name:$name,environments:$env}) {
+			nodes {
+				instanceGroups {
+					revision
+					mountedFiles {
+						path
+						isBinary
+						error
+						source {
+							kind
+							name
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetApplicationFiles(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+	name string,
+	env []string,
+) (data_ *GetApplicationFilesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationFiles",
+		Query:  GetApplicationFiles_Operation,
+		Variables: &__GetApplicationFilesInput{
+			Slug: slug,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetApplicationFilesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetApplicationInstances.
 const GetApplicationInstances_Operation = `
 query GetApplicationInstances ($team: Slug!, $orderBy: ApplicationOrder, $filter: TeamApplicationsFilter) {
@@ -31080,6 +31754,76 @@ func GetApplicationNames(
 	}
 
 	data_ = &GetApplicationNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetApplicationStatus.
+const GetApplicationStatus_Operation = `
+query GetApplicationStatus ($slug: Slug!, $name: String!, $env: [String!]) {
+	team(slug: $slug) {
+		applications(filter: {name:$name,environments:$env}) {
+			nodes {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+				instanceGroups {
+					name
+					image {
+						name
+						tag
+					}
+					revision
+					created
+					readyInstances
+					desiredInstances
+					instances {
+						name
+						restarts
+						created
+						status {
+							state
+							message
+							ready
+							lastExitReason
+							lastExitCode
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetApplicationStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+	name string,
+	env []string,
+) (data_ *GetApplicationStatusResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationStatus",
+		Query:  GetApplicationStatus_Operation,
+		Variables: &__GetApplicationStatusInput{
+			Slug: slug,
+			Name: name,
+			Env:  env,
+		},
+	}
+
+	data_ = &GetApplicationStatusResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
