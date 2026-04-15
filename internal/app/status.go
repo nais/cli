@@ -109,6 +109,13 @@ func GetApplicationStatus(ctx context.Context, slug, name string, envs []string)
 
 	app := resp.Team.Applications.Nodes[0]
 
+	if len(app.InstanceGroups) == 0 {
+		return &InstanceGroupStatus{
+			Application: app.Name,
+			Environment: app.TeamEnvironment.Environment.Name,
+		}, nil
+	}
+
 	groups := make([]InstanceGroupInfo, 0, len(app.InstanceGroups))
 	maxRevision := 0
 	for _, ig := range app.InstanceGroups {

@@ -57,6 +57,11 @@ func status(parentFlags *flag.App) *naistrix.Command {
 }
 
 func renderStatus(out *naistrix.OutputWriter, status *app.InstanceGroupStatus) error {
+	if len(status.Groups) == 0 {
+		out.Printf("No running instances found for %s in %s.\n", status.Application, status.Environment)
+		return nil
+	}
+
 	multipleGroups := len(status.Groups) > 1
 
 	for i, group := range status.Groups {
