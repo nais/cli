@@ -14,10 +14,10 @@ import (
 
 func activity(parentFlags *flag.App) *naistrix.Command {
 	flags := &flag.Activity{
-		App:    parentFlags,
-		Output: "table",
-		Limit:  20,
+		App:   parentFlags,
+		Limit: 20,
 	}
+	flags.Output = "table"
 
 	return &naistrix.Command{
 		Name:        "activity",

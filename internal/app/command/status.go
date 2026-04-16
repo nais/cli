@@ -24,11 +24,10 @@ func status(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name"},
 		},
 		Flags: flags,
+		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+			return requireSingleEnvironment(flags.Environment)
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if len(flags.Environment) != 1 {
-				return fmt.Errorf("exactly one environment must be specified with -e/--environment")
-			}
-
 			ret, err := app.GetApplicationStatus(ctx, flags.Team, args.Get("name"), flags.Environment)
 			if err != nil {
 				return err
@@ -40,19 +39,7 @@ func status(parentFlags *flag.App) *naistrix.Command {
 
 			return renderStatus(out, ret)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				apps, err := app.GetApplicationNames(ctx, flags.Team, flags.Environment)
-				if err != nil {
-					return nil, "Unable to fetch application names."
-				}
-				return apps, "Select an application."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteAppNames(flags.App),
 	}
 }
 
