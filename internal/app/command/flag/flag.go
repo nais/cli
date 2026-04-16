@@ -16,6 +16,7 @@ import (
 type App struct {
 	*flags.GlobalFlags
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
+	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 type Environments []string
 
@@ -64,16 +65,13 @@ type Restart struct {
 
 type Issues struct {
 	*App
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 type List struct {
 	*App
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 type Activity struct {
 	*App
-	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
 	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
 	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
 }
@@ -117,17 +115,14 @@ type Log struct {
 
 type Status struct {
 	*App
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 type EnvVars struct {
 	*App
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 type Files struct {
 	*App
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
 }
 
 func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
