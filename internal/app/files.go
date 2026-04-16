@@ -39,10 +39,9 @@ func GetApplicationFiles(ctx context.Context, slug, name string, envs []string) 
 		    applications(filter: { name: $name, environments: $env }) {
 		      nodes {
 		        instanceGroups {
-		          revision
+		          created
 		          mountedFiles {
 		            path
-		            isBinary
 		            error
 		            source {
 		              kind
@@ -75,12 +74,8 @@ func GetApplicationFiles(ctx context.Context, slug, name string, envs []string) 
 		return nil, nil
 	}
 
+	// API returns groups sorted newest first; use the first group.
 	newest := groups[0]
-	for _, g := range groups[1:] {
-		if g.Revision > newest.Revision {
-			newest = g
-		}
-	}
 
 	ret := make([]MountedFile, 0, len(newest.MountedFiles))
 	for _, f := range newest.MountedFiles {

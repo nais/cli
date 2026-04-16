@@ -44,7 +44,6 @@ type InstanceGroupStatus struct {
 type InstanceGroupInfo struct {
 	Name             string         `json:"name"`
 	Image            string         `json:"image"`
-	Revision         int            `json:"revision"`
 	ReadyInstances   int            `json:"readyInstances"`
 	DesiredInstances int            `json:"desiredInstances"`
 	Created          time.Time      `json:"created"`
@@ -70,7 +69,6 @@ func GetApplicationStatus(ctx context.Context, slug, name string, envs []string)
 		            name
 		            tag
 		          }
-		          revision
 		          created
 		          readyInstances
 		          desiredInstances
@@ -117,12 +115,6 @@ func GetApplicationStatus(ctx context.Context, slug, name string, envs []string)
 	}
 
 	groups := make([]InstanceGroupInfo, 0, len(app.InstanceGroups))
-	maxRevision := 0
-	for _, ig := range app.InstanceGroups {
-		if ig.Revision > maxRevision {
-			maxRevision = ig.Revision
-		}
-	}
 
 	for _, ig := range app.InstanceGroups {
 		instances := make([]InstanceInfo, 0, len(ig.Instances))
@@ -139,18 +131,20 @@ func GetApplicationStatus(ctx context.Context, slug, name string, envs []string)
 		groups = append(groups, InstanceGroupInfo{
 			Name:             ig.Name,
 			Image:            fmt.Sprintf("%s:%s", ig.Image.Name, ig.Image.Tag),
-			Revision:         ig.Revision,
 			ReadyInstances:   ig.ReadyInstances,
 			DesiredInstances: ig.DesiredInstances,
 			Created:          ig.Created,
-			Current:          ig.Revision == maxRevision,
 			Instances:        instances,
 		})
 	}
 
+	// API returns groups sorted newest first; first group is "current".
 	sort.Slice(groups, func(i, j int) bool {
-		return groups[i].Revision > groups[j].Revision
+		return groups[i].Created.After(groups[j].Created)
 	})
+	if len(groups) > 0 {
+		groups[0].Current = true
+	}
 
 	return &InstanceGroupStatus{
 		Application: app.Name,
