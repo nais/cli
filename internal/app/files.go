@@ -74,8 +74,13 @@ func GetApplicationFiles(ctx context.Context, slug, name string, envs []string) 
 		return nil, nil
 	}
 
-	// API returns groups sorted newest first; use the first group.
+	// Select the newest group by creation time.
 	newest := groups[0]
+	for _, g := range groups[1:] {
+		if g.Created.After(newest.Created) {
+			newest = g
+		}
+	}
 
 	ret := make([]MountedFile, 0, len(newest.MountedFiles))
 	for _, f := range newest.MountedFiles {
