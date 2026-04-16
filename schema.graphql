@@ -61,7 +61,7 @@ enum ActivityLogActivityType {
 """
 Filter for credential creation events.
 """
-	CREDENTIALS_CREATE
+	CREDENTIALS_CREATED
 """
 An application was deleted.
 """
@@ -74,6 +74,14 @@ An application was restarted.
 An application was scaled.
 """
 	APPLICATION_SCALED
+"""
+A generic kubernetes resource was updated via apply.
+"""
+	GENERIC_KUBERNETES_RESOURCE_UPDATED
+"""
+A generic kubernetes resource was created via apply.
+"""
+	GENERIC_KUBERNETES_RESOURCE_CREATED
 """
 All activity log entries related to direct cluster changes.
 """
@@ -350,10 +358,6 @@ enum ActivityLogEntryResourceType {
 Unknown type.
 """
 	UNKNOWN
-"""
-All activity log entries related to credential creation will use this resource type.
-"""
-	CREDENTIALS
 """
 All activity log entries related to applications will use this resource type.
 """
@@ -796,6 +800,11 @@ Get items before this cursor.
 		before: Cursor
 	): DeploymentConnection!
 """
+Instance groups for the application. An instance group represents a set of identical instances.
+All instances in a group share the same configuration.
+"""
+	instanceGroups: [InstanceGroup!]!
+"""
 Kafka topics the application has access to. This does not currently support pagination, but will return all available Kafka topics.
 """
 	kafkaTopicAcls(
@@ -880,11 +889,6 @@ Get the mean time to fix history for an application.
 	vulnerabilityFixHistory(
 		from: Date!
 	): VulnerabilityFixHistory!
-"""
-Instance groups for the application. An instance group represents a set of identical instances
-backed by a Kubernetes ReplicaSet. All instances in a group share the same configuration.
-"""
-	instanceGroups: [InstanceGroup!]!
 }
 
 """
@@ -908,6 +912,45 @@ List of nodes.
 List of edges.
 """
 	edges: [ApplicationEdge!]!
+}
+
+type ApplicationCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the creation.
+"""
+	data: GenericKubernetesResourceActivityLogEntryData!
 }
 
 type ApplicationDeletedActivityLogEntry implements ActivityLogEntry & Node{
@@ -1007,9 +1050,23 @@ enum ApplicationInstanceState {
 
 type ApplicationInstanceStatus {
 	state: ApplicationInstanceState!
+"""
+A user-friendly description of the current state.
+"""
 	message: String!
+"""
+Whether the container is passing its readiness check and can receive traffic.
+"""
 	ready: Boolean!
+"""
+The reason the container last terminated, if applicable.
+This is populated even when the instance is currently running, to help debug restart loops.
+Example values: "OOMKilled", "Error", "Completed".
+"""
 	lastExitReason: String
+"""
+The exit code from the last container termination, if applicable.
+"""
 	lastExitCode: Int
 }
 
@@ -1018,158 +1075,6 @@ type ApplicationInstanceUtilization {
 Get the current usage for the requested resource type.
 """
 	current: Float!
-}
-
-"""
-An instance group represents a set of identical instances (backed by a Kubernetes ReplicaSet).
-All instances in the group share the same configuration (environment variables, mounted files, image).
-"""
-type InstanceGroup implements Node {
-"""
-The globally unique ID of the instance group.
-"""
-	id: ID!
-"""
-The name of the instance group.
-"""
-	name: String!
-"""
-The container image used by instances in this group.
-"""
-	image: ContainerImage!
-"""
-The revision number of this instance group. Higher revision numbers are newer.
-"""
-	revision: Int!
-"""
-When the instance group was created.
-"""
-	created: Time!
-"""
-The number of instances that are ready.
-"""
-	readyInstances: Int!
-"""
-The desired number of instances.
-"""
-	desiredInstances: Int!
-"""
-Environment variables configured for instances in this group.
-"""
-	environmentVariables: [InstanceGroupEnvironmentVariable!]!
-"""
-Files mounted into instances in this group from Secrets or ConfigMaps.
-"""
-	mountedFiles: [InstanceGroupMountedFile!]!
-"""
-The application instances belonging to this instance group.
-"""
-	instances: [ApplicationInstance!]!
-"""
-Recent Kubernetes events for this instance group and its instances.
-"""
-	events: [InstanceGroupEvent!]!
-}
-
-"""
-An environment variable configured for an instance group.
-"""
-type InstanceGroupEnvironmentVariable {
-"""
-The name of the environment variable.
-"""
-	name: String!
-"""
-The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
-"""
-	value: String
-"""
-The source of the environment variable value.
-"""
-	source: InstanceGroupValueSource!
-}
-
-"""
-A file mounted into an instance group from a Secret or ConfigMap.
-"""
-type InstanceGroupMountedFile {
-"""
-The file path inside the container.
-"""
-	path: String!
-"""
-The source of the mounted file.
-"""
-	source: InstanceGroupValueSource!
-"""
-The file content. Null for files from Secrets or when the source could not be resolved.
-"""
-	content: String
-"""
-Whether the content is base64-encoded binary data.
-"""
-	isBinary: Boolean!
-"""
-Error message when the source Secret or ConfigMap could not be resolved.
-"""
-	error: String
-}
-
-"""
-Describes the source of a value (environment variable or mounted file).
-"""
-type InstanceGroupValueSource {
-"""
-The kind of source.
-"""
-	kind: InstanceGroupValueSourceKind!
-"""
-The name of the source resource.
-"""
-	name: String!
-}
-
-"""
-The kind of source for an environment variable or mounted file.
-"""
-enum InstanceGroupValueSourceKind {
-	SECRET
-	CONFIG_MAP
-	SPEC
-}
-
-"""
-A Kubernetes event related to an instance group or one of its instances.
-"""
-type InstanceGroupEvent {
-"""
-When the event occurred.
-"""
-	timestamp: Time!
-"""
-The Kubernetes event reason.
-"""
-	reason: String!
-"""
-The event message from Kubernetes.
-"""
-	message: String!
-"""
-The severity of the event.
-"""
-	severity: InstanceGroupEventSeverity!
-"""
-The name of the instance this event relates to, if applicable.
-"""
-	sourceInstance: String
-}
-
-"""
-The severity of an instance group event.
-"""
-enum InstanceGroupEventSeverity {
-	INFO
-	WARNING
 }
 
 """
@@ -1347,6 +1252,45 @@ The application is not running.
 The application state is unknown.
 """
 	UNKNOWN
+}
+
+type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: GenericKubernetesResourceActivityLogEntryData!
 }
 
 input AssignRoleToServiceAccountInput {
@@ -1992,11 +1936,11 @@ The name of the config value.
 """
 	name: String!
 """
-The config value itself. When encoding is BASE64, the value is Base64-encoded binary data.
+The config value itself.
 """
 	value: String!
 """
-Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
+The encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
 """
 	encoding: ValueEncoding!
 }
@@ -2004,10 +1948,7 @@ Encoding of the value. PLAIN_TEXT for UTF-8 text, BASE64 for binary data.
 input ConfigValueInput {
 	name: String!
 	value: String!
-"""
-Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
-"""
-	encoding: ValueEncoding = PLAIN_TEXT
+	encoding: ValueEncoding
 }
 
 input ConfigureReconcilerInput {
@@ -2327,6 +2268,7 @@ input CreateValkeyInput {
 	memory: ValkeyMemory!
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 	notifyKeyspaceEvents: String
+	databases: Int
 }
 
 type CreateValkeyPayload {
@@ -2386,14 +2328,6 @@ Data associated with the credential creation.
 }
 
 type CredentialsActivityLogEntryData {
-"""
-The service type (OPENSEARCH, VALKEY, KAFKA).
-"""
-	serviceType: String!
-"""
-The instance name, if applicable.
-"""
-	instanceName: String
 """
 The permission level, if applicable.
 """
@@ -2491,7 +2425,7 @@ The job that the run belonged to.
 """
 Whether or not the run was deleted.
 """
-	success: Boolean
+	success: Boolean!
 }
 
 input DeleteOpenSearchInput {
@@ -3145,6 +3079,117 @@ The `Float` scalar type represents signed double-precision fractional values as 
 """
 scalar Float
 
+"""
+Activity log entry for a resource kind that is not modelled in the GraphQL API.
+The resource type will be the uppercase Kubernetes kind, e.g. 'NAISJOB'.
+"""
+type GenericKubernetesResourceActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the apply operation.
+"""
+	data: GenericKubernetesResourceActivityLogEntryData!
+}
+
+"""
+Additional data associated with a resource created or updated via apply.
+"""
+type GenericKubernetesResourceActivityLogEntryData {
+"""
+The apiVersion of the applied resource.
+"""
+	apiVersion: String!
+"""
+The kind of the applied resource.
+"""
+	kind: String!
+"""
+The fields that changed during the apply. Only populated for updates.
+"""
+	changedFields: [ResourceChangedField!]!
+"""
+GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
+"""
+	gitHubActorClaims: GitHubActorClaims
+}
+
+"""
+GitHub Actions OIDC token claims captured at the time of an apply operation.
+"""
+type GitHubActorClaims {
+"""
+The git ref that triggered the workflow, e.g. 'refs/heads/main'.
+"""
+	ref: String!
+"""
+The repository name that triggered the workflow, e.g. 'org/repo'.
+"""
+	repository: String!
+"""
+The immutable numeric GitHub repository ID.
+"""
+	repositoryID: String!
+"""
+The unique identifier of the Actions workflow run. Links to https://github.com/<repo>/actions/runs/<runId>.
+"""
+	runID: String!
+"""
+The attempt number of the workflow run (1-indexed).
+"""
+	runAttempt: String!
+"""
+The GitHub username that triggered the workflow.
+"""
+	actor: String!
+"""
+The path to the workflow file, e.g. '.github/workflows/deploy.yaml'.
+"""
+	workflow: String!
+"""
+The event that triggered the workflow, e.g. 'push' or 'workflow_dispatch'.
+"""
+	eventName: String!
+"""
+The GitHub deployment environment name, if the job targets one.
+"""
+	environment: String!
+"""
+The ref of the reusable workflow called by this job, if any. E.g. 'org/repo/.github/workflows/deploy.yaml@refs/heads/main'.
+"""
+	jobWorkflowRef: String!
+}
+
 input GrantPostgresAccessInput {
 	clusterName: String!
 	teamSlug: Slug!
@@ -3439,6 +3484,130 @@ enum IngressType {
 	EXTERNAL
 	INTERNAL
 	AUTHENTICATED
+}
+
+"""
+An instance group represents a set of identical instances.
+All instances in the group share the same configuration (environment variables, mounted files, image).
+"""
+type InstanceGroup implements Node{
+"""
+The globally unique ID of the instance group.
+"""
+	id: ID!
+"""
+The name of the instance group.
+"""
+	name: String!
+"""
+The container image used by instances in this group.
+"""
+	image: ContainerImage!
+"""
+When the instance group was created.
+"""
+	created: Time!
+"""
+The number of instances that are ready.
+"""
+	readyInstances: Int!
+"""
+The desired number of instances.
+"""
+	desiredInstances: Int!
+"""
+Environment variables configured for instances in this group.
+Variables from Secrets require elevation to view their values.
+"""
+	environmentVariables: [InstanceGroupEnvironmentVariable!]!
+"""
+Files mounted into instances in this group from Secrets or Configs.
+"""
+	mountedFiles: [InstanceGroupMountedFile!]!
+"""
+The application instances belonging to this instance group.
+"""
+	instances: [ApplicationInstance!]!
+}
+
+"""
+An environment variable configured for an instance group.
+"""
+type InstanceGroupEnvironmentVariable {
+"""
+The name of the environment variable.
+"""
+	name: String!
+"""
+The value of the environment variable. Null if the value comes from a Secret (requires elevation to view).
+"""
+	value: String
+"""
+The source of the environment variable value.
+"""
+	source: InstanceGroupValueSource!
+}
+
+"""
+A file mounted into an instance group from a Secret or Config.
+"""
+type InstanceGroupMountedFile {
+"""
+The file path inside the instance.
+"""
+	path: String!
+"""
+The source of the mounted file.
+"""
+	source: InstanceGroupValueSource!
+"""
+The file content. Null for files from Secrets (requires elevation to view)
+or when the source could not be resolved (check the error field).
+"""
+	content: String
+"""
+The encoding of the content.
+PLAIN_TEXT means the content can be displayed as-is.
+BASE64 means the content is base64-encoded binary data that should be downloaded rather than displayed.
+"""
+	encoding: ValueEncoding!
+"""
+Error message when the source could not be resolved.
+When set, the file entry represents a failed mount rather than an actual file.
+"""
+	error: String
+}
+
+"""
+Describes the source of a value (environment variable or mounted file).
+"""
+type InstanceGroupValueSource {
+"""
+The kind of source.
+"""
+	kind: InstanceGroupValueSourceKind!
+"""
+The name of the source resource.
+"""
+	name: String!
+}
+
+"""
+The kind of source for an environment variable or mounted file.
+"""
+enum InstanceGroupValueSourceKind {
+"""
+The value comes from a Secret.
+"""
+	SECRET
+"""
+The value comes from a Config.
+"""
+	CONFIG
+"""
+The value is defined inline in the workload spec.
+"""
+	SPEC
 }
 
 """
@@ -3831,7 +4000,7 @@ List of edges.
 	edges: [JobEdge!]!
 }
 
-type JobDeletedActivityLogEntry implements ActivityLogEntry & Node{
+type JobCreatedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
 """
@@ -3864,9 +4033,13 @@ The team slug that the entry belongs to.
 The environment name that the entry belongs to.
 """
 	environmentName: String
+"""
+Data associated with the creation.
+"""
+	data: GenericKubernetesResourceActivityLogEntryData!
 }
 
-type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node{
+type JobDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
 """
@@ -4020,6 +4193,52 @@ List of edges.
 	edges: [JobRunEdge!]!
 }
 
+type JobRunDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: JobRunDeletedActivityLogEntryData
+}
+
+type JobRunDeletedActivityLogEntryData {
+"""
+The name of the deleted job run.
+"""
+	runName: String!
+}
+
 type JobRunEdge {
 """
 Cursor for this edge that can be used for pagination.
@@ -4169,6 +4388,45 @@ The team slug that the entry belongs to.
 The environment name that the entry belongs to.
 """
 	environmentName: String
+}
+
+type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: GenericKubernetesResourceActivityLogEntryData!
 }
 
 type KafkaCredentials {
@@ -4531,24 +4789,6 @@ The mutation root for the Nais GraphQL API.
 """
 type Mutation {
 """
-Create temporary credentials for an OpenSearch instance.
-"""
-	createOpenSearchCredentials(
-		input: CreateOpenSearchCredentialsInput!
-	): CreateOpenSearchCredentialsPayload!
-"""
-Create temporary credentials for a Valkey instance.
-"""
-	createValkeyCredentials(
-		input: CreateValkeyCredentialsInput!
-	): CreateValkeyCredentialsPayload!
-"""
-Create temporary credentials for Kafka.
-"""
-	createKafkaCredentials(
-		input: CreateKafkaCredentialsInput!
-	): CreateKafkaCredentialsPayload!
-"""
 Delete an application.
 """
 	deleteApplication(
@@ -4621,6 +4861,12 @@ Trigger a job
 		input: TriggerJobInput!
 	): TriggerJobPayload!
 """
+Create temporary credentials for Kafka.
+"""
+	createKafkaCredentials(
+		input: CreateKafkaCredentialsInput!
+	): CreateKafkaCredentialsPayload!
+"""
 Create a new OpenSearch instance.
 """
 	createOpenSearch(
@@ -4638,6 +4884,12 @@ Delete an existing OpenSearch instance.
 	deleteOpenSearch(
 		input: DeleteOpenSearchInput!
 	): DeleteOpenSearchPayload!
+"""
+Create temporary credentials for an OpenSearch instance.
+"""
+	createOpenSearchCredentials(
+		input: CreateOpenSearchCredentialsInput!
+	): CreateOpenSearchCredentialsPayload!
 """
 Grant temporary access to a Postgres cluster.
 """
@@ -4921,6 +5173,12 @@ Delete an existing Valkey instance.
 	deleteValkey(
 		input: DeleteValkeyInput!
 	): DeleteValkeyPayload!
+"""
+Create temporary credentials for a Valkey instance.
+"""
+	createValkeyCredentials(
+		input: CreateValkeyCredentialsInput!
+	): CreateValkeyCredentialsPayload!
 """
 Updates a vulnerability
 This mutation is currently unstable and may change in the future.
@@ -6518,6 +6776,24 @@ The delete key for the team. This can be used to confirm the deletion of the tea
 	key: TeamDeleteKey
 }
 
+"""
+A single field that changed.
+"""
+type ResourceChangedField {
+"""
+The dot-separated path to the changed field, e.g. 'spec.replicas'.
+"""
+	field: String!
+"""
+The value before the change. Null if the field was added.
+"""
+	oldValue: String
+"""
+The value after the change. Null if the field was removed.
+"""
+	newValue: String
+}
+
 input ResourceIssueFilter {
 	severity: Severity
 	issueType: IssueType
@@ -7112,20 +7388,6 @@ Order secrets by the last time it was modified.
 	LAST_MODIFIED_AT
 }
 
-"""
-Encoding of a secret or config value.
-"""
-enum ValueEncoding {
-"""
-The value is plain text (UTF-8).
-"""
-	PLAIN_TEXT
-"""
-The value is Base64-encoded binary data.
-"""
-	BASE64
-}
-
 type SecretValue {
 """
 The name of the secret value.
@@ -7190,10 +7452,7 @@ The name of the added value.
 input SecretValueInput {
 	name: String!
 	value: String!
-"""
-Encoding of the value. Defaults to PLAIN_TEXT. Use BASE64 for binary data (certificates, keystores, etc.).
-"""
-	encoding: ValueEncoding = PLAIN_TEXT
+	encoding: ValueEncoding
 }
 
 type SecretValueRemovedActivityLogEntry implements ActivityLogEntry & Node{
@@ -10374,6 +10633,7 @@ input UpdateValkeyInput {
 	memory: ValkeyMemory!
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 	notifyKeyspaceEvents: String
+	databases: Int
 }
 
 type UpdateValkeyPayload {
@@ -10736,6 +10996,10 @@ Maximum memory policy for the Valkey instance.
 Keyspace notifications for the Valkey instance. See https://valkey.io/topics/notifications/ for details.
 """
 	notifyKeyspaceEvents: String
+"""
+Number of databases the Valkey instance is configured with. Default is 16. Minimum 1, maximum 128. Changing this will cause a restart of the Valkey service.
+"""
+	databases: Int!
 """
 Issues that affects the instance.
 """
@@ -11140,6 +11404,20 @@ The old value of the field.
 The new value of the field.
 """
 	newValue: String
+}
+
+"""
+Encoding of a secret or config value.
+"""
+enum ValueEncoding {
+"""
+The value is plain text (UTF-8).
+"""
+	PLAIN_TEXT
+"""
+The value is Base64-encoded binary data.
+"""
+	BASE64
 }
 
 """

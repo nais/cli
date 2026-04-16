@@ -17,8 +17,8 @@ func (s ValueSource) String() string {
 	switch s.Kind {
 	case "SECRET":
 		return fmt.Sprintf("Secret/%s", s.Name)
-	case "CONFIG_MAP":
-		return fmt.Sprintf("ConfigMap/%s", s.Name)
+	case "CONFIG":
+		return fmt.Sprintf("Config/%s", s.Name)
 	case "SPEC":
 		return s.Name
 	default:
@@ -58,7 +58,7 @@ func GetApplicationEnvVars(ctx context.Context, slug, name string, envs []string
 		    applications(filter: { name: $name, environments: $env }) {
 		      nodes {
 		        instanceGroups {
-		          revision
+		          created
 		          environmentVariables {
 		            name
 		            value
@@ -93,12 +93,8 @@ func GetApplicationEnvVars(ctx context.Context, slug, name string, envs []string
 		return nil, nil
 	}
 
+	// API returns groups sorted newest first; use the first group.
 	newest := groups[0]
-	for _, g := range groups[1:] {
-		if g.Revision > newest.Revision {
-			newest = g
-		}
-	}
 
 	ret := make([]EnvVar, 0, len(newest.EnvironmentVariables))
 	for _, ev := range newest.EnvironmentVariables {
