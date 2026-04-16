@@ -33,13 +33,13 @@ func files(parentFlags *flag.App) *naistrix.Command {
 				return err
 			}
 
+			if flags.Output == "json" {
+				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
+			}
+
 			if len(ret) == 0 {
 				out.Println("No mounted files found.")
 				return nil
-			}
-
-			if flags.Output == "json" {
-				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
 			if err := out.Table().Render(ret); err != nil {
