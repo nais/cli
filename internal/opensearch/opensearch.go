@@ -28,15 +28,6 @@ type Metadata struct {
 	TeamSlug string
 }
 
-func Upsert(ctx context.Context, metadata Metadata, data *OpenSearch) error {
-	_, err := Create(ctx, metadata, data)
-	if naisapi.IsErrAlreadyExists(err) {
-		_, err := Update(ctx, metadata, data)
-		return err
-	}
-	return err
-}
-
 func Create(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateOpenSearch(

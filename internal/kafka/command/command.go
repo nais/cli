@@ -23,6 +23,7 @@ func Kafka(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		},
 		SubCommands: []*naistrix.Command{
 			credentials(flags),
+			grantAccess(flags),
 			list(flags),
 		},
 	}

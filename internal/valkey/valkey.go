@@ -25,15 +25,6 @@ type Metadata struct {
 	TeamSlug string
 }
 
-func Upsert(ctx context.Context, metadata Metadata, data *Valkey) error {
-	_, err := Create(ctx, metadata, data)
-	if naisapi.IsErrAlreadyExists(err) {
-		_, err := Update(ctx, metadata, data)
-		return err
-	}
-	return err
-}
-
 func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
 	_ = `# @genqlient(omitempty: true)
 		mutation CreateValkey(
