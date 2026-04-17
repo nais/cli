@@ -19,6 +19,8 @@ func (s ValueSource) String() string {
 		return fmt.Sprintf("Secret/%s", s.Name)
 	case "CONFIG":
 		return fmt.Sprintf("Config/%s", s.Name)
+	case "NAIS":
+		return fmt.Sprintf("Nais/%s", s.Name)
 	case "SPEC":
 		return s.Name
 	default:

@@ -139,6 +139,10 @@ A user was granted access to a Postgres cluster
 """
 	POSTGRES_GRANT_ACCESS
 """
+A Postgres instance was deleted
+"""
+	POSTGRES_DELETED
+"""
 Reconciler enabled activity log entry.
 """
 	RECONCILER_ENABLED
@@ -1068,6 +1072,11 @@ Example values: "OOMKilled", "Error", "Completed".
 The exit code from the last container termination, if applicable.
 """
 	lastExitCode: Int
+"""
+The timestamp of the last container termination, if applicable.
+This is populated even when the instance is currently running, to help debug restart loops.
+"""
+	lastExitTimestamp: Time
 }
 
 type ApplicationInstanceUtilization {
@@ -1140,6 +1149,44 @@ How many resources are allocated to each instance.
 Scaling strategies for the application.
 """
 	scaling: ApplicationScaling!
+}
+
+"""
+An issue raised when an application keeps restarting repeatedly.
+"""
+type ApplicationRestartLoopIssue implements Issue & Node{
+"""
+Unique identifier for this issue.
+"""
+	id: ID!
+"""
+The team environment where the issue was detected.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+The severity of the issue.
+"""
+	severity: Severity!
+"""
+A human-readable description of the issue.
+"""
+	message: String!
+"""
+The workload that is stuck in a restart loop.
+"""
+	workload: Workload!
+"""
+The number of container restarts.
+"""
+	restartCount: Int!
+"""
+The reason for the last container exit.
+"""
+	lastExitReason: String!
+"""
+The timestamp of the last container exit.
+"""
+	lastExitTimestamp: Time!
 }
 
 type ApplicationRestartedActivityLogEntry implements ActivityLogEntry & Node{
@@ -2441,6 +2488,19 @@ Whether or not the OpenSearch instance was deleted.
 	openSearchDeleted: Boolean
 }
 
+input DeletePostgresInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+type DeletePostgresPayload {
+"""
+Whether or not the Postgres instance was deleted.
+"""
+	postgresDeleted: Boolean
+}
+
 input DeleteSecretInput {
 	name: String!
 	environment: String!
@@ -3605,9 +3665,13 @@ The value comes from a Config.
 """
 	CONFIG
 """
-The value is defined inline in the workload spec.
+The value is defined inline in the workload's application manifest (user-defined).
 """
 	SPEC
+"""
+The value was injected by the Nais platform (naiserator), not defined by the user.
+"""
+	NAIS
 }
 
 """
@@ -3707,6 +3771,10 @@ enum IssueType {
 	VULNERABLE_IMAGE
 	EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
 	UNLEASH_RELEASE_CHANNEL
+"""
+Raised when an application is stuck in a restart loop.
+"""
+	APPLICATION_RESTART_LOOP
 }
 
 type Job implements Node & Workload & ActivityLogger{
@@ -4897,6 +4965,12 @@ Grant temporary access to a Postgres cluster.
 		input: GrantPostgresAccessInput!
 	): GrantPostgresAccessPayload!
 """
+Delete an existing Postgres instance.
+"""
+	deletePostgres(
+		input: DeletePostgresInput!
+	): DeletePostgresPayload!
+"""
 Enable a reconciler
 
 A reconciler must be fully configured before it can be enabled.
@@ -5711,6 +5785,41 @@ interface Persistence {
 	team: Team!
 	environment: TeamEnvironment!
 	teamEnvironment: TeamEnvironment!
+}
+
+type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
 }
 
 type PostgresGrantAccessActivityLogEntry implements ActivityLogEntry & Node{
