@@ -17,7 +17,7 @@ func files(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "files",
 		Title:       "Show mounted files for an application.",
-		Description: "Lists all files mounted into the application from Secrets and ConfigMaps, with their paths and sources. Use 'nais secret view' to inspect secret contents.",
+		Description: "Lists all files mounted into the application from Secrets and Configs, with their paths and sources. Use 'nais secret view' to inspect secret contents.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
