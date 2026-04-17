@@ -119,16 +119,6 @@ func GetApplicationEnvVars(ctx context.Context, slug, name string, envs []string
 	return ret, nil
 }
 
-// HasSecrets returns true if any env var comes from a Secret source.
-func HasSecrets(vars []EnvVar) bool {
-	for _, v := range vars {
-		if v.Source.Kind == "SECRET" {
-			return true
-		}
-	}
-	return false
-}
-
 // UniqueSecretNames returns deduplicated secret names from env vars.
 func UniqueSecretNames(vars []EnvVar) []string {
 	seen := make(map[string]struct{})
