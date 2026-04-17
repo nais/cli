@@ -35,18 +35,6 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	}
 	publicKey := privateKey.PublicKey()
 
-	progress("Discovering STUN endpoint...")
-	stunEndpoint, stunConn, err := DiscoverSTUNEndpoint(0)
-	if err != nil {
-		return nil, fmt.Errorf("STUN discovery failed: %w", err)
-	}
-	stunConnOwned := true
-	defer func() {
-		if stunConnOwned {
-			_ = stunConn.Close()
-		}
-	}()
-
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get graphql client: %w", err)
@@ -55,12 +43,11 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	progress("Creating tunnel...")
 
 	createResp, err := gql.CreateTunnel(ctx, client, gql.CreateTunnelInput{
-		TeamSlug:           cfg.TeamSlug,
-		EnvironmentName:    cfg.Environment,
-		TargetHost:         cfg.TargetHost,
-		TargetPort:         cfg.TargetPort,
-		ClientPublicKey:    publicKey.String(),
-		ClientSTUNEndpoint: stunEndpoint,
+		TeamSlug:        cfg.TeamSlug,
+		EnvironmentName: cfg.Environment,
+		TargetHost:      cfg.TargetHost,
+		TargetPort:      cfg.TargetPort,
+		ClientPublicKey: publicKey.String(),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create tunnel: %w", err)
@@ -74,7 +61,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	defer ticker.Stop()
 
 	var gatewayPublicKey string
-	var gatewaySTUNEndpoint string
+	var forwarderEndpoint string
 
 	for {
 		select {
@@ -94,7 +81,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 			switch t.Phase {
 			case gql.TunnelPhaseReady, gql.TunnelPhaseConnected:
 				gatewayPublicKey = t.GatewayPublicKey
-				gatewaySTUNEndpoint = t.GatewaySTUNEndpoint
+				forwarderEndpoint = t.ForwarderEndpoint
 				progress("Gateway ready!")
 			case gql.TunnelPhaseFailed:
 				return nil, fmt.Errorf("gateway failed to start: %s", t.Message)
@@ -115,18 +102,17 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		return nil, fmt.Errorf("parse gateway public key: %w", err)
 	}
 
-	wgTunnel, err := SetupWireGuardWithConn(privateKey, gwKey, gatewaySTUNEndpoint, stunConn)
+	wgTunnel, err := SetupWireGuard(privateKey, gwKey, forwarderEndpoint)
 	if err != nil {
 		return nil, fmt.Errorf("setup wireguard: %w", err)
 	}
-	stunConnOwned = false
 
 	return &TunnelInfo{
 		TunnelName:       tunnelName,
 		TeamSlug:         cfg.TeamSlug,
 		EnvironmentName:  cfg.Environment,
 		GatewayPublicKey: gwKey,
-		GatewayEndpoint:  gatewaySTUNEndpoint,
+		GatewayEndpoint:  forwarderEndpoint,
 		PrivateKey:       privateKey,
 		WireGuardTunnel:  wgTunnel,
 	}, nil
