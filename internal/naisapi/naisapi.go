@@ -196,46 +196,6 @@ func IsConsoleAdmin(ctx context.Context) bool {
 	return false
 }
 
-func GetTeamWorkloads(ctx context.Context, teamSlug string) ([]gql.GetTeamWorkloadsTeamWorkloadsWorkloadConnectionNodesWorkload, error) {
-	_ = `# @genqlient
-		query GetTeamWorkloads($slug: Slug!) {
-			team(slug: $slug) {
-				workloads(first: 1000) {
-					nodes {
-						__typename
-						name
-						... on Application {
-						  applicationState: state
-						}
-						... on Job {
-						  jobState: state
-						}
-						totalIssues: issues {
-						  pageInfo {
-							totalCount
-						  }
-						}
-						image { vulnerabilitySummary { total } }
-						teamEnvironment { environment { name } }
-					}
-				}
-			}
-		}
-	`
-
-	client, err := GraphqlClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := gql.GetTeamWorkloads(ctx, client, teamSlug)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Team.Workloads.Nodes, nil
-}
-
 func GetUserEmails(ctx context.Context) ([]string, error) {
 	ret, err := GetUsers(ctx)
 	if err != nil {
