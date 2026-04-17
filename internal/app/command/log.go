@@ -22,8 +22,8 @@ func log(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "log",
 		Aliases:     []string{"logs"},
-		Title:       "Workload and team logs.",
-		Description: "Fetch and stream logs from workloads and teams.",
+		Title:       "Show logs for an application.",
+		Description: "Fetch and stream logs from an application.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
