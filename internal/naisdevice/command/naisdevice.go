@@ -15,7 +15,6 @@ func Naisdevice(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			statuscmd(flags),
 			gatewaycmd(flags),
-			jitacmd(),
 			doctorcmd(),
 			disconnectcmd(),
 			connectcmd(),
