@@ -17,5 +17,5 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type Status struct {
 	*flags.GlobalFlags
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }

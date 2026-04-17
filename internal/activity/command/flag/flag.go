@@ -21,7 +21,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type List struct {
 	*Activity
-	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output       Output        `name:"output" short:"o" usage:"Format output (table or json)."`
 	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
 	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
 	ResourceType ResourceTypes `name:"resource-type" usage:"Filter by resource type. Can be repeated."`

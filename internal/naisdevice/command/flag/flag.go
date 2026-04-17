@@ -22,7 +22,7 @@ type Device struct {
 type Status struct {
 	*Device
 	Quiet  bool   `name:"quiet" short:"q" usage:"Suppress output"`
-	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (yaml or json)."`
 }
 
 type Gateway struct {
@@ -31,12 +31,12 @@ type Gateway struct {
 
 type List struct {
 	*Gateway
-	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (yaml or json)."`
 }
 
 type Describe struct {
 	*Gateway
-	Output Output `name:"output" short:"o" usage:"Format output (yaml|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (yaml or json)."`
 }
 
 type GrantAccess struct {

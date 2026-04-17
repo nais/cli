@@ -70,7 +70,7 @@ type (
 	List struct {
 		*Valkey
 		Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-		Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+		Output      Output       `name:"output" short:"o" usage:"Format output (table or json)."`
 	}
 )
 

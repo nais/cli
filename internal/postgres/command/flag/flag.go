@@ -113,7 +113,7 @@ type Revoke struct {
 
 type List struct {
 	*Postgres
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 type Output string
