@@ -124,7 +124,7 @@ func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Argument
 type List struct {
 	*OpenSearch
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output      Output       `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {

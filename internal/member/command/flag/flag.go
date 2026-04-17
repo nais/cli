@@ -34,5 +34,5 @@ type RemoveMember struct {
 
 type ListMembers struct {
 	*Member
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }

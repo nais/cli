@@ -72,13 +72,13 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 type List struct {
 	*Config
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-	Output      Output       `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output      Output       `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 type Activity struct {
 	*Config
 	Environment  Environments  `name:"environment" short:"e" usage:"Filter by environment."`
-	Output       Output        `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output       Output        `name:"output" short:"o" usage:"Format output (table or json)."`
 	Limit        int           `name:"limit" short:"l" usage:"Maximum number of activity entries to fetch."`
 	ActivityType ActivityTypes `name:"activity-type" usage:"Filter by activity type. Can be repeated."`
 }
@@ -92,7 +92,7 @@ func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, strin
 type Get struct {
 	*Config
 	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
-	Output      Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output      Output `name:"output" short:"o" usage:"Format output (table or json)."`
 	ToFile      string `name:"to-file" usage:"Write a single key's value to a file. Requires --key. Binary values are decoded automatically."`
 	Key         string `name:"key" usage:"Name of the key to extract. Used with --to-file."`
 }

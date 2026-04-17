@@ -12,7 +12,7 @@ import (
 
 type Issues struct {
 	*flags.GlobalFlags
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 type (

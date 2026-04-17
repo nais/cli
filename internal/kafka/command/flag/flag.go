@@ -34,7 +34,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type List struct {
 	*Kafka
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 type CredentialsOutput string
