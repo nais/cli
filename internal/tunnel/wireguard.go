@@ -30,14 +30,9 @@ type WireGuardTunnel struct {
 // SetupWireGuard creates a userspace WireGuard device for the CLI side of the tunnel.
 // privateKey: CLI's WireGuard private key
 // gatewayPublicKey: gateway's WireGuard public key
-// gatewayEndpoint: gateway's UDP endpoint (ip:port) discovered via STUN
+// gatewayEndpoint: gateway's UDP endpoint (ip:port) exposed by the forwarder
 func SetupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewayEndpoint string) (*WireGuardTunnel, error) {
 	return setupWireGuard(privateKey, gatewayPublicKey, gatewayEndpoint, conn.NewDefaultBind(), "listen_port=0\n")
-}
-
-// SetupWireGuardWithConn creates a userspace WireGuard device using an existing STUN UDP socket.
-func SetupWireGuardWithConn(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewayEndpoint string, stunConn *net.UDPConn) (*WireGuardTunnel, error) {
-	return setupWireGuard(privateKey, gatewayPublicKey, gatewayEndpoint, NewSTUNBind(stunConn), "")
 }
 
 func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewayEndpoint string, bind conn.Bind, listenPortConfig string) (*WireGuardTunnel, error) {

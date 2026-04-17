@@ -786,12 +786,12 @@ func (v *CreateTunnelCreateTunnelCreateTunnelPayload) GetTunnel() CreateTunnelCr
 
 // CreateTunnelCreateTunnelCreateTunnelPayloadTunnel includes the requested fields of the GraphQL type Tunnel.
 type CreateTunnelCreateTunnelCreateTunnelPayloadTunnel struct {
-	Id                  string      `json:"id"`
-	Name                string      `json:"name"`
-	Phase               TunnelPhase `json:"phase"`
-	GatewayPublicKey    string      `json:"gatewayPublicKey"`
-	GatewaySTUNEndpoint string      `json:"gatewaySTUNEndpoint"`
-	Message             string      `json:"message"`
+	Id                string      `json:"id"`
+	Name              string      `json:"name"`
+	Phase             TunnelPhase `json:"phase"`
+	GatewayPublicKey  string      `json:"gatewayPublicKey"`
+	ForwarderEndpoint string      `json:"forwarderEndpoint"`
+	Message           string      `json:"message"`
 }
 
 // GetId returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.Id, and is useful for accessing the field via an interface.
@@ -808,21 +808,20 @@ func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetGatewayPublicKey(
 	return v.GatewayPublicKey
 }
 
-// GetGatewaySTUNEndpoint returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.GatewaySTUNEndpoint, and is useful for accessing the field via an interface.
-func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetGatewaySTUNEndpoint() string {
-	return v.GatewaySTUNEndpoint
+// GetForwarderEndpoint returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.ForwarderEndpoint, and is useful for accessing the field via an interface.
+func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetForwarderEndpoint() string {
+	return v.ForwarderEndpoint
 }
 
 // GetMessage returns CreateTunnelCreateTunnelCreateTunnelPayloadTunnel.Message, and is useful for accessing the field via an interface.
 func (v *CreateTunnelCreateTunnelCreateTunnelPayloadTunnel) GetMessage() string { return v.Message }
 
 type CreateTunnelInput struct {
-	TeamSlug           string `json:"teamSlug"`
-	EnvironmentName    string `json:"environmentName"`
-	TargetHost         string `json:"targetHost"`
-	TargetPort         int    `json:"targetPort"`
-	ClientPublicKey    string `json:"clientPublicKey"`
-	ClientSTUNEndpoint string `json:"clientSTUNEndpoint"`
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+	TargetHost      string `json:"targetHost"`
+	TargetPort      int    `json:"targetPort"`
+	ClientPublicKey string `json:"clientPublicKey"`
 }
 
 // GetTeamSlug returns CreateTunnelInput.TeamSlug, and is useful for accessing the field via an interface.
@@ -839,9 +838,6 @@ func (v *CreateTunnelInput) GetTargetPort() int { return v.TargetPort }
 
 // GetClientPublicKey returns CreateTunnelInput.ClientPublicKey, and is useful for accessing the field via an interface.
 func (v *CreateTunnelInput) GetClientPublicKey() string { return v.ClientPublicKey }
-
-// GetClientSTUNEndpoint returns CreateTunnelInput.ClientSTUNEndpoint, and is useful for accessing the field via an interface.
-func (v *CreateTunnelInput) GetClientSTUNEndpoint() string { return v.ClientSTUNEndpoint }
 
 // CreateTunnelResponse is returned by CreateTunnel on success.
 type CreateTunnelResponse struct {
@@ -25151,12 +25147,12 @@ func (v *GetTunnelTeamEnvironment) GetTunnel() GetTunnelTeamEnvironmentTunnel { 
 
 // GetTunnelTeamEnvironmentTunnel includes the requested fields of the GraphQL type Tunnel.
 type GetTunnelTeamEnvironmentTunnel struct {
-	Id                  string      `json:"id"`
-	Name                string      `json:"name"`
-	Phase               TunnelPhase `json:"phase"`
-	GatewayPublicKey    string      `json:"gatewayPublicKey"`
-	GatewaySTUNEndpoint string      `json:"gatewaySTUNEndpoint"`
-	Message             string      `json:"message"`
+	Id                string      `json:"id"`
+	Name              string      `json:"name"`
+	Phase             TunnelPhase `json:"phase"`
+	GatewayPublicKey  string      `json:"gatewayPublicKey"`
+	ForwarderEndpoint string      `json:"forwarderEndpoint"`
+	Message           string      `json:"message"`
 }
 
 // GetId returns GetTunnelTeamEnvironmentTunnel.Id, and is useful for accessing the field via an interface.
@@ -25171,9 +25167,9 @@ func (v *GetTunnelTeamEnvironmentTunnel) GetPhase() TunnelPhase { return v.Phase
 // GetGatewayPublicKey returns GetTunnelTeamEnvironmentTunnel.GatewayPublicKey, and is useful for accessing the field via an interface.
 func (v *GetTunnelTeamEnvironmentTunnel) GetGatewayPublicKey() string { return v.GatewayPublicKey }
 
-// GetGatewaySTUNEndpoint returns GetTunnelTeamEnvironmentTunnel.GatewaySTUNEndpoint, and is useful for accessing the field via an interface.
-func (v *GetTunnelTeamEnvironmentTunnel) GetGatewaySTUNEndpoint() string {
-	return v.GatewaySTUNEndpoint
+// GetForwarderEndpoint returns GetTunnelTeamEnvironmentTunnel.ForwarderEndpoint, and is useful for accessing the field via an interface.
+func (v *GetTunnelTeamEnvironmentTunnel) GetForwarderEndpoint() string {
+	return v.ForwarderEndpoint
 }
 
 // GetMessage returns GetTunnelTeamEnvironmentTunnel.Message, and is useful for accessing the field via an interface.
@@ -30384,7 +30380,7 @@ mutation CreateTunnel ($input: CreateTunnelInput!) {
 			name
 			phase
 			gatewayPublicKey
-			gatewaySTUNEndpoint
+			forwarderEndpoint
 			message
 		}
 	}
@@ -32394,7 +32390,7 @@ query GetTunnel ($teamSlug: Slug!, $environmentName: String!, $name: String!) {
 				name
 				phase
 				gatewayPublicKey
-				gatewaySTUNEndpoint
+				forwarderEndpoint
 				message
 			}
 		}
@@ -32927,7 +32923,7 @@ func TailLog(
 
 type TailLogWsResponse graphql.BaseResponse[*TailLogResponse]
 
-func TailLogForwardData(interfaceChan interface{}, jsonRawMsg json.RawMessage) error {
+func TailLogForwardData(interfaceChan any, jsonRawMsg json.RawMessage) error {
 	var gqlResp graphql.Response
 	var wsResp TailLogWsResponse
 	err := json.Unmarshal(jsonRawMsg, &gqlResp)

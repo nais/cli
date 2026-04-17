@@ -10,7 +10,7 @@ mutation CreateTunnel($input: CreateTunnelInput!) {
       name
       phase
       gatewayPublicKey
-      gatewaySTUNEndpoint
+      forwarderEndpoint
       message
     }
   }
@@ -26,7 +26,7 @@ query GetTunnel($teamSlug: Slug!, $environmentName: String!, $name: String!) {
         name
         phase
         gatewayPublicKey
-        gatewaySTUNEndpoint
+        forwarderEndpoint
         message
       }
     }
