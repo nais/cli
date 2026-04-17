@@ -42,8 +42,3 @@ type Teams struct {
 type Schema struct {
 	*Api
 }
-
-type Status struct {
-	*Api
-	Output Output `name:"output" short:"o" usage:"Format output (table|json)."`
-}
