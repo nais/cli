@@ -27,6 +27,7 @@ import (
 	opensearchCommand "github.com/nais/cli/internal/opensearch/command"
 	postgres "github.com/nais/cli/internal/postgres/command"
 	secrets "github.com/nais/cli/internal/secret/command"
+	status "github.com/nais/cli/internal/status/command"
 	validate "github.com/nais/cli/internal/validate/command"
 	valkeyCommand "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/cli/internal/version"
@@ -85,6 +86,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		validate.Validate(globalFlags),
 		issues.Issues(globalFlags),
 		log.Log(globalFlags),
+		status.Status(globalFlags),
 	}
 
 	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {

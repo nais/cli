@@ -18,7 +18,6 @@ func Api(parentFlags *alpha.Alpha) *naistrix.Command {
 			schemaCommand(flags),
 			teamCommand(flags),
 			teamsCommand(flags),
-			statusCommand(flags),
 		},
 	}
 }

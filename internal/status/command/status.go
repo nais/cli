@@ -7,9 +7,11 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
-	"github.com/nais/cli/internal/naisapi/command/flag"
-	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/status"
+	"github.com/nais/cli/internal/status/command/flag"
+	"github.com/nais/cli/internal/status/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -45,8 +47,8 @@ type statusEntry struct {
 	Issues    workloadsWithIssues `heading:"Critical Issues" json:"failing"`
 }
 
-func statusCommand(parentFlags *flag.Api) *naistrix.Command {
-	flags := &flag.Status{Api: parentFlags}
+func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
+	flags := &flag.Status{GlobalFlags: parentFlags}
 	return &naistrix.Command{
 		Name:        "status",
 		Title:       "Get a quick overview of the status of your teams.",
@@ -58,7 +60,7 @@ func statusCommand(parentFlags *flag.Api) *naistrix.Command {
 				return err
 			}
 
-			ret, err := naisapi.GetStatus(ctx, flags)
+			ret, err := status.GetStatus(ctx, flags)
 			if err != nil {
 				return err
 			}
