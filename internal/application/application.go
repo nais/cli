@@ -7,32 +7,32 @@ import (
 	"os"
 	"slices"
 
-	activity "github.com/nais/cli/internal/activity/command"
-	alpha "github.com/nais/cli/internal/alpha/command"
+	activityCommand "github.com/nais/cli/internal/activity/command"
+	alphaCommand "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
 	"github.com/nais/cli/internal/auth"
-	configCmd "github.com/nais/cli/internal/config/command"
-	debug "github.com/nais/cli/internal/debug/command"
+	configCommand "github.com/nais/cli/internal/config/command"
+	debugCommand "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
-	issues "github.com/nais/cli/internal/issues/command"
+	issuesCommand "github.com/nais/cli/internal/issues/command"
 	jobCommand "github.com/nais/cli/internal/job/command"
 	kafkaCommand "github.com/nais/cli/internal/kafka/command"
-	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
-	log "github.com/nais/cli/internal/log/command"
-	members "github.com/nais/cli/internal/member/command"
+	kubeconfigCommand "github.com/nais/cli/internal/kubeconfig/command"
+	logCommand "github.com/nais/cli/internal/log/command"
+	memberCommand "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/naisapi"
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisapiCommand "github.com/nais/cli/internal/naisapi/command"
-	naisdevice "github.com/nais/cli/internal/naisdevice/command"
+	naisdeviceCommand "github.com/nais/cli/internal/naisdevice/command"
 	opensearchCommand "github.com/nais/cli/internal/opensearch/command"
-	postgres "github.com/nais/cli/internal/postgres/command"
-	secrets "github.com/nais/cli/internal/secret/command"
-	status "github.com/nais/cli/internal/status/command"
-	validate "github.com/nais/cli/internal/validate/command"
+	postgresCommand "github.com/nais/cli/internal/postgres/command"
+	secretCommand "github.com/nais/cli/internal/secret/command"
+	statusCommand "github.com/nais/cli/internal/status/command"
+	validateCommand "github.com/nais/cli/internal/validate/command"
 	valkeyCommand "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/cli/internal/version"
-	vulnerabilities "github.com/nais/cli/internal/vulnerability/command"
+	vulnerabilityCommand "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 	"golang.org/x/term"
@@ -68,27 +68,27 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 	naisapiauth.ConfigFilePath = &f.Config
 
 	cmds := []*naistrix.Command{
-		auth.Auth(globalFlags),
-		activity.Activity(globalFlags),
+		activityCommand.Activity(globalFlags),
+		alphaCommand.Alpha(globalFlags),
 		appCommand.App(globalFlags),
+		auth.Auth(globalFlags),
+		configCommand.Config(globalFlags),
+		debugCommand.Debug(globalFlags),
+		issuesCommand.Issues(globalFlags),
 		jobCommand.Job(globalFlags),
 		kafkaCommand.Kafka(globalFlags),
-		opensearchCommand.OpenSearch(globalFlags),
-		valkeyCommand.Valkey(globalFlags),
-		naisdevice.Naisdevice(globalFlags),
-		members.Members(globalFlags),
-		alpha.Alpha(globalFlags),
-		postgres.Postgres(globalFlags),
-		debug.Debug(globalFlags),
-		kubeconfig.Kubeconfig(globalFlags),
-		configCmd.Config(globalFlags),
-		secrets.Secrets(globalFlags),
-		vulnerabilities.Vulnerabilities(globalFlags),
-		validate.Validate(globalFlags),
-		issues.Issues(globalFlags),
-		log.Log(globalFlags),
-		status.Status(globalFlags),
+		kubeconfigCommand.Kubeconfig(globalFlags),
+		logCommand.Log(globalFlags),
+		memberCommand.Members(globalFlags),
 		naisapiCommand.Api(globalFlags),
+		naisdeviceCommand.Naisdevice(globalFlags),
+		opensearchCommand.OpenSearch(globalFlags),
+		postgresCommand.Postgres(globalFlags),
+		secretCommand.Secrets(globalFlags),
+		statusCommand.Status(globalFlags),
+		validateCommand.Validate(globalFlags),
+		valkeyCommand.Valkey(globalFlags),
+		vulnerabilityCommand.Vulnerabilities(globalFlags),
 	}
 
 	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {
