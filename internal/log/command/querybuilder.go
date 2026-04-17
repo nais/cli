@@ -24,31 +24,31 @@ func NewQueryBuilder() *QueryBuilder {
 	}
 }
 
-// AddEnvironments adds environments in the k8s_cluster_name selector in the query.
+// AddEnvironments adds environments to the k8s_cluster_name selector in the query.
 func (qb *QueryBuilder) AddEnvironments(environment ...string) *QueryBuilder {
 	qb.environments = append(qb.environments, environment...)
 	return qb
 }
 
-// AddTeams adds teams in the service_namespace selector in the query.
+// AddTeams adds teams to the service_namespace selector in the query.
 func (qb *QueryBuilder) AddTeams(team ...string) *QueryBuilder {
 	qb.teams = append(qb.teams, team...)
 	return qb
 }
 
-// AddWorkloads adds workloads in the service_name selector in the query.
+// AddWorkloads adds workloads to the service_name selector in the query.
 func (qb *QueryBuilder) AddWorkloads(workload ...string) *QueryBuilder {
 	qb.workloads = append(qb.workloads, workload...)
 	return qb
 }
 
-// AddContainers adds containers in the k8s_container_name filter in the query.
+// AddContainers adds containers to the k8s_container_name filter in the query.
 func (qb *QueryBuilder) AddContainers(container ...string) *QueryBuilder {
 	qb.containers = append(qb.containers, container...)
 	return qb
 }
 
-// AddContainers adds containers in the k8s_container_name filter in the query.
+// AddPods adds pods to the k8s_pod_name filter in the query.
 func (qb *QueryBuilder) AddPods(pod ...string) *QueryBuilder {
 	qb.pods = append(qb.pods, pod...)
 	return qb
