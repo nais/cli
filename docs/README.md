@@ -15,3 +15,11 @@ mise run generate:docs # Generate the Markdown files
 bundle install # Install dependencies from Gemfile
 bundle exec jekyll serve # Start the Jekyll server
 ```
+
+There is also a mise task that does all this in one go:
+
+```bash
+mise run docs
+```
+
+The command will serve the generated docs on http://localhost:4000.
