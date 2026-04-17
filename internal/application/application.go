@@ -18,6 +18,7 @@ import (
 	jobCommand "github.com/nais/cli/internal/job/command"
 	kafkaCommand "github.com/nais/cli/internal/kafka/command"
 	kubeconfig "github.com/nais/cli/internal/kubeconfig/command"
+	log "github.com/nais/cli/internal/log/command"
 	members "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/naisapi"
@@ -83,6 +84,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		vulnerabilities.Vulnerabilities(globalFlags),
 		validate.Validate(globalFlags),
 		issues.Issues(globalFlags),
+		log.Log(globalFlags),
 	}
 
 	if err = app.AddCommand(cmds[0], cmds[1:]...); err != nil {

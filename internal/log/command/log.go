@@ -6,31 +6,27 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	logflags "github.com/nais/cli/internal/log/command/flag"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
-func Log(parentFlags *flag.Alpha) *naistrix.Command {
+func Log(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &logflags.LogFlags{
-		Alpha: parentFlags,
-		Since: time.Hour,
-		Limit: 100,
+		GlobalFlags: parentFlags,
+		Since:       time.Hour,
+		Limit:       100,
 	}
 	return &naistrix.Command{
 		Name:        "log",
 		Aliases:     []string{"logs"},
-		Title:       "Workload and team logs.",
-		Description: "Fetch and stream logs from workloads and teams.",
+		Title:       "Show logs for a team.",
+		Description: "Fetch and stream logs from a team.",
 		Flags:       flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("--environment is required")
-			}
-
-			if len(flags.Team) == 0 {
-				return fmt.Errorf("team cannot be empty, set team using 'nais defaults set team <team>' or the --team flag")
+				return fmt.Errorf("exactly one environment must be specified")
 			}
 
 			return nil
@@ -50,9 +46,7 @@ func Log(parentFlags *flag.Alpha) *naistrix.Command {
 			if query == "" {
 				query = NewQueryBuilder().
 					AddEnvironments(queryEnvironment).
-					AddTeams(flags.Team...).
-					AddWorkloads(flags.Workload...).
-					AddContainers(flags.Container...).
+					AddTeams(flags.Team).
 					Build()
 			}
 

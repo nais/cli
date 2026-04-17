@@ -5,7 +5,6 @@ import (
 	apply "github.com/nais/cli/internal/apply/command"
 	"github.com/nais/cli/internal/flags"
 	krakend "github.com/nais/cli/internal/krakend/command"
-	log "github.com/nais/cli/internal/log/command"
 	mcpcmd "github.com/nais/cli/internal/mcp/command"
 	naisapi "github.com/nais/cli/internal/naisapi/command"
 	"github.com/nais/naistrix"
@@ -21,7 +20,6 @@ func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			naisapi.Api(flags),
 			apply.Apply(flags),
-			log.Log(flags),
 			krakend.Krakend(flags),
 			mcpcmd.MCP(flags),
 		},
