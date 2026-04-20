@@ -9,9 +9,9 @@ import (
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/status"
 	"github.com/nais/cli/internal/status/command/flag"
-	"github.com/nais/cli/internal/status/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
