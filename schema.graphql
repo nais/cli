@@ -12301,7 +12301,7 @@ type Tunnel implements Node {
 	name: String!
 	phase: TunnelPhase!
 	gatewayPublicKey: String!
-	gatewaySTUNEndpoint: String!
+	forwarderEndpoint: String!
 	target: TunnelTarget!
 	message: String!
 	createdAt: Time!
@@ -12313,7 +12313,6 @@ input CreateTunnelInput {
 	targetHost: String!
 	targetPort: Int!
 	clientPublicKey: String!
-	clientSTUNEndpoint: String!
 }
 
 type CreateTunnelPayload {
