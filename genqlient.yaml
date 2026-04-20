@@ -1,19 +1,6 @@
 schema: schema.graphql
 operations:
-  - internal/activity/**/*.go
-  - internal/apply/**/*.go
-  - internal/valkey/**/*.go
-  - internal/opensearch/**/*.go
-  - internal/issues/**/*.go
-  - internal/member/**/*.go
-  - internal/naisapi/**/*.go
-  - internal/app/**/*.go
-  - internal/job/**/*.go
-  - internal/kafka/**/*.go
-  - internal/postgres/**/*.go
-  - internal/config/**/*.go
-  - internal/secret/**/*.go
-  - internal/vulnerability/**/*.go
+  - internal/**/*.go
 bindings:
   Slug:
     type: string
