@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/status/command/flag"
-	"github.com/nais/cli/internal/status/gql"
 )
 
 func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMember, error) {
