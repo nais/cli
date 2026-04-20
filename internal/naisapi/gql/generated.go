@@ -27681,9 +27681,7 @@ func (v *GetTunnelTeamEnvironmentTunnel) GetPhase() TunnelPhase { return v.Phase
 func (v *GetTunnelTeamEnvironmentTunnel) GetGatewayPublicKey() string { return v.GatewayPublicKey }
 
 // GetForwarderEndpoint returns GetTunnelTeamEnvironmentTunnel.ForwarderEndpoint, and is useful for accessing the field via an interface.
-func (v *GetTunnelTeamEnvironmentTunnel) GetForwarderEndpoint() string {
-	return v.ForwarderEndpoint
-}
+func (v *GetTunnelTeamEnvironmentTunnel) GetForwarderEndpoint() string { return v.ForwarderEndpoint }
 
 // GetMessage returns GetTunnelTeamEnvironmentTunnel.Message, and is useful for accessing the field via an interface.
 func (v *GetTunnelTeamEnvironmentTunnel) GetMessage() string { return v.Message }
@@ -35971,7 +35969,7 @@ func TailLog(
 
 type TailLogWsResponse graphql.BaseResponse[*TailLogResponse]
 
-func TailLogForwardData(interfaceChan any, jsonRawMsg json.RawMessage) error {
+func TailLogForwardData(interfaceChan interface{}, jsonRawMsg json.RawMessage) error {
 	var gqlResp graphql.Response
 	var wsResp TailLogWsResponse
 	err := json.Unmarshal(jsonRawMsg, &gqlResp)
