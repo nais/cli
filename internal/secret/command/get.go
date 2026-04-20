@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -130,15 +131,11 @@ type getOptions struct {
 func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter, opts getOptions) error {
 	metadata := metadataFromArgs(args, opts.team, opts.environment)
 
-	existing, err := secret.Get(ctx, metadata)
-	if err != nil {
-		return fmt.Errorf("fetching secret: %w", err)
+	type valueInfo struct {
+		value    string
+		encoding gql.ValueEncoding
 	}
-
-	entries := make([]Entry, len(existing.Keys))
-	for i, k := range existing.Keys {
-		entries[i] = Entry{Key: k}
-	}
+	var valueMap map[string]valueInfo
 
 	if opts.withValues {
 		reason := opts.reason
@@ -161,23 +158,11 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			return fmt.Errorf("viewing secret values: %w", err)
 		}
 
-		type valueInfo struct {
-			value    string
-			encoding gql.ValueEncoding
-		}
-		valueMap := make(map[string]valueInfo, len(values))
+		valueMap = make(map[string]valueInfo, len(values))
 		for _, v := range values {
 			valueMap[v.Name] = valueInfo{value: v.Value, encoding: v.Encoding}
 		}
 
-		for i := range entries {
-			if info, ok := valueMap[entries[i].Key]; ok {
-				entries[i].Value = info.value
-				entries[i].Encoding = info.encoding
-			}
-		}
-
-		// Handle --to-file: extract a single key's value to a file
 		if opts.toFile != "" {
 			info, ok := valueMap[opts.key]
 			if !ok {
@@ -203,30 +188,63 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		}
 	}
 
+	// Metadata is best-effort: platform-managed secrets (e.g. Azure AD) are
+	// not exposed via team.environment.secret, so tolerate not-found when we
+	// already have values from viewSecretValues.
+	existing, err := secret.Get(ctx, metadata)
+	if err != nil {
+		if valueMap == nil || !strings.Contains(err.Error(), "Resource not found") {
+			return fmt.Errorf("fetching secret: %w", err)
+		}
+		existing = nil
+	}
+
+	var entries []Entry
+	if existing != nil {
+		entries = make([]Entry, len(existing.Keys))
+		for i, k := range existing.Keys {
+			entries[i] = Entry{Key: k}
+			if info, ok := valueMap[k]; ok {
+				entries[i].Value = info.value
+				entries[i].Encoding = info.encoding
+			}
+		}
+	} else {
+		entries = make([]Entry, 0, len(valueMap))
+		for k, info := range valueMap {
+			entries = append(entries, Entry{Key: k, Value: info.value, Encoding: info.encoding})
+		}
+	}
+
 	if opts.outputFormat == "json" {
 		detail := SecretDetail{
-			Name:         existing.Name,
-			Environment:  existing.TeamEnvironment.Environment.Name,
-			Data:         entries,
-			LastModified: secret.LastModified(existing.LastModifiedAt),
+			Name:        metadata.Name,
+			Environment: metadata.EnvironmentName,
+			Data:        entries,
 		}
-		if existing.LastModifiedBy.Email != "" {
-			detail.ModifiedBy = existing.LastModifiedBy.Email
-		}
-		for _, w := range existing.Workloads.Nodes {
-			detail.Workloads = append(detail.Workloads, w.GetName())
+		if existing != nil {
+			detail.Name = existing.Name
+			detail.Environment = existing.TeamEnvironment.Environment.Name
+			detail.LastModified = secret.LastModified(existing.LastModifiedAt)
+			if existing.LastModifiedBy.Email != "" {
+				detail.ModifiedBy = existing.LastModifiedBy.Email
+			}
+			for _, w := range existing.Workloads.Nodes {
+				detail.Workloads = append(detail.Workloads, w.GetName())
+			}
 		}
 		return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 	}
 
-	pterm.DefaultSection.Println("Secret details")
-	err = pterm.DefaultTable.
-		WithHasHeader().
-		WithHeaderRowSeparator("-").
-		WithData(secret.FormatDetails(metadata, existing)).
-		Render()
-	if err != nil {
-		return fmt.Errorf("rendering table: %w", err)
+	if existing != nil {
+		pterm.DefaultSection.Println("Secret details")
+		if err := pterm.DefaultTable.
+			WithHasHeader().
+			WithHeaderRowSeparator("-").
+			WithData(secret.FormatDetails(metadata, existing)).
+			Render(); err != nil {
+			return fmt.Errorf("rendering table: %w", err)
+		}
 	}
 
 	pterm.DefaultSection.Println("Data")
@@ -239,21 +257,24 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			}
 			data = secret.FormatDataWithValues(secretEntries)
 		} else {
-			data = secret.FormatData(existing.Keys)
+			keys := make([]string, len(entries))
+			for i, e := range entries {
+				keys[i] = e.Key
+			}
+			data = secret.FormatData(keys)
 		}
-		err = pterm.DefaultTable.
+		if err := pterm.DefaultTable.
 			WithHasHeader().
 			WithHeaderRowSeparator("-").
 			WithData(data).
-			Render()
-		if err != nil {
+			Render(); err != nil {
 			return fmt.Errorf("rendering data table: %w", err)
 		}
 	} else {
 		pterm.Info.Println("This secret has no keys.")
 	}
 
-	if len(existing.Workloads.Nodes) > 0 {
+	if existing != nil && len(existing.Workloads.Nodes) > 0 {
 		pterm.DefaultSection.Println("Workloads using this secret")
 		return pterm.DefaultTable.
 			WithHasHeader().
@@ -262,6 +283,8 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			Render()
 	}
 
-	pterm.Info.Println("No workloads are using this secret.")
+	if existing != nil {
+		pterm.Info.Println("No workloads are using this secret.")
+	}
 	return nil
 }
