@@ -3,6 +3,7 @@ package tunnel
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -78,7 +79,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 			if t.Id == "" {
 				continue
 			}
-			switch t.Phase {
+			switch phase := gql.TunnelPhase(strings.ToUpper(string(t.Phase))); phase {
 			case gql.TunnelPhaseReady, gql.TunnelPhaseConnected:
 				gatewayPublicKey = t.GatewayPublicKey
 				forwarderEndpoint = t.ForwarderEndpoint
