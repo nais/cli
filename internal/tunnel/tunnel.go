@@ -41,7 +41,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		return nil, fmt.Errorf("get graphql client: %w", err)
 	}
 
-	progress("Creating tunnel...")
+	progress("Creating tunnel")
 
 	createResp, err := gql.CreateTunnel(ctx, client, gql.CreateTunnelInput{
 		TeamSlug:        cfg.TeamSlug,
@@ -55,7 +55,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	}
 	tunnelName := createResp.CreateTunnel.Tunnel.Name
 
-	progress("Gateway starting...")
+	progress("Waiting for gateway")
 
 	timeout := time.After(60 * time.Second)
 	ticker := time.NewTicker(2 * time.Second)
@@ -83,13 +83,13 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 			case gql.TunnelPhaseReady, gql.TunnelPhaseConnected:
 				gatewayPublicKey = t.GatewayPublicKey
 				forwarderEndpoint = t.ForwarderEndpoint
-				progress(fmt.Sprintf("Gateway ready! publicKey=%s endpoint=%s", gatewayPublicKey, forwarderEndpoint))
+				progress("Gateway ready")
 			case gql.TunnelPhaseFailed:
 				return nil, fmt.Errorf("gateway failed to start: %s", t.Message)
 			case gql.TunnelPhaseTerminated:
 				return nil, fmt.Errorf("gateway terminated unexpectedly: %s", t.Message)
 			default:
-				progress(fmt.Sprintf("Gateway phase: %s...", t.Phase))
+				progress(fmt.Sprintf("Gateway %s", t.Phase))
 				continue
 			}
 		}
@@ -103,7 +103,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		return nil, fmt.Errorf("parse gateway public key: %w", err)
 	}
 
-	progress(fmt.Sprintf("Connecting WireGuard: clientPublicKey=%s gatewayPublicKey=%s endpoint=%s", publicKey.String(), gwKey.String(), forwarderEndpoint))
+	progress("Connecting WireGuard")
 
 	wgTunnel, err := SetupWireGuard(privateKey, gwKey, forwarderEndpoint)
 	if err != nil {

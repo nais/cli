@@ -16,6 +16,7 @@ import (
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/pterm/pterm"
 )
 
 func proxy(parentFlags *flag.Valkey) *naistrix.Command {
@@ -63,14 +64,17 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("get valkey credentials: %w", err)
 			}
 
+			spinner, _ := pterm.DefaultSpinner.Start("Creating tunnel")
+
 			tunnelInfo, err := tunnel.CreateAndConnect(ctx, tunnel.Config{
 				TeamSlug:    flags.Team,
 				Environment: string(flags.Environment),
 				ListenAddr:  flags.ListenAddr,
 				TargetHost:  creds.Host,
 				TargetPort:  creds.Port,
-			}, func(msg string) { out.Infof("%s\n", msg) })
+			}, func(msg string) { spinner.UpdateText(msg) })
 			if err != nil {
+				spinner.Fail()
 				return fmt.Errorf("create tunnel: %w", err)
 			}
 			defer tunnelInfo.WireGuardTunnel.Close()
@@ -82,12 +86,13 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 			lc := net.ListenConfig{}
 			listener, err := lc.Listen(ctx, "tcp", flags.ListenAddr)
 			if err != nil {
+				spinner.Fail()
 				return fmt.Errorf("listen on %s: %w", flags.ListenAddr, err)
 			}
 			defer listener.Close()
 
-			out.Infof("Listening on %s, forwarding to %s via WireGuard tunnel\n",
-				listener.Addr().String(), flags.Instance)
+			spinner.Success(fmt.Sprintf("Listening on %s, forwarding to %s via WireGuard tunnel",
+				listener.Addr().String(), flags.Instance))
 
 			go func() {
 				<-ctx.Done()
