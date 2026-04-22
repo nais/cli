@@ -17,8 +17,6 @@ import (
 	"github.com/nais/naistrix/output"
 )
 
-// Entry represents a key-value pair in a secret. When values are not fetched,
-// the Value field is empty and omitted from JSON output.
 type Entry struct {
 	Key      string            `json:"key"`
 	Value    string            `json:"value,omitempty"`
