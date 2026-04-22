@@ -127,7 +127,7 @@ func Run(ctx context.Context, w io.Writer) error {
 			pterm.Println()
 			pterm.Warning.Println("You must (re-)authenticate to run this command.")
 
-			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
+			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115 -- fd fits in int on all supported platforms
 				pterm.Println()
 				result, _ := pterm.DefaultInteractiveConfirm.
 					WithDefaultValue(true).

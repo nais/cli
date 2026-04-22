@@ -31,10 +31,11 @@ func (f workloadsWithIssues) String() string {
 	}
 
 	var issues strings.Builder
-	issues.WriteString(fmt.Sprintf("%v workloads with issues\n\n", len(f)))
+	fmt.Fprintf(&issues, "%v workloads with issues\n\n", len(f))
 	for _, w := range f {
-		issues.WriteString(fmt.Sprintf("%s (%s): %s\n", w.Kind, w.Environment, w.Name))
-		issues.WriteString(formatErrorTypes(w.ErrorTypes) + "\n\n")
+		fmt.Fprintf(&issues, "%s (%s): %s\n", w.Kind, w.Environment, w.Name)
+		issues.WriteString(formatErrorTypes(w.ErrorTypes))
+		issues.WriteString("\n\n")
 	}
 
 	return strings.TrimRight(issues.String(), "\n")
@@ -67,7 +68,7 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 
 			var entries []statusEntry
 			for _, t := range ret {
-				workloadsWithCriticalIssues := make([]gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload, 0)
+				var workloadsWithCriticalIssues []gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload
 				for _, w := range t.Team.Workloads.Nodes {
 					if w.GetIssues().PageInfo.TotalCount > 0 {
 						workloadsWithCriticalIssues = append(workloadsWithCriticalIssues, w)
@@ -81,7 +82,6 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 					},
 					Workloads: t.Team.Workloads.PageInfo.TotalCount,
 					NotNais:   len(workloadsWithCriticalIssues),
-					Issues:    make(workloadsWithIssues, 0),
 				}
 				for _, f := range workloadsWithCriticalIssues {
 					a := workload{

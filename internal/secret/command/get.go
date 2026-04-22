@@ -17,8 +17,6 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// Entry represents a key-value pair in a secret. When values are not fetched,
-// the Value field is empty and omitted from JSON output.
 type Entry struct {
 	Key      string            `json:"key"`
 	Value    string            `json:"value,omitempty"`

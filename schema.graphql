@@ -12282,4 +12282,59 @@ The vulnerability.
 	node: WorkloadWithVulnerability!
 }
 
+enum TunnelPhase {
+	PENDING
+	PROVISIONING
+	READY
+	CONNECTED
+	FAILED
+	TERMINATED
+}
+
+type TunnelTarget {
+	host: String!
+	port: Int!
+}
+
+type Tunnel implements Node {
+	id: ID!
+	name: String!
+	phase: TunnelPhase!
+	gatewayPublicKey: String!
+	forwarderEndpoint: String!
+	target: TunnelTarget!
+	message: String!
+	createdAt: Time!
+}
+
+input CreateTunnelInput {
+	teamSlug: Slug!
+	environmentName: String!
+	targetHost: String!
+	targetPort: Int!
+	clientPublicKey: String!
+}
+
+type CreateTunnelPayload {
+	tunnel: Tunnel!
+}
+
+input DeleteTunnelInput {
+	teamSlug: Slug!
+	environmentName: String!
+	tunnelName: String!
+}
+
+type DeleteTunnelPayload {
+	success: Boolean!
+}
+
+extend type Mutation {
+	createTunnel(input: CreateTunnelInput!): CreateTunnelPayload!
+	deleteTunnel(input: DeleteTunnelInput!): DeleteTunnelPayload!
+}
+
+extend type TeamEnvironment {
+	tunnel(name: String!): Tunnel
+}
 

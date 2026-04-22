@@ -205,6 +205,12 @@ func (m *MaxMemoryPolicy) IsValid() bool {
 	return false
 }
 
+type Proxy struct {
+	*Valkey
+	Instance   string `name:"instance" short:"i" usage:"The |INSTANCE| name of the Valkey instance."`
+	ListenAddr string `name:"listen-addr" short:"a" usage:"Address to listen on for the proxy. Defaults to |localhost:6379|."`
+}
+
 type Credentials struct {
 	*Valkey
 	Permission Permission `name:"permission" short:"p" usage:"Permission level for the credentials (READ, WRITE, READWRITE, ADMIN)."`
