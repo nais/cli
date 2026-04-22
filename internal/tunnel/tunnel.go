@@ -83,7 +83,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 			case gql.TunnelPhaseReady, gql.TunnelPhaseConnected:
 				gatewayPublicKey = t.GatewayPublicKey
 				forwarderEndpoint = t.ForwarderEndpoint
-				progress("Gateway ready!")
+				progress(fmt.Sprintf("Gateway ready! publicKey=%s endpoint=%s", gatewayPublicKey, forwarderEndpoint))
 			case gql.TunnelPhaseFailed:
 				return nil, fmt.Errorf("gateway failed to start: %s", t.Message)
 			case gql.TunnelPhaseTerminated:
@@ -102,6 +102,8 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	if err != nil {
 		return nil, fmt.Errorf("parse gateway public key: %w", err)
 	}
+
+	progress(fmt.Sprintf("Connecting WireGuard: clientPublicKey=%s gatewayPublicKey=%s endpoint=%s", publicKey.String(), gwKey.String(), forwarderEndpoint))
 
 	wgTunnel, err := SetupWireGuard(privateKey, gwKey, forwarderEndpoint)
 	if err != nil {
