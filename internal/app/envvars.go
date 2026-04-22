@@ -95,7 +95,6 @@ func GetApplicationEnvVars(ctx context.Context, slug, name, env string) ([]EnvVa
 		return nil, nil
 	}
 
-	// Select the newest group by creation time.
 	newest := groups[0]
 	for _, g := range groups[1:] {
 		if g.Created.After(newest.Created) {
