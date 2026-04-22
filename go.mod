@@ -31,7 +31,7 @@ require (
 	github.com/nais/device v1.7.3
 	github.com/nais/krakend/pkg/migration v0.0.0-20251112211103-82b954ae962b
 	github.com/nais/liberator v0.0.0-20260216142648-ee49a9372bc4
-	github.com/nais/naistrix v0.23.7
+	github.com/nais/naistrix v0.25.0
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.83
 	github.com/sethvargo/go-retry v0.3.0
@@ -168,7 +168,7 @@ require (
 	github.com/lestrrat-go/option/v2 v2.0.0 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
-	github.com/mattn/go-runewidth v0.0.22 // indirect
+	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
