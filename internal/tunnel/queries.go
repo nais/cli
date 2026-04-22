@@ -1,6 +1,6 @@
 package tunnel
 
-// genqlient operation definitions — DO NOT REMOVE, used by go generate
+// genqlient operation definitions used by go generate.
 
 var _ = `# @genqlient
 mutation CreateTunnel($input: CreateTunnelInput!) {
