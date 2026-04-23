@@ -31,7 +31,7 @@ require (
 	github.com/nais/device v1.7.3
 	github.com/nais/krakend/pkg/migration v0.0.0-20251112211103-82b954ae962b
 	github.com/nais/liberator v0.0.0-20260216142648-ee49a9372bc4
-	github.com/nais/naistrix v0.27.1
+	github.com/nais/naistrix v0.28.0
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.83
 	github.com/sethvargo/go-retry v0.3.0
