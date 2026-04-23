@@ -305,7 +305,7 @@ func RemoveValue(ctx context.Context, metadata Metadata, valueName string) error
 	return err
 }
 
-// FormatDetails formats config metadata for pterm table rendering.
+// FormatDetails formats config metadata for table rendering.
 func FormatDetails(metadata Metadata, c *gql.GetConfigTeamEnvironmentConfig) [][]string {
 	data := [][]string{
 		{"Field", "Value"},
@@ -324,7 +324,7 @@ func FormatDetails(metadata Metadata, c *gql.GetConfigTeamEnvironmentConfig) [][
 	return data
 }
 
-// FormatData formats config values as a key-value table for pterm rendering.
+// FormatData formats config values as a key-value table for rendering.
 // Binary values (BASE64 encoding) are shown as a placeholder with byte count.
 func FormatData(values []gql.GetConfigTeamEnvironmentConfigValuesConfigValue) [][]string {
 	data := [][]string{
@@ -345,7 +345,7 @@ func FormatData(values []gql.GetConfigTeamEnvironmentConfigValuesConfigValue) []
 	return data
 }
 
-// FormatWorkloads formats the workloads using a config for pterm table rendering.
+// FormatWorkloads formats the workloads using a config for table rendering.
 func FormatWorkloads(c *gql.GetConfigTeamEnvironmentConfig) [][]string {
 	workloads := [][]string{
 		{"Name", "Type"},

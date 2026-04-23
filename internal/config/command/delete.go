@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/config/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 )
 
 func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
@@ -48,31 +48,22 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 				return fmt.Errorf("fetching config: %w", err)
 			}
 
-			pterm.Warning.Println("You are about to delete a config with the following configuration:")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(config.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Warnln("You are about to delete a config with the following configuration:")
+			if err := out.Table().Render(config.FormatDetails(metadata, existing)); err != nil {
 				return err
 			}
 
 			if len(existing.Workloads.Nodes) > 0 {
-				pterm.Warning.Println("This config is currently in use by the following workloads:")
-				err = pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(config.FormatWorkloads(existing)).
-					Render()
-				if err != nil {
+				out.Warnln("This config is currently in use by the following workloads:")
+				if err := out.Table().Render(config.FormatWorkloads(existing)); err != nil {
 					return err
 				}
 			}
 
 			if !f.Yes {
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !result {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
@@ -83,11 +74,11 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 			}
 
 			if !deleted {
-				pterm.Warning.Printfln("Config %q in %q for team %q was not deleted", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+				out.Warnf("Config %q in %q for team %q was not deleted\n", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 				return nil
 			}
 
-			pterm.Success.Printfln("Deleted config %q from %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+			out.Successf("Deleted config %q from %q for team %q\n", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 			return nil
 		},
 	}

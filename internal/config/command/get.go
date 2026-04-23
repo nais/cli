@@ -12,7 +12,6 @@ import (
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
-	"github.com/pterm/pterm"
 )
 
 // Entry represents a key-value pair in a config.
@@ -147,7 +146,7 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			return fmt.Errorf("writing to file %q: %w", opts.toFile, err)
 		}
 
-		pterm.Success.Printfln("Wrote key %q (%d bytes) to %s", opts.key, len(data), opts.toFile)
+		out.Successf("Wrote key %q (%d bytes) to %s\n", opts.key, len(data), opts.toFile)
 		return nil
 	}
 
@@ -167,40 +166,24 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 	}
 
-	pterm.DefaultSection.Println("Config details")
-	err = pterm.DefaultTable.
-		WithHasHeader().
-		WithHeaderRowSeparator("-").
-		WithData(config.FormatDetails(metadata, existing)).
-		Render()
-	if err != nil {
+	if err := out.Table().Render(config.FormatDetails(metadata, existing)); err != nil {
 		return fmt.Errorf("rendering table: %w", err)
 	}
 
-	pterm.DefaultSection.Println("Data")
+	out.Println()
 	if len(entries) > 0 {
-		data := config.FormatData(existing.Values)
-		err = pterm.DefaultTable.
-			WithHasHeader().
-			WithHeaderRowSeparator("-").
-			WithData(data).
-			Render()
-		if err != nil {
+		if err := out.Table().Render(config.FormatData(existing.Values)); err != nil {
 			return fmt.Errorf("rendering data table: %w", err)
 		}
 	} else {
-		pterm.Info.Println("This config has no keys.")
+		out.Infoln("This config has no keys.")
 	}
 
+	out.Println()
 	if len(existing.Workloads.Nodes) > 0 {
-		pterm.DefaultSection.Println("Workloads using this config")
-		return pterm.DefaultTable.
-			WithHasHeader().
-			WithHeaderRowSeparator("-").
-			WithData(config.FormatWorkloads(existing)).
-			Render()
+		return out.Table().Render(config.FormatWorkloads(existing))
 	}
 
-	pterm.Info.Println("No workloads are using this config.")
+	out.Infoln("No workloads are using this config.")
 	return nil
 }
