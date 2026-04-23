@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
 )
 
 func create(parentFlags *flag.Secret) *naistrix.Command {
@@ -39,7 +38,7 @@ func create(parentFlags *flag.Secret) *naistrix.Command {
 				return fmt.Errorf("creating secret: %w", err)
 			}
 
-			pterm.Success.Printfln("Created secret %q in %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+			out.Successf("Created secret %q in %q for team %q\n", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 			return nil
 		},
 	}

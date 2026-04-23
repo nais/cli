@@ -14,7 +14,6 @@ import (
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
 )
 
 func set(parentFlags *flag.Secret) *naistrix.Command {
@@ -118,9 +117,9 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 			}
 
 			if updated {
-				pterm.Success.Printfln("Updated key %q in secret %q in %q", f.Key, metadata.Name, metadata.EnvironmentName)
+				out.Successf("Updated key %q in secret %q in %q\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			} else {
-				pterm.Success.Printfln("Added key %q to secret %q in %q", f.Key, metadata.Name, metadata.EnvironmentName)
+				out.Successf("Added key %q to secret %q in %q\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			}
 
 			return nil
