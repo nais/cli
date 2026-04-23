@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 	"golang.org/x/term"
 )
 
@@ -49,15 +49,15 @@ func Login(parentFlags *flag.Auth) *naistrix.Command {
 			}
 
 			if term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
-				pterm.Println()
-				pterm.Println("Many Nais commands require you to be logged in to both Google and Nais.")
+				out.Println()
+				out.Println("Many Nais commands require you to be logged in to both Google and Nais.")
 				if flags.Yes {
 					return naisapi.Login(ctx, out)
 				}
-				result, _ := pterm.DefaultInteractiveConfirm.
-					WithDefaultValue(true).
-					Show("Would you like to also log in to Nais?")
-				if result {
+
+				if result, err := input.Confirm("Would you like to also log in to Nais?", input.ConfirmWithDefaultTrue()); err != nil {
+					return err
+				} else if result {
 					return naisapi.Login(ctx, out)
 				}
 			}
