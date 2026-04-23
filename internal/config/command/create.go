@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/config/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
 )
 
 func create(parentFlags *flag.Config) *naistrix.Command {
@@ -39,7 +38,7 @@ func create(parentFlags *flag.Config) *naistrix.Command {
 				return fmt.Errorf("creating config: %w", err)
 			}
 
-			pterm.Success.Printfln("Created config %q in %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+			out.Successf("Created config %q in %q for team %q\n", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 			return nil
 		},
 	}

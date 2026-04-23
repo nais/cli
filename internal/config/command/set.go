@@ -14,7 +14,6 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
 )
 
 func set(parentFlags *flag.Config) *naistrix.Command {
@@ -118,9 +117,9 @@ func set(parentFlags *flag.Config) *naistrix.Command {
 			}
 
 			if updated {
-				pterm.Success.Printfln("Updated key %q in config %q in %q", f.Key, metadata.Name, metadata.EnvironmentName)
+				out.Successf("Updated key %q in config %q in %q\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			} else {
-				pterm.Success.Printfln("Added key %q to config %q in %q", f.Key, metadata.Name, metadata.EnvironmentName)
+				out.Successf("Added key %q to config %q in %q\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			}
 
 			return nil
