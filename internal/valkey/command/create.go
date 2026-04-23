@@ -9,7 +9,8 @@ import (
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
+	"github.com/nais/naistrix/output"
 )
 
 func create(parentFlags *flag.Valkey) *naistrix.Command {
@@ -75,7 +76,7 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
 			}
 
-			info := pterm.TableData{
+			tblData := [][]string{
 				{"Field", "Value"},
 				{"Team", metadata.TeamSlug},
 				{"Environment", metadata.EnvironmentName},
@@ -85,14 +86,15 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 				{"Max memory policy", string(data.MaxMemoryPolicy)},
 			}
 
-			pterm.Info.Println("You are about to create a Valkey instance with the following configuration:")
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(info).Render(); err != nil {
+			out.Infoln("You are about to create a Valkey instance with the following configuration:")
+			if err := out.Table(output.TableWithMargins()).Render(tblData); err != nil {
 				return err
 			}
 
 			if !flags.Yes {
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				if ok, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !ok {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
@@ -102,7 +104,7 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 				return err
 			}
 
-			pterm.Success.Printfln("Created Valkey instance %q for %q in %q", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
+			out.Successf("Created Valkey instance %q for %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
 	}

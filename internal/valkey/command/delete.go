@@ -2,14 +2,14 @@ package command
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
+	"github.com/nais/naistrix/output"
 )
 
 func delete(parentFlags *flag.Valkey) *naistrix.Command {
@@ -50,45 +50,35 @@ func delete(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			if len(existing.Access.Edges) > 0 {
-				pterm.Error.Println("This Valkey instance cannot be deleted as it is currently in use by the following workloads:")
-				err = pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(valkey.FormatAccessList(metadata, existing)).
-					Render()
-				if err != nil {
+				out.Errorln("This Valkey instance cannot be deleted as it is currently in use by the following workloads:")
+				if err := out.Table(output.TableWithMargins()).Render(valkey.FormatAccessList(metadata, existing)); err != nil {
 					return err
 				}
 
-				pterm.Info.Println("Remove all references to this Valkey instance from the workloads and try again.")
-				return errors.New("")
+				out.Infoln("Remove all references to this Valkey instance from the workloads and try again.")
+				return nil
 			}
 
-			pterm.Warning.Println("You are about to delete a Valkey instance with the following configuration:")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(valkey.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Warnln("You are about to delete a Valkey instance with the following configuration:")
+			if err := out.Table(output.TableWithMargins()).Render(valkey.FormatDetails(metadata, existing)); err != nil {
 				return err
 			}
 
 			if !flags.Yes {
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !result {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
 
-			deleted, err := valkey.Delete(ctx, metadata)
-			if err != nil {
+			if deleted, err := valkey.Delete(ctx, metadata); err != nil {
 				return err
+			} else if !deleted {
+				return fmt.Errorf("Valkey instance was not deleted")
 			}
 
-			if deleted {
-				pterm.Success.Printf("Deleted Valkey instance %q from %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
-			}
+			out.Successf("Deleted Valkey instance %q from %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
 	}
