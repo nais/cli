@@ -9,7 +9,8 @@ import (
 	"github.com/nais/cli/internal/opensearch/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
+	"github.com/nais/naistrix/output"
 )
 
 func create(parentFlags *flag.OpenSearch) *naistrix.Command {
@@ -91,7 +92,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			data.StorageGB = storage
 
-			info := pterm.TableData{
+			tblData := [][]string{
 				{"Field", "Value"},
 				{"Team", metadata.TeamSlug},
 				{"Environment", metadata.EnvironmentName},
@@ -102,13 +103,14 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				{"Version", string(data.Version)},
 			}
 
-			pterm.Info.Println("You are about to create an OpenSearch instance with the following configuration:")
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(info).Render(); err != nil {
+			out.Infoln("You are about to create an OpenSearch instance with the following configuration:")
+			if err := out.Table(output.TableWithMargins()).Render(tblData); err != nil {
 				return err
 			}
 
-			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-			if !result {
+			if ok, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				return err
+			} else if !ok {
 				return fmt.Errorf("cancelled by user")
 			}
 
@@ -117,7 +119,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return err
 			}
 
-			pterm.Success.Printfln("Created OpenSearch instance %q for %q in %q", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
+			out.Successf("Created OpenSearch instance %q for %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
 	}

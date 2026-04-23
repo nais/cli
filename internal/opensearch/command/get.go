@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/opensearch/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/output"
 )
 
 func get(parentFlags *flag.OpenSearch) *naistrix.Command {
@@ -51,22 +51,13 @@ func get(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}
 
-			pterm.DefaultSection.Println("OpenSearch instance details")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(opensearch.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Println("OpenSearch instance details")
+			if err = out.Table(output.TableWithMargins()).Render(opensearch.FormatDetails(metadata, existing)); err != nil {
 				return fmt.Errorf("rendering table: %w", err)
 			}
 
-			pterm.DefaultSection.Println("OpenSearch access list")
-			return pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(opensearch.FormatAccessList(metadata, existing)).
-				Render()
+			out.Println("OpenSearch access list")
+			return out.Table(output.TableWithTopMargin()).Render(opensearch.FormatAccessList(metadata, existing))
 		},
 	}
 }
