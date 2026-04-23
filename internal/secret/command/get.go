@@ -13,8 +13,8 @@ import (
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/input"
 	"github.com/nais/naistrix/output"
-	"github.com/pterm/pterm"
 )
 
 // Entry represents a key-value pair in a secret. When values are not fetched,
@@ -140,10 +140,8 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 	if opts.withValues {
 		reason := opts.reason
 		if reason == "" {
-			pterm.Warning.Println("Viewing secret values is logged for auditing purposes.")
-			result, err := pterm.DefaultInteractiveTextInput.
-				WithDefaultText("Reason for accessing secret values (min 10 chars)").
-				Show()
+			out.Warnln("Viewing secret values is logged for auditing purposes.")
+			result, err := input.Input("Reason for accessing secret values (min 10 chars)")
 			if err != nil {
 				return fmt.Errorf("prompting for reason: %w", err)
 			}
@@ -183,7 +181,7 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 				return fmt.Errorf("writing to file %q: %w", opts.toFile, err)
 			}
 
-			pterm.Success.Printfln("Wrote key %q (%d bytes) to %s", opts.key, len(data), opts.toFile)
+			out.Successf("Wrote key %q (%d bytes) to %s\n", opts.key, len(data), opts.toFile)
 			return nil
 		}
 	}
@@ -237,17 +235,13 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 	}
 
 	if existing != nil {
-		pterm.DefaultSection.Println("Secret details")
-		if err := pterm.DefaultTable.
-			WithHasHeader().
-			WithHeaderRowSeparator("-").
-			WithData(secret.FormatDetails(metadata, existing)).
-			Render(); err != nil {
+		out.Println("Secret details")
+		if err := out.Table().Render(secret.FormatDetails(metadata, existing)); err != nil {
 			return fmt.Errorf("rendering table: %w", err)
 		}
 	}
 
-	pterm.DefaultSection.Println("Data")
+	out.Println("Data")
 	if len(entries) > 0 {
 		var data [][]string
 		if opts.withValues {
@@ -263,28 +257,20 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			}
 			data = secret.FormatData(keys)
 		}
-		if err := pterm.DefaultTable.
-			WithHasHeader().
-			WithHeaderRowSeparator("-").
-			WithData(data).
-			Render(); err != nil {
+		if err := out.Table().Render(data); err != nil {
 			return fmt.Errorf("rendering data table: %w", err)
 		}
 	} else {
-		pterm.Info.Println("This secret has no keys.")
+		out.Infoln("This secret has no keys.")
 	}
 
 	if existing != nil && len(existing.Workloads.Nodes) > 0 {
-		pterm.DefaultSection.Println("Workloads using this secret")
-		return pterm.DefaultTable.
-			WithHasHeader().
-			WithHeaderRowSeparator("-").
-			WithData(secret.FormatWorkloads(existing)).
-			Render()
+		out.Println("Workloads using this secret")
+		return out.Table().Render(secret.FormatWorkloads(existing))
 	}
 
 	if existing != nil {
-		pterm.Info.Println("No workloads are using this secret.")
+		out.Infoln("No workloads are using this secret.")
 	}
 	return nil
 }

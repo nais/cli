@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 )
 
 func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
@@ -48,42 +48,30 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 				return fmt.Errorf("fetching secret: %w", err)
 			}
 
-			pterm.Warning.Println("You are about to delete a secret with the following configuration:")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(secret.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Warnln("You are about to delete a secret with the following configuration:")
+			if err := out.Table().Render(secret.FormatDetails(metadata, existing)); err != nil {
 				return err
 			}
 
 			if len(existing.Workloads.Nodes) > 0 {
-				pterm.Warning.Println("This secret is currently in use by the following workloads:")
-				err = pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(secret.FormatWorkloads(existing)).
-					Render()
-				if err != nil {
+				out.Warnln("This secret is currently in use by the following workloads:")
+				if err := out.Table().Render(secret.FormatWorkloads(existing)); err != nil {
 					return err
 				}
 			}
 
 			if !f.Yes {
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !result {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
 
-			deleted, err := secret.Delete(ctx, metadata)
-			if err != nil {
+			if deleted, err := secret.Delete(ctx, metadata); err != nil {
 				return fmt.Errorf("deleting secret: %w", err)
-			}
-
-			if deleted {
-				pterm.Success.Printfln("Deleted secret %q from %q for team %q", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
+			} else if deleted {
+				out.Successf("Deleted secret %q from %q for team %q\n", metadata.Name, metadata.EnvironmentName, metadata.TeamSlug)
 			}
 
 			return nil

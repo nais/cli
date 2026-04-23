@@ -293,7 +293,7 @@ func RemoveValue(ctx context.Context, metadata Metadata, valueName string) error
 	return err
 }
 
-// FormatDetails formats secret metadata for pterm table rendering.
+// FormatDetails formats secret metadata for table rendering.
 func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][]string {
 	data := [][]string{
 		{"Field", "Value"},
@@ -320,7 +320,7 @@ type Entry struct {
 	Encoding gql.ValueEncoding
 }
 
-// FormatData formats secret keys as a key-only table for pterm rendering.
+// FormatData formats secret keys as a key-only table for rendering.
 func FormatData(keys []string) [][]string {
 	data := [][]string{
 		{"Key"},
@@ -331,7 +331,7 @@ func FormatData(keys []string) [][]string {
 	return data
 }
 
-// FormatDataWithValues formats key-value pairs as a two-column table for pterm rendering.
+// FormatDataWithValues formats key-value pairs as a two-column table for rendering.
 // Binary values (BASE64 encoding) are shown as a placeholder with byte count.
 func FormatDataWithValues(entries []Entry) [][]string {
 	data := [][]string{
@@ -352,7 +352,7 @@ func FormatDataWithValues(entries []Entry) [][]string {
 	return data
 }
 
-// FormatWorkloads formats the workloads using a secret for pterm table rendering.
+// FormatWorkloads formats the workloads using a secret for table rendering.
 func FormatWorkloads(s *gql.GetSecretTeamEnvironmentSecret) [][]string {
 	workloads := [][]string{
 		{"Name", "Type"},

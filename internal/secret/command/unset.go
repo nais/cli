@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 )
 
 func unset(parentFlags *flag.Secret) *naistrix.Command {
@@ -49,11 +49,11 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args, f.Team, string(f.Environment))
 
-			pterm.Warning.Printfln("You are about to unset key %q from secret %q in %q.", f.Key, metadata.Name, metadata.EnvironmentName)
-
+			out.Warnf("You are about to unset key %q from secret %q in %q.\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			if !f.Yes {
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !result {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
@@ -62,7 +62,7 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 				return fmt.Errorf("unsetting secret key: %w", err)
 			}
 
-			pterm.Success.Printfln("Unset key %q from secret %q in %q", f.Key, metadata.Name, metadata.EnvironmentName)
+			out.Successf("Unset key %q from secret %q in %q\n", f.Key, metadata.Name, metadata.EnvironmentName)
 			return nil
 		},
 	}
