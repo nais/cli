@@ -2,14 +2,14 @@ package command
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
+	"github.com/nais/naistrix/output"
 )
 
 func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
@@ -53,42 +53,33 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 
 			if len(existing.Access.Edges) > 0 {
-				pterm.Error.Println("This OpenSearch instance cannot be deleted as it is currently in use by the following workloads:")
-				err = pterm.DefaultTable.
-					WithHasHeader().
-					WithHeaderRowSeparator("-").
-					WithData(opensearch.FormatAccessList(metadata, existing)).
-					Render()
-				if err != nil {
+				out.Errorln("This OpenSearch instance cannot be deleted as it is currently in use by the following workloads:")
+				if err := out.Table(output.TableWithMargins()).Render(opensearch.FormatAccessList(metadata, existing)); err != nil {
 					return err
 				}
 
-				pterm.Info.Println("Remove all references to this OpenSearch instance from the workloads and try again.")
-				return errors.New("")
+				out.Infoln("Remove all references to this OpenSearch instance from the workloads and try again.")
+				return nil
 			}
 
-			pterm.Warning.Println("You are about to delete an OpensSarch instance with the following configuration:")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(opensearch.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Warnln("You are about to delete an OpenSearch instance with the following configuration:")
+			if err := out.Table(output.TableWithMargins()).Render(opensearch.FormatDetails(metadata, existing)); err != nil {
 				return err
 			}
-			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-			if !result {
+
+			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				return err
+			} else if !result {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			deleted, err := opensearch.Delete(ctx, metadata)
-			if err != nil {
+			if deleted, err := opensearch.Delete(ctx, metadata); err != nil {
 				return err
+			} else if !deleted {
+				return fmt.Errorf("OpenSearch instance was not deleted")
 			}
 
-			if deleted {
-				pterm.Success.Printf("Deleted OpenSearch instance %q from %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
-			}
+			out.Successf("Deleted OpenSearch instance %q from %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
 	}
