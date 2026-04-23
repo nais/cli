@@ -7,7 +7,6 @@ import (
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
 )
 
 func deleteRun(parentFlags *flag.Job) *naistrix.Command {
@@ -59,9 +58,7 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 				return fmt.Errorf("deleting job run: %w", err)
 			}
 
-			pterm.Success.Printfln("Deleted job run %q from %q for team %q",
-				runName, string(flags.Environment), flags.Team)
-
+			out.Successf("Deleted job run %q from %q for team %q\n", runName, string(flags.Environment), flags.Team)
 			return nil
 		},
 	}
