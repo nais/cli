@@ -9,7 +9,8 @@ import (
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
+	"github.com/nais/naistrix/output"
 )
 
 func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
@@ -71,7 +72,7 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 				MaxMemoryPolicy: existing.MaxMemoryPolicy,
 			}
 
-			info := pterm.TableData{
+			info := [][]string{
 				{"Field", "Old Value", "New Value"},
 				{"Team", metadata.TeamSlug, "(unchanged)"},
 				{"Environment", metadata.EnvironmentName, "(unchanged)"},
@@ -82,7 +83,7 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if flags.Tier != "" && string(flags.Tier) != string(existing.Tier) {
 				data.Tier = gql.ValkeyTier(flags.Tier)
 				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing tier from %q to %q\n", existing.Tier, data.Tier)
+					out.Infof("Changing tier from %q to %q\n", existing.Tier, data.Tier)
 				}
 				newTier = string(data.Tier)
 			}
@@ -92,7 +93,7 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if flags.Memory != "" && string(flags.Memory) != string(existing.Memory) {
 				data.Memory = gql.ValkeyMemory(flags.Memory)
 				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing memory from %q to %q\n", existing.Memory, data.Memory)
+					out.Infof("Changing memory from %q to %q\n", existing.Memory, data.Memory)
 				}
 				newMemory = string(data.Memory)
 			}
@@ -102,31 +103,31 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			if flags.MaxMemoryPolicy != "" && string(flags.MaxMemoryPolicy) != string(existing.MaxMemoryPolicy) {
 				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
 				if flags.IsVerbose() {
-					pterm.Info.Printf("Changing max memory policy from %q to %q\n", existing.MaxMemoryPolicy, data.MaxMemoryPolicy)
+					out.Infof("Changing max memory policy from %q to %q\n", existing.MaxMemoryPolicy, data.MaxMemoryPolicy)
 				}
 				newMaxMemoryPolicy = string(data.MaxMemoryPolicy)
 			}
 			info = append(info, []string{"Max memory policy", string(existing.MaxMemoryPolicy), newMaxMemoryPolicy})
 
-			pterm.Info.Println("You are about to update a Valkey instance with the following configuration:")
-			if err := pterm.DefaultTable.WithHasHeader().WithHeaderRowSeparator("-").WithData(info).Render(); err != nil {
+			out.Infoln("You are about to update a Valkey instance with the following configuration:")
+			if err := out.Table(output.TableWithMargins()).Render(info); err != nil {
 				return err
 			}
 
 			if !flags.Yes {
-				pterm.Warning.Println("Changing settings may cause a restart of the Valkey instance.")
-				result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-				if !result {
+				out.Warnln("Changing settings may cause a restart of the Valkey instance.")
+				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+					return err
+				} else if !result {
 					return fmt.Errorf("cancelled by user")
 				}
 			}
 
-			_, err = valkey.Update(ctx, metadata, data)
-			if err != nil {
+			if _, err = valkey.Update(ctx, metadata, data); err != nil {
 				return err
 			}
 
-			pterm.Success.Printf("Updated Valkey instance %q for %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
+			out.Successf("Updated Valkey instance %q for %q in %q\n", metadata.Name, metadata.TeamSlug, metadata.EnvironmentName)
 			return nil
 		},
 	}

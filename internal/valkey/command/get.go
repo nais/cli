@@ -8,7 +8,7 @@ import (
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/output"
 )
 
 func get(parentFlags *flag.Valkey) *naistrix.Command {
@@ -48,22 +48,13 @@ func get(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
 
-			pterm.DefaultSection.Println("Valkey instance details")
-			err = pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(valkey.FormatDetails(metadata, existing)).
-				Render()
-			if err != nil {
+			out.Println("Valkey instance details")
+			if err = out.Table(output.TableWithMargins()).Render(valkey.FormatDetails(metadata, existing)); err != nil {
 				return fmt.Errorf("rendering table: %w", err)
 			}
 
-			pterm.DefaultSection.Println("Valkey access list")
-			return pterm.DefaultTable.
-				WithHasHeader().
-				WithHeaderRowSeparator("-").
-				WithData(valkey.FormatAccessList(metadata, existing)).
-				Render()
+			out.Println("Valkey access list")
+			return out.Table(output.TableWithTopMargin()).Render(valkey.FormatAccessList(metadata, existing))
 		},
 	}
 }
