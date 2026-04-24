@@ -233,9 +233,9 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 		return err
 	}
 
-	logging.Verbosef = out.Verbosef
-	logging.Infof = out.Infof
-	logging.Errorf = out.Errorf
+	logging.Verbosef = func(format string, v ...any) { out.Verbosef(format, v...) }
+	logging.Infof = func(format string, v ...any) { out.Infof(format, v...) }
+	logging.Errorf = func(format string, v ...any) { out.Errorf(format, v...) }
 
 	if err := grantUserAccess(ctx, projectID, "roles/cloudsql.instanceUser", 1*time.Hour, out); err != nil {
 		return err

@@ -34,7 +34,7 @@ import (
 	"github.com/nais/cli/internal/version"
 	vulnerabilityCommand "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 	"golang.org/x/term"
 )
 
@@ -124,31 +124,33 @@ func Run(ctx context.Context, w io.Writer) error {
 
 	if err != nil {
 		if errors.Is(err, naisapi.ErrNeedsLogin) {
-			pterm.Println()
-			pterm.Warning.Println("You must (re-)authenticate to run this command.")
+			out := app.Output()
+			out.
+				Println().
+				Warnln("You must (re-)authenticate to run this command.").
+				Println()
 
 			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
-				pterm.Println()
-				result, _ := pterm.DefaultInteractiveConfirm.
-					WithDefaultValue(true).
-					Show("Would you like to log in and re-run the command?")
+				result, err := input.Confirm("Would you like to log in and re-run the command?", input.ConfirmWithDefaultTrue())
+				if err != nil {
+					return err
+				}
 
 				if result {
-					pterm.Println()
+					out.Println()
 					if err := naisapi.Login(ctx, naistrix.NewOutputWriter(w, &f.VerboseLevel)); err != nil {
 						return err
 					}
 
-					pterm.Println()
-					pterm.Info.Printf("Re-running command %s\n", executedCommand)
-
-					pterm.Println()
+					out.
+						Println().
+						Infof("Re-running command %s\n", executedCommand).
+						Println()
 					return app.Run(naistrix.RunWithContext(ctx))
 				}
 			}
 
-			pterm.Println()
-			pterm.Error.Println("Please run `nais login --nais` to (re-)authenticate.")
+			out.Errorln("Please run `nais login --nais` to (re-)authenticate.")
 			return nil
 		}
 
