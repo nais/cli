@@ -63,18 +63,24 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 
 	var gatewayPublicKey string
 	var forwarderEndpoint string
+	var lastPollErr error
 
 	for {
 		select {
 		case <-timeout:
+			if lastPollErr != nil {
+				return nil, fmt.Errorf("gateway did not become ready within 60s (last error: %v)", lastPollErr)
+			}
 			return nil, fmt.Errorf("gateway did not become ready within 60s — try again or check cluster status")
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-ticker.C:
 			pollResp, err := gql.GetTunnel(ctx, client, cfg.TeamSlug, cfg.Environment, tunnelName)
 			if err != nil {
-				return nil, fmt.Errorf("poll tunnel status: %w", err)
+				lastPollErr = err
+				continue
 			}
+			lastPollErr = nil
 			t := pollResp.Team.Environment.Tunnel
 			if t.Id == "" {
 				continue
