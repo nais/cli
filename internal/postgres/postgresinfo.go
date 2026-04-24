@@ -238,13 +238,13 @@ func (p *postgresDBInfo) fetchClusterInfoFromCluster(ctx context.Context) error 
 
 func NewNaisOut(out *naistrix.OutputWriter) io.Writer {
 	return &NaisWriter{
-		writeFunc: out.Infof,
+		writeFunc: func(format string, v ...any) { out.Infof(format, v...) },
 	}
 }
 
 func NewNaisErr(out *naistrix.OutputWriter) io.Writer {
 	return &NaisWriter{
-		writeFunc: out.Errorf,
+		writeFunc: func(format string, v ...any) { out.Errorf(format, v...) },
 	}
 }
 
