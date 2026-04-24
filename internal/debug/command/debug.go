@@ -49,7 +49,7 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			return nil
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return debug.Run(args.Get("app_name"), debugFlags)
+			return debug.Run(args.Get("app_name"), debugFlags, out)
 		},
 	}
 }

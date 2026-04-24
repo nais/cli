@@ -9,7 +9,8 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/debug/command/flag"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/input"
 	core_v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,9 +29,10 @@ type Debug struct {
 	workloadName string
 	debugImage   string
 	byPod        bool
+	out          *naistrix.OutputWriter
 }
 
-func Setup(client kubernetes.Interface, flags *flag.DebugSticky, workloadName, debugImage string, byPod bool) *Debug {
+func Setup(client kubernetes.Interface, flags *flag.DebugSticky, workloadName, debugImage string, byPod bool, out *naistrix.OutputWriter) *Debug {
 	return &Debug{
 		ctx:          context.Background(),
 		client:       client,
@@ -38,11 +40,12 @@ func Setup(client kubernetes.Interface, flags *flag.DebugSticky, workloadName, d
 		workloadName: workloadName,
 		debugImage:   debugImage,
 		byPod:        byPod,
+		out:          out,
 	}
 }
 
 func (d *Debug) getPodsForWorkload() (*core_v1.PodList, error) {
-	pterm.Info.Println("Fetching workload...")
+	d.out.Infoln("Fetching workload...")
 	var podList *core_v1.PodList
 	var err error
 	podList, err = d.client.CoreV1().Pods(d.flags.Team).List(d.ctx, metav1.ListOptions{
@@ -71,11 +74,11 @@ func (d *Debug) debugPod(podName string) error {
 		pN := debuggerContainerName(podName)
 		_, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, pN, metav1.GetOptions{})
 		if err == nil {
-			pterm.Info.Printf("%s already exists, trying to attach...\n", pN)
+			d.out.Infof("%s already exists, trying to attach...\n", pN)
 
 			// Polling loop to check if the debugger container is running
 			for i := range maxRetries {
-				pterm.Info.Printf("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
+				d.out.Infof("Attempt %d/%d: Time remaining: %d seconds\n", i+1, maxRetries, (maxRetries-i)*pollInterval)
 				pod, err := d.client.CoreV1().Pods(d.flags.Team).Get(d.ctx, pN, metav1.GetOptions{})
 				if err != nil {
 					return fmt.Errorf("failed to get debug pod copy %s: %v", pN, err)
@@ -83,7 +86,7 @@ func (d *Debug) debugPod(podName string) error {
 
 				for _, c := range pod.Status.ContainerStatuses {
 					if c.Name == debuggerContainerDefaultName && c.State.Running != nil {
-						pterm.Success.Println("Container is running. Attaching...")
+						d.out.Successln("Container is running. Attaching...")
 						return d.attachToExistingDebugContainer(pN)
 					}
 				}
@@ -102,8 +105,8 @@ func (d *Debug) debugPod(podName string) error {
 		}
 
 		if len(pod.Spec.EphemeralContainers) > 0 {
-			pterm.Warning.Printf("The container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
-			pterm.Info.Printf("Please consider using 'nais debug tidy %s' to clean up\n", d.workloadName)
+			d.out.Warnf("The container %s already has %d terminated debug containers.\n", podName, len(pod.Spec.EphemeralContainers))
+			d.out.Infof("Please consider using 'nais debug tidy %s' to clean up\n", d.workloadName)
 		}
 	}
 
@@ -132,7 +135,7 @@ func (d *Debug) attachToExistingDebugContainer(podName string) error {
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start attach command: %v", err)
 	}
-	pterm.Success.Printf("Attached to pod %s\n", podName)
+	d.out.Successf("Attached to pod %s\n", podName)
 
 	if err := cmd.Wait(); err != nil {
 		return fmt.Errorf("attach command failed: %v", err)
@@ -178,22 +181,22 @@ func (d *Debug) createDebugPod(podName string) error {
 	}
 
 	if d.flags.Copy {
-		pterm.Info.Printf("Debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
+		d.out.Infof("Debugging pod copy created, enable process namespace sharing in %s\n", debuggerContainerName(podName))
 	} else {
-		pterm.Info.Println("Debugging container created...")
+		d.out.Infoln("Debugging container created...")
 	}
-	pterm.Info.Printf("Using debugger image %s\n", d.debugImage)
+	d.out.Infof("Using debugger image %s\n", d.debugImage)
 
 	if err := cmd.Wait(); err != nil {
 		if strings.Contains(err.Error(), "exit status 1") {
-			pterm.Info.Println("Debugging container exited")
+			d.out.Infoln("Debugging container exited")
 			return nil
 		}
 		return fmt.Errorf("debug command failed: %v", err)
 	}
 
 	if d.flags.Copy {
-		pterm.Info.Printf("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.workloadName)
+		d.out.Infof("Run 'nais debug -cp %s' command to attach to the debug pod\n", d.workloadName)
 	}
 
 	return nil
@@ -211,22 +214,22 @@ func (d *Debug) Debug() error {
 	}
 
 	if len(podNames) == 0 {
-		pterm.Info.Println("No pods found.")
+		d.out.Infoln("No pods found.")
 		return nil
 	}
 
 	podName := podNames[0]
 	if d.byPod {
-		result, err := pterm.DefaultInteractiveSelect.WithOptions(podNames).Show()
+		result, err := input.Select("Select a pod to debug", podNames)
 		if err != nil {
-			pterm.Error.Printf("Prompt failed: %v\n", err)
+			d.out.Errorf("Prompt failed: %v\n", err)
 			return err
 		}
 		podName = result
 	}
 
 	if err := d.debugPod(podName); err != nil {
-		pterm.Error.Printf("Failed to debug pod %s: %v\n", podName, err)
+		d.out.Errorf("Failed to debug pod %s: %v\n", podName, err)
 	}
 
 	return nil
