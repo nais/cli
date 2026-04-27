@@ -58,7 +58,7 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 	progress("Waiting for gateway")
 
 	timeout := time.After(60 * time.Second)
-	ticker := time.NewTicker(2 * time.Second)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
 	var gatewayPublicKey string
