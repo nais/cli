@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/tunnel"
@@ -121,28 +120,13 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 					}
 					defer remote.Close()
 
-					done := make(chan struct{}, 2)
-					go func() {
-						io.Copy(remote, conn) // #nosec G104 //nolint:errcheck
-						done <- struct{}{}
-					}()
-					go func() {
-						io.Copy(conn, remote) // #nosec G104 //nolint:errcheck
-						done <- struct{}{}
-					}()
-					<-done
+					var copyWg sync.WaitGroup
+					copyWg.Go(func() { io.Copy(remote, conn) }) // #nosec G104 //nolint:errcheck
+					copyWg.Go(func() { io.Copy(conn, remote) }) // #nosec G104 //nolint:errcheck
+					copyWg.Wait()
 				})
 			}
 
-			drainDone := make(chan struct{})
-			go func() {
-				wg.Wait()
-				close(drainDone)
-			}()
-			select {
-			case <-drainDone:
-			case <-time.After(5 * time.Second):
-			}
 			return nil
 		},
 	}
