@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"net"
 	"net/netip"
+	"unsafe"
 
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/tun/netstack"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
+	"gvisor.dev/gvisor/pkg/tcpip"
+	"gvisor.dev/gvisor/pkg/tcpip/stack"
+	"gvisor.dev/gvisor/pkg/tcpip/transport/tcp"
 )
 
 const (
@@ -41,7 +45,7 @@ func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewa
 	tun, wgNet, err := netstack.CreateNetTUN(
 		[]netip.Addr{prefix.Addr()},
 		[]netip.Addr{}, // no DNS
-		1400, // GKE VPC MTU is 1460; WireGuard overhead is 60 bytes (20 IPv4 + 8 UDP + 32 WG)
+		1400,           // GKE VPC MTU is 1460; WireGuard overhead is 60 bytes (20 IPv4 + 8 UDP + 32 WG)
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create netstack TUN: %w", err)
@@ -49,6 +53,8 @@ func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewa
 	if bind == nil {
 		return nil, fmt.Errorf("wireguard bind is nil")
 	}
+
+	tuneStack((*netstackView)(unsafe.Pointer(wgNet)).stack)
 
 	logger := device.NewLogger(device.LogLevelError, "[wireguard-cli] ")
 	dev := device.NewDevice(tun, bind, logger)
@@ -71,6 +77,32 @@ endpoint=%s
 	}
 
 	return &WireGuardTunnel{dev: dev, net: wgNet}, nil
+}
+
+// netstackView mirrors the memory layout of netstack.Net to access the unexported stack field.
+type netstackView struct {
+	_     unsafe.Pointer
+	stack *stack.Stack
+}
+
+// tuneStack adjusts gVisor netstack TCP parameters for better throughput.
+func tuneStack(s *stack.Stack) {
+	if s == nil {
+		return
+	}
+	s.SetTransportProtocolOption(tcp.ProtocolNumber, &tcpip.TCPReceiveBufferSizeRangeOption{
+		Min:     tcp.MinBufferSize,
+		Default: tcp.DefaultReceiveBufferSize,
+		Max:     8 << 20, // 8MiB — Tailscale production value (tailscale/tailscale#12994)
+	})
+	s.SetTransportProtocolOption(tcp.ProtocolNumber, &tcpip.TCPSendBufferSizeRangeOption{
+		Min:     tcp.MinBufferSize,
+		Default: tcp.DefaultSendBufferSize,
+		Max:     6 << 20, // 6MiB
+	})
+	// RACK disabled: gVisor bug causes spurious retransmissions (tailscale/tailscale#9707)
+	rackOpt := tcpip.TCPRecovery(0)
+	s.SetTransportProtocolOption(tcp.ProtocolNumber, &rackOpt)
 }
 
 // Net returns the netstack network for creating TCP connections through the tunnel.
