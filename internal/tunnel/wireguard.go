@@ -5,15 +5,11 @@ import (
 	"fmt"
 	"net"
 	"net/netip"
-	"unsafe"
 
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/tun/netstack"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
-	"gvisor.dev/gvisor/pkg/tcpip"
-	"gvisor.dev/gvisor/pkg/tcpip/stack"
-	"gvisor.dev/gvisor/pkg/tcpip/transport/tcp"
 )
 
 const (
@@ -54,8 +50,6 @@ func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewa
 		return nil, fmt.Errorf("wireguard bind is nil")
 	}
 
-	tuneStack((*netstackView)(unsafe.Pointer(wgNet)).stack)
-
 	logger := device.NewLogger(device.LogLevelError, "[wireguard-cli] ")
 	dev := device.NewDevice(tun, bind, logger)
 
@@ -77,29 +71,6 @@ endpoint=%s
 	}
 
 	return &WireGuardTunnel{dev: dev, net: wgNet}, nil
-}
-
-type netstackView struct {
-	_     unsafe.Pointer
-	stack *stack.Stack
-}
-
-func tuneStack(s *stack.Stack) {
-	if s == nil {
-		return
-	}
-	s.SetTransportProtocolOption(tcp.ProtocolNumber, &tcpip.TCPReceiveBufferSizeRangeOption{
-		Min:     tcp.MinBufferSize,
-		Default: tcp.DefaultReceiveBufferSize,
-		Max:     8 << 20,
-	})
-	s.SetTransportProtocolOption(tcp.ProtocolNumber, &tcpip.TCPSendBufferSizeRangeOption{
-		Min:     tcp.MinBufferSize,
-		Default: tcp.DefaultSendBufferSize,
-		Max:     6 << 20,
-	})
-	rackOpt := tcpip.TCPRecovery(0)
-	s.SetTransportProtocolOption(tcp.ProtocolNumber, &rackOpt)
 }
 
 // Net returns the netstack network for creating TCP connections through the tunnel.
