@@ -41,7 +41,7 @@ func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewa
 	tun, wgNet, err := netstack.CreateNetTUN(
 		[]netip.Addr{prefix.Addr()},
 		[]netip.Addr{}, // no DNS
-		1420,           // MTU
+		1400, // GKE VPC MTU is 1460; WireGuard overhead is 60 bytes (20 IPv4 + 8 UDP + 32 WG)
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create netstack TUN: %w", err)
