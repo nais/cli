@@ -8,15 +8,6 @@ import (
 	"github.com/nais/naistrix"
 )
 
-// requireSingleEnvironment validates that exactly one environment is specified.
-func requireSingleEnvironment(envs flag.Environments) error {
-	if len(envs) != 1 {
-		return naistrix.Errorf("exactly one environment must be specified with -e/--environment")
-	}
-	return nil
-}
-
-// autoCompleteAppNames returns an AutoCompleteFunc that completes application names for the given flags.
 func autoCompleteAppNames(flags *flag.App) func(context.Context, *naistrix.Arguments, string) ([]string, string) {
 	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 		if args.Len() == 0 {

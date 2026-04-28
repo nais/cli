@@ -16,13 +16,20 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "restart",
 		Title:       "Restart an application.",
-		Description: "Triggers a rolling restart of the application in the specified environment. Requires exactly one environment to be specified.",
+		Description: "Triggers a rolling restart of the application in the specified environment. If the application exists in only one environment, it is auto-selected; otherwise an interactive prompt is shown when running in a terminal.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.RestartApp(ctx, flags.Team, args.Get("name"), flags.Environment)
+			name := args.Get("name")
+
+			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), false)
+			if err != nil {
+				return err
+			}
+
+			ret, err := app.RestartApp(ctx, flags.Team, name, environment)
 			if err != nil {
 				return err
 			}
@@ -30,5 +37,6 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 			out.Println(ret)
 			return nil
 		},
+		AutoCompleteFunc: autoCompleteAppNames(flags.App),
 	}
 }

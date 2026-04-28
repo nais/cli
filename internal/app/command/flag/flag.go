@@ -18,6 +18,12 @@ type App struct {
 	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
 	Output      Output       `name:"output" short:"o" usage:"Format output (table or json)."`
 }
+
+func (a *App) GetTeam() string { return a.Team }
+
+type teamScoped interface {
+	GetTeam() string
+}
 type Environments []string
 
 func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
@@ -35,7 +41,10 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 		return nil, "Please provide an application name to auto-complete instances."
 	}
 
-	f := flags.(*Log)
+	f, ok := flags.(*Log)
+	if !ok {
+		return nil, ""
+	}
 	if len(f.Environment) == 0 {
 		return nil, "Please provide environment (-e, --environment) to auto-complete instances."
 	}
@@ -44,7 +53,7 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 		return nil, "Please provide team to auto-complete instances. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 
-	instances, err := app.GetApplicationInstances(ctx, string(f.Team), args.Get("name"), string(f.Environment))
+	instances, err := app.GetApplicationInstances(ctx, f.Team, args.Get("name"), string(f.Environment))
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch instances for auto-completion: %v", err)
 	}
@@ -61,6 +70,7 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type Restart struct {
 	*App
+	Environment Env `name:"environment" short:"e" usage:"Environment of the application. Auto-selected if the app exists in only one environment."`
 }
 
 type Issues struct {
@@ -89,7 +99,11 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 		return autoCompleteEnvironments(ctx)
 	}
 
-	team := teamFromAppFlags(flags)
+	ts, ok := flags.(teamScoped)
+	if !ok {
+		return nil, ""
+	}
+	team := ts.GetTeam()
 	if len(team) == 0 {
 		return nil, "Please provide team to auto-complete environments. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
@@ -101,20 +115,9 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 	return envs, "Available environments"
 }
 
-func teamFromAppFlags(flags any) string {
-	switch f := flags.(type) {
-	case *Log:
-		return f.Team
-	case *EnvVars:
-		return f.Team
-	default:
-		return ""
-	}
-}
-
 type Log struct {
 	*App
-	Environment    Env           `name:"environment" short:"e" usage:"Filter by environment."`
+	Environment    Env           `name:"environment" short:"e" usage:"Environment of the application. Auto-selected if the app exists in only one environment."`
 	Instance       instances     `name:"instance" short:"i" usage:"Filter by instance. Can be repeated"`
 	Container      []string      `name:"container" short:"c" usage:"Filter logs to a specific |container|. Can be repeated."`
 	WithTimestamps bool          `name:"with-timestamps" usage:"Include timestamps in log output."`
@@ -126,6 +129,7 @@ type Log struct {
 
 type Status struct {
 	*App
+	Environment Env `name:"environment" short:"e" usage:"Environment of the application. Auto-selected if the app exists in only one environment."`
 }
 
 type EnvVars struct {
@@ -135,6 +139,7 @@ type EnvVars struct {
 
 type Files struct {
 	*App
+	Environment Env `name:"environment" short:"e" usage:"Environment of the application. Auto-selected if the app exists in only one environment."`
 }
 
 func autoCompleteEnvironments(ctx context.Context) ([]string, string) {

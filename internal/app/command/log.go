@@ -28,31 +28,26 @@ func log(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name"},
 		},
 		Flags: flags,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
-			}
-			if args.Get("name") == "" {
-				return fmt.Errorf("application name is required")
-			}
-
-			return nil
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return fmt.Errorf("unable to get authenticated user: %w", err)
 			}
 
-			queryEnvironment := flags.Environment
-			if user.Domain() == "nav.no" {
-				queryEnvironment = flag.Env(strings.TrimSuffix(string(queryEnvironment), "-gcp"))
-			}
 			appName := args.Get("name")
+			environment, err := resolveAppEnvironment(ctx, out, flags.Team, appName, string(flags.Environment), false)
+			if err != nil {
+				return err
+			}
+
+			queryEnvironment := environment
+			if user.Domain() == "nav.no" {
+				queryEnvironment = strings.TrimSuffix(environment, "-gcp")
+			}
 			query := flags.RawQuery
 			if query == "" {
 				query = logs.NewQueryBuilder().
-					AddEnvironments(string(queryEnvironment)).
+					AddEnvironments(queryEnvironment).
 					AddTeams(flags.Team).
 					AddWorkloads(appName).
 					AddContainers(flags.Container...).
@@ -60,7 +55,7 @@ func log(parentFlags *flag.App) *naistrix.Command {
 					Build()
 			}
 
-			if err := naisapi.TailLog(ctx, out, string(flags.Environment), flags.Limit, flags.Since, flags.WithTimestamps, flags.WithLabels, query); err != nil {
+			if err := naisapi.TailLog(ctx, out, environment, flags.Limit, flags.Since, flags.WithTimestamps, flags.WithLabels, query); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 
@@ -71,11 +66,12 @@ func log(parentFlags *flag.App) *naistrix.Command {
 				if len(flags.Team) == 0 {
 					return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
 				}
-				if flags.Environment == "" {
-					return nil, "Please provide environment to auto-complete application names. '-e, --environment <environment>' flag."
-				}
 
-				apps, err := app.GetApplicationNames(ctx, flags.Team, []string{string(flags.Environment)})
+				envs := []string{}
+				if flags.Environment != "" {
+					envs = []string{string(flags.Environment)}
+				}
+				apps, err := app.GetApplicationNames(ctx, flags.Team, envs)
 				if err != nil {
 					return nil, "Unable to fetch application names."
 				}

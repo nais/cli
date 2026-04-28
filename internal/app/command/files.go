@@ -22,11 +22,15 @@ func files(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name"},
 		},
 		Flags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return requireSingleEnvironment(flags.Environment)
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.GetApplicationFiles(ctx, flags.Team, args.Get("name"), flags.Environment)
+			name := args.Get("name")
+
+			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), flags.Output == "json")
+			if err != nil {
+				return err
+			}
+
+			ret, err := app.GetApplicationFiles(ctx, flags.Team, name, environment)
 			if err != nil {
 				return err
 			}
@@ -46,7 +50,7 @@ func files(parentFlags *flag.App) *naistrix.Command {
 
 			if app.HasSecretFiles(ret) {
 				out.Println("")
-				out.Printf("To view secret contents, use 'nais secret view <name> -e %s'.\n", flags.Environment[0])
+				out.Printf("To view secret contents, use 'nais secret view <name> -e %s'.\n", environment)
 			}
 
 			return nil

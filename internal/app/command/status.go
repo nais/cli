@@ -24,11 +24,15 @@ func status(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name"},
 		},
 		Flags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return requireSingleEnvironment(flags.Environment)
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.GetApplicationStatus(ctx, flags.Team, args.Get("name"), flags.Environment)
+			name := args.Get("name")
+
+			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), flags.Output == "json")
+			if err != nil {
+				return err
+			}
+
+			ret, err := app.GetApplicationStatus(ctx, flags.Team, name, environment)
 			if err != nil {
 				return err
 			}
