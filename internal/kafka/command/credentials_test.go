@@ -18,7 +18,7 @@ func newTestOutputWriter(buf *bytes.Buffer) *naistrix.OutputWriter {
 
 func testKafkaCreds() *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials {
 	return &gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials{
-		Username:       "alice",
+		Username:       "myteam_alice_deadbeef_99",
 		AccessCert:     "-----BEGIN CERTIFICATE-----\ntest-cert\n-----END CERTIFICATE-----",
 		AccessKey:      "-----BEGIN PRIVATE KEY-----\ntest-key\n-----END PRIVATE KEY-----",
 		CaCert:         "-----BEGIN CERTIFICATE-----\ntest-ca\n-----END CERTIFICATE-----",
@@ -90,9 +90,9 @@ func TestWriteKafkaEnv(t *testing.T) {
 	got := buf.String()
 	for _, want := range []string{
 		`KAFKA_BROKERS="broker1:9092,broker2:9092"`,
-		`KAFKA_USERNAME="alice"`,
+		`KAFKA_USERNAME="myteam_alice_deadbeef_99"`,
 		`KAFKA_SCHEMA_REGISTRY="https://schema-registry:8081"`,
-		`KAFKA_SCHEMA_REGISTRY_USER="alice"`,
+		`KAFKA_SCHEMA_REGISTRY_USER="myteam_alice_deadbeef_99"`,
 		"KAFKA_CERTIFICATE=$(cat <<'NAIS_KAFKA_CERT_EOF'",
 		"KAFKA_PRIVATE_KEY=$(cat <<'NAIS_KAFKA_KEY_EOF'",
 		"KAFKA_CA=$(cat <<'NAIS_KAFKA_CA_EOF'",
@@ -136,7 +136,7 @@ func TestWriteKafkaKcat(t *testing.T) {
 	for _, want := range []string{
 		"# nais-cli ",
 		"bootstrap.servers=broker1:9092,broker2:9092",
-		"# username=alice",
+		`# sasl.username=myteam_alice_deadbeef_99 (use "alice" with 'nais kafka grant-access')`,
 		"security.protocol=ssl",
 	} {
 		if !strings.Contains(text, want) {
@@ -174,13 +174,28 @@ func TestWriteKafkaJava(t *testing.T) {
 	text := string(content)
 	for _, want := range []string{
 		"# nais-cli ",
-		"# username=alice",
+		`# sasl.username=myteam_alice_deadbeef_99 (use "alice" with 'nais kafka grant-access')`,
 		"security.protocol=SSL",
 		"ssl.truststore.type=PEM",
 		"ssl.keystore.type=PEM",
 	} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("Java config missing %q\n%s", want, text)
+		}
+	}
+}
+
+func TestKafkaApplicationName(t *testing.T) {
+	for _, tc := range []struct {
+		in, want string
+	}{
+		{"tsm_tmp-kafka-topic-4cea36_50d5a466_pF5", "tmp-kafka-topic-4cea36"},
+		{"redundant-team_application_18515795_99", "application"},
+		{"my-app", "my-app"},
+		{"", ""},
+	} {
+		if got := kafkaApplicationName(tc.in); got != tc.want {
+			t.Errorf("kafkaApplicationName(%q) = %q, want %q", tc.in, got, tc.want)
 		}
 	}
 }
