@@ -32,7 +32,7 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			access := grantAccessTopicFlags.Access
 			namespace := grantAccessTopicFlags.Team
 			topicName := args.Get("topic")
-			username := args.Get("username")
+			username := kafkaApplicationName(args.Get("username"))
 
 			if err := aiven.ValidAclPermission(access); err != nil {
 				return err
