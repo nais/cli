@@ -53,7 +53,11 @@ func resolveAppEnvironment(ctx context.Context, out *naistrix.OutputWriter, team
 		return envs[0], nil
 	default:
 		sort.Strings(envs)
-		if !term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
+		// Only prompt when both stdin and stdout are terminals: stdin so we can
+		// read the user's choice, stdout so the user actually sees the prompt.
+		// In pipelines like `nais app status <app> | jq ...`, stdout is a pipe
+		// and we must fail clearly instead of blocking on hidden input.
+		if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) { // #nosec G115
 			return "", fmt.Errorf("application %q exists in multiple environments (%s); specify -e, --environment", name, strings.Join(envs, ", "))
 		}
 		selected, err := input.Select(fmt.Sprintf("Select environment for %s", name), envs)
