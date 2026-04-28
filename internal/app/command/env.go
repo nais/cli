@@ -23,11 +23,15 @@ func env(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name"},
 		},
 		Flags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return requireSingleEnvironment(flags.Environment)
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.GetApplicationEnvVars(ctx, flags.Team, args.Get("name"), flags.Environment)
+			name := args.Get("name")
+
+			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment))
+			if err != nil {
+				return err
+			}
+
+			ret, err := app.GetApplicationEnvVars(ctx, flags.Team, name, environment)
 			if err != nil {
 				return err
 			}
@@ -47,7 +51,7 @@ func env(parentFlags *flag.App) *naistrix.Command {
 
 			if secretNames := app.UniqueSecretNames(ret); len(secretNames) > 0 {
 				out.Println("")
-				out.Printf("Secret values hidden. Use 'nais secret view <name> -e %s' to reveal.\n", flags.Environment[0])
+				out.Printf("Secret values hidden. Use 'nais secret view <name> -e %s' to reveal.\n", environment)
 				out.Printf("Secrets in use: %s\n", strings.Join(secretNames, ", "))
 			}
 
