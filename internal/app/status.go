@@ -51,7 +51,7 @@ type InstanceGroupInfo struct {
 	Instances        []InstanceInfo `json:"instances"`
 }
 
-func GetApplicationStatus(ctx context.Context, slug, name string, envs []string) (*InstanceGroupStatus, error) {
+func GetApplicationStatus(ctx context.Context, slug, name, env string) (*InstanceGroupStatus, error) {
 	_ = `# @genqlient
 		query GetApplicationStatus($slug: Slug!, $name: String!, $env: [String!]) {
 		  team(slug: $slug) {
@@ -96,7 +96,7 @@ func GetApplicationStatus(ctx context.Context, slug, name string, envs []string)
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationStatus(ctx, client, slug, name, envs)
+	resp, err := gql.GetApplicationStatus(ctx, client, slug, name, []string{env})
 	if err != nil {
 		return nil, err
 	}

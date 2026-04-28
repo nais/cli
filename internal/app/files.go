@@ -32,7 +32,7 @@ type MountedFile struct {
 	Error  MountedFileError `json:"error"`
 }
 
-func GetApplicationFiles(ctx context.Context, slug, name string, envs []string) ([]MountedFile, error) {
+func GetApplicationFiles(ctx context.Context, slug, name, env string) ([]MountedFile, error) {
 	_ = `# @genqlient
 		query GetApplicationFiles($slug: Slug!, $name: String!, $env: [String!]) {
 		  team(slug: $slug) {
@@ -60,7 +60,7 @@ func GetApplicationFiles(ctx context.Context, slug, name string, envs []string) 
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationFiles(ctx, client, slug, name, envs)
+	resp, err := gql.GetApplicationFiles(ctx, client, slug, name, []string{env})
 	if err != nil {
 		return nil, err
 	}
