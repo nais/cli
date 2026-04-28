@@ -7,5 +7,13 @@ import (
 )
 
 func Login(ctx context.Context, out *naistrix.OutputWriter, verbose bool) error {
-	return executeGcloud(ctx, out, verbose, "auth", "login", "--update-adc")
+	if err := executeGcloud(ctx, verbose, "auth", "login", "--update-adc"); err != nil {
+		return err
+	}
+
+	if !verbose {
+		out.Println("Logged in with gcloud.")
+	}
+
+	return nil
 }

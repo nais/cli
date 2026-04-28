@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	"github.com/nais/naistrix"
 )
 
-func executeGcloud(ctx context.Context, out *naistrix.OutputWriter, verbose bool, arg ...string) error {
+func executeGcloud(ctx context.Context, verbose bool, arg ...string) error {
 	cmd := exec.CommandContext(ctx, "gcloud", arg...)
 	if verbose {
 		cmd.Stdout = os.Stdout
@@ -24,7 +22,6 @@ func executeGcloud(ctx context.Context, out *naistrix.OutputWriter, verbose bool
 		if err != nil {
 			return fmt.Errorf("%v\nerror running %q command: %w", string(o), cmd.String(), err)
 		}
-		out.Println("Logged in with gcloud.")
 	}
 
 	return nil

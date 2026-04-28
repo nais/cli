@@ -7,5 +7,5 @@ import (
 )
 
 func PrintAccessToken(ctx context.Context, out *naistrix.OutputWriter) error {
-	return executeGcloud(ctx, out, true, "auth", "print-access-token")
+	return executeGcloud(ctx, true, "auth", "print-access-token")
 }

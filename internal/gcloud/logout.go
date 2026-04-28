@@ -7,9 +7,17 @@ import (
 )
 
 func Logout(ctx context.Context, out *naistrix.OutputWriter, verbose bool) error {
-	if err := executeGcloud(ctx, out, verbose, "auth", "application-default", "revoke", "--quiet"); err != nil {
+	if err := executeGcloud(ctx, verbose, "auth", "application-default", "revoke", "--quiet"); err != nil {
 		return err
 	}
 
-	return executeGcloud(ctx, out, verbose, "auth", "revoke")
+	if err := executeGcloud(ctx, verbose, "auth", "revoke"); err != nil {
+		return err
+	}
+
+	if !verbose {
+		out.Println("Logged out of gcloud.")
+	}
+
+	return nil
 }
