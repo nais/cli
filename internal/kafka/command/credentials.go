@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -144,6 +145,18 @@ func printMultilineEnvVar(out *naistrix.OutputWriter, name, value, marker string
 	out.Println(")")
 }
 
+var saslUsernameRe = regexp.MustCompile(`^[a-z0-9-]{1,20}_([a-z0-9-]{1,30})_[a-f0-9]{8}_[A-Za-z0-9]{1,8}$`)
+
+// kafkaApplicationName returns the application-name segment of a Nais Kafka SASL
+// username (the value used by `nais kafka grant-access`). Returns the input
+// unchanged if it doesn't match the SASL format.
+func kafkaApplicationName(username string) string {
+	if m := saslUsernameRe.FindStringSubmatch(username); m != nil {
+		return m[1]
+	}
+	return username
+}
+
 func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials) error {
 	files, err := writeCertFiles(creds)
 	if err != nil {
@@ -157,7 +170,7 @@ func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	config.WriteString(fmt.Sprintf("# nais-cli %s\n# kcat -F %s -t your.topic\n",
 		time.Now().Truncate(time.Minute), configFile))
 	config.WriteString(fmt.Sprintf("bootstrap.servers=%s\n", creds.Brokers))
-	config.WriteString(fmt.Sprintf("# username=%s\n", creds.Username))
+	config.WriteString(fmt.Sprintf("# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username)))
 	config.WriteString("security.protocol=ssl\n")
 	config.WriteString(fmt.Sprintf("ssl.certificate.location=%s\n", files.cert))
 	config.WriteString(fmt.Sprintf("ssl.key.location=%s\n", files.key))
@@ -189,7 +202,7 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	properties.WriteString(fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)))
 	properties.WriteString(fmt.Sprintf("# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s\n",
 		creds.Brokers, configFile))
-	properties.WriteString(fmt.Sprintf("# username=%s\n", creds.Username))
+	properties.WriteString(fmt.Sprintf("# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username)))
 	properties.WriteString("security.protocol=SSL\n")
 	properties.WriteString("ssl.protocol=TLS\n")
 	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", filepath.ToSlash(files.ca)))
