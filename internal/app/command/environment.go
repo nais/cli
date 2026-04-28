@@ -20,12 +20,13 @@ import (
 //   - If provided is non-empty, it is validated against the environments where the
 //     application exists.
 //   - If provided is empty and the application exists in exactly one environment,
-//     that environment is auto-selected and a notice is printed via out.
+//     that environment is auto-selected and a notice is printed via out, unless
+//     quiet is true (e.g. when machine-readable output like JSON is requested).
 //   - If provided is empty and the application exists in multiple environments,
 //     an interactive selector is shown when running in a terminal. In a non-interactive
 //     context (CI, pipes), a clear error is returned listing the available environments.
 //   - If the application is not found in any environment, an error is returned.
-func resolveAppEnvironment(ctx context.Context, out *naistrix.OutputWriter, team, name, provided string) (string, error) {
+func resolveAppEnvironment(ctx context.Context, out *naistrix.OutputWriter, team, name, provided string, quiet bool) (string, error) {
 	envs, err := app.ApplicationEnvironments(ctx, team, name)
 	if err != nil {
 		return "", fmt.Errorf("fetching environments for application %q: %w", name, err)
@@ -46,7 +47,9 @@ func resolveAppEnvironment(ctx context.Context, out *naistrix.OutputWriter, team
 	case 0:
 		return "", fmt.Errorf("application %q not found in team %q", name, team)
 	case 1:
-		out.Infof("%s only found in %s, auto-selecting.\n", name, envs[0])
+		if !quiet {
+			out.Infof("%s only found in %s, auto-selecting.\n", name, envs[0])
+		}
 		return envs[0], nil
 	default:
 		sort.Strings(envs)
