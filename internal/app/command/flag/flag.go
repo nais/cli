@@ -89,16 +89,27 @@ func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str st
 		return autoCompleteEnvironments(ctx)
 	}
 
-	f := flags.(*Log)
-	if len(f.Team) == 0 {
+	team := teamFromAppFlags(flags)
+	if len(team) == 0 {
 		return nil, "Please provide team to auto-complete environments. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 
-	envs, err := app.ApplicationEnvironments(ctx, f.Team, args.Get("name"))
+	envs, err := app.ApplicationEnvironments(ctx, team, args.Get("name"))
 	if err != nil {
 		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
 	}
 	return envs, "Available environments"
+}
+
+func teamFromAppFlags(flags any) string {
+	switch f := flags.(type) {
+	case *Log:
+		return f.Team
+	case *EnvVars:
+		return f.Team
+	default:
+		return ""
+	}
 }
 
 type Log struct {
@@ -119,6 +130,7 @@ type Status struct {
 
 type EnvVars struct {
 	*App
+	Environment Env `name:"environment" short:"e" usage:"Environment of the application. Auto-selected if the app exists in only one environment."`
 }
 
 type Files struct {

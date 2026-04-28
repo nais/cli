@@ -53,7 +53,7 @@ type EnvVar struct {
 	Source ValueSource `json:"source"`
 }
 
-func GetApplicationEnvVars(ctx context.Context, slug, name string, envs []string) ([]EnvVar, error) {
+func GetApplicationEnvVars(ctx context.Context, slug, name, env string) ([]EnvVar, error) {
 	_ = `# @genqlient
 		query GetApplicationEnvVars($slug: Slug!, $name: String!, $env: [String!]) {
 		  team(slug: $slug) {
@@ -81,7 +81,7 @@ func GetApplicationEnvVars(ctx context.Context, slug, name string, envs []string
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationEnvVars(ctx, client, slug, name, envs)
+	resp, err := gql.GetApplicationEnvVars(ctx, client, slug, name, []string{env})
 	if err != nil {
 		return nil, err
 	}
