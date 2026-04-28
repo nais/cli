@@ -54,7 +54,7 @@ func setupWireGuard(privateKey wgtypes.Key, gatewayPublicKey wgtypes.Key, gatewa
 		return nil, fmt.Errorf("wireguard bind is nil")
 	}
 
-	tuneStack((*netstackView)(unsafe.Pointer(wgNet)).stack)
+	tuneStack((*netstackView)(unsafe.Pointer(wgNet)).stack) // #nosec G103 -- mirrors netstack.Net layout to access unexported stack field
 
 	logger := device.NewLogger(device.LogLevelError, "[wireguard-cli] ")
 	dev := device.NewDevice(tun, bind, logger)
