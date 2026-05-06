@@ -79,21 +79,6 @@ func (m *Migrator) Setup(ctx context.Context) error {
 		return fmt.Errorf("failed to create ConfigMap: %w", err)
 	}
 
-	role, err := makeMigratorRole(m.cfg)
-	if err != nil {
-		return err
-	}
-	err = createObject(ctx, m, cfgMap, role, CommandSetup)
-	if err != nil {
-		return err
-	}
-
-	roleBinding := makeRoleBinding(m.cfg)
-	err = createObject(ctx, m, cfgMap, roleBinding, CommandSetup)
-	if err != nil {
-		return err
-	}
-
 	jobName, err := m.doNaisJob(ctx, cfgMap, CommandSetup)
 	if err != nil {
 		return err

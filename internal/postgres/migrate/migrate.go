@@ -20,7 +20,6 @@ import (
 	"golang.org/x/sync/errgroup"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -427,68 +426,6 @@ func createObject[T interface {
 		return fmt.Errorf("failed to create Object: %w", err)
 	}
 	return nil
-}
-
-// makeMigratorRole grants the migrator jobs read access to exactly the two
-// secrets they read in resolved.ResolveInstance: google-sql-<app> (source creds
-// pre-promote, target creds post-promote) and google-sql-migrator-<app> (target
-// creds via the helper app). Replaces reliance on the nais:developer ClusterRole,
-// which lost secrets:get in nais/system#402.
-func makeMigratorRole(cfg config.Config) (*rbacv1.Role, error) {
-	helperName, err := helperAppName(cfg.AppName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive helper app name: %w", err)
-	}
-
-	appSecretName := "google-sql-" + cfg.AppName
-	helperSecretName := "google-sql-" + helperName
-
-	return &rbacv1.Role{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cfg.MigrationName(),
-			Namespace: cfg.Team,
-		},
-		Rules: []rbacv1.PolicyRule{
-			{
-				APIGroups:     []string{""},
-				Resources:     []string{"secrets"},
-				Verbs:         []string{"get", "list", "watch"},
-				ResourceNames: []string{appSecretName, helperSecretName},
-			},
-		},
-	}, nil
-}
-
-func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
-	return &rbacv1.RoleBinding{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cfg.MigrationName(),
-			Namespace: cfg.Team,
-		},
-		Subjects: []rbacv1.Subject{
-			{
-				Kind: "ServiceAccount",
-				Name: CommandSetup.JobName(cfg),
-			},
-			{
-				Kind: "ServiceAccount",
-				Name: CommandPromote.JobName(cfg),
-			},
-			{
-				Kind: "ServiceAccount",
-				Name: CommandFinalize.JobName(cfg),
-			},
-			{
-				Kind: "ServiceAccount",
-				Name: CommandRollback.JobName(cfg),
-			},
-		},
-		RoleRef: rbacv1.RoleRef{
-			Kind:     "Role",
-			Name:     cfg.MigrationName(),
-			APIGroup: "rbac.authorization.k8s.io",
-		},
-	}
 }
 
 func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v1.Naisjob {
