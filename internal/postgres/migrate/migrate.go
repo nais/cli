@@ -434,6 +434,11 @@ func createObject[T interface {
 // pre-promote, target creds post-promote) and google-sql-migrator-<app> (target
 // creds via the helper app). Replaces reliance on the nais:developer ClusterRole,
 // which lost secrets:get in nais/system#402.
+//
+// Verbs are limited to "get" because that is the only verb the migrator uses
+// (resolved.ResolveInstance calls Secrets().Get). Including "list" and "watch"
+// would trigger Kubernetes' privilege escalation prevention for callers that
+// only have "get" on the named secrets.
 func makeMigratorRole(cfg config.Config) (*rbacv1.Role, error) {
 	helperName, err := helperAppName(cfg.AppName)
 	if err != nil {
@@ -452,7 +457,7 @@ func makeMigratorRole(cfg config.Config) (*rbacv1.Role, error) {
 			{
 				APIGroups:     []string{""},
 				Resources:     []string{"secrets"},
-				Verbs:         []string{"get", "list", "watch"},
+				Verbs:         []string{"get"},
 				ResourceNames: []string{appSecretName, helperSecretName},
 			},
 		},
