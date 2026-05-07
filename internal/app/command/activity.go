@@ -2,12 +2,10 @@ package command
 
 import (
 	"context"
-	"os"
 
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
-	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -33,7 +31,7 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 				return err
 			}
 
-			ret, found, err := app.GetApplicationActivity(ctx, flags.Team, args.Get("name"), flags.Environment, activityTypes, flags.Limit)
+			ret, found, err := app.GetApplicationActivity(ctx, flags.Team, args.Get("name"), string(flags.Environment), activityTypes, flags.Limit)
 			if err != nil {
 				return err
 			}
@@ -52,23 +50,6 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				environments := []string(flags.Environment)
-				if len(environments) == 0 {
-					environments = cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
-				}
-
-				apps, err := app.GetApplicationNames(ctx, flags.Team, environments)
-				if err != nil {
-					return nil, "Unable to fetch application names."
-				}
-				return apps, "Select an application."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

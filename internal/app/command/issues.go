@@ -23,7 +23,7 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := app.GetApplicationIssues(ctx, flags.Team, args.Get("name"), flags.Environment)
+			ret, err := app.GetApplicationIssues(ctx, flags.Team, args.Get("name"), string(flags.Environment))
 			if err != nil {
 				return err
 			}
@@ -38,18 +38,6 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				apps, err := app.GetApplicationNames(ctx, flags.Team, flags.Environment)
-				if err != nil {
-					return nil, "Unable to fetch application names."
-				}
-				return apps, "Select an application."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

@@ -3,8 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"maps"
 	"slices"
-	"sort"
 	"time"
 
 	"github.com/nais/cli/internal/formatting"
@@ -80,23 +80,45 @@ func (a LastUpdated) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", time.Time(a).Format(time.RFC3339)), nil
 }
 
-func GetApplicationNames(ctx context.Context, team string, environments []string) ([]string, error) {
+type ApplicationNames map[string][]string
+
+// Unique returns a list of unique application names across all environments, sorted.
+func (n ApplicationNames) Unique() []string {
+	unique := make(map[string]struct{})
+	for _, apps := range n {
+		for _, app := range apps {
+			unique[app] = struct{}{}
+		}
+	}
+
+	ret := slices.Collect(maps.Keys(unique))
+	slices.Sort(ret)
+	return ret
+}
+
+// InEnv returns a list of application names in a given environment, sorted.
+func (n ApplicationNames) InEnv(env string) []string {
+	ret := n[env]
+	slices.Sort(ret)
+	return ret
+}
+
+// GetApplicationNames returns a map where the keys are the environment names, and the value is a list of application
+// names in that environment.
+func GetApplicationNames(ctx context.Context, team string) (ApplicationNames, error) {
 	_ = `# @genqlient
-		query GetApplicationNames($team: Slug!) {
-		  team(slug: $team) {
-			  applications(first: 1000) {
-		      nodes {
-		        name
-				teamEnvironment {
-					environment {
-						name
+	query GetApplicationNames($team: Slug!) {
+		team(slug: $team) {
+			applications(first: 1000) {
+				nodes {
+					name
+					teamEnvironment {
+						environment { name }
 					}
 				}
-		      }
-		    }
-		  }
+			}
 		}
-		`
+	}`
 
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
@@ -107,23 +129,17 @@ func GetApplicationNames(ctx context.Context, team string, environments []string
 	if err != nil {
 		return nil, err
 	}
-	uniq := make(map[string]struct{})
 
+	apps := make(map[string][]string)
 	for _, app := range resp.Team.Applications.Nodes {
 		env := app.TeamEnvironment.Environment.Name
-		if len(environments) > 0 && !slices.Contains(environments, env) {
-			continue
+		if _, ok := apps[env]; !ok {
+			apps[env] = []string{}
 		}
-		uniq[app.Name] = struct{}{}
+		apps[env] = append(apps[env], app.Name)
 	}
 
-	ret := make([]string, 0, len(uniq))
-	for name := range uniq {
-		ret = append(ret, name)
-	}
-	sort.Strings(ret)
-
-	return ret, nil
+	return apps, nil
 }
 
 func GetTeamApplications(ctx context.Context, team string, orderBy gql.ApplicationOrder, filter gql.TeamApplicationsFilter) ([]Application, error) {
