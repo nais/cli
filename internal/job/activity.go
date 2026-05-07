@@ -16,7 +16,7 @@ type JobActivity struct {
 	Message     string    `json:"message"`
 }
 
-func GetJobActivity(ctx context.Context, team, name string, environments []string, limit int) ([]JobActivity, error) {
+func GetJobActivity(ctx context.Context, team, name string, environment string, limit int) ([]JobActivity, error) {
 	_ = `# @genqlient
 		query GetJobActivity($team: Slug!, $name: String!, $env: [String!], $first: Int) {
 			team(slug: $team) {
@@ -46,7 +46,7 @@ func GetJobActivity(ctx context.Context, team, name string, environments []strin
 		return nil, err
 	}
 
-	resp, err := gql.GetJobActivity(ctx, client, team, name, environments, limit)
+	resp, err := gql.GetJobActivity(ctx, client, team, name, []string{environment}, limit)
 	if err != nil {
 		return nil, err
 	}

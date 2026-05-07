@@ -19,16 +19,8 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "List jobs in a team.",
 		Description: "Shows all jobs for the team with their schedule, last run status, state, and issue count. Use --environment to filter by environment.",
 		Flags:       flags,
-		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if flags.Team == "" {
-					return nil, "Please provide team. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-			}
-			return nil, ""
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := job.GetTeamJobs(ctx, flags.Team, flags.Environment)
+			ret, err := job.GetTeamJobs(ctx, flags.Team, string(flags.Environment))
 			if err != nil {
 				return err
 			}

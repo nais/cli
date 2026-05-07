@@ -20,7 +20,7 @@ func (s Severity) String() string {
 	return formatting.ColoredSeverityString(string(s), gql.Severity(s))
 }
 
-func GetJobIssues(ctx context.Context, team, name string, envs []string) ([]JobIssue, error) {
+func GetJobIssues(ctx context.Context, team, name string, environment string) ([]JobIssue, error) {
 	_ = `# @genqlient
 		query GetJobIssues($team: Slug!, $name: String!, $env: [String!]) {
 			team(slug: $team) {
@@ -48,7 +48,7 @@ func GetJobIssues(ctx context.Context, team, name string, envs []string) ([]JobI
 		return nil, err
 	}
 
-	resp, err := gql.GetJobIssues(ctx, client, team, name, envs)
+	resp, err := gql.GetJobIssues(ctx, client, team, name, []string{environment})
 	if err != nil {
 		return nil, err
 	}

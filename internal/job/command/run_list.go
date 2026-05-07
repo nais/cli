@@ -20,23 +20,8 @@ func listRuns(parentFlags *flag.Job) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "job-name"},
 		},
-		Flags: flags,
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if flags.Team == "" {
-					return nil, "Please provide team to auto-complete job names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				if flags.Environment == "" {
-					return []string{"--environment"}, ""
-				}
-				jobs, err := job.GetJobNames(ctx, flags.Team, []string{string(flags.Environment)})
-				if err != nil {
-					return nil, "Unable to fetch job names."
-				}
-				return jobs, "Select a job."
-			}
-			return nil, ""
-		},
+		Flags:            flags,
+		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
 				return fmt.Errorf("exactly one environment must be specified")
