@@ -3,65 +3,14 @@ package flag
 import (
 	"context"
 	"fmt"
-	"os"
-	"slices"
-	"sort"
 
 	"github.com/nais/cli/internal/flags"
-	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/naistrix"
 )
 
 type OpenSearch struct {
 	*flags.GlobalFlags
-	Environment Env `name:"environment" short:"e" usage:"Filter by environment."`
-}
-
-type Env string
-
-func (e *Env) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	var team string
-	switch f := flags.(type) {
-	case *Credentials:
-		team = f.Team
-	case *OpenSearch:
-		team = f.Team
-	}
-
-	if team != "" && isCredentialsCompletionFromCLIArgs() {
-		envs, err := opensearchCredentialEnvironments(ctx, team)
-		if err == nil {
-			return envs, "Available environments with OpenSearch instances"
-		}
-	}
-	return autoCompleteEnvironments(ctx)
-}
-
-func isCredentialsCompletionFromCLIArgs() bool {
-	return slices.Contains(os.Args, "credentials")
-}
-
-func opensearchCredentialEnvironments(ctx context.Context, team string) ([]string, error) {
-	instances, err := opensearch.GetAll(ctx, team)
-	if err != nil {
-		return nil, err
-	}
-
-	seen := make(map[string]struct{})
-	var envs []string
-	for _, instance := range instances {
-		env := instance.TeamEnvironment.Environment.Name
-		if _, ok := seen[env]; ok {
-			continue
-		}
-		seen[env] = struct{}{}
-		envs = append(envs, env)
-	}
-
-	sort.Strings(envs)
-	return envs, nil
 }
 
 type Create struct {
@@ -89,42 +38,15 @@ type Delete struct {
 	*OpenSearch
 }
 
-type GetEnv string
-
-func (e *GetEnv) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	if args.Len() == 0 {
-		return autoCompleteEnvironments(ctx)
-	}
-
-	f := flags.(*Get)
-	if len(f.Team) == 0 {
-		return nil, "Please provide team to auto-complete environments. 'nais defaults set team <team>', or '--team <team>' flag."
-	}
-
-	envs, err := opensearch.OpenSearchEnvironments(ctx, f.Team, args.Get("name"))
-	if err != nil {
-		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
-	}
-	return envs, "Available environments"
-}
-
 type Get struct {
 	*OpenSearch
-	Environment GetEnv `name:"environment" short:"e" usage:"Filter by environment."`
 }
 
 type Output string
 
-type Environments []string
-
-func (e *Environments) AutoComplete(ctx context.Context, args *naistrix.Arguments, str string, flags any) ([]string, string) {
-	return autoCompleteEnvironments(ctx)
-}
-
 type List struct {
 	*OpenSearch
-	Environment Environments `name:"environment" short:"e" usage:"Filter by environment."`
-	Output      Output       `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
@@ -231,12 +153,4 @@ func (p *Permission) AutoComplete(context.Context, *naistrix.Arguments, string, 
 		perms = append(perms, string(perm))
 	}
 	return perms, "Available permission levels."
-}
-
-func autoCompleteEnvironments(ctx context.Context) ([]string, string) {
-	envs, err := naisapi.GetAllEnvironments(ctx)
-	if err != nil {
-		return nil, fmt.Sprintf("Failed to fetch environments for auto-completion: %v", err)
-	}
-	return envs, "Available environments"
 }

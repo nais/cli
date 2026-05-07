@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
@@ -66,7 +65,7 @@ func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 			var summaries []OpenSearchSummary
 			for _, o := range opensearches {
 				// TODO: use filter in GQL query instead
-				if len(flags.Environment) > 0 && !slices.Contains(flags.Environment, string(o.TeamEnvironment.Environment.Name)) {
+				if len(flags.Environment) > 0 && string(flags.Environment) != o.TeamEnvironment.Environment.Name {
 					continue
 				}
 				summaries = append(summaries, OpenSearchSummary{
