@@ -11,14 +11,13 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Khan/genqlient/graphql"
-	"github.com/nais/cli/internal/naisapi/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/suessflorian/gqlfetch"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
+func PullSchema(ctx context.Context) (string, error) {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return "", err
@@ -41,7 +40,7 @@ func PullSchema(ctx context.Context, _ *flag.Schema) (string, error) {
 	return schema, nil
 }
 
-func StartProxy(ctx context.Context, out *naistrix.OutputWriter, flags *flag.Proxy) error {
+func StartProxy(ctx context.Context, out *naistrix.OutputWriter, listenAddr string) error {
 	user, err := GetAuthenticatedUser(ctx)
 	if err != nil {
 		return err
@@ -62,11 +61,11 @@ func StartProxy(ctx context.Context, out *naistrix.OutputWriter, flags *flag.Pro
 		}),
 	}
 
-	out.Println("Forwarding requests from", "http://"+flags.ListenAddr, "to", target.String())
+	out.Println("Forwarding requests from", "http://"+listenAddr, "to", target.String())
 	// Start the server
 	http.Handle("/graphql", proxy)
 	http.Handle("/", playground.Handler("Nais API playground", "/graphql"))
-	if err := http.ListenAndServe(flags.ListenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	if err := http.ListenAndServe(listenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 	return nil
