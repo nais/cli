@@ -12,12 +12,12 @@ func TestBuildSecretActivity(t *testing.T) {
 	now := time.Now().UTC()
 
 	tests := []struct {
-		name         string
-		resources    []secretActivityResource
-		secretName   string
-		environments []string
-		wantFound    bool
-		want         []SecretActivity
+		name        string
+		resources   []secretActivityResource
+		secretName  string
+		environment string
+		wantFound   bool
+		want        []SecretActivity
 	}{
 		{
 			name:       "exact name match with fallback environment",
@@ -48,9 +48,9 @@ func TestBuildSecretActivity(t *testing.T) {
 					},
 				},
 			},
-			environments: []string{"prod-gcp"},
-			wantFound:    false,
-			want:         []SecretActivity{},
+			environment: "prod-gcp",
+			wantFound:   false,
+			want:        []SecretActivity{},
 		},
 		{
 			name:       "not found when only partial name exists",
@@ -95,7 +95,7 @@ func TestBuildSecretActivity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, found := buildSecretActivity(tt.resources, tt.secretName, tt.environments)
+			got, found := buildSecretActivity(tt.resources, tt.secretName, tt.environment)
 			if found != tt.wantFound {
 				t.Fatalf("buildSecretActivity() found = %v, want %v", found, tt.wantFound)
 			}

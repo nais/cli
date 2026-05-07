@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/secret"
@@ -58,73 +57,43 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteSecretNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
-	if countEnvironmentFlagsInCLIArgs() > 1 {
-		return nil, "Only one -e, --environment flag may be provided."
-	}
-
-	if environment == "" {
-		envs := environmentValuesFromCLIArgs()
-		if len(envs) == 1 {
-			environment = envs[0]
+func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
+	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+		if args.Len() > 0 {
+			return nil, ""
 		}
-	}
 
-	environments := []string{}
-	if environment != "" {
-		environments = append(environments, environment)
-	}
-	return autoCompleteSecretNamesInEnvironments(ctx, team, environments, requireEnvironment)
-}
-
-func autoCompleteSecretNamesInEnvironments(ctx context.Context, team string, environments []string, requireEnvironment bool) ([]string, string) {
-	if team == "" {
-		return nil, "Please provide team to auto-complete secret names. 'nais defaults set team <team>', or '--team <team>' flag."
-	}
-	if requireEnvironment && len(environments) == 0 {
-		return nil, "Please provide environment to auto-complete secret names. '-e, --environment <environment>' flag."
-	}
-
-	environmentFilter := make(map[string]struct{}, len(environments))
-	for _, env := range environments {
-		if env == "" {
-			continue
+		if flags.Team == "" {
+			return nil, "Please provide team to auto-complete secret names. 'nais defaults set team <team>', or '--team <team>' flag."
 		}
-		environmentFilter[env] = struct{}{}
-	}
 
-	secrets, err := secret.GetAll(ctx, team)
-	if err != nil {
-		return nil, fmt.Sprintf("Unable to fetch secrets for auto-completion: %v", err)
-	}
+		if flags.Environment == "" {
+			return nil, "Please provide environment to auto-complete secret names. '-e, --environment <environment>' flag."
+		}
 
-	seen := make(map[string]struct{})
-	var names []string
-	for _, s := range secrets {
-		if len(environmentFilter) > 0 {
-			if _, ok := environmentFilter[s.TeamEnvironment.Environment.Name]; !ok {
+		secrets, err := secret.GetAll(ctx, flags.Team)
+		if err != nil {
+			return nil, fmt.Sprintf("Unable to fetch secrets for auto-completion: %v", err)
+		}
+
+		seen := make(map[string]struct{})
+		var names []string
+		for _, s := range secrets {
+			if string(flags.Environment) != s.TeamEnvironment.Environment.Name {
 				continue
 			}
+			if _, ok := seen[s.Name]; ok {
+				continue
+			}
+			seen[s.Name] = struct{}{}
+			names = append(names, s.Name)
 		}
-		if _, ok := seen[s.Name]; ok {
-			continue
-		}
-		seen[s.Name] = struct{}{}
-		names = append(names, s.Name)
-	}
-	sort.Strings(names)
+		sort.Strings(names)
 
-	if len(names) == 0 && len(environmentFilter) > 0 {
-		sortedEnvironments := make([]string, 0, len(environmentFilter))
-		for env := range environmentFilter {
-			sortedEnvironments = append(sortedEnvironments, env)
+		if len(names) == 0 {
+			return nil, "No secrets found."
 		}
-		sort.Strings(sortedEnvironments)
-		if len(sortedEnvironments) == 1 {
-			return nil, fmt.Sprintf("No secrets found in environment %q.", sortedEnvironments[0])
-		}
-		return nil, fmt.Sprintf("No secrets found in environments: %s.", strings.Join(sortedEnvironments, ", "))
-	}
 
-	return names, "Select a secret."
+		return names, "Select a secret."
+	}
 }

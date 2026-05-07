@@ -34,12 +34,7 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 			}
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteSecretNames(ctx, f.Team, string(f.Environment), true)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Unset a key from a secret.",
