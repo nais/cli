@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
@@ -20,8 +21,16 @@ func TestParse(t *testing.T) {
 		want  want
 	}{
 		{
-			name:  "single filter",
-			input: &flag.List{Environment: "x"},
+			name: "single filter",
+			input: &flag.List{
+				Issues: &flag.Issues{
+					GlobalFlags: &flags.GlobalFlags{
+						AdditionalFlags: &flags.AdditionalFlags{
+							Environment: "x",
+						},
+					},
+				},
+			},
 			want: want{
 				filters: gql.IssueFilter{
 					Environments: []string{"x"},
@@ -29,8 +38,17 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:  "multiple filters",
-			input: &flag.List{Environment: "x", Severity: "CRITICAL"},
+			name: "multiple filters",
+			input: &flag.List{
+				Issues: &flag.Issues{
+					GlobalFlags: &flags.GlobalFlags{
+						AdditionalFlags: &flags.AdditionalFlags{
+							Environment: "x",
+						},
+					},
+				},
+				Severity: "CRITICAL",
+			},
 			want: want{
 				filters: gql.IssueFilter{
 					Environments: []string{"x"},
@@ -39,8 +57,15 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:  "invalid filter value",
-			input: &flag.List{Severity: "marning"},
+			name: "invalid filter value",
+			input: &flag.List{
+				Issues: &flag.Issues{
+					GlobalFlags: &flags.GlobalFlags{
+						AdditionalFlags: &flags.AdditionalFlags{},
+					},
+				},
+				Severity: "marning",
+			},
 			want: want{
 				err: "invalid filter value: marning, valid values are: [CRITICAL WARNING TODO]",
 			},
