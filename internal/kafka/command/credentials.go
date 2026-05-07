@@ -24,10 +24,10 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "Creates temporary credentials for accessing Kafka. Output format can be env (default), kcat, or java. The env format prints environment variables to stdout. The kcat and java formats write configuration files to a temporary directory.",
 		Flags:       flags,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if len(flags.Environment) != 1 {
+			if flags.Environment == "" {
 				return fmt.Errorf("exactly one environment is required, set using -e, --environment flag")
 			}
-			if err := validation.CheckEnvironment(flags.Environment[0]); err != nil {
+			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
 				return err
 			}
 			if flags.TTL == "" {
@@ -57,7 +57,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 			creds, err := kafka.CreateCredentials(
 				ctx,
 				flags.Team,
-				flags.Environment[0],
+				string(flags.Environment),
 				flags.TTL,
 			)
 			if err != nil {
