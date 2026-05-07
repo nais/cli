@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"context"
-	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -14,7 +13,7 @@ type Topic struct {
 	Environment string `json:"environment"`
 }
 
-func GetTeamTopics(ctx context.Context, team string, environments []string) ([]Topic, error) {
+func GetTeamTopics(ctx context.Context, team string, environment string) ([]Topic, error) {
 	_ = `# @genqlient
 		query GetTeamKafkaTopics($team: Slug!) {
 			team(slug: $team) {
@@ -45,7 +44,7 @@ func GetTeamTopics(ctx context.Context, team string, environments []string) ([]T
 	ret := make([]Topic, 0, len(resp.Team.KafkaTopics.Nodes))
 	for _, topic := range resp.Team.KafkaTopics.Nodes {
 		env := topic.TeamEnvironment.Environment.Name
-		if len(environments) > 0 && !slices.Contains(environments, env) {
+		if len(environment) > 0 && environment != env {
 			continue
 		}
 

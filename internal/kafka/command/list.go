@@ -20,7 +20,7 @@ func list(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "Shows all Kafka topics owned by the team. Use --environment to filter by environment.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := kafka.GetTeamTopics(ctx, flags.Team, flags.Environment)
+			ret, err := kafka.GetTeamTopics(ctx, flags.Team, string(flags.Environment))
 			if err != nil {
 				return err
 			}
