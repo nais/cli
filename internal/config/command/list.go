@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/config"
@@ -54,7 +53,7 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 			for _, c := range configs {
 				envName := c.TeamEnvironment.Environment.Name
 
-				if len(f.Environment) > 0 && !slices.Contains(f.Environment, envName) {
+				if len(f.Environment) > 0 && string(f.Environment) != envName {
 					continue
 				}
 

@@ -33,7 +33,7 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 				return err
 			}
 
-			ret, found, err := config.GetActivity(ctx, f.Team, args.Get("name"), f.Environment, activityTypes, f.Limit)
+			ret, found, err := config.GetActivity(ctx, f.Team, args.Get("name"), string(f.Environment), activityTypes, f.Limit)
 			if err != nil {
 				return err
 			}
@@ -54,18 +54,6 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if f.Team == "" {
-					return nil, "Please provide team to auto-complete config names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				environments := []string(f.Environment)
-				if len(environments) == 0 {
-					environments = environmentValuesFromCLIArgs()
-				}
-				return autoCompleteConfigNamesInEnvironments(ctx, f.Team, environments, false)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 	}
 }

@@ -12,12 +12,12 @@ func TestBuildConfigActivity(t *testing.T) {
 	now := time.Now().UTC()
 
 	tests := []struct {
-		name         string
-		resources    []configActivityResource
-		configName   string
-		environments []string
-		wantFound    bool
-		want         []ConfigActivity
+		name        string
+		resources   []configActivityResource
+		configName  string
+		environment string
+		wantFound   bool
+		want        []ConfigActivity
 	}{
 		{
 			name:       "exact name match with fallback environment",
@@ -65,9 +65,9 @@ func TestBuildConfigActivity(t *testing.T) {
 					},
 				},
 			},
-			environments: []string{"prod-gcp"},
-			wantFound:    false,
-			want:         []ConfigActivity{},
+			environment: "prod-gcp",
+			wantFound:   false,
+			want:        []ConfigActivity{},
 		},
 		{
 			name:       "not found when only partial name exists",
@@ -100,8 +100,8 @@ func TestBuildConfigActivity(t *testing.T) {
 					},
 				},
 			},
-			environments: []string{"prod-gcp"},
-			wantFound:    true,
+			environment: "prod-gcp",
+			wantFound:   true,
 			want: []ConfigActivity{
 				{CreatedAt: now, Actor: "bob@example.com", Environment: "prod-gcp", Message: "Updated key"},
 			},
@@ -119,7 +119,7 @@ func TestBuildConfigActivity(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, found := buildConfigActivity(tt.resources, tt.configName, tt.environments)
+			got, found := buildConfigActivity(tt.resources, tt.configName, tt.environment)
 			if found != tt.wantFound {
 				t.Fatalf("buildConfigActivity() found = %v, want %v", found, tt.wantFound)
 			}

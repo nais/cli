@@ -56,7 +56,3 @@ func validateSingleEnvironmentFlagUsage() error {
 func countEnvironmentFlagsInCLIArgs() int {
 	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
-
-func environmentValuesFromCLIArgs() []string {
-	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
-}

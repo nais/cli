@@ -58,12 +58,7 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 			}
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteConfigNames(ctx, f.Team, string(f.Environment), false)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Get details for a config named my-config in environment dev.",

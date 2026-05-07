@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"slices"
 	"sort"
 	"time"
 
@@ -30,7 +29,7 @@ type configActivityResource struct {
 	Entries        []configActivityEntry
 }
 
-func GetActivity(ctx context.Context, team, name string, environments []string, activityTypes []gql.ActivityLogActivityType, limit int) ([]ConfigActivity, bool, error) {
+func GetActivity(ctx context.Context, team, name string, environment string, activityTypes []gql.ActivityLogActivityType, limit int) ([]ConfigActivity, bool, error) {
 	_ = `# @genqlient
 		query GetConfigActivity($team: Slug!, $name: String!, $activityTypes: [ActivityLogActivityType!], $first: Int) {
 			team(slug: $team) {
@@ -85,11 +84,11 @@ func GetActivity(ctx context.Context, team, name string, environments []string, 
 		})
 	}
 
-	ret, found := buildConfigActivity(resources, name, environments)
+	ret, found := buildConfigActivity(resources, name, environment)
 	return ret, found, nil
 }
 
-func buildConfigActivity(resources []configActivityResource, name string, environments []string) ([]ConfigActivity, bool) {
+func buildConfigActivity(resources []configActivityResource, name string, environment string) ([]ConfigActivity, bool) {
 	found := false
 	ret := make([]ConfigActivity, 0)
 
@@ -99,7 +98,7 @@ func buildConfigActivity(resources []configActivityResource, name string, enviro
 		}
 
 		defaultEnv := c.DefaultEnvName
-		if len(environments) > 0 && !slices.Contains(environments, defaultEnv) {
+		if len(environment) > 0 && environment != defaultEnv {
 			continue
 		}
 
