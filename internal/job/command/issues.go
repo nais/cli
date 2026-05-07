@@ -21,7 +21,7 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := job.GetJobIssues(ctx, flags.Team, args.Get("name"), flags.Environment)
+			ret, err := job.GetJobIssues(ctx, flags.Team, args.Get("name"), string(flags.Environment))
 			if err != nil {
 				return err
 			}
@@ -36,18 +36,6 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete job names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				jobs, err := job.GetJobNames(ctx, flags.Team, flags.Environment)
-				if err != nil {
-					return nil, "Unable to fetch job names."
-				}
-				return jobs, "Select a job."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }

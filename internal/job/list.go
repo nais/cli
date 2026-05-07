@@ -2,7 +2,6 @@ package job
 
 import (
 	"context"
-	"slices"
 	"sort"
 
 	"github.com/nais/cli/internal/naisapi"
@@ -59,7 +58,7 @@ func (s Schedule) String() string {
 	return string(s)
 }
 
-func GetJobNames(ctx context.Context, team string, environments []string) ([]string, error) {
+func GetJobNames(ctx context.Context, team string, environment string) ([]string, error) {
 	_ = `# @genqlient
 		query GetJobNames($team: Slug!) {
 			team(slug: $team) {
@@ -90,7 +89,7 @@ func GetJobNames(ctx context.Context, team string, environments []string) ([]str
 	uniq := make(map[string]struct{})
 	for _, j := range resp.Team.Jobs.Nodes {
 		env := j.TeamEnvironment.Environment.Name
-		if len(environments) > 0 && !slices.Contains(environments, env) {
+		if len(environment) > 0 && environment != env {
 			continue
 		}
 		uniq[j.Name] = struct{}{}
@@ -105,7 +104,7 @@ func GetJobNames(ctx context.Context, team string, environments []string) ([]str
 	return ret, nil
 }
 
-func GetTeamJobs(ctx context.Context, team string, environments []string) ([]Job, error) {
+func GetTeamJobs(ctx context.Context, team string, environment string) ([]Job, error) {
 	_ = `# @genqlient
 		query GetTeamJobs($team: Slug!, $orderBy: JobOrder) {
 			team(slug: $team) {
@@ -155,7 +154,7 @@ func GetTeamJobs(ctx context.Context, team string, environments []string) ([]Job
 	ret := make([]Job, 0)
 	for _, j := range resp.Team.Jobs.Nodes {
 		env := j.TeamEnvironment.Environment.Name
-		if len(environments) > 0 && !slices.Contains(environments, env) {
+		if len(environment) > 0 && environment != env {
 			continue
 		}
 

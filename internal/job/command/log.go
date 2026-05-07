@@ -8,6 +8,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	globalFlags "github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
 	logs "github.com/nais/cli/internal/log/command"
@@ -48,7 +49,7 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 
 			queryEnvironment := flags.Environment
 			if user.Domain() == "nav.no" {
-				queryEnvironment = flag.Env(strings.TrimSuffix(string(queryEnvironment), "-gcp"))
+				queryEnvironment = globalFlags.Environment(strings.TrimSuffix(string(queryEnvironment), "-gcp"))
 			}
 
 			jobName := args.Get("name")
@@ -97,21 +98,6 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete job names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-				if flags.Environment == "" {
-					return nil, "Please provide environment to auto-complete job names. '-e, --environment <environment>' flag."
-				}
-				jobs, err := job.GetJobNames(ctx, flags.Team, []string{string(flags.Environment)})
-				if err != nil {
-					return nil, "Unable to fetch job names."
-				}
-				return jobs, "Select a job."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }
