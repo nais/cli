@@ -28,12 +28,7 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 			}
 			return validateArgs(args)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteConfigNames(ctx, f.Team, string(f.Environment), true)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Delete a config named my-config in environment dev.",

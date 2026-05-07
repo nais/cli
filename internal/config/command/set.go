@@ -57,12 +57,7 @@ func set(parentFlags *flag.Config) *naistrix.Command {
 			}
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteConfigNames(ctx, f.Team, string(f.Environment), true)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Set a key-value pair in a config.",
