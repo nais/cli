@@ -37,7 +37,7 @@ func Log(parentFlags *flags.GlobalFlags) *naistrix.Command {
 				return fmt.Errorf("unable to get authenticated user: %w", err)
 			}
 
-			queryEnvironment := flags.Environment
+			queryEnvironment := string(flags.Environment)
 			if user.Domain() == "nav.no" {
 				queryEnvironment = strings.TrimSuffix(queryEnvironment, "-gcp")
 			}
@@ -50,7 +50,7 @@ func Log(parentFlags *flags.GlobalFlags) *naistrix.Command {
 					Build()
 			}
 
-			if err := naisapi.TailLog(ctx, out, flags.Environment, flags.Limit, flags.Since, flags.WithTimestamps, flags.WithLabels, query); err != nil {
+			if err := naisapi.TailLog(ctx, out, string(flags.Environment), flags.Limit, flags.Since, flags.WithTimestamps, flags.WithLabels, query); err != nil {
 				return fmt.Errorf("unable to tail logs: %w", err)
 			}
 
