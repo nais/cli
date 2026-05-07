@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/valkey"
@@ -65,7 +64,7 @@ func list(parentFlags *flag.Valkey) *naistrix.Command {
 			var summaries []ValkeySummary
 			for _, v := range valkeys {
 				// TODO: use filter in GQL query instead
-				if len(flags.Environment) > 0 && !slices.Contains(flags.Environment, string(v.TeamEnvironment.Environment.Name)) {
+				if len(flags.Environment) > 0 && string(flags.Environment) != v.TeamEnvironment.Environment.Name {
 					continue
 				}
 				summaries = append(summaries, ValkeySummary{
