@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/secret"
@@ -54,7 +53,7 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 			for _, s := range secrets {
 				envName := s.TeamEnvironment.Environment.Name
 
-				if len(f.Environment) > 0 && !slices.Contains(f.Environment, envName) {
+				if len(f.Environment) > 0 && string(f.Environment) != envName {
 					continue
 				}
 

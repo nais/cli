@@ -28,12 +28,7 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 			}
 			return validateArgs(args)
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteSecretNames(ctx, f.Team, string(f.Environment), true)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Delete a secret named my-secret in environment dev.",

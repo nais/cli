@@ -2,7 +2,6 @@ package secret
 
 import (
 	"context"
-	"slices"
 	"sort"
 	"time"
 
@@ -30,7 +29,7 @@ type secretActivityResource struct {
 	Entries        []secretActivityEntry
 }
 
-func GetActivity(ctx context.Context, team, name string, environments []string, activityTypes []gql.ActivityLogActivityType, limit int) ([]SecretActivity, bool, error) {
+func GetActivity(ctx context.Context, team, name string, environment string, activityTypes []gql.ActivityLogActivityType, limit int) ([]SecretActivity, bool, error) {
 	_ = `# @genqlient
 		query GetSecretActivity($team: Slug!, $name: String!, $activityTypes: [ActivityLogActivityType!], $first: Int) {
 			team(slug: $team) {
@@ -85,11 +84,11 @@ func GetActivity(ctx context.Context, team, name string, environments []string, 
 		})
 	}
 
-	ret, found := buildSecretActivity(resources, name, environments)
+	ret, found := buildSecretActivity(resources, name, environment)
 	return ret, found, nil
 }
 
-func buildSecretActivity(resources []secretActivityResource, name string, environments []string) ([]SecretActivity, bool) {
+func buildSecretActivity(resources []secretActivityResource, name string, environment string) ([]SecretActivity, bool) {
 	found := false
 	ret := make([]SecretActivity, 0)
 
@@ -99,7 +98,7 @@ func buildSecretActivity(resources []secretActivityResource, name string, enviro
 		}
 
 		defaultEnv := s.DefaultEnvName
-		if len(environments) > 0 && !slices.Contains(environments, defaultEnv) {
+		if len(environment) > 0 && environment != defaultEnv {
 			continue
 		}
 

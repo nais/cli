@@ -68,12 +68,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			}
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteSecretNames(ctx, f.Team, string(f.Environment), false)
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{
 				Description: "Get details for a secret named my-secret in environment dev.",
