@@ -15,7 +15,7 @@ type ApplicationActivity struct {
 	Message     string    `json:"message"`
 }
 
-func GetApplicationActivity(ctx context.Context, team, name string, environments []string, activityTypes []gql.ActivityLogActivityType, limit int) ([]ApplicationActivity, bool, error) {
+func GetApplicationActivity(ctx context.Context, team, name string, environment string, activityTypes []gql.ActivityLogActivityType, limit int) ([]ApplicationActivity, bool, error) {
 	_ = `# @genqlient
 		query GetApplicationActivity($team: Slug!, $name: String!, $environments: [String!], $activityTypes: [ActivityLogActivityType!], $first: Int) {
 			team(slug: $team) {
@@ -46,7 +46,7 @@ func GetApplicationActivity(ctx context.Context, team, name string, environments
 		return nil, false, err
 	}
 
-	resp, err := gql.GetApplicationActivity(ctx, client, team, name, environments, activityTypes, limit)
+	resp, err := gql.GetApplicationActivity(ctx, client, team, name, []string{environment}, activityTypes, limit)
 	if err != nil {
 		return nil, false, err
 	}

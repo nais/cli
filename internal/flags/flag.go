@@ -12,7 +12,8 @@ type GlobalFlags struct {
 }
 
 type AdditionalFlags struct {
-	Team string `name:"team" short:"t" usage:"Specify the team to use for this command. Overrides the default team from configuration."`
+	Team        string      `name:"team" short:"t" usage:"Specify the |team| to use for this command. Overrides the default team from configuration."`
+	Environment Environment `name:"environment" short:"e" usage:"Specify the |environment| to use for this command. Overrides the default environment from configuration."`
 }
 
 func (a AdditionalFlags) RequiredTeam() (string, error) {

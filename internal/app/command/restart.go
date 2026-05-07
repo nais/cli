@@ -37,6 +37,6 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 			out.Println(ret)
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(flags.App),
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

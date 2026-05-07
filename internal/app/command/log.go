@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
 	logs "github.com/nais/cli/internal/log/command"
 	"github.com/nais/cli/internal/naisapi"
@@ -61,23 +60,6 @@ func log(parentFlags *flag.App) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if len(flags.Team) == 0 {
-					return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-
-				envs := []string{}
-				if flags.Environment != "" {
-					envs = []string{string(flags.Environment)}
-				}
-				apps, err := app.GetApplicationNames(ctx, flags.Team, envs)
-				if err != nil {
-					return nil, "Unable to fetch application names."
-				}
-				return apps, "Select an application."
-			}
-			return nil, ""
-		},
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

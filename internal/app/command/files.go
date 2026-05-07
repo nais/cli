@@ -55,6 +55,6 @@ func files(parentFlags *flag.App) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(flags.App),
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

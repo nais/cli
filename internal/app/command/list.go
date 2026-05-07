@@ -34,7 +34,7 @@ func list(parentFlags *flag.App) *naistrix.Command {
 			ret, err := app.GetTeamApplications(ctx, flags.Team, gql.ApplicationOrder{
 				Field:     gql.ApplicationOrderFieldIssues,
 				Direction: gql.OrderDirectionDesc,
-			}, gql.TeamApplicationsFilter{Environments: flags.Environment})
+			}, gql.TeamApplicationsFilter{Environments: []string{string(flags.Environment)}})
 			if err != nil {
 				return err
 			}

@@ -43,7 +43,7 @@ func status(parentFlags *flag.App) *naistrix.Command {
 
 			return renderStatus(out, ret)
 		},
-		AutoCompleteFunc: autoCompleteAppNames(flags.App),
+		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }
 
