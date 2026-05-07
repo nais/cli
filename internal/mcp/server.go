@@ -86,7 +86,8 @@ func (s *Server) serveStdio() error {
 
 // serveHTTP starts the server with HTTP transport.
 func (s *Server) serveHTTP(ctx context.Context) error {
-	httpServer := server.NewStreamableHTTPServer(s.mcpServer,
+	httpServer := server.NewStreamableHTTPServer(
+		s.mcpServer,
 		server.WithStateLess(true),
 	)
 	s.options.Logger.Info("Starting HTTP server", "address", s.options.ListenAddr)

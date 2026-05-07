@@ -116,7 +116,8 @@ func grantUserAccess(ctx context.Context, projectID, role string, duration time.
 
 	if duration > 0 {
 		timestamp := time.Now().Add(duration).UTC().Format(time.RFC3339)
-		args = append(args,
+		args = append(
+			args,
 			"--condition",
 			formatCondition("request.time < timestamp('"+timestamp+"')", "nais_cli_access"),
 		)

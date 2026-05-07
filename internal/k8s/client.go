@@ -61,11 +61,13 @@ func WithKubeContext(kubeCtx string) ClientOverride {
 }
 
 func SetupControllerRuntimeClient(overrides ...ClientOverride) *Client {
-	ctrllog.SetLogger(logr.FromSlogHandler(slog.NewTextHandler(
-		os.Stdout,
-		&slog.HandlerOptions{
-			Level: slog.LevelInfo,
-		}),
+	ctrllog.SetLogger(logr.FromSlogHandler(
+		slog.NewTextHandler(
+			os.Stdout,
+			&slog.HandlerOptions{
+				Level: slog.LevelInfo,
+			},
+		),
 	))
 
 	InitScheme(scheme)

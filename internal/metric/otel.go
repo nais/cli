@@ -70,7 +70,8 @@ func CreateAndIncreaseCounter(ctx context.Context, metricName string) {
 func newResource() (*resource.Resource, error) {
 	return resource.Merge(
 		resource.Default(),
-		resource.NewWithAttributes(semconv.SchemaURL,
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
 			semconv.ServiceName(CliName),
 			semconv.ServiceVersion(version.Version),
 		),
@@ -86,9 +87,11 @@ func newMeterProvider() *metric.MeterProvider {
 	)
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),
-		metric.WithReader(metric.NewPeriodicReader(
-			metricExporter,
-			metric.WithInterval(1*time.Second)),
+		metric.WithReader(
+			metric.NewPeriodicReader(
+				metricExporter,
+				metric.WithInterval(1*time.Second),
+			),
 		),
 	)
 

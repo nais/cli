@@ -254,7 +254,8 @@ func (c *oidcClient) ParseIDToken(ctx context.Context, token string) (*IDToken, 
 		return nil, fmt.Errorf("fetch jwks from %q: %w", c.oidc.JwksURI, err)
 	}
 
-	j, err := jwt.ParseString(token,
+	j, err := jwt.ParseString(
+		token,
 		jwt.WithKeySet(jwkSet),
 		jwt.WithIssuer(c.oidc.Issuer),
 		jwt.WithAudience(c.oauth2.ClientID),

@@ -136,7 +136,8 @@ func (t *toolContext) getSchema(reqCtx context.Context) (string, error) {
 // registerSchemaTools registers schema exploration tools.
 func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	// List all types tool
-	listTypesTool := mcp.NewTool("schema_list_types",
+	listTypesTool := mcp.NewTool(
+		"schema_list_types",
 		mcp.WithDescription("List all types in the Nais GraphQL API schema, grouped by kind. Use this to explore available data types before querying specific type details. Useful for understanding the API structure."),
 		mcp.WithInputSchema[SchemaListTypesInput](),
 		mcp.WithOutputSchema[SchemaListTypesOutput](),
@@ -144,7 +145,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(listTypesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListTypes))
 
 	// Get type details tool
-	getTypeTool := mcp.NewTool("schema_get_type",
+	getTypeTool := mcp.NewTool(
+		"schema_get_type",
 		mcp.WithDescription("Get complete details about a GraphQL type: fields with their types, interfaces it implements, types that implement it (for interfaces), enum values, or union member types. Use this to understand the shape of data returned by queries."),
 		mcp.WithInputSchema[SchemaGetTypeInput](),
 		mcp.WithOutputSchema[SchemaGetTypeOutput](),
@@ -152,7 +154,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(getTypeTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetType))
 
 	// List queries tool
-	listQueriesTool := mcp.NewTool("schema_list_queries",
+	listQueriesTool := mcp.NewTool(
+		"schema_list_queries",
 		mcp.WithDescription("List all available GraphQL query operations with their return types and number of arguments. These are the entry points for reading data from the Nais API."),
 		mcp.WithInputSchema[SchemaListQueriesInput](),
 		mcp.WithOutputSchema[[]SchemaOperationInfo](),
@@ -160,7 +163,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(listQueriesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListQueries))
 
 	// List mutations tool
-	listMutationsTool := mcp.NewTool("schema_list_mutations",
+	listMutationsTool := mcp.NewTool(
+		"schema_list_mutations",
 		mcp.WithDescription("List all available GraphQL mutation operations with their return types and number of arguments. Mutations are used to modify data (note: the MCP server currently only exposes read operations)."),
 		mcp.WithInputSchema[SchemaListMutationsInput](),
 		mcp.WithOutputSchema[[]SchemaOperationInfo](),
@@ -168,7 +172,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(listMutationsTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListMutations))
 
 	// Get field details tool
-	getFieldTool := mcp.NewTool("schema_get_field",
+	getFieldTool := mcp.NewTool(
+		"schema_get_field",
 		mcp.WithDescription("Get detailed information about a specific field including its arguments with types and defaults, return type, description, and deprecation status. Use 'Query' as the type to inspect query operations, or 'Mutation' for mutations."),
 		mcp.WithInputSchema[SchemaGetFieldInput](),
 		mcp.WithOutputSchema[SchemaGetFieldOutput](),
@@ -176,7 +181,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(getFieldTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetField))
 
 	// Get enum values tool
-	getEnumTool := mcp.NewTool("schema_get_enum",
+	getEnumTool := mcp.NewTool(
+		"schema_get_enum",
 		mcp.WithDescription("Get all possible values for an enum type with their descriptions and deprecation status. Use this to understand valid values for enum fields (e.g., ApplicationState, DeploymentState)."),
 		mcp.WithInputSchema[SchemaGetEnumInput](),
 		mcp.WithOutputSchema[SchemaGetEnumOutput](),
@@ -184,7 +190,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(getEnumTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetEnum))
 
 	// Search schema tool
-	searchSchemaTool := mcp.NewTool("schema_search",
+	searchSchemaTool := mcp.NewTool(
+		"schema_search",
 		mcp.WithDescription("Search across all schema types, fields, and enum values by name or description. Returns up to 50 matches. Use this to discover relevant types when you're not sure of exact names."),
 		mcp.WithInputSchema[SchemaSearchInput](),
 		mcp.WithOutputSchema[SchemaSearchOutput](),
@@ -192,7 +199,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(searchSchemaTool, mcp.NewStructuredToolHandler(ctx.handleSchemaSearch))
 
 	// Get types implementing interface
-	getImplementorsTool := mcp.NewTool("schema_get_implementors",
+	getImplementorsTool := mcp.NewTool(
+		"schema_get_implementors",
 		mcp.WithDescription("Get all concrete types that implement a GraphQL interface. Use this to find all possible types when a query returns an interface type."),
 		mcp.WithInputSchema[SchemaGetImplementorsInput](),
 		mcp.WithOutputSchema[SchemaGetImplementorsOutput](),
@@ -200,7 +208,8 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(getImplementorsTool, mcp.NewStructuredToolHandler(ctx.handleSchemaGetImplementors))
 
 	// Get union types
-	getUnionTypesTool := mcp.NewTool("schema_get_union_types",
+	getUnionTypesTool := mcp.NewTool(
+		"schema_get_union_types",
 		mcp.WithDescription("Get all member types of a GraphQL union. Use this to understand what concrete types can be returned when a query returns a union type."),
 		mcp.WithInputSchema[SchemaGetUnionTypesInput](),
 		mcp.WithOutputSchema[SchemaGetUnionTypesOutput](),

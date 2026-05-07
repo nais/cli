@@ -78,7 +78,8 @@ func githubTokenSource(ctx context.Context, requestURL, requestToken string) oau
 
 		// Skip signature verification here as we're only interested in the expiry time.
 		// The API will validate the token later.
-		j, err := jwt.ParseString(tokenResponse.Token,
+		j, err := jwt.ParseString(
+			tokenResponse.Token,
 			jwt.WithVerify(false),
 			jwt.WithAcceptableSkew(10*time.Second),
 		)
