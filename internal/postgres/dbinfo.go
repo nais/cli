@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 	"golang.org/x/oauth2"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -39,7 +39,7 @@ func (d *DBInfo) AppName() string {
 	return d.appName
 }
 
-func NewDBInfo(ctx context.Context, appName string, namespace string, context flag.Environment) (DB, error) {
+func NewDBInfo(ctx context.Context, appName string, namespace string, context flags.Environment) (DB, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
 		CurrentContext: string(context),

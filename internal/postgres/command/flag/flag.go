@@ -2,7 +2,6 @@ package flag
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
@@ -10,20 +9,7 @@ import (
 
 type Postgres struct {
 	*flags.GlobalFlags
-	Namespace   string      `name:"namespace" short:"n" usage:"REMOVED, see --team."`
-	Context     string      `name:"context" short:"c" usage:"REMOVED, see --environment."`
-	Environment Environment `name:"environment" short:"e" usage:"The |ENVIRONMENT| to use."`
-	Reason      string      `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
-}
-
-func (p Postgres) UsesRemovedFlags() error {
-	if p.Namespace != "" {
-		return fmt.Errorf("the -n, --namespace flag is replaced with the -t, --team flag")
-	}
-	if p.Context != "" {
-		return fmt.Errorf("the -c, --context flag is replaced with the -e, --environment flag")
-	}
-	return nil
+	Reason string `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
 }
 
 type Migrate struct {
