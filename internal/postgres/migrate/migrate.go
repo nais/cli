@@ -20,6 +20,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime/pkg/client"
@@ -426,6 +427,45 @@ func createObject[T interface {
 		return fmt.Errorf("failed to create Object: %w", err)
 	}
 	return nil
+}
+
+// makeRoleBinding binds the migrator job ServiceAccounts to the nais:developer
+// ClusterRole, granting them the same platform permissions developers have:
+// applications, sqlinstances, deployments/scale, networkpolicies, etc.
+//
+// Secrets:get is granted separately via a platform-managed RoleBinding
+// (tmp-secretreader → nais:secretreader) since nais:developer lost
+// secrets:get in nais/system#402.
+func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
+	return &rbacv1.RoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      cfg.MigrationName(),
+			Namespace: cfg.Team,
+		},
+		Subjects: []rbacv1.Subject{
+			{
+				Kind: "ServiceAccount",
+				Name: CommandSetup.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandPromote.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandFinalize.JobName(cfg),
+			},
+			{
+				Kind: "ServiceAccount",
+				Name: CommandRollback.JobName(cfg),
+			},
+		},
+		RoleRef: rbacv1.RoleRef{
+			Kind:     "ClusterRole",
+			Name:     "nais:developer",
+			APIGroup: "rbac.authorization.k8s.io",
+		},
+	}
 }
 
 func makeNaisjob(cfg config.Config, imageTag string, command Command) *nais_io_v1.Naisjob {
