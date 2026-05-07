@@ -49,13 +49,15 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			}
 
 			if accessResult.AlreadyAdded {
-				out.Printf("ACL entry already exists for '%s/%s' on topic %s/%s.",
+				out.Printf(
+					"ACL entry already exists for '%s/%s' on topic %s/%s.",
 					newAcl.Application, newAcl.Access, namespace, topicName,
 				)
 				return nil
 			}
 
-			out.Printf("ACL added for '%s', with access '%s' on topic '%s/%s'.",
+			out.Printf(
+				"ACL added for '%s', with access '%s' on topic '%s/%s'.",
 				newAcl.Application, newAcl.Access, namespace, topicName,
 			)
 			return nil

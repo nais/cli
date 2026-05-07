@@ -162,7 +162,8 @@ func (d *Debug) createDebugPod(podName string) error {
 	}
 
 	if d.flags.Copy {
-		args = append(args,
+		args = append(
+			args,
 			"--copy-to", debuggerContainerName(podName),
 			"-c", "debugger",
 		)

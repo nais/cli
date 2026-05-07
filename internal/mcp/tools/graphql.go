@@ -185,7 +185,8 @@ Replace the placeholders (e.g., ` + "`{team}`" + `, ` + "`{env}`" + `, ` + "`{ap
 
 func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 	// get_nais_context tool - provides essential context for working with Nais
-	getNaisContextTool := mcp.NewTool("get_nais_context",
+	getNaisContextTool := mcp.NewTool(
+		"get_nais_context",
 		mcp.WithDescription("Get the current Nais context including authenticated user, their teams, and console URL. Call this first to understand what the user has access to and to get the correct console URL for links."),
 		mcp.WithInputSchema[GetNaisContextInput](),
 		mcp.WithOutputSchema[GetNaisContextOutput](),
@@ -193,7 +194,8 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(getNaisContextTool, mcp.NewStructuredToolHandler(ctx.handleGetNaisContext))
 
 	// execute_graphql tool - dynamic output, so we use NewTypedToolHandler
-	executeGraphQLTool := mcp.NewTool("execute_graphql",
+	executeGraphQLTool := mcp.NewTool(
+		"execute_graphql",
 		mcp.WithDescription(`Execute a GraphQL query against the Nais API.
 
 IMPORTANT: Before using this tool, use the schema exploration tools (schema_list_queries, schema_get_type, schema_get_field) to understand the available types and fields.
@@ -207,7 +209,8 @@ This tool only supports queries (read operations). Mutations are not allowed.
 	s.AddTool(executeGraphQLTool, mcp.NewTypedToolHandler(ctx.handleExecuteGraphQL))
 
 	// validate_graphql tool
-	validateGraphQLTool := mcp.NewTool("validate_graphql",
+	validateGraphQLTool := mcp.NewTool(
+		"validate_graphql",
 		mcp.WithDescription("Validate a GraphQL query against the schema without executing it. Use this to check if your query is valid before executing."),
 		mcp.WithInputSchema[ValidateGraphQLInput](),
 		mcp.WithOutputSchema[ValidateGraphQLOutput](),
