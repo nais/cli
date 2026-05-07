@@ -432,10 +432,6 @@ func createObject[T interface {
 // makeRoleBinding binds the migrator job ServiceAccounts to the nais:developer
 // ClusterRole, granting them the same platform permissions developers have:
 // applications, sqlinstances, deployments/scale, networkpolicies, etc.
-//
-// Secrets:get is granted separately via a platform-managed RoleBinding
-// (tmp-secretreader → nais:secretreader) since nais:developer lost
-// secrets:get in nais/system#402.
 func makeRoleBinding(cfg config.Config) *rbacv1.RoleBinding {
 	return &rbacv1.RoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
