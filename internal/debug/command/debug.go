@@ -14,7 +14,6 @@ import (
 func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	stickyFlags := &flag.DebugSticky{
 		GlobalFlags: parentFlags,
-		Environment: flag.Environment(""),
 	}
 
 	debugFlags := &flag.Debug{
@@ -37,9 +36,6 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Flags:       debugFlags,
 		StickyFlags: stickyFlags,
 		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := stickyFlags.UsesRemovedFlags(); err != nil {
-				return err
-			}
 			if _, err := debugFlags.RequiredTeam(); err != nil {
 				return err
 			}

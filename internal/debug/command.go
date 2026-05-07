@@ -12,7 +12,7 @@ import (
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
 func Run(workloadName string, flags *flag.Debug, out *naistrix.OutputWriter) error {
-	clientSet, err := SetupClient(flags.DebugSticky, flags.Environment)
+	clientSet, err := SetupClient(flags.DebugSticky)
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func Run(workloadName string, flags *flag.Debug, out *naistrix.OutputWriter) err
 	return nil
 }
 
-func SetupClient(flags *flag.DebugSticky, cluster flag.Environment) (kubernetes.Interface, error) {
+func SetupClient(flags *flag.DebugSticky) (kubernetes.Interface, error) {
 	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(flags.Environment)))
 
 	team, err := flags.RequiredTeam()
