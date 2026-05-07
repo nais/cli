@@ -13,11 +13,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flag.Environment, namespace string, out *naistrix.OutputWriter) error {
+func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flags.Environment, namespace string, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err

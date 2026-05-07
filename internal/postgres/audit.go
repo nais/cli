@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,7 +32,7 @@ func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudi
 	return err
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, sv *SecretValues, out *naistrix.OutputWriter) error {
+func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, sv *SecretValues, out *naistrix.OutputWriter) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
@@ -201,7 +202,7 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 	return dbFlags, nil
 }
 
-func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, sv *SecretValues, out *naistrix.OutputWriter) (bool, error) {
+func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, sv *SecretValues, out *naistrix.OutputWriter) (bool, error) {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return false, err

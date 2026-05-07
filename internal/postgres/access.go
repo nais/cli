@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
@@ -69,7 +70,7 @@ func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *nai
 	return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, q, sv)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flag.Environment, schema, statement string, sv *SecretValues) error {
+func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, schema, statement string, sv *SecretValues) error {
 	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
 	if err != nil {
 		return err
