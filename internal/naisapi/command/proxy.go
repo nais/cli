@@ -16,7 +16,7 @@ func proxyCommand(parentFlags *flag.Api) *naistrix.Command {
 		Description: "This command is used to forward requests to the Nais API, allowing you to interact with the API through a local proxy.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return naisapi.StartProxy(ctx, out, flags)
+			return naisapi.StartProxy(ctx, out, flags.ListenAddr)
 		},
 	}
 }

@@ -16,7 +16,7 @@ func schemaCommand(parentFlags *flag.Api) *naistrix.Command {
 		Description: "Fetch and print the full Nais API GraphQL schema. Useful for exploring the API or generating client code.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			s, err := naisapi.PullSchema(ctx, flags)
+			s, err := naisapi.PullSchema(ctx)
 			if err != nil {
 				return err
 			}

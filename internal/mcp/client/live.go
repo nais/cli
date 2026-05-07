@@ -42,7 +42,7 @@ func (c *LiveClient) GetUserTeams(ctx context.Context) ([]gql.UserTeamsMeUserTea
 
 // GetSchema returns the GraphQL schema.
 func (c *LiveClient) GetSchema(ctx context.Context) (string, error) {
-	return naisapi.PullSchema(ctx, nil)
+	return naisapi.PullSchema(ctx)
 }
 
 // GetConsoleURL returns the base console URL for the current tenant.
