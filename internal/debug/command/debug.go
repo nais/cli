@@ -2,12 +2,12 @@ package command
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -33,17 +33,9 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
-		Flags:       debugFlags,
-		StickyFlags: stickyFlags,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if _, err := debugFlags.RequiredTeam(); err != nil {
-				return err
-			}
-			if debugFlags.Environment == "" {
-				return fmt.Errorf("the -e, --environment flag is required")
-			}
-			return nil
-		},
+		Flags:        debugFlags,
+		StickyFlags:  stickyFlags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(debugFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return debug.Run(args.Get("app_name"), debugFlags, out)
 		},

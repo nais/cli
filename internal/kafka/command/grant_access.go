@@ -5,6 +5,7 @@ import (
 
 	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/kafka/command/flag"
+	"github.com/nais/cli/internal/validation"
 	nais_kafka "github.com/nais/liberator/pkg/apis/kafka.nais.io/v1"
 	"github.com/nais/naistrix"
 )
@@ -14,7 +15,6 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 		Kafka:  parentFlags,
 		Access: "read",
 	}
-
 	return &naistrix.Command{
 		Name:        "grant-access",
 		Title:       "Grant a user's service-user access to a Kafka Topic.",
@@ -24,10 +24,7 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			{Name: "username"},
 			{Name: "topic"},
 		},
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			_, err := grantAccessTopicFlags.RequiredTeam()
-			return err
-		},
+		ValidateFunc: validation.RequireTeam(grantAccessTopicFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			access := grantAccessTopicFlags.Access
 			namespace := grantAccessTopicFlags.Team
