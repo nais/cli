@@ -3,10 +3,8 @@ package command
 import (
 	"context"
 	"fmt"
-	"os"
 	"sort"
 
-	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
@@ -59,17 +57,6 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 		return nil, "Please provide team to auto-complete OpenSearch instance names. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 
-	if environmentFlagOccurrencesFromCLIArgs() > 1 {
-		return nil, "Please specify exactly one environment to auto-complete OpenSearch instance names. '-e, --environment <environment>' flag."
-	}
-
-	if environment == "" {
-		envs := environmentValuesFromCLIArgs()
-		if len(envs) == 1 {
-			environment = envs[0]
-		}
-	}
-
 	if requireEnvironment && environment == "" {
 		return nil, "Please provide environment to auto-complete OpenSearch instance names. '-e, --environment <environment>' flag."
 	}
@@ -98,14 +85,6 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 	}
 
 	return names, "Select an OpenSearch instance."
-}
-
-func environmentValuesFromCLIArgs() []string {
-	return cliflags.UniqueFlagValues(os.Args, "-e", "--environment")
-}
-
-func environmentFlagOccurrencesFromCLIArgs() int {
-	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {
