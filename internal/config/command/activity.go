@@ -6,6 +6,7 @@ import (
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -16,18 +17,17 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 		Output: "table",
 		Limit:  20,
 	}
-
 	return &naistrix.Command{
 		Name:        "activity",
 		Title:       "Show activity for a config.",
 		Description: "Show the activity log for a specific configuration, including creation, updates, and deletions. Optionally filter by activity type.",
 		Args:        defaultArgs,
 		Flags:       f,
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireTeamAndEnvironment(f),
+			validateArgs,
+		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-
 			activityTypes, err := activityutil.ParseActivityTypes(f.ActivityType)
 			if err != nil {
 				return err

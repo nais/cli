@@ -18,12 +18,10 @@ func create(parentFlags *flag.Secret) *naistrix.Command {
 		Description: "This command creates a new empty secret in a team environment.",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
-				return err
-			}
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+		),
 		Examples: []naistrix.Example{
 			{
 				Description: "Create a secret named my-secret in environment dev.",

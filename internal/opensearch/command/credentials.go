@@ -23,27 +23,22 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
-				return err
-			}
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-			if flags.Permission == "" {
-				return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
-			}
-			if !aiven.IsValidPermission(gql.CredentialPermission(flags.Permission)) {
-				return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllCredentialPermission)
-			}
-			if flags.TTL == "" {
-				return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
-			}
-			return nil
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			validateArgs,
+			func(ctx context.Context, args *naistrix.Arguments) error {
+				if flags.Permission == "" {
+					return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
+				}
+				if !aiven.IsValidPermission(gql.CredentialPermission(flags.Permission)) {
+					return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllCredentialPermission)
+				}
+				if flags.TTL == "" {
+					return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() != 0 {
 				return nil, ""

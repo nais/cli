@@ -22,3 +22,13 @@ func (a AdditionalFlags) RequiredTeam() (string, error) {
 	}
 	return a.Team, nil
 }
+
+// HasTeam returns true if the value is not nil and that the [AdditionalFlags.Team] field is not empty.
+func (a *AdditionalFlags) HasTeam() bool {
+	return a != nil && a.Team != ""
+}
+
+// HasEnvironment returns true if the value is not nil and that the [AdditionalFlags.Environment] field is not empty.
+func (a *AdditionalFlags) HasEnvironment() bool {
+	return a != nil && a.Environment != ""
+}

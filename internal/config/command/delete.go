@@ -19,15 +19,10 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 		Description: "This command deletes a config and all its values.",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
-				return err
-			}
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.Example{
 			{

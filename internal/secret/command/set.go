@@ -24,39 +24,34 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 		Description: "Set a key-value pair in a secret. If the key already exists, its value is updated. If the key does not exist, it is added. Updating a value will cause a restart of workloads referencing the secret.",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
-				return err
-			}
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-			if f.Key == "" {
-				return fmt.Errorf("--key is required")
-			}
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+			func(_ context.Context, args *naistrix.Arguments) error {
+				if f.Key == "" {
+					return fmt.Errorf("--key is required")
+				}
 
-			// Count the number of value sources provided
-			sources := 0
-			if f.Value != "" {
-				sources++
-			}
-			if f.ValueFromStdin {
-				sources++
-			}
-			if f.ValueFromFile != "" {
-				sources++
-			}
-			if sources == 0 {
-				return fmt.Errorf("--value, --value-from-stdin, or --value-from-file is required")
-			}
-			if sources > 1 {
-				return fmt.Errorf("--value, --value-from-stdin, and --value-from-file are mutually exclusive")
-			}
-			return nil
-		},
+				// Count the number of value sources provided
+				sources := 0
+				if f.Value != "" {
+					sources++
+				}
+				if f.ValueFromStdin {
+					sources++
+				}
+				if f.ValueFromFile != "" {
+					sources++
+				}
+				if sources == 0 {
+					return fmt.Errorf("--value, --value-from-stdin, or --value-from-file is required")
+				}
+				if sources > 1 {
+					return fmt.Errorf("--value, --value-from-stdin, and --value-from-file are mutually exclusive")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{

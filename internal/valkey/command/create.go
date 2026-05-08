@@ -21,19 +21,13 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 		Description: "This command creates a Valkey instance.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
-				return err
-			}
-			if err := flags.Validate(); err != nil {
-				return err
-			}
-
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			validateArgs,
+			func(ctx context.Context, args *naistrix.Arguments) error {
+				return flags.Validate()
+			},
+		),
 		Examples: []naistrix.Example{
 			{
 				Description: "Create a Valkey instance named some-valkey with default settings.",
