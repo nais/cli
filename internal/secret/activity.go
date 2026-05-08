@@ -29,7 +29,7 @@ type secretActivityResource struct {
 	Entries        []secretActivityEntry
 }
 
-func GetActivity(ctx context.Context, team, name string, environment string, activityTypes []gql.ActivityLogActivityType, limit int) ([]SecretActivity, bool, error) {
+func GetActivity(ctx context.Context, secretName, team, environment string, activityTypes []gql.ActivityLogActivityType, limit int) ([]SecretActivity, bool, error) {
 	_ = `# @genqlient
 		query GetSecretActivity($team: Slug!, $name: String!, $activityTypes: [ActivityLogActivityType!], $first: Int) {
 			team(slug: $team) {
@@ -60,7 +60,7 @@ func GetActivity(ctx context.Context, team, name string, environment string, act
 		return nil, false, err
 	}
 
-	resp, err := gql.GetSecretActivity(ctx, client, team, name, activityTypes, limit)
+	resp, err := gql.GetSecretActivity(ctx, client, team, secretName, activityTypes, limit)
 	if err != nil {
 		return nil, false, err
 	}
@@ -84,7 +84,7 @@ func GetActivity(ctx context.Context, team, name string, environment string, act
 		})
 	}
 
-	ret, found := buildSecretActivity(resources, name, environment)
+	ret, found := buildSecretActivity(resources, secretName, environment)
 	return ret, found, nil
 }
 

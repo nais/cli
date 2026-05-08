@@ -33,7 +33,7 @@ func activity(parentFlags *flag.Secret) *naistrix.Command {
 				return err
 			}
 
-			ret, found, err := secret.GetActivity(ctx, f.Team, args.Get("name"), string(f.Environment), activityTypes, f.Limit)
+			ret, found, err := secret.GetActivity(ctx, args.Get("name"), f.Team, string(f.Environment), activityTypes, f.Limit)
 			if err != nil {
 				return err
 			}
