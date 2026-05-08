@@ -19,21 +19,16 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 		Description: "This command removes a key-value pair from a secret.",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(f.Environment)); err != nil {
-				return err
-			}
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-			if f.Key == "" {
-				return fmt.Errorf("--key is required")
-			}
-			return nil
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+			func(_ context.Context, args *naistrix.Arguments) error {
+				if f.Key == "" {
+					return fmt.Errorf("--key is required")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{

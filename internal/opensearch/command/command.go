@@ -18,14 +18,12 @@ import (
 func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.OpenSearch{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "opensearch",
-		Aliases:     []string{"opensearches", "os"},
-		Title:       "Manage OpenSearch instances.",
-		Description: "Commands for creating, updating, deleting, and inspecting OpenSearch instances and their credentials.",
-		StickyFlags: f,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(f.Team)
-		},
+		Name:         "opensearch",
+		Aliases:      []string{"opensearches", "os"},
+		Title:        "Manage OpenSearch instances.",
+		Description:  "Commands for creating, updating, deleting, and inspecting OpenSearch instances and their credentials.",
+		StickyFlags:  f,
+		ValidateFunc: validation.RequireTeam(f),
 		SubCommands: []*naistrix.Command{
 			create(f),
 			credentials(f),
@@ -37,7 +35,7 @@ func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	}
 }
 
-func validateArgs(args *naistrix.Arguments) error {
+func validateArgs(_ context.Context, args *naistrix.Arguments) error {
 	if args.Len() != 1 {
 		return fmt.Errorf("expected 1 arguments, got %d", args.Len())
 	}
@@ -108,13 +106,6 @@ func environmentValuesFromCLIArgs() []string {
 
 func environmentFlagOccurrencesFromCLIArgs() int {
 	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
-}
-
-func validateSingleEnvironmentFlagUsage() error {
-	if environmentFlagOccurrencesFromCLIArgs() > 1 {
-		return fmt.Errorf("only one -e, --environment flag may be provided")
-	}
-	return nil
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {

@@ -22,16 +22,10 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			err := validation.CheckEnvironment(string(flags.Environment))
-			if err != nil {
-				return err
-			}
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			validateArgs,
+		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)

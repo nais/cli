@@ -1,8 +1,6 @@
 package command
 
 import (
-	"context"
-
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/member/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -12,14 +10,12 @@ import (
 func Members(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Member{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "members",
-		Aliases:     []string{"member"},
-		Title:       "Interact with Nais team members.",
-		Description: "Commands for listing, adding, removing, and managing roles of team members.",
-		StickyFlags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(flags.Team)
-		},
+		Name:         "members",
+		Aliases:      []string{"member"},
+		Title:        "Interact with Nais team members.",
+		Description:  "Commands for listing, adding, removing, and managing roles of team members.",
+		StickyFlags:  flags,
+		ValidateFunc: validation.RequireTeam(parentFlags),
 		SubCommands: []*naistrix.Command{
 			list(flags),
 			add(flags),

@@ -3,12 +3,10 @@ package command
 import (
 	"context"
 	"fmt"
-	"os"
 	"slices"
 	"sort"
 	"strings"
 
-	"github.com/nais/cli/internal/cliflags"
 	"github.com/nais/cli/internal/secret"
 )
 
@@ -44,15 +42,4 @@ func selectSecretEnvironment(team, name, provided string, envs []string) (string
 		sort.Strings(envs)
 		return "", fmt.Errorf("secret %q exists in multiple environments (%s); specify -e, --environment", name, strings.Join(envs, ", "))
 	}
-}
-
-func validateSingleEnvironmentFlagUsage() error {
-	if countEnvironmentFlagsInCLIArgs() > 1 {
-		return fmt.Errorf("only one -e, --environment flag may be provided")
-	}
-	return nil
-}
-
-func countEnvironmentFlagsInCLIArgs() int {
-	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
 }

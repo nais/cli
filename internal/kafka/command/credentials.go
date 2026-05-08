@@ -23,22 +23,19 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 		Title:       "Create temporary credentials for Kafka.",
 		Description: "Creates temporary credentials for accessing Kafka. Output format can be env (default), kcat, or java. The env format prints environment variables to stdout. The kcat and java formats write configuration files to a temporary directory.",
 		Flags:       flags,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment is required, set using -e, --environment flag")
-			}
-			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
-				return err
-			}
-			if flags.TTL == "" {
-				return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
-			}
-			output := string(flags.Output)
-			if output != "" && output != "env" && output != "kcat" && output != "java" {
-				return fmt.Errorf("invalid output format %q, must be one of: env, kcat, java", output)
-			}
-			return nil
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			func(ctx context.Context, args *naistrix.Arguments) error {
+				if flags.TTL == "" {
+					return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
+				}
+				output := string(flags.Output)
+				if output != "" && output != "env" && output != "kcat" && output != "java" {
+					return fmt.Errorf("invalid output format %q, must be one of: env, kcat, java", output)
+				}
+				return nil
+			},
+		),
 		Examples: []naistrix.Example{
 			{
 				Description: "Create Kafka credentials in environment dev, valid for 1 day, output as environment variables.",

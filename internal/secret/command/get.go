@@ -42,32 +42,25 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		Description: "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				if err := validation.CheckEnvironment(providedEnvironment); err != nil {
-					return err
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+			func(_ context.Context, args *naistrix.Arguments) error {
+				if f.ToFile != "" && f.Key == "" {
+					return fmt.Errorf("--to-file requires --key to specify which key to extract")
 				}
-			}
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-			if f.ToFile != "" && f.Key == "" {
-				return fmt.Errorf("--to-file requires --key to specify which key to extract")
-			}
-			if f.Key != "" && f.ToFile == "" {
-				return fmt.Errorf("--key is only used with --to-file")
-			}
-			if f.Reason != "" && !f.WithValues && f.ToFile == "" {
-				return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
-			}
-			if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
-				return fmt.Errorf("reason must be at least 10 characters")
-			}
-			return nil
-		},
+				if f.Key != "" && f.ToFile == "" {
+					return fmt.Errorf("--key is only used with --to-file")
+				}
+				if f.Reason != "" && !f.WithValues && f.ToFile == "" {
+					return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
+				}
+				if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
+					return fmt.Errorf("reason must be at least 10 characters")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.Example{
 			{

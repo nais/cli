@@ -20,15 +20,10 @@ func delete(parentFlags *flag.Valkey) *naistrix.Command {
 		Description: "This command deletes an existing Valkey instance.",
 		Flags:       flags,
 		Args:        defaultArgs,
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := validation.CheckEnvironment(string(flags.Environment)); err != nil {
-				return err
-			}
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			validateArgs,
+		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
 				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)

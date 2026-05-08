@@ -38,26 +38,19 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 		Description: "This command shows details about a config, including its key-value pairs, workloads using it, and last modification info.",
 		Flags:       f,
 		Args:        defaultArgs,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				if err := validation.CheckEnvironment(providedEnvironment); err != nil {
-					return err
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(f),
+			validateArgs,
+			func(_ context.Context, args *naistrix.Arguments) error {
+				if f.ToFile != "" && f.Key == "" {
+					return fmt.Errorf("--to-file requires --key to specify which key to extract")
 				}
-			}
-			if err := validateArgs(args); err != nil {
-				return err
-			}
-			if f.ToFile != "" && f.Key == "" {
-				return fmt.Errorf("--to-file requires --key to specify which key to extract")
-			}
-			if f.Key != "" && f.ToFile == "" {
-				return fmt.Errorf("--key is only used with --to-file")
-			}
-			return nil
-		},
+				if f.Key != "" && f.ToFile == "" {
+					return fmt.Errorf("--key is only used with --to-file")
+				}
+				return nil
+			},
+		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.Example{
 			{

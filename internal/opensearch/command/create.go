@@ -23,19 +23,13 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
-		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
-			if err := validateSingleEnvironmentFlagUsage(); err != nil {
-				return err
-			}
-			if err := flags.Validate(); err != nil {
-				return err
-			}
-			err := validation.CheckEnvironment(string(flags.Environment))
-			if err != nil {
-				return err
-			}
-			return validateArgs(args)
-		},
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireEnvironment(flags),
+			validateArgs,
+			func(ctx context.Context, args *naistrix.Arguments) error {
+				return flags.Validate()
+			},
+		),
 		Examples: []naistrix.Example{
 			{
 				Description: "Create an OpenSearch instance named some-opensearch with default settings.",

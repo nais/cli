@@ -17,14 +17,12 @@ import (
 func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Valkey{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "valkey",
-		Aliases:     []string{"valkeys"},
-		Title:       "Manage Valkey instances.",
-		Description: "Commands for creating, updating, deleting, and inspecting Valkey instances and their credentials.",
-		StickyFlags: f,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(f.Team)
-		},
+		Name:         "valkey",
+		Aliases:      []string{"valkeys"},
+		Title:        "Manage Valkey instances.",
+		Description:  "Commands for creating, updating, deleting, and inspecting Valkey instances and their credentials.",
+		StickyFlags:  f,
+		ValidateFunc: validation.RequireTeam(f),
 		SubCommands: []*naistrix.Command{
 			create(f),
 			credentials(f),
@@ -40,7 +38,7 @@ var defaultArgs = []naistrix.Argument{
 	{Name: "name"},
 }
 
-func validateArgs(args *naistrix.Arguments) error {
+func validateArgs(_ context.Context, args *naistrix.Arguments) error {
 	if args.Len() != 1 {
 		return fmt.Errorf("expected 1 argument, got %d", args.Len())
 	}
@@ -110,11 +108,4 @@ func environmentValuesFromCLIArgs() []string {
 
 func environmentFlagOccurrencesFromCLIArgs() int {
 	return cliflags.CountFlagOccurrences(os.Args, "-e", "--environment")
-}
-
-func validateSingleEnvironmentFlagUsage() error {
-	if environmentFlagOccurrencesFromCLIArgs() > 1 {
-		return fmt.Errorf("only one -e, --environment flag may be provided")
-	}
-	return nil
 }

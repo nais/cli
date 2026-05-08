@@ -15,13 +15,11 @@ import (
 func Config(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Config{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "config",
-		Title:       "Manage config for a team.",
-		Description: "Commands for listing, creating, viewing, updating, and deleting configuration values for a team across environments.",
-		StickyFlags: f,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			return validation.CheckTeam(f.Team)
-		},
+		Name:         "config",
+		Title:        "Manage config for a team.",
+		Description:  "Commands for listing, creating, viewing, updating, and deleting configuration values for a team across environments.",
+		StickyFlags:  f,
+		ValidateFunc: validation.RequireTeam(f),
 		SubCommands: []*naistrix.Command{
 			list(f),
 			activity(f),
@@ -38,7 +36,7 @@ var defaultArgs = []naistrix.Argument{
 	{Name: "name"},
 }
 
-func validateArgs(args *naistrix.Arguments) error {
+func validateArgs(_ context.Context, args *naistrix.Arguments) error {
 	if args.Len() != 1 {
 		return fmt.Errorf("expected 1 argument, got %d", args.Len())
 	}
