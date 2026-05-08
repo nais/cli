@@ -31,7 +31,7 @@ require (
 	github.com/nais/device v1.7.3
 	github.com/nais/krakend/pkg/migration v0.0.0-20251112211103-82b954ae962b
 	github.com/nais/liberator v0.0.0-20260216142648-ee49a9372bc4
-	github.com/nais/naistrix v0.31.3
+	github.com/nais/naistrix v0.31.4
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.83
 	github.com/sethvargo/go-retry v0.3.0
@@ -64,7 +64,7 @@ require (
 require (
 	al.essio.dev/pkg/shellescape v1.6.0 // indirect
 	atomicgo.dev/cursor v0.2.0 // indirect
-	atomicgo.dev/keyboard v0.2.9 // indirect
+	atomicgo.dev/keyboard v0.2.10 // indirect
 	atomicgo.dev/schedule v0.1.0 // indirect
 	cloud.google.com/go v0.121.2 // indirect
 	cloud.google.com/go/auth v0.16.5 // indirect
@@ -200,7 +200,7 @@ require (
 	github.com/savioxavier/termlink v1.4.3 // indirect
 	github.com/securego/gosec/v2 v2.26.1 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
-	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
+	github.com/sergi/go-diff v1.4.0 // indirect
 	github.com/sethvargo/ratchet v0.11.4 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
