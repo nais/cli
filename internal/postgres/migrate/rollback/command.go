@@ -11,7 +11,7 @@ import (
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-func Run(ctx context.Context, applicationName, targetInstanceName string, flags *flag.MigrateRollback) error {
+func Run(ctx context.Context, applicationName, targetInstanceName, team, environment string, flags *flag.MigrateRollback) error {
 	cfg := config.Config{
 		AppName: applicationName,
 		Target: config.InstanceConfig{
@@ -19,14 +19,9 @@ func Run(ctx context.Context, applicationName, targetInstanceName string, flags 
 		},
 	}
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(flags.Environment)))
-	team, err := flags.RequiredTeam()
-	if err != nil {
-		return err
-	}
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
 	cfg.Team = team
-
-	clientset, err := k8s.SetupClientGo(string(flags.Environment))
+	clientset, err := k8s.SetupClientGo(environment)
 	if err != nil {
 		return err
 	}

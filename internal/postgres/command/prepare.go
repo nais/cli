@@ -8,6 +8,7 @@ import (
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/pterm/pterm"
 )
@@ -31,14 +32,15 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
-		Flags: flags,
+		Flags:        flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
 			if !result {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags, out)
+			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
 	}
 }

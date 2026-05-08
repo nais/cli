@@ -37,9 +37,9 @@ func (ic *InstanceConfig) String() string {
 	return fmt.Sprintf("Name: %v\nTier: %v\nDiskSize: %v\nType: %v\n", ic.InstanceName, ic.Tier, ic.DiskSize, ic.Type)
 }
 
-func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appName string, namespace string) error {
+func (ic *InstanceConfig) Resolve(ctx context.Context, client ctrl.Client, appName, team string) error {
 	app := &nais_io_v1alpha1.Application{}
-	err := client.Get(ctx, ctrl.ObjectKey{Namespace: namespace, Name: appName}, app)
+	err := client.Get(ctx, ctrl.ObjectKey{Namespace: team, Name: appName}, app)
 	if err != nil {
 		return err
 	}

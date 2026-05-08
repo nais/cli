@@ -11,7 +11,7 @@ import (
 	"github.com/nais/cli/internal/postgres/migrate/config"
 )
 
-func Run(ctx context.Context, applicationName, targetInstanceName string, flags *flag.MigrateSetup) error {
+func Run(ctx context.Context, applicationName, targetInstanceName, team, environment string, flags *flag.MigrateSetup) error {
 	cfg := config.Config{
 		AppName: applicationName,
 		Target: config.InstanceConfig{
@@ -19,25 +19,19 @@ func Run(ctx context.Context, applicationName, targetInstanceName string, flags 
 		},
 	}
 
-	environment := flags.Environment
 	tier := flags.Tier
 	diskAutoresize := flags.DiskAutoResize
 	diskSize := flags.DiskSize
 	instanceType := flags.InstanceType
-	team, err := flags.RequiredTeam()
-	if err != nil {
-		return err
-	}
 
 	cfg.Target.Tier = isSet(tier)
 	cfg.Target.DiskAutoresize = isSetBool(diskAutoresize)
 	cfg.Target.DiskSize = isSetInt(diskSize)
 	cfg.Target.Type = isSet(instanceType)
 
-	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(string(environment)))
+	client := k8s.SetupControllerRuntimeClient(k8s.WithKubeContext(environment))
 	cfg.Team = team
-
-	clientSet, err := k8s.SetupClientGo(string(environment))
+	clientSet, err := k8s.SetupClientGo(environment)
 	if err != nil {
 		return err
 	}

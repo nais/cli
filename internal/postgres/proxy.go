@@ -11,14 +11,14 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func RunProxy(ctx context.Context, appName string, fl *flag.Proxy, out *naistrix.OutputWriter) error {
+func RunProxy(ctx context.Context, appName, team, environment string, fl *flag.Proxy, out *naistrix.OutputWriter) error {
 	// Get secret values with user-provided reason (access is logged for audit purposes)
-	sv, err := GetSecretValuesWithUserReason(ctx, appName, fl.Postgres, fl.Reason, out)
+	sv, err := GetSecretValuesWithUserReason(ctx, appName, team, environment, fl.Postgres, fl.Reason, out)
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}

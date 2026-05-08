@@ -50,7 +50,7 @@ func (s *SecretValues) Get(suffix string) string {
 // For CloudSQL databases, this retrieves the secret values directly.
 // For in-cluster postgres, this grants temporary access to the database.
 // In both cases, the access is logged for audit purposes.
-func GetSecretValues(ctx context.Context, appName string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
+func GetSecretValues(ctx context.Context, appName, team, environment string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
 	if reason == "" {
 		reason = fl.Reason
 		if reason == "" {
@@ -58,20 +58,7 @@ func GetSecretValues(ctx context.Context, appName string, fl *flag.Postgres, rea
 		}
 	}
 
-	team, err := fl.RequiredTeam()
-	if err != nil {
-		return nil, err
-	}
-
 	out.Printf("Using team %q\n", team)
-
-	environment := string(fl.Environment)
-	if environment == "" {
-		environment = string(fl.Environment)
-		if environment == "" {
-			return nil, fmt.Errorf("environment is required")
-		}
-	}
 
 	// Check if this is a CloudSQL or in-cluster postgres database
 	isCloudSQL, err := isCloudSQLDatabase(ctx, appName, fl)
@@ -89,7 +76,7 @@ func GetSecretValues(ctx context.Context, appName string, fl *flag.Postgres, rea
 // GetSecretValuesWithUserReason retrieves secret values with a user-provided reason.
 // This should be used for interactive operations like proxy and psql where the user
 // should provide justification for accessing the database.
-func GetSecretValuesWithUserReason(ctx context.Context, appName string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
+func GetSecretValuesWithUserReason(ctx context.Context, appName, team, environment string, fl *flag.Postgres, reason string, out *naistrix.OutputWriter) (*SecretValues, error) {
 	if reason == "" {
 		reason = fl.Reason
 		if reason == "" {
@@ -101,7 +88,7 @@ func GetSecretValuesWithUserReason(ctx context.Context, appName string, fl *flag
 		return nil, fmt.Errorf("reason must be at least 10 characters")
 	}
 
-	return GetSecretValues(ctx, appName, fl, reason, out)
+	return GetSecretValues(ctx, appName, team, environment, fl, reason, out)
 }
 
 // isCloudSQLDatabase checks if the given app uses CloudSQL or in-cluster postgres

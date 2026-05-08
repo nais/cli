@@ -5,6 +5,7 @@ import (
 
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -17,9 +18,10 @@ func grantCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
-		Flags: flags,
+		Flags:        flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.GrantAndCreateSQLUser(ctx, args.Get("app_name"), flags.Environment, flags.Team, out)
+			return postgres.GrantAndCreateSQLUser(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), out)
 		},
 	}
 }

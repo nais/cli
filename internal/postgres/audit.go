@@ -6,34 +6,33 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func EnableAuditLogging(ctx context.Context, appName string, fl *flag.EnableAudit, out *naistrix.OutputWriter) error {
+func EnableAuditLogging(ctx context.Context, appName, team, environment string, fl *flag.EnableAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonEnableAudit, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonEnableAudit, out)
 	if err != nil {
 		return err
 	}
-	return enableAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, sv, out)
+	return enableAuditAsAppUser(ctx, appName, team, environment, sv, out)
 }
 
-func VerifyAuditLogging(ctx context.Context, appName string, fl *flag.VerifyAudit, out *naistrix.OutputWriter) error {
+func VerifyAuditLogging(ctx context.Context, appName, team, environment string, fl *flag.VerifyAudit, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonVerifyAudit, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonVerifyAudit, out)
 	if err != nil {
 		return err
 	}
-	_, err = verifyAuditAsAppUser(ctx, appName, fl.Team, fl.Environment, sv, out)
+	_, err = verifyAuditAsAppUser(ctx, appName, team, environment, sv, out)
 	return err
 }
 
-func enableAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, sv *SecretValues, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+func enableAuditAsAppUser(ctx context.Context, appName, team, environment string, sv *SecretValues, out *naistrix.OutputWriter) error {
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}
@@ -160,7 +159,7 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 		Group:    "sql.cnrm.cloud.google.com",
 		Version:  "v1beta1",
 		Resource: "sqlinstances",
-	}).Namespace(string(info.namespace)).List(ctx, v1.ListOptions{
+	}).Namespace(info.namespace).List(ctx, v1.ListOptions{
 		LabelSelector: "app=" + info.appName,
 	})
 	if err != nil {
@@ -202,8 +201,8 @@ func getDBFlags(ctx context.Context, info *CloudSQLDBInfo) (map[string]string, e
 	return dbFlags, nil
 }
 
-func verifyAuditAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, sv *SecretValues, out *naistrix.OutputWriter) (bool, error) {
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string, sv *SecretValues, out *naistrix.OutputWriter) (bool, error) {
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return false, err
 	}

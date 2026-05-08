@@ -6,6 +6,7 @@ import (
 	"github.com/nais/cli/internal/metric"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -18,9 +19,10 @@ func enableAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
 		},
-		Flags: flags,
+		Flags:        flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			err := postgres.EnableAuditLogging(ctx, args.Get("app_name"), flags, out)
+			err := postgres.EnableAuditLogging(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 			if err != nil {
 				metric.CreateAndIncreaseCounter(ctx, "enable_audit_logging_error")
 			}

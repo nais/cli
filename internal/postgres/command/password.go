@@ -5,6 +5,7 @@ import (
 
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -23,8 +24,9 @@ func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				Args: []naistrix.Argument{
 					{Name: "app_name"},
 				},
+				ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 				RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-					return postgres.RotatePassword(ctx, args.Get("app_name"), flags, out)
+					return postgres.RotatePassword(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 				},
 			},
 		},

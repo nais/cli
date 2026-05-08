@@ -5,16 +5,18 @@ import (
 
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
 func usersCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.User{Postgres: parentFlags}
 	return &naistrix.Command{
-		Name:        "users",
-		Title:       "Manage users in your SQL instance.",
-		Description: "Commands for adding, listing, and dropping users in a Postgres SQL instance.",
-		StickyFlags: flags,
+		Name:         "users",
+		Title:        "Manage users in your SQL instance.",
+		Description:  "Commands for adding, listing, and dropping users in a Postgres SQL instance.",
+		StickyFlags:  flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		SubCommands: []*naistrix.Command{
 			addCommand(flags),
 			dropCommand(flags),
@@ -24,7 +26,7 @@ func usersCommand(parentFlags *flag.Postgres) *naistrix.Command {
 }
 
 func addCommand(parentFlags *flag.User) *naistrix.Command {
-	userAddFlags := &flag.UserAdd{
+	flags := &flag.UserAdd{
 		User:      parentFlags,
 		Privilege: "select",
 	}
@@ -37,9 +39,9 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 			{Name: "username"},
 			{Name: "password"},
 		},
-		Flags: userAddFlags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.AddUser(ctx, args.Get("app_name"), args.Get("username"), args.Get("password"), userAddFlags, out)
+			return postgres.AddUser(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), args.Get("username"), args.Get("password"), flags, out)
 		},
 	}
 }
@@ -55,14 +57,13 @@ func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.ListUsers(ctx, args.Get("app_name"), flags, out)
+			return postgres.ListUsers(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
 	}
 }
 
 func dropCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserDrop{User: parentFlags}
-
 	return &naistrix.Command{
 		Name:        "drop",
 		Title:       "Drop a user from a SQL instance database.",
@@ -73,7 +74,7 @@ func dropCommand(parentFlags *flag.User) *naistrix.Command {
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return postgres.DropUser(ctx, args.Get("app_name"), args.Get("username"), flags, out)
+			return postgres.DropUser(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), args.Get("username"), flags, out)
 		},
 	}
 }
