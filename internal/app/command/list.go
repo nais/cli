@@ -22,19 +22,15 @@ func list(parentFlags *flag.App) *naistrix.Command {
 		Title:       "List applications in a team.",
 		Description: "Shows all applications for the team with their current state, running instances, issues, and last updated time. Use --environment to filter by environment.",
 		Flags:       flags,
-		AutoCompleteFunc: func(_ context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				if flags.Team == "" {
-					return nil, "Please provide team. 'nais defaults set team <team>', or '--team <team>' flag."
-				}
-			}
-			return nil, ""
-		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			filter := gql.TeamApplicationsFilter{}
+			if flags.Environment != "" {
+				filter.Environments = append(filter.Environments, string(flags.Environment))
+			}
 			ret, err := app.GetTeamApplications(ctx, flags.Team, gql.ApplicationOrder{
 				Field:     gql.ApplicationOrderFieldIssues,
 				Direction: gql.OrderDirectionDesc,
-			}, gql.TeamApplicationsFilter{Environments: []string{string(flags.Environment)}})
+			}, filter)
 			if err != nil {
 				return err
 			}
