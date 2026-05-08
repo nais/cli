@@ -10,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
-	"github.com/pterm/pterm"
+	"github.com/nais/naistrix/input"
 )
 
 func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
@@ -34,8 +34,9 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			result, _ := pterm.DefaultInteractiveConfirm.Show("Are you sure you want to continue?")
-			if !result {
+			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				return err
+			} else if !result {
 				return fmt.Errorf("cancelled by user")
 			}
 
