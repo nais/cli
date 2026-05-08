@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
@@ -35,9 +34,9 @@ var (
 	revokeUsage = `REVOKE USAGE ON SCHEMA $schema FROM cloudsqliamuser;`
 )
 
-func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *naistrix.OutputWriter) error {
+func PrepareAccess(ctx context.Context, appName, team, environment string, fl *flag.Prepare, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonPrepareAccess, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonPrepareAccess, out)
 	if err != nil {
 		return err
 	}
@@ -50,15 +49,15 @@ func PrepareAccess(ctx context.Context, appName string, fl *flag.Prepare, out *n
 	}
 
 	if fl.AllPrivileges {
-		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantAllPrivs), sv)
+		return sqlExecAsAppUser(ctx, appName, team, environment, fl.Schema, prependUsageIfNotPublic(grantAllPrivs), sv)
 	} else {
-		return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs), sv)
+		return sqlExecAsAppUser(ctx, appName, team, environment, fl.Schema, prependUsageIfNotPublic(grantSelectPrivs), sv)
 	}
 }
 
-func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *naistrix.OutputWriter) error {
+func RevokeAccess(ctx context.Context, appName, team, environment string, fl *flag.Revoke, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonRevokeAccess, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonRevokeAccess, out)
 	if err != nil {
 		return err
 	}
@@ -67,11 +66,11 @@ func RevokeAccess(ctx context.Context, appName string, fl *flag.Revoke, out *nai
 	if fl.Schema != "public" {
 		q += "\n" + revokeUsage
 	}
-	return sqlExecAsAppUser(ctx, appName, fl.Team, fl.Environment, fl.Schema, q, sv)
+	return sqlExecAsAppUser(ctx, appName, team, environment, fl.Schema, q, sv)
 }
 
-func sqlExecAsAppUser(ctx context.Context, appName string, namespace string, cluster flags.Environment, schema, statement string, sv *SecretValues) error {
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+func sqlExecAsAppUser(ctx context.Context, appName, team, environment string, schema, statement string, sv *SecretValues) error {
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}

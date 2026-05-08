@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 	"golang.org/x/oauth2"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -39,10 +38,10 @@ func (d *DBInfo) AppName() string {
 	return d.appName
 }
 
-func NewDBInfo(ctx context.Context, appName string, namespace string, context flags.Environment) (DB, error) {
+func NewDBInfo(ctx context.Context, appName, team, environment string) (DB, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{
-		CurrentContext: string(context),
+		CurrentContext: environment,
 	}
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	config, err := kubeConfig.ClientConfig()
@@ -50,12 +49,12 @@ func NewDBInfo(ctx context.Context, appName string, namespace string, context fl
 		return nil, fmt.Errorf("NewDBInfo: unable to get kubeconfig: %w", err)
 	}
 
-	if namespace == "" {
+	if team == "" {
 		ns, _, err := kubeConfig.Namespace()
 		if err != nil {
 			return nil, fmt.Errorf("NewDBInfo: unable to get namespace: %w", err)
 		}
-		namespace = ns
+		team = ns
 	}
 
 	k8sClient, err := kubernetes.NewForConfig(config)
@@ -72,7 +71,7 @@ func NewDBInfo(ctx context.Context, appName string, namespace string, context fl
 		k8sClient:     k8sClient,
 		dynamicClient: dynamicClient,
 		config:        kubeConfig,
-		namespace:     namespace,
+		namespace:     team,
 		appName:       appName,
 	}
 

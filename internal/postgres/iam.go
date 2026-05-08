@@ -13,13 +13,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 )
 
-func GrantAndCreateSQLUser(ctx context.Context, appName string, cluster flags.Environment, namespace string, out *naistrix.OutputWriter) error {
-	dbInfo, err := NewDBInfo(ctx, appName, namespace, cluster)
+func GrantAndCreateSQLUser(ctx context.Context, appName, team, environment string, out *naistrix.OutputWriter) error {
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}
@@ -213,14 +212,14 @@ func formatCondition(expr, title string) string {
 	return fmt.Sprintf("expression=%v,title=%v", expr, title)
 }
 
-func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *naistrix.OutputWriter) error {
+func ListUsers(ctx context.Context, appName, team, environment string, fl *flag.UserList, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonListUsers, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonListUsers, out)
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}
@@ -260,19 +259,19 @@ func ListUsers(ctx context.Context, appName string, fl *flag.UserList, out *nais
 	return err
 }
 
-func AddUser(ctx context.Context, appName, username, password string, fl *flag.UserAdd, out *naistrix.OutputWriter) error {
+func AddUser(ctx context.Context, appName, team, environment, username, password string, fl *flag.UserAdd, out *naistrix.OutputWriter) error {
 	err := validateSQLVariables(username, password, fl.Privilege)
 	if err != nil {
 		return err
 	}
 
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonAddUser, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonAddUser, out)
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}
@@ -308,14 +307,14 @@ func AddUser(ctx context.Context, appName, username, password string, fl *flag.U
 	return nil
 }
 
-func DropUser(ctx context.Context, appName string, username string, fl *flag.UserDrop, out *naistrix.OutputWriter) error {
+func DropUser(ctx context.Context, appName, team, environment, username string, fl *flag.UserDrop, out *naistrix.OutputWriter) error {
 	// Get secret values (access is logged for audit purposes)
-	sv, err := GetSecretValues(ctx, appName, fl.Postgres, ReasonDropUser, out)
+	sv, err := GetSecretValues(ctx, appName, team, environment, fl.Postgres, ReasonDropUser, out)
 	if err != nil {
 		return err
 	}
 
-	dbInfo, err := NewDBInfo(ctx, appName, fl.Team, fl.Environment)
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
 	if err != nil {
 		return err
 	}
