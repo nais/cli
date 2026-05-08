@@ -19,10 +19,11 @@ import (
 func migrateCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.Migrate{Postgres: parentFlags}
 	return &naistrix.Command{
-		Name:        "migrate",
-		Title:       "Migrate to a new SQL instance.",
-		Description: "Commands for migrating a Postgres database to a new Cloud SQL instance, including setup, promotion, finalization, and rollback.",
-		StickyFlags: flags,
+		Name:         "migrate",
+		Title:        "Migrate to a new SQL instance.",
+		Description:  "Commands for migrating a Postgres database to a new Cloud SQL instance, including setup, promotion, finalization, and rollback.",
+		StickyFlags:  flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		SubCommands: []*naistrix.Command{
 			migrateSetupCommand(flags),
 			migratePromoteCommand(flags),
@@ -54,30 +55,20 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeamAndEnvironment(flags),
-			func(ctx context.Context, args *naistrix.Arguments) error {
-				if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
-					return fmt.Errorf("tier must start with `db-`")
-				}
+		ValidateFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if flags.Tier != "" && !strings.HasPrefix(flags.Tier, "db-") {
+				return fmt.Errorf("tier must start with `db-`")
+			}
 
-				if flags.InstanceType != "" && !strings.HasPrefix(flags.InstanceType, "POSTGRES_") {
-					return fmt.Errorf("instance type must start with `POSTGRES_`")
-				}
+			if flags.InstanceType != "" && !strings.HasPrefix(flags.InstanceType, "POSTGRES_") {
+				return fmt.Errorf("instance type must start with `POSTGRES_`")
+			}
 
-				return nil
-			},
-		),
+			return nil
+		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return setup.Run(
-				ctx,
-				args.Get("app_name"),
-				args.Get("target_sql_instance_name"),
-				flags.Team,
-				string(flags.Environment),
-				flags,
-			)
+			return setup.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
 	}
 }
@@ -93,7 +84,6 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return promote.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
@@ -110,17 +100,9 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		Flags:        flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return finalize.Run(
-				ctx,
-				args.Get("app_name"),
-				args.Get("target_sql_instance_name"),
-				flags.Team,
-				string(flags.Environment),
-				flags.DryRun,
-			)
+			return finalize.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags.DryRun)
 		},
 	}
 }
@@ -135,8 +117,7 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *naistrix.Command {
 			{Name: "app_name"},
 			{Name: "target_sql_instance_name"},
 		},
-		Flags:        flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return rollback.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
