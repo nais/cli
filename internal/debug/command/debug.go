@@ -12,14 +12,8 @@ import (
 )
 
 func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
-	stickyFlags := &flag.DebugSticky{
-		GlobalFlags: parentFlags,
-	}
-
-	debugFlags := &flag.Debug{
-		DebugSticky: stickyFlags,
-	}
-
+	stickyFlags := &flag.DebugSticky{GlobalFlags: parentFlags}
+	debugFlags := &flag.Debug{DebugSticky: stickyFlags}
 	return &naistrix.Command{
 		Name:  "debug",
 		Title: "Create and attach to a debug container.",
@@ -37,7 +31,7 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		StickyFlags:  stickyFlags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(debugFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return debug.Run(args.Get("app_name"), debugFlags, out)
+			return debug.Run(args.Get("app_name"), debugFlags.Team, string(debugFlags.Environment), debugFlags, out)
 		},
 	}
 }
