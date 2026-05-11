@@ -3,7 +3,7 @@
 # ln -s ../../script/semantic-commit-hook.sh .git/hooks/commit-msg
 
 function validate_title {
-  grep -qE '^(Merge|((feat|fix|ci|docs|refactor|perf|test|build|style)(\([a-z0-9\s\-\_\,]+\))?!?:\s\w))' <<<"$1"
+  grep -qE '^(Merge|((feat|flake|fix|ci|upkeep|docs|refactor|perf|test|build|style)(\([a-z0-9\s\-\_\,]+\))?!?:\s\w))' <<<"$1"
 }
 
 function explain_scheme {
