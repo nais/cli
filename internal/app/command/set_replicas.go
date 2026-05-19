@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
 	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/input"
 )
 
 func setReplicas(parentFlags *flag.App) *naistrix.Command {
@@ -32,11 +33,11 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			if flags.Environment == "" {
 				return fmt.Errorf("environment must be specified (-e, --environment)")
 			}
-			if flags.Min <= 0 {
-				return fmt.Errorf("--min must be a positive integer")
+			if flags.Min < 0 {
+				return fmt.Errorf("--min must be a non-negative integer")
 			}
-			if flags.Max <= 0 {
-				return fmt.Errorf("--max must be a positive integer")
+			if flags.Max < 0 {
+				return fmt.Errorf("--max must be a non-negative integer")
 			}
 			if flags.Min > flags.Max {
 				return fmt.Errorf("--min (%d) cannot be greater than --max (%d)", flags.Min, flags.Max)
@@ -45,6 +46,14 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
+
+			if flags.Min == 0 && flags.Max == 0 {
+				if result, err := input.Confirm(fmt.Sprintf("Are you sure you want to stop %v in %v?", name, flags.Environment)); err != nil {
+					return err
+				} else if !result {
+					return fmt.Errorf("cancelled by user")
+				}
+			}
 
 			ret, err := app.SetReplicas(ctx, flags.Team, name, string(flags.Environment), flags.Min, flags.Max)
 			if err != nil {
