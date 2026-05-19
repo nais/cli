@@ -14,14 +14,14 @@ func TestParseEnvVarUpdates(t *testing.T) {
 		{
 			name: "set single variable",
 			args: []string{"FOO=bar"},
-			want: []EnvVarUpdate{{Name: "FOO", Value: ptr("bar")}},
+			want: []EnvVarUpdate{{Name: "FOO", Value: new("bar")}},
 		},
 		{
 			name: "set multiple variables",
 			args: []string{"FOO=bar", "BAZ=qux"},
 			want: []EnvVarUpdate{
-				{Name: "FOO", Value: ptr("bar")},
-				{Name: "BAZ", Value: ptr("qux")},
+				{Name: "FOO", Value: new("bar")},
+				{Name: "BAZ", Value: new("qux")},
 			},
 		},
 		{
@@ -33,24 +33,24 @@ func TestParseEnvVarUpdates(t *testing.T) {
 			name: "set and remove",
 			args: []string{"NEW=hello", "OLD-"},
 			want: []EnvVarUpdate{
-				{Name: "NEW", Value: ptr("hello")},
+				{Name: "NEW", Value: new("hello")},
 				{Name: "OLD", Value: nil},
 			},
 		},
 		{
 			name: "value with equals sign",
 			args: []string{"FOO=bar=baz"},
-			want: []EnvVarUpdate{{Name: "FOO", Value: ptr("bar=baz")}},
+			want: []EnvVarUpdate{{Name: "FOO", Value: new("bar=baz")}},
 		},
 		{
 			name: "empty value",
 			args: []string{"FOO="},
-			want: []EnvVarUpdate{{Name: "FOO", Value: ptr("")}},
+			want: []EnvVarUpdate{{Name: "FOO", Value: new("")}},
 		},
 		{
 			name: "value with hyphen",
 			args: []string{"FOO=bar-baz"},
-			want: []EnvVarUpdate{{Name: "FOO", Value: ptr("bar-baz")}},
+			want: []EnvVarUpdate{{Name: "FOO", Value: new("bar-baz")}},
 		},
 		{
 			name: "key with hyphen and delete",
@@ -106,8 +106,4 @@ func TestParseEnvVarUpdates(t *testing.T) {
 			}
 		})
 	}
-}
-
-func ptr(s string) *string {
-	return &s
 }
