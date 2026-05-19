@@ -28772,6 +28772,120 @@ func (v *SecretValueInput) GetValue() string { return v.Value }
 // GetEncoding returns SecretValueInput.Encoding, and is useful for accessing the field via an interface.
 func (v *SecretValueInput) GetEncoding() ValueEncoding { return v.Encoding }
 
+// SetApplicationEnvResponse is returned by SetApplicationEnv on success.
+type SetApplicationEnvResponse struct {
+	// Update specific fields on an application. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	UpdateApplication SetApplicationEnvUpdateApplicationUpdateApplicationPayload `json:"updateApplication"`
+}
+
+// GetUpdateApplication returns SetApplicationEnvResponse.UpdateApplication, and is useful for accessing the field via an interface.
+func (v *SetApplicationEnvResponse) GetUpdateApplication() SetApplicationEnvUpdateApplicationUpdateApplicationPayload {
+	return v.UpdateApplication
+}
+
+// SetApplicationEnvUpdateApplicationUpdateApplicationPayload includes the requested fields of the GraphQL type UpdateApplicationPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload for updating an application.
+type SetApplicationEnvUpdateApplicationUpdateApplicationPayload struct {
+	// The updated application.
+	Application SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication `json:"application"`
+}
+
+// GetApplication returns SetApplicationEnvUpdateApplicationUpdateApplicationPayload.Application, and is useful for accessing the field via an interface.
+func (v *SetApplicationEnvUpdateApplicationUpdateApplicationPayload) GetApplication() SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication {
+	return v.Application
+}
+
+// SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+}
+
+// GetName returns SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication) GetName() string {
+	return v.Name
+}
+
+// SetApplicationReplicasResponse is returned by SetApplicationReplicas on success.
+type SetApplicationReplicasResponse struct {
+	// Update specific fields on an application. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	UpdateApplication SetApplicationReplicasUpdateApplicationUpdateApplicationPayload `json:"updateApplication"`
+}
+
+// GetUpdateApplication returns SetApplicationReplicasResponse.UpdateApplication, and is useful for accessing the field via an interface.
+func (v *SetApplicationReplicasResponse) GetUpdateApplication() SetApplicationReplicasUpdateApplicationUpdateApplicationPayload {
+	return v.UpdateApplication
+}
+
+// SetApplicationReplicasUpdateApplicationUpdateApplicationPayload includes the requested fields of the GraphQL type UpdateApplicationPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload for updating an application.
+type SetApplicationReplicasUpdateApplicationUpdateApplicationPayload struct {
+	// The updated application.
+	Application SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication `json:"application"`
+}
+
+// GetApplication returns SetApplicationReplicasUpdateApplicationUpdateApplicationPayload.Application, and is useful for accessing the field via an interface.
+func (v *SetApplicationReplicasUpdateApplicationUpdateApplicationPayload) GetApplication() SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication {
+	return v.Application
+}
+
+// SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
+}
+
+// GetName returns SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplication) GetName() string {
+	return v.Name
+}
+
+// SetJobEnvResponse is returned by SetJobEnv on success.
+type SetJobEnvResponse struct {
+	// Update specific fields on a job. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	UpdateJob SetJobEnvUpdateJobUpdateJobPayload `json:"updateJob"`
+}
+
+// GetUpdateJob returns SetJobEnvResponse.UpdateJob, and is useful for accessing the field via an interface.
+func (v *SetJobEnvResponse) GetUpdateJob() SetJobEnvUpdateJobUpdateJobPayload { return v.UpdateJob }
+
+// SetJobEnvUpdateJobUpdateJobPayload includes the requested fields of the GraphQL type UpdateJobPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload for updating a job.
+type SetJobEnvUpdateJobUpdateJobPayload struct {
+	// The updated job.
+	Job SetJobEnvUpdateJobUpdateJobPayloadJob `json:"job"`
+}
+
+// GetJob returns SetJobEnvUpdateJobUpdateJobPayload.Job, and is useful for accessing the field via an interface.
+func (v *SetJobEnvUpdateJobUpdateJobPayload) GetJob() SetJobEnvUpdateJobUpdateJobPayloadJob {
+	return v.Job
+}
+
+// SetJobEnvUpdateJobUpdateJobPayloadJob includes the requested fields of the GraphQL type Job.
+type SetJobEnvUpdateJobUpdateJobPayloadJob struct {
+	// The name of the job.
+	Name string `json:"name"`
+}
+
+// GetName returns SetJobEnvUpdateJobUpdateJobPayloadJob.Name, and is useful for accessing the field via an interface.
+func (v *SetJobEnvUpdateJobUpdateJobPayloadJob) GetName() string { return v.Name }
+
 // SetRoleResponse is returned by SetRole on success.
 type SetRoleResponse struct {
 	// Assign a role to a team member
@@ -30342,6 +30456,20 @@ func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetId() string { ret
 // GetName returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
 func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetName() string { return v.Name }
 
+// Input for setting an environment variable on a workload. To remove a variable, set value to null.
+type UpdateWorkloadEnvironmentVariableInput struct {
+	// Name of the environment variable.
+	Name string `json:"name"`
+	// Value of the environment variable. Set to null to remove the variable.
+	Value *string `json:"value"`
+}
+
+// GetName returns UpdateWorkloadEnvironmentVariableInput.Name, and is useful for accessing the field via an interface.
+func (v *UpdateWorkloadEnvironmentVariableInput) GetName() string { return v.Name }
+
+// GetValue returns UpdateWorkloadEnvironmentVariableInput.Value, and is useful for accessing the field via an interface.
+func (v *UpdateWorkloadEnvironmentVariableInput) GetValue() *string { return v.Value }
+
 // UserTeamsMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // UserTeamsMeAuthenticatedUser is implemented by the following types:
@@ -31624,6 +31752,74 @@ func (v *__RestartAppInput) GetApplication() string { return v.Application }
 
 // GetEnv returns __RestartAppInput.Env, and is useful for accessing the field via an interface.
 func (v *__RestartAppInput) GetEnv() string { return v.Env }
+
+// __SetApplicationEnvInput is used internally by genqlient
+type __SetApplicationEnvInput struct {
+	Team                 string                                   `json:"team"`
+	Name                 string                                   `json:"name"`
+	Env                  string                                   `json:"env"`
+	EnvironmentVariables []UpdateWorkloadEnvironmentVariableInput `json:"environmentVariables"`
+}
+
+// GetTeam returns __SetApplicationEnvInput.Team, and is useful for accessing the field via an interface.
+func (v *__SetApplicationEnvInput) GetTeam() string { return v.Team }
+
+// GetName returns __SetApplicationEnvInput.Name, and is useful for accessing the field via an interface.
+func (v *__SetApplicationEnvInput) GetName() string { return v.Name }
+
+// GetEnv returns __SetApplicationEnvInput.Env, and is useful for accessing the field via an interface.
+func (v *__SetApplicationEnvInput) GetEnv() string { return v.Env }
+
+// GetEnvironmentVariables returns __SetApplicationEnvInput.EnvironmentVariables, and is useful for accessing the field via an interface.
+func (v *__SetApplicationEnvInput) GetEnvironmentVariables() []UpdateWorkloadEnvironmentVariableInput {
+	return v.EnvironmentVariables
+}
+
+// __SetApplicationReplicasInput is used internally by genqlient
+type __SetApplicationReplicasInput struct {
+	Team string `json:"team"`
+	Name string `json:"name"`
+	Env  string `json:"env"`
+	Min  int    `json:"min"`
+	Max  int    `json:"max"`
+}
+
+// GetTeam returns __SetApplicationReplicasInput.Team, and is useful for accessing the field via an interface.
+func (v *__SetApplicationReplicasInput) GetTeam() string { return v.Team }
+
+// GetName returns __SetApplicationReplicasInput.Name, and is useful for accessing the field via an interface.
+func (v *__SetApplicationReplicasInput) GetName() string { return v.Name }
+
+// GetEnv returns __SetApplicationReplicasInput.Env, and is useful for accessing the field via an interface.
+func (v *__SetApplicationReplicasInput) GetEnv() string { return v.Env }
+
+// GetMin returns __SetApplicationReplicasInput.Min, and is useful for accessing the field via an interface.
+func (v *__SetApplicationReplicasInput) GetMin() int { return v.Min }
+
+// GetMax returns __SetApplicationReplicasInput.Max, and is useful for accessing the field via an interface.
+func (v *__SetApplicationReplicasInput) GetMax() int { return v.Max }
+
+// __SetJobEnvInput is used internally by genqlient
+type __SetJobEnvInput struct {
+	Team                 string                                   `json:"team"`
+	Name                 string                                   `json:"name"`
+	Env                  string                                   `json:"env"`
+	EnvironmentVariables []UpdateWorkloadEnvironmentVariableInput `json:"environmentVariables"`
+}
+
+// GetTeam returns __SetJobEnvInput.Team, and is useful for accessing the field via an interface.
+func (v *__SetJobEnvInput) GetTeam() string { return v.Team }
+
+// GetName returns __SetJobEnvInput.Name, and is useful for accessing the field via an interface.
+func (v *__SetJobEnvInput) GetName() string { return v.Name }
+
+// GetEnv returns __SetJobEnvInput.Env, and is useful for accessing the field via an interface.
+func (v *__SetJobEnvInput) GetEnv() string { return v.Env }
+
+// GetEnvironmentVariables returns __SetJobEnvInput.EnvironmentVariables, and is useful for accessing the field via an interface.
+func (v *__SetJobEnvInput) GetEnvironmentVariables() []UpdateWorkloadEnvironmentVariableInput {
+	return v.EnvironmentVariables
+}
 
 // __SetRoleInput is used internally by genqlient
 type __SetRoleInput struct {
@@ -34635,6 +34831,134 @@ func RestartApp(
 	}
 
 	data_ = &RestartAppResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by SetApplicationEnv.
+const SetApplicationEnv_Operation = `
+mutation SetApplicationEnv ($team: Slug!, $name: String!, $env: String!, $environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]) {
+	updateApplication(input: {teamSlug:$team,environmentName:$env,name:$name,environmentVariables:$environmentVariables}) {
+		application {
+			name
+		}
+	}
+}
+`
+
+func SetApplicationEnv(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env string,
+	environmentVariables []UpdateWorkloadEnvironmentVariableInput,
+) (data_ *SetApplicationEnvResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SetApplicationEnv",
+		Query:  SetApplicationEnv_Operation,
+		Variables: &__SetApplicationEnvInput{
+			Team:                 team,
+			Name:                 name,
+			Env:                  env,
+			EnvironmentVariables: environmentVariables,
+		},
+	}
+
+	data_ = &SetApplicationEnvResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by SetApplicationReplicas.
+const SetApplicationReplicas_Operation = `
+mutation SetApplicationReplicas ($team: Slug!, $name: String!, $env: String!, $min: Int!, $max: Int!) {
+	updateApplication(input: {teamSlug:$team,environmentName:$env,name:$name,replicas:{min:$min,max:$max}}) {
+		application {
+			name
+		}
+	}
+}
+`
+
+func SetApplicationReplicas(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env string,
+	min int,
+	max int,
+) (data_ *SetApplicationReplicasResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SetApplicationReplicas",
+		Query:  SetApplicationReplicas_Operation,
+		Variables: &__SetApplicationReplicasInput{
+			Team: team,
+			Name: name,
+			Env:  env,
+			Min:  min,
+			Max:  max,
+		},
+	}
+
+	data_ = &SetApplicationReplicasResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by SetJobEnv.
+const SetJobEnv_Operation = `
+mutation SetJobEnv ($team: Slug!, $name: String!, $env: String!, $environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]) {
+	updateJob(input: {teamSlug:$team,environmentName:$env,name:$name,environmentVariables:$environmentVariables}) {
+		job {
+			name
+		}
+	}
+}
+`
+
+func SetJobEnv(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	env string,
+	environmentVariables []UpdateWorkloadEnvironmentVariableInput,
+) (data_ *SetJobEnvResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SetJobEnv",
+		Query:  SetJobEnv_Operation,
+		Variables: &__SetJobEnvInput{
+			Team:                 team,
+			Name:                 name,
+			Env:                  env,
+			EnvironmentVariables: environmentVariables,
+		},
+	}
+
+	data_ = &SetJobEnvResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

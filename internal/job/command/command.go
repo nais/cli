@@ -23,6 +23,7 @@ func Job(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			issues(flags),
 			log(flags),
 			run(flags),
+			set(flags),
 		},
 	}
 }

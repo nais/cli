@@ -96,3 +96,13 @@ type EnvVars struct {
 type Files struct {
 	*App
 }
+
+type SetReplicas struct {
+	*App
+	Min int `name:"min" usage:"Minimum number of replicas." required:"true"`
+	Max int `name:"max" usage:"Maximum number of replicas." required:"true"`
+}
+
+type SetEnv struct {
+	*App
+}
