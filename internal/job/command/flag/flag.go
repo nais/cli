@@ -59,3 +59,7 @@ type Log struct {
 	Since          time.Duration `name:"since" short:"s" usage:"How far back in time to start the initial batch. Examples: 300s, 1h, 2h45m. Defaults to 1h."`
 	Limit          int           `name:"limit" short:"l" usage:"Maximum number of initial log lines."`
 }
+
+type SetEnv struct {
+	*Job
+}

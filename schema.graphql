@@ -75,9 +75,9 @@ An application was scaled.
 """
 	APPLICATION_SCALED
 """
-A generic kubernetes resource was updated via apply.
+An application was updated.
 """
-	GENERIC_KUBERNETES_RESOURCE_UPDATED
+	APPLICATION_UPDATED
 """
 A generic kubernetes resource was created via apply.
 """
@@ -118,6 +118,10 @@ Activity log entries related to job run deletion.
 Activity log entries related to job triggering.
 """
 	JOB_TRIGGERED
+"""
+Activity log entries related to job updates.
+"""
+	JOB_UPDATED
 """
 OpenSearch was created.
 """
@@ -186,6 +190,14 @@ Secret was deleted.
 Secret values were viewed.
 """
 	SECRET_VALUES_VIEWED
+"""
+A workload binding was added to a service account.
+"""
+	SERVICE_ACCOUNT_WORKLOAD_BINDING_ADDED
+"""
+A workload binding was removed from a service account.
+"""
+	SERVICE_ACCOUNT_WORKLOAD_BINDING_REMOVED
 """
 Service account was created.
 """
@@ -285,6 +297,20 @@ Activity log entry for when a vulnerability is updated.
 }
 
 """
+A single facet item for activity types.
+"""
+type ActivityLogActivityTypeFacetItem {
+"""
+The activity type enum value, usable in the ActivityLogFilter.
+"""
+	activityType: ActivityLogActivityType!
+"""
+Number of matching entries.
+"""
+	count: Int!
+}
+
+"""
 Interface for activity log entries.
 """
 interface ActivityLogEntry {
@@ -338,6 +364,11 @@ List of nodes.
 List of edges.
 """
 	edges: [ActivityLogEntryEdge!]!
+"""
+Facets for the activity log entries. Provides distribution counts to help narrow down results.
+Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+"""
+	facets: ActivityLogFacets
 }
 
 """
@@ -421,8 +452,56 @@ All activity log entries related to vulnerabilities will use this resource type.
 	VULNERABILITY
 }
 
+"""
+A single facet item for environments.
+"""
+type ActivityLogEnvironmentFacetItem {
+"""
+The environment name.
+"""
+	environmentName: String!
+"""
+Number of matching entries.
+"""
+	count: Int!
+}
+
+"""
+Facets for activity log entries, providing distribution counts across different dimensions.
+"""
+type ActivityLogFacets {
+"""
+Distribution of entries by activity type. These values can be used with the ActivityLogFilter.
+"""
+	activityTypes: [ActivityLogActivityTypeFacetItem!]!
+"""
+Distribution of entries by resource type.
+"""
+	resourceTypes: [ActivityLogResourceTypeFacetItem!]!
+"""
+Distribution of entries by environment.
+"""
+	environments: [ActivityLogEnvironmentFacetItem!]!
+}
+
 input ActivityLogFilter {
 	activityTypes: [ActivityLogActivityType!]
+	resourceTypes: [ActivityLogEntryResourceType!]
+	environments: [String!]
+}
+
+"""
+A single facet item for resource types.
+"""
+type ActivityLogResourceTypeFacetItem {
+"""
+The resource type.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Number of matching entries.
+"""
+	count: Int!
 }
 
 interface ActivityLogger {
@@ -486,6 +565,24 @@ type AddTeamMemberPayload {
 The added team member.
 """
 	member: TeamMember
+}
+
+input AddWorkloadToServiceAccountInput {
+	serviceAccountID: ID!
+	environment: String!
+	teamSlug: Slug!
+	workloadName: String!
+}
+
+type AddWorkloadToServiceAccountPayload {
+"""
+The service account that the workload was bound to.
+"""
+	serviceAccount: ServiceAccount
+"""
+The created binding.
+"""
+	binding: ServiceAccountWorkloadBinding
 }
 
 """
@@ -860,6 +957,11 @@ Get items before this cursor.
 		before: Cursor
 	): SecretConnection!
 """
+The Nais service account this application is bound to, if any. Authenticating using the application's
+Workload Token will then act as this Nais service account.
+"""
+	serviceAccount: ServiceAccount
+"""
 SQL instances referenced by the application. This does not currently support pagination, but will return all available SQL instances.
 """
 	sqlInstances(
@@ -916,6 +1018,11 @@ List of nodes.
 List of edges.
 """
 	edges: [ApplicationEdge!]!
+"""
+Facets for the applications. Provides distribution counts to help narrow down results.
+Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+"""
+	facets: ApplicationFacets
 }
 
 type ApplicationCreatedActivityLogEntry implements ActivityLogEntry & Node{
@@ -1004,6 +1111,34 @@ Cursor for this edge that can be used for pagination.
 The application.
 """
 	node: Application!
+}
+
+"""
+A single facet item for environments.
+"""
+type ApplicationEnvironmentFacetItem {
+"""
+The environment name.
+"""
+	environmentName: String!
+"""
+Number of matching applications.
+"""
+	count: Int!
+}
+
+"""
+Facets for applications, providing distribution counts across different dimensions.
+"""
+type ApplicationFacets {
+"""
+Distribution of applications by environment.
+"""
+	environments: [ApplicationEnvironmentFacetItem!]!
+"""
+Distribution of applications by state.
+"""
+	states: [ApplicationStateFacetItem!]!
 }
 
 type ApplicationInstance implements Node{
@@ -1301,6 +1436,23 @@ The application state is unknown.
 	UNKNOWN
 }
 
+"""
+A single facet item for application states.
+"""
+type ApplicationStateFacetItem {
+"""
+The application state.
+"""
+	state: ApplicationState!
+"""
+Number of matching applications.
+"""
+	count: Int!
+}
+
+"""
+Activity log entry for when an application is updated.
+"""
 type ApplicationUpdatedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -1337,7 +1489,21 @@ The environment name that the entry belongs to.
 """
 Data associated with the update.
 """
-	data: GenericKubernetesResourceActivityLogEntryData!
+	data: ApplicationUpdatedActivityLogEntryData!
+}
+
+"""
+Data associated with an application update activity log entry.
+"""
+type ApplicationUpdatedActivityLogEntryData {
+"""
+The fields that changed during the update.
+"""
+	changedFields: [ResourceChangedField!]!
+"""
+GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
+"""
+	gitHubActorClaims: GitHubActorClaims
 }
 
 input AssignRoleToServiceAccountInput {
@@ -3593,7 +3759,11 @@ The application instances belonging to this instance group.
 """
 An environment variable configured for an instance group.
 """
-type InstanceGroupEnvironmentVariable {
+type InstanceGroupEnvironmentVariable implements Node{
+"""
+The globally unique ID of the environment variable.
+"""
+	id: ID!
 """
 The name of the environment variable.
 """
@@ -4017,6 +4187,11 @@ Get items before this cursor.
 		before: Cursor
 	): SecretConnection!
 """
+The Nais service account this job is bound to, if any. Authenticating using the job's Workload Token
+will then act as this Nais service account.
+"""
+	serviceAccount: ServiceAccount
+"""
 SQL instances referenced by the job. This does not currently support pagination, but will return all available SQL instances.
 """
 	sqlInstances(
@@ -4066,6 +4241,11 @@ List of nodes.
 List of edges.
 """
 	edges: [JobEdge!]!
+"""
+Facets for the jobs. Provides distribution counts to help narrow down results.
+Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+"""
+	facets: JobFacets
 }
 
 type JobCreatedActivityLogEntry implements ActivityLogEntry & Node{
@@ -4153,6 +4333,34 @@ The job.
 	node: Job!
 }
 
+"""
+A single facet item for environments.
+"""
+type JobEnvironmentFacetItem {
+"""
+The environment name.
+"""
+	environmentName: String!
+"""
+Number of matching jobs.
+"""
+	count: Int!
+}
+
+"""
+Facets for jobs, providing distribution counts across different dimensions.
+"""
+type JobFacets {
+"""
+Distribution of jobs by environment.
+"""
+	environments: [JobEnvironmentFacetItem!]!
+"""
+Distribution of jobs by state.
+"""
+	states: [JobStateFacetItem!]!
+}
+
 type JobManifest implements WorkloadManifest{
 """
 The manifest content, serialized as a YAML document.
@@ -4178,6 +4386,10 @@ Order jobs by the name of the environment.
 Order by state.
 """
 	STATE
+"""
+Order jobs by next scheduled run time. Jobs without a next run (no schedule or invalid cron) are always sorted last.
+"""
+	NEXT_RUN
 """
 Order jobs by the deployment time.
 """
@@ -4414,6 +4626,10 @@ The cron expression for the job.
 The time zone for the job. Defaults to UTC.
 """
 	timeZone: String!
+"""
+The next scheduled run time. Null if the cron expression is invalid.
+"""
+	nextRun: Time
 }
 
 enum JobState {
@@ -4421,6 +4637,20 @@ enum JobState {
 	RUNNING
 	FAILED
 	UNKNOWN
+}
+
+"""
+A single facet item for job states.
+"""
+type JobStateFacetItem {
+"""
+The job state.
+"""
+	state: JobState!
+"""
+Number of matching jobs.
+"""
+	count: Int!
 }
 
 type JobTriggeredActivityLogEntry implements ActivityLogEntry & Node{
@@ -4458,6 +4688,9 @@ The environment name that the entry belongs to.
 	environmentName: String
 }
 
+"""
+Activity log entry for when a job is updated.
+"""
 type JobUpdatedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -4494,7 +4727,21 @@ The environment name that the entry belongs to.
 """
 Data associated with the update.
 """
-	data: GenericKubernetesResourceActivityLogEntryData!
+	data: JobUpdatedActivityLogEntryData!
+}
+
+"""
+Data associated with a job update activity log entry.
+"""
+type JobUpdatedActivityLogEntryData {
+"""
+The fields that changed during the update.
+"""
+	changedFields: [ResourceChangedField!]!
+"""
+GitHub Actions OIDC token claims at the time of the apply. Only present when the request was authenticated via a GitHub token.
+"""
+	gitHubActorClaims: GitHubActorClaims
 }
 
 type KafkaCredentials {
@@ -4875,6 +5122,16 @@ Input for restarting an application.
 		input: RestartApplicationInput!
 	): RestartApplicationPayload!
 """
+Update specific fields on an application. Only provided fields are applied.
+Changes are temporary and will be overwritten on next deploy.
+"""
+	updateApplication(
+"""
+Input for updating an application.
+"""
+		input: UpdateApplicationInput!
+	): UpdateApplicationPayload!
+"""
 Create a new config.
 """
 	createConfig(
@@ -4928,6 +5185,16 @@ Trigger a job
 	triggerJob(
 		input: TriggerJobInput!
 	): TriggerJobPayload!
+"""
+Update specific fields on a job. Only provided fields are applied.
+Changes are temporary and will be overwritten on next deploy.
+"""
+	updateJob(
+"""
+Input for updating a job.
+"""
+		input: UpdateJobInput!
+	): UpdateJobPayload!
 """
 Create temporary credentials for Kafka.
 """
@@ -5041,6 +5308,19 @@ This creates a temporary elevation and logs the access for auditing purposes.
 	viewSecretValues(
 		input: ViewSecretValuesInput!
 	): ViewSecretValuesPayload!
+"""
+Bind a workload to a service account, allowing the workload to authenticate against the
+Nais API as the service account using its Workload Token.
+"""
+	addWorkloadToServiceAccount(
+		input: AddWorkloadToServiceAccountInput!
+	): AddWorkloadToServiceAccountPayload!
+"""
+Remove a workload binding from a service account.
+"""
+	removeWorkloadFromServiceAccount(
+		input: RemoveWorkloadFromServiceAccountInput!
+	): RemoveWorkloadFromServiceAccountPayload!
 """
 Create a service account.
 """
@@ -6075,6 +6355,10 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Optional filter to filter the roles by.
+"""
+		filter: RoleFilter
 	): RoleConnection!
 """
 Get the monthly cost summary for a tenant.
@@ -6742,6 +7026,21 @@ The team that the member was removed from.
 	team: Team
 }
 
+input RemoveWorkloadFromServiceAccountInput {
+	bindingID: ID!
+}
+
+type RemoveWorkloadFromServiceAccountPayload {
+"""
+The service account the binding was associated with.
+"""
+	serviceAccount: ServiceAccount
+"""
+True if the binding was removed.
+"""
+	bindingDeleted: Boolean
+}
+
 type Repository implements Node{
 """
 ID of the repository.
@@ -7072,6 +7371,10 @@ A cursor for use in pagination.
 	cursor: Cursor!
 }
 
+input RoleFilter {
+	excludeGlobalRoles: Boolean
+}
+
 type RoleRevokedFromServiceAccountActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -7180,6 +7483,14 @@ Search filter for filtering search results.
 Search filter for filtering search results.
 """
 	type: SearchType
+"""
+Search filter for filtering search results.
+"""
+	types: [SearchType!]
+"""
+Search filter for filtering search results.
+"""
+	teams: [Slug!]
 }
 
 """
@@ -7786,6 +8097,27 @@ Get items before this cursor.
 """
 		before: Cursor
 	): ServiceAccountTokenConnection!
+"""
+The workloads bound to this service account.
+"""
+	workloadBindings(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): ServiceAccountWorkloadBindingConnection!
 }
 
 type ServiceAccountConnection {
@@ -8153,6 +8485,182 @@ The old value of the field.
 The new value of the field.
 """
 	newValue: String
+}
+
+"""
+A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
+Workload Token to the API, the API will authenticate the request as the bound service account.
+
+The binding is identified at authentication time by the workload's environment, team and name, plus the Workload
+UID once it has been observed (trust on first use). If the UID changes (for instance because the workload has
+been recreated), the binding is considered broken and authentication will fail until the binding is removed and
+re-added.
+"""
+type ServiceAccountWorkloadBinding implements Node{
+"""
+The globally unique ID of the binding.
+"""
+	id: ID!
+"""
+The service account this binding belongs to.
+"""
+	serviceAccount: ServiceAccount!
+"""
+The currently-resolved workload, or null if it can no longer be found (for instance because it has been deleted).
+"""
+	workload: Workload
+"""
+The environment the bound workload is deployed in.
+"""
+	environment: String!
+"""
+The team slug owning the bound workload.
+"""
+	teamSlug: Slug!
+"""
+The name of the bound workload.
+"""
+	workloadName: String!
+"""
+True if the binding is broken — either the workload no longer exists, or the Workload UID
+does not match the value pinned to the binding.
+"""
+	isBroken: Boolean!
+"""
+When the binding was created.
+"""
+	createdAt: Time!
+"""
+When the binding was last used to authenticate against the API. Updates are throttled to at most once per
+minute.
+"""
+	lastUsedAt: Time
+}
+
+type ServiceAccountWorkloadBindingAddedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: ServiceAccountWorkloadBindingAddedActivityLogEntryData!
+}
+
+type ServiceAccountWorkloadBindingAddedActivityLogEntryData {
+"""
+The team slug of the workload.
+"""
+	teamSlug: Slug!
+"""
+The name of the workload.
+"""
+	workloadName: String!
+}
+
+type ServiceAccountWorkloadBindingConnection {
+"""
+A list of bindings.
+"""
+	nodes: [ServiceAccountWorkloadBinding!]!
+"""
+A list of edges.
+"""
+	edges: [ServiceAccountWorkloadBindingEdge!]!
+"""
+Information to aid in pagination.
+"""
+	pageInfo: PageInfo!
+}
+
+type ServiceAccountWorkloadBindingEdge {
+"""
+The binding.
+"""
+	node: ServiceAccountWorkloadBinding!
+"""
+A cursor for use in pagination.
+"""
+	cursor: Cursor!
+}
+
+type ServiceAccountWorkloadBindingRemovedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: ServiceAccountWorkloadBindingRemovedActivityLogEntryData!
+}
+
+type ServiceAccountWorkloadBindingRemovedActivityLogEntryData {
+"""
+The team slug of the workload.
+"""
+	teamSlug: Slug!
+"""
+The name of the workload.
+"""
+	workloadName: String!
 }
 
 type ServiceCostSample {
@@ -9000,6 +9508,27 @@ Filtering options for items returned from the connection.
 		filter: SecretFilter
 	): SecretConnection!
 """
+Nais service accounts owned by the team.
+"""
+	serviceAccounts(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): ServiceAccountConnection!
+"""
 SQL instances owned by the team.
 """
 	sqlInstances(
@@ -9162,6 +9691,10 @@ Input for filtering the applications of a team.
 Input for filtering the applications of a team.
 """
 	environments: [String!]
+"""
+Input for filtering the applications of a team.
+"""
+	states: [ApplicationState!]
 }
 
 type TeamCDN {
@@ -9707,6 +10240,18 @@ type TeamInventoryCountApplications {
 Total number of applications.
 """
 	total: Int!
+"""
+Number of applications in a running state.
+"""
+	running: Int!
+"""
+Number of applications in a not running state.
+"""
+	notRunning: Int!
+"""
+Number of applications in an unknown state.
+"""
+	unknown: Int!
 }
 
 type TeamInventoryCountBigQueryDatasets {
@@ -9738,6 +10283,22 @@ type TeamInventoryCountJobs {
 Total number of jobs.
 """
 	total: Int!
+"""
+Number of jobs in a running state.
+"""
+	running: Int!
+"""
+Number of jobs in a completed state.
+"""
+	completed: Int!
+"""
+Number of jobs in a failed state.
+"""
+	failed: Int!
+"""
+Number of jobs in an unknown state.
+"""
+	unknown: Int!
 }
 
 type TeamInventoryCountKafkaTopics {
@@ -9811,6 +10372,7 @@ Secret inventory count for a team.
 input TeamJobsFilter {
 	name: String!
 	environments: [String!]
+	states: [JobState!]
 }
 
 type TeamMember {
@@ -10607,6 +11169,56 @@ The current major version of Unleash available.
 	currentMajorVersion: Int!
 }
 
+"""
+Input for updating an application.
+"""
+input UpdateApplicationInput {
+"""
+Input for updating an application.
+"""
+	name: String!
+"""
+Input for updating an application.
+"""
+	teamSlug: Slug!
+"""
+Input for updating an application.
+"""
+	environmentName: String!
+"""
+Input for updating an application.
+"""
+	environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]
+"""
+Input for updating an application.
+"""
+	replicas: UpdateApplicationReplicasInput
+}
+
+"""
+Payload for updating an application.
+"""
+type UpdateApplicationPayload {
+"""
+The updated application.
+"""
+	application: Application
+}
+
+"""
+Input for updating the replica configuration of an application.
+"""
+input UpdateApplicationReplicasInput {
+"""
+Input for updating the replica configuration of an application.
+"""
+	min: Int!
+"""
+Input for updating the replica configuration of an application.
+"""
+	max: Int!
+}
+
 input UpdateConfigValueInput {
 	name: String!
 	environmentName: String!
@@ -10633,6 +11245,23 @@ type UpdateImageVulnerabilityPayload {
 The vulnerability updated.
 """
 	vulnerability: ImageVulnerability
+}
+
+input UpdateJobInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+	environmentVariables: [UpdateWorkloadEnvironmentVariableInput!]
+}
+
+"""
+Payload for updating a job.
+"""
+type UpdateJobPayload {
+"""
+The updated job.
+"""
+	job: Job
 }
 
 input UpdateOpenSearchInput {
@@ -10750,6 +11379,20 @@ type UpdateValkeyPayload {
 Valkey instance that was updated.
 """
 	valkey: Valkey!
+}
+
+"""
+Input for setting an environment variable on a workload. To remove a variable, set value to null.
+"""
+input UpdateWorkloadEnvironmentVariableInput {
+"""
+Input for setting an environment variable on a workload. To remove a variable, set value to null.
+"""
+	name: String!
+"""
+Input for setting an environment variable on a workload. To remove a variable, set value to null.
+"""
+	value: String
 }
 
 """
