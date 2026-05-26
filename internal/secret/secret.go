@@ -92,9 +92,6 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllSecretsTeamSecret
 				  }
 				}
 				lastModifiedAt
-				lastModifiedBy {
-				  email
-				}
 			  }
 			}
 		  }

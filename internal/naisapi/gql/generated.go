@@ -4507,8 +4507,6 @@ type GetAllSecretsTeamSecretsSecretConnectionNodesSecret struct {
 	Workloads GetAllSecretsTeamSecretsSecretConnectionNodesSecretWorkloadsWorkloadConnection `json:"workloads"`
 	// Last time the secret was modified.
 	LastModifiedAt time.Time `json:"lastModifiedAt"`
-	// User who last modified the secret.
-	LastModifiedBy GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser `json:"lastModifiedBy"`
 }
 
 // GetName returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.Name, and is useful for accessing the field via an interface.
@@ -4530,25 +4528,6 @@ func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetWorkloads() Get
 // GetLastModifiedAt returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.LastModifiedAt, and is useful for accessing the field via an interface.
 func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetLastModifiedAt() time.Time {
 	return v.LastModifiedAt
-}
-
-// GetLastModifiedBy returns GetAllSecretsTeamSecretsSecretConnectionNodesSecret.LastModifiedBy, and is useful for accessing the field via an interface.
-func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecret) GetLastModifiedBy() GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser {
-	return v.LastModifiedBy
-}
-
-// GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser includes the requested fields of the GraphQL type User.
-// The GraphQL type's documentation follows.
-//
-// The user type represents a user of the Nais platform and the Nais GraphQL API.
-type GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser struct {
-	// The email address of the user.
-	Email string `json:"email"`
-}
-
-// GetEmail returns GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser.Email, and is useful for accessing the field via an interface.
-func (v *GetAllSecretsTeamSecretsSecretConnectionNodesSecretLastModifiedByUser) GetEmail() string {
-	return v.Email
 }
 
 // GetAllSecretsTeamSecretsSecretConnectionNodesSecretTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -33632,9 +33611,6 @@ query GetAllSecrets ($teamSlug: Slug!) {
 					}
 				}
 				lastModifiedAt
-				lastModifiedBy {
-					email
-				}
 			}
 		}
 	}
