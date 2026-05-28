@@ -23,8 +23,8 @@ const (
 	ActivityLogActivityTypeApplicationRestarted ActivityLogActivityType = "APPLICATION_RESTARTED"
 	// An application was scaled.
 	ActivityLogActivityTypeApplicationScaled ActivityLogActivityType = "APPLICATION_SCALED"
-	// A generic kubernetes resource was updated via apply.
-	ActivityLogActivityTypeGenericKubernetesResourceUpdated ActivityLogActivityType = "GENERIC_KUBERNETES_RESOURCE_UPDATED"
+	// An application was updated.
+	ActivityLogActivityTypeApplicationUpdated ActivityLogActivityType = "APPLICATION_UPDATED"
 	// A generic kubernetes resource was created via apply.
 	ActivityLogActivityTypeGenericKubernetesResourceCreated ActivityLogActivityType = "GENERIC_KUBERNETES_RESOURCE_CREATED"
 	// All activity log entries related to direct cluster changes.
@@ -45,6 +45,8 @@ const (
 	ActivityLogActivityTypeJobRunDeleted ActivityLogActivityType = "JOB_RUN_DELETED"
 	// Activity log entries related to job triggering.
 	ActivityLogActivityTypeJobTriggered ActivityLogActivityType = "JOB_TRIGGERED"
+	// Activity log entries related to job updates.
+	ActivityLogActivityTypeJobUpdated ActivityLogActivityType = "JOB_UPDATED"
 	// OpenSearch was created.
 	ActivityLogActivityTypeOpensearchCreated ActivityLogActivityType = "OPENSEARCH_CREATED"
 	// OpenSearch was updated.
@@ -79,6 +81,10 @@ const (
 	ActivityLogActivityTypeSecretDeleted ActivityLogActivityType = "SECRET_DELETED"
 	// Secret values were viewed.
 	ActivityLogActivityTypeSecretValuesViewed ActivityLogActivityType = "SECRET_VALUES_VIEWED"
+	// A workload binding was added to a service account.
+	ActivityLogActivityTypeServiceAccountWorkloadBindingAdded ActivityLogActivityType = "SERVICE_ACCOUNT_WORKLOAD_BINDING_ADDED"
+	// A workload binding was removed from a service account.
+	ActivityLogActivityTypeServiceAccountWorkloadBindingRemoved ActivityLogActivityType = "SERVICE_ACCOUNT_WORKLOAD_BINDING_REMOVED"
 	// Service account was created.
 	ActivityLogActivityTypeServiceAccountCreated ActivityLogActivityType = "SERVICE_ACCOUNT_CREATED"
 	// Service account was updated.
@@ -134,7 +140,7 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeApplicationDeleted,
 	ActivityLogActivityTypeApplicationRestarted,
 	ActivityLogActivityTypeApplicationScaled,
-	ActivityLogActivityTypeGenericKubernetesResourceUpdated,
+	ActivityLogActivityTypeApplicationUpdated,
 	ActivityLogActivityTypeGenericKubernetesResourceCreated,
 	ActivityLogActivityTypeClusterAudit,
 	ActivityLogActivityTypeConfigCreated,
@@ -145,6 +151,7 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeJobDeleted,
 	ActivityLogActivityTypeJobRunDeleted,
 	ActivityLogActivityTypeJobTriggered,
+	ActivityLogActivityTypeJobUpdated,
 	ActivityLogActivityTypeOpensearchCreated,
 	ActivityLogActivityTypeOpensearchUpdated,
 	ActivityLogActivityTypeOpensearchDeleted,
@@ -162,6 +169,8 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeSecretValueRemoved,
 	ActivityLogActivityTypeSecretDeleted,
 	ActivityLogActivityTypeSecretValuesViewed,
+	ActivityLogActivityTypeServiceAccountWorkloadBindingAdded,
+	ActivityLogActivityTypeServiceAccountWorkloadBindingRemoved,
 	ActivityLogActivityTypeServiceAccountCreated,
 	ActivityLogActivityTypeServiceAccountUpdated,
 	ActivityLogActivityTypeServiceAccountDeleted,
@@ -5117,6 +5126,8 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
@@ -5244,6 +5255,10 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -5416,6 +5431,12 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "ServiceAccountUpdatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ServiceMaintenanceActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
@@ -5809,6 +5830,22 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
 		typename = "ServiceMaintenanceActivityLogEntry"
 
@@ -6106,6 +6143,9 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 }
 
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -6566,6 +6606,9 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 }
 
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -7515,6 +7558,82 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 
 // GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -9824,6 +9943,8 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
@@ -9951,6 +10072,10 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -10123,6 +10248,12 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 		return json.Unmarshal(b, *v)
 	case "ServiceAccountUpdatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ServiceMaintenanceActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
@@ -10516,6 +10647,22 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
 		typename = "ServiceMaintenanceActivityLogEntry"
 
@@ -10813,6 +10960,9 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 }
 
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -11273,6 +11423,9 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 }
 
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -12222,6 +12375,82 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 
 // GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -13431,6 +13660,8 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
@@ -13558,6 +13789,10 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -13730,6 +13965,12 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "ServiceAccountUpdatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ServiceMaintenanceActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
@@ -14123,6 +14364,22 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
 		typename = "ServiceMaintenanceActivityLogEntry"
 
@@ -14420,6 +14677,9 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 }
 
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -14880,6 +15140,9 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 }
 
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -15829,6 +16092,82 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 
 // GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -18218,6 +18557,8 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
@@ -18345,6 +18686,10 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -18517,6 +18862,12 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "ServiceAccountUpdatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ServiceMaintenanceActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
@@ -18910,6 +19261,22 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
 		typename = "ServiceMaintenanceActivityLogEntry"
 
@@ -19207,6 +19574,9 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 }
 
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -19667,6 +20037,9 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 }
 
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -20616,6 +20989,82 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 
 // GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetEnvironmentName() string {
 	return v.EnvironmentName
 }
 
@@ -21775,6 +22224,8 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamConfirmDeleteKeyActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesTeamCreateDeleteKeyActivityLogEntry
@@ -21912,6 +22363,10 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -22084,6 +22539,12 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "ServiceAccountUpdatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ServiceMaintenanceActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry)
@@ -22477,6 +22938,22 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceMaintenanceActivityLogEntry:
 		typename = "ServiceMaintenanceActivityLogEntry"
 
@@ -22830,6 +23307,9 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicatio
 }
 
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesApplicationUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -23458,6 +23938,9 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTrigger
 }
 
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry struct {
 	Typename string `json:"__typename"`
 	// Interface for activity log entries.
@@ -24757,6 +25240,110 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAcc
 
 // GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountUpdatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingAddedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetEnvironmentName() string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesServiceAccountWorkloadBindingRemovedActivityLogEntry) GetResourceName() string {
 	return v.ResourceName
 }
 
@@ -27675,6 +28262,8 @@ const (
 	JobOrderFieldEnvironment JobOrderField = "ENVIRONMENT"
 	// Order by state.
 	JobOrderFieldState JobOrderField = "STATE"
+	// Order jobs by next scheduled run time. Jobs without a next run (no schedule or invalid cron) are always sorted last.
+	JobOrderFieldNextRun JobOrderField = "NEXT_RUN"
 	// Order jobs by the deployment time.
 	JobOrderFieldDeploymentTime JobOrderField = "DEPLOYMENT_TIME"
 	// Order jobs by issue severity
@@ -27685,6 +28274,7 @@ var AllJobOrderField = []JobOrderField{
 	JobOrderFieldName,
 	JobOrderFieldEnvironment,
 	JobOrderFieldState,
+	JobOrderFieldNextRun,
 	JobOrderFieldDeploymentTime,
 	JobOrderFieldIssues,
 }
@@ -28774,7 +29364,8 @@ func (v *SecretValueInput) GetEncoding() ValueEncoding { return v.Encoding }
 
 // SetApplicationEnvResponse is returned by SetApplicationEnv on success.
 type SetApplicationEnvResponse struct {
-	// Update specific fields on an application. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	// Update specific fields on an application. Only provided fields are applied.
+	// Changes are temporary and will be overwritten on next deploy.
 	UpdateApplication SetApplicationEnvUpdateApplicationUpdateApplicationPayload `json:"updateApplication"`
 }
 
@@ -28815,7 +29406,8 @@ func (v *SetApplicationEnvUpdateApplicationUpdateApplicationPayloadApplication) 
 
 // SetApplicationReplicasResponse is returned by SetApplicationReplicas on success.
 type SetApplicationReplicasResponse struct {
-	// Update specific fields on an application. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	// Update specific fields on an application. Only provided fields are applied.
+	// Changes are temporary and will be overwritten on next deploy.
 	UpdateApplication SetApplicationReplicasUpdateApplicationUpdateApplicationPayload `json:"updateApplication"`
 }
 
@@ -28856,7 +29448,8 @@ func (v *SetApplicationReplicasUpdateApplicationUpdateApplicationPayloadApplicat
 
 // SetJobEnvResponse is returned by SetJobEnv on success.
 type SetJobEnvResponse struct {
-	// Update specific fields on a job. Only provided fields are applied. Changes are temporary and will be overwritten on next deploy.
+	// Update specific fields on a job. Only provided fields are applied.
+	// Changes are temporary and will be overwritten on next deploy.
 	UpdateJob SetJobEnvUpdateJobUpdateJobPayload `json:"updateJob"`
 }
 
@@ -29030,6 +29623,8 @@ type TeamApplicationsFilter struct {
 	Name string `json:"name"`
 	// Input for filtering the applications of a team.
 	Environments []string `json:"environments"`
+	// Input for filtering the applications of a team.
+	States []ApplicationState `json:"states"`
 }
 
 // GetName returns TeamApplicationsFilter.Name, and is useful for accessing the field via an interface.
@@ -29037,6 +29632,9 @@ func (v *TeamApplicationsFilter) GetName() string { return v.Name }
 
 // GetEnvironments returns TeamApplicationsFilter.Environments, and is useful for accessing the field via an interface.
 func (v *TeamApplicationsFilter) GetEnvironments() []string { return v.Environments }
+
+// GetStates returns TeamApplicationsFilter.States, and is useful for accessing the field via an interface.
+func (v *TeamApplicationsFilter) GetStates() []ApplicationState { return v.States }
 
 // Team member roles.
 type TeamMemberRole string
@@ -30458,9 +31056,9 @@ func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetName() string { r
 
 // Input for setting an environment variable on a workload. To remove a variable, set value to null.
 type UpdateWorkloadEnvironmentVariableInput struct {
-	// Name of the environment variable.
+	// Input for setting an environment variable on a workload. To remove a variable, set value to null.
 	Name string `json:"name"`
-	// Value of the environment variable. Set to null to remove the variable.
+	// Input for setting an environment variable on a workload. To remove a variable, set value to null.
 	Value *string `json:"value"`
 }
 
