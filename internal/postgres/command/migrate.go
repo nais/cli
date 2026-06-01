@@ -43,7 +43,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		flags.DiskAutoResize = v
 	}
 
-	if v, err := strconv.Atoi(os.Getenv("TARGET_INSTANCE_DISKSIZE")); err == nil {
+	if v, err := strconv.Atoi(os.Getenv("TARGET_INSTANCE_DISK_SIZE")); err == nil {
 		flags.DiskSize = v
 	}
 

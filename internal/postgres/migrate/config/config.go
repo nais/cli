@@ -161,7 +161,7 @@ func (c *Config) CreateConfigMap() *corev1.ConfigMap {
 	c.Target.InstanceName.Do(dataBuilder[string](data, "TARGET_INSTANCE_NAME"))
 	c.Target.Tier.Do(dataBuilder[string](data, "TARGET_INSTANCE_TIER"))
 	c.Target.DiskAutoresize.Do(dataBuilder[bool](data, "TARGET_INSTANCE_DISK_AUTORESIZE"))
-	c.Target.DiskSize.Do(dataBuilder[int](data, "TARGET_INSTANCE_DISKSIZE"))
+	c.Target.DiskSize.Do(dataBuilder[int](data, "TARGET_INSTANCE_DISK_SIZE"))
 	c.Target.Type.Do(dataBuilder[string](data, "TARGET_INSTANCE_TYPE"))
 
 	c.Source.InstanceName.Do(dataBuilder[string](data, "SOURCE_INSTANCE_NAME"))
