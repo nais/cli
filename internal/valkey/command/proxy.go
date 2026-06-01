@@ -29,22 +29,21 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 		Title:       "Create a proxy to a Valkey instance.",
 		Description: "Allows your user to connect to Valkey instances and starts a proxy.",
 		Flags:       flags,
+		Args:        defaultArgs,
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),
-			func(context.Context, *naistrix.Arguments) error {
-				if flags.Instance == "" {
-					return fmt.Errorf("--instance flag is required")
-				}
-				return nil
-			},
+			validateArgs,
 		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+			if args.Len() != 0 {
+				return nil, ""
+			}
 			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
 		},
 		Examples: []naistrix.Example{
 			{
 				Description: "Create a proxy to a Valkey instance named my-valkey in environment dev.",
-				Command:     "proxy --instance my-valkey --environment dev",
+				Command:     "my-valkey --environment dev",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -52,7 +51,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 				ctx,
 				flags.Team,
 				string(flags.Environment),
-				flags.Instance,
+				args.Get("name"),
 				gql.CredentialPermissionReadwrite,
 				"1h",
 			)
@@ -88,7 +87,11 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 			defer listener.Close()
 
 			spinner.Success(fmt.Sprintf("Listening on %s, forwarding to %s via WireGuard tunnel",
-				listener.Addr().String(), flags.Instance))
+				listener.Addr().String(), args.Get("name")))
+
+			out.Println(fmt.Sprintf("VALKEY_USERNAME=%q", creds.Username))
+			out.Println(fmt.Sprintf("VALKEY_PASSWORD=%q", creds.Password))
+			out.Println(fmt.Sprintf("VALKEY_URI=%q", fmt.Sprintf("rediss://%s:%s@%s", creds.Username, creds.Password, listener.Addr().String())))
 
 			go func() {
 				<-ctx.Done()
@@ -124,6 +127,7 @@ func proxy(parentFlags *flag.Valkey) *naistrix.Command {
 				})
 			}
 
+			wg.Wait()
 			return nil
 		},
 	}

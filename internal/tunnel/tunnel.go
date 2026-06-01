@@ -29,7 +29,7 @@ type Config struct {
 	TargetPort  int
 }
 
-func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*TunnelInfo, error) {
+func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (ret *TunnelInfo, retErr error) {
 	privateKey, err := wgtypes.GeneratePrivateKey()
 	if err != nil {
 		return nil, fmt.Errorf("generate wireguard key: %w", err)
@@ -54,6 +54,13 @@ func CreateAndConnect(ctx context.Context, cfg Config, progress func(string)) (*
 		return nil, fmt.Errorf("create tunnel: %w", err)
 	}
 	tunnelName := createResp.CreateTunnel.Tunnel.Name
+
+	// Clean up the server-side tunnel on any failure after creation.
+	defer func() {
+		if retErr != nil {
+			_ = DeleteTunnel(context.Background(), cfg.TeamSlug, cfg.Environment, tunnelName)
+		}
+	}()
 
 	progress("Waiting for gateway")
 
