@@ -1,8 +1,10 @@
 title: Nais CLI manual
 description: Nais CLI manual
 theme: just-the-docs
-search_enabled: true
 color_scheme: dark
+search_enabled: true
+search:
+    focus_shortcut_key: 'k'
 favicon_ico: /assets/media/favicon.svg
 exclude:
   - README.md
