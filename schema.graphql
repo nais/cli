@@ -263,6 +263,14 @@ Team environment was updated.
 """
 	TEAM_ENVIRONMENT_UPDATED
 """
+Tunnel was created.
+"""
+	TUNNEL_CREATED
+"""
+Tunnel was deleted.
+"""
+	TUNNEL_DELETED
+"""
 Unleash instance was created.
 """
 	UNLEASH_INSTANCE_CREATED
@@ -438,6 +446,10 @@ All activity log entries related to secrets will use this resource type.
 All activity log entries related to teams will use this resource type.
 """
 	TEAM
+"""
+All activity log entries related to Tunnels will use this resource type.
+"""
+	TUNNEL
 """
 All activity log entries related to unleash will use this resource type.
 """
@@ -837,6 +849,10 @@ Filtering options for items returned from the connection.
 		filter: ResourceIssueFilter
 	): IssueConnection!
 """
+History of previous releases of this application, ordered by most recent first.
+"""
+	history: [ApplicationHistory!]!
+"""
 BigQuery datasets referenced by the application. This does not currently support pagination, but will return all available datasets.
 """
 	bigQueryDatasets(
@@ -1139,6 +1155,20 @@ Distribution of applications by environment.
 Distribution of applications by state.
 """
 	states: [ApplicationStateFacetItem!]!
+}
+
+"""
+A historical release entry for an application.
+"""
+type ApplicationHistory {
+"""
+The full container image reference including tag.
+"""
+	image: String!
+"""
+When this image was deployed.
+"""
+	deployedAt: Time!
 }
 
 type ApplicationInstance implements Node{
@@ -1719,6 +1749,10 @@ Get the last n items in the connection. This can be used in combination with the
 Get items before this cursor.
 """
 		before: Cursor
+"""
+Filter workloads. When teamSlugs is set only workloads belonging to those teams are returned.
+"""
+		filter: CVEWorkloadsFilter
 	): WorkloadWithVulnerabilityConnection!
 }
 
@@ -1767,6 +1801,16 @@ enum CVEOrderField {
 	SEVERITY
 	CVSS_SCORE
 	AFFECTED_WORKLOADS_COUNT
+}
+
+"""
+Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+"""
+input CVEWorkloadsFilter {
+"""
+Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+"""
+	teamSlugs: [Slug!]
 }
 
 input ChangeDeploymentKeyInput {
@@ -2223,9 +2267,13 @@ Filter items.
 		filter: ActivityLogFilter
 	): ActivityLogEntryConnection!
 """
+SBOM pipeline status and processing information for this image.
+"""
+	sbom: ContainerImageSBOM!
+"""
 Whether the image has a software bill of materials (SBOM) attached to it.
 """
-	hasSBOM: Boolean!
+	hasSBOM: Boolean! @deprecated(reason: "Use sbom { status } == READY to check if an SBOM is attached.")
 """
 Get the vulnerabilities of the image.
 """
@@ -2280,6 +2328,26 @@ Get items before this cursor.
 """
 		before: Cursor
 	): ContainerImageWorkloadReferenceConnection!
+}
+
+"""
+SBOM metadata for a container image, including pipeline status and processing
+information. This type is accessed through ContainerImage.sbom.
+"""
+type ContainerImageSBOM implements Node{
+"""
+The globally unique ID of the container image SBOM node.
+"""
+	id: ID!
+"""
+The SBOM pipeline status.
+"""
+	status: SBOMStatus!
+"""
+The timestamp when SBOM processing started for this image.
+Useful as a progress indicator when status is PROCESSING.
+"""
+	processingStartedAt: Time
 }
 
 type ContainerImageWorkloadReference {
@@ -2447,6 +2515,21 @@ type CreateTeamPayload {
 The newly created team.
 """
 	team: Team
+}
+
+input CreateTunnelInput {
+	teamSlug: Slug!
+	environmentName: String!
+	targetHost: String!
+	targetPort: Int!
+	clientPublicKey: String!
+}
+
+type CreateTunnelPayload {
+"""
+The newly created tunnel.
+"""
+	tunnel: Tunnel!
 }
 
 input CreateUnleashForTeamInput {
@@ -2704,6 +2787,19 @@ The service account that the token belonged to.
 Whether or not the service account token was deleted.
 """
 	serviceAccountTokenDeleted: Boolean
+}
+
+input DeleteTunnelInput {
+	teamSlug: Slug!
+	environmentName: String!
+	tunnelName: String!
+}
+
+type DeleteTunnelPayload {
+"""
+Whether the tunnel was successfully deleted.
+"""
+	success: Boolean!
 }
 
 input DeleteUnleashInstanceInput {
@@ -3603,6 +3699,12 @@ Number of vulnerabilities with severity UNASSIGNED.
 Timestamp of the last update of the vulnerability summary.
 """
 	lastUpdated: Time
+"""
+When set, the vulnerability counts are sourced from this older image tag because
+no summary exists yet for the requested tag (e.g. a newly deployed image that is
+still being scanned). The value is the tag the stale data originates from.
+"""
+	staleImageTag: String
 }
 
 type ImageVulnerabilitySuppression {
@@ -5468,6 +5570,18 @@ The user must already be a member of the team for this mutation to succeed.
 	setTeamMemberRole(
 		input: SetTeamMemberRoleInput!
 	): SetTeamMemberRolePayload!
+"""
+Create a WireGuard tunnel to a target host and port.
+"""
+	createTunnel(
+		input: CreateTunnelInput!
+	): CreateTunnelPayload!
+"""
+Delete a WireGuard tunnel and clean up the gateway pod.
+"""
+	deleteTunnel(
+		input: DeleteTunnelInput!
+	): DeleteTunnelPayload!
 """
 Create a new Unleash instance.
 
@@ -7453,6 +7567,28 @@ The email address of the user that got a role revoked.
 The name of the revoked role.
 """
 	roleName: String!
+}
+
+"""
+The SBOM pipeline status for an image or workload.
+"""
+enum SBOMStatus {
+"""
+SBOM generation is in progress.
+"""
+	PROCESSING
+"""
+SBOM data is available.
+"""
+	READY
+"""
+No SBOM is available for this image or workload.
+"""
+	NO_SBOM
+"""
+SBOM generation failed.
+"""
+	FAILED
 }
 
 enum ScalingDirection {
@@ -10077,6 +10213,12 @@ SQL instance in the team environment.
 		name: String!
 	): SqlInstance!
 """
+Get a specific tunnel by name.
+"""
+	tunnel(
+		name: String!
+	): Tunnel
+"""
 Valkey instance in the team environment.
 """
 	valkey(
@@ -10953,6 +11095,160 @@ The new job run.
 	jobRun: JobRun
 }
 
+"""
+A WireGuard tunnel between the CLI and an in-cluster gateway.
+"""
+type Tunnel implements Node{
+"""
+Globally unique ID of the tunnel.
+"""
+	id: ID!
+"""
+The name of the tunnel.
+"""
+	name: String!
+"""
+The current phase of the tunnel.
+"""
+	phase: TunnelPhase!
+"""
+The WireGuard public key of the gateway.
+"""
+	gatewayPublicKey: String!
+"""
+The forwarder endpoint used by the client to reach the gateway.
+"""
+	forwarderEndpoint: String!
+"""
+The target destination (host and port) for the tunnel.
+"""
+	target: TunnelTarget!
+"""
+Status message describing the tunnel state.
+"""
+	message: String!
+"""
+Creation time of the tunnel.
+"""
+	createdAt: Time!
+}
+
+type TunnelCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: TunnelCreatedActivityLogEntryData!
+}
+
+type TunnelCreatedActivityLogEntryData {
+"""
+The name of the tunnel that was created.
+"""
+	tunnelName: String!
+"""
+The target host of the tunnel.
+"""
+	targetHost: String!
+}
+
+type TunnelDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the update.
+"""
+	data: TunnelDeletedActivityLogEntryData!
+}
+
+type TunnelDeletedActivityLogEntryData {
+"""
+The name of the tunnel that was deleted.
+"""
+	tunnelName: String!
+}
+
+"""
+The lifecycle phase of a Tunnel.
+"""
+enum TunnelPhase {
+	PENDING
+	PROVISIONING
+	READY
+	CONNECTED
+	FAILED
+	TERMINATED
+}
+
+"""
+The target destination for a WireGuard tunnel.
+"""
+type TunnelTarget {
+	host: String!
+	port: Int!
+}
+
 type UnleashInstance implements Node{
 	id: ID!
 	name: String!
@@ -11193,6 +11489,10 @@ Input for updating an application.
 Input for updating an application.
 """
 	replicas: UpdateApplicationReplicasInput
+"""
+Input for updating an application.
+"""
+	image: String
 }
 
 """
@@ -12861,7 +13161,7 @@ The workload
 """
 True if the workload has a software bill of materials (SBOM) attached.
 """
-	hasSBOM: Boolean!
+	hasSBOM: Boolean! @deprecated(reason: "Use workload { image { sbom { status } } } to check SBOM status.")
 """
 The vulnerability summary for the workload.
 """
@@ -12894,8 +13194,21 @@ The workload vulnerability summary.
 	node: WorkloadVulnerabilitySummary!
 }
 
-type WorkloadWithVulnerability {
+"""
+A workload affected by a specific vulnerability.
+"""
+type WorkloadWithVulnerability implements Node{
+"""
+The globally unique ID of the workload vulnerability node.
+"""
+	id: ID!
+"""
+The vulnerability affecting the workload.
+"""
 	vulnerability: ImageVulnerability!
+"""
+The workload affected by the vulnerability.
+"""
 	workload: Workload!
 }
 

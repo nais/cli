@@ -106,3 +106,7 @@ type SetReplicas struct {
 type SetEnv struct {
 	*App
 }
+
+type SetImage struct {
+	*App
+}

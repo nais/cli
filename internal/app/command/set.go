@@ -13,6 +13,7 @@ func set(parentFlags *flag.App) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			setReplicas(parentFlags),
 			setEnv(parentFlags),
+			setImage(parentFlags),
 		},
 	}
 }
