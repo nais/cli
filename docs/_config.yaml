@@ -2,6 +2,7 @@ title: Nais CLI manual
 description: Nais CLI manual
 theme: just-the-docs
 color_scheme: dark
+lang: en
 search_enabled: true
 search:
     focus_shortcut_key: 'k'
