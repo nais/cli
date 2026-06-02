@@ -1,0 +1,13 @@
+<!-- Based on: https://github.com/ekawahyu/printable-docs/blob/main/_includes/head_custom.html -->
+<!-- Do not use "//" comments in JavaScript! -->
+<script>
+    let theme = localStorage.getItem('theme');
+    if (!theme) {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light';
+        localStorage.setItem('theme', theme);
+    }
+
+  document.documentElement.classList.add(theme === 'dark' ? 'dark-mode' : 'light-mode');
+	jtd.setTheme(theme);
+</script>
+<script type="text/javascript" src="{{ '/assets/js/theme-button.js' | relative_url }}" defer></script>
