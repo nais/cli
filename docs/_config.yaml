@@ -9,6 +9,9 @@ search:
 favicon_ico: /assets/media/favicon.svg
 exclude:
   - README.md
+nav_external_links:
+  - title: Tilgjengelighetserklæring
+    url: https://uustatus.no/nb/erklaringer/publisert/158658ed-2eba-4e9f-b3ed-a69c44b8439d
 defaults:
   - scope:
       path: ""
