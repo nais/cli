@@ -3,6 +3,7 @@ description: Nais CLI manual
 theme: just-the-docs
 search_enabled: true
 color_scheme: dark
+favicon_ico: /assets/media/favicon.svg
 exclude:
   - README.md
 defaults:
