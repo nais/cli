@@ -164,14 +164,19 @@ func writeKafkaKcat(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	dir := filepath.Dir(files.cert)
 
 	var config strings.Builder
-	config.WriteString(fmt.Sprintf("# nais-cli %s\n# kcat -F %s -t your.topic\n",
-		time.Now().Truncate(time.Minute), configFile))
-	config.WriteString(fmt.Sprintf("bootstrap.servers=%s\n", creds.Brokers))
-	config.WriteString(fmt.Sprintf("# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username)))
-	config.WriteString("security.protocol=ssl\n")
-	config.WriteString(fmt.Sprintf("ssl.certificate.location=%s\n", files.cert))
-	config.WriteString(fmt.Sprintf("ssl.key.location=%s\n", files.key))
-	config.WriteString(fmt.Sprintf("ssl.ca.location=%s\n", files.ca))
+	_, _ = fmt.Fprintf(
+		&config,
+		"# nais-cli %s\n# kcat -F %s -t your.topic\n",
+		time.Now().Truncate(time.Minute),
+		configFile,
+	)
+
+	_, _ = fmt.Fprintf(&config, "bootstrap.servers=%s\n", creds.Brokers)
+	_, _ = fmt.Fprintf(&config, "# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username))
+	_, _ = fmt.Fprintf(&config, "security.protocol=ssl\n")
+	_, _ = fmt.Fprintf(&config, "ssl.certificate.location=%s\n", files.cert)
+	_, _ = fmt.Fprintf(&config, "ssl.key.location=%s\n", files.key)
+	_, _ = fmt.Fprintf(&config, "ssl.ca.location=%s\n", files.ca)
 
 	if err := os.WriteFile(configFile, []byte(config.String()), 0o600); err != nil {
 		if removeErr := os.RemoveAll(dir); removeErr != nil {
@@ -196,16 +201,15 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 	dir := filepath.Dir(files.cert)
 
 	var properties strings.Builder
-	properties.WriteString(fmt.Sprintf("# nais-cli %s\n", time.Now().Truncate(time.Minute)))
-	properties.WriteString(fmt.Sprintf("# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s\n",
-		creds.Brokers, configFile))
-	properties.WriteString(fmt.Sprintf("# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username)))
-	properties.WriteString("security.protocol=SSL\n")
-	properties.WriteString("ssl.protocol=TLS\n")
-	properties.WriteString(fmt.Sprintf("ssl.truststore.location=%s\n", filepath.ToSlash(files.ca)))
-	properties.WriteString("ssl.truststore.type=PEM\n")
-	properties.WriteString(fmt.Sprintf("ssl.keystore.location=%s\n", filepath.ToSlash(files.keystore)))
-	properties.WriteString("ssl.keystore.type=PEM\n")
+	_, _ = fmt.Fprintf(&properties, "# nais-cli %s\n", time.Now().Truncate(time.Minute))
+	_, _ = fmt.Fprintf(&properties, "# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s\n", creds.Brokers, configFile)
+	_, _ = fmt.Fprintf(&properties, "# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username))
+	_, _ = fmt.Fprint(&properties, "security.protocol=SSL\n")
+	_, _ = fmt.Fprint(&properties, "ssl.protocol=TLS\n")
+	_, _ = fmt.Fprintf(&properties, "ssl.truststore.location=%s\n", filepath.ToSlash(files.ca))
+	_, _ = fmt.Fprint(&properties, "ssl.truststore.type=PEM\n")
+	_, _ = fmt.Fprintf(&properties, "ssl.keystore.location=%s\n", filepath.ToSlash(files.keystore))
+	_, _ = fmt.Fprint(&properties, "ssl.keystore.type=PEM\n")
 
 	if err := os.WriteFile(configFile, []byte(properties.String()), 0o600); err != nil {
 		if removeErr := os.RemoveAll(dir); removeErr != nil {

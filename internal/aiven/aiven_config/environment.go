@@ -38,18 +38,18 @@ func WriteKafkaEnvConfigToFile(secret *v1.Secret, destinationPath string) error 
 
 func writeConfigToFile(secret *v1.Secret, destinationPath, destinationFilename string, envsToSave []string, secretFilesToSave map[string]fileTuple) error {
 	var envsToFile strings.Builder
-	envsToFile.WriteString(fmt.Sprintf("# nais-cli %s .env\n", time.Now().Truncate(time.Minute)))
+	_, _ = fmt.Fprintf(&envsToFile, "# nais-cli %s .env\n", time.Now().Truncate(time.Minute))
 	for fileName, tuple := range secretFilesToSave {
 		err := os.WriteFile(filepath.Join(destinationPath, fileName), secret.Data[tuple.Key], FilePermission)
 		if err != nil {
 			return err
 		}
 
-		envsToFile.WriteString(fmt.Sprintf("%s=\"%s\"\n", tuple.PathKey, filepath.Join(destinationPath, fileName)))
+		_, _ = fmt.Fprintf(&envsToFile, "%s=\"%s\"\n", tuple.PathKey, filepath.Join(destinationPath, fileName))
 	}
 
 	for _, key := range envsToSave {
-		envsToFile.WriteString(fmt.Sprintf("%s=\"%s\"\n", key, string(secret.Data[key])))
+		_, _ = fmt.Fprintf(&envsToFile, "%s=\"%s\"\n", key, string(secret.Data[key]))
 	}
 
 	err := os.WriteFile(filepath.Join(destinationPath, destinationFilename), []byte(envsToFile.String()), FilePermission)

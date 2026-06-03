@@ -88,7 +88,7 @@ func sqlExecAsAppUser(ctx context.Context, appName, team, environment string, sc
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	_, err = db.ExecContext(ctx, statement)
 	if err != nil {

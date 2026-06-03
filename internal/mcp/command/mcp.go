@@ -68,7 +68,7 @@ func runServe(ctx context.Context, flags *flag.Serve, out *naistrix.OutputWriter
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		logOutput = f
 	}
 

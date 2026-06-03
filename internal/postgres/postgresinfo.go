@@ -79,12 +79,12 @@ func (p *postgresDBInfo) DBConnection(ctx context.Context) (*ConnectionInfo, err
 }
 
 func (p *postgresDBInfo) RunProxy(ctx context.Context, host string, port *uint, portCh chan<- int, out *naistrix.OutputWriter, printInstructions bool) error {
-	cfg, err := p.DBInfo.config.ClientConfig()
+	cfg, err := p.config.ClientConfig()
 	if err != nil {
 		return err
 	}
 
-	pods, err := p.DBInfo.k8sClient.CoreV1().Pods(fmt.Sprintf("pg-%s", p.namespace)).List(ctx, meta_v1.ListOptions{
+	pods, err := p.k8sClient.CoreV1().Pods(fmt.Sprintf("pg-%s", p.namespace)).List(ctx, meta_v1.ListOptions{
 		LabelSelector: fmt.Sprintf("spilo-role=master,application=spilo,cluster-name=%s", p.clusterName),
 	})
 	if err != nil {
@@ -101,7 +101,7 @@ func (p *postgresDBInfo) RunProxy(ctx context.Context, host string, port *uint, 
 	email := user.Email()
 
 	masterPod := pods.Items[0]
-	pfUrl := p.DBInfo.k8sClient.CoreV1().RESTClient().Post().
+	pfUrl := p.k8sClient.CoreV1().RESTClient().Post().
 		Resource("pods").
 		Namespace(masterPod.GetNamespace()).
 		Name(masterPod.GetName()).

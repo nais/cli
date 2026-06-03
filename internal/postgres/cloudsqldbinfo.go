@@ -301,7 +301,7 @@ func runProxy(ctx context.Context, projectID, connectionName, address string, po
 				out.Println("error dialing connection", err)
 				return
 			}
-			defer conn2.Close()
+			defer func() { _ = conn2.Close() }()
 
 			closer := make(chan struct{}, 2)
 			go copy(closer, conn2, conn)

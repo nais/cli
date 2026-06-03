@@ -32,5 +32,5 @@ func TestJavaConfigGenerated(t *testing.T) {
 	assert.True(t, strings.Contains(string(result), TrustStorePassProp))
 	assert.True(t, strings.Contains(string(result), KeyStoreLocationProp))
 
-	defer os.Remove(tmpDest)
+	defer func() { _ = os.Remove(tmpDest) }()
 }
