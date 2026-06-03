@@ -80,7 +80,7 @@ func (qb *QueryBuilder) Build() string {
 	}
 
 	var query strings.Builder
-	query.WriteString(fmt.Sprintf("{%s}", strings.Join(selectors, ",")))
+	_, _ = fmt.Fprintf(&query, "{%s}", strings.Join(selectors, ","))
 
 	for _, filter := range filters {
 		query.WriteString(" | " + filter)

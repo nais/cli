@@ -72,7 +72,7 @@ func enableAuditAsAppUser(ctx context.Context, appName, team, environment string
 		return err
 	}
 
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	_, err = db.ExecContext(ctx, "CREATE EXTENSION IF NOT EXISTS pgaudit")
 	if err != nil {
@@ -98,7 +98,7 @@ func checkAuditConfigured(ctx context.Context, connectionInfo *ConnectionInfo) (
 	if err != nil {
 		return false, err
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Check if pgaudit extension is installed
 	var extensionExists bool
@@ -259,7 +259,7 @@ func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string
 	if err != nil {
 		return false, fmt.Errorf("error connecting to database: %w", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	err = db.PingContext(ctx)
 	if err != nil {

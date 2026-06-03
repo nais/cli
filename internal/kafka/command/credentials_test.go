@@ -45,7 +45,7 @@ func TestWriteCertFiles(t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		os.RemoveAll(filepath.Dir(files.cert))
+		_ = os.RemoveAll(filepath.Dir(files.cert))
 	})
 
 	for _, tc := range []struct {

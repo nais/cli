@@ -54,7 +54,7 @@ func SetConfig(ctx context.Context, setting string, value bool) error {
 	}
 
 	client := pb.NewDeviceAgentClient(connection)
-	defer connection.Close()
+	defer func() { _ = connection.Close() }()
 
 	// we have to fetch the agent configuration and mutate it in here. :(
 	// SetAgentConfiguration on the agent's side replaces its config with the payload we send

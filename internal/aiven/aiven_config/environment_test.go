@@ -36,5 +36,5 @@ func TestKafkaEnvironmentConfigGenerated(t *testing.T) {
 	assert.True(t, strings.Contains(string(result), KafkaPrivateKeyKey))
 	assert.True(t, strings.Contains(string(result), KafkaClientKeyStoreP12File))
 
-	defer os.Remove(tmpDest)
+	defer func() { _ = os.Remove(tmpDest) }()
 }

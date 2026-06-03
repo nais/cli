@@ -33,5 +33,5 @@ func TestKcatConfigGenerated(t *testing.T) {
 	assert.True(t, strings.Contains(string(result), KafkaCatSslCertificateLocation))
 	assert.True(t, strings.Contains(string(result), KafkaSecurityProtocolLocation))
 
-	defer os.Remove(tmpDest)
+	defer func() { _ = os.Remove(tmpDest) }()
 }

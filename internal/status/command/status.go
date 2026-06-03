@@ -31,10 +31,10 @@ func (f workloadsWithIssues) String() string {
 	}
 
 	var issues strings.Builder
-	issues.WriteString(fmt.Sprintf("%v workloads with issues\n\n", len(f)))
+	_, _ = fmt.Fprintf(&issues, "%v workloads with issues\n\n", len(f))
 	for _, w := range f {
-		issues.WriteString(fmt.Sprintf("%s (%s): %s\n", w.Kind, w.Environment, w.Name))
-		issues.WriteString(formatErrorTypes(w.ErrorTypes) + "\n\n")
+		_, _ = fmt.Fprintf(&issues, "%s (%s): %s\n", w.Kind, w.Environment, w.Name)
+		_, _ = fmt.Fprintf(&issues, "%s\n\n", formatErrorTypes(w.ErrorTypes))
 	}
 
 	return strings.TrimRight(issues.String(), "\n")
