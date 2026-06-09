@@ -39,6 +39,11 @@ func list(parentFlags *flag.App) *naistrix.Command {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
+			if len(ret) == 0 {
+				out.Println("No applications found.")
+				return nil
+			}
+
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {
 				return err
