@@ -98,8 +98,10 @@ func renderStatus(out *naistrix.OutputWriter, status *app.InstanceGroupStatus) e
 			}
 		}
 
-		if err := out.Table().Render(entries); err != nil {
-			return err
+		if len(entries) > 0 {
+			if err := out.Table().Render(entries); err != nil {
+				return err
+			}
 		}
 
 		if len(failingMessages) > 0 {
