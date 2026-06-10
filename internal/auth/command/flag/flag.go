@@ -24,3 +24,7 @@ type PrintAccessToken struct {
 	*Auth
 	Nais bool `name:"nais" short:"n" usage:"Print token from login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais login --nais\"."`
 }
+
+type WorkloadIdentityMetadata struct {
+	*Auth
+}

@@ -1013,6 +1013,31 @@ func (v *DeleteValkeyResponse) GetDeleteValkey() DeleteValkeyDeleteValkeyDeleteV
 	return v.DeleteValkey
 }
 
+// EnvironmentOIDCIssuerEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type EnvironmentOIDCIssuerEnvironment struct {
+	// The OIDC issuer URL for workload identity tokens in the environment. Null for environments that do not support workload identity.
+	OidcIssuerURL string `json:"oidcIssuerURL"`
+}
+
+// GetOidcIssuerURL returns EnvironmentOIDCIssuerEnvironment.OidcIssuerURL, and is useful for accessing the field via an interface.
+func (v *EnvironmentOIDCIssuerEnvironment) GetOidcIssuerURL() string { return v.OidcIssuerURL }
+
+// EnvironmentOIDCIssuerResponse is returned by EnvironmentOIDCIssuer on success.
+type EnvironmentOIDCIssuerResponse struct {
+	// Get a single environment.
+	Environment EnvironmentOIDCIssuerEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns EnvironmentOIDCIssuerResponse.Environment, and is useful for accessing the field via an interface.
+func (v *EnvironmentOIDCIssuerResponse) GetEnvironment() EnvironmentOIDCIssuerEnvironment {
+	return v.Environment
+}
+
 // EnvironmentsEnvironmentsEnvironmentConnection includes the requested fields of the GraphQL type EnvironmentConnection.
 // The GraphQL type's documentation follows.
 //
@@ -32506,6 +32531,14 @@ func (v *__DeleteValkeyInput) GetEnvironmentName() string { return v.Environment
 // GetTeamSlug returns __DeleteValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __EnvironmentOIDCIssuerInput is used internally by genqlient
+type __EnvironmentOIDCIssuerInput struct {
+	Name string `json:"name"`
+}
+
+// GetName returns __EnvironmentOIDCIssuerInput.Name, and is useful for accessing the field via an interface.
+func (v *__EnvironmentOIDCIssuerInput) GetName() string { return v.Name }
+
 // __FindWorkloadsForCveInput is used internally by genqlient
 type __FindWorkloadsForCveInput struct {
 	Identifier string `json:"identifier"`
@@ -33985,6 +34018,40 @@ func DeleteValkey(
 	}
 
 	data_ = &DeleteValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by EnvironmentOIDCIssuer.
+const EnvironmentOIDCIssuer_Operation = `
+query EnvironmentOIDCIssuer ($name: String!) {
+	environment(name: $name) {
+		oidcIssuerURL
+	}
+}
+`
+
+func EnvironmentOIDCIssuer(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+) (data_ *EnvironmentOIDCIssuerResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "EnvironmentOIDCIssuer",
+		Query:  EnvironmentOIDCIssuer_Operation,
+		Variables: &__EnvironmentOIDCIssuerInput{
+			Name: name,
+		},
+	}
+
+	data_ = &EnvironmentOIDCIssuerResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
