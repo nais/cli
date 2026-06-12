@@ -7,4 +7,5 @@ type Kubeconfig struct {
 	Exclude   []string `name:"exclude" usage:"Exclude |cluster| from kubeconfig. Can be repeated."`
 	Overwrite bool     `name:"overwrite" short:"o" usage:"Overwrite existing kubeconfig entries if conflicts are found."`
 	Clear     bool     `name:"clear" short:"c" usage:"Clear existing kubeconfig."`
+	Onprem    bool     `name:"onprem" usage:"Include onprem/FSS clusters"`
 }
