@@ -1,10 +1,10 @@
-package logout
+package command
 
 import (
 	"context"
 	"os"
 
-	"github.com/nais/cli/internal/auth/flag"
+	"github.com/nais/cli/internal/auth/command/flag"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
@@ -12,14 +12,8 @@ import (
 	"golang.org/x/term"
 )
 
-type loginFlags struct {
-	*flag.Auth
-	Nais bool `name:"nais" short:"n" usage:"Logout using login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais login --nais\"."`
-	Yes  bool `name:"yes" short:"y" usage:"Automatically answer yes to all prompts."`
-}
-
-func Logout(parentFlags *flag.Auth) *naistrix.Command {
-	flags := &loginFlags{Auth: parentFlags}
+func logout(parentFlags *flag.Auth) *naistrix.Command {
+	flags := &flag.Logout{Auth: parentFlags}
 	return &naistrix.Command{
 		Name:            "logout",
 		TopLevelAliases: []string{"logout"},

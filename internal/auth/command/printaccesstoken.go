@@ -1,21 +1,16 @@
-package printaccesstoken
+package command
 
 import (
 	"context"
 
-	"github.com/nais/cli/internal/auth/flag"
+	"github.com/nais/cli/internal/auth/command/flag"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
-type printAccessTokenFlags struct {
-	*flag.Auth
-	Nais bool `name:"nais" short:"n" usage:"Print token from login.nais.io instead of gcloud.\nShould be used if you logged in using \"nais login --nais\"."`
-}
-
-func PrintAccessToken(parentFlags *flag.Auth) *naistrix.Command {
-	flags := &printAccessTokenFlags{Auth: parentFlags}
+func printAccessToken(parentFlags *flag.Auth) *naistrix.Command {
+	flags := &flag.PrintAccessToken{Auth: parentFlags}
 	return &naistrix.Command{
 		Name:        "print-access-token",
 		Title:       "Print current access token",

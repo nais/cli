@@ -10,7 +10,7 @@ import (
 	activityCommand "github.com/nais/cli/internal/activity/command"
 	alphaCommand "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
-	"github.com/nais/cli/internal/auth"
+	authCommand "github.com/nais/cli/internal/auth/command"
 	configCommand "github.com/nais/cli/internal/config/command"
 	debugCommand "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
@@ -71,7 +71,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		activityCommand.Activity(globalFlags),
 		alphaCommand.Alpha(globalFlags),
 		appCommand.App(globalFlags),
-		auth.Auth(globalFlags),
+		authCommand.Auth(globalFlags),
 		configCommand.Config(globalFlags),
 		debugCommand.Debug(globalFlags),
 		issuesCommand.Issues(globalFlags),
