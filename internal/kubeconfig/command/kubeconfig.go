@@ -45,7 +45,7 @@ func Kubeconfig(parentFlags *flags.GlobalFlags) *naistrix.Command {
 				kubeconfig.WithOverwriteData(flags.Overwrite),
 				kubeconfig.WithFromScratch(flags.Clear),
 				kubeconfig.WithExcludeClusters(flags.Exclude),
-				kubeconfig.WithOnpremClusters(true),
+				kubeconfig.WithOnpremClusters(false),
 				kubeconfig.WithVerboseLogging(flags.IsVerbose()),
 			)
 		},
