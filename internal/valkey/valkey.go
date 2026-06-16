@@ -3,6 +3,7 @@ package valkey
 import (
 	"context"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
@@ -14,6 +15,12 @@ type Valkey struct {
 	Tier gql.ValkeyTier `json:"tier" toml:"tier" jsonschema:"enum=SINGLE_NODE,enum=HIGH_AVAILABILITY"`
 	// MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. "allkeys-lru".
 	MaxMemoryPolicy gql.ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty" toml:"maxMemoryPolicy,omitempty" jsonschema:"enum=ALLKEYS_LFU,enum=ALLKEYS_LRU,enum=ALLKEYS_RANDOM,enum=NO_EVICTION,enum=VOLATILE_LFU,enum=VOLATILE_LRU,enum=VOLATILE_RANDOM,enum=VOLATILE_TTL"`
+	// Databases is the number of logical databases to provision.
+	Databases int `json:"databases,omitempty" toml:"databases,omitempty"`
+	// NotifyKeyspaceEvents configures Valkey keyspace notifications, e.g. "Ex".
+	NotifyKeyspaceEvents string `json:"notifyKeyspaceEvents,omitempty" toml:"notifyKeyspaceEvents,omitempty"`
+
+	Labels map[string]string `json:"labels,omitempty" toml:"labels,omitempty"`
 }
 
 type Metadata struct {
@@ -26,18 +33,14 @@ type Metadata struct {
 }
 
 func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateValkeyCreateValkeyCreateValkeyPayloadValkey, error) {
-	_ = `# @genqlient(omitempty: true)
+	_ = `# @genqlient
+		# @genqlient(for: "CreateValkeyInput.maxMemoryPolicy", omitempty: true)
+		# @genqlient(for: "CreateValkeyInput.notifyKeyspaceEvents", omitempty: true)
+		# @genqlient(for: "CreateValkeyInput.databases", omitempty: true)
 		mutation CreateValkey(
-		  $name: String!,
-		  $environmentName: String!,
-		  $teamSlug: Slug!,
-		  $memory: ValkeyMemory!,
-		  $tier: ValkeyTier!,
-		  $maxMemoryPolicy: ValkeyMaxMemoryPolicy,
+		  $input: CreateValkeyInput!
 		) {
-		  createValkey(
-		    input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug, memory: $memory, tier: $tier, maxMemoryPolicy: $maxMemoryPolicy }
-		  ) {
+		  createValkey(input: $input) {
 		    valkey {
 		      id
 		      name
@@ -51,7 +54,16 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		return nil, err
 	}
 
-	resp, err := gql.CreateValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Memory, data.Tier, data.MaxMemoryPolicy)
+	resp, err := gql.CreateValkey(ctx, client, gql.CreateValkeyInput{
+		Name:                 metadata.Name,
+		EnvironmentName:      metadata.EnvironmentName,
+		TeamSlug:             metadata.TeamSlug,
+		Memory:               data.Memory,
+		Tier:                 data.Tier,
+		MaxMemoryPolicy:      data.MaxMemoryPolicy,
+		NotifyKeyspaceEvents: data.NotifyKeyspaceEvents,
+		Databases:            data.Databases,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -169,18 +181,14 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkey
 }
 
 func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey, error) {
-	_ = `# @genqlient(omitempty: true)
+	_ = `# @genqlient
+		# @genqlient(for: "UpdateValkeyInput.maxMemoryPolicy", omitempty: true)
+		# @genqlient(for: "UpdateValkeyInput.notifyKeyspaceEvents", omitempty: true)
+		# @genqlient(for: "UpdateValkeyInput.databases", omitempty: true)
 		mutation UpdateValkey(
-		  $name: String!,
-		  $environmentName: String!,
-		  $teamSlug: Slug!,
-		  $memory: ValkeyMemory!,
-		  $tier: ValkeyTier!,
-		  $maxMemoryPolicy: ValkeyMaxMemoryPolicy,
+		  $input: UpdateValkeyInput!
 		) {
-		  updateValkey(
-		    input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug, memory: $memory, tier: $tier, maxMemoryPolicy: $maxMemoryPolicy }
-		  ) {
+		  updateValkey(input: $input) {
 		    valkey {
 		      id
 		      name
@@ -194,7 +202,28 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		return nil, err
 	}
 
-	resp, err := gql.UpdateValkey(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Memory, data.Tier, data.MaxMemoryPolicy)
+	labels := make([]gql.ResourceLabelInput, 0, len(data.Labels))
+	for key, value := range data.Labels {
+		labels = append(labels, gql.ResourceLabelInput{
+			Key:   key,
+			Value: value,
+		})
+	}
+
+	spew.Dump(data.Labels)
+	spew.Dump(labels)
+
+	resp, err := gql.UpdateValkey(ctx, client, gql.UpdateValkeyInput{
+		Name:                 metadata.Name,
+		EnvironmentName:      metadata.EnvironmentName,
+		TeamSlug:             metadata.TeamSlug,
+		Memory:               data.Memory,
+		Tier:                 data.Tier,
+		MaxMemoryPolicy:      data.MaxMemoryPolicy,
+		NotifyKeyspaceEvents: data.NotifyKeyspaceEvents,
+		Databases:            data.Databases,
+		Labels:               labels,
+	})
 	if err != nil {
 		return nil, err
 	}
