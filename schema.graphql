@@ -171,6 +171,10 @@ Secret was created.
 """
 	SECRET_CREATED
 """
+Secret was updated.
+"""
+	SECRET_UPDATED
+"""
 Secret value was added.
 """
 	SECRET_VALUE_ADDED
@@ -748,6 +752,10 @@ List of authentication and authorization for the application.
 """
 	authIntegrations: [ApplicationAuthIntegrations!]!
 """
+User-defined labels attached to this application.
+"""
+	labels: [ResourceLabel!]!
+"""
 The application manifest.
 """
 	manifest: ApplicationManifest!
@@ -1127,6 +1135,10 @@ Distribution of applications by environment.
 Distribution of applications by state.
 """
 	states: [ApplicationStateFacetItem!]!
+"""
+Distribution of applications by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -1563,6 +1575,10 @@ type BigQueryDataset implements Persistence & Node{
 	): BigQueryDatasetAccessConnection!
 	status: BigQueryDatasetStatus!
 	workload: Workload
+"""
+User-defined labels attached to this BigQuery dataset.
+"""
+	labels: [ResourceLabel!]!
 	cost: BigQueryDatasetCost!
 }
 
@@ -1620,6 +1636,10 @@ type BigQueryDatasetFacets {
 Distribution of datasets by environment.
 """
 	environments: [StringFacetItem!]!
+"""
+Distribution of datasets by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -1634,6 +1654,10 @@ Input for filtering BigQuery datasets.
 Input for filtering BigQuery datasets.
 """
 	environments: [String!]
+"""
+Input for filtering BigQuery datasets.
+"""
+	labels: [LabelFilter!]
 }
 
 input BigQueryDatasetOrder {
@@ -1680,6 +1704,10 @@ type Bucket implements Persistence & Node{
 	publicAccessPrevention: String!
 	uniformBucketLevelAccess: Boolean!
 	workload: Workload
+"""
+User-defined labels attached to this bucket.
+"""
+	labels: [ResourceLabel!]!
 }
 
 type BucketConnection {
@@ -1706,6 +1734,10 @@ type BucketFacets {
 Distribution of buckets by environment.
 """
 	environments: [StringFacetItem!]!
+"""
+Distribution of buckets by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -1720,6 +1752,10 @@ Input for filtering buckets.
 Input for filtering buckets.
 """
 	environments: [String!]
+"""
+Input for filtering buckets.
+"""
+	labels: [LabelFilter!]
 }
 
 input BucketOrder {
@@ -1943,6 +1979,10 @@ The values stored in the config.
 """
 	values: [ConfigValue!]!
 """
+User-defined labels attached to the config.
+"""
+	labels: [ResourceLabel!]!
+"""
 Applications that use the config.
 """
 	applications(
@@ -2153,6 +2193,10 @@ Distribution of configs by environment.
 Distribution of configs by whether they are in use by any workload.
 """
 	inUse: [BooleanFacetItem!]!
+"""
+Distribution of configs by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -2171,6 +2215,10 @@ Input for filtering the configs of a team.
 Input for filtering the configs of a team.
 """
 	environments: [String!]
+"""
+Input for filtering the configs of a team.
+"""
+	labels: [LabelFilter!]
 }
 
 input ConfigOrder {
@@ -4154,6 +4202,10 @@ List of authentication and authorization for the job.
 """
 	authIntegrations: [JobAuthIntegrations!]!
 """
+User-defined labels attached to this job.
+"""
+	labels: [ResourceLabel!]!
+"""
 Optional schedule for the job. Jobs with no schedule are run once.
 """
 	schedule: JobSchedule
@@ -4518,6 +4570,10 @@ Distribution of jobs by environment.
 Distribution of jobs by state.
 """
 	states: [JobStateFacetItem!]!
+"""
+Distribution of jobs by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 type JobManifest implements WorkloadManifest{
@@ -4961,6 +5017,10 @@ type KafkaTopic implements Persistence & Node{
 	): KafkaTopicAclConnection!
 	configuration: KafkaTopicConfiguration
 	pool: String!
+"""
+User-defined labels attached to this Kafka topic.
+"""
+	labels: [ResourceLabel!]!
 }
 
 type KafkaTopicAcl {
@@ -5040,6 +5100,10 @@ Distribution of topics by environment.
 Distribution of topics by Kafka pool.
 """
 	pools: [StringFacetItem!]!
+"""
+Distribution of topics by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -5058,6 +5122,10 @@ Input for filtering Kafka topics.
 Input for filtering Kafka topics.
 """
 	pools: [String!]
+"""
+Input for filtering Kafka topics.
+"""
+	labels: [LabelFilter!]
 }
 
 input KafkaTopicOrder {
@@ -5068,6 +5136,38 @@ input KafkaTopicOrder {
 enum KafkaTopicOrderField {
 	NAME
 	ENVIRONMENT
+}
+
+"""
+A shared facet item representing a label value distribution (key-value pairs).
+"""
+type LabelFacetItem {
+"""
+The label key.
+"""
+	key: String!
+"""
+The label value.
+"""
+	value: String!
+"""
+Number of matching resources.
+"""
+	count: Int!
+}
+
+"""
+Filter resources by a user-defined label.
+"""
+input LabelFilter {
+"""
+Filter resources by a user-defined label.
+"""
+	key: String!
+"""
+Filter resources by a user-defined label.
+"""
+	value: String
 }
 
 type LastRunFailedIssue implements Issue & Node{
@@ -5334,6 +5434,12 @@ Create a new config.
 		input: CreateConfigInput!
 	): CreateConfigPayload!
 """
+Update the user-defined labels of a config.
+"""
+	updateConfig(
+		input: UpdateConfigInput!
+	): UpdateConfigPayload!
+"""
 Add a value to a config.
 """
 	addConfigValue(
@@ -5473,6 +5579,12 @@ Create a new secret.
 	createSecret(
 		input: CreateSecretInput!
 	): CreateSecretPayload!
+"""
+Update the user-defined labels of a secret.
+"""
+	updateSecret(
+		input: UpdateSecretInput!
+	): UpdateSecretPayload!
 """
 Add a secret value to a secret.
 """
@@ -5814,6 +5926,10 @@ Available storage in GB.
 """
 	storageGB: Int!
 """
+User-defined labels attached to the instance.
+"""
+	labels: [ResourceLabel!]!
+"""
 Issues that affects the instance.
 """
 	issues(
@@ -6025,6 +6141,10 @@ Distribution of instances by environment.
 Distribution of instances by tier.
 """
 	tiers: [OpenSearchTierFacetItem!]!
+"""
+Distribution of instances by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -6043,6 +6163,10 @@ Input for filtering OpenSearch instances.
 Input for filtering OpenSearch instances.
 """
 	tiers: [OpenSearchTier!]
+"""
+Input for filtering OpenSearch instances.
+"""
+	labels: [LabelFilter!]
 }
 
 type OpenSearchIssue implements Issue & Node{
@@ -6324,6 +6448,7 @@ interface Persistence {
 	team: Team!
 	environment: TeamEnvironment!
 	teamEnvironment: TeamEnvironment!
+	labels: [ResourceLabel!]!
 }
 
 type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node{
@@ -6456,6 +6581,10 @@ Current state of the Postgres cluster.
 Maintenance window for the Postgres cluster, if configured.
 """
 	maintenanceWindow: PostgresInstanceMaintenanceWindow
+"""
+User-defined labels attached to this instance.
+"""
+	labels: [ResourceLabel!]!
 }
 
 type PostgresInstanceAudit {
@@ -6509,6 +6638,10 @@ Distribution of instances by high availability.
 Distribution of instances by major version.
 """
 	majorVersions: [StringFacetItem!]!
+"""
+Distribution of instances by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -6535,6 +6668,10 @@ Input for filtering Postgres instances.
 Input for filtering Postgres instances.
 """
 	majorVersions: [String!]
+"""
+Input for filtering Postgres instances.
+"""
+	labels: [LabelFilter!]
 }
 
 type PostgresInstanceMaintenanceWindow {
@@ -7533,6 +7670,38 @@ input ResourceIssueFilter {
 	issueType: IssueType
 }
 
+"""
+A user-defined label attached to a resource.
+
+Labels are key-value pairs that teams can use to organize and filter their
+resources. Both the key and the value may contain letters, numbers, hyphens,
+underscores and dots, and may be at most 63 characters long.
+"""
+type ResourceLabel {
+"""
+The label key.
+"""
+	key: String!
+"""
+The label value.
+"""
+	value: String!
+}
+
+"""
+A user-defined label to set on a resource.
+"""
+input ResourceLabelInput {
+"""
+A user-defined label to set on a resource.
+"""
+	key: String!
+"""
+A user-defined label to set on a resource.
+"""
+	value: String!
+}
+
 enum ResourceType {
 	OPENSEARCH
 	VALKEY
@@ -7929,6 +8098,10 @@ The names of the keys in the secret. This does not require elevation to access.
 """
 	keys: [String!]!
 """
+User-defined labels attached to the secret.
+"""
+	labels: [ResourceLabel!]!
+"""
 Applications that use the secret.
 """
 	applications(
@@ -8139,6 +8312,10 @@ Distribution of secrets by environment.
 Distribution of secrets by whether they are in use by any workload.
 """
 	inUse: [BooleanFacetItem!]!
+"""
+Distribution of secrets by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -8157,6 +8334,10 @@ Input for filtering the secrets of a team.
 Input for filtering the secrets of a team.
 """
 	environments: [String!]
+"""
+Input for filtering the secrets of a team.
+"""
+	labels: [LabelFilter!]
 }
 
 input SecretOrder {
@@ -8177,6 +8358,67 @@ Order secrets by the name of the environment.
 Order secrets by the last time it was modified.
 """
 	LAST_MODIFIED_AT
+}
+
+type SecretUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action. The value is either the name of a service account, or the email address of a user.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the entry.
+"""
+	data: SecretUpdatedActivityLogEntryData!
+}
+
+type SecretUpdatedActivityLogEntryData {
+"""
+The fields that were updated.
+"""
+	updatedFields: [SecretUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type SecretUpdatedActivityLogEntryDataUpdatedField {
+"""
+The name of the field that was updated.
+"""
+	field: String!
+"""
+The old value of the field.
+"""
+	oldValue: String
+"""
+The new value of the field.
+"""
+	newValue: String
 }
 
 type SecretValue {
@@ -9146,6 +9388,10 @@ type SqlDatabase implements Persistence & Node{
 	collation: String
 	deletionPolicy: String
 	healthy: Boolean!
+"""
+User-defined labels attached to this database.
+"""
+	labels: [ResourceLabel!]!
 }
 
 type SqlInstance implements Persistence & Node{
@@ -9168,6 +9414,10 @@ type SqlInstance implements Persistence & Node{
 	tier: String!
 	version: String
 	status: SqlInstanceStatus!
+"""
+User-defined labels attached to this instance.
+"""
+	labels: [ResourceLabel!]!
 	database: SqlDatabase
 	flags(
 		first: Int
@@ -9251,6 +9501,10 @@ type SqlInstanceDisk {
 type SqlInstanceEdge {
 	cursor: Cursor!
 	node: SqlInstance!
+}
+
+input SqlInstanceFilter {
+	labels: [LabelFilter!]
 }
 
 type SqlInstanceFlag {
@@ -9957,6 +10211,10 @@ Get items before this cursor.
 Ordering options for items returned from the connection.
 """
 		orderBy: SqlInstanceOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: SqlInstanceFilter
 	): SqlInstanceConnection!
 	unleash: UnleashInstance
 	workloadUtilization(
@@ -10104,6 +10362,10 @@ Input for filtering the applications of a team.
 Input for filtering the applications of a team.
 """
 	states: [ApplicationState!]
+"""
+Input for filtering the applications of a team.
+"""
+	labels: [LabelFilter!]
 }
 
 type TeamCDN {
@@ -10788,6 +11050,7 @@ input TeamJobsFilter {
 	name: String!
 	environments: [String!]
 	states: [JobState!]
+	labels: [LabelFilter!]
 }
 
 type TeamMember {
@@ -11287,6 +11550,10 @@ input TeamWorkloadsFilter {
 Input for filtering team workloads.
 """
 	environments: [String!]
+"""
+Input for filtering team workloads.
+"""
+	labels: [LabelFilter!]
 }
 
 type TenantVulnerabilitySummary {
@@ -11792,6 +12059,20 @@ Input for updating the replica configuration of an application.
 	max: Int!
 }
 
+input UpdateConfigInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	labels: [ResourceLabelInput!]!
+}
+
+type UpdateConfigPayload {
+"""
+The updated config.
+"""
+	config: Config
+}
+
 input UpdateConfigValueInput {
 	name: String!
 	environmentName: String!
@@ -11845,6 +12126,7 @@ input UpdateOpenSearchInput {
 	memory: OpenSearchMemory!
 	version: OpenSearchMajorVersion!
 	storageGB: Int!
+	labels: [ResourceLabelInput!]
 }
 
 type UpdateOpenSearchPayload {
@@ -11852,6 +12134,20 @@ type UpdateOpenSearchPayload {
 OpenSearch instance that was updated.
 """
 	openSearch: OpenSearch!
+}
+
+input UpdateSecretInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	labels: [ResourceLabelInput!]!
+}
+
+type UpdateSecretPayload {
+"""
+The updated secret.
+"""
+	secret: Secret
 }
 
 input UpdateSecretValueInput {
@@ -11945,6 +12241,7 @@ input UpdateValkeyInput {
 	maxMemoryPolicy: ValkeyMaxMemoryPolicy
 	notifyKeyspaceEvents: String
 	databases: Int
+	labels: [ResourceLabelInput!]
 }
 
 type UpdateValkeyPayload {
@@ -12296,6 +12593,10 @@ type Valkey implements Persistence & Node & ActivityLogger{
 	team: Team!
 	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
+"""
+User-defined labels attached to the instance.
+"""
+	labels: [ResourceLabel!]!
 	access(
 		first: Int
 		after: Cursor
@@ -12537,6 +12838,10 @@ Distribution of instances by environment.
 Distribution of instances by tier.
 """
 	tiers: [ValkeyTierFacetItem!]!
+"""
+Distribution of instances by user-defined labels.
+"""
+	labels: [LabelFacetItem!]!
 }
 
 """
@@ -12555,6 +12860,10 @@ Input for filtering Valkey instances.
 Input for filtering Valkey instances.
 """
 	tiers: [ValkeyTier!]
+"""
+Input for filtering Valkey instances.
+"""
+	labels: [LabelFilter!]
 }
 
 type ValkeyIssue implements Issue & Node{
@@ -13051,6 +13360,10 @@ Interface for workloads.
 Interface for workloads.
 """
 	teamEnvironment: TeamEnvironment!
+"""
+Interface for workloads.
+"""
+	labels: [ResourceLabel!]!
 """
 Interface for workloads.
 """
