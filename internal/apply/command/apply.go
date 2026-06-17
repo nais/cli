@@ -23,7 +23,7 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 		AutoCompleteExtensions: []string{"yaml", "yml"},
 		Flags:                  flags,
 		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeamAndEnvironment(flags),
+			validation.RequireTeam(flags),
 			func(ctx context.Context, args *naistrix.Arguments) error {
 				if args.Get("file") == "" {
 					return fmt.Errorf("file cannot be empty")
@@ -32,7 +32,7 @@ func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
 			},
 		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return apply.Run(ctx, string(flags.Environment), args.Get("file"), flags, out)
+			return apply.Run(ctx, args.Get("file"), flags, out)
 		},
 	}
 }
