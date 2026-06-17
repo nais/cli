@@ -1,26 +1,31 @@
 package apply
 
 import (
+	"strings"
 	"testing"
 
-	"github.com/nais/cli/internal/apply/native"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/google/go-cmp/cmp"
+	"github.com/nais/cli/internal/apply/resource"
 )
 
 func TestReadManifestFile_Validation(t *testing.T) {
-	_, err := readManifestFile("")
-	assert.ErrorContains(t, err, "file path cannot be empty")
-
-	_, err = readManifestFile("manifest.toml")
-	assert.ErrorContains(t, err, "unsupported file extension")
-
-	_, err = readManifestFile("does-not-exist.yaml")
-	assert.ErrorContains(t, err, "failed to read file")
+	for name, tc := range map[string]struct {
+		path   string
+		errMsg string
+	}{
+		"empty path":       {path: "", errMsg: "file path cannot be empty"},
+		"bad extension":    {path: "manifest.toml", errMsg: "unsupported file extension"},
+		"nonexistent file": {path: "does-not-exist.yaml", errMsg: "failed to read file"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := readManifestFile(tc.path)
+			mustErrorContains(t, err, tc.errMsg)
+		})
+	}
 }
 
 func TestToUnstructured(t *testing.T) {
-	resources, err := native.Parse([]byte(`
+	manifests, err := resource.Parse([]byte(`
 version: v1
 kind: SomeFutureKind
 metadata:
@@ -30,24 +35,34 @@ spec:
   nested:
     count: 3
 `))
-	require.NoError(t, err)
-	require.Len(t, resources, 1)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(manifests) != 1 {
+		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+	}
 
-	u, err := toUnstructured(resources[0])
-	require.NoError(t, err)
+	u, err := toUnstructured(manifests[0], nil)
+	if err != nil {
+		t.Fatalf("toUnstructured: %v", err)
+	}
 
-	assert.Equal(t, "nais.io/v1", u.GetAPIVersion())
-	assert.Equal(t, "SomeFutureKind", u.GetKind())
-	assert.Equal(t, "my-resource", u.GetName())
-
-	spec, found, err := unstructuredNestedMap(u.Object, "spec")
-	require.NoError(t, err)
-	require.True(t, found)
-	assert.Equal(t, "bar", spec["foo"])
+	want := map[string]any{
+		"apiVersion": "nais.io/v1",
+		"kind":       "SomeFutureKind",
+		"metadata":   map[string]any{"name": "my-resource"},
+		"spec": map[string]any{
+			"foo":    "bar",
+			"nested": map[string]any{"count": 3},
+		},
+	}
+	if diff := cmp.Diff(want, u.Object); diff != "" {
+		t.Errorf("unstructured mismatch (-want +got):\n%s", diff)
+	}
 }
 
 func TestDecodeCRD_PreservesFullManifest(t *testing.T) {
-	docs, err := native.Documents([]byte(`
+	docs, err := resource.Documents([]byte(`
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
@@ -62,40 +77,59 @@ spec:
     min: 1
     max: 1
 `))
-	require.NoError(t, err)
-	require.Len(t, docs, 1)
-	require.False(t, native.IsNativeManifest(docs[0]))
+	if err != nil {
+		t.Fatalf("Documents: %v", err)
+	}
+	if len(docs) != 1 {
+		t.Fatalf("expected 1 document, got %d", len(docs))
+	}
+	if resource.IsNativeManifest(docs[0]) {
+		t.Fatal("expected a regular CRD, got a native manifest")
+	}
 
 	u, err := decodeCRD(docs[0])
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("decodeCRD: %v", err)
+	}
 
 	// apiVersion, namespace and labels must be preserved as-is.
-	assert.Equal(t, "nais.io/v1alpha1", u.GetAPIVersion())
-	assert.Equal(t, "Application", u.GetKind())
-	assert.Equal(t, "testapp", u.GetName())
-	assert.Equal(t, "examples", u.GetNamespace())
-	assert.Equal(t, map[string]string{"team": "examples", "label": "value"}, u.GetLabels())
+	if got, want := u.GetAPIVersion(), "nais.io/v1alpha1"; got != want {
+		t.Errorf("apiVersion = %q, want %q", got, want)
+	}
+	if got, want := u.GetKind(), "Application"; got != want {
+		t.Errorf("kind = %q, want %q", got, want)
+	}
+	if got, want := u.GetName(), "testapp"; got != want {
+		t.Errorf("name = %q, want %q", got, want)
+	}
+	if got, want := u.GetNamespace(), "examples"; got != want {
+		t.Errorf("namespace = %q, want %q", got, want)
+	}
+	want := map[string]string{"team": "examples", "label": "value"}
+	if diff := cmp.Diff(want, u.GetLabels()); diff != "" {
+		t.Errorf("labels mismatch (-want +got):\n%s", diff)
+	}
 }
 
 func TestDecodeCRD_MissingFields(t *testing.T) {
-	docs, err := native.Documents([]byte("apiVersion: nais.io/v1alpha1\nmetadata:\n  name: x\n"))
-	require.NoError(t, err)
-	require.Len(t, docs, 1)
+	docs, err := resource.Documents([]byte("apiVersion: nais.io/v1alpha1\nmetadata:\n  name: x\n"))
+	if err != nil {
+		t.Fatalf("Documents: %v", err)
+	}
+	if len(docs) != 1 {
+		t.Fatalf("expected 1 document, got %d", len(docs))
+	}
 
 	_, err = decodeCRD(docs[0])
-	assert.ErrorContains(t, err, `missing required field "kind"`)
+	mustErrorContains(t, err, `missing required field "kind"`)
 }
 
-// unstructuredNestedMap is a tiny helper to read a nested map without pulling in
-// extra dependencies in the test.
-func unstructuredNestedMap(obj map[string]any, key string) (map[string]any, bool, error) {
-	v, ok := obj[key]
-	if !ok {
-		return nil, false, nil
+func mustErrorContains(t *testing.T, err error, want string) {
+	t.Helper()
+	if err == nil {
+		t.Fatalf("expected error containing %q, got nil", want)
 	}
-	m, ok := v.(map[string]any)
-	if !ok {
-		return nil, false, assert.AnError
+	if !strings.Contains(err.Error(), want) {
+		t.Errorf("error %q does not contain %q", err.Error(), want)
 	}
-	return m, true, nil
 }
