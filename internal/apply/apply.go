@@ -19,8 +19,13 @@ import (
 // manifest back into a CRD for the generic apply endpoint.
 const crdGroup = "nais.io"
 
-func Run(ctx context.Context, environment, filePath string, flags *flag.Apply, out *naistrix.OutputWriter) error {
-	data, err := readManifestFile(filePath)
+func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.OutputWriter) error {
+	environment, err := resolveEnvironment(ctx, string(flags.Environment), out)
+	if err != nil {
+		return err
+	}
+
+	data, err := render(filePath, string(flags.Mixin), environment, flags.Set, out)
 	if err != nil {
 		return err
 	}
