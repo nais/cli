@@ -1,4 +1,4 @@
-package native
+package resource
 
 import (
 	"context"
@@ -9,9 +9,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// valkeySpec is the user-facing (CRD-flavoured) Valkey spec. Values use the
-// vocabulary of the Kubernetes CRD (e.g. "4GB", "HighAvailability") and are
-// mapped to their GraphQL enums before the mutation is called.
+func init() {
+	register(valkeyResource{kindSupport{kind: "Valkey", strippedVersion: "v1"}})
+}
+
+// valkeyResource applies Valkey instances through the nais-api Valkey mutation.
+// It is only available as a stripped manifest; a raw Valkey CRD falls through to
+// the generic apply endpoint.
+type valkeyResource struct{ kindSupport }
+
+// valkeySpec is the user-facing (CRD-flavoured) Valkey spec. Values use the CRD
+// vocabulary (e.g. "4GB", "HighAvailability") and are mapped to GraphQL enums
+// before the mutation is called.
 type valkeySpec struct {
 	Memory               string             `yaml:"memory"`
 	Tier                 string             `yaml:"tier"`
@@ -22,7 +31,7 @@ type valkeySpec struct {
 }
 
 // valkeyPersistence is parsed so it does not trip the strict spec decoder, but
-// is intentionally ignored until the nais-api mutation supports it.
+// is ignored until the nais-api mutation supports it.
 type valkeyPersistence struct {
 	Disabled bool `yaml:"disabled"`
 }
@@ -54,7 +63,7 @@ var (
 	}
 )
 
-func applyValkey(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error) {
+func (v valkeyResource) Apply(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error) {
 	var s valkeySpec
 	if err := decodeSpec(spec, &s); err != nil {
 		return "", err
@@ -86,7 +95,7 @@ func applyValkey(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, e
 		TeamSlug:        meta.TeamSlug,
 	}
 
-	exists, err := valkeyExists(ctx, vmeta)
+	exists, err := v.exists(ctx, vmeta)
 	if err != nil {
 		return "", err
 	}
@@ -102,10 +111,8 @@ func applyValkey(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, e
 	return ActionCreated, nil
 }
 
-// valkeyExists reports whether a Valkey instance with the given name already
-// exists in the target environment. Listing avoids having to distinguish a
-// "not found" error from a genuine failure on a single Get.
-func valkeyExists(ctx context.Context, meta valkey.Metadata) (bool, error) {
+// exists reports whether a Valkey instance with the given name already exists.
+func (v valkeyResource) exists(ctx context.Context, meta valkey.Metadata) (bool, error) {
 	_, err := valkey.Get(ctx, meta)
 	if err != nil {
 		if naisapi.IsNotFound(err) {

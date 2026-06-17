@@ -3,7 +3,6 @@ package valkey
 import (
 	"context"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
@@ -209,9 +208,6 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 			Value: value,
 		})
 	}
-
-	spew.Dump(data.Labels)
-	spew.Dump(labels)
 
 	resp, err := gql.UpdateValkey(ctx, client, gql.UpdateValkeyInput{
 		Name:                 metadata.Name,

@@ -1,4 +1,4 @@
-package native
+package resource
 
 import (
 	"context"
@@ -8,6 +8,14 @@ import (
 	"github.com/nais/cli/internal/opensearch"
 	"gopkg.in/yaml.v3"
 )
+
+func init() {
+	register(openSearchResource{kindSupport{kind: "OpenSearch", strippedVersion: "v1"}})
+}
+
+// openSearchResource applies OpenSearch instances through the nais-api
+// OpenSearch mutation. It is only available as a stripped manifest.
+type openSearchResource struct{ kindSupport }
 
 // openSearchSpec is the user-facing (CRD-flavoured) OpenSearch spec.
 type openSearchSpec struct {
@@ -38,7 +46,7 @@ var (
 	}
 )
 
-func applyOpenSearch(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error) {
+func (o openSearchResource) Apply(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error) {
 	var s openSearchSpec
 	if err := decodeSpec(spec, &s); err != nil {
 		return "", err
@@ -65,7 +73,7 @@ func applyOpenSearch(ctx context.Context, meta Metadata, spec *yaml.Node) (Actio
 		TeamSlug:        meta.TeamSlug,
 	}
 
-	exists, err := openSearchExists(ctx, ometa)
+	exists, err := o.exists(ctx, ometa)
 	if err != nil {
 		return "", err
 	}
@@ -81,9 +89,8 @@ func applyOpenSearch(ctx context.Context, meta Metadata, spec *yaml.Node) (Actio
 	return ActionCreated, nil
 }
 
-// openSearchExists reports whether an OpenSearch instance with the given name
-// already exists in the target environment.
-func openSearchExists(ctx context.Context, meta opensearch.Metadata) (bool, error) {
+// exists reports whether an OpenSearch instance with the given name already exists.
+func (o openSearchResource) exists(ctx context.Context, meta opensearch.Metadata) (bool, error) {
 	_, err := opensearch.Get(ctx, meta)
 	if err != nil {
 		if naisapi.IsNotFound(err) {
@@ -91,6 +98,5 @@ func openSearchExists(ctx context.Context, meta opensearch.Metadata) (bool, erro
 		}
 		return false, err
 	}
-
 	return true, nil
 }

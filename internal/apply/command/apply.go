@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"time"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
 	"github.com/nais/cli/internal/apply"
@@ -12,7 +13,7 @@ import (
 )
 
 func Apply(parentFlags *alpha.Alpha) *naistrix.Command {
-	flags := &flag.Apply{Alpha: parentFlags}
+	flags := &flag.Apply{Alpha: parentFlags, Timeout: 10 * time.Minute}
 	return &naistrix.Command{
 		Name:        "apply",
 		Title:       "Apply resources.",

@@ -17,6 +17,22 @@ nais alpha apply <config-file> --environment <env> --team <team>
 - `--environment` (`-e`) — target environment, e.g. `dev` or `prod` (required, tab-completion supported)
 - `--team` (`-t`) — team slug (required)
 - `--allow-ignored-fields` — warn instead of failing when a manifest contains fields that `nais apply` ignores (e.g. `metadata.namespace`, `metadata.annotations`)
+- `--wait` — wait for applied resources to become ready before returning. Currently supported for `Application` resources; other kinds (Valkey, OpenSearch) are skipped
+- `--timeout` — maximum time to wait for resources to become ready when `--wait` is set (default `10m`). Examples: `30s`, `5m`, `10m`
+
+## Waiting for readiness
+
+With `--wait`, after a successful apply `nais apply` polls the Nais API until each
+wait-capable resource has converged to a healthy, steady state, and exits
+non-zero if the `--timeout` is reached first (useful for failing CI jobs).
+
+For an `Application`, "ready" means the rollout has converged to a single
+instance group where all desired instances are ready and the application state is
+`RUNNING`. Because the apply endpoint returns no rollout handle, correlation is
+best-effort: `nais apply` waits for a new rollout (an instance group created
+at/after the apply) to converge. If no new rollout appears shortly after a
+no-op apply and the application is already healthy, it is reported as already up
+to date.
 
 ## Manifest format
 

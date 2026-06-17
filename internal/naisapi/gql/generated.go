@@ -542,6 +542,171 @@ var AllApplicationState = []ApplicationState{
 	ApplicationStateUnknown,
 }
 
+// ApplicationStatusResponse is returned by ApplicationStatus on success.
+type ApplicationStatusResponse struct {
+	// Get a team by its slug.
+	Team ApplicationStatusTeam `json:"team"`
+}
+
+// GetTeam returns ApplicationStatusResponse.Team, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusResponse) GetTeam() ApplicationStatusTeam { return v.Team }
+
+// ApplicationStatusTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ApplicationStatusTeam struct {
+	// Get a specific environment for the team.
+	Environment ApplicationStatusTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns ApplicationStatusTeam.Environment, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeam) GetEnvironment() ApplicationStatusTeamEnvironment {
+	return v.Environment
+}
+
+// ApplicationStatusTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type ApplicationStatusTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application ApplicationStatusTeamEnvironmentApplication `json:"application"`
+}
+
+// GetApplication returns ApplicationStatusTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironment) GetApplication() ApplicationStatusTeamEnvironmentApplication {
+	return v.Application
+}
+
+// ApplicationStatusTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type ApplicationStatusTeamEnvironmentApplication struct {
+	// The application state.
+	State ApplicationState `json:"state"`
+	// Instance groups for the application. An instance group represents a set of identical instances.
+	// All instances in a group share the same configuration.
+	InstanceGroups []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
+}
+
+// GetState returns ApplicationStatusTeamEnvironmentApplication.State, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplication) GetState() ApplicationState { return v.State }
+
+// GetInstanceGroups returns ApplicationStatusTeamEnvironmentApplication.InstanceGroups, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplication) GetInstanceGroups() []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup {
+	return v.InstanceGroups
+}
+
+// ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances.
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup struct {
+	// The name of the instance group.
+	Name string `json:"name"`
+	// When the instance group was created.
+	Created time.Time `json:"created"`
+	// The number of instances that are ready.
+	ReadyInstances int `json:"readyInstances"`
+	// The desired number of instances.
+	DesiredInstances int `json:"desiredInstances"`
+	// The application instances belonging to this instance group.
+	Instances []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance `json:"instances"`
+}
+
+// GetName returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Name, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetName() string {
+	return v.Name
+}
+
+// GetCreated returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Created, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetCreated() time.Time {
+	return v.Created
+}
+
+// GetReadyInstances returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.ReadyInstances, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetReadyInstances() int {
+	return v.ReadyInstances
+}
+
+// GetDesiredInstances returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.DesiredInstances, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetDesiredInstances() int {
+	return v.DesiredInstances
+}
+
+// GetInstances returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Instances, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetInstances() []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance {
+	return v.Instances
+}
+
+// ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance struct {
+	Name     string                                                                                                   `json:"name"`
+	Restarts int                                                                                                      `json:"restarts"`
+	Status   ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus `json:"status"`
+}
+
+// GetName returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Name, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetName() string {
+	return v.Name
+}
+
+// GetRestarts returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Restarts, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetRestarts() int {
+	return v.Restarts
+}
+
+// GetStatus returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Status, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetStatus() ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus {
+	return v.Status
+}
+
+// ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus includes the requested fields of the GraphQL type ApplicationInstanceStatus.
+type ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus struct {
+	State ApplicationInstanceState `json:"state"`
+	// Whether the container is passing its readiness check and can receive traffic.
+	Ready bool `json:"ready"`
+	// A user-friendly description of the current state.
+	Message string `json:"message"`
+	// The reason the container last terminated, if applicable.
+	// This is populated even when the instance is currently running, to help debug restart loops.
+	// Example values: "OOMKilled", "Error", "Completed".
+	LastExitReason *string `json:"lastExitReason"`
+	// The exit code from the last container termination, if applicable.
+	LastExitCode *int `json:"lastExitCode"`
+}
+
+// GetState returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.State, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetState() ApplicationInstanceState {
+	return v.State
+}
+
+// GetReady returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Ready, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetReady() bool {
+	return v.Ready
+}
+
+// GetMessage returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Message, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetMessage() string {
+	return v.Message
+}
+
+// GetLastExitReason returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitReason, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitReason() *string {
+	return v.LastExitReason
+}
+
+// GetLastExitCode returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
+func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitCode() *int {
+	return v.LastExitCode
+}
+
 type ConfigValueInput struct {
 	Name     string        `json:"name"`
 	Value    string        `json:"value"`
@@ -32682,6 +32847,22 @@ func (v *__ApplicationEnvironmentsInput) GetTeam() string { return v.Team }
 // GetFilter returns __ApplicationEnvironmentsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ApplicationEnvironmentsInput) GetFilter() TeamApplicationsFilter { return v.Filter }
 
+// __ApplicationStatusInput is used internally by genqlient
+type __ApplicationStatusInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+}
+
+// GetTeam returns __ApplicationStatusInput.Team, and is useful for accessing the field via an interface.
+func (v *__ApplicationStatusInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __ApplicationStatusInput.Environment, and is useful for accessing the field via an interface.
+func (v *__ApplicationStatusInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __ApplicationStatusInput.Name, and is useful for accessing the field via an interface.
+func (v *__ApplicationStatusInput) GetName() string { return v.Name }
+
 // __CreateConfigInput is used internally by genqlient
 type __CreateConfigInput struct {
 	Name            string `json:"name"`
@@ -33858,6 +34039,65 @@ func ApplicationEnvironments(
 	}
 
 	data_ = &ApplicationEnvironmentsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ApplicationStatus.
+const ApplicationStatus_Operation = `
+query ApplicationStatus ($team: Slug!, $environment: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			application(name: $name) {
+				state
+				instanceGroups {
+					name
+					created
+					readyInstances
+					desiredInstances
+					instances {
+						name
+						restarts
+						status {
+							state
+							ready
+							message
+							lastExitReason
+							lastExitCode
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func ApplicationStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+) (data_ *ApplicationStatusResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ApplicationStatus",
+		Query:  ApplicationStatus_Operation,
+		Variables: &__ApplicationStatusInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+		},
+	}
+
+	data_ = &ApplicationStatusResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -6,17 +6,23 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/nais/cli/internal/apply/command/flag"
-	"github.com/nais/cli/internal/apply/native"
+	"github.com/nais/cli/internal/apply/resource"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-// crdGroup is the Kubernetes API group used when converting a nais-native
-// manifest back into a CRD for the generic apply endpoint.
+// waitTarget is a resource to poll for readiness after a successful apply.
+type waitTarget struct {
+	waiter resource.Waiter
+	name   string
+}
+
+// crdGroup is the fallback API group for stripped manifests of unknown kinds.
 const crdGroup = "nais.io"
 
 func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.OutputWriter) error {
@@ -30,7 +36,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		return err
 	}
 
-	docs, err := native.Documents(data)
+	docs, err := resource.Documents(data)
 	if err != nil {
 		return err
 	}
@@ -39,53 +45,66 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 	}
 
 	var (
-		crds []unstructured.Unstructured
-		errs []string
+		crds        []unstructured.Unstructured
+		errs        []string
+		waitTargets []waitTarget
 	)
 
+	// Captured before applying so a rollout from this apply can be told apart
+	// from the resource's previous state while waiting.
+	since := time.Now()
+
 	for _, doc := range docs {
-		// Regular Kubernetes CRDs (identified by apiVersion) are always
-		// forwarded to the generic apply endpoint untouched, and never sent
-		// to a mutation.
-		if !native.IsNativeManifest(doc) {
+		// Regular CRDs are forwarded to the generic apply endpoint untouched.
+		if !resource.IsNativeManifest(doc) {
 			crd, err := decodeCRD(doc)
 			if err != nil {
 				errs = append(errs, err.Error())
 				continue
 			}
 			crds = append(crds, crd)
+			r, _ := resource.ForCRD(crd.GetAPIVersion(), crd.GetKind())
+			waitTargets = appendWaitTarget(waitTargets, r, crd.GetName())
 			continue
 		}
 
-		res, err := native.ParseDocument(doc)
+		m, err := resource.ParseManifest(doc)
 		if err != nil {
 			errs = append(errs, err.Error())
 			continue
 		}
 
-		if err := handleIgnoredFields(res, flags.AllowIgnoredFields, out); err != nil {
+		if err := handleIgnoredFields(m, flags.AllowIgnoredFields, out); err != nil {
 			return err
 		}
 
-		// nais-native kinds without a dedicated mutation are converted back
-		// into a CRD and applied through the generic endpoint.
-		if !native.HasMutation(res.Kind) {
-			crd, err := toUnstructured(res)
+		r, _ := resource.ForManifest(m)
+
+		if applier, ok := r.(resource.Applier); ok {
+			action, err := applier.Apply(ctx, resource.Metadata{
+				Name:            m.Name,
+				TeamSlug:        flags.Team,
+				EnvironmentName: environment,
+				Labels:          m.Labels,
+			}, &m.Spec)
 			if err != nil {
-				errs = append(errs, fmt.Sprintf("%s/%s: %v", res.Kind, res.Name, err))
+				out.Warnf("%s/%s: %v\n", m.Kind, m.Name, err)
+				errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
 				continue
 			}
-			crds = append(crds, crd)
+			waitTargets = appendWaitTarget(waitTargets, r, m.Name)
+			out.Successf("%s/%s: %s\n", m.Kind, m.Name, action)
 			continue
 		}
 
-		action, err := native.Apply(ctx, res, flags.Team, environment)
+		// No mutation: convert back into a CRD for the generic endpoint.
+		crd, err := toUnstructured(m, r)
 		if err != nil {
-			out.Warnf("%s/%s: %v\n", res.Kind, res.Name, err)
-			errs = append(errs, fmt.Sprintf("%s/%s: %v", res.Kind, res.Name, err))
+			errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
 			continue
 		}
-		out.Successf("%s/%s: %s\n", res.Kind, res.Name, action)
+		crds = append(crds, crd)
+		waitTargets = appendWaitTarget(waitTargets, r, m.Name)
 	}
 
 	if len(crds) > 0 {
@@ -96,29 +115,66 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		return fmt.Errorf("apply failed for %d resource(s):\n  %s", len(errs), strings.Join(errs, "\n  "))
 	}
 
+	if flags.Wait {
+		if err := waitForReady(ctx, flags.Team, environment, waitTargets, since, flags.Timeout, out); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-// handleIgnoredFields reports nais-native manifest fields that nais apply does
-// not use. By default this is a hard error; with --allow-ignored-fields it is
-// downgraded to a warning.
-func handleIgnoredFields(r native.Resource, allow bool, out *naistrix.OutputWriter) error {
-	if len(r.IgnoredFields) == 0 {
+// appendWaitTarget records a resource to wait on, skipping a nil resource (e.g.
+// an unexpected apiVersion) or one without a Waiter (e.g. Valkey, OpenSearch).
+func appendWaitTarget(targets []waitTarget, r resource.Resource, name string) []waitTarget {
+	waiter, ok := r.(resource.Waiter)
+	if !ok {
+		return targets
+	}
+	return append(targets, waitTarget{waiter: waiter, name: name})
+}
+
+// waitForReady polls every wait target until it is ready, sharing one timeout.
+func waitForReady(ctx context.Context, team, environment string, targets []waitTarget, since time.Time, timeout time.Duration, out *naistrix.OutputWriter) error {
+	if len(targets) == 0 {
 		return nil
 	}
-	fields := strings.Join(r.IgnoredFields, ", ")
+
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	var errs []string
+	for _, t := range targets {
+		if err := t.waiter.Wait(ctx, team, environment, t.name, since, out); err != nil {
+			errs = append(errs, err.Error())
+		}
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("wait failed for %d resource(s):\n  %s", len(errs), strings.Join(errs, "\n  "))
+	}
+	return nil
+}
+
+// handleIgnoredFields errors on manifest fields nais apply does not use, or warns
+// instead when --allow-ignored-fields is set.
+func handleIgnoredFields(m resource.Manifest, allow bool, out *naistrix.OutputWriter) error {
+	if len(m.IgnoredFields) == 0 {
+		return nil
+	}
+	fields := strings.Join(m.IgnoredFields, ", ")
 	if allow {
-		out.Warnf("%s/%s: ignoring fields not used by nais apply: %s\n", r.Kind, r.Name, fields)
+		out.Warnf("%s/%s: ignoring fields not used by nais apply: %s\n", m.Kind, m.Name, fields)
 		return nil
 	}
 	return fmt.Errorf(
 		"%s/%s contains fields not used by nais apply: %s\nRemove them, or pass --allow-ignored-fields to ignore them with a warning instead",
-		r.Kind, r.Name, fields,
+		m.Kind, m.Name, fields,
 	)
 }
 
-// applyCRDs sends CRDs to the generic apply endpoint and returns any
-// per-resource errors.
+// applyCRDs sends CRDs to the generic apply endpoint, returning per-resource
+// errors.
 func applyCRDs(ctx context.Context, team, environment string, crds []unstructured.Unstructured, out *naistrix.OutputWriter) []string {
 	resp, err := naisapi.ApplyManifests(ctx, team, environment, crds)
 	if err != nil {
@@ -137,8 +193,8 @@ func applyCRDs(ctx context.Context, team, environment string, crds []unstructure
 	return errs
 }
 
-// decodeCRD decodes a regular Kubernetes CRD document into an unstructured
-// object, preserving all of its fields (apiVersion, metadata, labels, etc.).
+// decodeCRD decodes a regular CRD document into an unstructured object,
+// preserving all of its fields.
 func decodeCRD(doc *yaml.Node) (unstructured.Unstructured, error) {
 	var u unstructured.Unstructured
 	if err := doc.Decode(&u.Object); err != nil {
@@ -153,20 +209,26 @@ func decodeCRD(doc *yaml.Node) (unstructured.Unstructured, error) {
 	return u, nil
 }
 
-// toUnstructured rebuilds a native Kubernetes CRD from a stripped manifest so it
-// can be sent to the generic apply endpoint.
-func toUnstructured(r native.Resource) (unstructured.Unstructured, error) {
+// toUnstructured builds a CRD from a stripped manifest for the generic apply
+// endpoint. The apiVersion comes from the resolved resource, falling back to the
+// nais.io group plus the manifest version for unknown kinds.
+func toUnstructured(m resource.Manifest, r resource.Resource) (unstructured.Unstructured, error) {
 	spec := map[string]any{}
-	if r.Spec.Kind != 0 {
-		if err := r.Spec.Decode(&spec); err != nil {
+	if m.Spec.Kind != 0 {
+		if err := m.Spec.Decode(&spec); err != nil {
 			return unstructured.Unstructured{}, fmt.Errorf("failed to decode spec: %w", err)
 		}
 	}
 
+	apiVersion := crdGroup + "/" + m.Version
+	if r != nil && r.APIVersion() != "" {
+		apiVersion = r.APIVersion()
+	}
+
 	return unstructured.Unstructured{Object: map[string]any{
-		"apiVersion": crdGroup + "/" + r.Version,
-		"kind":       r.Kind,
-		"metadata":   map[string]any{"name": r.Name},
+		"apiVersion": apiVersion,
+		"kind":       m.Kind,
+		"metadata":   map[string]any{"name": m.Name},
 		"spec":       spec,
 	}}, nil
 }
