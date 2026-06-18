@@ -67,6 +67,12 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 				printDryRunYAML(doc, out)
 				continue
 			}
+
+			if err := ensureWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
+				errs = append(errs, err.Error())
+				continue
+			}
+
 			crds = append(crds, crd)
 			r, _ := resource.ForCRD(crd.GetAPIVersion(), crd.GetKind())
 			waitTargets = appendWaitTarget(waitTargets, r, crd.GetName())
@@ -121,6 +127,12 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 			errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
 			continue
 		}
+
+		if err := ensureWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+
 		crds = append(crds, crd)
 		waitTargets = appendWaitTarget(waitTargets, r, m.Name)
 	}
@@ -254,6 +266,45 @@ func toUnstructured(m resource.Manifest, r resource.Resource) (unstructured.Unst
 		"metadata":   map[string]any{"name": m.Name},
 		"spec":       spec,
 	}}, nil
+}
+
+// workloadKinds are the CRD kinds that require a spec.image field.
+var workloadKinds = map[string]bool{
+	"Application": true,
+	"Naisjob":     true,
+}
+
+// ensureWorkloadImage checks whether an Application or Naisjob CRD has spec.image
+// set. When it is missing, the current image is fetched from the cluster and
+// injected into the manifest. An error is returned when the image cannot be
+// resolved (e.g. the workload does not exist in the cluster yet).
+func ensureWorkloadImage(ctx context.Context, crd *unstructured.Unstructured, team, environment string, out *naistrix.OutputWriter) error {
+	kind := crd.GetKind()
+	if !workloadKinds[kind] {
+		return nil
+	}
+
+	// If the manifest already contains spec.image, there is nothing to do.
+	if img, _, _ := unstructured.NestedString(crd.Object, "spec", "image"); img != "" {
+		return nil
+	}
+
+	name := crd.GetName()
+	image, err := getWorkloadImage(ctx, team, environment, name, kind)
+	if err != nil {
+		return fmt.Errorf(
+			"%s/%s is missing spec.image and the current image could not be fetched from the cluster: %w\n"+
+				"Set the image in the manifest or pass --set spec.image=<image>",
+			kind, name, err,
+		)
+	}
+
+	if err := unstructured.SetNestedField(crd.Object, image.String(), "spec", "image"); err != nil {
+		return fmt.Errorf("failed to set spec.image on %s/%s: %w", kind, name, err)
+	}
+
+	out.Printf("%s/%s: spec.image not set, using current image from cluster: %s\n", kind, name, image)
+	return nil
 }
 
 // readManifestFile reads a YAML manifest file, validating the extension.
