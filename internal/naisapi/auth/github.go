@@ -51,7 +51,7 @@ func resolveGithubTenant(ctx context.Context) (string, error) {
 	}
 
 	u := fmt.Sprintf("https://storage.googleapis.com/github-deploy-data/%s.json", owner)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil) // #nosec G704 -- URL is constructed from a fixed GCS base URL with owner segment from GITHUB_REPOSITORY_OWNER; SSRF risk is acceptable
 	if err != nil {
 		return "", fmt.Errorf("creating deploy data request: %w", err)
 	}
