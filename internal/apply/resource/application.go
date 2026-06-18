@@ -149,7 +149,7 @@ func (a applicationResource) summaryLine(state gql.ApplicationState, groups []in
 		ready += g.ready
 		desired += g.desired
 	}
-	return fmt.Sprintf("state=%s, instances ready %d/%d, groups=%d", state, ready, desired, len(groups))
+	return fmt.Sprintf("application state=%s, instances ready %d/%d, instance groups=%d", state, ready, desired, len(groups))
 }
 
 func (a applicationResource) unhealthyInstances(groups []instanceGroup) []instance {
