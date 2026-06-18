@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
@@ -51,7 +52,17 @@ func list(parentFlags *flag.Valkey) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			valkeys, err := valkey.GetAll(ctx, flags.Team)
+			filter := gql.ValkeyFilter{}
+			if len(flags.Environment) > 0 {
+				filter.Environments = []string{string(flags.Environment)}
+			}
+			labelFilters, err := labels.ParseFilters(flags.Labels)
+			if err != nil {
+				return err
+			}
+			filter.Labels = labelFilters
+
+			valkeys, err := valkey.GetAll(ctx, flags.Team, filter)
 			if err != nil {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
@@ -63,10 +74,6 @@ func list(parentFlags *flag.Valkey) *naistrix.Command {
 
 			var summaries []ValkeySummary
 			for _, v := range valkeys {
-				// TODO: use filter in GQL query instead
-				if len(flags.Environment) > 0 && string(flags.Environment) != v.TeamEnvironment.Environment.Name {
-					continue
-				}
 				summaries = append(summaries, ValkeySummary{
 					Environment: v.TeamEnvironment.Environment.Name,
 					Name:        v.Name,

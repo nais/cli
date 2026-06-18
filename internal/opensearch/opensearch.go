@@ -134,11 +134,11 @@ func Get(ctx context.Context, metadata Metadata) (*gql.GetOpenSearchTeamEnvironm
 	return &resp.Team.Environment.OpenSearch, nil
 }
 
-func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch, error) {
+func GetAll(ctx context.Context, teamSlug string, filter gql.OpenSearchFilter) ([]gql.GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch, error) {
 	_ = `# @genqlient
-		query GetAllOpenSearches($teamSlug: Slug!) {
+		query GetAllOpenSearches($teamSlug: Slug!, $filter: OpenSearchFilter) {
 		  team(slug: $teamSlug) {
-			openSearches {
+			openSearches(filter: $filter) {
 			  nodes {
 				name
 				memory
@@ -171,7 +171,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllOpenSearchesTeamO
 		return nil, err
 	}
 
-	resp, err := gql.GetAllOpenSearches(ctx, client, teamSlug)
+	resp, err := gql.GetAllOpenSearches(ctx, client, teamSlug, filter)
 	if err != nil {
 		return nil, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
 	"github.com/nais/cli/internal/opensearch/command/flag"
@@ -52,7 +53,17 @@ func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			opensearches, err := opensearch.GetAll(ctx, flags.Team)
+			filter := gql.OpenSearchFilter{}
+			if len(flags.Environment) > 0 {
+				filter.Environments = []string{string(flags.Environment)}
+			}
+			labelFilters, err := labels.ParseFilters(flags.Labels)
+			if err != nil {
+				return err
+			}
+			filter.Labels = labelFilters
+
+			opensearches, err := opensearch.GetAll(ctx, flags.Team, filter)
 			if err != nil {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}
@@ -64,10 +75,6 @@ func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 
 			var summaries []OpenSearchSummary
 			for _, o := range opensearches {
-				// TODO: use filter in GQL query instead
-				if len(flags.Environment) > 0 && string(flags.Environment) != o.TeamEnvironment.Environment.Name {
-					continue
-				}
 				summaries = append(summaries, OpenSearchSummary{
 					Environment: o.TeamEnvironment.Environment.Name,
 					Name:        o.Name,

@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
@@ -18,7 +19,17 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Description: "List all Google Cloud SQL Postgres instances owned by a team, showing instance details.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := postgres.GetTeamPostgresInstances(ctx, flags.Team, nil)
+			labelFilters, err := labels.ParseFilters(flags.Labels)
+			if err != nil {
+				return err
+			}
+
+			environments := []string(nil)
+			if flags.Environment != "" {
+				environments = []string{string(flags.Environment)}
+			}
+
+			ret, err := postgres.GetTeamPostgresInstances(ctx, flags.Team, environments, labelFilters)
 			if err != nil {
 				return err
 			}

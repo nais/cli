@@ -707,6 +707,30 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 	return v.LastExitCode
 }
 
+// Input for filtering the configs of a team.
+type ConfigFilter struct {
+	// Input for filtering the configs of a team.
+	Name string `json:"name"`
+	// Input for filtering the configs of a team.
+	InUse bool `json:"inUse"`
+	// Input for filtering the configs of a team.
+	Environments []string `json:"environments"`
+	// Input for filtering the configs of a team.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns ConfigFilter.Name, and is useful for accessing the field via an interface.
+func (v *ConfigFilter) GetName() string { return v.Name }
+
+// GetInUse returns ConfigFilter.InUse, and is useful for accessing the field via an interface.
+func (v *ConfigFilter) GetInUse() bool { return v.InUse }
+
+// GetEnvironments returns ConfigFilter.Environments, and is useful for accessing the field via an interface.
+func (v *ConfigFilter) GetEnvironments() []string { return v.Environments }
+
+// GetLabels returns ConfigFilter.Labels, and is useful for accessing the field via an interface.
+func (v *ConfigFilter) GetLabels() []LabelFilter { return v.Labels }
+
 type ConfigValueInput struct {
 	Name     string        `json:"name"`
 	Value    string        `json:"value"`
@@ -29638,6 +29662,30 @@ var AllJobState = []JobState{
 	JobStateUnknown,
 }
 
+// Input for filtering Kafka topics.
+type KafkaTopicFilter struct {
+	// Input for filtering Kafka topics.
+	Name string `json:"name"`
+	// Input for filtering Kafka topics.
+	Environments []string `json:"environments"`
+	// Input for filtering Kafka topics.
+	Pools []string `json:"pools"`
+	// Input for filtering Kafka topics.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns KafkaTopicFilter.Name, and is useful for accessing the field via an interface.
+func (v *KafkaTopicFilter) GetName() string { return v.Name }
+
+// GetEnvironments returns KafkaTopicFilter.Environments, and is useful for accessing the field via an interface.
+func (v *KafkaTopicFilter) GetEnvironments() []string { return v.Environments }
+
+// GetPools returns KafkaTopicFilter.Pools, and is useful for accessing the field via an interface.
+func (v *KafkaTopicFilter) GetPools() []string { return v.Pools }
+
+// GetLabels returns KafkaTopicFilter.Labels, and is useful for accessing the field via an interface.
+func (v *KafkaTopicFilter) GetLabels() []LabelFilter { return v.Labels }
+
 // Filter resources by a user-defined label.
 type LabelFilter struct {
 	// Filter resources by a user-defined label.
@@ -30386,6 +30434,30 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.Name
 }
 
+// Input for filtering OpenSearch instances.
+type OpenSearchFilter struct {
+	// Input for filtering OpenSearch instances.
+	Name string `json:"name"`
+	// Input for filtering OpenSearch instances.
+	Environments []string `json:"environments"`
+	// Input for filtering OpenSearch instances.
+	Tiers []OpenSearchTier `json:"tiers"`
+	// Input for filtering OpenSearch instances.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns OpenSearchFilter.Name, and is useful for accessing the field via an interface.
+func (v *OpenSearchFilter) GetName() string { return v.Name }
+
+// GetEnvironments returns OpenSearchFilter.Environments, and is useful for accessing the field via an interface.
+func (v *OpenSearchFilter) GetEnvironments() []string { return v.Environments }
+
+// GetTiers returns OpenSearchFilter.Tiers, and is useful for accessing the field via an interface.
+func (v *OpenSearchFilter) GetTiers() []OpenSearchTier { return v.Tiers }
+
+// GetLabels returns OpenSearchFilter.Labels, and is useful for accessing the field via an interface.
+func (v *OpenSearchFilter) GetLabels() []LabelFilter { return v.Labels }
+
 type OpenSearchMajorVersion string
 
 const (
@@ -30470,6 +30542,40 @@ var AllOrderDirection = []OrderDirection{
 	OrderDirectionAsc,
 	OrderDirectionDesc,
 }
+
+// Input for filtering Postgres instances.
+type PostgresInstanceFilter struct {
+	// Input for filtering Postgres instances.
+	Name string `json:"name"`
+	// Input for filtering Postgres instances.
+	Environments []string `json:"environments"`
+	// Input for filtering Postgres instances.
+	States []PostgresInstanceState `json:"states"`
+	// Input for filtering Postgres instances.
+	HighAvailability bool `json:"highAvailability"`
+	// Input for filtering Postgres instances.
+	MajorVersions []string `json:"majorVersions"`
+	// Input for filtering Postgres instances.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns PostgresInstanceFilter.Name, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetName() string { return v.Name }
+
+// GetEnvironments returns PostgresInstanceFilter.Environments, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetEnvironments() []string { return v.Environments }
+
+// GetStates returns PostgresInstanceFilter.States, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetStates() []PostgresInstanceState { return v.States }
+
+// GetHighAvailability returns PostgresInstanceFilter.HighAvailability, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetHighAvailability() bool { return v.HighAvailability }
+
+// GetMajorVersions returns PostgresInstanceFilter.MajorVersions, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetMajorVersions() []string { return v.MajorVersions }
+
+// GetLabels returns PostgresInstanceFilter.Labels, and is useful for accessing the field via an interface.
+func (v *PostgresInstanceFilter) GetLabels() []LabelFilter { return v.Labels }
 
 type PostgresInstanceState string
 
@@ -30682,6 +30788,30 @@ type RestartAppRestartApplicationRestartApplicationPayloadApplication struct {
 func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetName() string {
 	return v.Name
 }
+
+// Input for filtering the secrets of a team.
+type SecretFilter struct {
+	// Input for filtering the secrets of a team.
+	Name string `json:"name"`
+	// Input for filtering the secrets of a team.
+	InUse bool `json:"inUse"`
+	// Input for filtering the secrets of a team.
+	Environments []string `json:"environments"`
+	// Input for filtering the secrets of a team.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns SecretFilter.Name, and is useful for accessing the field via an interface.
+func (v *SecretFilter) GetName() string { return v.Name }
+
+// GetInUse returns SecretFilter.InUse, and is useful for accessing the field via an interface.
+func (v *SecretFilter) GetInUse() bool { return v.InUse }
+
+// GetEnvironments returns SecretFilter.Environments, and is useful for accessing the field via an interface.
+func (v *SecretFilter) GetEnvironments() []string { return v.Environments }
+
+// GetLabels returns SecretFilter.Labels, and is useful for accessing the field via an interface.
+func (v *SecretFilter) GetLabels() []LabelFilter { return v.Labels }
 
 type SecretValueInput struct {
 	Name     string        `json:"name"`
@@ -30927,6 +31057,13 @@ var AllSeverity = []Severity{
 	SeverityTodo,
 }
 
+type SqlInstanceFilter struct {
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetLabels returns SqlInstanceFilter.Labels, and is useful for accessing the field via an interface.
+func (v *SqlInstanceFilter) GetLabels() []LabelFilter { return v.Labels }
+
 type SqlInstanceState string
 
 const (
@@ -31018,6 +31155,25 @@ func (v *TeamApplicationsFilter) GetStates() []ApplicationState { return v.State
 
 // GetLabels returns TeamApplicationsFilter.Labels, and is useful for accessing the field via an interface.
 func (v *TeamApplicationsFilter) GetLabels() []LabelFilter { return v.Labels }
+
+type TeamJobsFilter struct {
+	Name         string        `json:"name"`
+	Environments []string      `json:"environments"`
+	States       []JobState    `json:"states"`
+	Labels       []LabelFilter `json:"labels"`
+}
+
+// GetName returns TeamJobsFilter.Name, and is useful for accessing the field via an interface.
+func (v *TeamJobsFilter) GetName() string { return v.Name }
+
+// GetEnvironments returns TeamJobsFilter.Environments, and is useful for accessing the field via an interface.
+func (v *TeamJobsFilter) GetEnvironments() []string { return v.Environments }
+
+// GetStates returns TeamJobsFilter.States, and is useful for accessing the field via an interface.
+func (v *TeamJobsFilter) GetStates() []JobState { return v.States }
+
+// GetLabels returns TeamJobsFilter.Labels, and is useful for accessing the field via an interface.
+func (v *TeamJobsFilter) GetLabels() []LabelFilter { return v.Labels }
 
 // Team member roles.
 type TeamMemberRole string
@@ -32006,6 +32162,30 @@ func (v *UsersUsersUserConnectionNodesUser) GetName() string { return v.Name }
 // GetEmail returns UsersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
 func (v *UsersUsersUserConnectionNodesUser) GetEmail() string { return v.Email }
 
+// Input for filtering Valkey instances.
+type ValkeyFilter struct {
+	// Input for filtering Valkey instances.
+	Name string `json:"name"`
+	// Input for filtering Valkey instances.
+	Environments []string `json:"environments"`
+	// Input for filtering Valkey instances.
+	Tiers []ValkeyTier `json:"tiers"`
+	// Input for filtering Valkey instances.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetName returns ValkeyFilter.Name, and is useful for accessing the field via an interface.
+func (v *ValkeyFilter) GetName() string { return v.Name }
+
+// GetEnvironments returns ValkeyFilter.Environments, and is useful for accessing the field via an interface.
+func (v *ValkeyFilter) GetEnvironments() []string { return v.Environments }
+
+// GetTiers returns ValkeyFilter.Tiers, and is useful for accessing the field via an interface.
+func (v *ValkeyFilter) GetTiers() []ValkeyTier { return v.Tiers }
+
+// GetLabels returns ValkeyFilter.Labels, and is useful for accessing the field via an interface.
+func (v *ValkeyFilter) GetLabels() []LabelFilter { return v.Labels }
+
 type ValkeyMaxMemoryPolicy string
 
 const (
@@ -32526,11 +32706,15 @@ func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifie
 
 // __GetAllConfigsInput is used internally by genqlient
 type __GetAllConfigsInput struct {
-	TeamSlug string `json:"teamSlug"`
+	TeamSlug string       `json:"teamSlug"`
+	Filter   ConfigFilter `json:"filter"`
 }
 
 // GetTeamSlug returns __GetAllConfigsInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllConfigsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetFilter returns __GetAllConfigsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetAllConfigsInput) GetFilter() ConfigFilter { return v.Filter }
 
 // __GetAllIssuesInput is used internally by genqlient
 type __GetAllIssuesInput struct {
@@ -32546,27 +32730,39 @@ func (v *__GetAllIssuesInput) GetFilter() IssueFilter { return v.Filter }
 
 // __GetAllOpenSearchesInput is used internally by genqlient
 type __GetAllOpenSearchesInput struct {
-	TeamSlug string `json:"teamSlug"`
+	TeamSlug string           `json:"teamSlug"`
+	Filter   OpenSearchFilter `json:"filter"`
 }
 
 // GetTeamSlug returns __GetAllOpenSearchesInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllOpenSearchesInput) GetTeamSlug() string { return v.TeamSlug }
 
+// GetFilter returns __GetAllOpenSearchesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetAllOpenSearchesInput) GetFilter() OpenSearchFilter { return v.Filter }
+
 // __GetAllSecretsInput is used internally by genqlient
 type __GetAllSecretsInput struct {
-	TeamSlug string `json:"teamSlug"`
+	TeamSlug string       `json:"teamSlug"`
+	Filter   SecretFilter `json:"filter"`
 }
 
 // GetTeamSlug returns __GetAllSecretsInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllSecretsInput) GetTeamSlug() string { return v.TeamSlug }
 
+// GetFilter returns __GetAllSecretsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetAllSecretsInput) GetFilter() SecretFilter { return v.Filter }
+
 // __GetAllValkeysInput is used internally by genqlient
 type __GetAllValkeysInput struct {
-	TeamSlug string `json:"teamSlug"`
+	TeamSlug string       `json:"teamSlug"`
+	Filter   ValkeyFilter `json:"filter"`
 }
 
 // GetTeamSlug returns __GetAllValkeysInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetAllValkeysInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetFilter returns __GetAllValkeysInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetAllValkeysInput) GetFilter() ValkeyFilter { return v.Filter }
 
 // __GetApplicationActivityInput is used internally by genqlient
 type __GetApplicationActivityInput struct {
@@ -32940,8 +33136,9 @@ func (v *__GetTeamApplicationsInput) GetFilter() TeamApplicationsFilter { return
 
 // __GetTeamJobsInput is used internally by genqlient
 type __GetTeamJobsInput struct {
-	Team    string   `json:"team"`
-	OrderBy JobOrder `json:"orderBy"`
+	Team    string         `json:"team"`
+	OrderBy JobOrder       `json:"orderBy"`
+	Filter  TeamJobsFilter `json:"filter"`
 }
 
 // GetTeam returns __GetTeamJobsInput.Team, and is useful for accessing the field via an interface.
@@ -32950,21 +33147,38 @@ func (v *__GetTeamJobsInput) GetTeam() string { return v.Team }
 // GetOrderBy returns __GetTeamJobsInput.OrderBy, and is useful for accessing the field via an interface.
 func (v *__GetTeamJobsInput) GetOrderBy() JobOrder { return v.OrderBy }
 
+// GetFilter returns __GetTeamJobsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetTeamJobsInput) GetFilter() TeamJobsFilter { return v.Filter }
+
 // __GetTeamKafkaTopicsInput is used internally by genqlient
 type __GetTeamKafkaTopicsInput struct {
-	Team string `json:"team"`
+	Team   string           `json:"team"`
+	Filter KafkaTopicFilter `json:"filter"`
 }
 
 // GetTeam returns __GetTeamKafkaTopicsInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
 
+// GetFilter returns __GetTeamKafkaTopicsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetTeamKafkaTopicsInput) GetFilter() KafkaTopicFilter { return v.Filter }
+
 // __GetTeamPostgresInstancesInput is used internally by genqlient
 type __GetTeamPostgresInstancesInput struct {
-	Team string `json:"team"`
+	Team           string                 `json:"team"`
+	PostgresFilter PostgresInstanceFilter `json:"postgresFilter"`
+	SqlFilter      SqlInstanceFilter      `json:"sqlFilter"`
 }
 
 // GetTeam returns __GetTeamPostgresInstancesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetTeamPostgresInstancesInput) GetTeam() string { return v.Team }
+
+// GetPostgresFilter returns __GetTeamPostgresInstancesInput.PostgresFilter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresInstancesInput) GetPostgresFilter() PostgresInstanceFilter {
+	return v.PostgresFilter
+}
+
+// GetSqlFilter returns __GetTeamPostgresInstancesInput.SqlFilter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresInstancesInput) GetSqlFilter() SqlInstanceFilter { return v.SqlFilter }
 
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
@@ -34266,9 +34480,9 @@ func FindWorkloadsForCve(
 
 // The query executed by GetAllConfigs.
 const GetAllConfigs_Operation = `
-query GetAllConfigs ($teamSlug: Slug!) {
+query GetAllConfigs ($teamSlug: Slug!, $filter: ConfigFilter) {
 	team(slug: $teamSlug) {
-		configs(first: 1000, orderBy: {field:NAME,direction:ASC}) {
+		configs(first: 1000, orderBy: {field:NAME,direction:ASC}, filter: $filter) {
 			nodes {
 				name
 				values {
@@ -34301,12 +34515,14 @@ func GetAllConfigs(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	teamSlug string,
+	filter ConfigFilter,
 ) (data_ *GetAllConfigsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetAllConfigs",
 		Query:  GetAllConfigs_Operation,
 		Variables: &__GetAllConfigsInput{
 			TeamSlug: teamSlug,
+			Filter:   filter,
 		},
 	}
 
@@ -34450,9 +34666,9 @@ func GetAllIssues(
 
 // The query executed by GetAllOpenSearches.
 const GetAllOpenSearches_Operation = `
-query GetAllOpenSearches ($teamSlug: Slug!) {
+query GetAllOpenSearches ($teamSlug: Slug!, $filter: OpenSearchFilter) {
 	team(slug: $teamSlug) {
-		openSearches {
+		openSearches(filter: $filter) {
 			nodes {
 				name
 				memory
@@ -34484,12 +34700,14 @@ func GetAllOpenSearches(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	teamSlug string,
+	filter OpenSearchFilter,
 ) (data_ *GetAllOpenSearchesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetAllOpenSearches",
 		Query:  GetAllOpenSearches_Operation,
 		Variables: &__GetAllOpenSearchesInput{
 			TeamSlug: teamSlug,
+			Filter:   filter,
 		},
 	}
 
@@ -34507,9 +34725,9 @@ func GetAllOpenSearches(
 
 // The query executed by GetAllSecrets.
 const GetAllSecrets_Operation = `
-query GetAllSecrets ($teamSlug: Slug!) {
+query GetAllSecrets ($teamSlug: Slug!, $filter: SecretFilter) {
 	team(slug: $teamSlug) {
-		secrets(first: 1000, orderBy: {field:NAME,direction:ASC}) {
+		secrets(first: 1000, orderBy: {field:NAME,direction:ASC}, filter: $filter) {
 			nodes {
 				name
 				keys
@@ -34535,12 +34753,14 @@ func GetAllSecrets(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	teamSlug string,
+	filter SecretFilter,
 ) (data_ *GetAllSecretsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetAllSecrets",
 		Query:  GetAllSecrets_Operation,
 		Variables: &__GetAllSecretsInput{
 			TeamSlug: teamSlug,
+			Filter:   filter,
 		},
 	}
 
@@ -34558,9 +34778,9 @@ func GetAllSecrets(
 
 // The query executed by GetAllValkeys.
 const GetAllValkeys_Operation = `
-query GetAllValkeys ($teamSlug: Slug!) {
+query GetAllValkeys ($teamSlug: Slug!, $filter: ValkeyFilter) {
 	team(slug: $teamSlug) {
-		valkeys {
+		valkeys(filter: $filter) {
 			nodes {
 				name
 				memory
@@ -34589,12 +34809,14 @@ func GetAllValkeys(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	teamSlug string,
+	filter ValkeyFilter,
 ) (data_ *GetAllValkeysResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetAllValkeys",
 		Query:  GetAllValkeys_Operation,
 		Variables: &__GetAllValkeysInput{
 			TeamSlug: teamSlug,
+			Filter:   filter,
 		},
 	}
 
@@ -35845,9 +36067,9 @@ func GetTeamApplications(
 
 // The query executed by GetTeamJobs.
 const GetTeamJobs_Operation = `
-query GetTeamJobs ($team: Slug!, $orderBy: JobOrder) {
+query GetTeamJobs ($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) {
 	team(slug: $team) {
-		jobs(first: 1000, orderBy: $orderBy) {
+		jobs(first: 1000, orderBy: $orderBy, filter: $filter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -35882,6 +36104,7 @@ func GetTeamJobs(
 	client_ graphql.Client,
 	team string,
 	orderBy JobOrder,
+	filter TeamJobsFilter,
 ) (data_ *GetTeamJobsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamJobs",
@@ -35889,6 +36112,7 @@ func GetTeamJobs(
 		Variables: &__GetTeamJobsInput{
 			Team:    team,
 			OrderBy: orderBy,
+			Filter:  filter,
 		},
 	}
 
@@ -35906,9 +36130,9 @@ func GetTeamJobs(
 
 // The query executed by GetTeamKafkaTopics.
 const GetTeamKafkaTopics_Operation = `
-query GetTeamKafkaTopics ($team: Slug!) {
+query GetTeamKafkaTopics ($team: Slug!, $filter: KafkaTopicFilter) {
 	team(slug: $team) {
-		kafkaTopics(first: 1000) {
+		kafkaTopics(first: 1000, filter: $filter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -35926,12 +36150,14 @@ func GetTeamKafkaTopics(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
+	filter KafkaTopicFilter,
 ) (data_ *GetTeamKafkaTopicsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamKafkaTopics",
 		Query:  GetTeamKafkaTopics_Operation,
 		Variables: &__GetTeamKafkaTopicsInput{
-			Team: team,
+			Team:   team,
+			Filter: filter,
 		},
 	}
 
@@ -35949,9 +36175,9 @@ func GetTeamKafkaTopics(
 
 // The query executed by GetTeamPostgresInstances.
 const GetTeamPostgresInstances_Operation = `
-query GetTeamPostgresInstances ($team: Slug!) {
+query GetTeamPostgresInstances ($team: Slug!, $postgresFilter: PostgresInstanceFilter, $sqlFilter: SqlInstanceFilter) {
 	team(slug: $team) {
-		postgresInstances(first: 1000) {
+		postgresInstances(first: 1000, filter: $postgresFilter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -35967,7 +36193,7 @@ query GetTeamPostgresInstances ($team: Slug!) {
 				state
 			}
 		}
-		sqlInstances(first: 1000) {
+		sqlInstances(first: 1000, filter: $sqlFilter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -35991,12 +36217,16 @@ func GetTeamPostgresInstances(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
+	postgresFilter PostgresInstanceFilter,
+	sqlFilter SqlInstanceFilter,
 ) (data_ *GetTeamPostgresInstancesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamPostgresInstances",
 		Query:  GetTeamPostgresInstances_Operation,
 		Variables: &__GetTeamPostgresInstancesInput{
-			Team: team,
+			Team:           team,
+			PostgresFilter: postgresFilter,
+			SqlFilter:      sqlFilter,
 		},
 	}
 

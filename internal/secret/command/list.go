@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/naistrix"
@@ -39,7 +41,17 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			secrets, err := secret.GetAll(ctx, f.Team)
+			filter := gql.SecretFilter{}
+			if len(f.Environment) > 0 {
+				filter.Environments = []string{string(f.Environment)}
+			}
+			labelFilters, err := labels.ParseFilters(f.Labels)
+			if err != nil {
+				return err
+			}
+			filter.Labels = labelFilters
+
+			secrets, err := secret.GetAll(ctx, f.Team, filter)
 			if err != nil {
 				return fmt.Errorf("fetching secrets: %w", err)
 			}
@@ -52,10 +64,6 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 			var summaries []SecretSummary
 			for _, s := range secrets {
 				envName := s.TeamEnvironment.Environment.Name
-
-				if len(f.Environment) > 0 && string(f.Environment) != envName {
-					continue
-				}
 
 				var workloadNames []string
 				for _, w := range s.Workloads.Nodes {

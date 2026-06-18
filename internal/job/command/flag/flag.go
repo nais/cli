@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/naistrix"
 )
 
@@ -22,8 +23,11 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type List struct {
 	*Job
-	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output              `name:"output" short:"o" usage:"Format output (table or json)."`
+	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
+
+func (*List) LabelFacetResource() string { return "jobs" }
 
 type Issues struct {
 	*Job

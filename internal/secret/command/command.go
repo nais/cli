@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -69,7 +70,9 @@ func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
 			return nil, "Please provide environment to auto-complete secret names. '-e, --environment <environment>' flag."
 		}
 
-		secrets, err := secret.GetAll(ctx, flags.Team)
+		secrets, err := secret.GetAll(ctx, flags.Team, gql.SecretFilter{
+			Environments: []string{string(flags.Environment)},
+		})
 		if err != nil {
 			return nil, fmt.Sprintf("Unable to fetch secrets for auto-completion: %v", err)
 		}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
@@ -46,8 +47,11 @@ type Output string
 
 type List struct {
 	*OpenSearch
-	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output              `name:"output" short:"o" usage:"Format output (table or json)."`
+	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
+
+func (*List) LabelFacetResource() string { return "openSearches" }
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
 	return []string{"table", "json"}, "Available output formats."

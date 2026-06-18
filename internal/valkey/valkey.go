@@ -137,11 +137,11 @@ func Get(ctx context.Context, metadata Metadata) (*gql.GetValkeyTeamEnvironmentV
 	return &resp.Team.Environment.Valkey, nil
 }
 
-func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkeysValkeyConnectionNodesValkey, error) {
+func GetAll(ctx context.Context, teamSlug string, filter gql.ValkeyFilter) ([]gql.GetAllValkeysTeamValkeysValkeyConnectionNodesValkey, error) {
 	_ = `# @genqlient
-		query GetAllValkeys($teamSlug: Slug!) {
+		query GetAllValkeys($teamSlug: Slug!, $filter: ValkeyFilter) {
 		  team(slug: $teamSlug) {
-			valkeys {
+			valkeys(filter: $filter) {
 			  nodes {
 				name
 				memory
@@ -171,7 +171,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllValkeysTeamValkey
 		return nil, err
 	}
 
-	resp, err := gql.GetAllValkeys(ctx, client, teamSlug)
+	resp, err := gql.GetAllValkeys(ctx, client, teamSlug, filter)
 	if err != nil {
 		return nil, err
 	}

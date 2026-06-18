@@ -104,11 +104,11 @@ func GetJobNames(ctx context.Context, team string, environment string) ([]string
 	return ret, nil
 }
 
-func GetTeamJobs(ctx context.Context, team string, environment string) ([]Job, error) {
+func GetTeamJobs(ctx context.Context, team string, environment string, labels []gql.LabelFilter) ([]Job, error) {
 	_ = `# @genqlient
-		query GetTeamJobs($team: Slug!, $orderBy: JobOrder) {
+		query GetTeamJobs($team: Slug!, $orderBy: JobOrder, $filter: TeamJobsFilter) {
 			team(slug: $team) {
-				jobs(first: 1000, orderBy: $orderBy) {
+				jobs(first: 1000, orderBy: $orderBy, filter: $filter) {
 					nodes {
 						name
 						teamEnvironment {
@@ -143,10 +143,18 @@ func GetTeamJobs(ctx context.Context, team string, environment string) ([]Job, e
 		return nil, err
 	}
 
+	filter := gql.TeamJobsFilter{}
+	if environment != "" {
+		filter.Environments = []string{environment}
+	}
+	if len(labels) > 0 {
+		filter.Labels = labels
+	}
+
 	resp, err := gql.GetTeamJobs(ctx, client, team, gql.JobOrder{
 		Field:     gql.JobOrderFieldIssues,
 		Direction: gql.OrderDirectionDesc,
-	})
+	}, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -154,9 +162,6 @@ func GetTeamJobs(ctx context.Context, team string, environment string) ([]Job, e
 	ret := make([]Job, 0)
 	for _, j := range resp.Team.Jobs.Nodes {
 		env := j.TeamEnvironment.Environment.Name
-		if len(environment) > 0 && environment != env {
-			continue
-		}
 
 		schedule := Schedule("")
 		if j.Schedule.Expression != "" {

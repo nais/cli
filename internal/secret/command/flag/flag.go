@@ -5,6 +5,7 @@ import (
 
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
@@ -21,8 +22,11 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type List struct {
 	*Secret
-	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output              `name:"output" short:"o" usage:"Format output (table or json)."`
+	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
+
+func (*List) LabelFacetResource() string { return "secrets" }
 
 type Activity struct {
 	*Secret

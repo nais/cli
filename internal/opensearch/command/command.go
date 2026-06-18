@@ -61,7 +61,12 @@ func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, 
 		return nil, "Please provide environment to auto-complete OpenSearch instance names. '-e, --environment <environment>' flag."
 	}
 
-	instances, err := opensearch.GetAll(ctx, team)
+	filter := gql.OpenSearchFilter{}
+	if environment != "" {
+		filter.Environments = []string{environment}
+	}
+
+	instances, err := opensearch.GetAll(ctx, team, filter)
 	if err != nil {
 		return nil, "Unable to fetch OpenSearch instances."
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
+	labelspkg "github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
@@ -26,6 +27,13 @@ func list(parentFlags *flag.App) *naistrix.Command {
 			filter := gql.TeamApplicationsFilter{}
 			if flags.Environment != "" {
 				filter.Environments = append(filter.Environments, string(flags.Environment))
+			}
+			if len(flags.Labels) > 0 {
+				labelFilters, err := labelspkg.ParseFilters(flags.Labels)
+				if err != nil {
+					return err
+				}
+				filter.Labels = labelFilters
 			}
 			ret, err := app.GetTeamApplications(ctx, flags.Team, gql.ApplicationOrder{
 				Field:     gql.ApplicationOrderFieldIssues,

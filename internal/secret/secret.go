@@ -58,7 +58,7 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 
 // SecretEnvironments returns the environments where a secret with the given name exists.
 func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug)
+	all, err := GetAll(ctx, teamSlug, gql.SecretFilter{Name: name})
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, e
 }
 
 // GetAll retrieves all secrets for a team.
-func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllSecretsTeamSecretsSecretConnectionNodesSecret, error) {
+func GetAll(ctx context.Context, teamSlug string, filter gql.SecretFilter) ([]gql.GetAllSecretsTeamSecretsSecretConnectionNodesSecret, error) {
 	_ = `# @genqlient
-		query GetAllSecrets($teamSlug: Slug!) {
+		query GetAllSecrets($teamSlug: Slug!, $filter: SecretFilter) {
 		  team(slug: $teamSlug) {
-			secrets(first: 1000, orderBy: {field: NAME, direction: ASC}) {
+			secrets(first: 1000, orderBy: {field: NAME, direction: ASC}, filter: $filter) {
 			  nodes {
 				name
 				keys
@@ -103,7 +103,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllSecretsTeamSecret
 		return nil, err
 	}
 
-	resp, err := gql.GetAllSecrets(ctx, client, teamSlug)
+	resp, err := gql.GetAllSecrets(ctx, client, teamSlug, filter)
 	if err != nil {
 		return nil, err
 	}

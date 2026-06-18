@@ -7,6 +7,8 @@ import (
 
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
+	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -39,7 +41,17 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			configs, err := config.GetAll(ctx, f.Team)
+			filter := gql.ConfigFilter{}
+			if len(f.Environment) > 0 {
+				filter.Environments = []string{string(f.Environment)}
+			}
+			labelFilters, err := labels.ParseFilters(f.Labels)
+			if err != nil {
+				return err
+			}
+			filter.Labels = labelFilters
+
+			configs, err := config.GetAll(ctx, f.Team, filter)
 			if err != nil {
 				return fmt.Errorf("fetching config: %w", err)
 			}
@@ -52,10 +64,6 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 			var summaries []ConfigSummary
 			for _, c := range configs {
 				envName := c.TeamEnvironment.Environment.Name
-
-				if len(f.Environment) > 0 && string(f.Environment) != envName {
-					continue
-				}
 
 				var keyNames []string
 				for _, v := range c.Values {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/naistrix"
 )
 
@@ -99,8 +100,11 @@ type Revoke struct {
 
 type List struct {
 	*Postgres
-	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output              `name:"output" short:"o" usage:"Format output (table or json)."`
+	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
+
+func (*List) LabelFacetResource() string { return "postgresInstances" }
 
 type Output string
 

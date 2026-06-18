@@ -8,6 +8,7 @@ import (
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
@@ -68,7 +69,9 @@ func autoCompleteConfigNames(flags *flag.Config) naistrix.AutoCompleteFunc {
 			return nil, "Please provide environment to auto-complete config names. 'nais defaults set environment <env>', or '--environment <env>' flag."
 		}
 
-		configs, err := config.GetAll(ctx, flags.Team)
+		configs, err := config.GetAll(ctx, flags.Team, gql.ConfigFilter{
+			Environments: []string{string(flags.Environment)},
+		})
 		if err != nil {
 			return nil, fmt.Sprintf("Unable to fetch config for auto-completion: %v", err)
 		}
