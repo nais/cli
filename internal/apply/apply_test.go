@@ -1,11 +1,20 @@
 package apply
 
 import (
+	"bytes"
+	"context"
+	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	alphaflag "github.com/nais/cli/internal/alpha/command/flag"
+	applyflag "github.com/nais/cli/internal/apply/command/flag"
 	"github.com/nais/cli/internal/apply/resource"
+	flagspkg "github.com/nais/cli/internal/flags"
+	"github.com/nais/naistrix"
 )
 
 func TestReadManifestFile_Validation(t *testing.T) {
@@ -122,6 +131,90 @@ func TestDecodeCRD_MissingFields(t *testing.T) {
 
 	_, err = decodeCRD(docs[0])
 	mustErrorContains(t, err, `missing required field "kind"`)
+}
+
+func TestRun_DryRunDoesNotApply(t *testing.T) {
+	dir := t.TempDir()
+	manifestPath := filepath.Join(dir, "nais.yaml")
+	manifest := `
+version: v1
+kind: Application
+metadata:
+  name: myapp
+spec:
+  image: ghcr.io/nais/app:latest
+---
+apiVersion: nais.io/v1
+kind: SomeCRD
+metadata:
+  name: custom
+spec:
+  foo: bar
+`
+	if err := os.WriteFile(manifestPath, []byte(manifest), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	var out bytes.Buffer
+	flags := &applyflag.Apply{
+		Alpha: &alphaflag.Alpha{
+			GlobalFlags: &flagspkg.GlobalFlags{
+				AdditionalFlags: &flagspkg.AdditionalFlags{
+					Team:        "my-team",
+					Environment: "dev",
+				},
+			},
+		},
+		DryRun: true,
+	}
+
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(&out, new(naistrix.Count)))
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	got := out.String()
+	for _, want := range []string{
+		"Application/myapp: would apply",
+		"SomeCRD/custom: would apply",
+		"dry-run complete: no resources were applied",
+	} {
+		if !strings.Contains(got, want) {
+			t.Errorf("output %q does not contain %q", got, want)
+		}
+	}
+}
+
+func TestRun_DryRunFailsOnIgnoredFieldsWithoutAllowFlag(t *testing.T) {
+	dir := t.TempDir()
+	manifestPath := filepath.Join(dir, "nais.yaml")
+	manifest := `
+version: v1
+kind: Application
+metadata:
+  name: myapp
+  namespace: should-fail
+spec:
+  image: ghcr.io/nais/app:latest
+`
+	if err := os.WriteFile(manifestPath, []byte(manifest), 0o600); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	flags := &applyflag.Apply{
+		Alpha: &alphaflag.Alpha{
+			GlobalFlags: &flagspkg.GlobalFlags{
+				AdditionalFlags: &flagspkg.AdditionalFlags{
+					Team:        "my-team",
+					Environment: "dev",
+				},
+			},
+		},
+		DryRun: true,
+	}
+
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	mustErrorContains(t, err, "contains fields not used by nais apply")
 }
 
 func mustErrorContains(t *testing.T, err error, want string) {

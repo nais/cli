@@ -20,10 +20,9 @@ func GithubActions(ctx context.Context) (*AuthenticatedUser, bool, error) {
 		return nil, false, nil
 	}
 
-	// TODO: tenant and domain should be derived from the token somehow
-	tenant := os.Getenv("NAIS_API_TENANT")
-	if tenant == "" {
-		return nil, false, fmt.Errorf("NAIS_API_TENANT must be set when using GitHub Actions authentication")
+	tenant, err := resolveGithubTenant(ctx)
+	if err != nil {
+		return nil, false, err
 	}
 	domain := "TODO"
 
@@ -38,6 +37,47 @@ func GithubActions(ctx context.Context) (*AuthenticatedUser, bool, error) {
 		domain:      domain,
 		ts:          oauth2.ReuseTokenSourceWithExpiry(token, ts, 30*time.Second),
 	}, true, nil
+}
+
+func resolveGithubTenant(ctx context.Context) (string, error) {
+	// Allow explicit override via environment variable
+	if tenant := os.Getenv("NAIS_API_TENANT"); tenant != "" {
+		return tenant, nil
+	}
+
+	owner := os.Getenv("GITHUB_REPOSITORY_OWNER")
+	if owner == "" {
+		return "", fmt.Errorf("GITHUB_REPOSITORY_OWNER must be set when using GitHub Actions authentication")
+	}
+
+	u := fmt.Sprintf("https://storage.googleapis.com/github-deploy-data/%s.json", owner)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil) // #nosec G704 -- URL is constructed from a fixed GCS base URL with owner segment from GITHUB_REPOSITORY_OWNER; SSRF risk is acceptable
+	if err != nil {
+		return "", fmt.Errorf("creating deploy data request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req) // #nosec G704 -- URL is constructed from a fixed GCS base URL with owner segment from GITHUB_REPOSITORY_OWNER; SSRF risk is acceptable
+	if err != nil {
+		return "", fmt.Errorf("fetching deploy data: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("fetching deploy data for owner %q: unexpected status %s", owner, resp.Status)
+	}
+
+	var deployData struct {
+		TenantName string `json:"TENANT_NAME"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&deployData); err != nil {
+		return "", fmt.Errorf("decoding deploy data: %w", err)
+	}
+
+	if deployData.TenantName == "" {
+		return "", fmt.Errorf("cannot discover tenant name automatically for %q - set NAIS_API_TENANT", owner)
+	}
+
+	return deployData.TenantName, nil
 }
 
 func githubTokenSource(ctx context.Context, requestURL, requestToken string) oauth2.TokenSource {

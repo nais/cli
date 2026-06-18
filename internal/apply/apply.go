@@ -62,6 +62,11 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 				errs = append(errs, err.Error())
 				continue
 			}
+			if flags.DryRun {
+				out.Printf("%s/%s: would apply\n", crd.GetKind(), crd.GetName())
+				printDryRunYAML(doc, out)
+				continue
+			}
 
 			if err := ensureWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
 				errs = append(errs, err.Error())
@@ -85,6 +90,19 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		}
 
 		r, _ := resource.ForManifest(m)
+		if flags.DryRun {
+			// Keep conversion/validation behavior aligned with real apply for
+			// non-mutation resources.
+			if _, ok := r.(resource.Applier); !ok {
+				if _, err := toUnstructured(m, r); err != nil {
+					errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
+					continue
+				}
+			}
+			out.Printf("%s/%s: would apply\n", m.Kind, m.Name)
+			printDryRunYAML(doc, out)
+			continue
+		}
 
 		if applier, ok := r.(resource.Applier); ok {
 			action, err := applier.Apply(ctx, resource.Metadata{
@@ -125,6 +143,11 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 
 	if len(errs) > 0 {
 		return fmt.Errorf("apply failed for %d resource(s):\n  %s", len(errs), strings.Join(errs, "\n  "))
+	}
+
+	if flags.DryRun {
+		out.Printf("dry-run complete: no resources were applied\n")
+		return nil
 	}
 
 	if flags.Wait {
@@ -301,4 +324,17 @@ func readManifestFile(filePath string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to read file %s: %w", filePath, err)
 	}
 	return data, nil
+}
+
+func printDryRunYAML(doc *yaml.Node, out *naistrix.OutputWriter) {
+	rendered, err := yaml.Marshal(doc)
+	if err != nil {
+		out.Printf("failed to render dry-run YAML: %v\n", err)
+		return
+	}
+
+	out.Printf("---\n%s", rendered)
+	if len(rendered) == 0 || rendered[len(rendered)-1] != '\n' {
+		out.Printf("\n")
+	}
 }
