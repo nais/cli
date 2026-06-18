@@ -14112,6 +14112,147 @@ func __marshalGetConfigTeamEnvironmentConfigWorkloadsWorkloadConnectionNodesWork
 	}
 }
 
+// GetCurrentApplicationImageResponse is returned by GetCurrentApplicationImage on success.
+type GetCurrentApplicationImageResponse struct {
+	// Get a team by its slug.
+	Team GetCurrentApplicationImageTeam `json:"team"`
+}
+
+// GetTeam returns GetCurrentApplicationImageResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageResponse) GetTeam() GetCurrentApplicationImageTeam { return v.Team }
+
+// GetCurrentApplicationImageTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetCurrentApplicationImageTeam struct {
+	// Get a specific environment for the team.
+	Environment GetCurrentApplicationImageTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetCurrentApplicationImageTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageTeam) GetEnvironment() GetCurrentApplicationImageTeamEnvironment {
+	return v.Environment
+}
+
+// GetCurrentApplicationImageTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetCurrentApplicationImageTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application GetCurrentApplicationImageTeamEnvironmentApplication `json:"application"`
+}
+
+// GetApplication returns GetCurrentApplicationImageTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageTeamEnvironment) GetApplication() GetCurrentApplicationImageTeamEnvironmentApplication {
+	return v.Application
+}
+
+// GetCurrentApplicationImageTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetCurrentApplicationImageTeamEnvironmentApplication struct {
+	// The container image of the application.
+	Image GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage `json:"image"`
+}
+
+// GetImage returns GetCurrentApplicationImageTeamEnvironmentApplication.Image, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageTeamEnvironmentApplication) GetImage() GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage {
+	return v.Image
+}
+
+// GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage struct {
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image.
+	Tag string `json:"tag"`
+}
+
+// GetName returns GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage) GetName() string {
+	return v.Name
+}
+
+// GetTag returns GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *GetCurrentApplicationImageTeamEnvironmentApplicationImageContainerImage) GetTag() string {
+	return v.Tag
+}
+
+// GetCurrentJobImageResponse is returned by GetCurrentJobImage on success.
+type GetCurrentJobImageResponse struct {
+	// Get a team by its slug.
+	Team GetCurrentJobImageTeam `json:"team"`
+}
+
+// GetTeam returns GetCurrentJobImageResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageResponse) GetTeam() GetCurrentJobImageTeam { return v.Team }
+
+// GetCurrentJobImageTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetCurrentJobImageTeam struct {
+	// Get a specific environment for the team.
+	Environment GetCurrentJobImageTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetCurrentJobImageTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageTeam) GetEnvironment() GetCurrentJobImageTeamEnvironment {
+	return v.Environment
+}
+
+// GetCurrentJobImageTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetCurrentJobImageTeamEnvironment struct {
+	// Nais job in the team environment.
+	Job GetCurrentJobImageTeamEnvironmentJob `json:"job"`
+}
+
+// GetJob returns GetCurrentJobImageTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageTeamEnvironment) GetJob() GetCurrentJobImageTeamEnvironmentJob {
+	return v.Job
+}
+
+// GetCurrentJobImageTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type GetCurrentJobImageTeamEnvironmentJob struct {
+	// The container image of the job.
+	Image GetCurrentJobImageTeamEnvironmentJobImageContainerImage `json:"image"`
+}
+
+// GetImage returns GetCurrentJobImageTeamEnvironmentJob.Image, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageTeamEnvironmentJob) GetImage() GetCurrentJobImageTeamEnvironmentJobImageContainerImage {
+	return v.Image
+}
+
+// GetCurrentJobImageTeamEnvironmentJobImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetCurrentJobImageTeamEnvironmentJobImageContainerImage struct {
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image.
+	Tag string `json:"tag"`
+}
+
+// GetName returns GetCurrentJobImageTeamEnvironmentJobImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageTeamEnvironmentJobImageContainerImage) GetName() string { return v.Name }
+
+// GetTag returns GetCurrentJobImageTeamEnvironmentJobImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *GetCurrentJobImageTeamEnvironmentJobImageContainerImage) GetTag() string { return v.Tag }
+
 // GetJobActivityResponse is returned by GetJobActivity on success.
 type GetJobActivityResponse struct {
 	// Get a team by its slug.
@@ -33309,6 +33450,38 @@ func (v *__GetConfigInput) GetEnvironmentName() string { return v.EnvironmentNam
 // GetTeamSlug returns __GetConfigInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetConfigInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GetCurrentApplicationImageInput is used internally by genqlient
+type __GetCurrentApplicationImageInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+}
+
+// GetTeam returns __GetCurrentApplicationImageInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetCurrentApplicationImageInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetCurrentApplicationImageInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetCurrentApplicationImageInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __GetCurrentApplicationImageInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetCurrentApplicationImageInput) GetName() string { return v.Name }
+
+// __GetCurrentJobImageInput is used internally by genqlient
+type __GetCurrentJobImageInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+}
+
+// GetTeam returns __GetCurrentJobImageInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetCurrentJobImageInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetCurrentJobImageInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetCurrentJobImageInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __GetCurrentJobImageInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetCurrentJobImageInput) GetName() string { return v.Name }
+
 // __GetJobActivityInput is used internally by genqlient
 type __GetJobActivityInput struct {
 	Team  string   `json:"team"`
@@ -35622,6 +35795,96 @@ func GetConfigActivity(
 	}
 
 	data_ = &GetConfigActivityResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetCurrentApplicationImage.
+const GetCurrentApplicationImage_Operation = `
+query GetCurrentApplicationImage ($team: Slug!, $environment: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			application(name: $name) {
+				image {
+					name
+					tag
+				}
+			}
+		}
+	}
+}
+`
+
+func GetCurrentApplicationImage(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+) (data_ *GetCurrentApplicationImageResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetCurrentApplicationImage",
+		Query:  GetCurrentApplicationImage_Operation,
+		Variables: &__GetCurrentApplicationImageInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+		},
+	}
+
+	data_ = &GetCurrentApplicationImageResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetCurrentJobImage.
+const GetCurrentJobImage_Operation = `
+query GetCurrentJobImage ($team: Slug!, $environment: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			job(name: $name) {
+				image {
+					name
+					tag
+				}
+			}
+		}
+	}
+}
+`
+
+func GetCurrentJobImage(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+) (data_ *GetCurrentJobImageResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetCurrentJobImage",
+		Query:  GetCurrentJobImage_Operation,
+		Variables: &__GetCurrentJobImageInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+		},
+	}
+
+	data_ = &GetCurrentJobImageResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
