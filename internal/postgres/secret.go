@@ -125,7 +125,7 @@ func isCloudSQLDatabase(ctx context.Context, appName string, fl *flag.Postgres) 
 		LabelSelector: "app=" + appName,
 	})
 	if err != nil {
-		return false, fmt.Errorf("error looking for sqlinstance %q in %q: %w", appName, ns, err)
+		return false, fmt.Errorf("error looking for sqlinstance for application %q in %q: %w", appName, ns, err)
 	}
 
 	return len(sqlInstances.Items) >= 1, nil
@@ -215,7 +215,7 @@ func getPostgresClusterName(ctx context.Context, appName string, fl *flag.Postgr
 		return appName, nil
 	}
 
-	return "", fmt.Errorf("unable to find postgres cluster for %q in %q", appName, ns)
+	return "", fmt.Errorf("unable to find postgres cluster for application %q in %q", appName, ns)
 }
 
 // grantPostgresAccess grants temporary access to an in-cluster postgres database.
