@@ -1,6 +1,6 @@
 # nais apply
 
-Apply Valkey and OpenSearch resources to a Nais environment.
+Apply Valkey, OpenSearch and Config resources to a Nais environment.
 
 ## Usage
 
@@ -54,9 +54,12 @@ spec:
   ...
 ```
 
-Resources that have a dedicated nais-api mutation (Valkey, OpenSearch) are
-created or updated through that mutation. Other kinds are converted back into a
-native CRD and sent to the generic apply endpoint.
+Some resources (e.g. Config) use `data`/`binaryData` at the top level instead
+of `spec`. See the Config section below.
+
+Resources that have a dedicated nais-api mutation (Valkey, OpenSearch, Config)
+are created or updated through that mutation. Other kinds are converted back
+into a native CRD and sent to the generic apply endpoint.
 
 Multiple resources can be placed in the same file separated by `---`, and the
 native format may be mixed with regular Kubernetes CRDs (see below).
@@ -115,6 +118,27 @@ spec:
   memory: "4GB"             # 2GB | 4GB | 8GB | 16GB | 32GB | 64GB
   version: "2"              # "1" | "2" | "2.19" | "3.3"
   storageGB: 50
+```
+
+### Config
+
+Config uses `data` and `binaryData` at the top level instead of `spec`. The
+manifest is fully declarative: keys present in the manifest are added or
+updated, and keys missing from the manifest are removed.
+
+```yaml
+version: v1
+kind: Config
+metadata:
+  name: my-config
+  labels:                          # optional
+    purpose: backend
+data:
+  DATABASE_HOST: db.example.com
+  LOG_LEVEL: info
+  PORT: "8080"
+binaryData:                        # optional; values must be base64-encoded
+  keystore.p12: aGVsbG8gd29ybGQ=
 ```
 
 ### Multi-resource file

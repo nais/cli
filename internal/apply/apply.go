@@ -110,7 +110,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 				TeamSlug:        flags.Team,
 				EnvironmentName: environment,
 				Labels:          m.Labels,
-			}, &m.Spec)
+			}, m)
 			if err != nil {
 				out.Warnf("%s/%s: %v\n", m.Kind, m.Name, err)
 				errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))

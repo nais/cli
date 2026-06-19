@@ -191,6 +191,50 @@ func Create(ctx context.Context, metadata Metadata) (*gql.CreateConfigCreateConf
 	return &resp.CreateConfig.Config, nil
 }
 
+// CreateWithValues creates a new config with the given values and labels in a single operation.
+func CreateWithValues(ctx context.Context, metadata Metadata, values []gql.ConfigValueInput, labels []gql.ResourceLabelInput) error {
+	_ = `# @genqlient
+		mutation CreateConfigWithValues($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
+		  createConfig(input: {name: $name, environmentName: $environmentName, teamSlug: $teamSlug, values: $values, labels: $labels}) {
+			config {
+			  id
+			  name
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = gql.CreateConfigWithValues(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, values, labels)
+	return err
+}
+
+// UpdateWithValues replaces all values and labels on an existing config in a single operation.
+func UpdateWithValues(ctx context.Context, metadata Metadata, values []gql.ConfigValueInput, labels []gql.ResourceLabelInput) error {
+	_ = `# @genqlient
+		mutation UpdateConfigWithValues($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
+		  updateConfig(input: {name: $name, environmentName: $environmentName, teamSlug: $teamSlug, values: $values, labels: $labels}) {
+			config {
+			  id
+			  name
+			}
+		  }
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = gql.UpdateConfigWithValues(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, values, labels)
+	return err
+}
+
 // Delete deletes a config and all its values.
 func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 	_ = `# @genqlient

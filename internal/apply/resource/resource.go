@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/nais/naistrix"
-	"gopkg.in/yaml.v3"
 )
 
 // Resource is a kind that `nais apply` knows about, scoped to the manifest
@@ -36,7 +35,7 @@ type Resource interface {
 // Applier is implemented by resources with a dedicated nais-api mutation, using
 // create-or-update semantics.
 type Applier interface {
-	Apply(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error)
+	Apply(ctx context.Context, meta Metadata, m Manifest) (Action, error)
 }
 
 // Waiter is implemented by resources that support --wait. since is the apply

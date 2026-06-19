@@ -223,6 +223,79 @@ func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
 	}
 }
 
+func TestParse_Config(t *testing.T) {
+	manifests, err := Parse([]byte(`
+version: v1
+kind: Config
+metadata:
+  name: my-config
+  labels:
+    purpose: backend
+data:
+  DATABASE_HOST: db.example.com
+  LOG_LEVEL: info
+  PORT: "8080"
+binaryData:
+  keystore.p12: aGVsbG8gd29ybGQ=
+`))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(manifests) != 1 {
+		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+	}
+
+	m := manifests[0]
+	if got, want := m.Kind, "Config"; got != want {
+		t.Errorf("kind = %q, want %q", got, want)
+	}
+	if got, want := m.Name, "my-config"; got != want {
+		t.Errorf("name = %q, want %q", got, want)
+	}
+	if len(m.IgnoredFields) != 0 {
+		t.Errorf("expected no ignored fields, got %v", m.IgnoredFields)
+	}
+
+	wantLabels := map[string]string{"purpose": "backend"}
+	if diff := cmp.Diff(wantLabels, m.Labels); diff != "" {
+		t.Errorf("labels mismatch (-want +got):\n%s", diff)
+	}
+
+	wantData := map[string]string{
+		"DATABASE_HOST": "db.example.com",
+		"LOG_LEVEL":     "info",
+		"PORT":          "8080",
+	}
+	if diff := cmp.Diff(wantData, m.Data); diff != "" {
+		t.Errorf("data mismatch (-want +got):\n%s", diff)
+	}
+
+	wantBinaryData := map[string]string{
+		"keystore.p12": "aGVsbG8gd29ybGQ=",
+	}
+	if diff := cmp.Diff(wantBinaryData, m.BinaryData); diff != "" {
+		t.Errorf("binaryData mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestParse_ConfigNoIgnoredFields(t *testing.T) {
+	// Config uses data/binaryData at top level — these should NOT be ignored fields.
+	manifests, err := Parse([]byte(`
+version: v1
+kind: Config
+metadata:
+  name: test
+data:
+  KEY: value
+`))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if len(manifests[0].IgnoredFields) != 0 {
+		t.Errorf("expected no ignored fields, got %v", manifests[0].IgnoredFields)
+	}
+}
+
 func mustDocument(t *testing.T, manifest string) *yaml.Node {
 	t.Helper()
 	docs, err := Documents([]byte(manifest))

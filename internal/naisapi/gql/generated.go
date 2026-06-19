@@ -761,6 +761,45 @@ func (v *CreateConfigResponse) GetCreateConfig() CreateConfigCreateConfigCreateC
 	return v.CreateConfig
 }
 
+// CreateConfigWithValuesCreateConfigCreateConfigPayload includes the requested fields of the GraphQL type CreateConfigPayload.
+type CreateConfigWithValuesCreateConfigCreateConfigPayload struct {
+	// The created config.
+	Config CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig `json:"config"`
+}
+
+// GetConfig returns CreateConfigWithValuesCreateConfigCreateConfigPayload.Config, and is useful for accessing the field via an interface.
+func (v *CreateConfigWithValuesCreateConfigCreateConfigPayload) GetConfig() CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig {
+	return v.Config
+}
+
+// CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig) GetId() string { return v.Id }
+
+// GetName returns CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig) GetName() string { return v.Name }
+
+// CreateConfigWithValuesResponse is returned by CreateConfigWithValues on success.
+type CreateConfigWithValuesResponse struct {
+	// Create a new config.
+	CreateConfig CreateConfigWithValuesCreateConfigCreateConfigPayload `json:"createConfig"`
+}
+
+// GetCreateConfig returns CreateConfigWithValuesResponse.CreateConfig, and is useful for accessing the field via an interface.
+func (v *CreateConfigWithValuesResponse) GetCreateConfig() CreateConfigWithValuesCreateConfigCreateConfigPayload {
+	return v.CreateConfig
+}
+
 // CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload includes the requested fields of the GraphQL type CreateKafkaCredentialsPayload.
 type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload struct {
 	// The generated credentials.
@@ -32309,6 +32348,45 @@ func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetNa
 	return v.Name
 }
 
+// UpdateConfigWithValuesResponse is returned by UpdateConfigWithValues on success.
+type UpdateConfigWithValuesResponse struct {
+	// Update the user-defined labels of a config.
+	UpdateConfig UpdateConfigWithValuesUpdateConfigUpdateConfigPayload `json:"updateConfig"`
+}
+
+// GetUpdateConfig returns UpdateConfigWithValuesResponse.UpdateConfig, and is useful for accessing the field via an interface.
+func (v *UpdateConfigWithValuesResponse) GetUpdateConfig() UpdateConfigWithValuesUpdateConfigUpdateConfigPayload {
+	return v.UpdateConfig
+}
+
+// UpdateConfigWithValuesUpdateConfigUpdateConfigPayload includes the requested fields of the GraphQL type UpdateConfigPayload.
+type UpdateConfigWithValuesUpdateConfigUpdateConfigPayload struct {
+	// The updated config.
+	Config UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig `json:"config"`
+}
+
+// GetConfig returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayload.Config, and is useful for accessing the field via an interface.
+func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayload) GetConfig() UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig {
+	return v.Config
+}
+
+// UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig struct {
+	// The globally unique ID of the config.
+	Id string `json:"id"`
+	// The name of the config.
+	Name string `json:"name"`
+}
+
+// GetId returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig.Id, and is useful for accessing the field via an interface.
+func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetId() string { return v.Id }
+
+// GetName returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
+func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetName() string { return v.Name }
+
 // UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
 type UpdateOpenSearchResponse struct {
 	// Update an existing OpenSearch instance.
@@ -33019,6 +33097,30 @@ func (v *__CreateConfigInput) GetEnvironmentName() string { return v.Environment
 
 // GetTeamSlug returns __CreateConfigInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__CreateConfigInput) GetTeamSlug() string { return v.TeamSlug }
+
+// __CreateConfigWithValuesInput is used internally by genqlient
+type __CreateConfigWithValuesInput struct {
+	Name            string               `json:"name"`
+	EnvironmentName string               `json:"environmentName"`
+	TeamSlug        string               `json:"teamSlug"`
+	Values          []ConfigValueInput   `json:"values"`
+	Labels          []ResourceLabelInput `json:"labels"`
+}
+
+// GetName returns __CreateConfigWithValuesInput.Name, and is useful for accessing the field via an interface.
+func (v *__CreateConfigWithValuesInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __CreateConfigWithValuesInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__CreateConfigWithValuesInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __CreateConfigWithValuesInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__CreateConfigWithValuesInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetValues returns __CreateConfigWithValuesInput.Values, and is useful for accessing the field via an interface.
+func (v *__CreateConfigWithValuesInput) GetValues() []ConfigValueInput { return v.Values }
+
+// GetLabels returns __CreateConfigWithValuesInput.Labels, and is useful for accessing the field via an interface.
+func (v *__CreateConfigWithValuesInput) GetLabels() []ResourceLabelInput { return v.Labels }
 
 // __CreateKafkaCredentialsInput is used internally by genqlient
 type __CreateKafkaCredentialsInput struct {
@@ -33984,6 +34086,30 @@ func (v *__UpdateConfigValueInput) GetTeamSlug() string { return v.TeamSlug }
 // GetValue returns __UpdateConfigValueInput.Value, and is useful for accessing the field via an interface.
 func (v *__UpdateConfigValueInput) GetValue() ConfigValueInput { return v.Value }
 
+// __UpdateConfigWithValuesInput is used internally by genqlient
+type __UpdateConfigWithValuesInput struct {
+	Name            string               `json:"name"`
+	EnvironmentName string               `json:"environmentName"`
+	TeamSlug        string               `json:"teamSlug"`
+	Values          []ConfigValueInput   `json:"values"`
+	Labels          []ResourceLabelInput `json:"labels"`
+}
+
+// GetName returns __UpdateConfigWithValuesInput.Name, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigWithValuesInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns __UpdateConfigWithValuesInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigWithValuesInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns __UpdateConfigWithValuesInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigWithValuesInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetValues returns __UpdateConfigWithValuesInput.Values, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigWithValuesInput) GetValues() []ConfigValueInput { return v.Values }
+
+// GetLabels returns __UpdateConfigWithValuesInput.Labels, and is useful for accessing the field via an interface.
+func (v *__UpdateConfigWithValuesInput) GetLabels() []ResourceLabelInput { return v.Labels }
+
 // __UpdateOpenSearchInput is used internally by genqlient
 type __UpdateOpenSearchInput struct {
 	Name            string                 `json:"name,omitempty"`
@@ -34312,6 +34438,51 @@ func CreateConfig(
 	}
 
 	data_ = &CreateConfigResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by CreateConfigWithValues.
+const CreateConfigWithValues_Operation = `
+mutation CreateConfigWithValues ($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
+	createConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,values:$values,labels:$labels}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func CreateConfigWithValues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	values []ConfigValueInput,
+	labels []ResourceLabelInput,
+) (data_ *CreateConfigWithValuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateConfigWithValues",
+		Query:  CreateConfigWithValues_Operation,
+		Variables: &__CreateConfigWithValuesInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Values:          values,
+			Labels:          labels,
+		},
+	}
+
+	data_ = &CreateConfigWithValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -37612,6 +37783,51 @@ func UpdateConfigValue(
 	}
 
 	data_ = &UpdateConfigValueResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateConfigWithValues.
+const UpdateConfigWithValues_Operation = `
+mutation UpdateConfigWithValues ($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
+	updateConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,values:$values,labels:$labels}) {
+		config {
+			id
+			name
+		}
+	}
+}
+`
+
+func UpdateConfigWithValues(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	name string,
+	environmentName string,
+	teamSlug string,
+	values []ConfigValueInput,
+	labels []ResourceLabelInput,
+) (data_ *UpdateConfigWithValuesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateConfigWithValues",
+		Query:  UpdateConfigWithValues_Operation,
+		Variables: &__UpdateConfigWithValuesInput{
+			Name:            name,
+			EnvironmentName: environmentName,
+			TeamSlug:        teamSlug,
+			Values:          values,
+			Labels:          labels,
+		},
+	}
+
+	data_ = &UpdateConfigWithValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

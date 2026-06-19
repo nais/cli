@@ -19,7 +19,7 @@ var allowedVersions = map[string]struct{}{
 // allowedTopLevel and allowedMetadata are the only fields a stripped manifest may
 // contain; anything else is reported as an ignored field.
 var (
-	allowedTopLevel = map[string]struct{}{"version": {}, "kind": {}, "metadata": {}, "spec": {}}
+	allowedTopLevel = map[string]struct{}{"version": {}, "kind": {}, "metadata": {}, "spec": {}, "data": {}, "binaryData": {}}
 	allowedMetadata = map[string]struct{}{"name": {}, "labels": {}}
 )
 
@@ -31,6 +31,11 @@ type Manifest struct {
 	Name    string
 	Labels  map[string]string
 	Spec    yaml.Node
+
+	// Data holds top-level key-value data for resources that use data/binaryData
+	// instead of spec (e.g. Config).
+	Data       map[string]string
+	BinaryData map[string]string
 
 	// IgnoredFields are envelope fields that are not part of the nais-native
 	// format (e.g. "metadata.namespace").
@@ -80,7 +85,9 @@ func ParseManifest(root *yaml.Node) (Manifest, error) {
 			Name   string            `yaml:"name"`
 			Labels map[string]string `yaml:"labels,omitempty"`
 		} `yaml:"metadata"`
-		Spec yaml.Node `yaml:"spec"`
+		Spec       yaml.Node         `yaml:"spec"`
+		Data       map[string]string `yaml:"data,omitempty"`
+		BinaryData map[string]string `yaml:"binaryData,omitempty"`
 	}
 	if err := root.Decode(&raw); err != nil {
 		return Manifest{}, fmt.Errorf("failed to decode manifest: %w", err)
@@ -105,6 +112,8 @@ func ParseManifest(root *yaml.Node) (Manifest, error) {
 		Name:          raw.Metadata.Name,
 		Spec:          raw.Spec,
 		Labels:        raw.Metadata.Labels,
+		Data:          raw.Data,
+		BinaryData:    raw.BinaryData,
 		IgnoredFields: ignoredFields(root),
 	}, nil
 }
