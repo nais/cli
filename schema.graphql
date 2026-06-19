@@ -2509,6 +2509,8 @@ input CreateConfigInput {
 	name: String!
 	environmentName: String!
 	teamSlug: Slug!
+	labels: [ResourceLabelInput!]
+	values: [ConfigValueInput!]
 }
 
 type CreateConfigPayload {
@@ -12063,7 +12065,8 @@ input UpdateConfigInput {
 	name: String!
 	environmentName: String!
 	teamSlug: Slug!
-	labels: [ResourceLabelInput!]!
+	labels: [ResourceLabelInput!]
+	values: [ConfigValueInput!]
 }
 
 type UpdateConfigPayload {

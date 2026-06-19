@@ -6,7 +6,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/valkey"
-	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -63,9 +62,9 @@ var (
 	}
 )
 
-func (v valkeyResource) Apply(ctx context.Context, meta Metadata, spec *yaml.Node) (Action, error) {
+func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (Action, error) {
 	var s valkeySpec
-	if err := decodeSpec(spec, &s); err != nil {
+	if err := decodeSpec(&m.Spec, &s); err != nil {
 		return "", err
 	}
 

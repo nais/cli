@@ -44,6 +44,9 @@ func TestForManifest(t *testing.T) {
 		"opensearch v1 resolves to a mutation": {
 			kind: "OpenSearch", version: "v1", wantFound: true, wantApplier: true, wantWaiter: false,
 		},
+		"config v1 resolves to a mutation": {
+			kind: "Config", version: "v1", wantFound: true, wantApplier: true, wantWaiter: false,
+		},
 		"application is not handled as a stripped manifest": {
 			kind: "Application", version: "v1", wantFound: false,
 		},

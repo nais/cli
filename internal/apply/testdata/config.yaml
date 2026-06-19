@@ -1,0 +1,10 @@
+version: v1
+kind: Config
+metadata:
+  name: my-backend-config
+data:
+  DATABASE_HOST: db.example.com
+  LOG_LEVEL: info
+  PORT: "8080"
+binaryData:
+  keystore.p12: aGVsbG8gd29ybGQ=
