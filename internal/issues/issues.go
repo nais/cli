@@ -64,18 +64,6 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 				__typename
 			  }
 			}
-			... on FailedSynchronizationIssue {
-			  workload {
-				name
-				__typename
-			  }
-			}
-			... on InvalidSpecIssue {
-			  workload {
-				name
-				__typename
-			  }
-			}
 			... on LastRunFailedIssue {
 			  job {
 				name
@@ -130,6 +118,12 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 				__typename
 			  }
 			}
+			... on WorkloadProblemIssue {
+			  workload {
+				name
+				__typename
+			  }
+			}
 		  }
 		}
 	  }
@@ -172,10 +166,6 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			i.ResourceType = c.Application.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue:
 			setWorkloadResource(c.GetWorkload())
-		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
-			setWorkloadResource(c.GetWorkload())
-		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue:
-			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue:
 			i.ResourceName = c.Job.GetName()
 			i.ResourceType = c.Job.GetTypename()
@@ -201,6 +191,8 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+			setWorkloadResource(c.GetWorkload())
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesWorkloadProblemIssue:
 			setWorkloadResource(c.GetWorkload())
 		}
 		ret = append(ret, i)
