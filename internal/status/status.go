@@ -17,16 +17,7 @@ func GetStatus(ctx context.Context, _ *flag.Status) ([]gql.TeamStatusMeUserTeams
 						nodes {
 							team {
 								slug
-								workloads(first: 500) {
-									nodes {
-										__typename
-										name
-										teamEnvironment { environment { name } }
-										issues(first: 100, filter: { severity: CRITICAL }) {
-											nodes { __typename }
-											pageInfo { totalCount }
-										}
-									}
+								workloads(first: 1) {
 									pageInfo { totalCount }
 								}
 							}

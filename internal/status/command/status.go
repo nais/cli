@@ -3,11 +3,10 @@ package command
 import (
 	"context"
 	"fmt"
-	"maps"
-	"slices"
 	"strings"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/issues"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/status"
@@ -20,7 +19,7 @@ type workload struct {
 	Kind        string   `json:"kind"`
 	Name        string   `json:"name"`
 	Environment string   `json:"environment"`
-	ErrorTypes  []string `json:"errorType"`
+	Messages    []string `json:"messages"`
 }
 
 type workloadsWithIssues []workload
@@ -30,14 +29,14 @@ func (f workloadsWithIssues) String() string {
 		return "No issues detected"
 	}
 
-	var issues strings.Builder
-	_, _ = fmt.Fprintf(&issues, "%v workloads with issues\n\n", len(f))
+	var b strings.Builder
+	_, _ = fmt.Fprintf(&b, "%v workloads with issues\n\n", len(f))
 	for _, w := range f {
-		_, _ = fmt.Fprintf(&issues, "%s (%s): %s\n", w.Kind, w.Environment, w.Name)
-		_, _ = fmt.Fprintf(&issues, "%s\n\n", formatErrorTypes(w.ErrorTypes))
+		_, _ = fmt.Fprintf(&b, "%s (%s): %s\n", w.Kind, w.Environment, w.Name)
+		_, _ = fmt.Fprintf(&b, "%s\n\n", strings.Join(w.Messages, "\n"))
 	}
 
-	return strings.TrimRight(issues.String(), "\n")
+	return strings.TrimRight(b.String(), "\n")
 }
 
 type statusEntry struct {
@@ -65,13 +64,29 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 				return err
 			}
 
+			critical := gql.SeverityCritical
 			var entries []statusEntry
 			for _, t := range ret {
-				workloadsWithCriticalIssues := make([]gql.TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeamWorkloadsWorkloadConnectionNodesWorkload, 0)
-				for _, w := range t.Team.Workloads.Nodes {
-					if w.GetIssues().PageInfo.TotalCount > 0 {
-						workloadsWithCriticalIssues = append(workloadsWithCriticalIssues, w)
+				teamIssues, err := issues.GetAll(ctx, t.Team.Slug, gql.IssueFilter{Severity: critical})
+				if err != nil {
+					return err
+				}
+
+				// Group issues by resource (name + environment).
+				type resourceKey struct{ name, env string }
+				resourceMap := make(map[resourceKey]*workload)
+				var resourceOrder []resourceKey
+				for _, issue := range teamIssues {
+					key := resourceKey{issue.ResourceName, issue.Environment}
+					if _, ok := resourceMap[key]; !ok {
+						resourceMap[key] = &workload{
+							Kind:        issue.ResourceType,
+							Name:        issue.ResourceName,
+							Environment: issue.Environment,
+						}
+						resourceOrder = append(resourceOrder, key)
 					}
+					resourceMap[key].Messages = append(resourceMap[key].Messages, issue.Message)
 				}
 
 				n := statusEntry{
@@ -80,19 +95,11 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 						URL:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
 					},
 					Workloads: t.Team.Workloads.PageInfo.TotalCount,
-					NotNais:   len(workloadsWithCriticalIssues),
-					Issues:    make(workloadsWithIssues, 0),
+					NotNais:   len(resourceMap),
+					Issues:    make(workloadsWithIssues, 0, len(resourceOrder)),
 				}
-				for _, f := range workloadsWithCriticalIssues {
-					a := workload{
-						Kind:        f.GetTypename(),
-						Name:        f.GetName(),
-						Environment: f.GetTeamEnvironment().Environment.Name,
-					}
-					for _, et := range f.GetIssues().Nodes {
-						a.ErrorTypes = append(a.ErrorTypes, et.GetTypename())
-					}
-					n.Issues = append(n.Issues, a)
+				for _, key := range resourceOrder {
+					n.Issues = append(n.Issues, *resourceMap[key])
 				}
 				entries = append(entries, n)
 			}
@@ -109,30 +116,4 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			return out.Table().Render(entries)
 		},
 	}
-}
-
-func formatErrorTypes(errorTypes []string) string {
-	if len(errorTypes) == 0 {
-		return "Unknown failure"
-	}
-
-	texts := map[string]string{}
-	for _, et := range errorTypes {
-		switch et {
-		case "WorkloadStatusNoRunningInstances":
-			texts[et] = "No running instances"
-		case "WorkloadStatusVulnerable":
-			texts[et] = "Vulnerabilities detected"
-		case "WorkloadStatusFailedRun":
-			texts[et] = "Failed job run"
-		default:
-			texts[et] = et
-		}
-	}
-
-	vals := maps.Values(texts)
-	ret := slices.Collect(vals)
-	slices.Sort(ret)
-
-	return strings.Join(ret, "\n")
 }
