@@ -13,6 +13,7 @@ The Nais CLI (`nais`) is a command-line tool for interacting with the [Nais plat
 
 ```bash
 brew tap nais/tap
+brew trust nais/tap
 brew install nais
 ```
 
