@@ -68,7 +68,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 				continue
 			}
 
-			if err := ensureWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
+			if err := resolveWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
 				errs = append(errs, err.Error())
 				continue
 			}
@@ -128,7 +128,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 			continue
 		}
 
-		if err := ensureWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
+		if err := resolveWorkloadImage(ctx, &crd, flags.Team, environment, out); err != nil {
 			errs = append(errs, err.Error())
 			continue
 		}
@@ -274,11 +274,12 @@ var workloadKinds = map[string]bool{
 	"Naisjob":     true,
 }
 
-// ensureWorkloadImage checks whether an Application or Naisjob CRD has spec.image
+// resolveWorkloadImage checks whether an Application or Naisjob CRD has spec.image
 // set. When it is missing, the current image is fetched from the cluster and
-// injected into the manifest. An error is returned when the image cannot be
-// resolved (e.g. the workload does not exist in the cluster yet).
-func ensureWorkloadImage(ctx context.Context, crd *unstructured.Unstructured, team, environment string, out *naistrix.OutputWriter) error {
+// injected into the manifest. When the image cannot be resolved (e.g. the
+// workload does not exist in the cluster yet), a warning is emitted and the
+// manifest is applied without spec.image.
+func resolveWorkloadImage(ctx context.Context, crd *unstructured.Unstructured, team, environment string, out *naistrix.OutputWriter) error {
 	kind := crd.GetKind()
 	if !workloadKinds[kind] {
 		return nil
@@ -292,11 +293,12 @@ func ensureWorkloadImage(ctx context.Context, crd *unstructured.Unstructured, te
 	name := crd.GetName()
 	image, err := getWorkloadImage(ctx, team, environment, name, kind)
 	if err != nil {
-		return fmt.Errorf(
-			"%s/%s is missing spec.image and the current image could not be fetched from the cluster: %w\n"+
-				"Set the image in the manifest or pass --set spec.image=<image>",
+		out.Printf(
+			"warning: %s/%s is missing spec.image and the current image could not be fetched from the cluster: %v\n"+
+				"The workload will not run without an image. Set spec.image in the manifest or pass --set spec.image=<image>.\n",
 			kind, name, err,
 		)
+		return nil
 	}
 
 	if err := unstructured.SetNestedField(crd.Object, image.String(), "spec", "image"); err != nil {
