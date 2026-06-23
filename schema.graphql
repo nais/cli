@@ -728,10 +728,6 @@ The team that owns the application.
 """
 	team: Team!
 """
-The environment the application is deployed in.
-"""
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-"""
 The team environment for the application.
 """
 	teamEnvironment: TeamEnvironment!
@@ -1562,7 +1558,6 @@ type BigQueryDataset implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	cascadingDelete: Boolean!
 	description: String
@@ -1698,7 +1693,6 @@ type Bucket implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	cascadingDelete: Boolean!
 	publicAccessPrevention: String!
@@ -3442,12 +3436,15 @@ interface ExternalNetworkPolicyTarget {
 	ports: [Int!]!
 }
 
+"""
+Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+"""
 type FailedSynchronizationIssue implements Issue & Node{
-	id: ID!
-	teamEnvironment: TeamEnvironment!
-	severity: Severity!
-	message: String!
-	workload: Workload!
+	id: ID! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	teamEnvironment: TeamEnvironment! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	severity: Severity! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	message: String! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	workload: Workload! @deprecated(reason: "Use WorkloadProblemIssue instead.")
 }
 
 type FeatureKafka implements Node{
@@ -4072,12 +4069,15 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 """
 scalar Int
 
+"""
+Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+"""
 type InvalidSpecIssue implements Issue & Node{
-	id: ID!
-	teamEnvironment: TeamEnvironment!
-	severity: Severity!
-	message: String!
-	workload: Workload!
+	id: ID! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	teamEnvironment: TeamEnvironment! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	severity: Severity! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	message: String! @deprecated(reason: "Use WorkloadProblemIssue instead.")
+	workload: Workload! @deprecated(reason: "Use WorkloadProblemIssue instead.")
 }
 
 interface Issue {
@@ -4158,8 +4158,12 @@ enum IssueType {
 	DEPRECATED_REGISTRY
 	NO_RUNNING_INSTANCES
 	LAST_RUN_FAILED
-	FAILED_SYNCHRONIZATION
-	INVALID_SPEC
+"""
+Raised when the platform reports a problem in a workload, such as an invalid spec, a failed synchronization or a deprecation.
+"""
+	WORKLOAD_PROBLEM
+	FAILED_SYNCHRONIZATION @deprecated(reason: "Use WORKLOAD_PROBLEM instead.")
+	INVALID_SPEC @deprecated(reason: "Use WORKLOAD_PROBLEM instead.")
 	MISSING_SBOM
 	VULNERABLE_IMAGE
 	EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
@@ -4183,10 +4187,6 @@ The name of the job.
 The team that owns the job.
 """
 	team: Team!
-"""
-The environment the job is deployed in.
-"""
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The team environment for the job.
 """
@@ -5007,7 +5007,6 @@ type KafkaTopic implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	acl(
 		first: Int
@@ -5899,7 +5898,6 @@ type OpenSearch implements Persistence & Node & ActivityLogger{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	terminationProtection: Boolean!
 	state: OpenSearchState!
@@ -6448,7 +6446,6 @@ interface Persistence {
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment!
 	teamEnvironment: TeamEnvironment!
 	labels: [ResourceLabel!]!
 }
@@ -6536,7 +6533,6 @@ type PostgresInstance implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 """
 Workloads that reference the Postgres instance.
@@ -8001,10 +7997,6 @@ Search filter for filtering search results.
 """
 Search filter for filtering search results.
 """
-	type: SearchType
-"""
-Search filter for filtering search results.
-"""
 	types: [SearchType!]
 """
 Search filter for filtering search results.
@@ -8083,10 +8075,6 @@ The globally unique ID of the secret.
 The name of the secret.
 """
 	name: String!
-"""
-The environment the secret exists in.
-"""
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 """
 The environment the secret exists in.
 """
@@ -9384,7 +9372,6 @@ type SqlDatabase implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	charset: String
 	collation: String
@@ -9400,7 +9387,6 @@ type SqlInstance implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 	workload: Workload
 	cascadingDelete: Boolean!
@@ -11465,10 +11451,6 @@ The current resource usage.
 """
 The environment for the utilization data.
 """
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
-"""
-The environment for the utilization data.
-"""
 	teamEnvironment: TeamEnvironment!
 }
 
@@ -11538,10 +11520,6 @@ input TeamVulnerabilitySummaryFilter {
 Input for filtering team vulnerability summaries.
 """
 	environmentName: String
-"""
-Input for filtering team vulnerability summaries.
-"""
-	environments: [String!]
 }
 
 """
@@ -12594,7 +12572,6 @@ type Valkey implements Persistence & Node & ActivityLogger{
 	name: String!
 	terminationProtection: Boolean!
 	team: Team!
-	environment: TeamEnvironment! @deprecated(reason: "Use the `teamEnvironment` field instead.")
 	teamEnvironment: TeamEnvironment!
 """
 User-defined labels attached to the instance.
@@ -13358,10 +13335,6 @@ Interface for workloads.
 """
 Interface for workloads.
 """
-	environment: TeamEnvironment!
-"""
-Interface for workloads.
-"""
 	teamEnvironment: TeamEnvironment!
 """
 Interface for workloads.
@@ -13689,6 +13662,47 @@ Order by whether the workload has a software bill of materials (SBOM)
 Order by the last time the vulnerabilities were scanned.
 """
 	VULNERABILITY_LAST_SCANNED
+}
+
+"""
+An issue surfacing a problem reported by the platform in a workload's status.
+"""
+type WorkloadProblemIssue implements Issue & Node{
+	id: ID!
+	teamEnvironment: TeamEnvironment!
+	severity: Severity!
+	message: String!
+	workload: Workload!
+"""
+The kind of problem as reported by the platform.
+"""
+	problemType: WorkloadProblemType!
+"""
+The workload manifest field path that triggered the problem (for example `image`), if known.
+"""
+	source: String
+"""
+For deprecations, the end-of-life date, if known.
+"""
+	endOfLife: Date
+}
+
+"""
+The kind of a problem reported by the platform for a workload.
+"""
+enum WorkloadProblemType {
+"""
+A permanent error that prevents the workload from being deployed, e.g. an invalid spec or a failed synchronization.
+"""
+	ERROR
+"""
+A warning about something that might be wrongly configured.
+"""
+	WARNING
+"""
+A feature in use that will be changed or removed in the future.
+"""
+	DEPRECATION
 }
 
 """
