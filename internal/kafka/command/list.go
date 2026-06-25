@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/kafka/command/flag"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
@@ -20,7 +21,12 @@ func list(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "Shows all Kafka topics owned by the team. Use --environment to filter by environment.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := kafka.GetTeamTopics(ctx, flags.Team, string(flags.Environment))
+			labelFilters, err := labels.ParseFilters(flags.Labels)
+			if err != nil {
+				return err
+			}
+
+			ret, err := kafka.GetTeamTopics(ctx, flags.Team, string(flags.Environment), labelFilters)
 			if err != nil {
 				return err
 			}

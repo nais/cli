@@ -58,7 +58,7 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 
 // ConfigEnvironments returns the environments where a config with the given name exists.
 func ConfigEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug)
+	all, err := GetAll(ctx, teamSlug, gql.ConfigFilter{Name: name})
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func ConfigEnvironments(ctx context.Context, teamSlug, name string) ([]string, e
 }
 
 // GetAll retrieves all configs for a team.
-func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllConfigsTeamConfigsConfigConnectionNodesConfig, error) {
+func GetAll(ctx context.Context, teamSlug string, filter gql.ConfigFilter) ([]gql.GetAllConfigsTeamConfigsConfigConnectionNodesConfig, error) {
 	_ = `# @genqlient
-		query GetAllConfigs($teamSlug: Slug!) {
+		query GetAllConfigs($teamSlug: Slug!, $filter: ConfigFilter) {
 		  team(slug: $teamSlug) {
-			configs(first: 1000, orderBy: {field: NAME, direction: ASC}) {
+			configs(first: 1000, orderBy: {field: NAME, direction: ASC}, filter: $filter) {
 			  nodes {
 				name
 				values {
@@ -110,7 +110,7 @@ func GetAll(ctx context.Context, teamSlug string) ([]gql.GetAllConfigsTeamConfig
 		return nil, err
 	}
 
-	resp, err := gql.GetAllConfigs(ctx, client, teamSlug)
+	resp, err := gql.GetAllConfigs(ctx, client, teamSlug, filter)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
@@ -20,7 +21,12 @@ func list(parentFlags *flag.Job) *naistrix.Command {
 		Description: "Shows all jobs for the team with their schedule, last run status, state, and issue count. Use --environment to filter by environment.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			ret, err := job.GetTeamJobs(ctx, flags.Team, string(flags.Environment))
+			labelFilters, err := labels.ParseFilters(flags.Labels)
+			if err != nil {
+				return err
+			}
+
+			ret, err := job.GetTeamJobs(ctx, flags.Team, string(flags.Environment), labelFilters)
 			if err != nil {
 				return err
 			}

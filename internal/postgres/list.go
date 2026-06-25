@@ -57,11 +57,11 @@ func (s State) String() string {
 	return "<info>Unknown</info>"
 }
 
-func GetTeamPostgresInstances(ctx context.Context, team string, environments []string) ([]Instance, error) {
+func GetTeamPostgresInstances(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]Instance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgresInstances($team: Slug!) {
+		query GetTeamPostgresInstances($team: Slug!, $postgresFilter: PostgresInstanceFilter, $sqlFilter: SqlInstanceFilter) {
 			team(slug: $team) {
-				postgresInstances(first: 1000) {
+				postgresInstances(first: 1000, filter: $postgresFilter) {
 					nodes {
 						name
 						teamEnvironment {
@@ -77,7 +77,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 						state
 					}
 				}
-				sqlInstances(first: 1000) {
+				sqlInstances(first: 1000, filter: $sqlFilter) {
 					nodes {
 						name
 						teamEnvironment {
@@ -103,7 +103,15 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		return nil, err
 	}
 
-	resp, err := gql.GetTeamPostgresInstances(ctx, client, team)
+	postgresFilter := gql.PostgresInstanceFilter{
+		Environments: environments,
+		Labels:       labelFilters,
+	}
+	sqlFilter := gql.SqlInstanceFilter{
+		Labels: labelFilters,
+	}
+
+	resp, err := gql.GetTeamPostgresInstances(ctx, client, team, postgresFilter, sqlFilter)
 	if err != nil {
 		return nil, err
 	}

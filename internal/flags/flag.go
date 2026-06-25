@@ -19,6 +19,14 @@ func (a *AdditionalFlags) HasTeam() bool {
 	return a != nil && a.Team != ""
 }
 
+// GetTeam returns the team value, or an empty string if the receiver is nil.
+func (a *AdditionalFlags) GetTeam() string {
+	if a == nil {
+		return ""
+	}
+	return a.Team
+}
+
 // HasEnvironment returns true if the value is not nil and that the [AdditionalFlags.Environment] field is not empty.
 func (a *AdditionalFlags) HasEnvironment() bool {
 	return a != nil && a.Environment != ""

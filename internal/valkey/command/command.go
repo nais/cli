@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
@@ -63,7 +64,12 @@ func autoCompleteValkeyNames(ctx context.Context, team, environment string, requ
 		return nil, "Please provide environment to auto-complete Valkey instance names. '-e, --environment <environment>' flag."
 	}
 
-	instances, err := valkey.GetAll(ctx, team)
+	filter := gql.ValkeyFilter{}
+	if environment != "" {
+		filter.Environments = []string{environment}
+	}
+
+	instances, err := valkey.GetAll(ctx, team, filter)
 	if err != nil {
 		return nil, "Unable to fetch Valkey instances."
 	}

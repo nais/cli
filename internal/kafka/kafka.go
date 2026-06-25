@@ -13,11 +13,11 @@ type Topic struct {
 	Environment string `json:"environment"`
 }
 
-func GetTeamTopics(ctx context.Context, team string, environment string) ([]Topic, error) {
+func GetTeamTopics(ctx context.Context, team string, environment string, labels []gql.LabelFilter) ([]Topic, error) {
 	_ = `# @genqlient
-		query GetTeamKafkaTopics($team: Slug!) {
+		query GetTeamKafkaTopics($team: Slug!, $filter: KafkaTopicFilter) {
 			team(slug: $team) {
-				kafkaTopics(first: 1000) {
+				kafkaTopics(first: 1000, filter: $filter) {
 					nodes {
 						name
 						teamEnvironment {
@@ -36,7 +36,15 @@ func GetTeamTopics(ctx context.Context, team string, environment string) ([]Topi
 		return nil, err
 	}
 
-	resp, err := gql.GetTeamKafkaTopics(ctx, client, team)
+	filter := gql.KafkaTopicFilter{}
+	if environment != "" {
+		filter.Environments = []string{environment}
+	}
+	if len(labels) > 0 {
+		filter.Labels = labels
+	}
+
+	resp, err := gql.GetTeamKafkaTopics(ctx, client, team, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +52,6 @@ func GetTeamTopics(ctx context.Context, team string, environment string) ([]Topi
 	ret := make([]Topic, 0, len(resp.Team.KafkaTopics.Nodes))
 	for _, topic := range resp.Team.KafkaTopics.Nodes {
 		env := topic.TeamEnvironment.Environment.Name
-		if len(environment) > 0 && environment != env {
-			continue
-		}
 
 		ret = append(ret, Topic{
 			Name:        topic.Name,

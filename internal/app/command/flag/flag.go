@@ -8,6 +8,7 @@ import (
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
@@ -60,7 +61,10 @@ type Issues struct {
 }
 type List struct {
 	*App
+	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
+
+func (*List) LabelFacetResource() string { return "applications" }
 
 type Activity struct {
 	*App
@@ -91,6 +95,19 @@ type Status struct {
 
 type EnvVars struct {
 	*App
+}
+
+type Labels struct {
+	*App
+}
+
+type LabelsList struct {
+	*Labels
+}
+
+type LabelsSet struct {
+	*Labels
+	LabelSet labels.LabelFilters `name:"label" short:"l" usage:"Set label in |KEY=VALUE| form. Can be repeated."`
 }
 
 type Files struct {
