@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/nais/cli/internal/alpha/command/flag"
-	apply "github.com/nais/cli/internal/apply/command"
 	"github.com/nais/cli/internal/flags"
 	krakend "github.com/nais/cli/internal/krakend/command"
 	mcpcmd "github.com/nais/cli/internal/mcp/command"
@@ -17,7 +16,6 @@ func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Description: "These commands are usually fully functional and ready to use, but the API might evolve based on your feedback.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
-			apply.Apply(flags),
 			krakend.Krakend(flags),
 			mcpcmd.MCP(flags),
 		},
