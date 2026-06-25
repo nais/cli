@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -31,9 +32,35 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		return err
 	}
 
-	data, err := render(filePath, string(flags.Mixin), environment, flags.Set, out)
+	isDir, err := isDirectory(filePath)
 	if err != nil {
 		return err
+	}
+
+	if isDir {
+		if len(flags.Set) > 0 {
+			return fmt.Errorf("--set cannot be used when applying a directory (ambiguous target manifest)")
+		}
+		if flags.Mixin != "" {
+			return fmt.Errorf("--mixin cannot be used when applying a directory (mixins are auto-loaded per file)")
+		}
+	}
+
+	var data []byte
+	if isDir {
+		envs, err := naisapi.GetAllEnvironments(ctx)
+		if err != nil {
+			out.Warnf("unable to fetch environment list: %v; mixin files will be identified heuristically\n", err)
+		}
+		data, err = renderDir(filePath, environment, envs, out)
+		if err != nil {
+			return err
+		}
+	} else {
+		data, err = render(filePath, string(flags.Mixin), environment, flags.Set, out)
+		if err != nil {
+			return err
+		}
 	}
 
 	docs, err := resource.Documents(data)
@@ -43,6 +70,10 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 	if len(docs) == 0 {
 		return fmt.Errorf("no resources found in %s", filePath)
 	}
+
+	// Sort documents so workloads (Application, Naisjob) are applied last,
+	// ensuring their dependencies (e.g. Config, Valkey, OpenSearch) exist first.
+	sortDocsWorkloadsLast(docs)
 
 	var (
 		crds        []unstructured.Unstructured
@@ -339,4 +370,45 @@ func printDryRunYAML(doc *yaml.Node, out *naistrix.OutputWriter) {
 	if len(rendered) == 0 || rendered[len(rendered)-1] != '\n' {
 		out.Printf("\n")
 	}
+}
+
+// isDirectory reports whether the given path is a directory.
+func isDirectory(path string) (bool, error) {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return false, fmt.Errorf("failed to stat %s: %w", path, err)
+	}
+	return fi.IsDir(), nil
+}
+
+// sortDocsWorkloadsLast reorders documents so that workload kinds (Application,
+// Naisjob) appear after all other resources. This ensures dependencies like
+// Config, Valkey, and OpenSearch are created before the workloads that reference
+// them.
+func sortDocsWorkloadsLast(docs []*yaml.Node) {
+	sort.SliceStable(docs, func(i, j int) bool {
+		iIsWorkload := isWorkloadDoc(docs[i])
+		jIsWorkload := isWorkloadDoc(docs[j])
+		// Non-workloads before workloads; preserve relative order otherwise.
+		return !iIsWorkload && jIsWorkload
+	})
+}
+
+// isWorkloadDoc checks if a YAML document node represents a workload kind.
+func isWorkloadDoc(doc *yaml.Node) bool {
+	kind := docKind(doc)
+	return workloadKinds[kind]
+}
+
+// docKind extracts the "kind" value from a YAML mapping node.
+func docKind(doc *yaml.Node) string {
+	if doc.Kind != yaml.MappingNode {
+		return ""
+	}
+	for i := 0; i+1 < len(doc.Content); i += 2 {
+		if doc.Content[i].Value == "kind" {
+			return doc.Content[i+1].Value
+		}
+	}
+	return ""
 }
