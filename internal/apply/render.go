@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/nais/naistrix"
@@ -141,4 +142,113 @@ func decodeSingleDocument(data []byte, path string) (map[string]any, error) {
 	}
 
 	return doc, nil
+}
+
+// renderDir collects all YAML base files in a directory (excluding mixin files),
+// renders each with its environment-specific mixin (if present), and returns the
+// concatenated YAML output.
+//
+// knownEnvs is an optional list of known Nais environment names used to identify
+// mixin files: a file "<base>.<env>.yaml" is treated as a mixin when the
+// corresponding base file exists and env is a known environment. When knownEnvs
+// is empty or nil, any "<base>.<suffix>.yaml" file with a matching base is
+// treated as a mixin (heuristic fallback).
+func renderDir(dirPath, environment string, knownEnvs []string, out *naistrix.OutputWriter) ([]byte, error) {
+	entries, err := os.ReadDir(dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory %s: %w", dirPath, err)
+	}
+
+	// Collect all YAML files and identify which are mixins.
+	var yamlFiles []string
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		ext := filepath.Ext(name)
+		if ext != ".yaml" && ext != ".yml" {
+			continue
+		}
+		yamlFiles = append(yamlFiles, name)
+	}
+
+	mixins := mixinSet(yamlFiles, knownEnvs)
+
+	// Collect base files (non-mixins) sorted alphabetically.
+	var baseFiles []string
+	for _, name := range yamlFiles {
+		if mixins[name] {
+			continue
+		}
+		baseFiles = append(baseFiles, name)
+	}
+	sort.Strings(baseFiles)
+
+	if len(baseFiles) == 0 {
+		return nil, fmt.Errorf("no YAML resource files found in %s", dirPath)
+	}
+
+	var combined []byte
+	for _, name := range baseFiles {
+		basePath := filepath.Join(dirPath, name)
+		data, err := render(basePath, "", environment, nil, out)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
+		if len(combined) > 0 {
+			combined = append(combined, []byte("---\n")...)
+		}
+		combined = append(combined, data...)
+		if len(data) > 0 && data[len(data)-1] != '\n' {
+			combined = append(combined, '\n')
+		}
+	}
+
+	return combined, nil
+}
+
+// mixinSet returns the set of filenames that are environment-specific mixins.
+// A file is considered a mixin when it matches the pattern "<base>.<env>.<ext>"
+// and the corresponding base file "<base>.<ext>" exists in the directory.
+//
+// When knownEnvs is non-empty, only suffixes present in the list are considered
+// environment names; otherwise any suffix is accepted (heuristic fallback for
+// when the environment list could not be fetched).
+func mixinSet(yamlFiles []string, knownEnvs []string) map[string]bool {
+	fileSet := make(map[string]bool, len(yamlFiles))
+	for _, f := range yamlFiles {
+		fileSet[f] = true
+	}
+
+	envSet := make(map[string]bool, len(knownEnvs))
+	for _, e := range knownEnvs {
+		envSet[e] = true
+	}
+
+	mixins := make(map[string]bool)
+
+	for _, name := range yamlFiles {
+		ext := filepath.Ext(name)
+		stem := name[:len(name)-len(ext)]
+
+		before, after, ok := strings.Cut(stem, ".")
+		if !ok {
+			continue
+		}
+
+		baseName := before + ext
+		if !fileSet[baseName] {
+			continue
+		}
+
+		suffix := after
+		if len(envSet) > 0 && !envSet[suffix] {
+			continue
+		}
+
+		mixins[name] = true
+	}
+
+	return mixins
 }

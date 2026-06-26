@@ -3,12 +3,12 @@ package flag
 import (
 	"time"
 
-	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
 
 type Apply struct {
-	*alpha.Alpha
+	*flags.GlobalFlags
 	AllowIgnoredFields bool          `name:"allow-ignored-fields" usage:"Warn instead of failing when a manifest contains fields that nais apply ignores (e.g. |metadata.namespace| or |metadata.annotations|)."`
 	DryRun             bool          `name:"dry-run" usage:"Preview which resources would be applied without making any changes."`
 	Mixin              mixinFile     `name:"mixin" usage:"YAML |FILE| deep-merged over the base manifest (mixin values win). If omitted, an adjacent <base>.<env>.yaml is auto-loaded when present."`

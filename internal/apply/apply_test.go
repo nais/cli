@@ -10,11 +10,11 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	alphaflag "github.com/nais/cli/internal/alpha/command/flag"
 	applyflag "github.com/nais/cli/internal/apply/command/flag"
 	"github.com/nais/cli/internal/apply/resource"
 	flagspkg "github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
+	"gopkg.in/yaml.v3"
 )
 
 func TestReadManifestFile_Validation(t *testing.T) {
@@ -157,12 +157,10 @@ spec:
 
 	var out bytes.Buffer
 	flags := &applyflag.Apply{
-		Alpha: &alphaflag.Alpha{
-			GlobalFlags: &flagspkg.GlobalFlags{
-				AdditionalFlags: &flagspkg.AdditionalFlags{
-					Team:        "my-team",
-					Environment: "dev",
-				},
+		GlobalFlags: &flagspkg.GlobalFlags{
+			AdditionalFlags: &flagspkg.AdditionalFlags{
+				Team:        "my-team",
+				Environment: "dev",
 			},
 		},
 		DryRun: true,
@@ -202,12 +200,10 @@ spec:
 	}
 
 	flags := &applyflag.Apply{
-		Alpha: &alphaflag.Alpha{
-			GlobalFlags: &flagspkg.GlobalFlags{
-				AdditionalFlags: &flagspkg.AdditionalFlags{
-					Team:        "my-team",
-					Environment: "dev",
-				},
+		GlobalFlags: &flagspkg.GlobalFlags{
+			AdditionalFlags: &flagspkg.AdditionalFlags{
+				Team:        "my-team",
+				Environment: "dev",
 			},
 		},
 		DryRun: true,
@@ -225,4 +221,111 @@ func mustErrorContains(t *testing.T, err error, want string) {
 	if !strings.Contains(err.Error(), want) {
 		t.Errorf("error %q does not contain %q", err.Error(), want)
 	}
+}
+
+func TestSortDocsWorkloadsLast(t *testing.T) {
+	mkDoc := func(kind string) *yaml.Node {
+		return &yaml.Node{
+			Kind: yaml.MappingNode,
+			Content: []*yaml.Node{
+				{Kind: yaml.ScalarNode, Value: "kind"},
+				{Kind: yaml.ScalarNode, Value: kind},
+			},
+		}
+	}
+
+	docs := []*yaml.Node{
+		mkDoc("Application"),
+		mkDoc("Valkey"),
+		mkDoc("Naisjob"),
+		mkDoc("OpenSearch"),
+		mkDoc("Config"),
+	}
+
+	sortDocsWorkloadsLast(docs)
+
+	kinds := make([]string, len(docs))
+	for i, d := range docs {
+		kinds[i] = docKind(d)
+	}
+
+	// Workloads should be at the end
+	for i, kind := range kinds {
+		if workloadKinds[kind] && i < 3 {
+			t.Errorf("workload %q at index %d, expected at index >= 3", kind, i)
+		}
+		if !workloadKinds[kind] && i >= 3 {
+			t.Errorf("non-workload %q at index %d, expected at index < 3", kind, i)
+		}
+	}
+
+	// Non-workloads preserve relative order
+	nonWorkloads := []string{}
+	for _, k := range kinds {
+		if !workloadKinds[k] {
+			nonWorkloads = append(nonWorkloads, k)
+		}
+	}
+	if want := []string{"Valkey", "OpenSearch", "Config"}; strings.Join(nonWorkloads, ",") != strings.Join(want, ",") {
+		t.Errorf("non-workload order = %v, want %v", nonWorkloads, want)
+	}
+
+	// Workloads preserve relative order
+	workloads := []string{}
+	for _, k := range kinds {
+		if workloadKinds[k] {
+			workloads = append(workloads, k)
+		}
+	}
+	if want := []string{"Application", "Naisjob"}; strings.Join(workloads, ",") != strings.Join(want, ",") {
+		t.Errorf("workload order = %v, want %v", workloads, want)
+	}
+}
+
+func TestRun_DirectoryWithSetFails(t *testing.T) {
+	dir := t.TempDir()
+	manifestPath := filepath.Join(dir, "manifests")
+	if err := os.Mkdir(manifestPath, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(manifestPath, "app.yaml"), []byte("kind: Application\nmetadata:\n  name: myapp\nspec:\n  image: test\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	flags := &applyflag.Apply{
+		GlobalFlags: &flagspkg.GlobalFlags{
+			AdditionalFlags: &flagspkg.AdditionalFlags{
+				Team:        "my-team",
+				Environment: "dev",
+			},
+		},
+		Set: []string{"spec.image=override"},
+	}
+
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	mustErrorContains(t, err, "--set cannot be used when applying a directory")
+}
+
+func TestRun_DirectoryWithMixinFlagFails(t *testing.T) {
+	dir := t.TempDir()
+	manifestPath := filepath.Join(dir, "manifests")
+	if err := os.Mkdir(manifestPath, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(manifestPath, "app.yaml"), []byte("kind: Application\nmetadata:\n  name: myapp\nspec:\n  image: test\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	flags := &applyflag.Apply{
+		GlobalFlags: &flagspkg.GlobalFlags{
+			AdditionalFlags: &flagspkg.AdditionalFlags{
+				Team:        "my-team",
+				Environment: "dev",
+			},
+		},
+		Mixin: "some-mixin.yaml",
+	}
+
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	mustErrorContains(t, err, "--mixin cannot be used when applying a directory")
 }
