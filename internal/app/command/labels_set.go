@@ -34,7 +34,7 @@ func labelsSet(parentFlags *flag.Labels) *naistrix.Command {
 			}
 
 			name := args.Get("name")
-			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), flags.Output == "json")
+			environment, err := resolveAppEnvironment(ctx, flags.Team, name, string(flags.Environment))
 			if err != nil {
 				return err
 			}

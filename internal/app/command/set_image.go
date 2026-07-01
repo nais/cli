@@ -2,15 +2,14 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
-	"golang.org/x/term"
 )
 
 type imageReleaseOption struct {
@@ -60,7 +59,7 @@ func setImage(parentFlags *flag.App) *naistrix.Command {
 				"such as environment variables, secrets or configuration, are not affected.",
 			)
 
-			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), false)
+			environment, err := resolveAppEnvironment(ctx, flags.Team, name, string(flags.Environment))
 			if err != nil {
 				return err
 			}
@@ -83,10 +82,6 @@ func setImage(parentFlags *flag.App) *naistrix.Command {
 }
 
 func selectImage(ctx context.Context, team, name, env string) (string, error) {
-	if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) { // #nosec G115
-		return "", fmt.Errorf("this command requires an interactive terminal to select an image. Please run this command in an interactive terminal")
-	}
-
 	images, err := app.GetApplicationImages(ctx, team, name, env)
 	if err != nil {
 		return "", err
@@ -106,6 +101,9 @@ func selectImage(ctx context.Context, team, name, env string) (string, error) {
 	}
 
 	selected, err := input.Select(fmt.Sprintf("Select an image for %v in %v", name, env), options)
+	if errors.Is(err, input.ErrNotInteractive) {
+		return "", fmt.Errorf("this command requires an interactive terminal to select an image")
+	}
 	if err != nil {
 		return "", fmt.Errorf("selecting image: %w", err)
 	}

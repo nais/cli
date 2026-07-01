@@ -1177,6 +1177,26 @@ var AllCredentialPermission = []CredentialPermission{
 	CredentialPermissionAdmin,
 }
 
+// DeleteAppDeleteApplicationDeleteApplicationPayload includes the requested fields of the GraphQL type DeleteApplicationPayload.
+type DeleteAppDeleteApplicationDeleteApplicationPayload struct {
+	// Whether or not the application was deleted.
+	Success bool `json:"success"`
+}
+
+// GetSuccess returns DeleteAppDeleteApplicationDeleteApplicationPayload.Success, and is useful for accessing the field via an interface.
+func (v *DeleteAppDeleteApplicationDeleteApplicationPayload) GetSuccess() bool { return v.Success }
+
+// DeleteAppResponse is returned by DeleteApp on success.
+type DeleteAppResponse struct {
+	// Delete an application.
+	DeleteApplication DeleteAppDeleteApplicationDeleteApplicationPayload `json:"deleteApplication"`
+}
+
+// GetDeleteApplication returns DeleteAppResponse.DeleteApplication, and is useful for accessing the field via an interface.
+func (v *DeleteAppResponse) GetDeleteApplication() DeleteAppDeleteApplicationDeleteApplicationPayload {
+	return v.DeleteApplication
+}
+
 // DeleteConfigDeleteConfigDeleteConfigPayload includes the requested fields of the GraphQL type DeleteConfigPayload.
 type DeleteConfigDeleteConfigDeleteConfigPayload struct {
 	// The deleted config.
@@ -32608,6 +32628,22 @@ type __CreateValkeyInput struct {
 // GetInput returns __CreateValkeyInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreateValkeyInput) GetInput() CreateValkeyInput { return v.Input }
 
+// __DeleteAppInput is used internally by genqlient
+type __DeleteAppInput struct {
+	Team string `json:"team"`
+	Env  string `json:"env"`
+	Name string `json:"name"`
+}
+
+// GetTeam returns __DeleteAppInput.Team, and is useful for accessing the field via an interface.
+func (v *__DeleteAppInput) GetTeam() string { return v.Team }
+
+// GetEnv returns __DeleteAppInput.Env, and is useful for accessing the field via an interface.
+func (v *__DeleteAppInput) GetEnv() string { return v.Env }
+
+// GetName returns __DeleteAppInput.Name, and is useful for accessing the field via an interface.
+func (v *__DeleteAppInput) GetName() string { return v.Name }
+
 // __DeleteConfigInput is used internally by genqlient
 type __DeleteConfigInput struct {
 	Name            string `json:"name"`
@@ -34149,6 +34185,44 @@ func CreateValkeyCredentials(
 	}
 
 	data_ = &CreateValkeyCredentialsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeleteApp.
+const DeleteApp_Operation = `
+mutation DeleteApp ($team: Slug!, $env: String!, $name: String!) {
+	deleteApplication(input: {teamSlug:$team,environmentName:$env,name:$name}) {
+		success
+	}
+}
+`
+
+func DeleteApp(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	env string,
+	name string,
+) (data_ *DeleteAppResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeleteApp",
+		Query:  DeleteApp_Operation,
+		Variables: &__DeleteAppInput{
+			Team: team,
+			Env:  env,
+			Name: name,
+		},
+	}
+
+	data_ = &DeleteAppResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -56,6 +56,11 @@ type Restart struct {
 	*App
 }
 
+type Delete struct {
+	*App
+	Yes bool `name:"yes" short:"y" usage:"Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."`
+}
+
 type Issues struct {
 	*App
 }

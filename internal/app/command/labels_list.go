@@ -21,7 +21,7 @@ func labelsList(parentFlags *flag.Labels) *naistrix.Command {
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
-			environment, err := resolveAppEnvironment(ctx, out, flags.Team, name, string(flags.Environment), flags.Output == "json")
+			environment, err := resolveAppEnvironment(ctx, flags.Team, name, string(flags.Environment))
 			if err != nil {
 				return err
 			}
