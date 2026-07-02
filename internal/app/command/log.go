@@ -34,7 +34,7 @@ func log(parentFlags *flag.App) *naistrix.Command {
 			}
 
 			appName := args.Get("name")
-			environment, err := resolveAppEnvironment(ctx, out, flags.Team, appName, string(flags.Environment), false)
+			environment, err := resolveAppEnvironment(ctx, flags.Team, appName, string(flags.Environment))
 			if err != nil {
 				return err
 			}

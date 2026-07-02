@@ -391,8 +391,8 @@ github.com/nais/krakend/pkg/migration v0.0.0-20260529115721-808871c75630 h1:7yH0
 github.com/nais/krakend/pkg/migration v0.0.0-20260529115721-808871c75630/go.mod h1:Siwxo1B39dMTFYEwTzPwr1+Rg5r/0OAtHC3BbKh/XPA=
 github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c h1:IS4qWh2Of5rV7UY4YnQKg7rxP9lx5BzfFv1XNMZbCtI=
 github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c/go.mod h1:MT3N4X8eK6cJ94zoybdIY8JCaPrHCnw4Pde8piMS/v4=
-github.com/nais/naistrix v0.32.1 h1:YW5sqOr15heHPt9y/vjt5Y6nhiHOlDcKf4jqI/OXaSs=
-github.com/nais/naistrix v0.32.1/go.mod h1:/zqmi1P5Nqf6vaxooMa2ae3bc7aW3wzQcIy/2sQMcOk=
+github.com/nais/naistrix v0.33.0 h1:iBA6YnWDNTte9IYGe4hs6v0eX/pHkI7XNKFVUo/x9qY=
+github.com/nais/naistrix v0.33.0/go.mod h1:/zqmi1P5Nqf6vaxooMa2ae3bc7aW3wzQcIy/2sQMcOk=
 github.com/nais/pgrator v0.0.0-20260113113020-3944d387b42d h1:Ciq0quRhHOeeOTWy9WNmLe04uNYhe7l9qIrFTpFC5y0=
 github.com/nais/pgrator v0.0.0-20260113113020-3944d387b42d/go.mod h1:jpksYq94zmmjIIhjOBl+9GpEkTbaeLrrcINPQx9REx4=
 github.com/onsi/ginkgo/v2 v2.29.0 h1:rfh+ZFjgJhYWRoIqVf3Uwx/W20yLrcrE2h2GmYVRaag=
