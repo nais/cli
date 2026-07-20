@@ -20,7 +20,7 @@ const (
 	KeyStoreLocationProp   = "ssl.keystore.location"
 	TrustStoreLocationProp = "ssl.truststore.location"
 
-	FileHeader = `# Usage example: kafka-console-consumer.sh --topic %s.your.topic --bootstrap-server %s --consumer.config %s
+	FileHeader = `# Usage example: kafka-console-consumer.sh --topic %s.your.topic --bootstrap-server %s --command-config %s
 security.protocol=SSL
 ssl.protocol=TLS
 ssl.keystore.type=PKCS12
