@@ -202,7 +202,7 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 
 	var properties strings.Builder
 	_, _ = fmt.Fprintf(&properties, "# nais-cli %s\n", time.Now().Truncate(time.Minute))
-	_, _ = fmt.Fprintf(&properties, "# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s\n", creds.Brokers, configFile)
+	_, _ = fmt.Fprintf(&properties, "# Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --command-config %s\n", creds.Brokers, configFile)
 	_, _ = fmt.Fprintf(&properties, "# sasl.username=%s (use %q with 'nais kafka grant-access')\n", creds.Username, kafkaApplicationName(creds.Username))
 	_, _ = fmt.Fprint(&properties, "security.protocol=SSL\n")
 	_, _ = fmt.Fprint(&properties, "ssl.protocol=TLS\n")
@@ -220,6 +220,6 @@ func writeKafkaJava(out *naistrix.OutputWriter, creds *gql.CreateKafkaCredential
 
 	out.Println(fmt.Sprintf("Kafka Java configuration written to: %s", dir))
 	out.Println(fmt.Sprintf("Warning: %s contains sensitive credentials. Remove it when finished (e.g. rm -rf %s).", dir, dir))
-	out.Println(fmt.Sprintf("Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --consumer.config %s", creds.Brokers, configFile))
+	out.Println(fmt.Sprintf("Usage: kafka-console-consumer.sh --topic your.topic --bootstrap-server %s --command-config %s", creds.Brokers, configFile))
 	return nil
 }
