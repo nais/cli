@@ -49,7 +49,7 @@ func Get() (string, error) {
 			return "", ErrSecretNotFound
 		}
 		return res.val, res.err
-	case <-time.After(3 * time.Second):
+	case <-time.After(60 * time.Second):
 		return "", &TimeoutError{"timeout while trying to get secret from keyring"}
 	}
 }
@@ -76,7 +76,7 @@ func Set(value string) error {
 	select {
 	case err := <-ch:
 		return err
-	case <-time.After(3 * time.Second):
+	case <-time.After(60 * time.Second):
 		return &TimeoutError{"timeout while trying to set secret in keyring"}
 	}
 }
@@ -97,7 +97,7 @@ func Delete() error {
 			return ErrSecretNotFound
 		}
 		return err
-	case <-time.After(3 * time.Second):
+	case <-time.After(60 * time.Second):
 		return &TimeoutError{"timeout while trying to delete keyring secrets for service"}
 	}
 }
