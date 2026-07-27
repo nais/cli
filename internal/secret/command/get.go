@@ -202,7 +202,8 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		}
 	}
 
-	if opts.outputFormat == "json" {
+	switch opts.outputFormat {
+	case "json":
 		detail := SecretDetail{
 			Name:        metadata.Name,
 			Environment: metadata.EnvironmentName,
@@ -220,6 +221,14 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			}
 		}
 		return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
+	case "keyvalue":
+		data := make(map[string]any, len(existing.Keys))
+		for _, key := range existing.Keys {
+			data[key] = valueMap[key].value
+		}
+
+		return out.KeyValue().Render(data)
+
 	}
 
 	if existing != nil {

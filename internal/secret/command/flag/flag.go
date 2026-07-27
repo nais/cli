@@ -43,7 +43,7 @@ func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, strin
 
 type Get struct {
 	*Secret
-	Output     Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output     Output `name:"output" short:"o" usage:"Format output (table, keyvalue, or json)."`
 	WithValues bool   `name:"with-values" usage:"Also fetch and display secret values (access is logged)."`
 	Reason     string `name:"reason" usage:"Reason for accessing secret values (min 10 chars). Used with --with-values."`
 	ToFile     string `name:"to-file" usage:"Write a single key's value to a file (implies --with-values). Requires --key. Binary values are decoded automatically."`

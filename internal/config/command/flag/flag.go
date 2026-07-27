@@ -17,7 +17,7 @@ type Config struct {
 type Output string
 
 func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	return []string{"table", "json"}, "Available output formats."
+	return []string{"table", "keyvalue", "json"}, "Available output formats."
 }
 
 type List struct {
@@ -43,7 +43,7 @@ func (a *ActivityTypes) AutoComplete(context.Context, *naistrix.Arguments, strin
 
 type Get struct {
 	*Config
-	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+	Output Output `name:"output" short:"o" usage:"Format output (table, keyvalue, or json)."`
 	ToFile string `name:"to-file" usage:"Write a single key's value to a file. Requires --key. Binary values are decoded automatically."`
 	Key    string `name:"key" usage:"Name of the key to extract. Used with --to-file."`
 }

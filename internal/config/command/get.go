@@ -138,7 +138,8 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		return nil
 	}
 
-	if opts.outputFormat == "json" {
+	switch opts.outputFormat {
+	case "json":
 		detail := ConfigDetail{
 			Name:         existing.Name,
 			Environment:  existing.TeamEnvironment.Environment.Name,
@@ -152,6 +153,13 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			detail.Workloads = append(detail.Workloads, w.GetName())
 		}
 		return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
+	case "keyvalue":
+		data := make(map[string]any, len(existing.Values))
+		for _, v := range existing.Values {
+			data[v.Name] = v.Value
+		}
+
+		return out.KeyValue().Render(data)
 	}
 
 	if err := out.Table().Render(config.FormatDetails(metadata, existing)); err != nil {
