@@ -5,6 +5,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type Valkey struct {
@@ -59,9 +60,9 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		MaxMemoryPolicy:      data.MaxMemoryPolicy,
-		NotifyKeyspaceEvents: data.NotifyKeyspaceEvents,
-		Databases:            data.Databases,
+		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
+		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
+		Databases:            new(data.Databases),
 	})
 	if err != nil {
 		return nil, err
@@ -89,7 +90,7 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 		return false, err
 	}
 
-	return resp.DeleteValkey.ValkeyDeleted, nil
+	return ptr.Deref(resp.DeleteValkey.ValkeyDeleted, false), nil
 }
 
 func Get(ctx context.Context, metadata Metadata) (*gql.GetValkeyTeamEnvironmentValkey, error) {
@@ -171,7 +172,7 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.ValkeyFilter) ([]gq
 		return nil, err
 	}
 
-	resp, err := gql.GetAllValkeys(ctx, client, teamSlug, filter)
+	resp, err := gql.GetAllValkeys(ctx, client, teamSlug, new(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -215,9 +216,9 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		MaxMemoryPolicy:      data.MaxMemoryPolicy,
-		NotifyKeyspaceEvents: data.NotifyKeyspaceEvents,
-		Databases:            data.Databases,
+		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
+		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
+		Databases:            new(data.Databases),
 		Labels:               labels,
 	})
 	if err != nil {
@@ -235,7 +236,7 @@ func FormatDetails(metadata Metadata, valkey *gql.GetValkeyTeamEnvironmentValkey
 		{"Name", metadata.Name},
 		{"Memory", string(valkey.Memory)},
 		{"Tier", string(valkey.Tier)},
-		{"Max memory policy", string(valkey.MaxMemoryPolicy)},
+		{"Max memory policy", string(ptr.Deref(valkey.MaxMemoryPolicy, ""))},
 		{"State", string(valkey.State)},
 	}
 }
@@ -249,7 +250,7 @@ func FormatAccessList(metadata Metadata, valkey *gql.GetValkeyTeamEnvironmentVal
 			edge.Node.Workload.GetTeam().Slug,
 			metadata.EnvironmentName,
 			edge.Node.Workload.GetName(),
-			edge.Node.Workload.GetTypename(),
+			ptr.Deref(edge.Node.Workload.GetTypename(), ""),
 			edge.Node.Access,
 		})
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/opensearch/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"k8s.io/utils/ptr"
 )
 
 type state string
@@ -82,7 +83,7 @@ func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 					Memory:      string(o.Memory),
 					StorageGB:   o.StorageGB,
 					Workloads:   len(o.Access.Edges),
-					Version:     o.Version.Actual,
+					Version:     ptr.Deref(o.Version.Actual, ""),
 					State:       state(o.State),
 				})
 			}

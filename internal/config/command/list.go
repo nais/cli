@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
@@ -11,6 +12,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"k8s.io/utils/ptr"
 )
 
 type ConfigSummary struct {
@@ -80,7 +82,7 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 					Environment:  envName,
 					Keys:         summarizeList(keyNames),
 					Workloads:    summarizeList(workloadNames),
-					LastModified: config.LastModified(c.LastModifiedAt),
+					LastModified: config.LastModified(ptr.Deref(c.LastModifiedAt, time.Time{})),
 				})
 			}
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type ValueSource struct {
@@ -109,7 +110,7 @@ func GetApplicationEnvVars(ctx context.Context, slug, name, env string) ([]EnvVa
 		ret = append(ret, EnvVar{
 			Name: ev.Name,
 			Value: EnvVarValue{
-				Value:    ev.Value,
+				Value:    ptr.Deref(ev.Value, ""),
 				IsSecret: isSecret,
 			},
 			Source: ValueSource{

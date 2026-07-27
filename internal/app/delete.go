@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 // DeleteApp starts deletion of an application. The Nais API deletes the
@@ -32,7 +33,7 @@ func DeleteApp(ctx context.Context, team, name, env string) error {
 		return err
 	}
 
-	if !resp.DeleteApplication.Success {
+	if !ptr.Deref(resp.DeleteApplication.Success, false) {
 		return fmt.Errorf("deletion of %q in %q was not successful", name, env)
 	}
 
