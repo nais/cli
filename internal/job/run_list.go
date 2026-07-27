@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type JobRun struct {
@@ -65,8 +66,8 @@ func GetJobRuns(ctx context.Context, team, environment, jobName string) ([]JobRu
 		}
 
 		trigger := string(r.Trigger.Type)
-		if r.Trigger.Actor != "" {
-			trigger = r.Trigger.Actor
+		if ptr.Deref(r.Trigger.Actor, "") != "" {
+			trigger = ptr.Deref(r.Trigger.Actor, "")
 		}
 
 		ret = append(ret, JobRun{

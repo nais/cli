@@ -67,7 +67,7 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			critical := gql.SeverityCritical
 			var entries []statusEntry
 			for _, t := range ret {
-				teamIssues, err := issues.GetAll(ctx, t.Team.Slug, gql.IssueFilter{Severity: critical})
+				teamIssues, err := issues.GetAll(ctx, t.Team.Slug, gql.IssueFilter{Severity: new(critical)})
 				if err != nil {
 					return err
 				}

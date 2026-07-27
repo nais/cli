@@ -9,6 +9,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix/output"
+	"k8s.io/utils/ptr"
 )
 
 const consoleBaseURL = "https://console.nav.cloud.nais.io"
@@ -111,7 +112,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		Labels: labelFilters,
 	}
 
-	resp, err := gql.GetTeamPostgresInstances(ctx, client, team, postgresFilter, sqlFilter)
+	resp, err := gql.GetTeamPostgresInstances(ctx, client, team, new(postgresFilter), new(sqlFilter))
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +152,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 			},
 			Type:             "Cloud SQL",
 			Environment:      env,
-			Version:          s.Version,
+			Version:          ptr.Deref(s.Version, ""),
 			HighAvailability: s.HighAvailability,
 			Audit:            s.AuditLog != nil,
 			State:            State(s.State),

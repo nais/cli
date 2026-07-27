@@ -7,8 +7,10 @@ import (
 	"slices"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 // Metadata identifies a specific config in a team environment.
@@ -58,7 +60,7 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 
 // ConfigEnvironments returns the environments where a config with the given name exists.
 func ConfigEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug, gql.ConfigFilter{Name: name})
+	all, err := GetAll(ctx, teamSlug, gql.ConfigFilter{Name: new(name)})
 	if err != nil {
 		return nil, err
 	}
@@ -110,10 +112,12 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.ConfigFilter) ([]gq
 		return nil, err
 	}
 
-	resp, err := gql.GetAllConfigs(ctx, client, teamSlug, filter)
+	resp, err := gql.GetAllConfigs(ctx, client, teamSlug, new(filter))
 	if err != nil {
 		return nil, err
 	}
+
+	spew.Dump(resp.Team.Configs.Nodes)
 
 	return resp.Team.Configs.Nodes, nil
 }
@@ -188,7 +192,7 @@ func Create(ctx context.Context, metadata Metadata) (*gql.CreateConfigCreateConf
 		return nil, err
 	}
 
-	return &resp.CreateConfig.Config, nil
+	return resp.CreateConfig.Config, nil
 }
 
 // CreateWithValues creates a new config with the given values and labels in a single operation.
@@ -255,7 +259,7 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 		return false, err
 	}
 
-	return resp.DeleteConfig.ConfigDeleted, nil
+	return ptr.Deref(resp.DeleteConfig.ConfigDeleted, false), nil
 }
 
 // SetValue sets a key-value pair in a config. If the key already exists, its value is updated.
@@ -297,7 +301,7 @@ func addValue(ctx context.Context, metadata Metadata, key, value string, encodin
 	_, err = gql.AddConfigValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.ConfigValueInput{
 		Name:     key,
 		Value:    value,
-		Encoding: encoding,
+		Encoding: new(encoding),
 	})
 	return err
 }
@@ -322,7 +326,7 @@ func updateValue(ctx context.Context, metadata Metadata, key, value string, enco
 	_, err = gql.UpdateConfigValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.ConfigValueInput{
 		Name:     key,
 		Value:    value,
-		Encoding: encoding,
+		Encoding: new(encoding),
 	})
 	return err
 }
@@ -358,10 +362,10 @@ func FormatDetails(metadata Metadata, c *gql.GetConfigTeamEnvironmentConfig) [][
 		{"Name", c.Name},
 	}
 
-	if !c.LastModifiedAt.IsZero() {
-		data = append(data, []string{"Last Modified", LastModified(c.LastModifiedAt).String()})
+	if c.LastModifiedAt != nil && !c.LastModifiedAt.IsZero() {
+		data = append(data, []string{"Last Modified", LastModified(*c.LastModifiedAt).String()})
 	}
-	if c.LastModifiedBy.Email != "" {
+	if c.LastModifiedBy != nil && c.LastModifiedBy.Email != "" {
 		data = append(data, []string{"Modified By", c.LastModifiedBy.Email})
 	}
 
@@ -398,7 +402,7 @@ func FormatWorkloads(c *gql.GetConfigTeamEnvironmentConfig) [][]string {
 	for _, w := range c.Workloads.Nodes {
 		workloads = append(workloads, []string{
 			w.GetName(),
-			w.GetTypename(),
+			ptr.Deref(w.GetTypename(), ""),
 		})
 	}
 

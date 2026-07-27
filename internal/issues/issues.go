@@ -7,6 +7,7 @@ import (
 	"github.com/nais/cli/internal/formatting"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type Severity gql.Severity
@@ -135,7 +136,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		return nil, err
 	}
 
-	resp, err := gql.GetAllIssues(ctx, client, teamSlug, issueFilter)
+	resp, err := gql.GetAllIssues(ctx, client, teamSlug, new(issueFilter))
 	if err != nil {
 		return nil, fmt.Errorf("graphql: %w", err)
 	}
@@ -151,43 +152,43 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		}
 		setWorkloadResource := func(workload interface {
 			GetName() string
-			GetTypename() string
+			GetTypename() *string
 		},
 		) {
 			if workload == nil {
 				return
 			}
 			i.ResourceName = workload.GetName()
-			i.ResourceType = workload.GetTypename()
+			i.ResourceType = ptr.Deref(workload.GetTypename(), "")
 		}
 		switch c := issue.(type) {
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
 			i.ResourceName = c.Application.GetName()
-			i.ResourceType = c.Application.GetTypename()
+			i.ResourceType = ptr.Deref(c.Application.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue:
 			i.ResourceName = c.Job.GetName()
-			i.ResourceType = c.Job.GetTypename()
+			i.ResourceType = ptr.Deref(c.Job.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue:
 			i.ResourceName = c.OpenSearch.GetName()
-			i.ResourceType = c.OpenSearch.GetTypename()
+			i.ResourceType = ptr.Deref(c.OpenSearch.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue:
 			i.ResourceName = c.SqlInstance.GetName()
-			i.ResourceType = c.SqlInstance.GetTypename()
+			i.ResourceType = ptr.Deref(c.SqlInstance.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue:
 			i.ResourceName = c.SqlInstance.GetName()
-			i.ResourceType = c.SqlInstance.GetTypename()
+			i.ResourceType = ptr.Deref(c.SqlInstance.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesValkeyIssue:
 			i.ResourceName = c.Valkey.GetName()
-			i.ResourceType = c.Valkey.GetTypename()
+			i.ResourceType = ptr.Deref(c.Valkey.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
 			i.ResourceName = c.Unleash.GetName()
-			i.ResourceType = c.Unleash.GetTypename()
+			i.ResourceType = ptr.Deref(c.Unleash.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:

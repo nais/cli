@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type JobActivity struct {
@@ -46,7 +47,7 @@ func GetJobActivity(ctx context.Context, team, name string, environment string, 
 		return nil, err
 	}
 
-	resp, err := gql.GetJobActivity(ctx, client, team, name, []string{environment}, limit)
+	resp, err := gql.GetJobActivity(ctx, client, team, name, []string{environment}, new(limit))
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +57,8 @@ func GetJobActivity(ctx context.Context, team, name string, environment string, 
 		defaultEnv := j.TeamEnvironment.Environment.Name
 		for _, entry := range j.ActivityLog.Nodes {
 			env := defaultEnv
-			if entry.GetEnvironmentName() != "" {
-				env = entry.GetEnvironmentName()
+			if ptr.Deref(entry.GetEnvironmentName(), "") != "" {
+				env = ptr.Deref(entry.GetEnvironmentName(), "")
 			}
 			ret = append(ret, JobActivity{
 				CreatedAt:   entry.GetCreatedAt(),

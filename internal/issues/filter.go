@@ -20,17 +20,17 @@ func ParseFilter(flags *flag.List) (gql.IssueFilter, error) {
 		if err != nil {
 			return gql.IssueFilter{}, err
 		}
-		ret.IssueType = it
+		ret.IssueType = new(it)
 	}
 	if flags.ResourceName != "" {
-		ret.ResourceName = string(flags.ResourceName)
+		ret.ResourceName = new(string(flags.ResourceName))
 	}
 	if flags.ResourceType != "" {
 		rt, err := parseEnumValue(string(flags.ResourceType), gql.AllResourceType)
 		if err != nil {
 			return gql.IssueFilter{}, err
 		}
-		ret.ResourceType = rt
+		ret.ResourceType = new(rt)
 	}
 	if flags.Severity != "" {
 		s, err := parseEnumValue(string(flags.Severity), gql.AllSeverity)
@@ -38,7 +38,7 @@ func ParseFilter(flags *flag.List) (gql.IssueFilter, error) {
 			return gql.IssueFilter{}, err
 		}
 
-		ret.Severity = s
+		ret.Severity = new(s)
 	}
 
 	return ret, nil
