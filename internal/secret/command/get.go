@@ -211,8 +211,10 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		if existing != nil {
 			detail.Name = existing.Name
 			detail.Environment = existing.TeamEnvironment.Environment.Name
-			detail.LastModified = secret.LastModified(existing.LastModifiedAt)
-			if existing.LastModifiedBy.Email != "" {
+			if existing.LastModifiedAt != nil && !existing.LastModifiedAt.IsZero() {
+				detail.LastModified = secret.LastModified(*existing.LastModifiedAt)
+			}
+			if existing.LastModifiedBy != nil && existing.LastModifiedBy.Email != "" {
 				detail.ModifiedBy = existing.LastModifiedBy.Email
 			}
 			for _, w := range existing.Workloads.Nodes {

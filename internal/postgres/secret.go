@@ -13,6 +13,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/utils/ptr"
 )
 
 // Hardcoded reasons for administrative operations
@@ -245,8 +246,8 @@ mutation GrantPostgresAccess($input: GrantPostgresAccessInput!) {
 		return fmt.Errorf("granting postgres access: %w", err)
 	}
 
-	if resp.GrantPostgresAccess.Error != "" {
-		return fmt.Errorf("granting postgres access: %s", resp.GrantPostgresAccess.Error)
+	if ptr.Deref(resp.GrantPostgresAccess.Error, "") != "" {
+		return fmt.Errorf("granting postgres access: %s", ptr.Deref(resp.GrantPostgresAccess.Error, ""))
 	}
 
 	return nil

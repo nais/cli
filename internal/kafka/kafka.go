@@ -44,7 +44,7 @@ func GetTeamTopics(ctx context.Context, team string, environment string, labels 
 		filter.Labels = labels
 	}
 
-	resp, err := gql.GetTeamKafkaTopics(ctx, client, team, filter)
+	resp, err := gql.GetTeamKafkaTopics(ctx, client, team, new(filter))
 	if err != nil {
 		return nil, err
 	}

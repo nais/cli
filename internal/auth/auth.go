@@ -11,6 +11,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 // GetEnvironmentOIDCIssuer returns the OIDC issuer URL for workload identity
@@ -34,17 +35,18 @@ func GetEnvironmentOIDCIssuer(ctx context.Context, env string) (*url.URL, error)
 		return nil, err
 	}
 
-	if resp.Environment.OidcIssuerURL == "" {
+	issuerURL := ptr.Deref(resp.Environment.OidcIssuerURL, "")
+	if issuerURL == "" {
 		return nil, fmt.Errorf("environment %q does not support workload identity (no OIDC issuer URL)", env)
 	}
 
-	issuer, err := url.Parse(resp.Environment.OidcIssuerURL)
+	issuer, err := url.Parse(issuerURL)
 	if err != nil {
-		return nil, fmt.Errorf("parsing OIDC issuer URL %q for environment %q: %w", resp.Environment.OidcIssuerURL, env, err)
+		return nil, fmt.Errorf("parsing OIDC issuer URL %q for environment %q: %w", issuerURL, env, err)
 	}
 
 	if issuer.Scheme != "https" || issuer.Host == "" || issuer.RawQuery != "" || issuer.Fragment != "" {
-		return nil, fmt.Errorf("invalid OIDC issuer URL %q for environment %q: expected an absolute https URL without query or fragment", resp.Environment.OidcIssuerURL, env)
+		return nil, fmt.Errorf("invalid OIDC issuer URL %q for environment %q: expected an absolute https URL without query or fragment", issuerURL, env)
 	}
 
 	return issuer, nil

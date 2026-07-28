@@ -70,13 +70,16 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 					workloadNames = append(workloadNames, w.GetName())
 				}
 
-				summaries = append(summaries, SecretSummary{
-					Name:         s.Name,
-					Environment:  envName,
-					Keys:         summarizeList(s.Keys),
-					Workloads:    summarizeList(workloadNames),
-					LastModified: secret.LastModified(s.LastModifiedAt),
-				})
+				summary := SecretSummary{
+					Name:        s.Name,
+					Environment: envName,
+					Keys:        summarizeList(s.Keys),
+					Workloads:   summarizeList(workloadNames),
+				}
+				if s.LastModifiedAt != nil && !s.LastModifiedAt.IsZero() {
+					summary.LastModified = secret.LastModified(*s.LastModifiedAt)
+				}
+				summaries = append(summaries, summary)
 			}
 
 			if len(summaries) == 0 {

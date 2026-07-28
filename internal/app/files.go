@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type MountedFileError struct {
@@ -91,7 +92,7 @@ func GetApplicationFiles(ctx context.Context, slug, name, env string) ([]Mounted
 				Name: f.Source.Name,
 			},
 			Error: MountedFileError{
-				Error: f.Error,
+				Error: ptr.Deref(f.Error, ""),
 			},
 		})
 	}

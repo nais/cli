@@ -131,9 +131,10 @@ func ParseFilters(args LabelFilters) ([]gql.LabelFilter, error) {
 
 	filters := make([]gql.LabelFilter, 0, len(keys))
 	for _, key := range keys {
+		value := assignments[key]
 		filters = append(filters, gql.LabelFilter{
 			Key:   key,
-			Value: assignments[key],
+			Value: new(value),
 		})
 	}
 	return filters, nil

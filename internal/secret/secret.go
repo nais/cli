@@ -9,6 +9,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 // Metadata identifies a specific secret in a team environment.
@@ -58,7 +59,7 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 
 // SecretEnvironments returns the environments where a secret with the given name exists.
 func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug, gql.SecretFilter{Name: name})
+	all, err := GetAll(ctx, teamSlug, gql.SecretFilter{Name: new(name)})
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +104,7 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.SecretFilter) ([]gq
 		return nil, err
 	}
 
-	resp, err := gql.GetAllSecrets(ctx, client, teamSlug, filter)
+	resp, err := gql.GetAllSecrets(ctx, client, teamSlug, new(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +178,7 @@ func Create(ctx context.Context, metadata Metadata) (*gql.CreateSecretCreateSecr
 		return nil, err
 	}
 
-	return &resp.CreateSecret.Secret, nil
+	return resp.CreateSecret.Secret, nil
 }
 
 // Delete deletes a secret and all its values.
@@ -200,7 +201,7 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 		return false, err
 	}
 
-	return resp.DeleteSecret.SecretDeleted, nil
+	return ptr.Deref(resp.DeleteSecret.SecretDeleted, false), nil
 }
 
 // SetValue sets a key-value pair in a secret. If the key already exists, its value is updated.
@@ -238,7 +239,7 @@ func addValue(ctx context.Context, metadata Metadata, key, value string, encodin
 	_, err = gql.AddSecretValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.SecretValueInput{
 		Name:     key,
 		Value:    value,
-		Encoding: encoding,
+		Encoding: new(encoding),
 	})
 	return err
 }
@@ -263,7 +264,7 @@ func updateValue(ctx context.Context, metadata Metadata, key, value string, enco
 	_, err = gql.UpdateSecretValue(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, gql.SecretValueInput{
 		Name:     key,
 		Value:    value,
-		Encoding: encoding,
+		Encoding: new(encoding),
 	})
 	return err
 }
@@ -299,10 +300,10 @@ func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][
 		{"Name", s.Name},
 	}
 
-	if !s.LastModifiedAt.IsZero() {
-		data = append(data, []string{"Last Modified", LastModified(s.LastModifiedAt).String()})
+	if s.LastModifiedAt != nil && !s.LastModifiedAt.IsZero() {
+		data = append(data, []string{"Last Modified", LastModified(*s.LastModifiedAt).String()})
 	}
-	if s.LastModifiedBy.Email != "" {
+	if s.LastModifiedBy != nil && s.LastModifiedBy.Email != "" {
 		data = append(data, []string{"Modified By", s.LastModifiedBy.Email})
 	}
 
@@ -356,10 +357,13 @@ func FormatWorkloads(s *gql.GetSecretTeamEnvironmentSecret) [][]string {
 	}
 
 	for _, w := range s.Workloads.Nodes {
-		workloads = append(workloads, []string{
+		wl := []string{
 			w.GetName(),
-			w.GetTypename(),
-		})
+		}
+		if w.GetTypename() != nil {
+			wl = append(wl, *w.GetTypename())
+		}
+		workloads = append(workloads, wl)
 	}
 
 	return workloads

@@ -52,7 +52,7 @@ func TestParse(t *testing.T) {
 			want: want{
 				filters: gql.IssueFilter{
 					Environments: []string{"x"},
-					Severity:     "CRITICAL",
+					Severity:     new(gql.Severity("CRITICAL")),
 				},
 			},
 		},
