@@ -134,6 +134,7 @@ func validateAuditFlags(ctx context.Context, info *CloudSQLDBInfo) error {
 		"cloudsql.enable_pgaudit",
 		"pgaudit.log",
 		"pgaudit.log_parameter",
+		"pgaudit.log_relation",
 	}
 
 	err = validateRequiredFlags(dbFlags, requiredFlags)
@@ -254,6 +255,17 @@ func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string
 		return false, fmt.Errorf("pgaudit.log_parameter must be set to 'on' or 'true'")
 	}
 	out.Printf("  ✅ Flag <info>pgaudit.log_parameter</info> = <info>%s</info>\n", logParameter)
+
+	logRelation, relationExists := dbFlags["pgaudit.log_relation"]
+	if !relationExists {
+		out.Println("  ❌ Flag <info>pgaudit.log_relation</info> is missing")
+		return false, fmt.Errorf("pgaudit.log_relation flag is not set")
+	}
+	if logRelation != "on" && logRelation != "true" {
+		out.Printf("  ❌ Flag <info>pgaudit.log_relation</info>: expected <info>on</info>, got <info>%s</info>\n", logRelation)
+		return false, fmt.Errorf("pgaudit.log_relation must be set to 'on'")
+	}
+	out.Printf("  ✅ Flag <info>pgaudit.log_relation</info> = <info>%s</info>\n", logRelation)
 
 	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
