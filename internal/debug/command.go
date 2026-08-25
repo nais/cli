@@ -17,7 +17,7 @@ func Run(workloadName, team, environment string, flags *flag.Debug, out *naistri
 		return err
 	}
 
-	dg := Setup(clientSet, flags.DebugSticky, workloadName, debugImageDefault, flags.ByPod, out)
+	dg := Setup(clientSet, flags, workloadName, debugImageDefault, flags.ByPod, out)
 	if err := dg.Debug(); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}

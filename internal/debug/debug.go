@@ -25,14 +25,14 @@ const (
 type Debug struct {
 	ctx          context.Context
 	client       kubernetes.Interface
-	flags        *flag.DebugSticky
+	flags        *flag.Debug
 	workloadName string
 	debugImage   string
 	byPod        bool
 	out          *naistrix.OutputWriter
 }
 
-func Setup(client kubernetes.Interface, flags *flag.DebugSticky, workloadName, debugImage string, byPod bool, out *naistrix.OutputWriter) *Debug {
+func Setup(client kubernetes.Interface, flags *flag.Debug, workloadName, debugImage string, byPod bool, out *naistrix.OutputWriter) *Debug {
 	return &Debug{
 		ctx:          context.Background(),
 		client:       client,

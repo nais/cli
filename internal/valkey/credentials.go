@@ -7,13 +7,13 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func CreateCredentials(ctx context.Context, teamSlug, environmentName, instanceName string, permission gql.CredentialPermission, ttl string) (*gql.CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials, error) {
+func CreateCredentials(ctx context.Context, teamSlug, environmentName, instanceName string, permission gql.ValkeyPermission, ttl string) (*gql.CreateValkeyCredentialsCreateValkeyCredentialsCreateValkeyCredentialsPayloadCredentialsValkeyCredentials, error) {
 	_ = `# @genqlient
 		mutation CreateValkeyCredentials(
 		  $teamSlug: Slug!,
 		  $environmentName: String!,
 		  $instanceName: String!,
-		  $permission: CredentialPermission!,
+		  $permission: ValkeyPermission!,
 		  $ttl: String!,
 		) {
 		  createValkeyCredentials(
