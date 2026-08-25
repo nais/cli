@@ -59,10 +59,6 @@ The URL that specifies the behavior of this scalar.
 
 enum ActivityLogActivityType {
 """
-Filter for credential creation events.
-"""
-	CREDENTIALS_CREATED
-"""
 An application was deleted.
 """
 	APPLICATION_DELETED
@@ -123,6 +119,10 @@ Activity log entries related to job updates.
 """
 	JOB_UPDATED
 """
+Filter for Kafka credential creation events.
+"""
+	KAFKA_CREDENTIALS_CREATED
+"""
 OpenSearch was created.
 """
 	OPENSEARCH_CREATED
@@ -138,6 +138,10 @@ OpenSearch was deleted.
 Started service maintenance on OpenSearch instance.
 """
 	OPENSEARCH_MAINTENANCE_STARTED
+"""
+Filter for credential creation events.
+"""
+	OPENSEARCH_CREDENTIALS_CREATED
 """
 A user was granted access to a Postgres cluster
 """
@@ -303,6 +307,10 @@ Started service maintenance on Valkey instance.
 """
 	VALKEY_MAINTENANCE_STARTED
 """
+Filter for credential creation events.
+"""
+	VALKEY_CREDENTIALS_CREATED
+"""
 Activity log entry for when a vulnerability is updated.
 """
 	VULNERABILITY_UPDATED
@@ -426,6 +434,10 @@ All activity log entries related to jobs will use this resource type.
 """
 	JOB
 """
+All activity log entries related to Kafka topics will use this resource type.
+"""
+	KAFKA_TOPIC
+"""
 All activity log entries related to OpenSearches will use this resource type.
 """
 	OPENSEARCH
@@ -490,6 +502,8 @@ input ActivityLogFilter {
 	activityTypes: [ActivityLogActivityType!]
 	resourceTypes: [ActivityLogEntryResourceType!]
 	environments: [String!]
+	from: Time
+	to: Time
 }
 
 """
@@ -637,6 +651,11 @@ List of nodes.
 List of edges.
 """
 	edges: [AlertEdge!]!
+"""
+Facets for alerts. Provides distribution counts to help narrow down results.
+Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+"""
+	facets: AlertFacets
 }
 
 """
@@ -651,6 +670,20 @@ Cursor for this edge that can be used for pagination.
 The Alert.
 """
 	node: Alert!
+}
+
+"""
+Facets for alerts, providing distribution counts across different dimensions.
+"""
+type AlertFacets {
+"""
+Distribution of alerts by environment.
+"""
+	environments: [StringFacetItem!]!
+"""
+Distribution of alerts by state.
+"""
+	states: [AlertStateFacetItem!]!
 }
 
 """
@@ -698,6 +731,20 @@ Only return alerts that are inactive.
 Only return alerts that are pending.
 """
 	PENDING
+}
+
+"""
+A single facet item for alert states.
+"""
+type AlertStateFacetItem {
+"""
+The alert state.
+"""
+	state: AlertState!
+"""
+Number of matching alerts.
+"""
+	count: Int!
 }
 
 input AllowTeamAccessToUnleashInput {
@@ -2347,9 +2394,14 @@ Name of the container image.
 """
 	name: String!
 """
-Tag of the container image.
+Tag of the container image. Empty when the image reference has no explicit tag,
+for example when it is referenced by digest only.
 """
 	tag: String!
+"""
+Digest of the container image, if present.
+"""
+	digest: String
 """
 Activity log associated with the container image.
 """
@@ -2531,7 +2583,7 @@ input CreateOpenSearchCredentialsInput {
 	teamSlug: Slug!
 	environmentName: String!
 	instanceName: String!
-	permission: CredentialPermission!
+	permission: OpenSearchPermission!
 	ttl: String!
 }
 
@@ -2656,7 +2708,7 @@ input CreateValkeyCredentialsInput {
 	teamSlug: Slug!
 	environmentName: String!
 	instanceName: String!
-	permission: CredentialPermission!
+	permission: ValkeyPermission!
 	ttl: String!
 }
 
@@ -2683,66 +2735,6 @@ type CreateValkeyPayload {
 Valkey instance that was created.
 """
 	valkey: Valkey!
-}
-
-"""
-Permission level for OpenSearch and Valkey credentials.
-"""
-enum CredentialPermission {
-	READ
-	WRITE
-	READWRITE
-	ADMIN
-}
-
-type CredentialsActivityLogEntry implements ActivityLogEntry & Node{
-"""
-ID of the entry.
-"""
-	id: ID!
-"""
-The identity of the actor who performed the action.
-"""
-	actor: String!
-"""
-Creation time of the entry.
-"""
-	createdAt: Time!
-"""
-Message that summarizes the entry.
-"""
-	message: String!
-"""
-Type of the resource that was affected by the action.
-"""
-	resourceType: ActivityLogEntryResourceType!
-"""
-Name of the resource that was affected by the action.
-"""
-	resourceName: String!
-"""
-The team slug that the entry belongs to.
-"""
-	teamSlug: Slug!
-"""
-The environment name that the entry belongs to.
-"""
-	environmentName: String
-"""
-Data associated with the credential creation.
-"""
-	data: CredentialsActivityLogEntryData!
-}
-
-type CredentialsActivityLogEntryData {
-"""
-The permission level, if applicable.
-"""
-	permission: String
-"""
-The TTL that was requested for the credentials.
-"""
-	ttl: String!
 }
 
 """
@@ -3868,61 +3860,6 @@ URL for the ingress.
 Type of ingress.
 """
 	type: IngressType!
-"""
-Metrics for the ingress.
-"""
-	metrics: IngressMetrics!
-}
-
-"""
-Ingress metric type.
-"""
-type IngressMetricSample {
-"""
-Timestamp of the value.
-"""
-	timestamp: Time!
-"""
-Value of the IngressMetricsType at the given timestamp.
-"""
-	value: Float!
-}
-
-type IngressMetrics {
-"""
-Number of requests to the ingress per second.
-"""
-	requestsPerSecond: Float!
-"""
-Number of errors in the ingress per second.
-"""
-	errorsPerSecond: Float!
-"""
-Ingress metrics between start and end with step size.
-"""
-	series(
-		input: IngressMetricsInput!
-	): [IngressMetricSample!]!
-}
-
-input IngressMetricsInput {
-	start: Time!
-	end: Time!
-	type: IngressMetricsType!
-}
-
-"""
-Type of ingress metrics to fetch.
-"""
-enum IngressMetricsType {
-"""
-Number of requests to the ingress per second.
-"""
-	REQUESTS_PER_SECOND
-"""
-Number of errors in the ingress per second.
-"""
-	ERRORS_PER_SECOND
 }
 
 enum IngressType {
@@ -4100,6 +4037,11 @@ List of nodes.
 List of edges.
 """
 	edges: [IssueEdge!]!
+"""
+Facets for the issues. Provides distribution counts to help narrow down results.
+Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
+"""
+	facets: IssueFacets
 }
 
 type IssueEdge {
@@ -4111,6 +4053,28 @@ Cursor for this edge that can be used for pagination.
 The Issue.
 """
 	node: Issue!
+}
+
+"""
+Facets for issues, providing distribution counts across different dimensions.
+"""
+type IssueFacets {
+"""
+Distribution of issues by environment.
+"""
+	environments: [StringFacetItem!]!
+"""
+Distribution of issues by severity.
+"""
+	severities: [IssueSeverityFacetItem!]!
+"""
+Distribution of issues by resource type.
+"""
+	resourceTypes: [IssueResourceTypeFacetItem!]!
+"""
+Distribution of issues by issue type.
+"""
+	issueTypes: [IssueTypeFacetItem!]!
 }
 
 input IssueFilter {
@@ -4149,6 +4113,34 @@ Order by issue type.
 	ISSUE_TYPE
 }
 
+"""
+A single facet item for resource types.
+"""
+type IssueResourceTypeFacetItem {
+"""
+The resource type.
+"""
+	resourceType: ResourceType!
+"""
+Number of matching issues.
+"""
+	count: Int!
+}
+
+"""
+A single facet item for issue severities.
+"""
+type IssueSeverityFacetItem {
+"""
+The severity.
+"""
+	severity: Severity!
+"""
+Number of matching issues.
+"""
+	count: Int!
+}
+
 enum IssueType {
 	OPENSEARCH
 	VALKEY
@@ -4172,6 +4164,20 @@ Raised when the platform reports a problem in a workload, such as an invalid spe
 Raised when an application is stuck in a restart loop.
 """
 	APPLICATION_RESTART_LOOP
+}
+
+"""
+A single facet item for issue types.
+"""
+type IssueTypeFacetItem {
+"""
+The issue type.
+"""
+	issueType: IssueType!
+"""
+Number of matching issues.
+"""
+	count: Int!
 }
 
 type Job implements Node & Workload & ActivityLogger{
@@ -4986,6 +4992,52 @@ Comma-separated list of broker addresses.
 Schema registry URL.
 """
 	schemaRegistry: String!
+}
+
+type KafkaCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the credential creation.
+"""
+	data: KafkaCredentialsCreatedActivityLogEntryData!
+}
+
+type KafkaCredentialsCreatedActivityLogEntryData {
+"""
+The TTL that was requested for the credentials.
+"""
+	ttl: String!
 }
 
 type KafkaLagScalingStrategy {
@@ -6089,6 +6141,56 @@ Full connection URI for the OpenSearch instance.
 	uri: String!
 }
 
+type OpenSearchCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the credential creation.
+"""
+	data: OpenSearchCredentialsCreatedActivityLogEntryData!
+}
+
+type OpenSearchCredentialsCreatedActivityLogEntryData {
+"""
+The permission level, if applicable.
+"""
+	permission: String
+"""
+The TTL that was requested for the credentials.
+"""
+	ttl: String!
+}
+
 type OpenSearchDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -6250,6 +6352,10 @@ The OpenSearchMaintenanceUpdate.
 
 enum OpenSearchMajorVersion {
 """
+OpenSearch Version 3.6.x
+"""
+	V3_6
+"""
 OpenSearch Version 3.3.x
 """
 	V3_3
@@ -6289,6 +6395,28 @@ enum OpenSearchOrderField {
 Order OpenSearches by issue severity
 """
 	ISSUES
+}
+
+"""
+Permission level for OpenSearch credentials.
+"""
+enum OpenSearchPermission {
+"""
+Read-only access.
+"""
+	READ
+"""
+Write-only access.
+"""
+	WRITE
+"""
+Read and write access.
+"""
+	READWRITE
+"""
+Administrative access.
+"""
+	ADMIN
 }
 
 enum OpenSearchState {
@@ -6799,6 +6927,31 @@ The ID of the object to fetch.
 """
 		id: ID!
 	): Node
+"""
+Activity log across all teams in the tenant.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 	roles(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -8629,7 +8782,7 @@ These types of users can be used to automate certain parts of the API, for insta
 
 Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation.
 """
-type ServiceAccount implements Node{
+type ServiceAccount implements Node & ActivityLogger{
 """
 The globally unique ID of the service account.
 """
@@ -8700,6 +8853,31 @@ Get items before this cursor.
 """
 		before: Cursor
 	): ServiceAccountTokenConnection!
+"""
+Activity log associated with the service account.
+"""
+	activityLog(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter items.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
 """
 The workloads bound to this service account.
 """
@@ -9009,6 +9187,10 @@ Data associated with the entry.
 
 type ServiceAccountTokenUpdatedActivityLogEntryData {
 """
+The name of the service account token that was updated. Null if the entry predates this field being recorded.
+"""
+	tokenName: String
+"""
 Fields that were updated.
 """
 	updatedFields: [ServiceAccountTokenUpdatedActivityLogEntryDataUpdatedField!]!
@@ -9093,11 +9275,6 @@ The new value of the field.
 """
 A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
 Workload Token to the API, the API will authenticate the request as the bound service account.
-
-The binding is identified at authentication time by the workload's environment, team and name, plus the Workload
-UID once it has been observed (trust on first use). If the UID changes (for instance because the workload has
-been recreated), the binding is considered broken and authentication will fail until the binding is removed and
-re-added.
 """
 type ServiceAccountWorkloadBinding implements Node{
 """
@@ -9125,8 +9302,7 @@ The name of the bound workload.
 """
 	workloadName: String!
 """
-True if the binding is broken — either the workload no longer exists, or the Workload UID
-does not match the value pinned to the binding.
+True if the binding is broken, i.e. when the workload no longer exists.
 """
 	isBroken: Boolean!
 """
@@ -9170,7 +9346,7 @@ The team slug that the entry belongs to.
 """
 	teamSlug: Slug
 """
-The environment name that the entry belongs to.
+The environment the bound workload was deployed in at the time of the binding.
 """
 	environmentName: String
 """
@@ -9188,6 +9364,10 @@ The team slug of the workload.
 The name of the workload.
 """
 	workloadName: String!
+"""
+The type of the workload at the time of the binding. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+"""
+	workloadType: WorkloadType
 }
 
 type ServiceAccountWorkloadBindingConnection {
@@ -9246,7 +9426,7 @@ The team slug that the entry belongs to.
 """
 	teamSlug: Slug
 """
-The environment name that the entry belongs to.
+The environment the bound workload was deployed in at the time of removal.
 """
 	environmentName: String
 """
@@ -9264,6 +9444,10 @@ The team slug of the workload.
 The name of the workload.
 """
 	workloadName: String!
+"""
+The type of the workload at the time of removal. Null if the workload type could not be determined (e.g. workload was not yet deployed).
+"""
+	workloadType: WorkloadType
 }
 
 type ServiceCostSample {
@@ -12766,6 +12950,56 @@ Full connection URI for the Valkey instance.
 	uri: String!
 }
 
+type ValkeyCredentialsCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who performed the action.
+"""
+	actor: String!
+"""
+Creation time of the entry.
+"""
+	createdAt: Time!
+"""
+Message that summarizes the entry.
+"""
+	message: String!
+"""
+Type of the resource that was affected by the action.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+Name of the resource that was affected by the action.
+"""
+	resourceName: String!
+"""
+The team slug that the entry belongs to.
+"""
+	teamSlug: Slug!
+"""
+The environment name that the entry belongs to.
+"""
+	environmentName: String
+"""
+Data associated with the credential creation.
+"""
+	data: ValkeyCredentialsCreatedActivityLogEntryData!
+}
+
+type ValkeyCredentialsCreatedActivityLogEntryData {
+"""
+The permission level, if applicable.
+"""
+	permission: String
+"""
+The TTL that was requested for the credentials.
+"""
+	ttl: String!
+}
+
 type ValkeyDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -12984,6 +13218,28 @@ enum ValkeyOrderField {
 Order Valkeys by issue severity
 """
 	ISSUES
+}
+
+"""
+Permission level for Valkey credentials.
+"""
+enum ValkeyPermission {
+"""
+Read-only access.
+"""
+	READ
+"""
+Write-only access.
+"""
+	WRITE
+"""
+Read and write access.
+"""
+	READWRITE
+"""
+Administrative access.
+"""
+	ADMIN
 }
 
 enum ValkeyState {
@@ -13447,6 +13703,10 @@ Interface for workloads.
 """
 Interface for workloads.
 """
+	serviceAccount: ServiceAccount
+"""
+Interface for workloads.
+"""
 	sqlInstances(
 		orderBy: SqlInstanceOrder
 	): SqlInstanceConnection!
@@ -13731,6 +13991,20 @@ Interface for resources allocated to workloads.
 Interface for resources allocated to workloads.
 """
 	requests: WorkloadResourceQuantity!
+}
+
+"""
+The type of a workload.
+"""
+enum WorkloadType {
+"""
+The workload is an application.
+"""
+	APPLICATION
+"""
+The workload is a job.
+"""
+	JOB
 }
 
 type WorkloadUtilization {

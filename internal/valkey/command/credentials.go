@@ -3,9 +3,9 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 
-	"github.com/nais/cli/internal/aiven"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
@@ -28,8 +28,8 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 				if flags.Permission == "" {
 					return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
 				}
-				if !aiven.IsValidPermission(gql.CredentialPermission(flags.Permission)) {
-					return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllCredentialPermission)
+				if !slices.Contains(gql.AllValkeyPermission, gql.ValkeyPermission(flags.Permission)) {
+					return fmt.Errorf("invalid permission %q, must be one of: %v", flags.Permission, gql.AllValkeyPermission)
 				}
 				if flags.TTL == "" {
 					return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
@@ -55,7 +55,7 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 				flags.Team,
 				string(flags.Environment),
 				args.Get("name"),
-				gql.CredentialPermission(flags.Permission),
+				gql.ValkeyPermission(flags.Permission),
 				flags.TTL,
 			)
 			if err != nil {

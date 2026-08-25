@@ -152,9 +152,9 @@ type Permission string
 var _ naistrix.FlagAutoCompleter = (*Permission)(nil)
 
 func (p *Permission) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	perms := make([]string, 0, len(gql.AllCredentialPermission))
-	for _, perm := range gql.AllCredentialPermission {
-		perms = append(perms, string(perm))
+	perms := make([]string, len(gql.AllOpenSearchPermission))
+	for i, perm := range gql.AllOpenSearchPermission {
+		perms[i] = string(perm)
 	}
 	return perms, "Available permission levels."
 }
