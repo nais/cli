@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
@@ -33,17 +34,25 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args, f.Team, string(f.Environment))
 
+			// Metadata is best-effort: platform-managed secrets (e.g. Aiven, Azure AD)
+			// are not exposed via team.environment.secret, so tolerate not-found.
 			existing, err := secret.Get(ctx, metadata)
-			if err != nil {
+			if err != nil && !strings.Contains(err.Error(), "Resource not found") {
 				return fmt.Errorf("fetching secret: %w", err)
 			}
 
 			out.Warnln("You are about to delete a secret with the following configuration:")
-			if err := out.Table().Render(secret.FormatDetails(metadata, existing)); err != nil {
-				return err
+			if existing != nil {
+				if err := out.Table().Render(secret.FormatDetails(metadata, existing)); err != nil {
+					return err
+				}
+			} else {
+				if err := out.Table().Render(secret.FormatMetadata(metadata)); err != nil {
+					return err
+				}
 			}
 
-			if len(existing.Workloads.Nodes) > 0 {
+			if existing != nil && len(existing.Workloads.Nodes) > 0 {
 				out.Warnln("This secret is currently in use by the following workloads:")
 				if err := out.Table().Render(secret.FormatWorkloads(existing)); err != nil {
 					return err
