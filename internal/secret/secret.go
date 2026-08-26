@@ -290,6 +290,18 @@ func RemoveValue(ctx context.Context, metadata Metadata, valueName string) error
 	return err
 }
 
+// FormatMetadata formats bare secret metadata (team/environment/name) for table
+// rendering when the secret is not accessible via the standard GraphQL query
+// (e.g. platform-managed secrets like Aiven or Azure AD).
+func FormatMetadata(metadata Metadata) [][]string {
+	return [][]string{
+		{"Field", "Value"},
+		{"Team", metadata.TeamSlug},
+		{"Environment", metadata.EnvironmentName},
+		{"Name", metadata.Name},
+	}
+}
+
 // FormatDetails formats secret metadata for table rendering.
 func FormatDetails(metadata Metadata, s *gql.GetSecretTeamEnvironmentSecret) [][]string {
 	data := [][]string{
