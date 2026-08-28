@@ -29,7 +29,7 @@ require (
 	github.com/mark3labs/mcp-go v0.54.1
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v1.16.1
-	github.com/nais/krakend/pkg/migration v0.0.0-20260529115721-808871c75630
+	github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421
 	github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c
 	github.com/nais/naistrix v0.35.0
 	github.com/pkg/errors v0.9.1
