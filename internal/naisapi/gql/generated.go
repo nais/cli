@@ -716,6 +716,27 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 	return v.LastExitCode
 }
 
+// Operational priority levels for vulnerabilities and CVEs.
+type CVEPriority string
+
+const (
+	// Vulnerability is known to be actively exploited and requires immediate action.
+	CVEPriorityUrgent CVEPriority = "URGENT"
+	// Vulnerability is associated with ransomware or has a high EPSS percentile.
+	CVEPriorityHigh CVEPriority = "HIGH"
+	// Vulnerability has a critical or high severity and elevated EPSS percentile.
+	CVEPriorityElevated CVEPriority = "ELEVATED"
+	// Vulnerability requires monitoring but no immediate action.
+	CVEPriorityMonitor CVEPriority = "MONITOR"
+)
+
+var AllCVEPriority = []CVEPriority{
+	CVEPriorityUrgent,
+	CVEPriorityHigh,
+	CVEPriorityElevated,
+	CVEPriorityMonitor,
+}
+
 // Input for filtering the configs of a team.
 type ConfigFilter struct {
 	// Input for filtering the configs of a team.
@@ -2548,13 +2569,15 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorklo
 }
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
-	Typename        string                                                                                      `json:"__typename"`
-	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment                              `json:"teamEnvironment"`
-	Id              string                                                                                      `json:"id"`
-	Severity        Severity                                                                                    `json:"severity"`
-	Message         string                                                                                      `json:"message"`
-	Workload        GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload `json:"-"`
+	Typename        string                                                         `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
 }
 
 // GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
@@ -2582,23 +2605,62 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 	return v.Message
 }
 
-// GetWorkload returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Workload, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetWorkload() GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload {
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
+	Typename        string                                                         `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	// The workload with urgent vulnerabilities and external ingresses.
+	Workload GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload `json:"-"`
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Id, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetId() string {
+	return v.Id
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetWorkload returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Workload, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetWorkload() GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload {
 	return v.Workload
 }
 
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) UnmarshalJSON(b []byte) error {
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 		Workload json.RawMessage `json:"workload"`
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue = v
+	firstPass.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -2609,18 +2671,18 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 		dst := &v.Workload
 		src := firstPass.Workload
 		if len(src) != 0 && string(src) != "null" {
-			err = __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload(
+			err = __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload(
 				src, dst)
 			if err != nil {
 				return fmt.Errorf(
-					"unable to unmarshal GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Workload: %w", err)
+					"unable to unmarshal GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Workload: %w", err)
 			}
 		}
 	}
 	return nil
 }
 
-type __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
+type __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
 	Typename string `json:"__typename"`
 
 	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
@@ -2634,7 +2696,7 @@ type __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCritic
 	Workload json.RawMessage `json:"workload"`
 }
 
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) MarshalJSON() ([]byte, error) {
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -2642,8 +2704,8 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 	return json.Marshal(premarshaled)
 }
 
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) __premarshalJSON() (*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue, error) {
-	var retval __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) __premarshalJSON() (*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue, error) {
+	var retval __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 
 	retval.Typename = v.Typename
 	retval.TeamEnvironment = v.TeamEnvironment
@@ -2655,26 +2717,26 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulner
 		dst := &retval.Workload
 		src := v.Workload
 		var err error
-		*dst, err = __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload(
+		*dst, err = __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload(
 			&src)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"unable to marshal GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Workload: %w", err)
+				"unable to marshal GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Workload: %w", err)
 		}
 	}
 	return &retval, nil
 }
 
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload includes the requested fields of the GraphQL interface Workload.
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload includes the requested fields of the GraphQL interface Workload.
 //
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload is implemented by the following types:
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload is implemented by the following types:
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob
 // The GraphQL type's documentation follows.
 //
 // Interface for workloads.
-type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload interface {
-	implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload()
+type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload interface {
+	implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload()
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
@@ -2684,12 +2746,12 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabil
 	GetTypename() string
 }
 
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload() {
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload() {
 }
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload() {
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload() {
 }
 
-func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload(b []byte, v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload) error {
+func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload(b []byte, v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload) error {
 	if string(b) == "null" {
 		return nil
 	}
@@ -2704,84 +2766,84 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCritica
 
 	switch tn.TypeName {
 	case "Application":
-		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication)
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication)
 		return json.Unmarshal(b, *v)
 	case "Job":
-		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob)
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
 			"response was missing Workload.__typename")
 	default:
 		return fmt.Errorf(
-			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload: "%v"`, tn.TypeName)
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload: "%v"`, tn.TypeName)
 	}
 }
 
-func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload(v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload) ([]byte, error) {
+func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload(v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload) ([]byte, error) {
 
 	var typename string
 	switch v := (*v).(type) {
-	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication:
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication:
 		typename = "Application"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication
+			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob:
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob:
 		typename = "Job"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob
+			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
 		return []byte("null"), nil
 	default:
 		return nil, fmt.Errorf(
-			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkload: "%T"`, v)
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkload: "%T"`, v)
 	}
 }
 
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication includes the requested fields of the GraphQL type Application.
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
 // An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication struct {
+type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication struct {
 	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
 
-// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication.Name, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication) GetName() string {
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication) GetName() string {
 	return v.Name
 }
 
-// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication.Typename, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadApplication) GetTypename() string {
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadApplication) GetTypename() string {
 	return v.Typename
 }
 
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob includes the requested fields of the GraphQL type Job.
-type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob struct {
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob struct {
 	// Interface for workloads.
 	Name     string `json:"name"`
 	Typename string `json:"__typename"`
 }
 
-// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob.Name, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob) GetName() string {
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob) GetName() string {
 	return v.Name
 }
 
-// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob.Typename, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssueWorkloadJob) GetTypename() string {
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssueWorkloadJob) GetTypename() string {
 	return v.Typename
 }
 
@@ -2864,6 +2926,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage(
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesLastRunFailedIssue
@@ -2897,6 +2960,8 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) imple
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -2948,6 +3013,9 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressCriticalVulnerabilityIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue)
@@ -3029,13 +3097,21 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
 		typename = "ExternalIngressCriticalVulnerabilityIssue"
 
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
 		premarshaled, err := v.__premarshalJSON()
 		if err != nil {
 			return nil, err
 		}
 		result := struct {
 			TypeName string `json:"__typename"`
-			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 		}{typename, premarshaled}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -9378,6 +9454,9 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 }
 
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
 	Typename string   `json:"__typename"`
 	Severity Severity `json:"severity"`
@@ -9396,6 +9475,31 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -9456,6 +9560,7 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesLastRunFailedIssue
@@ -9485,6 +9590,8 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -9536,6 +9643,9 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressCriticalVulnerabilityIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue)
@@ -9616,6 +9726,14 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -18273,6 +18391,9 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDepr
 }
 
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
 type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
 	Typename string   `json:"__typename"`
 	Severity Severity `json:"severity"`
@@ -18291,6 +18412,31 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExte
 
 // GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -18351,6 +18497,7 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInva
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesLastRunFailedIssue
@@ -18380,6 +18527,8 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDepr
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
@@ -18431,6 +18580,9 @@ func __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNo
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressCriticalVulnerabilityIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue)
@@ -18511,6 +18663,14 @@ func __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNode
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -28371,6 +28531,9 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 }
 
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
 type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
 	Typename string   `json:"__typename"`
 	Severity Severity `json:"severity"`
@@ -28383,6 +28546,25 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 
 // GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
+	Typename string   `json:"__typename"`
+	Severity Severity `json:"severity"`
+}
+
+// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTypename() string {
+	return v.Typename
+}
+
+// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetSeverity() Severity {
 	return v.Severity
 }
 
@@ -28431,6 +28613,7 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesLastRunFailedIssue
@@ -28458,6 +28641,8 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -28509,6 +28694,9 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressCriticalVulnerabilityIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "FailedSynchronizationIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue)
@@ -28589,6 +28777,14 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue:
@@ -29793,6 +29989,41 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 	return v.Slug
 }
 
+// GrantAccessToKafkaTopicResponse is returned by GrantAccessToKafkaTopic on success.
+type GrantAccessToKafkaTopicResponse struct {
+	// Update a Kafka Topic.
+	UpdateKafkaTopic GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload `json:"updateKafkaTopic"`
+}
+
+// GetUpdateKafkaTopic returns GrantAccessToKafkaTopicResponse.UpdateKafkaTopic, and is useful for accessing the field via an interface.
+func (v *GrantAccessToKafkaTopicResponse) GetUpdateKafkaTopic() GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload {
+	return v.UpdateKafkaTopic
+}
+
+// GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload includes the requested fields of the GraphQL type UpdateKafkaTopicPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload of the updateKafkaTopic mutation.
+type GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload struct {
+	// Updated Kafka topic.
+	KafkaTopic GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic `json:"kafkaTopic"`
+}
+
+// GetKafkaTopic returns GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload.KafkaTopic, and is useful for accessing the field via an interface.
+func (v *GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload) GetKafkaTopic() GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic {
+	return v.KafkaTopic
+}
+
+// GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic struct {
+	Id string `json:"id"`
+}
+
+// GetId returns GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic.Id, and is useful for accessing the field via an interface.
+func (v *GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic) GetId() string {
+	return v.Id
+}
+
 // GrantPostgresAccessGrantPostgresAccessGrantPostgresAccessPayload includes the requested fields of the GraphQL type GrantPostgresAccessPayload.
 type GrantPostgresAccessGrantPostgresAccessGrantPostgresAccessPayload struct {
 	Error string `json:"error"`
@@ -30114,7 +30345,9 @@ const (
 	IssueTypeMissingSbom                          IssueType = "MISSING_SBOM"
 	IssueTypeVulnerableImage                      IssueType = "VULNERABLE_IMAGE"
 	IssueTypeExternalIngressCriticalVulnerability IssueType = "EXTERNAL_INGRESS_CRITICAL_VULNERABILITY"
-	IssueTypeUnleashReleaseChannel                IssueType = "UNLEASH_RELEASE_CHANNEL"
+	// Raised when a workload has external ingress exposure and urgent vulnerabilities.
+	IssueTypeExternalIngressUrgentVulnerability IssueType = "EXTERNAL_INGRESS_URGENT_VULNERABILITY"
+	IssueTypeUnleashReleaseChannel              IssueType = "UNLEASH_RELEASE_CHANNEL"
 	// Raised when an application is stuck in a restart loop.
 	IssueTypeApplicationRestartLoop IssueType = "APPLICATION_RESTART_LOOP"
 )
@@ -30134,6 +30367,7 @@ var AllIssueType = []IssueType{
 	IssueTypeMissingSbom,
 	IssueTypeVulnerableImage,
 	IssueTypeExternalIngressCriticalVulnerability,
+	IssueTypeExternalIngressUrgentVulnerability,
 	IssueTypeUnleashReleaseChannel,
 	IssueTypeApplicationRestartLoop,
 }
@@ -30249,6 +30483,43 @@ func (v *KafkaTopicFilter) GetPools() []string { return v.Pools }
 
 // GetLabels returns KafkaTopicFilter.Labels, and is useful for accessing the field via an interface.
 func (v *KafkaTopicFilter) GetLabels() []LabelFilter { return v.Labels }
+
+// Valid access levels for Kafka Topic grants.
+type KafkaTopicGrantAccess string
+
+const (
+	// Read access to the Kafka Topic.
+	KafkaTopicGrantAccessRead KafkaTopicGrantAccess = "READ"
+	// Write access to the Kafka Topic.
+	KafkaTopicGrantAccessWrite KafkaTopicGrantAccess = "WRITE"
+	// Read and write access to the Kafka Topic.
+	KafkaTopicGrantAccessReadwrite KafkaTopicGrantAccess = "READWRITE"
+)
+
+var AllKafkaTopicGrantAccess = []KafkaTopicGrantAccess{
+	KafkaTopicGrantAccessRead,
+	KafkaTopicGrantAccessWrite,
+	KafkaTopicGrantAccessReadwrite,
+}
+
+// Input for adding a grant to a Kafka Topic.
+type KafkaTopicGrantInput struct {
+	// Input for adding a grant to a Kafka Topic.
+	Subject string `json:"subject"`
+	// Input for adding a grant to a Kafka Topic.
+	TeamName string `json:"teamName"`
+	// Input for adding a grant to a Kafka Topic.
+	Access KafkaTopicGrantAccess `json:"access"`
+}
+
+// GetSubject returns KafkaTopicGrantInput.Subject, and is useful for accessing the field via an interface.
+func (v *KafkaTopicGrantInput) GetSubject() string { return v.Subject }
+
+// GetTeamName returns KafkaTopicGrantInput.TeamName, and is useful for accessing the field via an interface.
+func (v *KafkaTopicGrantInput) GetTeamName() string { return v.TeamName }
+
+// GetAccess returns KafkaTopicGrantInput.Access, and is useful for accessing the field via an interface.
+func (v *KafkaTopicGrantInput) GetAccess() KafkaTopicGrantAccess { return v.Access }
 
 // Filter resources by a user-defined label.
 type LabelFilter struct {
@@ -32128,10 +32399,15 @@ var AllTeamVulnerabilityRiskScoreTrend = []TeamVulnerabilityRiskScoreTrend{
 type TeamVulnerabilitySummaryFilter struct {
 	// Input for filtering team vulnerability summaries.
 	EnvironmentName string `json:"environmentName"`
+	// Input for filtering team vulnerability summaries.
+	Priority CVEPriority `json:"priority"`
 }
 
 // GetEnvironmentName returns TeamVulnerabilitySummaryFilter.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *TeamVulnerabilitySummaryFilter) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetPriority returns TeamVulnerabilitySummaryFilter.Priority, and is useful for accessing the field via an interface.
+func (v *TeamVulnerabilitySummaryFilter) GetPriority() CVEPriority { return v.Priority }
 
 // Input for filtering team workloads.
 type TeamWorkloadsFilter struct {
@@ -33835,6 +34111,26 @@ func (v *__GetValkeyInput) GetEnvironmentName() string { return v.EnvironmentNam
 // GetTeamSlug returns __GetValkeyInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetValkeyInput) GetTeamSlug() string { return v.TeamSlug }
 
+// __GrantAccessToKafkaTopicInput is used internally by genqlient
+type __GrantAccessToKafkaTopicInput struct {
+	TopicName       string               `json:"topicName"`
+	TeamSlug        string               `json:"teamSlug"`
+	EnvironmentName string               `json:"environmentName"`
+	Grant           KafkaTopicGrantInput `json:"grant"`
+}
+
+// GetTopicName returns __GrantAccessToKafkaTopicInput.TopicName, and is useful for accessing the field via an interface.
+func (v *__GrantAccessToKafkaTopicInput) GetTopicName() string { return v.TopicName }
+
+// GetTeamSlug returns __GrantAccessToKafkaTopicInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GrantAccessToKafkaTopicInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __GrantAccessToKafkaTopicInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GrantAccessToKafkaTopicInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetGrant returns __GrantAccessToKafkaTopicInput.Grant, and is useful for accessing the field via an interface.
+func (v *__GrantAccessToKafkaTopicInput) GetGrant() KafkaTopicGrantInput { return v.Grant }
+
 // __GrantPostgresAccessInput is used internally by genqlient
 type __GrantPostgresAccessInput struct {
 	Input GrantPostgresAccessInput `json:"input"`
@@ -35216,7 +35512,7 @@ query GetAllIssues ($teamSlug: Slug!, $filter: IssueFilter) {
 				id
 				severity
 				message
-				... on ExternalIngressCriticalVulnerabilityIssue {
+				... on ExternalIngressUrgentVulnerabilityIssue {
 					workload {
 						name
 						__typename
@@ -37002,6 +37298,48 @@ func GetValkey(
 	}
 
 	data_ = &GetValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by GrantAccessToKafkaTopic.
+const GrantAccessToKafkaTopic_Operation = `
+mutation GrantAccessToKafkaTopic ($topicName: String!, $teamSlug: Slug!, $environmentName: String!, $grant: KafkaTopicGrantInput!) {
+	updateKafkaTopic(input: {name:$topicName,teamSlug:$teamSlug,environmentName:$environmentName,addGrants:[$grant]}) {
+		kafkaTopic {
+			id
+		}
+	}
+}
+`
+
+func GrantAccessToKafkaTopic(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	topicName string,
+	teamSlug string,
+	environmentName string,
+	grant KafkaTopicGrantInput,
+) (data_ *GrantAccessToKafkaTopicResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GrantAccessToKafkaTopic",
+		Query:  GrantAccessToKafkaTopic_Operation,
+		Variables: &__GrantAccessToKafkaTopicInput{
+			TopicName:       topicName,
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			Grant:           grant,
+		},
+	}
+
+	data_ = &GrantAccessToKafkaTopicResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

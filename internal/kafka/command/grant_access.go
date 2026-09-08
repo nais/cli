@@ -2,11 +2,12 @@ package command
 
 import (
 	"context"
+	"strings"
 
-	"github.com/nais/cli/internal/aiven"
+	"github.com/nais/cli/internal/kafka"
 	"github.com/nais/cli/internal/kafka/command/flag"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
-	nais_kafka "github.com/nais/liberator/pkg/apis/kafka.nais.io/v1"
 	"github.com/nais/naistrix"
 )
 
@@ -24,38 +25,28 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			{Name: "username"},
 			{Name: "topic"},
 		},
-		ValidateFunc: validation.RequireTeam(grantAccessTopicFlags),
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireTeamAndEnvironment(grantAccessTopicFlags),
+			func(context.Context, *naistrix.Arguments) error {
+				return grantAccessTopicFlags.Access.Validate()
+			},
+		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			access := grantAccessTopicFlags.Access
-			namespace := grantAccessTopicFlags.Team
 			topicName := args.Get("topic")
-			username := kafkaApplicationName(args.Get("username"))
-
-			if err := aiven.ValidAclPermission(access); err != nil {
-				return err
+			subject := kafkaApplicationName(args.Get("username"))
+			grant := gql.KafkaTopicGrantInput{
+				Subject:  subject,
+				TeamName: grantAccessTopicFlags.Team,
+				Access:   gql.KafkaTopicGrantAccess(strings.ToUpper(string(grantAccessTopicFlags.Access))),
 			}
 
-			newAcl := nais_kafka.TopicACL{
-				Team:        namespace,
-				Application: username,
-				Access:      access,
-			}
-			accessResult, err := aiven.GrantAccessToTopic(ctx, namespace, topicName, string(grantAccessTopicFlags.Environment), newAcl)
-			if err != nil {
-				return err
-			}
-
-			if accessResult.AlreadyAdded {
-				out.Printf(
-					"ACL entry already exists for '%s/%s' on topic %s/%s.",
-					newAcl.Application, newAcl.Access, namespace, topicName,
-				)
-				return nil
+			if err := kafka.GrantAccessToKafkaTopic(ctx, topicName, grantAccessTopicFlags.Team, grantAccessTopicFlags.Environment, grant); err != nil {
+				return naistrix.Errorf("Unable to grant access: %s", err)
 			}
 
 			out.Printf(
-				"ACL added for '%s', with access '%s' on topic '%s/%s'.",
-				newAcl.Application, newAcl.Access, namespace, topicName,
+				"ACL added for %q, with access %q on topic \"%s/%s\".\n",
+				subject, grantAccessTopicFlags.Access, grantAccessTopicFlags.Team, topicName,
 			)
 			return nil
 		},
