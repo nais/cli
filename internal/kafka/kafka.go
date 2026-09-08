@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
@@ -67,4 +68,34 @@ func GetTeamTopics(ctx context.Context, team string, environment string, labels 
 	})
 
 	return ret, nil
+}
+
+func GrantAccessToKafkaTopic(ctx context.Context, topicName, teamSlug string, environmentName flags.Environment, grant gql.KafkaTopicGrantInput) error {
+	_ = `# @genqlient
+		mutation GrantAccessToKafkaTopic(
+			$topicName: String!
+			$teamSlug: Slug!,
+			$environmentName: String!,
+			$grant: KafkaTopicGrantInput!,
+		) {
+			updateKafkaTopic(
+				input: { name: $topicName, teamSlug: $teamSlug, environmentName: $environmentName, addGrants: [$grant] }
+			) {
+				kafkaTopic {
+					id
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	if _, err = gql.GrantAccessToKafkaTopic(ctx, client, topicName, teamSlug, string(environmentName), grant); err != nil {
+		return err
+	}
+
+	return nil
 }

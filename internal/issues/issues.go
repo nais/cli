@@ -46,7 +46,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			id
 			severity
 			message
-			... on ExternalIngressCriticalVulnerabilityIssue {
+			... on ExternalIngressUrgentVulnerabilityIssue {
 				workload {
 					name
 					__typename
@@ -190,7 +190,7 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			i.ResourceType = c.Unleash.GetTypename()
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesVulnerableImageIssue:
 			setWorkloadResource(c.GetWorkload())
-		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
 			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesWorkloadProblemIssue:
 			setWorkloadResource(c.GetWorkload())

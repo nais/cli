@@ -1851,6 +1851,26 @@ CVSS score of the CVE.
 """
 	cvssScore: Float
 """
+Priority of the CVE based on threat intelligence signals.
+"""
+	priority: CVEPriority!
+"""
+EPSS score of the CVE (probability of exploitation).
+"""
+	epssScore: Float
+"""
+EPSS percentile of the CVE.
+"""
+	epssPercentile: Float
+"""
+Whether the CVE has a Known Exploited Vulnerability (KEV) entry.
+"""
+	hasKevEntry: Boolean!
+"""
+Whether the CVE is known to be used in ransomware attacks.
+"""
+	knownRansomwareUse: Boolean!
+"""
 Affected workloads
 """
 	workloads(
@@ -1918,10 +1938,48 @@ Ordering options when fetching CVEs.
 }
 
 enum CVEOrderField {
+"""
+Order by CVE identifier.
+"""
 	IDENTIFIER
+"""
+Order by CVE severity.
+"""
 	SEVERITY
+"""
+Order by CVSS score.
+"""
 	CVSS_SCORE
+"""
+Order by number of affected workloads.
+"""
 	AFFECTED_WORKLOADS_COUNT
+"""
+Order by CVE priority derived from threat intelligence signals.
+"""
+	PRIORITY
+}
+
+"""
+Operational priority levels for vulnerabilities and CVEs.
+"""
+enum CVEPriority {
+"""
+Vulnerability is known to be actively exploited and requires immediate action.
+"""
+	URGENT
+"""
+Vulnerability is associated with ransomware or has a high EPSS percentile.
+"""
+	HIGH
+"""
+Vulnerability has a critical or high severity and elevated EPSS percentile.
+"""
+	ELEVATED
+"""
+Vulnerability requires monitoring but no immediate action.
+"""
+	MONITOR
 }
 
 """
@@ -3403,13 +3461,71 @@ Order by the deployment time.
 	DEPLOYMENT_TIME
 }
 
+"""
+Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
+"""
 type ExternalIngressCriticalVulnerabilityIssue implements Issue & Node{
+"""
+The globally unique identifier for this issue.
+"""
+	id: ID! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+The team environment where the affected workload is deployed.
+"""
+	teamEnvironment: TeamEnvironment! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+The severity assigned to this issue.
+"""
+	severity: Severity! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+A human-readable description of the issue.
+"""
+	message: String! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+The workload with critical vulnerabilities and external ingresses.
+"""
+	workload: Workload! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+The highest CVSS score among vulnerabilities relevant to this issue.
+"""
+	cvssScore: Float! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+"""
+External ingress URLs that expose the workload.
+"""
+	ingresses: [String!]! @deprecated(reason: "Use ExternalIngressUrgentVulnerabilityIssue instead.")
+}
+
+"""
+Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+"""
+type ExternalIngressUrgentVulnerabilityIssue implements Issue & Node{
+"""
+The globally unique identifier for this issue.
+"""
 	id: ID!
+"""
+The team environment where the affected workload is deployed.
+"""
 	teamEnvironment: TeamEnvironment!
+"""
+The severity assigned to this issue.
+"""
 	severity: Severity!
+"""
+A human-readable description of the issue.
+"""
 	message: String!
+"""
+The workload with urgent vulnerabilities and external ingresses.
+"""
 	workload: Workload!
-	cvssScore: Float!
+"""
+Number of urgent vulnerabilities on the workload.
+"""
+	priorityUrgent: Int!
+"""
+External ingress URLs that expose the workload.
+"""
 	ingresses: [String!]!
 }
 
@@ -3665,6 +3781,10 @@ Severity of the vulnerability.
 """
 	severity: ImageVulnerabilitySeverity!
 """
+Priority of the vulnerability based on threat intelligence signals.
+"""
+	priority: CVEPriority!
+"""
 Description of the vulnerability.
 """
 	description: String!
@@ -3672,6 +3792,10 @@ Description of the vulnerability.
 Package name of the vulnerability.
 """
 	package: String!
+"""
+First known package version that contains a fix.
+"""
+	fixVersion: String
 	suppression: ImageVulnerabilitySuppression
 """
 Timestamp of when the vulnerability got its current severity.
@@ -3685,6 +3809,22 @@ Link to the vulnerability details.
 CVSS score of the vulnerability.
 """
 	cvssScore: Float
+"""
+EPSS score of the vulnerability.
+"""
+	epssScore: Float
+"""
+EPSS percentile of the vulnerability (0-1).
+"""
+	epssPercentile: Float
+"""
+Whether the vulnerability has a CISA KEV entry.
+"""
+	hasKevEntry: Boolean!
+"""
+Whether the vulnerability has known ransomware use.
+"""
+	knownRansomwareUse: Boolean!
 }
 
 type ImageVulnerabilityConnection {
@@ -3749,12 +3889,34 @@ Ordering options when fetching teams.
 }
 
 enum ImageVulnerabilityOrderField {
+"""
+Order by vulnerability identifier.
+"""
 	IDENTIFIER
+"""
+Order by vulnerability severity.
+"""
 	SEVERITY
+"""
+Order by when the vulnerability received its current severity.
+"""
 	SEVERITY_SINCE
+"""
+Order by affected package name.
+"""
 	PACKAGE
+"""
+Order by suppression state.
+"""
 	STATE
+"""
+Order by whether the vulnerability is suppressed.
+"""
 	SUPPRESSED
+"""
+Order by vulnerability priority derived from threat intelligence signals.
+"""
+	PRIORITY
 }
 
 type ImageVulnerabilitySample {
@@ -3786,25 +3948,33 @@ Risk score of the image.
 """
 	riskScore: Int!
 """
+Vulnerability counts grouped by severity.
+"""
+	countsBySeverity: ImageVulnerabilitySummaryCountsBySeverity!
+"""
+Vulnerability counts grouped by operational priority.
+"""
+	countsByPriority: ImageVulnerabilitySummaryCountsByPriority!
+"""
 Number of vulnerabilities with severity LOW.
 """
-	low: Int!
+	low: Int! @deprecated(reason: "Use countsBySeverity.low instead.")
 """
 Number of vulnerabilities with severity MEDIUM.
 """
-	medium: Int!
+	medium: Int! @deprecated(reason: "Use countsBySeverity.medium instead.")
 """
 Number of vulnerabilities with severity HIGH.
 """
-	high: Int!
+	high: Int! @deprecated(reason: "Use countsBySeverity.high instead.")
 """
 Number of vulnerabilities with severity CRITICAL.
 """
-	critical: Int!
+	critical: Int! @deprecated(reason: "Use countsBySeverity.critical instead.")
 """
 Number of vulnerabilities with severity UNASSIGNED.
 """
-	unassigned: Int!
+	unassigned: Int! @deprecated(reason: "Use countsBySeverity.unassigned instead.")
 """
 Timestamp of the last update of the vulnerability summary.
 """
@@ -3815,6 +3985,54 @@ no summary exists yet for the requested tag (e.g. a newly deployed image that is
 still being scanned). The value is the tag the stale data originates from.
 """
 	staleImageTag: String
+}
+
+"""
+Vulnerability counts grouped by operational priority.
+"""
+type ImageVulnerabilitySummaryCountsByPriority {
+"""
+Known-exploited vulnerabilities that require immediate action.
+"""
+	urgent: Int!
+"""
+Vulnerabilities with strong exploitation indicators.
+"""
+	highRisk: Int!
+"""
+Vulnerabilities with elevated exploitation risk.
+"""
+	elevatedRisk: Int!
+"""
+Vulnerabilities that should be monitored.
+"""
+	monitor: Int!
+}
+
+"""
+Vulnerability counts grouped by severity.
+"""
+type ImageVulnerabilitySummaryCountsBySeverity {
+"""
+Number of vulnerabilities with severity CRITICAL.
+"""
+	critical: Int!
+"""
+Number of vulnerabilities with severity HIGH.
+"""
+	high: Int!
+"""
+Number of vulnerabilities with severity MEDIUM.
+"""
+	medium: Int!
+"""
+Number of vulnerabilities with severity LOW.
+"""
+	low: Int!
+"""
+Number of vulnerabilities with severity UNASSIGNED.
+"""
+	unassigned: Int!
 }
 
 type ImageVulnerabilitySuppression {
@@ -4158,7 +4376,11 @@ Raised when the platform reports a problem in a workload, such as an invalid spe
 	INVALID_SPEC @deprecated(reason: "Use WORKLOAD_PROBLEM instead.")
 	MISSING_SBOM
 	VULNERABLE_IMAGE
-	EXTERNAL_INGRESS_CRITICAL_VULNERABILITY
+	EXTERNAL_INGRESS_CRITICAL_VULNERABILITY @deprecated(reason: "Use EXTERNAL_INGRESS_URGENT_VULNERABILITY.")
+"""
+Raised when a workload has external ingress exposure and urgent vulnerabilities.
+"""
+	EXTERNAL_INGRESS_URGENT_VULNERABILITY
 	UNLEASH_RELEASE_CHANNEL
 """
 Raised when an application is stuck in a restart loop.
@@ -5077,7 +5299,7 @@ User-defined labels attached to this Kafka topic.
 }
 
 type KafkaTopicAcl {
-	access: String!
+	access: KafkaTopicGrantAccess!
 	workloadName: String!
 	teamName: String!
 	team: Team
@@ -5179,6 +5401,42 @@ Input for filtering Kafka topics.
 Input for filtering Kafka topics.
 """
 	labels: [LabelFilter!]
+}
+
+"""
+Valid access levels for Kafka Topic grants.
+"""
+enum KafkaTopicGrantAccess {
+"""
+Read access to the Kafka Topic.
+"""
+	READ
+"""
+Write access to the Kafka Topic.
+"""
+	WRITE
+"""
+Read and write access to the Kafka Topic.
+"""
+	READWRITE
+}
+
+"""
+Input for adding a grant to a Kafka Topic.
+"""
+input KafkaTopicGrantInput {
+"""
+Input for adding a grant to a Kafka Topic.
+"""
+	subject: String!
+"""
+Input for adding a grant to a Kafka Topic.
+"""
+	teamName: String!
+"""
+Input for adding a grant to a Kafka Topic.
+"""
+	access: KafkaTopicGrantAccess!
 }
 
 input KafkaTopicOrder {
@@ -5556,6 +5814,12 @@ Create temporary credentials for Kafka.
 	createKafkaCredentials(
 		input: CreateKafkaCredentialsInput!
 	): CreateKafkaCredentialsPayload!
+"""
+Update a Kafka Topic.
+"""
+	updateKafkaTopic(
+		input: UpdateKafkaTopicInput!
+	): UpdateKafkaTopicPayload!
 """
 Create a new OpenSearch instance.
 """
@@ -11659,25 +11923,33 @@ Risk score of the team.
 """
 	riskScore: Int!
 """
+Vulnerability counts grouped by severity.
+"""
+	countsBySeverity: ImageVulnerabilitySummaryCountsBySeverity!
+"""
+Vulnerability counts grouped by operational priority.
+"""
+	countsByPriority: ImageVulnerabilitySummaryCountsByPriority!
+"""
 Number of vulnerabilities with severity CRITICAL.
 """
-	critical: Int!
+	critical: Int! @deprecated(reason: "Use countsBySeverity.critical instead.")
 """
 Number of vulnerabilities with severity HIGH.
 """
-	high: Int!
+	high: Int! @deprecated(reason: "Use countsBySeverity.high instead.")
 """
 Number of vulnerabilities with severity MEDIUM.
 """
-	medium: Int!
+	medium: Int! @deprecated(reason: "Use countsBySeverity.medium instead.")
 """
 Number of vulnerabilities with severity LOW.
 """
-	low: Int!
+	low: Int! @deprecated(reason: "Use countsBySeverity.low instead.")
 """
 Number of vulnerabilities with severity UNASSIGNED.
 """
-	unassigned: Int!
+	unassigned: Int! @deprecated(reason: "Use countsBySeverity.unassigned instead.")
 """
 Number of workloads with a software bill of materials (SBOM) attached.
 """
@@ -11704,6 +11976,10 @@ input TeamVulnerabilitySummaryFilter {
 Input for filtering team vulnerability summaries.
 """
 	environmentName: String
+"""
+Input for filtering team vulnerability summaries.
+"""
+	priority: CVEPriority
 }
 
 """
@@ -11726,25 +12002,33 @@ Risk score of the tenant.
 """
 	riskScore: Int!
 """
+Vulnerability counts grouped by severity.
+"""
+	countsBySeverity: ImageVulnerabilitySummaryCountsBySeverity!
+"""
+Vulnerability counts grouped by operational priority.
+"""
+	countsByPriority: ImageVulnerabilitySummaryCountsByPriority!
+"""
 Number of vulnerabilities with severity CRITICAL.
 """
-	critical: Int!
+	critical: Int! @deprecated(reason: "Use countsBySeverity.critical instead.")
 """
 Number of vulnerabilities with severity HIGH.
 """
-	high: Int!
+	high: Int! @deprecated(reason: "Use countsBySeverity.high instead.")
 """
 Number of vulnerabilities with severity MEDIUM.
 """
-	medium: Int!
+	medium: Int! @deprecated(reason: "Use countsBySeverity.medium instead.")
 """
 Number of vulnerabilities with severity LOW.
 """
-	low: Int!
+	low: Int! @deprecated(reason: "Use countsBySeverity.low instead.")
 """
 Number of vulnerabilities with severity UNASSIGNED.
 """
-	unassigned: Int!
+	unassigned: Int! @deprecated(reason: "Use countsBySeverity.unassigned instead.")
 """
 Number of workloads with a software bill of materials (SBOM) attached.
 """
@@ -12281,6 +12565,38 @@ type UpdateJobPayload {
 The updated job.
 """
 	job: Job
+}
+
+"""
+Input for the updateKafkaTopic mutation.
+"""
+input UpdateKafkaTopicInput {
+"""
+Input for the updateKafkaTopic mutation.
+"""
+	name: String!
+"""
+Input for the updateKafkaTopic mutation.
+"""
+	teamSlug: Slug!
+"""
+Input for the updateKafkaTopic mutation.
+"""
+	environmentName: String!
+"""
+Input for the updateKafkaTopic mutation.
+"""
+	addGrants: [KafkaTopicGrantInput!]
+}
+
+"""
+Payload of the updateKafkaTopic mutation.
+"""
+type UpdateKafkaTopicPayload {
+"""
+Updated Kafka topic.
+"""
+	kafkaTopic: KafkaTopic!
 }
 
 input UpdateOpenSearchInput {
@@ -13464,29 +13780,57 @@ Order by the name of the environment the workload is deployed in.
 """
 	ENVIRONMENT
 """
-Order by risk score"
+Order by risk score.
 """
 	VULNERABILITY_RISK_SCORE
 """
-Order by vulnerability severity critical"
+Order by vulnerability severity critical.
 """
 	VULNERABILITY_SEVERITY_CRITICAL
 """
-Order by vulnerability severity high"
+Order by vulnerability severity high.
 """
 	VULNERABILITY_SEVERITY_HIGH
 """
-Order by vulnerability severity medium"
+Order by vulnerability severity medium.
 """
 	VULNERABILITY_SEVERITY_MEDIUM
 """
-Order by vulnerability severity low"
+Order by vulnerability severity low.
 """
 	VULNERABILITY_SEVERITY_LOW
 """
-Order by vulnerability severity unassigned"
+Order by vulnerability severity unassigned.
 """
 	VULNERABILITY_SEVERITY_UNASSIGNED
+"""
+Order by the number of urgent vulnerabilities.
+
+Urgent vulnerabilities are known to be actively exploited and should be
+prioritized for immediate action.
+"""
+	VULNERABILITY_PRIORITY_URGENT
+"""
+Order by the number of high-risk vulnerabilities.
+
+High-risk vulnerabilities are not known exploited, but have strong
+exploitation indicators such as known ransomware use or very high EPSS.
+"""
+	VULNERABILITY_PRIORITY_HIGH_RISK
+"""
+Order by the number of elevated-risk vulnerabilities.
+
+Elevated-risk vulnerabilities are lower priority than high-risk, but still
+have meaningful exploitation risk signals.
+"""
+	VULNERABILITY_PRIORITY_ELEVATED_RISK
+"""
+Order by the number of monitor vulnerabilities.
+
+Monitor vulnerabilities should be tracked, but do not currently indicate the
+same operational urgency as the higher priority buckets.
+"""
+	VULNERABILITY_PRIORITY_MONITOR
 }
 
 type VulnerabilityUpdatedActivityLogEntry implements ActivityLogEntry & Node{
