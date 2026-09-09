@@ -61,9 +61,11 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			data := &valkey.Valkey{
-				Tier:            existing.Tier,
-				Memory:          existing.Memory,
-				MaxMemoryPolicy: existing.MaxMemoryPolicy,
+				Tier:   existing.Tier,
+				Memory: existing.Memory,
+			}
+			if existing.MaxMemoryPolicy != nil {
+				data.MaxMemoryPolicy = *existing.MaxMemoryPolicy
 			}
 
 			info := [][]string{
@@ -94,14 +96,19 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			info = append(info, []string{"Memory", string(existing.Memory), newMemory})
 
 			newMaxMemoryPolicy := "(unchanged)"
-			if flags.MaxMemoryPolicy != "" && string(flags.MaxMemoryPolicy) != string(existing.MaxMemoryPolicy) {
+			existingMaxMemoryPolicy := ""
+			if existing.MaxMemoryPolicy != nil {
+				existingMaxMemoryPolicy = string(*existing.MaxMemoryPolicy)
+			}
+			if flags.MaxMemoryPolicy != "" && existing.MaxMemoryPolicy != nil && string(flags.MaxMemoryPolicy) != existingMaxMemoryPolicy {
 				data.MaxMemoryPolicy = gql.ValkeyMaxMemoryPolicy(flags.MaxMemoryPolicy)
 				if flags.IsVerbose() {
-					out.Infof("Changing max memory policy from %q to %q\n", existing.MaxMemoryPolicy, data.MaxMemoryPolicy)
+					out.Infof("Changing max memory policy from %q to %q\n", existingMaxMemoryPolicy, data.MaxMemoryPolicy)
 				}
 				newMaxMemoryPolicy = string(data.MaxMemoryPolicy)
 			}
-			info = append(info, []string{"Max memory policy", string(existing.MaxMemoryPolicy), newMaxMemoryPolicy})
+
+			info = append(info, []string{"Max memory policy", existingMaxMemoryPolicy, newMaxMemoryPolicy})
 
 			out.Infoln("You are about to update a Valkey instance with the following configuration:")
 			if err := out.Table(output.TableWithMargins()).Render(info); err != nil {

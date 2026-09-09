@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type ApplicationActivity struct {
@@ -46,7 +47,7 @@ func GetApplicationActivity(ctx context.Context, team, name string, environment 
 		return nil, false, err
 	}
 
-	resp, err := gql.GetApplicationActivity(ctx, client, team, name, []string{environment}, activityTypes, limit)
+	resp, err := gql.GetApplicationActivity(ctx, client, team, name, []string{environment}, activityTypes, new(limit))
 	if err != nil {
 		return nil, false, err
 	}
@@ -63,8 +64,8 @@ func GetApplicationActivity(ctx context.Context, team, name string, environment 
 		defaultEnv := a.TeamEnvironment.Environment.Name
 		for _, entry := range a.ActivityLog.Nodes {
 			env := defaultEnv
-			if entry.GetEnvironmentName() != "" {
-				env = entry.GetEnvironmentName()
+			if ptr.Deref(entry.GetEnvironmentName(), "") != "" {
+				env = ptr.Deref(entry.GetEnvironmentName(), "")
 			}
 			ret = append(ret, ApplicationActivity{
 				CreatedAt:   entry.GetCreatedAt(),

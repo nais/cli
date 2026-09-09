@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type OpenSearch struct {
@@ -82,7 +83,7 @@ func Delete(ctx context.Context, metadata Metadata) (bool, error) {
 		return false, err
 	}
 
-	return resp.DeleteOpenSearch.OpenSearchDeleted, nil
+	return ptr.Deref(resp.DeleteOpenSearch.OpenSearchDeleted, false), nil
 }
 
 func Get(ctx context.Context, metadata Metadata) (*gql.GetOpenSearchTeamEnvironmentOpenSearch, error) {
@@ -171,7 +172,7 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.OpenSearchFilter) (
 		return nil, err
 	}
 
-	resp, err := gql.GetAllOpenSearches(ctx, client, teamSlug, filter)
+	resp, err := gql.GetAllOpenSearches(ctx, client, teamSlug, new(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +223,7 @@ func FormatDetails(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnvironme
 		{"Tier", string(openSearch.Tier)},
 		{"Memory", string(openSearch.Memory)},
 		{"Storage (GB)", strconv.Itoa(openSearch.StorageGB)},
-		{"Version", openSearch.Version.Actual},
+		{"Version", ptr.Deref(openSearch.Version.Actual, "")},
 		{"State", string(openSearch.State)},
 	}
 }
@@ -236,7 +237,7 @@ func FormatAccessList(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnviro
 			edge.Node.Workload.GetTeam().Slug,
 			metadata.EnvironmentName,
 			edge.Node.Workload.GetName(),
-			edge.Node.Workload.GetTypename(),
+			ptr.Deref(edge.Node.Workload.GetTypename(), ""),
 			edge.Node.Access,
 		})
 	}

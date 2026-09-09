@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type SecretActivity struct {
@@ -60,7 +61,7 @@ func GetActivity(ctx context.Context, secretName, team, environment string, acti
 		return nil, false, err
 	}
 
-	resp, err := gql.GetSecretActivity(ctx, client, team, secretName, activityTypes, limit)
+	resp, err := gql.GetSecretActivity(ctx, client, team, secretName, activityTypes, new(limit))
 	if err != nil {
 		return nil, false, err
 	}
@@ -73,7 +74,7 @@ func GetActivity(ctx context.Context, secretName, team, environment string, acti
 				CreatedAt:       entry.GetCreatedAt(),
 				Actor:           entry.GetActor(),
 				Message:         entry.GetMessage(),
-				EnvironmentName: entry.GetEnvironmentName(),
+				EnvironmentName: ptr.Deref(entry.GetEnvironmentName(), ""),
 			})
 		}
 

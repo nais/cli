@@ -151,10 +151,10 @@ func GetTeamJobs(ctx context.Context, team string, environment string, labels []
 		filter.Labels = labels
 	}
 
-	resp, err := gql.GetTeamJobs(ctx, client, team, gql.JobOrder{
+	resp, err := gql.GetTeamJobs(ctx, client, team, new(gql.JobOrder{
 		Field:     gql.JobOrderFieldIssues,
 		Direction: gql.OrderDirectionDesc,
-	}, filter)
+	}), new(filter))
 	if err != nil {
 		return nil, err
 	}

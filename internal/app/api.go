@@ -36,7 +36,7 @@ func GetApplicationInstances(ctx context.Context, team, app, env string) ([]stri
 
 	filter := gql.TeamApplicationsFilter{
 		Environments: []string{env},
-		Name:         app,
+		Name:         new(app),
 	}
 	orderBy := gql.ApplicationOrder{
 		Field:     gql.ApplicationOrderFieldIssues,
@@ -48,7 +48,7 @@ func GetApplicationInstances(ctx context.Context, team, app, env string) ([]stri
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationInstances(ctx, client, team, orderBy, filter)
+	resp, err := gql.GetApplicationInstances(ctx, client, team, new(orderBy), new(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -93,10 +93,10 @@ func ApplicationEnvironments(ctx context.Context, team, appName string) ([]strin
 	}
 
 	filter := gql.TeamApplicationsFilter{
-		Name: appName,
+		Name: new(appName),
 	}
 
-	resp, err := gql.ApplicationEnvironments(ctx, client, team, filter)
+	resp, err := gql.ApplicationEnvironments(ctx, client, team, new(filter))
 	if err != nil {
 		return nil, err
 	}

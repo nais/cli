@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"k8s.io/utils/ptr"
 )
 
 type Entry struct {
@@ -40,14 +41,14 @@ func List(ctx context.Context, team string, activityTypes []gql.ActivityLogActiv
 		return nil, err
 	}
 
-	resp, err := gql.GetTeamActivity(ctx, client, team, activityTypes, limit)
+	resp, err := gql.GetTeamActivity(ctx, client, team, activityTypes, new(limit))
 	if err != nil {
 		return nil, err
 	}
 
 	ret := make([]Entry, 0, len(resp.Team.ActivityLog.Nodes))
 	for _, entry := range resp.Team.ActivityLog.Nodes {
-		env := entry.GetEnvironmentName()
+		env := ptr.Deref(entry.GetEnvironmentName(), "")
 		if env == "" {
 			env = "N/A"
 		}

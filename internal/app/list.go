@@ -183,7 +183,7 @@ func GetTeamApplications(ctx context.Context, team string, orderBy gql.Applicati
 		return nil, err
 	}
 
-	resp, err := gql.GetTeamApplications(ctx, client, team, orderBy, filter)
+	resp, err := gql.GetTeamApplications(ctx, client, team, new(orderBy), new(filter))
 	if err != nil {
 		return nil, err
 	}

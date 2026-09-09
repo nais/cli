@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
@@ -12,6 +13,7 @@ import (
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"k8s.io/utils/ptr"
 )
 
 // Entry represents a key-value pair in a config.
@@ -143,7 +145,7 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 			Name:         existing.Name,
 			Environment:  existing.TeamEnvironment.Environment.Name,
 			Data:         entries,
-			LastModified: config.LastModified(existing.LastModifiedAt),
+			LastModified: config.LastModified(ptr.Deref(existing.LastModifiedAt, time.Time{})),
 		}
 		if existing.LastModifiedBy.Email != "" {
 			detail.ModifiedBy = existing.LastModifiedBy.Email

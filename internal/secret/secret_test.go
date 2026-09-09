@@ -34,8 +34,8 @@ func TestFormatDetails(t *testing.T) {
 				TeamEnvironment: gql.GetSecretTeamEnvironmentSecretTeamEnvironment{
 					Environment: gql.GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment{Name: "dev"},
 				},
-				LastModifiedAt: recentTime,
-				LastModifiedBy: gql.GetSecretTeamEnvironmentSecretLastModifiedByUser{Email: "user@example.com"},
+				LastModifiedAt: new(recentTime),
+				LastModifiedBy: new(gql.GetSecretTeamEnvironmentSecretLastModifiedByUser{Email: "user@example.com"}),
 			},
 			want: [][]string{
 				{"Field", "Value"},
@@ -78,7 +78,7 @@ func TestFormatDetails(t *testing.T) {
 				TeamEnvironment: gql.GetSecretTeamEnvironmentSecretTeamEnvironment{
 					Environment: gql.GetSecretTeamEnvironmentSecretTeamEnvironmentEnvironment{Name: "staging"},
 				},
-				LastModifiedAt: recentTime,
+				LastModifiedAt: new(recentTime),
 			},
 			want: [][]string{
 				{"Field", "Value"},
@@ -234,11 +234,11 @@ func TestFormatWorkloads(t *testing.T) {
 					Nodes: []gql.GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesWorkload{
 						&gql.GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesApplication{
 							Name:     "my-app",
-							Typename: "Application",
+							Typename: new("Application"),
 						},
 						&gql.GetSecretTeamEnvironmentSecretWorkloadsWorkloadConnectionNodesJob{
 							Name:     "my-job",
-							Typename: "Job",
+							Typename: new("Job"),
 						},
 					},
 				},
