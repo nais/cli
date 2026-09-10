@@ -118,6 +118,13 @@ spec:
   memory: "4GB"             # 2GB | 4GB | 8GB | 16GB | 32GB | 64GB
   version: "2"              # "1" | "2" | "2.19" | "3.3"
   storageGB: 50
+  shardIndexingPressure:    # optional
+    enabled: true
+    enforced: false
+  indices:                  # optional
+    queryBoolMaxClauseCount: 2048
+  http:                     # optional
+    maxContentLength: 200Mi
 ```
 
 ### Config

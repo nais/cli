@@ -9,17 +9,6 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-type OpenSearch struct {
-	// Memory is the memory for the OpenSearch instance.
-	Memory gql.OpenSearchMemory `json:"memory" toml:"memory" jsonschema:"enum=GB_2,enum=GB_4,enum=GB_8,enum=GB_16,enum=GB_32,enum=GB_64"`
-	// Tier is the tier of the OpenSearch instance.
-	Tier gql.OpenSearchTier `json:"tier" toml:"tier" jsonschema:"enum=SINGLE_NODE,enum=HIGH_AVAILABILITY"`
-	// Version is the version of OpenSearch.
-	Version gql.OpenSearchMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V2,enum=V2_19,enum=V3_3"`
-	// StorageGB is the storage capacity in GB for the OpenSearch instance.
-	StorageGB int `json:"storageGB,omitempty" toml:"storageGB,omitempty"`
-}
-
 type Metadata struct {
 	// Name is the name of the OpenSearch instance.
 	Name string
@@ -29,20 +18,12 @@ type Metadata struct {
 	TeamSlug string
 }
 
-func Create(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
-	_ = `# @genqlient(omitempty: true)
+func Create(ctx context.Context, metadata Metadata, data gql.CreateOpenSearchInput) (*gql.CreateOpenSearchCreateOpenSearchCreateOpenSearchPayloadOpenSearch, error) {
+	_ = `# @genqlient
 		mutation CreateOpenSearch(
-		  $name: String!,
-		  $environmentName: String!,
-		  $teamSlug: Slug!,
-		  $memory: OpenSearchMemory!,
-		  $tier: OpenSearchTier!,
-		  $version: OpenSearchMajorVersion!,
-		  $storageGB: Int!,
+		  $input: CreateOpenSearchInput!
 		) {
-		  createOpenSearch(
-		    input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug, memory: $memory, tier: $tier, version: $version, storageGB: $storageGB }
-		  ) {
+		  createOpenSearch(input: $input) {
 		    openSearch {
 		      id
 		      name
@@ -56,7 +37,10 @@ func Create(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.Crea
 		return nil, err
 	}
 
-	resp, err := gql.CreateOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Memory, data.Tier, data.Version, data.StorageGB)
+	data.Name = metadata.Name
+	data.EnvironmentName = metadata.EnvironmentName
+	data.TeamSlug = metadata.TeamSlug
+	resp, err := gql.CreateOpenSearch(ctx, client, data)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +80,10 @@ func Get(ctx context.Context, metadata Metadata) (*gql.GetOpenSearchTeamEnvironm
 				memory
 				tier
 				storageGB
+				shardIndexingPressureEnabled
+				shardIndexingPressureEnforced
+				indicesQueryBoolMaxClauseCount
+				httpMaxContentLength
 				version {
 				  actual
 				  desiredMajor
@@ -145,6 +133,10 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.OpenSearchFilter) (
 				memory
 				tier
 				storageGB
+				shardIndexingPressureEnabled
+				shardIndexingPressureEnforced
+				indicesQueryBoolMaxClauseCount
+				httpMaxContentLength
 				version {
 				  actual
 				}
@@ -179,19 +171,13 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.OpenSearchFilter) (
 	return resp.Team.OpenSearches.Nodes, nil
 }
 
-func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
-	_ = `# @genqlient(omitempty: true)
+func Update(ctx context.Context, metadata Metadata, data gql.UpdateOpenSearchInput) (*gql.UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch, error) {
+	_ = `# @genqlient
 		mutation UpdateOpenSearch(
-		  $name: String!,
-		  $environmentName: String!,
-		  $teamSlug: Slug!,
-		  $memory: OpenSearchMemory!,
-		  $tier: OpenSearchTier!,
-		  $version: OpenSearchMajorVersion!,
-		  $storageGB: Int!,
+		  $input: UpdateOpenSearchInput!
 		) {
 		  updateOpenSearch(
-		    input: { name: $name, environmentName: $environmentName, teamSlug: $teamSlug, memory: $memory, tier: $tier, version: $version, storageGB: $storageGB }
+		    input: $input
 		  ) {
 		    openSearch {
 		      id
@@ -206,7 +192,10 @@ func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.Upda
 		return nil, err
 	}
 
-	resp, err := gql.UpdateOpenSearch(ctx, client, metadata.Name, metadata.EnvironmentName, metadata.TeamSlug, data.Memory, data.Tier, data.Version, data.StorageGB)
+	data.Name = metadata.Name
+	data.EnvironmentName = metadata.EnvironmentName
+	data.TeamSlug = metadata.TeamSlug
+	resp, err := gql.UpdateOpenSearch(ctx, client, data)
 	if err != nil {
 		return nil, err
 	}
@@ -215,6 +204,11 @@ func Update(ctx context.Context, metadata Metadata, data *OpenSearch) (*gql.Upda
 }
 
 func FormatDetails(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnvironmentOpenSearch) [][]string {
+	indicesQueryBoolMaxClauseCount := "(default)"
+	if openSearch.IndicesQueryBoolMaxClauseCount != nil {
+		indicesQueryBoolMaxClauseCount = strconv.Itoa(*openSearch.IndicesQueryBoolMaxClauseCount)
+	}
+
 	return [][]string{
 		{"Field", "Value"},
 		{"Team", metadata.TeamSlug},
@@ -223,6 +217,10 @@ func FormatDetails(metadata Metadata, openSearch *gql.GetOpenSearchTeamEnvironme
 		{"Tier", string(openSearch.Tier)},
 		{"Memory", string(openSearch.Memory)},
 		{"Storage (GB)", strconv.Itoa(openSearch.StorageGB)},
+		{"Shard indexing pressure enabled", strconv.FormatBool(openSearch.ShardIndexingPressureEnabled)},
+		{"Shard indexing pressure enforced", strconv.FormatBool(openSearch.ShardIndexingPressureEnforced)},
+		{"Indices query bool max clause count", indicesQueryBoolMaxClauseCount},
+		{"HTTP max content length", ptr.Deref(openSearch.HttpMaxContentLength, "(default)")},
 		{"Version", ptr.Deref(openSearch.Version.Actual, "")},
 		{"State", string(openSearch.State)},
 	}

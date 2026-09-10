@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -12,6 +13,41 @@ import (
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
+
+func optionalBool(value *bool) string {
+	if value == nil {
+		return "(default)"
+	}
+	return strconv.FormatBool(*value)
+}
+
+func optionalInt(value *int) string {
+	if value == nil {
+		return "(default)"
+	}
+	return strconv.Itoa(*value)
+}
+
+func optionalIntValue(value *int) int {
+	if value == nil {
+		return 0
+	}
+	return *value
+}
+
+func optionalString(value *string) string {
+	if value == nil {
+		return "(default)"
+	}
+	return *value
+}
+
+func optionalStringValue(value *string) string {
+	if value == nil {
+		return ""
+	}
+	return *value
+}
 
 func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.OpenSearch{GlobalFlags: parentFlags}

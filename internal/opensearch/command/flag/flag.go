@@ -3,11 +3,13 @@ package flag
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type OpenSearch struct {
@@ -16,10 +18,14 @@ type OpenSearch struct {
 
 type Create struct {
 	*OpenSearch
-	Memory    Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance. Defaults to |GB_4|."`
-	Tier      Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance. Defaults to |SINGLE_NODE|."`
-	Version   Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance. Defaults to |V2|."`
-	StorageGB int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
+	Memory                         Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance. Defaults to |GB_4|."`
+	Tier                           Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance. Defaults to |SINGLE_NODE|."`
+	Version                        Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance. Defaults to |V2|."`
+	StorageGB                      int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
+	ShardIndexingPressureEnabled   Boolean `name:"shard-indexing-pressure-enabled" usage:"Enable shard indexing pressure (true or false)."`
+	ShardIndexingPressureEnforced  Boolean `name:"shard-indexing-pressure-enforced" usage:"Enforce shard indexing pressure limits (true or false)."`
+	IndicesQueryBoolMaxClauseCount int     `name:"indices-query-bool-max-clause-count" usage:"Maximum number of clauses in a Lucene BooleanQuery."`
+	HttpMaxContentLength           string  `name:"http-max-content-length" usage:"Maximum HTTP request content length (for example, 100Mi)."`
 }
 
 func (c *Create) Validate() error {
@@ -31,6 +37,15 @@ func (c *Create) Validate() error {
 	}
 	if c.Version != "" && !c.Version.IsValid() {
 		return fmt.Errorf("invalid version %q, must be one of: %v", c.Version, gql.AllOpenSearchMajorVersion)
+	}
+	if _, err := c.ShardIndexingPressureEnabled.Bool(); err != nil {
+		return fmt.Errorf("invalid shard indexing pressure enabled: %w", err)
+	}
+	if _, err := c.ShardIndexingPressureEnforced.Bool(); err != nil {
+		return fmt.Errorf("invalid shard indexing pressure enforced: %w", err)
+	}
+	if err := validateMaxContentLength(c.HttpMaxContentLength); err != nil {
+		return err
 	}
 	return nil
 }
@@ -59,10 +74,14 @@ func (o *Output) AutoComplete(context.Context, *naistrix.Arguments, string, any)
 
 type Update struct {
 	*OpenSearch
-	Memory       Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance."`
-	Tier         Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance."`
-	MajorVersion Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance."`
-	StorageGB    int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
+	Memory                         Memory  `name:"memory" short:"m" usage:"|MEMORY| of the OpenSearch instance."`
+	Tier                           Tier    `name:"tier" usage:"|TIER| of the OpenSearch instance."`
+	MajorVersion                   Version `name:"version" usage:"Major |VERSION| of the OpenSearch instance."`
+	StorageGB                      int     `name:"storage-gb" usage:"Storage capacity in |GB| for the OpenSearch instance. Defaults vary for different combinations of |TIER| and |MEMORY|."`
+	ShardIndexingPressureEnabled   Boolean `name:"shard-indexing-pressure-enabled" usage:"Enable shard indexing pressure (true or false)."`
+	ShardIndexingPressureEnforced  Boolean `name:"shard-indexing-pressure-enforced" usage:"Enforce shard indexing pressure limits (true or false)."`
+	IndicesQueryBoolMaxClauseCount int     `name:"indices-query-bool-max-clause-count" usage:"Maximum number of clauses in a Lucene BooleanQuery."`
+	HttpMaxContentLength           string  `name:"http-max-content-length" usage:"Maximum HTTP request content length (for example, 100Mi)."`
 }
 
 func (u *Update) Validate() error {
@@ -74,6 +93,49 @@ func (u *Update) Validate() error {
 	}
 	if u.MajorVersion != "" && !u.MajorVersion.IsValid() {
 		return fmt.Errorf("invalid version %q, must be one of: %v", u.MajorVersion, gql.AllOpenSearchMajorVersion)
+	}
+	if _, err := u.ShardIndexingPressureEnabled.Bool(); err != nil {
+		return fmt.Errorf("invalid shard indexing pressure enabled: %w", err)
+	}
+	if _, err := u.ShardIndexingPressureEnforced.Bool(); err != nil {
+		return fmt.Errorf("invalid shard indexing pressure enforced: %w", err)
+	}
+	if err := validateMaxContentLength(u.HttpMaxContentLength); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Boolean supports optional true or false command-line flags.
+type Boolean string
+
+var _ naistrix.FlagAutoCompleter = (*Boolean)(nil)
+
+func (b *Boolean) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"true", "false"}, "Boolean value."
+}
+
+func (b Boolean) Bool() (*bool, error) {
+	if b == "" {
+		return nil, nil
+	}
+	value, err := strconv.ParseBool(string(b))
+	if err != nil {
+		return nil, fmt.Errorf("%q must be true or false", b)
+	}
+	return &value, nil
+}
+
+func validateMaxContentLength(value string) error {
+	if value == "" {
+		return nil
+	}
+	quantity, err := resource.ParseQuantity(value)
+	if err != nil {
+		return fmt.Errorf("invalid HTTP max content length %q: %w", value, err)
+	}
+	if quantity.Sign() <= 0 {
+		return fmt.Errorf("invalid HTTP max content length %q: must be positive", value)
 	}
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/opensearch"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 func init() {
@@ -18,10 +19,26 @@ type openSearchResource struct{ kindSupport }
 
 // openSearchSpec is the user-facing (CRD-flavoured) OpenSearch spec.
 type openSearchSpec struct {
-	Memory    string `yaml:"memory"`
-	Tier      string `yaml:"tier"`
-	Version   string `yaml:"version"`
-	StorageGB int    `yaml:"storageGB"`
+	Memory                string                           `yaml:"memory"`
+	Tier                  string                           `yaml:"tier"`
+	Version               string                           `yaml:"version"`
+	StorageGB             int                              `yaml:"storageGB"`
+	ShardIndexingPressure *OpenSearchShardIndexingPressure `yaml:"shardIndexingPressure"`
+	Indices               *OpenSearchIndices               `yaml:"indices"`
+	Http                  *OpenSearchHttp                  `yaml:"http"`
+}
+
+type OpenSearchShardIndexingPressure struct {
+	Enabled  bool `yaml:"enabled"`
+	Enforced bool `yaml:"enforced"`
+}
+
+type OpenSearchIndices struct {
+	QueryBoolMaxClauseCount *int `yaml:"queryBoolMaxClauseCount"`
+}
+
+type OpenSearchHttp struct {
+	MaxContentLength *resource.Quantity `yaml:"maxContentLength"`
 }
 
 var (
@@ -42,6 +59,7 @@ var (
 		"2":    gql.OpenSearchMajorVersionV2,
 		"2.19": gql.OpenSearchMajorVersionV219,
 		"3.3":  gql.OpenSearchMajorVersionV33,
+		"3.6":  gql.OpenSearchMajorVersionV36,
 	}
 )
 
@@ -51,8 +69,11 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 		return "", err
 	}
 
-	data := &opensearch.OpenSearch{
-		StorageGB: s.StorageGB,
+	data := gql.CreateOpenSearchInput{
+		Name:            meta.Name,
+		EnvironmentName: meta.EnvironmentName,
+		TeamSlug:        meta.TeamSlug,
+		StorageGB:       s.StorageGB,
 	}
 
 	var err error
@@ -64,6 +85,17 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 	}
 	if data.Version, err = enumValue("version", s.Version, openSearchVersion); err != nil {
 		return "", err
+	}
+	if s.ShardIndexingPressure != nil {
+		data.ShardIndexingPressureEnabled = new(s.ShardIndexingPressure.Enabled)
+		data.ShardIndexingPressureEnforced = new(s.ShardIndexingPressure.Enforced)
+	}
+	if s.Indices != nil {
+		data.IndicesQueryBoolMaxClauseCount = s.Indices.QueryBoolMaxClauseCount
+	}
+	if s.Http != nil && s.Http.MaxContentLength != nil {
+		maxContentLength := s.Http.MaxContentLength.String()
+		data.HttpMaxContentLength = &maxContentLength
 	}
 
 	ometa := opensearch.Metadata{
@@ -77,7 +109,19 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 		return "", err
 	}
 	if exists {
-		if _, err := opensearch.Update(ctx, ometa, data); err != nil {
+		if _, err := opensearch.Update(ctx, ometa, gql.UpdateOpenSearchInput{
+			Name:                           data.Name,
+			EnvironmentName:                data.EnvironmentName,
+			TeamSlug:                       data.TeamSlug,
+			Tier:                           data.Tier,
+			Memory:                         data.Memory,
+			Version:                        data.Version,
+			StorageGB:                      data.StorageGB,
+			ShardIndexingPressureEnabled:   data.ShardIndexingPressureEnabled,
+			ShardIndexingPressureEnforced:  data.ShardIndexingPressureEnforced,
+			IndicesQueryBoolMaxClauseCount: data.IndicesQueryBoolMaxClauseCount,
+			HttpMaxContentLength:           data.HttpMaxContentLength,
+		}); err != nil {
 			return "", err
 		}
 		return ActionUpdated, nil
