@@ -19,15 +19,14 @@ var allowedVersions = map[string]struct{}{
 // allowedTopLevel and allowedMetadata are the only fields a stripped manifest may
 // contain; anything else is reported as an ignored field.
 var (
-	allowedTopLevel = map[string]struct{}{"version": {}, "kind": {}, "metadata": {}, "spec": {}, "data": {}, "binaryData": {}}
-	allowedMetadata = map[string]struct{}{"name": {}, "labels": {}}
+	allowedTopLevel = map[string]struct{}{"version": {}, "type": {}, "name": {}, "labels": {}, "spec": {}, "data": {}, "binaryData": {}}
 )
 
 // Manifest is a decoded nais-native manifest envelope. Spec is kept as a raw YAML
 // node so each resource can decode it into its own typed struct.
 type Manifest struct {
 	Version string
-	Kind    string
+	Type    string
 	Name    string
 	Labels  map[string]string
 	Spec    yaml.Node
@@ -79,12 +78,10 @@ func IsNativeManifest(root *yaml.Node) bool {
 // error or warn on.
 func ParseManifest(root *yaml.Node) (Manifest, error) {
 	var raw struct {
-		Version  string `yaml:"version"`
-		Kind     string `yaml:"kind"`
-		Metadata struct {
-			Name   string            `yaml:"name"`
-			Labels map[string]string `yaml:"labels,omitempty"`
-		} `yaml:"metadata"`
+		Version    string            `yaml:"version"`
+		Type       string            `yaml:"type"`
+		Name       string            `yaml:"name"`
+		Labels     map[string]string `yaml:"labels,omitempty"`
 		Spec       yaml.Node         `yaml:"spec"`
 		Data       map[string]string `yaml:"data,omitempty"`
 		BinaryData map[string]string `yaml:"binaryData,omitempty"`
@@ -93,25 +90,25 @@ func ParseManifest(root *yaml.Node) (Manifest, error) {
 		return Manifest{}, fmt.Errorf("failed to decode manifest: %w", err)
 	}
 
-	if raw.Kind == "" {
-		return Manifest{}, fmt.Errorf("manifest is missing required field %q", "kind")
+	if raw.Type == "" {
+		return Manifest{}, fmt.Errorf("manifest is missing required field \"type\"")
 	}
-	if raw.Metadata.Name == "" {
-		return Manifest{}, fmt.Errorf("%s manifest is missing required field %q", raw.Kind, "metadata.name")
+	if raw.Name == "" {
+		return Manifest{}, fmt.Errorf("%s manifest is missing required field \"name\"", raw.Type)
 	}
 	if raw.Version == "" {
-		return Manifest{}, fmt.Errorf("%s/%s is missing required field %q", raw.Kind, raw.Metadata.Name, "version")
+		return Manifest{}, fmt.Errorf("%s/%s is missing required field \"version\"", raw.Type, raw.Name)
 	}
 	if _, ok := allowedVersions[raw.Version]; !ok {
-		return Manifest{}, fmt.Errorf("%s/%s has unsupported version %q (supported: %s)", raw.Kind, raw.Metadata.Name, raw.Version, strings.Join(sortedKeys(allowedVersions), ", "))
+		return Manifest{}, fmt.Errorf("%s/%s has unsupported version %q (supported: %s)", raw.Type, raw.Name, raw.Version, strings.Join(sortedKeys(allowedVersions), ", "))
 	}
 
 	return Manifest{
 		Version:       raw.Version,
-		Kind:          raw.Kind,
-		Name:          raw.Metadata.Name,
+		Type:          raw.Type,
+		Name:          raw.Name,
 		Spec:          raw.Spec,
-		Labels:        raw.Metadata.Labels,
+		Labels:        raw.Labels,
 		Data:          raw.Data,
 		BinaryData:    raw.BinaryData,
 		IgnoredFields: ignoredFields(root),
@@ -175,20 +172,9 @@ func ignoredFields(root *yaml.Node) []string {
 	var ignored []string
 	for i := 0; i+1 < len(root.Content); i += 2 {
 		key := root.Content[i].Value
-		value := root.Content[i+1]
-
 		if _, ok := allowedTopLevel[key]; !ok {
 			ignored = append(ignored, key)
 			continue
-		}
-
-		if key == "metadata" && value.Kind == yaml.MappingNode {
-			for j := 0; j+1 < len(value.Content); j += 2 {
-				mk := value.Content[j].Value
-				if _, ok := allowedMetadata[mk]; !ok {
-					ignored = append(ignored, "metadata."+mk)
-				}
-			}
 		}
 	}
 	return ignored

@@ -58,7 +58,7 @@ func TestForManifest(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			r, found := ForManifest(Manifest{Kind: tc.kind, Version: tc.version})
+			r, found := ForManifest(Manifest{Type: tc.kind, Version: tc.version})
 			if found != tc.wantFound {
 				t.Fatalf("ForManifest found = %v, want %v", found, tc.wantFound)
 			}

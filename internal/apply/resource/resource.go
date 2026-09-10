@@ -78,10 +78,8 @@ const (
 
 // Metadata identifies where a resource is applied.
 type Metadata struct {
-	Name            string
 	TeamSlug        string
 	EnvironmentName string
-	Labels          map[string]string
 }
 
 // Action describes what an apply did to a resource.
@@ -102,7 +100,7 @@ func register(r Resource) {
 // ForManifest returns the resource handling a stripped manifest, matched on kind
 // and version.
 func ForManifest(m Manifest) (Resource, bool) {
-	return resolve(m.Kind, m.Version, "")
+	return resolve(m.Type, m.Version, "")
 }
 
 // ForCRD returns the resource handling a regular CRD, matched on kind and

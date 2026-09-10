@@ -21,7 +21,7 @@ type configResource struct{ kindSupport }
 
 func (c configResource) Apply(ctx context.Context, meta Metadata, m Manifest) (Action, error) {
 	cmeta := config.Metadata{
-		Name:            meta.Name,
+		Name:            m.Name,
 		TeamSlug:        meta.TeamSlug,
 		EnvironmentName: meta.EnvironmentName,
 	}

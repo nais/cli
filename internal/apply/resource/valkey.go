@@ -71,7 +71,7 @@ func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (A
 	data := &valkey.Valkey{
 		Databases:            s.Databases,
 		NotifyKeyspaceEvents: s.NotifyKeyspaceEvents,
-		Labels:               meta.Labels,
+		Labels:               m.Labels,
 	}
 
 	var err error
@@ -89,7 +89,7 @@ func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (A
 	// s.Persistence is parsed but intentionally ignored until the API supports it.
 
 	vmeta := valkey.Metadata{
-		Name:            meta.Name,
+		Name:            m.Name,
 		EnvironmentName: meta.EnvironmentName,
 		TeamSlug:        meta.TeamSlug,
 	}

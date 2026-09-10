@@ -36,9 +36,8 @@ func TestReadManifestFile_Validation(t *testing.T) {
 func TestToUnstructured(t *testing.T) {
 	manifests, err := resource.Parse([]byte(`
 version: v1
-kind: SomeFutureKind
-metadata:
-  name: my-resource
+type: SomeFutureKind
+name: my-resource
 spec:
   foo: bar
   nested:
@@ -138,9 +137,8 @@ func TestRun_DryRunDoesNotApply(t *testing.T) {
 	manifestPath := filepath.Join(dir, "nais.yaml")
 	manifest := `
 version: v1
-kind: Application
-metadata:
-  name: myapp
+type: Application
+name: myapp
 spec:
   image: ghcr.io/nais/app:latest
 ---
@@ -188,10 +186,9 @@ func TestRun_DryRunFailsOnIgnoredFieldsWithoutAllowFlag(t *testing.T) {
 	manifestPath := filepath.Join(dir, "nais.yaml")
 	manifest := `
 version: v1
-kind: Application
-metadata:
-  name: myapp
-  namespace: should-fail
+type: Application
+name: myapp
+namespace: should-fail
 spec:
   image: ghcr.io/nais/app:latest
 `

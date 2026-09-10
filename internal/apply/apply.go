@@ -126,36 +126,34 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 			// non-mutation resources.
 			if _, ok := r.(resource.Applier); !ok {
 				if _, err := toUnstructured(m, r); err != nil {
-					errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
+					errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Type, m.Name, err))
 					continue
 				}
 			}
-			out.Printf("%s/%s: would apply\n", m.Kind, m.Name)
+			out.Printf("%s/%s: would apply\n", m.Type, m.Name)
 			printDryRunYAML(doc, out)
 			continue
 		}
 
 		if applier, ok := r.(resource.Applier); ok {
 			action, err := applier.Apply(ctx, resource.Metadata{
-				Name:            m.Name,
 				TeamSlug:        flags.Team,
 				EnvironmentName: environment,
-				Labels:          m.Labels,
 			}, m)
 			if err != nil {
-				out.Warnf("%s/%s: %v\n", m.Kind, m.Name, err)
-				errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
+				out.Warnf("%s/%s: %v\n", m.Type, m.Name, err)
+				errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Type, m.Name, err))
 				continue
 			}
 			waitTargets = appendWaitTarget(waitTargets, r, m.Name)
-			out.Successf("%s/%s: %s\n", m.Kind, m.Name, action)
+			out.Successf("%s/%s: %s\n", m.Type, m.Name, action)
 			continue
 		}
 
 		// No mutation: convert back into a CRD for the generic endpoint.
 		crd, err := toUnstructured(m, r)
 		if err != nil {
-			errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Kind, m.Name, err))
+			errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Type, m.Name, err))
 			continue
 		}
 
@@ -230,12 +228,12 @@ func handleIgnoredFields(m resource.Manifest, allow bool, out *naistrix.OutputWr
 	}
 	fields := strings.Join(m.IgnoredFields, ", ")
 	if allow {
-		out.Warnf("%s/%s: ignoring fields not used by nais apply: %s\n", m.Kind, m.Name, fields)
+		out.Warnf("%s/%s: ignoring fields not used by nais apply: %s\n", m.Type, m.Name, fields)
 		return nil
 	}
 	return fmt.Errorf(
 		"%s/%s contains fields not used by nais apply: %s\nRemove them, or pass --allow-ignored-fields to ignore them with a warning instead",
-		m.Kind, m.Name, fields,
+		m.Type, m.Name, fields,
 	)
 }
 
@@ -293,7 +291,7 @@ func toUnstructured(m resource.Manifest, r resource.Resource) (unstructured.Unst
 
 	return unstructured.Unstructured{Object: map[string]any{
 		"apiVersion": apiVersion,
-		"kind":       m.Kind,
+		"kind":       m.Type,
 		"metadata":   map[string]any{"name": m.Name},
 		"spec":       spec,
 	}}, nil
