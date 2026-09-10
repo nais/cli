@@ -186,7 +186,7 @@ func TestIsNativeManifest(t *testing.T) {
 			want:     true,
 		},
 		"regular CRD": {
-			manifest: "apiVersion: nais.io/v1alpha1\nkind: Application\nmanifest:\n  name: testapp\n  namespace: examples\nspec: {}\n",
+			manifest: "apiVersion: nais.io/v1alpha1\nkind: Application\nmetadata:\n  name: testapp\n  namespace: examples\nspec: {}\n",
 			want:     false,
 		},
 		// A document carrying apiVersion is never native, even with a version field.
@@ -204,7 +204,7 @@ func TestIsNativeManifest(t *testing.T) {
 }
 
 func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
-	docs, err := Documents([]byte("version: v1\nkind: Valkey\nname: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nname: b\nspec: {}\n"))
+	docs, err := Documents([]byte("version: v1\ntype: Valkey\nname: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nname: b\nspec: {}\n"))
 	if err != nil {
 		t.Fatalf("Documents: %v", err)
 	}

@@ -16,8 +16,8 @@ var allowedVersions = map[string]struct{}{
 	"v1": {},
 }
 
-// allowedTopLevel and allowedMetadata are the only fields a stripped manifest may
-// contain; anything else is reported as an ignored field.
+// allowedTopLevel are the only fields a stripped manifest may contain; anything
+// else is reported as an ignored field.
 var (
 	allowedTopLevel = map[string]struct{}{"version": {}, "type": {}, "name": {}, "labels": {}, "spec": {}, "data": {}, "binaryData": {}}
 )

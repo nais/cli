@@ -97,7 +97,7 @@ func register(r Resource) {
 	registry[r.Kind()] = append(registry[r.Kind()], r)
 }
 
-// ForManifest returns the resource handling a stripped manifest, matched on kind
+// ForManifest returns the resource handling a stripped manifest, matched on type
 // and version.
 func ForManifest(m Manifest) (Resource, bool) {
 	return resolve(m.Type, m.Version, "")
