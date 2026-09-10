@@ -20,6 +20,11 @@ type Grant struct {
 	Access       string `heading:"Access level" json:"access"`
 }
 
+type TopicGrant struct {
+	TopicName string `json:"topicName"`
+	Grant
+}
+
 func GetTeamTopics(ctx context.Context, team string, environment string, labels []gql.LabelFilter) ([]Topic, error) {
 	_ = `# @genqlient
 		query GetTeamKafkaTopics($team: Slug!, $filter: KafkaTopicFilter) {
@@ -185,6 +190,53 @@ func GetKafkaTopicGrants(ctx context.Context, topicName, teamSlug string, enviro
 		}
 		return ret[i].TeamName < ret[j].TeamName
 	})
+
+	return ret, nil
+}
+
+func GetTeamKafkaTopicGrants(ctx context.Context, teamSlug string, environmentName flags.Environment) ([]TopicGrant, error) {
+	_ = `# @genqlient
+		query GetTeamKafkaTopicGrants($teamSlug: Slug!, $environmentName: String!) {
+			team(slug: $teamSlug) {
+				kafkaTopics(first: 1000, filter: { environments: [$environmentName] }) {
+					nodes {
+						name
+						acl(first: 1000, filter: { team: $teamSlug }) {
+							nodes {
+								workloadName
+								teamName
+								access
+							}
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetTeamKafkaTopicGrants(ctx, client, teamSlug, string(environmentName))
+	if err != nil {
+		return nil, err
+	}
+
+	var ret []TopicGrant
+	for _, topic := range resp.Team.KafkaTopics.Nodes {
+		for _, grant := range topic.Acl.Nodes {
+			ret = append(ret, TopicGrant{
+				TopicName: topic.Name,
+				Grant: Grant{
+					WorkloadName: grant.WorkloadName,
+					TeamName:     grant.TeamName,
+					Access:       string(grant.Access),
+				},
+			})
+		}
+	}
 
 	return ret, nil
 }

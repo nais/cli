@@ -18,19 +18,21 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 		Title:       "Revoke a user's service-user access to a Kafka topic.",
 		Description: "Removes an ACL entry for a user on a Kafka topic with the specified access level.",
 		Args: []naistrix.Argument{
-			{Name: "topic"},
 			{Name: "username"},
+			{Name: "topic"},
 			{Name: "access"},
 		},
-		ValidateFunc:     validation.RequireTeamAndEnvironment(parentFlags),
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireTeamAndEnvironment(parentFlags),
+			func(_ context.Context, args *naistrix.Arguments) error {
+				return flag.KafkaTopicGrantAccess(args.Get("access")).Validate()
+			},
+		),
 		AutoCompleteFunc: autoCompleteKafkaGrantArguments(parentFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			topicName := args.Get("topic")
 			subject := kafkaApplicationName(args.Get("username"))
+			topicName := args.Get("topic")
 			access := flag.KafkaTopicGrantAccess(args.Get("access"))
-			if err := access.Validate(); err != nil {
-				return err
-			}
 			grant := gql.KafkaTopicGrantInput{
 				Subject:  subject,
 				TeamName: parentFlags.Team,
@@ -51,12 +53,7 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 }
 
 func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFunc {
-	topic := autoCompleteKafkaTopicName(flags, 0)
-
 	return func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
-		if args.Len() == 0 {
-			return topic(ctx, args, toComplete)
-		}
 		if args.Len() > 2 {
 			return nil, ""
 		}
@@ -65,12 +62,12 @@ func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFun
 			return nil, "Please provide team and environment to auto-complete Kafka grants."
 		}
 
-		grants, err := kafka.GetKafkaTopicGrants(ctx, args.Get("topic"), flags.Team, flags.Environment)
+		grants, err := kafka.GetTeamKafkaTopicGrants(ctx, flags.Team, flags.Environment)
 		if err != nil {
-			return nil, "Unable to fetch Kafka topic grants."
+			return nil, "Unable to fetch Kafka grants."
 		}
 
-		if args.Len() == 1 {
+		if args.Len() == 0 {
 			subjects := make([]string, 0, len(grants))
 			seen := make(map[string]struct{})
 			for _, grant := range grants {
@@ -82,15 +79,35 @@ func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFun
 			}
 			sort.Strings(subjects)
 			if len(subjects) == 0 {
-				return nil, "No access grants found for this Kafka topic."
+				return nil, "No Kafka grants found in the selected environment."
 			}
-			return subjects, "Select a subject with access to this Kafka topic."
+			return subjects, "Select a subject with a Kafka grant."
 		}
 
 		subject := kafkaApplicationName(args.Get("username"))
+		if args.Len() == 1 {
+			topics := make([]string, 0, len(grants))
+			seen := make(map[string]struct{})
+			for _, grant := range grants {
+				if grant.WorkloadName != subject {
+					continue
+				}
+				if _, ok := seen[grant.TopicName]; ok {
+					continue
+				}
+				seen[grant.TopicName] = struct{}{}
+				topics = append(topics, grant.TopicName)
+			}
+			sort.Strings(topics)
+			if len(topics) == 0 {
+				return nil, "No Kafka grants found for this subject."
+			}
+			return topics, "Select a Kafka topic with a grant for this subject."
+		}
+
 		accesses := make([]string, 0, len(grants))
 		for _, grant := range grants {
-			if grant.WorkloadName == subject {
+			if grant.WorkloadName == subject && grant.TopicName == args.Get("topic") {
 				accesses = append(accesses, strings.ToLower(grant.Access))
 			}
 		}

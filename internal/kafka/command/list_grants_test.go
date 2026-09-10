@@ -58,8 +58,8 @@ func TestRevokeGrantCommand(t *testing.T) {
 	if command.Name != "revoke-grant" {
 		t.Errorf("Name = %q, want %q", command.Name, "revoke-grant")
 	}
-	if len(command.Args) != 3 || command.Args[0].Name != "topic" || command.Args[1].Name != "username" || command.Args[2].Name != "access" {
-		t.Errorf("Args = %#v, want topic, username, and access arguments", command.Args)
+	if len(command.Args) != 3 || command.Args[0].Name != "username" || command.Args[1].Name != "topic" || command.Args[2].Name != "access" {
+		t.Errorf("Args = %#v, want username, topic, and access arguments", command.Args)
 	}
 	if command.ValidateFunc == nil {
 		t.Error("ValidateFunc is nil")
