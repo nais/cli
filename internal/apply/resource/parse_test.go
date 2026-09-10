@@ -204,7 +204,7 @@ func TestIsNativeManifest(t *testing.T) {
 }
 
 func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
-	docs, err := Documents([]byte("version: v1\ntype: Valkey\nname: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nname: b\nspec: {}\n"))
+	docs, err := Documents([]byte("version: v1\ntype: Valkey\nname: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nmetadata:\n  name: b\nspec: {}\n"))
 	if err != nil {
 		t.Fatalf("Documents: %v", err)
 	}
