@@ -62,30 +62,31 @@ func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFun
 			return nil, "Please provide team and environment to auto-complete Kafka grants."
 		}
 
-		grants, err := kafka.GetTeamKafkaTopicGrants(ctx, flags.Team, flags.Environment)
-		if err != nil {
-			return nil, "Unable to fetch Kafka grants."
-		}
+		switch args.Len() {
+		case 0, 1:
+			grants, err := kafka.GetTeamKafkaTopicGrants(ctx, flags.Team, flags.Environment)
+			if err != nil {
+				return nil, "Unable to fetch Kafka grants."
+			}
 
-		if args.Len() == 0 {
-			subjects := make([]string, 0, len(grants))
-			seen := make(map[string]struct{})
-			for _, grant := range grants {
-				if _, ok := seen[grant.WorkloadName]; ok {
-					continue
+			if args.Len() == 0 {
+				subjects := make([]string, 0, len(grants))
+				seen := make(map[string]struct{})
+				for _, grant := range grants {
+					if _, ok := seen[grant.WorkloadName]; ok {
+						continue
+					}
+					seen[grant.WorkloadName] = struct{}{}
+					subjects = append(subjects, grant.WorkloadName)
 				}
-				seen[grant.WorkloadName] = struct{}{}
-				subjects = append(subjects, grant.WorkloadName)
+				sort.Strings(subjects)
+				if len(subjects) == 0 {
+					return nil, "No Kafka grants found in the selected environment."
+				}
+				return subjects, "Select a subject with a Kafka grant."
 			}
-			sort.Strings(subjects)
-			if len(subjects) == 0 {
-				return nil, "No Kafka grants found in the selected environment."
-			}
-			return subjects, "Select a subject with a Kafka grant."
-		}
 
-		subject := kafkaApplicationName(args.Get("username"))
-		if args.Len() == 1 {
+			subject := kafkaApplicationName(args.Get("username"))
 			topics := make([]string, 0, len(grants))
 			seen := make(map[string]struct{})
 			for _, grant := range grants {
@@ -103,19 +104,27 @@ func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFun
 				return nil, "No Kafka grants found for this subject."
 			}
 			return topics, "Select a Kafka topic with a grant for this subject."
-		}
-
-		accesses := make([]string, 0, len(grants))
-		for _, grant := range grants {
-			if grant.WorkloadName == subject && grant.TopicName == args.Get("topic") {
-				accesses = append(accesses, strings.ToLower(grant.Access))
+		case 2:
+			grants, err := kafka.GetKafkaTopicGrants(ctx, args.Get("topic"), flags.Team, flags.Environment)
+			if err != nil {
+				return nil, "Unable to fetch Kafka topic grants."
 			}
-		}
-		sort.Strings(accesses)
-		if len(accesses) == 0 {
-			return nil, "No access grants found for this subject on the Kafka topic."
-		}
 
-		return accesses, "Select an access level to revoke."
+			subject := kafkaApplicationName(args.Get("username"))
+			accesses := make([]string, 0, len(grants))
+			for _, grant := range grants {
+				if grant.WorkloadName == subject {
+					accesses = append(accesses, strings.ToLower(grant.Access))
+				}
+			}
+			sort.Strings(accesses)
+			if len(accesses) == 0 {
+				return nil, "No access grants found for this subject on the Kafka topic."
+			}
+
+			return accesses, "Select an access level to revoke."
+		default:
+			return nil, ""
+		}
 	}
 }
