@@ -70,7 +70,7 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 	}
 
 	data := gql.CreateOpenSearchInput{
-		Name:            meta.Name,
+		Name:            m.Name,
 		EnvironmentName: meta.EnvironmentName,
 		TeamSlug:        meta.TeamSlug,
 		StorageGB:       s.StorageGB,
@@ -99,7 +99,7 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 	}
 
 	ometa := opensearch.Metadata{
-		Name:            meta.Name,
+		Name:            m.Name,
 		EnvironmentName: meta.EnvironmentName,
 		TeamSlug:        meta.TeamSlug,
 	}
@@ -108,6 +108,7 @@ func (o openSearchResource) Apply(ctx context.Context, meta Metadata, m Manifest
 	if err != nil {
 		return "", err
 	}
+
 	if exists {
 		if _, err := opensearch.Update(ctx, ometa, gql.UpdateOpenSearchInput{
 			Name:                           data.Name,

@@ -13,9 +13,8 @@ import (
 func TestParse_Valkey(t *testing.T) {
 	manifests, err := Parse([]byte(`
 version: v1
-kind: Valkey
-metadata:
-  name: my-valkey-instance
+type: Valkey
+name: my-valkey-instance
 spec:
   memory: "4GB"
   tier: HighAvailability
@@ -36,8 +35,8 @@ spec:
 	if got, want := m.Version, "v1"; got != want {
 		t.Errorf("version = %q, want %q", got, want)
 	}
-	if got, want := m.Kind, "Valkey"; got != want {
-		t.Errorf("kind = %q, want %q", got, want)
+	if got, want := m.Type, "Valkey"; got != want {
+		t.Errorf("type = %q, want %q", got, want)
 	}
 	if got, want := m.Name, "my-valkey-instance"; got != want {
 		t.Errorf("name = %q, want %q", got, want)
@@ -67,12 +66,11 @@ func TestParse_IgnoredFields(t *testing.T) {
 	manifests, err := Parse([]byte(`
 apiVersion: nais.io/v1
 version: v1
-kind: Valkey
-metadata:
-  name: my-valkey-instance
-  namespace: default
-  annotations:
-    foo: bar
+type: Valkey
+name: my-valkey-instance
+namespace: default
+annotations:
+  foo: bar
 spec:
   memory: "4GB"
   tier: HighAvailability
@@ -84,7 +82,7 @@ spec:
 		t.Fatalf("expected 1 manifest, got %d", len(manifests))
 	}
 
-	want := []string{"apiVersion", "metadata.namespace", "metadata.annotations"}
+	want := []string{"apiVersion", "namespace", "annotations"}
 	got := manifests[0].IgnoredFields
 	if diff := cmp.Diff(want, got, cmpopts.SortSlices(func(a, b string) bool { return a < b })); diff != "" {
 		t.Errorf("ignored fields mismatch (-want +got):\n%s", diff)
@@ -94,17 +92,15 @@ spec:
 func TestParse_MultiDocument(t *testing.T) {
 	manifests, err := Parse([]byte(`
 version: v1
-kind: Valkey
-metadata:
-  name: cache
+type: Valkey
+name: cache
 spec:
   memory: "1GB"
   tier: SingleNode
 ---
 version: v1
-kind: OpenSearch
-metadata:
-  name: search
+type: OpenSearch
+name: search
 spec:
   memory: "8GB"
   tier: HighAvailability
@@ -118,7 +114,7 @@ spec:
 	want := []string{"Valkey", "OpenSearch"}
 	got := []string{}
 	for _, m := range manifests {
-		got = append(got, m.Kind)
+		got = append(got, m.Type)
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("kinds mismatch (-want +got):\n%s", diff)
@@ -130,20 +126,20 @@ func TestParse_Errors(t *testing.T) {
 		manifest string
 		errMsg   string
 	}{
-		"missing kind": {
-			manifest: "version: v1\nmetadata:\n  name: x\nspec: {}\n",
-			errMsg:   `missing required field "kind"`,
+		"missing type": {
+			manifest: "version: v1\nname: x\nspec: {}\n",
+			errMsg:   `missing required field "type"`,
 		},
 		"missing name": {
-			manifest: "version: v1\nkind: Valkey\nspec: {}\n",
-			errMsg:   `missing required field "metadata.name"`,
+			manifest: "version: v1\ntype: Valkey\nspec: {}\n",
+			errMsg:   `missing required field "name"`,
 		},
 		"missing version": {
-			manifest: "kind: Valkey\nmetadata:\n  name: x\nspec: {}\n",
+			manifest: "type: Valkey\nname: x\nspec: {}\n",
 			errMsg:   `missing required field "version"`,
 		},
 		"unsupported version": {
-			manifest: "version: v2\nkind: Valkey\nmetadata:\n  name: x\nspec: {}\n",
+			manifest: "version: v2\ntype: Valkey\nname: x\nspec: {}\n",
 			errMsg:   `unsupported version "v2"`,
 		},
 	} {
@@ -186,7 +182,7 @@ func TestIsNativeManifest(t *testing.T) {
 		want     bool
 	}{
 		"native manifest": {
-			manifest: "version: v1\nkind: Valkey\nmetadata:\n  name: x\nspec: {}\n",
+			manifest: "version: v1\ntype: Valkey\nname: x\nspec: {}\n",
 			want:     true,
 		},
 		"regular CRD": {
@@ -195,7 +191,7 @@ func TestIsNativeManifest(t *testing.T) {
 		},
 		// A document carrying apiVersion is never native, even with a version field.
 		"both apiVersion and version": {
-			manifest: "apiVersion: nais.io/v1alpha1\nversion: v1\nkind: Application\nmetadata:\n  name: testapp\nspec: {}\n",
+			manifest: "apiVersion: nais.io/v1alpha1\nversion: v1\nkind: Application\nname: testapp\nspec: {}\n",
 			want:     false,
 		},
 	} {
@@ -208,7 +204,7 @@ func TestIsNativeManifest(t *testing.T) {
 }
 
 func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
-	docs, err := Documents([]byte("version: v1\nkind: Valkey\nmetadata:\n  name: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nmetadata:\n  name: b\nspec: {}\n"))
+	docs, err := Documents([]byte("version: v1\ntype: Valkey\nname: a\nspec: {}\n---\n---\napiVersion: nais.io/v1alpha1\nkind: Application\nmetadata:\n  name: b\nspec: {}\n"))
 	if err != nil {
 		t.Fatalf("Documents: %v", err)
 	}
@@ -226,11 +222,10 @@ func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
 func TestParse_Config(t *testing.T) {
 	manifests, err := Parse([]byte(`
 version: v1
-kind: Config
-metadata:
-  name: my-config
-  labels:
-    purpose: backend
+type: Config
+name: my-config
+labels:
+  purpose: backend
 data:
   DATABASE_HOST: db.example.com
   LOG_LEVEL: info
@@ -246,7 +241,7 @@ binaryData:
 	}
 
 	m := manifests[0]
-	if got, want := m.Kind, "Config"; got != want {
+	if got, want := m.Type, "Config"; got != want {
 		t.Errorf("kind = %q, want %q", got, want)
 	}
 	if got, want := m.Name, "my-config"; got != want {
@@ -282,9 +277,8 @@ func TestParse_ConfigNoIgnoredFields(t *testing.T) {
 	// Config uses data/binaryData at top level — these should NOT be ignored fields.
 	manifests, err := Parse([]byte(`
 version: v1
-kind: Config
-metadata:
-  name: test
+type: Config
+name: test
 data:
   KEY: value
 `))
