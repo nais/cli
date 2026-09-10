@@ -29455,6 +29455,91 @@ func (v *GetTeamJobsTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) Get
 	return v.Name
 }
 
+// GetTeamKafkaTopicGrantsResponse is returned by GetTeamKafkaTopicGrants on success.
+type GetTeamKafkaTopicGrantsResponse struct {
+	// Get a team by its slug.
+	Team GetTeamKafkaTopicGrantsTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamKafkaTopicGrantsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsResponse) GetTeam() GetTeamKafkaTopicGrantsTeam { return v.Team }
+
+// GetTeamKafkaTopicGrantsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamKafkaTopicGrantsTeam struct {
+	// Kafka topics owned by the team.
+	KafkaTopics GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
+}
+
+// GetKafkaTopics returns GetTeamKafkaTopicGrantsTeam.KafkaTopics, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeam) GetKafkaTopics() GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection {
+	return v.KafkaTopics
+}
+
+// GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection includes the requested fields of the GraphQL type KafkaTopicConnection.
+type GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection struct {
+	Nodes []GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic `json:"nodes"`
+}
+
+// GetNodes returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection) GetNodes() []GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic {
+	return v.Nodes
+}
+
+// GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic struct {
+	Name string                                                                                              `json:"name"`
+	Acl  GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection `json:"acl"`
+}
+
+// GetName returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic) GetName() string {
+	return v.Name
+}
+
+// GetAcl returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic.Acl, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic) GetAcl() GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection {
+	return v.Acl
+}
+
+// GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection includes the requested fields of the GraphQL type KafkaTopicAclConnection.
+type GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection struct {
+	Nodes []GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl `json:"nodes"`
+}
+
+// GetNodes returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection) GetNodes() []GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl {
+	return v.Nodes
+}
+
+// GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl includes the requested fields of the GraphQL type KafkaTopicAcl.
+type GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl struct {
+	WorkloadName string                `json:"workloadName"`
+	TeamName     string                `json:"teamName"`
+	Access       KafkaTopicGrantAccess `json:"access"`
+}
+
+// GetWorkloadName returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.WorkloadName, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetWorkloadName() string {
+	return v.WorkloadName
+}
+
+// GetTeamName returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.TeamName, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetTeamName() string {
+	return v.TeamName
+}
+
+// GetAccess returns GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.Access, and is useful for accessing the field via an interface.
+func (v *GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetAccess() KafkaTopicGrantAccess {
+	return v.Access
+}
+
 // GetTeamKafkaTopicsResponse is returned by GetTeamKafkaTopics on success.
 type GetTeamKafkaTopicsResponse struct {
 	// Get a team by its slug.
@@ -34337,6 +34422,18 @@ func (v *__GetTeamJobsInput) GetOrderBy() *JobOrder { return v.OrderBy }
 // GetFilter returns __GetTeamJobsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamJobsInput) GetFilter() *TeamJobsFilter { return v.Filter }
 
+// __GetTeamKafkaTopicGrantsInput is used internally by genqlient
+type __GetTeamKafkaTopicGrantsInput struct {
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTeamSlug returns __GetTeamKafkaTopicGrantsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetTeamKafkaTopicGrantsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __GetTeamKafkaTopicGrantsInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetTeamKafkaTopicGrantsInput) GetEnvironmentName() string { return v.EnvironmentName }
+
 // __GetTeamKafkaTopicsInput is used internally by genqlient
 type __GetTeamKafkaTopicsInput struct {
 	Team   string            `json:"team"`
@@ -37402,6 +37499,53 @@ func GetTeamJobs(
 	}
 
 	data_ = &GetTeamJobsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTeamKafkaTopicGrants.
+const GetTeamKafkaTopicGrants_Operation = `
+query GetTeamKafkaTopicGrants ($teamSlug: Slug!, $environmentName: String!) {
+	team(slug: $teamSlug) {
+		kafkaTopics(first: 1000, filter: {environments:[$environmentName]}) {
+			nodes {
+				name
+				acl(first: 1000, filter: {team:$teamSlug}) {
+					nodes {
+						workloadName
+						teamName
+						access
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetTeamKafkaTopicGrants(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	teamSlug string,
+	environmentName string,
+) (data_ *GetTeamKafkaTopicGrantsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamKafkaTopicGrants",
+		Query:  GetTeamKafkaTopicGrants_Operation,
+		Variables: &__GetTeamKafkaTopicGrantsInput{
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+		},
+	}
+
+	data_ = &GetTeamKafkaTopicGrantsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

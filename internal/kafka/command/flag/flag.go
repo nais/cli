@@ -34,14 +34,14 @@ func (a *KafkaTopicGrantAccess) AutoComplete(context.Context, *naistrix.Argument
 	return []string{"read", "write", "readwrite"}, "Available access levels."
 }
 
-func (a *KafkaTopicGrantAccess) Validate() error {
+func (a KafkaTopicGrantAccess) Validate() error {
 	valid := []string{"read", "write", "readwrite"}
-	if a == nil || *a == "" {
+	if a == "" {
 		return naistrix.Errorf("access level is required, must be one of: %s", strings.Join(valid, ", "))
 	}
 
-	if !slices.Contains(valid, string(*a)) {
-		return naistrix.Errorf("invalid access level: %q, must be one of: %s", *a, strings.Join(valid, ", "))
+	if !slices.Contains(valid, string(a)) {
+		return naistrix.Errorf("invalid access level: %q, must be one of: %s", a, strings.Join(valid, ", "))
 	}
 
 	return nil
