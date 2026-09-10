@@ -12,6 +12,7 @@ import (
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 	"github.com/nais/naistrix/output"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 func update(parentFlags *flag.OpenSearch) *naistrix.Command {
@@ -59,7 +60,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			},
 			{
 				Description: "Set all available options for an OpenSearch instance named some-opensearch.",
-				Command:     "some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V3_3 --storage-gb 1000",
+				Command:     "some-opensearch --memory GB_8 --tier HIGH_AVAILABILITY --version V3_3 --storage-gb 1000 --shard-indexing-pressure-enabled true --shard-indexing-pressure-enforced false --indices-query-bool-max-clause-count 2048 --http-max-content-length 200Mi",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -70,11 +71,15 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return fmt.Errorf("fetching existing OpenSearch instance: %w", err)
 			}
 
-			data := &opensearch.OpenSearch{
-				Tier:      existing.Tier,
-				Memory:    existing.Memory,
-				Version:   existing.Version.DesiredMajor,
-				StorageGB: existing.StorageGB,
+			data := &gql.UpdateOpenSearchInput{
+				Tier:                           existing.Tier,
+				Memory:                         existing.Memory,
+				Version:                        existing.Version.DesiredMajor,
+				StorageGB:                      existing.StorageGB,
+				ShardIndexingPressureEnabled:   new(existing.ShardIndexingPressureEnabled),
+				ShardIndexingPressureEnforced:  new(existing.ShardIndexingPressureEnforced),
+				IndicesQueryBoolMaxClauseCount: existing.IndicesQueryBoolMaxClauseCount,
+				HttpMaxContentLength:           existing.HttpMaxContentLength,
 			}
 
 			outData := [][]string{
@@ -129,6 +134,69 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			outData = append(outData, []string{"Storage capacity", strconv.Itoa(existing.StorageGB), newStorageGB})
 
+			newShardIndexingPressureEnabled := "(unchanged)"
+			if flags.ShardIndexingPressureEnabled != "" {
+				value, err := flags.ShardIndexingPressureEnabled.Bool()
+				if err != nil {
+					return err
+				}
+				if *value != existing.ShardIndexingPressureEnabled {
+					data.ShardIndexingPressureEnabled = value
+					newShardIndexingPressureEnabled = strconv.FormatBool(*value)
+				}
+			}
+			outData = append(outData, []string{
+				"Shard indexing pressure enabled",
+				strconv.FormatBool(existing.ShardIndexingPressureEnabled),
+				newShardIndexingPressureEnabled,
+			})
+
+			newShardIndexingPressureEnforced := "(unchanged)"
+			if flags.ShardIndexingPressureEnforced != "" {
+				value, err := flags.ShardIndexingPressureEnforced.Bool()
+				if err != nil {
+					return err
+				}
+				if *value != existing.ShardIndexingPressureEnforced {
+					data.ShardIndexingPressureEnforced = value
+					newShardIndexingPressureEnforced = strconv.FormatBool(*value)
+				}
+			}
+			outData = append(outData, []string{
+				"Shard indexing pressure enforced",
+				strconv.FormatBool(existing.ShardIndexingPressureEnforced),
+				newShardIndexingPressureEnforced,
+			})
+
+			newIndicesQueryBoolMaxClauseCount := "(unchanged)"
+			if flags.IndicesQueryBoolMaxClauseCount != 0 && flags.IndicesQueryBoolMaxClauseCount != optionalIntValue(existing.IndicesQueryBoolMaxClauseCount) {
+				data.IndicesQueryBoolMaxClauseCount = new(flags.IndicesQueryBoolMaxClauseCount)
+				newIndicesQueryBoolMaxClauseCount = strconv.Itoa(flags.IndicesQueryBoolMaxClauseCount)
+			}
+			outData = append(outData, []string{
+				"Indices query bool max clause count",
+				optionalInt(existing.IndicesQueryBoolMaxClauseCount),
+				newIndicesQueryBoolMaxClauseCount,
+			})
+
+			newHTTPMaxContentLength := "(unchanged)"
+			if flags.HttpMaxContentLength != "" {
+				quantity, err := resource.ParseQuantity(flags.HttpMaxContentLength)
+				if err != nil {
+					return fmt.Errorf("parsing HTTP max content length: %w", err)
+				}
+				httpMaxContentLength := quantity.String()
+				if httpMaxContentLength != optionalStringValue(existing.HttpMaxContentLength) {
+					data.HttpMaxContentLength = &httpMaxContentLength
+					newHTTPMaxContentLength = httpMaxContentLength
+				}
+			}
+			outData = append(outData, []string{
+				"HTTP max content length",
+				optionalString(existing.HttpMaxContentLength),
+				newHTTPMaxContentLength,
+			})
+
 			out.Infoln("You are about to update an OpenSearch instance with the following configuration:")
 			if err := out.Table(output.TableWithMargins()).Render(outData); err != nil {
 				return err
@@ -141,7 +209,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return fmt.Errorf("cancelled by user")
 			}
 
-			if _, err = opensearch.Update(ctx, metadata, data); err != nil {
+			if _, err = opensearch.Update(ctx, metadata, *data); err != nil {
 				return err
 			}
 

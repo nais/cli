@@ -1010,6 +1010,59 @@ func (v *CreateOpenSearchCredentialsResponse) GetCreateOpenSearchCredentials() C
 	return v.CreateOpenSearchCredentials
 }
 
+type CreateOpenSearchInput struct {
+	Name                           string                 `json:"name"`
+	EnvironmentName                string                 `json:"environmentName"`
+	TeamSlug                       string                 `json:"teamSlug"`
+	Tier                           OpenSearchTier         `json:"tier"`
+	Memory                         OpenSearchMemory       `json:"memory"`
+	Version                        OpenSearchMajorVersion `json:"version"`
+	StorageGB                      int                    `json:"storageGB"`
+	ShardIndexingPressureEnabled   *bool                  `json:"shardIndexingPressureEnabled"`
+	ShardIndexingPressureEnforced  *bool                  `json:"shardIndexingPressureEnforced"`
+	IndicesQueryBoolMaxClauseCount *int                   `json:"indicesQueryBoolMaxClauseCount"`
+	HttpMaxContentLength           *string                `json:"httpMaxContentLength"`
+}
+
+// GetName returns CreateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns CreateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns CreateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetTier returns CreateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
+// GetMemory returns CreateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
+
+// GetVersion returns CreateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
+// GetStorageGB returns CreateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+
+// GetShardIndexingPressureEnabled returns CreateOpenSearchInput.ShardIndexingPressureEnabled, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetShardIndexingPressureEnabled() *bool {
+	return v.ShardIndexingPressureEnabled
+}
+
+// GetShardIndexingPressureEnforced returns CreateOpenSearchInput.ShardIndexingPressureEnforced, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetShardIndexingPressureEnforced() *bool {
+	return v.ShardIndexingPressureEnforced
+}
+
+// GetIndicesQueryBoolMaxClauseCount returns CreateOpenSearchInput.IndicesQueryBoolMaxClauseCount, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetIndicesQueryBoolMaxClauseCount() *int {
+	return v.IndicesQueryBoolMaxClauseCount
+}
+
+// GetHttpMaxContentLength returns CreateOpenSearchInput.HttpMaxContentLength, and is useful for accessing the field via an interface.
+func (v *CreateOpenSearchInput) GetHttpMaxContentLength() *string { return v.HttpMaxContentLength }
+
 // CreateOpenSearchResponse is returned by CreateOpenSearch on success.
 type CreateOpenSearchResponse struct {
 	// Create a new OpenSearch instance.
@@ -1153,6 +1206,7 @@ type CreateValkeyInput struct {
 	MaxMemoryPolicy      *ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 	NotifyKeyspaceEvents *string                `json:"notifyKeyspaceEvents,omitempty"`
 	Databases            *int                   `json:"databases,omitempty"`
+	PersistenceDisabled  *bool                  `json:"persistenceDisabled"`
 }
 
 // GetName returns CreateValkeyInput.Name, and is useful for accessing the field via an interface.
@@ -1178,6 +1232,9 @@ func (v *CreateValkeyInput) GetNotifyKeyspaceEvents() *string { return v.NotifyK
 
 // GetDatabases returns CreateValkeyInput.Databases, and is useful for accessing the field via an interface.
 func (v *CreateValkeyInput) GetDatabases() *int { return v.Databases }
+
+// GetPersistenceDisabled returns CreateValkeyInput.PersistenceDisabled, and is useful for accessing the field via an interface.
+func (v *CreateValkeyInput) GetPersistenceDisabled() *bool { return v.PersistenceDisabled }
 
 // CreateValkeyResponse is returned by CreateValkey on success.
 type CreateValkeyResponse struct {
@@ -4587,6 +4644,14 @@ type GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch struc
 	Tier OpenSearchTier `json:"tier"`
 	// Available storage in GB.
 	StorageGB int `json:"storageGB"`
+	// Whether shard indexing back pressure is enabled.
+	ShardIndexingPressureEnabled bool `json:"shardIndexingPressureEnabled"`
+	// Whether shard indexing back pressure runs in enforced mode. In enforced mode requests that may degrade cluster performance are rejected; in shadow mode (enforced false) metrics are tracked but no requests are rejected.
+	ShardIndexingPressureEnforced bool `json:"shardIndexingPressureEnforced"`
+	// Maximum number of clauses a Lucene BooleanQuery can contain. When not set, the instance uses the default of 1024. Increasing this value may cause performance issues.
+	IndicesQueryBoolMaxClauseCount *int `json:"indicesQueryBoolMaxClauseCount"`
+	// Maximum content length, in a human-readable quantity (e.g. "100Mi", "1Gi"), for requests to the OpenSearch HTTP API. When not set, the instance uses the default of 100Mi.
+	HttpMaxContentLength *string `json:"httpMaxContentLength"`
 	// Fetch version for the OpenSearch instance.
 	Version         GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearchVersion                          `json:"version"`
 	State           OpenSearchState                                                                                       `json:"state"`
@@ -4612,6 +4677,26 @@ func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) 
 // GetStorageGB returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.StorageGB, and is useful for accessing the field via an interface.
 func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetStorageGB() int {
 	return v.StorageGB
+}
+
+// GetShardIndexingPressureEnabled returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.ShardIndexingPressureEnabled, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetShardIndexingPressureEnabled() bool {
+	return v.ShardIndexingPressureEnabled
+}
+
+// GetShardIndexingPressureEnforced returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.ShardIndexingPressureEnforced, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetShardIndexingPressureEnforced() bool {
+	return v.ShardIndexingPressureEnforced
+}
+
+// GetIndicesQueryBoolMaxClauseCount returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.IndicesQueryBoolMaxClauseCount, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetIndicesQueryBoolMaxClauseCount() *int {
+	return v.IndicesQueryBoolMaxClauseCount
+}
+
+// GetHttpMaxContentLength returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.HttpMaxContentLength, and is useful for accessing the field via an interface.
+func (v *GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch) GetHttpMaxContentLength() *string {
+	return v.HttpMaxContentLength
 }
 
 // GetVersion returns GetAllOpenSearchesTeamOpenSearchesOpenSearchConnectionNodesOpenSearch.Version, and is useful for accessing the field via an interface.
@@ -19465,6 +19550,14 @@ type GetOpenSearchTeamEnvironmentOpenSearch struct {
 	Tier OpenSearchTier `json:"tier"`
 	// Available storage in GB.
 	StorageGB int `json:"storageGB"`
+	// Whether shard indexing back pressure is enabled.
+	ShardIndexingPressureEnabled bool `json:"shardIndexingPressureEnabled"`
+	// Whether shard indexing back pressure runs in enforced mode. In enforced mode requests that may degrade cluster performance are rejected; in shadow mode (enforced false) metrics are tracked but no requests are rejected.
+	ShardIndexingPressureEnforced bool `json:"shardIndexingPressureEnforced"`
+	// Maximum number of clauses a Lucene BooleanQuery can contain. When not set, the instance uses the default of 1024. Increasing this value may cause performance issues.
+	IndicesQueryBoolMaxClauseCount *int `json:"indicesQueryBoolMaxClauseCount"`
+	// Maximum content length, in a human-readable quantity (e.g. "100Mi", "1Gi"), for requests to the OpenSearch HTTP API. When not set, the instance uses the default of 100Mi.
+	HttpMaxContentLength *string `json:"httpMaxContentLength"`
 	// Fetch version for the OpenSearch instance.
 	Version GetOpenSearchTeamEnvironmentOpenSearchVersion                          `json:"version"`
 	State   OpenSearchState                                                        `json:"state"`
@@ -19482,6 +19575,26 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetTier() OpenSearchTier { retu
 
 // GetStorageGB returns GetOpenSearchTeamEnvironmentOpenSearch.StorageGB, and is useful for accessing the field via an interface.
 func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetStorageGB() int { return v.StorageGB }
+
+// GetShardIndexingPressureEnabled returns GetOpenSearchTeamEnvironmentOpenSearch.ShardIndexingPressureEnabled, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetShardIndexingPressureEnabled() bool {
+	return v.ShardIndexingPressureEnabled
+}
+
+// GetShardIndexingPressureEnforced returns GetOpenSearchTeamEnvironmentOpenSearch.ShardIndexingPressureEnforced, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetShardIndexingPressureEnforced() bool {
+	return v.ShardIndexingPressureEnforced
+}
+
+// GetIndicesQueryBoolMaxClauseCount returns GetOpenSearchTeamEnvironmentOpenSearch.IndicesQueryBoolMaxClauseCount, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetIndicesQueryBoolMaxClauseCount() *int {
+	return v.IndicesQueryBoolMaxClauseCount
+}
+
+// GetHttpMaxContentLength returns GetOpenSearchTeamEnvironmentOpenSearch.HttpMaxContentLength, and is useful for accessing the field via an interface.
+func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetHttpMaxContentLength() *string {
+	return v.HttpMaxContentLength
+}
 
 // GetVersion returns GetOpenSearchTeamEnvironmentOpenSearch.Version, and is useful for accessing the field via an interface.
 func (v *GetOpenSearchTeamEnvironmentOpenSearch) GetVersion() GetOpenSearchTeamEnvironmentOpenSearchVersion {
@@ -32597,6 +32710,63 @@ func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetId() st
 // GetName returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
 func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetName() string { return v.Name }
 
+type UpdateOpenSearchInput struct {
+	Name                           string                 `json:"name"`
+	EnvironmentName                string                 `json:"environmentName"`
+	TeamSlug                       string                 `json:"teamSlug"`
+	Tier                           OpenSearchTier         `json:"tier"`
+	Memory                         OpenSearchMemory       `json:"memory"`
+	Version                        OpenSearchMajorVersion `json:"version"`
+	StorageGB                      int                    `json:"storageGB"`
+	Labels                         []ResourceLabelInput   `json:"labels"`
+	ShardIndexingPressureEnabled   *bool                  `json:"shardIndexingPressureEnabled"`
+	ShardIndexingPressureEnforced  *bool                  `json:"shardIndexingPressureEnforced"`
+	IndicesQueryBoolMaxClauseCount *int                   `json:"indicesQueryBoolMaxClauseCount"`
+	HttpMaxContentLength           *string                `json:"httpMaxContentLength"`
+}
+
+// GetName returns UpdateOpenSearchInput.Name, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns UpdateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns UpdateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetTier returns UpdateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
+
+// GetMemory returns UpdateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
+
+// GetVersion returns UpdateOpenSearchInput.Version, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
+
+// GetStorageGB returns UpdateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+
+// GetLabels returns UpdateOpenSearchInput.Labels, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetLabels() []ResourceLabelInput { return v.Labels }
+
+// GetShardIndexingPressureEnabled returns UpdateOpenSearchInput.ShardIndexingPressureEnabled, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetShardIndexingPressureEnabled() *bool {
+	return v.ShardIndexingPressureEnabled
+}
+
+// GetShardIndexingPressureEnforced returns UpdateOpenSearchInput.ShardIndexingPressureEnforced, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetShardIndexingPressureEnforced() *bool {
+	return v.ShardIndexingPressureEnforced
+}
+
+// GetIndicesQueryBoolMaxClauseCount returns UpdateOpenSearchInput.IndicesQueryBoolMaxClauseCount, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetIndicesQueryBoolMaxClauseCount() *int {
+	return v.IndicesQueryBoolMaxClauseCount
+}
+
+// GetHttpMaxContentLength returns UpdateOpenSearchInput.HttpMaxContentLength, and is useful for accessing the field via an interface.
+func (v *UpdateOpenSearchInput) GetHttpMaxContentLength() *string { return v.HttpMaxContentLength }
+
 // UpdateOpenSearchResponse is returned by UpdateOpenSearch on success.
 type UpdateOpenSearchResponse struct {
 	// Update an existing OpenSearch instance.
@@ -32688,6 +32858,7 @@ type UpdateValkeyInput struct {
 	NotifyKeyspaceEvents *string                `json:"notifyKeyspaceEvents,omitempty"`
 	Databases            *int                   `json:"databases,omitempty"`
 	Labels               []ResourceLabelInput   `json:"labels"`
+	PersistenceDisabled  *bool                  `json:"persistenceDisabled"`
 }
 
 // GetName returns UpdateValkeyInput.Name, and is useful for accessing the field via an interface.
@@ -32716,6 +32887,9 @@ func (v *UpdateValkeyInput) GetDatabases() *int { return v.Databases }
 
 // GetLabels returns UpdateValkeyInput.Labels, and is useful for accessing the field via an interface.
 func (v *UpdateValkeyInput) GetLabels() []ResourceLabelInput { return v.Labels }
+
+// GetPersistenceDisabled returns UpdateValkeyInput.PersistenceDisabled, and is useful for accessing the field via an interface.
+func (v *UpdateValkeyInput) GetPersistenceDisabled() *bool { return v.PersistenceDisabled }
 
 // UpdateValkeyResponse is returned by UpdateValkey on success.
 type UpdateValkeyResponse struct {
@@ -33421,35 +33595,11 @@ func (v *__CreateOpenSearchCredentialsInput) GetTtl() string { return v.Ttl }
 
 // __CreateOpenSearchInput is used internally by genqlient
 type __CreateOpenSearchInput struct {
-	Name            string                 `json:"name,omitempty"`
-	EnvironmentName string                 `json:"environmentName,omitempty"`
-	TeamSlug        string                 `json:"teamSlug,omitempty"`
-	Memory          OpenSearchMemory       `json:"memory,omitempty"`
-	Tier            OpenSearchTier         `json:"tier,omitempty"`
-	Version         OpenSearchMajorVersion `json:"version,omitempty"`
-	StorageGB       int                    `json:"storageGB,omitempty"`
+	Input CreateOpenSearchInput `json:"input"`
 }
 
-// GetName returns __CreateOpenSearchInput.Name, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetName() string { return v.Name }
-
-// GetEnvironmentName returns __CreateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns __CreateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
-
-// GetMemory returns __CreateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
-
-// GetTier returns __CreateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
-
-// GetVersion returns __CreateOpenSearchInput.Version, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
-
-// GetStorageGB returns __CreateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
-func (v *__CreateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+// GetInput returns __CreateOpenSearchInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreateOpenSearchInput) GetInput() CreateOpenSearchInput { return v.Input }
 
 // __CreateSecretInput is used internally by genqlient
 type __CreateSecretInput struct {
@@ -34437,35 +34587,11 @@ func (v *__UpdateConfigWithValuesInput) GetLabels() []ResourceLabelInput { retur
 
 // __UpdateOpenSearchInput is used internally by genqlient
 type __UpdateOpenSearchInput struct {
-	Name            string                 `json:"name,omitempty"`
-	EnvironmentName string                 `json:"environmentName,omitempty"`
-	TeamSlug        string                 `json:"teamSlug,omitempty"`
-	Memory          OpenSearchMemory       `json:"memory,omitempty"`
-	Tier            OpenSearchTier         `json:"tier,omitempty"`
-	Version         OpenSearchMajorVersion `json:"version,omitempty"`
-	StorageGB       int                    `json:"storageGB,omitempty"`
+	Input UpdateOpenSearchInput `json:"input"`
 }
 
-// GetName returns __UpdateOpenSearchInput.Name, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetName() string { return v.Name }
-
-// GetEnvironmentName returns __UpdateOpenSearchInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns __UpdateOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
-
-// GetMemory returns __UpdateOpenSearchInput.Memory, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetMemory() OpenSearchMemory { return v.Memory }
-
-// GetTier returns __UpdateOpenSearchInput.Tier, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetTier() OpenSearchTier { return v.Tier }
-
-// GetVersion returns __UpdateOpenSearchInput.Version, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetVersion() OpenSearchMajorVersion { return v.Version }
-
-// GetStorageGB returns __UpdateOpenSearchInput.StorageGB, and is useful for accessing the field via an interface.
-func (v *__UpdateOpenSearchInput) GetStorageGB() int { return v.StorageGB }
+// GetInput returns __UpdateOpenSearchInput.Input, and is useful for accessing the field via an interface.
+func (v *__UpdateOpenSearchInput) GetInput() UpdateOpenSearchInput { return v.Input }
 
 // __UpdateSecretValueInput is used internally by genqlient
 type __UpdateSecretValueInput struct {
@@ -34866,8 +34992,8 @@ func CreateKafkaCredentials(
 
 // The mutation executed by CreateOpenSearch.
 const CreateOpenSearch_Operation = `
-mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: OpenSearchMemory!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion!, $storageGB: Int!) {
-	createOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,version:$version,storageGB:$storageGB}) {
+mutation CreateOpenSearch ($input: CreateOpenSearchInput!) {
+	createOpenSearch(input: $input) {
 		openSearch {
 			id
 			name
@@ -34879,25 +35005,13 @@ mutation CreateOpenSearch ($name: String!, $environmentName: String!, $teamSlug:
 func CreateOpenSearch(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	name string,
-	environmentName string,
-	teamSlug string,
-	memory OpenSearchMemory,
-	tier OpenSearchTier,
-	version OpenSearchMajorVersion,
-	storageGB int,
+	input CreateOpenSearchInput,
 ) (data_ *CreateOpenSearchResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "CreateOpenSearch",
 		Query:  CreateOpenSearch_Operation,
 		Variables: &__CreateOpenSearchInput{
-			Name:            name,
-			EnvironmentName: environmentName,
-			TeamSlug:        teamSlug,
-			Memory:          memory,
-			Tier:            tier,
-			Version:         version,
-			StorageGB:       storageGB,
+			Input: input,
 		},
 	}
 
@@ -35639,6 +35753,10 @@ query GetAllOpenSearches ($teamSlug: Slug!, $filter: OpenSearchFilter) {
 				memory
 				tier
 				storageGB
+				shardIndexingPressureEnabled
+				shardIndexingPressureEnforced
+				indicesQueryBoolMaxClauseCount
+				httpMaxContentLength
 				version {
 					actual
 				}
@@ -36745,6 +36863,10 @@ query GetOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!
 				memory
 				tier
 				storageGB
+				shardIndexingPressureEnabled
+				shardIndexingPressureEnforced
+				indicesQueryBoolMaxClauseCount
+				httpMaxContentLength
 				version {
 					actual
 					desiredMajor
@@ -38239,8 +38361,8 @@ func UpdateConfigWithValues(
 
 // The mutation executed by UpdateOpenSearch.
 const UpdateOpenSearch_Operation = `
-mutation UpdateOpenSearch ($name: String!, $environmentName: String!, $teamSlug: Slug!, $memory: OpenSearchMemory!, $tier: OpenSearchTier!, $version: OpenSearchMajorVersion!, $storageGB: Int!) {
-	updateOpenSearch(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,memory:$memory,tier:$tier,version:$version,storageGB:$storageGB}) {
+mutation UpdateOpenSearch ($input: UpdateOpenSearchInput!) {
+	updateOpenSearch(input: $input) {
 		openSearch {
 			id
 			name
@@ -38252,25 +38374,13 @@ mutation UpdateOpenSearch ($name: String!, $environmentName: String!, $teamSlug:
 func UpdateOpenSearch(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	name string,
-	environmentName string,
-	teamSlug string,
-	memory OpenSearchMemory,
-	tier OpenSearchTier,
-	version OpenSearchMajorVersion,
-	storageGB int,
+	input UpdateOpenSearchInput,
 ) (data_ *UpdateOpenSearchResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "UpdateOpenSearch",
 		Query:  UpdateOpenSearch_Operation,
 		Variables: &__UpdateOpenSearchInput{
-			Name:            name,
-			EnvironmentName: environmentName,
-			TeamSlug:        teamSlug,
-			Memory:          memory,
-			Tier:            tier,
-			Version:         version,
-			StorageGB:       storageGB,
+			Input: input,
 		},
 	}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 	"github.com/nais/naistrix/output"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 func create(parentFlags *flag.OpenSearch) *naistrix.Command {
@@ -53,18 +54,17 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 			},
 			{
 				Description: "Create an OpenSearch instance named some-opensearch with all possible options specified.",
-				Command:     "some-opensearch --memory GB_4 --tier SINGLE_NODE --version V2 --storage-gb 100",
+				Command:     "some-opensearch --memory GB_4 --tier SINGLE_NODE --version V2 --storage-gb 100 --shard-indexing-pressure-enabled true --shard-indexing-pressure-enforced false --indices-query-bool-max-clause-count 2048 --http-max-content-length 200Mi",
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			metadata := metadataFromArgs(args, flags.Team, string(flags.Environment))
 
 			// defaults
-			data := &opensearch.OpenSearch{
-				Tier:      gql.OpenSearchTierSingleNode,
-				Memory:    gql.OpenSearchMemoryGb4,
-				StorageGB: 0,
-				Version:   gql.OpenSearchMajorVersionV33,
+			data := gql.CreateOpenSearchInput{
+				Tier:    gql.OpenSearchTierSingleNode,
+				Memory:  gql.OpenSearchMemoryGb4,
+				Version: gql.OpenSearchMajorVersionV33,
 			}
 
 			if flags.Tier != "" {
@@ -78,6 +78,27 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			if flags.Version != "" {
 				data.Version = gql.OpenSearchMajorVersion(flags.Version)
+			}
+			shardIndexingPressureEnabled, err := flags.ShardIndexingPressureEnabled.Bool()
+			if err != nil {
+				return err
+			}
+			data.ShardIndexingPressureEnabled = shardIndexingPressureEnabled
+			shardIndexingPressureEnforced, err := flags.ShardIndexingPressureEnforced.Bool()
+			if err != nil {
+				return err
+			}
+			data.ShardIndexingPressureEnforced = shardIndexingPressureEnforced
+			if flags.IndicesQueryBoolMaxClauseCount != 0 {
+				data.IndicesQueryBoolMaxClauseCount = new(flags.IndicesQueryBoolMaxClauseCount)
+			}
+			if flags.HttpMaxContentLength != "" {
+				quantity, err := resource.ParseQuantity(flags.HttpMaxContentLength)
+				if err != nil {
+					return fmt.Errorf("parsing HTTP max content length: %w", err)
+				}
+				httpMaxContentLength := quantity.String()
+				data.HttpMaxContentLength = &httpMaxContentLength
 			}
 
 			storage, err := normalizeStorage(data.Tier, data.Memory, data.StorageGB)
@@ -95,6 +116,10 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				{"Memory", string(data.Memory)},
 				{"Storage", fmt.Sprintf("%d GB", data.StorageGB)},
 				{"Version", string(data.Version)},
+				{"Shard indexing pressure enabled", optionalBool(data.ShardIndexingPressureEnabled)},
+				{"Shard indexing pressure enforced", optionalBool(data.ShardIndexingPressureEnforced)},
+				{"Indices query bool max clause count", optionalInt(data.IndicesQueryBoolMaxClauseCount)},
+				{"HTTP max content length", optionalString(data.HttpMaxContentLength)},
 			}
 
 			out.Infoln("You are about to create an OpenSearch instance with the following configuration:")
