@@ -36,7 +36,7 @@ func (a *KafkaTopicGrantAccess) AutoComplete(context.Context, *naistrix.Argument
 
 func (a *KafkaTopicGrantAccess) Validate() error {
 	valid := []string{"read", "write", "readwrite"}
-	if a == nil {
+	if a == nil || *a == "" {
 		return naistrix.Errorf("access level is required, must be one of: %s", strings.Join(valid, ", "))
 	}
 
@@ -68,4 +68,9 @@ type Credentials struct {
 type GrantAccess struct {
 	*Kafka
 	Access KafkaTopicGrantAccess `name:"access" short:"a" usage:"Access |LEVEL| (readwrite, read and write)."`
+}
+
+type ListGrants struct {
+	*Kafka
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
