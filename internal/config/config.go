@@ -7,7 +7,6 @@ import (
 	"slices"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"k8s.io/utils/ptr"
@@ -116,8 +115,6 @@ func GetAll(ctx context.Context, teamSlug string, filter gql.ConfigFilter) ([]gq
 	if err != nil {
 		return nil, err
 	}
-
-	spew.Dump(resp.Team.Configs.Nodes)
 
 	return resp.Team.Configs.Nodes, nil
 }

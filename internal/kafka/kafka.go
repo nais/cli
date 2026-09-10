@@ -14,6 +14,12 @@ type Topic struct {
 	Environment string `json:"environment"`
 }
 
+type Grant struct {
+	WorkloadName string `heading:"Subject" json:"workloadName"`
+	TeamName     string `heading:"Team" json:"teamName"`
+	Access       string `heading:"Access level" json:"access"`
+}
+
 func GetTeamTopics(ctx context.Context, team string, environment string, labels []gql.LabelFilter) ([]Topic, error) {
 	_ = `# @genqlient
 		query GetTeamKafkaTopics($team: Slug!, $filter: KafkaTopicFilter) {
@@ -98,4 +104,87 @@ func GrantAccessToKafkaTopic(ctx context.Context, topicName, teamSlug string, en
 	}
 
 	return nil
+}
+
+func RevokeAccessFromKafkaTopic(ctx context.Context, topicName, teamSlug string, environmentName flags.Environment, grant gql.KafkaTopicGrantInput) error {
+	_ = `# @genqlient
+		mutation RevokeAccessFromKafkaTopic(
+			$topicName: String!
+			$teamSlug: Slug!,
+			$environmentName: String!,
+			$grant: KafkaTopicGrantInput!,
+		) {
+			updateKafkaTopic(
+				input: { name: $topicName, teamSlug: $teamSlug, environmentName: $environmentName, revokeGrants: [$grant] }
+			) {
+				kafkaTopic {
+					id
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	if _, err = gql.RevokeAccessFromKafkaTopic(ctx, client, topicName, teamSlug, string(environmentName), grant); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetKafkaTopicGrants(ctx context.Context, topicName, teamSlug string, environmentName flags.Environment) ([]Grant, error) {
+	_ = `# @genqlient
+		query GetKafkaTopicGrants($topicName: String!, $teamSlug: Slug!, $environmentName: String!) {
+			team(slug: $teamSlug) {
+				kafkaTopics(first: 1, filter: { name: $topicName, environments: [$environmentName] }) {
+					nodes {
+						acl(first: 1000) {
+							nodes {
+								workloadName
+								teamName
+								access
+							}
+						}
+					}
+				}
+			}
+		}
+	`
+
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := gql.GetKafkaTopicGrants(ctx, client, topicName, teamSlug, string(environmentName))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp.Team.KafkaTopics.Nodes) == 0 {
+		return nil, nil
+	}
+
+	grants := resp.Team.KafkaTopics.Nodes[0].Acl.Nodes
+	ret := make([]Grant, 0, len(grants))
+	for _, grant := range grants {
+		ret = append(ret, Grant{
+			WorkloadName: grant.WorkloadName,
+			TeamName:     grant.TeamName,
+			Access:       string(grant.Access),
+		})
+	}
+
+	sort.Slice(ret, func(i, j int) bool {
+		if ret[i].TeamName == ret[j].TeamName {
+			return ret[i].WorkloadName < ret[j].WorkloadName
+		}
+		return ret[i].TeamName < ret[j].TeamName
+	})
+
+	return ret, nil
 }

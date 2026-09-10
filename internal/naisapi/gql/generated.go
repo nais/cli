@@ -19425,6 +19425,85 @@ func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunT
 	return v.Actor
 }
 
+// GetKafkaTopicGrantsResponse is returned by GetKafkaTopicGrants on success.
+type GetKafkaTopicGrantsResponse struct {
+	// Get a team by its slug.
+	Team GetKafkaTopicGrantsTeam `json:"team"`
+}
+
+// GetTeam returns GetKafkaTopicGrantsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsResponse) GetTeam() GetKafkaTopicGrantsTeam { return v.Team }
+
+// GetKafkaTopicGrantsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetKafkaTopicGrantsTeam struct {
+	// Kafka topics owned by the team.
+	KafkaTopics GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
+}
+
+// GetKafkaTopics returns GetKafkaTopicGrantsTeam.KafkaTopics, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeam) GetKafkaTopics() GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection {
+	return v.KafkaTopics
+}
+
+// GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection includes the requested fields of the GraphQL type KafkaTopicConnection.
+type GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection struct {
+	Nodes []GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic `json:"nodes"`
+}
+
+// GetNodes returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection) GetNodes() []GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic {
+	return v.Nodes
+}
+
+// GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic struct {
+	Acl GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection `json:"acl"`
+}
+
+// GetAcl returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic.Acl, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopic) GetAcl() GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection {
+	return v.Acl
+}
+
+// GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection includes the requested fields of the GraphQL type KafkaTopicAclConnection.
+type GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection struct {
+	Nodes []GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl `json:"nodes"`
+}
+
+// GetNodes returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnection) GetNodes() []GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl {
+	return v.Nodes
+}
+
+// GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl includes the requested fields of the GraphQL type KafkaTopicAcl.
+type GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl struct {
+	WorkloadName string                `json:"workloadName"`
+	TeamName     string                `json:"teamName"`
+	Access       KafkaTopicGrantAccess `json:"access"`
+}
+
+// GetWorkloadName returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.WorkloadName, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetWorkloadName() string {
+	return v.WorkloadName
+}
+
+// GetTeamName returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.TeamName, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetTeamName() string {
+	return v.TeamName
+}
+
+// GetAccess returns GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl.Access, and is useful for accessing the field via an interface.
+func (v *GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicAclKafkaTopicAclConnectionNodesKafkaTopicAcl) GetAccess() KafkaTopicGrantAccess {
+	return v.Access
+}
+
 // GetLatestJobRunStateResponse is returned by GetLatestJobRunState on success.
 type GetLatestJobRunStateResponse struct {
 	// Get a team by its slug.
@@ -31767,6 +31846,41 @@ func (v *RestartAppRestartApplicationRestartApplicationPayloadApplication) GetNa
 	return v.Name
 }
 
+// RevokeAccessFromKafkaTopicResponse is returned by RevokeAccessFromKafkaTopic on success.
+type RevokeAccessFromKafkaTopicResponse struct {
+	// Update a Kafka Topic.
+	UpdateKafkaTopic RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload `json:"updateKafkaTopic"`
+}
+
+// GetUpdateKafkaTopic returns RevokeAccessFromKafkaTopicResponse.UpdateKafkaTopic, and is useful for accessing the field via an interface.
+func (v *RevokeAccessFromKafkaTopicResponse) GetUpdateKafkaTopic() RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload {
+	return v.UpdateKafkaTopic
+}
+
+// RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload includes the requested fields of the GraphQL type UpdateKafkaTopicPayload.
+// The GraphQL type's documentation follows.
+//
+// Payload of the updateKafkaTopic mutation.
+type RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload struct {
+	// Updated Kafka topic.
+	KafkaTopic RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic `json:"kafkaTopic"`
+}
+
+// GetKafkaTopic returns RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload.KafkaTopic, and is useful for accessing the field via an interface.
+func (v *RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayload) GetKafkaTopic() RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic {
+	return v.KafkaTopic
+}
+
+// RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic struct {
+	Id string `json:"id"`
+}
+
+// GetId returns RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic.Id, and is useful for accessing the field via an interface.
+func (v *RevokeAccessFromKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopic) GetId() string {
+	return v.Id
+}
+
 // Input for filtering the secrets of a team.
 type SecretFilter struct {
 	// Input for filtering the secrets of a team.
@@ -34089,6 +34203,22 @@ func (v *__GetJobRunsInput) GetName() string { return v.Name }
 // GetEnv returns __GetJobRunsInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetJobRunsInput) GetEnv() []string { return v.Env }
 
+// __GetKafkaTopicGrantsInput is used internally by genqlient
+type __GetKafkaTopicGrantsInput struct {
+	TopicName       string `json:"topicName"`
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetTopicName returns __GetKafkaTopicGrantsInput.TopicName, and is useful for accessing the field via an interface.
+func (v *__GetKafkaTopicGrantsInput) GetTopicName() string { return v.TopicName }
+
+// GetTeamSlug returns __GetKafkaTopicGrantsInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__GetKafkaTopicGrantsInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __GetKafkaTopicGrantsInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__GetKafkaTopicGrantsInput) GetEnvironmentName() string { return v.EnvironmentName }
+
 // __GetLatestJobRunStateInput is used internally by genqlient
 type __GetLatestJobRunStateInput struct {
 	Team string   `json:"team"`
@@ -34388,6 +34518,26 @@ func (v *__RestartAppInput) GetApplication() string { return v.Application }
 
 // GetEnv returns __RestartAppInput.Env, and is useful for accessing the field via an interface.
 func (v *__RestartAppInput) GetEnv() string { return v.Env }
+
+// __RevokeAccessFromKafkaTopicInput is used internally by genqlient
+type __RevokeAccessFromKafkaTopicInput struct {
+	TopicName       string               `json:"topicName"`
+	TeamSlug        string               `json:"teamSlug"`
+	EnvironmentName string               `json:"environmentName"`
+	Grant           KafkaTopicGrantInput `json:"grant"`
+}
+
+// GetTopicName returns __RevokeAccessFromKafkaTopicInput.TopicName, and is useful for accessing the field via an interface.
+func (v *__RevokeAccessFromKafkaTopicInput) GetTopicName() string { return v.TopicName }
+
+// GetTeamSlug returns __RevokeAccessFromKafkaTopicInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *__RevokeAccessFromKafkaTopicInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns __RevokeAccessFromKafkaTopicInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *__RevokeAccessFromKafkaTopicInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetGrant returns __RevokeAccessFromKafkaTopicInput.Grant, and is useful for accessing the field via an interface.
+func (v *__RevokeAccessFromKafkaTopicInput) GetGrant() KafkaTopicGrantInput { return v.Grant }
 
 // __SetApplicationEnvInput is used internally by genqlient
 type __SetApplicationEnvInput struct {
@@ -36805,6 +36955,54 @@ func GetJobRuns(
 	return data_, err_
 }
 
+// The query executed by GetKafkaTopicGrants.
+const GetKafkaTopicGrants_Operation = `
+query GetKafkaTopicGrants ($topicName: String!, $teamSlug: Slug!, $environmentName: String!) {
+	team(slug: $teamSlug) {
+		kafkaTopics(first: 1, filter: {name:$topicName,environments:[$environmentName]}) {
+			nodes {
+				acl(first: 1000) {
+					nodes {
+						workloadName
+						teamName
+						access
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetKafkaTopicGrants(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	topicName string,
+	teamSlug string,
+	environmentName string,
+) (data_ *GetKafkaTopicGrantsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetKafkaTopicGrants",
+		Query:  GetKafkaTopicGrants_Operation,
+		Variables: &__GetKafkaTopicGrantsInput{
+			TopicName:       topicName,
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+		},
+	}
+
+	data_ = &GetKafkaTopicGrantsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetLatestJobRunState.
 const GetLatestJobRunState_Operation = `
 query GetLatestJobRunState ($team: Slug!, $name: String!, $env: [String!]) {
@@ -37818,6 +38016,48 @@ func RestartApp(
 	}
 
 	data_ = &RestartAppResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by RevokeAccessFromKafkaTopic.
+const RevokeAccessFromKafkaTopic_Operation = `
+mutation RevokeAccessFromKafkaTopic ($topicName: String!, $teamSlug: Slug!, $environmentName: String!, $grant: KafkaTopicGrantInput!) {
+	updateKafkaTopic(input: {name:$topicName,teamSlug:$teamSlug,environmentName:$environmentName,revokeGrants:[$grant]}) {
+		kafkaTopic {
+			id
+		}
+	}
+}
+`
+
+func RevokeAccessFromKafkaTopic(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	topicName string,
+	teamSlug string,
+	environmentName string,
+	grant KafkaTopicGrantInput,
+) (data_ *RevokeAccessFromKafkaTopicResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "RevokeAccessFromKafkaTopic",
+		Query:  RevokeAccessFromKafkaTopic_Operation,
+		Variables: &__RevokeAccessFromKafkaTopicInput{
+			TopicName:       topicName,
+			TeamSlug:        teamSlug,
+			EnvironmentName: environmentName,
+			Grant:           grant,
+		},
+	}
+
+	data_ = &RevokeAccessFromKafkaTopicResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
