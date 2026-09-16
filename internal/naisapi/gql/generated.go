@@ -47,6 +47,8 @@ const (
 	ActivityLogActivityTypeJobUpdated ActivityLogActivityType = "JOB_UPDATED"
 	// Filter for Kafka credential creation events.
 	ActivityLogActivityTypeKafkaCredentialsCreated ActivityLogActivityType = "KAFKA_CREDENTIALS_CREATED"
+	// Filter for Kafka topic update events.
+	ActivityLogActivityTypeKafkaTopicUpdated ActivityLogActivityType = "KAFKA_TOPIC_UPDATED"
 	// OpenSearch was created.
 	ActivityLogActivityTypeOpensearchCreated ActivityLogActivityType = "OPENSEARCH_CREATED"
 	// OpenSearch was updated.
@@ -162,6 +164,7 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeJobTriggered,
 	ActivityLogActivityTypeJobUpdated,
 	ActivityLogActivityTypeKafkaCredentialsCreated,
+	ActivityLogActivityTypeKafkaTopicUpdated,
 	ActivityLogActivityTypeOpensearchCreated,
 	ActivityLogActivityTypeOpensearchUpdated,
 	ActivityLogActivityTypeOpensearchDeleted,
@@ -812,45 +815,6 @@ type CreateConfigResponse struct {
 
 // GetCreateConfig returns CreateConfigResponse.CreateConfig, and is useful for accessing the field via an interface.
 func (v *CreateConfigResponse) GetCreateConfig() CreateConfigCreateConfigCreateConfigPayload {
-	return v.CreateConfig
-}
-
-// CreateConfigWithValuesCreateConfigCreateConfigPayload includes the requested fields of the GraphQL type CreateConfigPayload.
-type CreateConfigWithValuesCreateConfigCreateConfigPayload struct {
-	// The created config.
-	Config *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig `json:"config"`
-}
-
-// GetConfig returns CreateConfigWithValuesCreateConfigCreateConfigPayload.Config, and is useful for accessing the field via an interface.
-func (v *CreateConfigWithValuesCreateConfigCreateConfigPayload) GetConfig() *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig {
-	return v.Config
-}
-
-// CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig includes the requested fields of the GraphQL type Config.
-// The GraphQL type's documentation follows.
-//
-// A config is a collection of key-value pairs.
-type CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig struct {
-	// The globally unique ID of the config.
-	Id string `json:"id"`
-	// The name of the config.
-	Name string `json:"name"`
-}
-
-// GetId returns CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig.Id, and is useful for accessing the field via an interface.
-func (v *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig) GetId() string { return v.Id }
-
-// GetName returns CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
-func (v *CreateConfigWithValuesCreateConfigCreateConfigPayloadConfig) GetName() string { return v.Name }
-
-// CreateConfigWithValuesResponse is returned by CreateConfigWithValues on success.
-type CreateConfigWithValuesResponse struct {
-	// Create a new config.
-	CreateConfig CreateConfigWithValuesCreateConfigCreateConfigPayload `json:"createConfig"`
-}
-
-// GetCreateConfig returns CreateConfigWithValuesResponse.CreateConfig, and is useful for accessing the field via an interface.
-func (v *CreateConfigWithValuesResponse) GetCreateConfig() CreateConfigWithValuesCreateConfigCreateConfigPayload {
 	return v.CreateConfig
 }
 
@@ -5412,6 +5376,7 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -5522,6 +5487,8 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -5684,6 +5651,9 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "KafkaCredentialsCreatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "OpenSearchCreatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
@@ -5976,6 +5946,14 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
@@ -7023,6 +7001,44 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 
 // GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -10684,6 +10700,7 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -10794,6 +10811,8 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -10956,6 +10975,9 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 		return json.Unmarshal(b, *v)
 	case "KafkaCredentialsCreatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "OpenSearchCreatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
@@ -11248,6 +11270,14 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
@@ -12295,6 +12325,44 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 
 // GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -14804,6 +14872,7 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -14914,6 +14983,8 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -15076,6 +15147,9 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "KafkaCredentialsCreatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "OpenSearchCreatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
@@ -15368,6 +15442,14 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
@@ -16415,6 +16497,44 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 
 // GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -20155,6 +20275,7 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -20265,6 +20386,8 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -20427,6 +20550,9 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "KafkaCredentialsCreatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "OpenSearchCreatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
@@ -20719,6 +20845,14 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
@@ -21766,6 +21900,44 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 
 // GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -24082,6 +24254,7 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTriggeredActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
@@ -24202,6 +24375,8 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobTrigger
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -24364,6 +24539,9 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "KafkaCredentialsCreatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "OpenSearchCreatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry)
@@ -24656,6 +24834,14 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCreatedActivityLogEntry:
@@ -25941,6 +26127,58 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCrede
 
 // GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaCredentialsCreatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesKafkaTopicUpdatedActivityLogEntry) GetResourceName() string {
 	return v.ResourceName
 }
 
@@ -32870,45 +33108,6 @@ func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetNa
 	return v.Name
 }
 
-// UpdateConfigWithValuesResponse is returned by UpdateConfigWithValues on success.
-type UpdateConfigWithValuesResponse struct {
-	// Update the user-defined labels of a config.
-	UpdateConfig UpdateConfigWithValuesUpdateConfigUpdateConfigPayload `json:"updateConfig"`
-}
-
-// GetUpdateConfig returns UpdateConfigWithValuesResponse.UpdateConfig, and is useful for accessing the field via an interface.
-func (v *UpdateConfigWithValuesResponse) GetUpdateConfig() UpdateConfigWithValuesUpdateConfigUpdateConfigPayload {
-	return v.UpdateConfig
-}
-
-// UpdateConfigWithValuesUpdateConfigUpdateConfigPayload includes the requested fields of the GraphQL type UpdateConfigPayload.
-type UpdateConfigWithValuesUpdateConfigUpdateConfigPayload struct {
-	// The updated config.
-	Config *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig `json:"config"`
-}
-
-// GetConfig returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayload.Config, and is useful for accessing the field via an interface.
-func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayload) GetConfig() *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig {
-	return v.Config
-}
-
-// UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig includes the requested fields of the GraphQL type Config.
-// The GraphQL type's documentation follows.
-//
-// A config is a collection of key-value pairs.
-type UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig struct {
-	// The globally unique ID of the config.
-	Id string `json:"id"`
-	// The name of the config.
-	Name string `json:"name"`
-}
-
-// GetId returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig.Id, and is useful for accessing the field via an interface.
-func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetId() string { return v.Id }
-
-// GetName returns UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig.Name, and is useful for accessing the field via an interface.
-func (v *UpdateConfigWithValuesUpdateConfigUpdateConfigPayloadConfig) GetName() string { return v.Name }
-
 type UpdateOpenSearchInput struct {
 	Name                           string                 `json:"name"`
 	EnvironmentName                string                 `json:"environmentName"`
@@ -33725,30 +33924,6 @@ func (v *__CreateConfigInput) GetEnvironmentName() string { return v.Environment
 
 // GetTeamSlug returns __CreateConfigInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__CreateConfigInput) GetTeamSlug() string { return v.TeamSlug }
-
-// __CreateConfigWithValuesInput is used internally by genqlient
-type __CreateConfigWithValuesInput struct {
-	Name            string               `json:"name"`
-	EnvironmentName string               `json:"environmentName"`
-	TeamSlug        string               `json:"teamSlug"`
-	Values          []ConfigValueInput   `json:"values"`
-	Labels          []ResourceLabelInput `json:"labels"`
-}
-
-// GetName returns __CreateConfigWithValuesInput.Name, and is useful for accessing the field via an interface.
-func (v *__CreateConfigWithValuesInput) GetName() string { return v.Name }
-
-// GetEnvironmentName returns __CreateConfigWithValuesInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *__CreateConfigWithValuesInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns __CreateConfigWithValuesInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *__CreateConfigWithValuesInput) GetTeamSlug() string { return v.TeamSlug }
-
-// GetValues returns __CreateConfigWithValuesInput.Values, and is useful for accessing the field via an interface.
-func (v *__CreateConfigWithValuesInput) GetValues() []ConfigValueInput { return v.Values }
-
-// GetLabels returns __CreateConfigWithValuesInput.Labels, and is useful for accessing the field via an interface.
-func (v *__CreateConfigWithValuesInput) GetLabels() []ResourceLabelInput { return v.Labels }
 
 // __CreateKafkaCredentialsInput is used internally by genqlient
 type __CreateKafkaCredentialsInput struct {
@@ -34808,30 +34983,6 @@ func (v *__UpdateConfigValueInput) GetTeamSlug() string { return v.TeamSlug }
 // GetValue returns __UpdateConfigValueInput.Value, and is useful for accessing the field via an interface.
 func (v *__UpdateConfigValueInput) GetValue() ConfigValueInput { return v.Value }
 
-// __UpdateConfigWithValuesInput is used internally by genqlient
-type __UpdateConfigWithValuesInput struct {
-	Name            string               `json:"name"`
-	EnvironmentName string               `json:"environmentName"`
-	TeamSlug        string               `json:"teamSlug"`
-	Values          []ConfigValueInput   `json:"values"`
-	Labels          []ResourceLabelInput `json:"labels"`
-}
-
-// GetName returns __UpdateConfigWithValuesInput.Name, and is useful for accessing the field via an interface.
-func (v *__UpdateConfigWithValuesInput) GetName() string { return v.Name }
-
-// GetEnvironmentName returns __UpdateConfigWithValuesInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *__UpdateConfigWithValuesInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns __UpdateConfigWithValuesInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *__UpdateConfigWithValuesInput) GetTeamSlug() string { return v.TeamSlug }
-
-// GetValues returns __UpdateConfigWithValuesInput.Values, and is useful for accessing the field via an interface.
-func (v *__UpdateConfigWithValuesInput) GetValues() []ConfigValueInput { return v.Values }
-
-// GetLabels returns __UpdateConfigWithValuesInput.Labels, and is useful for accessing the field via an interface.
-func (v *__UpdateConfigWithValuesInput) GetLabels() []ResourceLabelInput { return v.Labels }
-
 // __UpdateOpenSearchInput is used internally by genqlient
 type __UpdateOpenSearchInput struct {
 	Input UpdateOpenSearchInput `json:"input"`
@@ -35136,51 +35287,6 @@ func CreateConfig(
 	}
 
 	data_ = &CreateConfigResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The mutation executed by CreateConfigWithValues.
-const CreateConfigWithValues_Operation = `
-mutation CreateConfigWithValues ($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
-	createConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,values:$values,labels:$labels}) {
-		config {
-			id
-			name
-		}
-	}
-}
-`
-
-func CreateConfigWithValues(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	name string,
-	environmentName string,
-	teamSlug string,
-	values []ConfigValueInput,
-	labels []ResourceLabelInput,
-) (data_ *CreateConfigWithValuesResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "CreateConfigWithValues",
-		Query:  CreateConfigWithValues_Operation,
-		Variables: &__CreateConfigWithValuesInput{
-			Name:            name,
-			EnvironmentName: environmentName,
-			TeamSlug:        teamSlug,
-			Values:          values,
-			Labels:          labels,
-		},
-	}
-
-	data_ = &CreateConfigWithValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -38687,51 +38793,6 @@ func UpdateConfigValue(
 	}
 
 	data_ = &UpdateConfigValueResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The mutation executed by UpdateConfigWithValues.
-const UpdateConfigWithValues_Operation = `
-mutation UpdateConfigWithValues ($name: String!, $environmentName: String!, $teamSlug: Slug!, $values: [ConfigValueInput!], $labels: [ResourceLabelInput!]) {
-	updateConfig(input: {name:$name,environmentName:$environmentName,teamSlug:$teamSlug,values:$values,labels:$labels}) {
-		config {
-			id
-			name
-		}
-	}
-}
-`
-
-func UpdateConfigWithValues(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	name string,
-	environmentName string,
-	teamSlug string,
-	values []ConfigValueInput,
-	labels []ResourceLabelInput,
-) (data_ *UpdateConfigWithValuesResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "UpdateConfigWithValues",
-		Query:  UpdateConfigWithValues_Operation,
-		Variables: &__UpdateConfigWithValuesInput{
-			Name:            name,
-			EnvironmentName: environmentName,
-			TeamSlug:        teamSlug,
-			Values:          values,
-			Labels:          labels,
-		},
-	}
-
-	data_ = &UpdateConfigWithValuesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
