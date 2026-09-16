@@ -10,8 +10,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestParse_Valkey(t *testing.T) {
-	manifests, err := Parse([]byte(`
+func TestParseManifest_Valkey(t *testing.T) {
+	m, err := ParseManifest(mustDocument(t, `
 version: v1
 type: Valkey
 name: my-valkey-instance
@@ -25,13 +25,9 @@ spec:
     disabled: false
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-	if len(manifests) != 1 {
-		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+		t.Fatalf("ParseManifest: %v", err)
 	}
 
-	m := manifests[0]
 	if got, want := m.Version, "v1"; got != want {
 		t.Errorf("version = %q, want %q", got, want)
 	}
@@ -62,8 +58,8 @@ spec:
 	}
 }
 
-func TestParse_IgnoredFields(t *testing.T) {
-	manifests, err := Parse([]byte(`
+func TestParseManifest_IgnoredFields(t *testing.T) {
+	m, err := ParseManifest(mustDocument(t, `
 apiVersion: nais.io/v1
 version: v1
 type: Valkey
@@ -76,21 +72,18 @@ spec:
   tier: HighAvailability
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-	if len(manifests) != 1 {
-		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+		t.Fatalf("ParseManifest: %v", err)
 	}
 
 	want := []string{"apiVersion", "namespace", "annotations"}
-	got := manifests[0].IgnoredFields
+	got := m.IgnoredFields
 	if diff := cmp.Diff(want, got, cmpopts.SortSlices(func(a, b string) bool { return a < b })); diff != "" {
 		t.Errorf("ignored fields mismatch (-want +got):\n%s", diff)
 	}
 }
 
-func TestParse_MultiDocument(t *testing.T) {
-	manifests, err := Parse([]byte(`
+func TestParseManifest_MultiDocument(t *testing.T) {
+	docs, err := Documents([]byte(`
 version: v1
 type: Valkey
 name: cache
@@ -108,12 +101,16 @@ spec:
   storageGB: 100
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
+		t.Fatalf("Documents: %v", err)
 	}
 
 	want := []string{"Valkey", "OpenSearch"}
 	got := []string{}
-	for _, m := range manifests {
+	for _, doc := range docs {
+		m, err := ParseManifest(doc)
+		if err != nil {
+			t.Fatalf("ParseManifest: %v", err)
+		}
 		got = append(got, m.Type)
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
@@ -121,7 +118,7 @@ spec:
 	}
 }
 
-func TestParse_Errors(t *testing.T) {
+func TestParseManifest_Errors(t *testing.T) {
 	for name, tc := range map[string]struct {
 		manifest string
 		errMsg   string
@@ -144,7 +141,7 @@ func TestParse_Errors(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			_, err := Parse([]byte(tc.manifest))
+			_, err := ParseManifest(mustDocument(t, tc.manifest))
 			mustErrorContains(t, err, tc.errMsg)
 		})
 	}
@@ -219,8 +216,8 @@ func TestDocuments_SplitsAndSkipsEmpty(t *testing.T) {
 	}
 }
 
-func TestParse_Config(t *testing.T) {
-	manifests, err := Parse([]byte(`
+func TestParseManifest_Config(t *testing.T) {
+	m, err := ParseManifest(mustDocument(t, `
 version: v1
 type: Config
 name: my-config
@@ -234,13 +231,9 @@ binaryData:
   keystore.p12: aGVsbG8gd29ybGQ=
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
-	}
-	if len(manifests) != 1 {
-		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+		t.Fatalf("ParseManifest: %v", err)
 	}
 
-	m := manifests[0]
 	if got, want := m.Type, "Config"; got != want {
 		t.Errorf("kind = %q, want %q", got, want)
 	}
@@ -273,9 +266,9 @@ binaryData:
 	}
 }
 
-func TestParse_ConfigNoIgnoredFields(t *testing.T) {
+func TestParseManifest_ConfigNoIgnoredFields(t *testing.T) {
 	// Config uses data/binaryData at top level — these should NOT be ignored fields.
-	manifests, err := Parse([]byte(`
+	m, err := ParseManifest(mustDocument(t, `
 version: v1
 type: Config
 name: test
@@ -283,10 +276,10 @@ data:
   KEY: value
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
+		t.Fatalf("ParseManifest: %v", err)
 	}
-	if len(manifests[0].IgnoredFields) != 0 {
-		t.Errorf("expected no ignored fields, got %v", manifests[0].IgnoredFields)
+	if len(m.IgnoredFields) != 0 {
+		t.Errorf("expected no ignored fields, got %v", m.IgnoredFields)
 	}
 }
 

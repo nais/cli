@@ -17,24 +17,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestReadManifestFile_Validation(t *testing.T) {
-	for name, tc := range map[string]struct {
-		path   string
-		errMsg string
-	}{
-		"empty path":       {path: "", errMsg: "file path cannot be empty"},
-		"bad extension":    {path: "manifest.toml", errMsg: "unsupported file extension"},
-		"nonexistent file": {path: "does-not-exist.yaml", errMsg: "failed to read file"},
-	} {
-		t.Run(name, func(t *testing.T) {
-			_, err := readManifestFile(tc.path)
-			mustErrorContains(t, err, tc.errMsg)
-		})
-	}
-}
-
 func TestToUnstructured(t *testing.T) {
-	manifests, err := resource.Parse([]byte(`
+	docs, err := resource.Documents([]byte(`
 version: v1
 type: SomeFutureKind
 name: my-resource
@@ -44,13 +28,18 @@ spec:
     count: 3
 `))
 	if err != nil {
-		t.Fatalf("Parse: %v", err)
+		t.Fatalf("Documents: %v", err)
 	}
-	if len(manifests) != 1 {
-		t.Fatalf("expected 1 manifest, got %d", len(manifests))
+	if len(docs) != 1 {
+		t.Fatalf("expected 1 document, got %d", len(docs))
 	}
 
-	u, err := toUnstructured(manifests[0], nil)
+	m, err := resource.ParseManifest(docs[0])
+	if err != nil {
+		t.Fatalf("ParseManifest: %v", err)
+	}
+
+	u, err := toUnstructured(m, nil)
 	if err != nil {
 		t.Fatalf("toUnstructured: %v", err)
 	}

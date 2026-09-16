@@ -115,25 +115,6 @@ func ParseManifest(root *yaml.Node) (Manifest, error) {
 	}, nil
 }
 
-// Parse decodes every nais-native YAML document in data.
-func Parse(data []byte) ([]Manifest, error) {
-	docs, err := Documents(data)
-	if err != nil {
-		return nil, err
-	}
-
-	manifests := make([]Manifest, 0, len(docs))
-	for _, root := range docs {
-		m, err := ParseManifest(root)
-		if err != nil {
-			return nil, err
-		}
-		manifests = append(manifests, m)
-	}
-
-	return manifests, nil
-}
-
 // documentRoot returns the mapping node inside a decoded YAML document, or nil
 // for an empty document (e.g. a bare `---`).
 func documentRoot(doc *yaml.Node) *yaml.Node {

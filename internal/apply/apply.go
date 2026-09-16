@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -336,25 +335,6 @@ func resolveWorkloadImage(ctx context.Context, crd *unstructured.Unstructured, t
 
 	out.Printf("%s/%s: spec.image not set, using current image from cluster: %s\n", kind, name, image)
 	return nil
-}
-
-// readManifestFile reads a YAML manifest file, validating the extension.
-func readManifestFile(filePath string) ([]byte, error) {
-	if filePath == "" {
-		return nil, fmt.Errorf("file path cannot be empty")
-	}
-
-	switch strings.TrimLeft(filepath.Ext(filePath), ".") {
-	case "yaml", "yml":
-	default:
-		return nil, fmt.Errorf("unsupported file extension for file %s (expected .yaml or .yml)", filePath)
-	}
-
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %w", filePath, err)
-	}
-	return data, nil
 }
 
 func printDryRunYAML(doc *yaml.Node, out *naistrix.OutputWriter) {
