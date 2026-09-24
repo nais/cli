@@ -379,6 +379,20 @@ func TestLoadPublishedSchemaResolvesReferences(t *testing.T) {
 	}
 }
 
+func TestLoadPublishedSchemaRejectsEmptyAggregate(t *testing.T) {
+	for _, body := range []string{`{}`, `{"oneOf":[]}`} {
+		t.Run(body, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				_, _ = w.Write([]byte(body))
+			}))
+			defer server.Close()
+
+			_, err := loadPublishedSchema(context.Background(), server.URL+"/all.json")
+			mustErrorContains(t, err, "resource schema has no oneOf entries")
+		})
+	}
+}
+
 func TestRun_DryRunSkipsUnroutedApplicationCRD(t *testing.T) {
 	withTestResourceSchema(t, gojsonschema.NewStringLoader(testResourceSchema))
 

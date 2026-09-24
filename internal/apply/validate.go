@@ -149,6 +149,9 @@ func loadPublishedSchema(ctx context.Context, schemaURL string) (*gojsonschema.S
 	if err := json.Unmarshal(root, &aggregate); err != nil {
 		return nil, err
 	}
+	if len(aggregate.OneOf) == 0 {
+		return nil, fmt.Errorf("resource schema has no oneOf entries")
+	}
 	loader := gojsonschema.NewSchemaLoader()
 	for _, entry := range aggregate.OneOf {
 		ref, err := url.Parse(entry.Ref)
