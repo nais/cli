@@ -2,7 +2,10 @@ package validate
 
 import (
 	_ "embed"
+	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/nais/naistrix"
@@ -13,6 +16,32 @@ import (
 
 //go:embed schema.json
 var schema []byte
+
+func TestValidateSuggestsDryRunForNativeResources(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		prefix string
+		kind   string
+	}{
+		{name: "Postgres", kind: "Postgres"},
+		{name: "Valkey", kind: "Valkey"},
+		{name: "OpenSearch", kind: "OpenSearch"},
+		{name: "mixed documents", prefix: "apiVersion: nais.io/v1alpha1\nkind: Application\n---\n", kind: "Valkey"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "manifest.yaml")
+			manifest := fmt.Sprintf("%sversion: v1\ntype: %s\nname: example\n", tc.prefix, tc.kind)
+			require.NoError(t, os.WriteFile(path, []byte(manifest), 0o600))
+
+			v := New([]string{path})
+			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
+			level := naistrix.OutputVerbosityLevelNormal
+			err := v.Validate(naistrix.NewOutputWriter(io.Discard, &level))
+			require.ErrorContains(t, err, tc.kind+" manifests cannot be validated with nais validate")
+			assert.ErrorContains(t, err, "use nais apply --dry-run instead")
+		})
+	}
+}
 
 func TestValidate(t *testing.T) {
 	schemaLoader := gojsonschema.NewBytesLoader(schema)

@@ -22,19 +22,12 @@ const ResourceSchemaURL = "https://schemas.nais.io/all.json"
 // resourceSchemaLoader allows tests to supply a schema without network access.
 var resourceSchemaLoader gojsonschema.JSONLoader
 
-var nativeResourceKinds = map[string]struct{}{
-	"Postgres":   {},
-	"Valkey":     {},
-	"OpenSearch": {},
-}
-
 func needsResourceSchemaValidation(root *yaml.Node) bool {
 	if root == nil || root.Kind != yaml.MappingNode || !resource.IsNativeManifest(root) {
 		return false
 	}
 	typ, _ := nodeValue(root, "type")
-	_, ok := nativeResourceKinds[typ]
-	return ok
+	return resource.HasNativeSchema(typ)
 }
 
 // nodeValue returns the scalar value of a top-level key in a mapping node.

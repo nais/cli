@@ -72,6 +72,16 @@ func IsNativeManifest(root *yaml.Node) bool {
 	return !hasKey(root, "apiVersion") && hasKey(root, "version")
 }
 
+// HasNativeSchema reports whether a native resource kind has a published schema.
+func HasNativeSchema(kind string) bool {
+	switch kind {
+	case "Postgres", "Valkey", "OpenSearch":
+		return true
+	default:
+		return false
+	}
+}
+
 // ParseManifest parses a nais-native manifest into a Manifest, validating the
 // envelope (kind, metadata.name, supported version). Fields outside the format
 // are not rejected here but returned in Manifest.IgnoredFields for the caller to

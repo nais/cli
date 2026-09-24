@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/nais/cli/internal/apply/resource"
 	"github.com/nais/naistrix"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -45,6 +46,15 @@ func (v Validate) Validate(out *naistrix.OutputWriter) error {
 
 		errors := make([]gojsonschema.ResultError, 0)
 		for _, document := range documents {
+			var manifest struct {
+				APIVersion string `json:"apiVersion"`
+				Version    string `json:"version"`
+				Type       string `json:"type"`
+			}
+			if err := json.Unmarshal(document, &manifest); err == nil && manifest.APIVersion == "" && manifest.Version != "" && resource.HasNativeSchema(manifest.Type) {
+				return fmt.Errorf("%s: %s manifests cannot be validated with nais validate; use nais apply --dry-run instead", file, manifest.Type)
+			}
+
 			documentLoader := gojsonschema.NewBytesLoader(document)
 			result, err := gojsonschema.Validate(v.SchemaLoader, documentLoader)
 			if err != nil {
