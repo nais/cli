@@ -74,6 +74,14 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 	// ensuring their dependencies (e.g. Config, Valkey, OpenSearch) exist first.
 	sortDocsWorkloadsLast(docs)
 
+	warning, err := ValidateNativeManifests(ctx, docs, flags.AllowIgnoredFields)
+	if warning != nil {
+		out.Warnf("schema validation unavailable: %v; continuing without it\n", warning)
+	}
+	if err != nil {
+		return err
+	}
+
 	var (
 		crds        []unstructured.Unstructured
 		errs        []string
