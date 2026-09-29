@@ -29906,12 +29906,7 @@ func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection
 type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance struct {
 	Name            string                                                                                                      `json:"name"`
 	TeamEnvironment GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment `json:"teamEnvironment"`
-	// Major version of PostgreSQL.
-	MajorVersion string `json:"majorVersion"`
-	// Indicates whether the Postgres cluster is configured for high availability.
-	HighAvailability bool `json:"highAvailability"`
-	// Audit logging configuration for the Postgres cluster.
-	Audit GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit `json:"audit"`
+	Postgres        GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres        `json:"postgres"`
 	// Current state of the Postgres cluster.
 	State PostgresInstanceState `json:"state"`
 }
@@ -29926,19 +29921,9 @@ func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection
 	return v.TeamEnvironment
 }
 
-// GetMajorVersion returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.MajorVersion, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetMajorVersion() string {
-	return v.MajorVersion
-}
-
-// GetHighAvailability returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.HighAvailability, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetHighAvailability() bool {
-	return v.HighAvailability
-}
-
-// GetAudit returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.Audit, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetAudit() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit {
-	return v.Audit
+// GetPostgres returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.Postgres, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetPostgres() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres {
+	return v.Postgres
 }
 
 // GetState returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.State, and is useful for accessing the field via an interface.
@@ -29946,15 +29931,20 @@ func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection
 	return v.State
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit includes the requested fields of the GraphQL type PostgresInstanceAudit.
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit struct {
-	// Indicates whether audit logging is enabled for the Postgres cluster.
-	Enabled bool `json:"enabled"`
+// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres includes the requested fields of the GraphQL type Postgres.
+type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres struct {
+	MajorVersion     string `json:"majorVersion"`
+	HighAvailability bool   `json:"highAvailability"`
 }
 
-// GetEnabled returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit.Enabled, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceAudit) GetEnabled() bool {
-	return v.Enabled
+// GetMajorVersion returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres) GetMajorVersion() string {
+	return v.MajorVersion
+}
+
+// GetHighAvailability returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres) GetHighAvailability() bool {
+	return v.HighAvailability
 }
 
 // GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -31932,10 +31922,6 @@ type PostgresInstanceFilter struct {
 	// Input for filtering Postgres instances.
 	States []PostgresInstanceState `json:"states"`
 	// Input for filtering Postgres instances.
-	HighAvailability *bool `json:"highAvailability"`
-	// Input for filtering Postgres instances.
-	MajorVersions []string `json:"majorVersions"`
-	// Input for filtering Postgres instances.
 	Labels []LabelFilter `json:"labels"`
 }
 
@@ -31947,12 +31933,6 @@ func (v *PostgresInstanceFilter) GetEnvironments() []string { return v.Environme
 
 // GetStates returns PostgresInstanceFilter.States, and is useful for accessing the field via an interface.
 func (v *PostgresInstanceFilter) GetStates() []PostgresInstanceState { return v.States }
-
-// GetHighAvailability returns PostgresInstanceFilter.HighAvailability, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetHighAvailability() *bool { return v.HighAvailability }
-
-// GetMajorVersions returns PostgresInstanceFilter.MajorVersions, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetMajorVersions() []string { return v.MajorVersions }
 
 // GetLabels returns PostgresInstanceFilter.Labels, and is useful for accessing the field via an interface.
 func (v *PostgresInstanceFilter) GetLabels() []LabelFilter { return v.Labels }
@@ -37720,10 +37700,9 @@ query GetTeamPostgresInstances ($team: Slug!, $postgresFilter: PostgresInstanceF
 						name
 					}
 				}
-				majorVersion
-				highAvailability
-				audit {
-					enabled
+				postgres {
+					majorVersion
+					highAvailability
 				}
 				state
 			}

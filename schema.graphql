@@ -7016,6 +7016,7 @@ type PostgresInstance implements Persistence & Node{
 	name: String!
 	team: Team!
 	teamEnvironment: TeamEnvironment!
+	postgres: Postgres!
 """
 Workloads that reference the Postgres instance.
 """
@@ -7038,48 +7039,29 @@ Get items before this cursor.
 		before: Cursor
 	): WorkloadConnection!
 """
-Resource allocation for the Postgres cluster.
-"""
-	resources: PostgresInstanceResources!
-"""
-Major version of PostgreSQL.
-"""
-	majorVersion: String!
-"""
-Audit logging configuration for the Postgres cluster.
-"""
-	audit: PostgresInstanceAudit!
-"""
-Indicates whether the Postgres cluster is configured for high availability.
-"""
-	highAvailability: Boolean!
-"""
 Current state of the Postgres cluster.
 """
 	state: PostgresInstanceState!
-"""
-Maintenance window for the Postgres cluster, if configured.
-"""
-	maintenanceWindow: PostgresInstanceMaintenanceWindow
 """
 User-defined labels attached to this instance.
 """
 	labels: [ResourceLabel!]!
 }
 
-type PostgresInstanceAudit {
-"""
-Indicates whether audit logging is enabled for the Postgres cluster.
-"""
-	enabled: Boolean!
-"""
-URL for accessing the audit logs.
-"""
-	url: String
-"""
-List of statement classes that are being logged, such as `ddl`, `dml`, and `read`.
-"""
-	statementClasses: [String!]
+type Postgres implements Node {
+	id: ID!
+	name: String!
+	majorVersion: String!
+	highAvailability: Boolean!
+	resources: PostgresResources!
+	activeInstance: String
+	labels: [ResourceLabel!]!
+}
+
+type PostgresResources {
+	cpu: String
+	memory: String
+	diskSize: String
 }
 
 type PostgresInstanceConnection {
@@ -7111,14 +7093,6 @@ Distribution of instances by state.
 """
 	states: [PostgresInstanceStateFacetItem!]!
 """
-Distribution of instances by high availability.
-"""
-	highAvailability: [BooleanFacetItem!]!
-"""
-Distribution of instances by major version.
-"""
-	majorVersions: [StringFacetItem!]!
-"""
 Distribution of instances by user-defined labels.
 """
 	labels: [LabelFacetItem!]!
@@ -7143,20 +7117,7 @@ Input for filtering Postgres instances.
 """
 Input for filtering Postgres instances.
 """
-	highAvailability: Boolean
-"""
-Input for filtering Postgres instances.
-"""
-	majorVersions: [String!]
-"""
-Input for filtering Postgres instances.
-"""
 	labels: [LabelFilter!]
-}
-
-type PostgresInstanceMaintenanceWindow {
-	day: Int!
-	hour: Int!
 }
 
 input PostgresInstanceOrder {
@@ -7167,12 +7128,6 @@ input PostgresInstanceOrder {
 enum PostgresInstanceOrderField {
 	NAME
 	ENVIRONMENT
-}
-
-type PostgresInstanceResources {
-	cpu: String!
-	memory: String!
-	diskSize: String!
 }
 
 enum PostgresInstanceState {

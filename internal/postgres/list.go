@@ -20,7 +20,7 @@ type Instance struct {
 	Environment      string      `json:"environment"`
 	Version          string      `heading:"Version" json:"version"`
 	HighAvailability bool        `heading:"HA" json:"high_availability"`
-	Audit            bool        `json:"audit"`
+	Audit            *bool       `json:"audit,omitempty"`
 	State            State       `json:"state"`
 }
 
@@ -70,10 +70,9 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 								name
 							}
 						}
-						majorVersion
-						highAvailability
-						audit {
-							enabled
+						postgres {
+							majorVersion
+							highAvailability
 						}
 						state
 					}
@@ -132,9 +131,8 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 			},
 			Type:             "PostgreSQL",
 			Environment:      env,
-			Version:          p.MajorVersion,
-			HighAvailability: p.HighAvailability,
-			Audit:            p.Audit.Enabled,
+			Version:          p.Postgres.MajorVersion,
+			HighAvailability: p.Postgres.HighAvailability,
 			State:            State(p.State),
 		})
 	}
@@ -154,7 +152,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 			Environment:      env,
 			Version:          ptr.Deref(s.Version, ""),
 			HighAvailability: s.HighAvailability,
-			Audit:            s.AuditLog != nil,
+			Audit:            ptr.To(s.AuditLog != nil),
 			State:            State(s.State),
 		})
 	}
