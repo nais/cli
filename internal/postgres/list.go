@@ -27,13 +27,13 @@ type Instance struct {
 type State string
 
 func (s State) String() string {
-	// PostgresInstance states
+	// PostgresBranch states
 	switch s {
-	case State(gql.PostgresInstanceStateAvailable):
+	case State(gql.PostgresBranchStateAvailable):
 		return "Available"
-	case State(gql.PostgresInstanceStateProgressing):
+	case State(gql.PostgresBranchStateProgressing):
 		return "Progressing"
-	case State(gql.PostgresInstanceStateDegraded):
+	case State(gql.PostgresBranchStateDegraded):
 		return "<error>Degraded</error>"
 	}
 
@@ -58,11 +58,11 @@ func (s State) String() string {
 	return "<info>Unknown</info>"
 }
 
-func GetTeamPostgresInstances(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]Instance, error) {
+func GetTeamPostgresBranches(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]Instance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgresInstances($team: Slug!, $postgresFilter: PostgresInstanceFilter, $sqlFilter: SqlInstanceFilter) {
+		query GetTeamPostgresBranches($team: Slug!, $postgresFilter: PostgresBranchFilter, $sqlFilter: SqlInstanceFilter) {
 			team(slug: $team) {
-				postgresInstances(first: 1000, filter: $postgresFilter) {
+				postgresBranches(first: 1000, filter: $postgresFilter) {
 					nodes {
 						name
 						teamEnvironment {
@@ -103,7 +103,7 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		return nil, err
 	}
 
-	postgresFilter := gql.PostgresInstanceFilter{
+	postgresFilter := gql.PostgresBranchFilter{
 		Environments: environments,
 		Labels:       labelFilters,
 	}
@@ -111,14 +111,14 @@ func GetTeamPostgresInstances(ctx context.Context, team string, environments []s
 		Labels: labelFilters,
 	}
 
-	resp, err := gql.GetTeamPostgresInstances(ctx, client, team, new(postgresFilter), new(sqlFilter))
+	resp, err := gql.GetTeamPostgresBranches(ctx, client, team, new(postgresFilter), new(sqlFilter))
 	if err != nil {
 		return nil, err
 	}
 
 	var ret []Instance
 
-	for _, p := range resp.Team.PostgresInstances.Nodes {
+	for _, p := range resp.Team.PostgresBranches.Nodes {
 		env := p.TeamEnvironment.Environment.Name
 		if len(environments) > 0 && !slices.Contains(environments, env) {
 			continue

@@ -15,8 +15,8 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 
 	return &naistrix.Command{
 		Name:        "list",
-		Title:       "List postgres instances for a team.",
-		Description: "List all Google Cloud SQL Postgres instances owned by a team, showing instance details.",
+		Title:       "List Postgres branches and Cloud SQL instances for a team.",
+		Description: "List NAIS Postgres branches and Google Cloud SQL Postgres instances owned by a team.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			labelFilters, err := labels.ParseFilters(flags.Labels)
@@ -29,7 +29,7 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				environments = []string{string(flags.Environment)}
 			}
 
-			ret, err := postgres.GetTeamPostgresInstances(ctx, flags.Team, environments, labelFilters)
+			ret, err := postgres.GetTeamPostgresBranches(ctx, flags.Team, environments, labelFilters)
 			if err != nil {
 				return err
 			}
@@ -39,7 +39,7 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			}
 
 			if len(ret) == 0 {
-				out.Println("Team has no postgres instances.")
+				out.Println("Team has no Postgres branches or Cloud SQL instances.")
 				return nil
 			}
 

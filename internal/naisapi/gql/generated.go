@@ -29858,16 +29858,16 @@ func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTea
 	return v.Name
 }
 
-// GetTeamPostgresInstancesResponse is returned by GetTeamPostgresInstances on success.
-type GetTeamPostgresInstancesResponse struct {
+// GetTeamPostgresBranchesResponse is returned by GetTeamPostgresBranches on success.
+type GetTeamPostgresBranchesResponse struct {
 	// Get a team by its slug.
-	Team GetTeamPostgresInstancesTeam `json:"team"`
+	Team GetTeamPostgresBranchesTeam `json:"team"`
 }
 
-// GetTeam returns GetTeamPostgresInstancesResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesResponse) GetTeam() GetTeamPostgresInstancesTeam { return v.Team }
+// GetTeam returns GetTeamPostgresBranchesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesResponse) GetTeam() GetTeamPostgresBranchesTeam { return v.Team }
 
-// GetTeamPostgresInstancesTeam includes the requested fields of the GraphQL type Team.
+// GetTeamPostgresBranchesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -29875,191 +29875,191 @@ func (v *GetTeamPostgresInstancesResponse) GetTeam() GetTeamPostgresInstancesTea
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetTeamPostgresInstancesTeam struct {
+type GetTeamPostgresBranchesTeam struct {
 	// Postgres instances owned by the team.
-	PostgresInstances GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection `json:"postgresInstances"`
+	PostgresBranches GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection `json:"postgresBranches"`
 	// SQL instances owned by the team.
-	SqlInstances GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection `json:"sqlInstances"`
+	SqlInstances GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection `json:"sqlInstances"`
 }
 
-// GetPostgresInstances returns GetTeamPostgresInstancesTeam.PostgresInstances, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeam) GetPostgresInstances() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection {
-	return v.PostgresInstances
+// GetPostgresBranches returns GetTeamPostgresBranchesTeam.PostgresBranches, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeam) GetPostgresBranches() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection {
+	return v.PostgresBranches
 }
 
-// GetSqlInstances returns GetTeamPostgresInstancesTeam.SqlInstances, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeam) GetSqlInstances() GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection {
+// GetSqlInstances returns GetTeamPostgresBranchesTeam.SqlInstances, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeam) GetSqlInstances() GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection {
 	return v.SqlInstances
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection includes the requested fields of the GraphQL type PostgresInstanceConnection.
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection struct {
-	Nodes []GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance `json:"nodes"`
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection struct {
+	Nodes []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
 }
 
-// GetNodes returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnection) GetNodes() []GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance {
+// GetNodes returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection) GetNodes() []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
 	return v.Nodes
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance includes the requested fields of the GraphQL type PostgresInstance.
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance struct {
-	Name            string                                                                                                      `json:"name"`
-	TeamEnvironment GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment `json:"teamEnvironment"`
-	Postgres        GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres        `json:"postgres"`
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
+	Name            string                                                                                                `json:"name"`
+	TeamEnvironment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment `json:"teamEnvironment"`
+	Postgres        GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres        `json:"postgres"`
 	// Current state of the Postgres cluster.
-	State PostgresInstanceState `json:"state"`
+	State PostgresBranchState `json:"state"`
 }
 
-// GetName returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
 	return v.Name
 }
 
-// GetTeamEnvironment returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetTeamEnvironment() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment {
+// GetTeamEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetTeamEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment {
 	return v.TeamEnvironment
 }
 
-// GetPostgres returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.Postgres, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetPostgres() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres {
+// GetPostgres returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Postgres, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetPostgres() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres {
 	return v.Postgres
 }
 
-// GetState returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance.State, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstance) GetState() PostgresInstanceState {
+// GetState returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
 	return v.State
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres includes the requested fields of the GraphQL type Postgres.
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres struct {
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres includes the requested fields of the GraphQL type Postgres.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres struct {
 	MajorVersion     string `json:"majorVersion"`
 	HighAvailability bool   `json:"highAvailability"`
 }
 
-// GetMajorVersion returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres.MajorVersion, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres) GetMajorVersion() string {
+// GetMajorVersion returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetMajorVersion() string {
 	return v.MajorVersion
 }
 
-// GetHighAvailability returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres.HighAvailability, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstancePostgres) GetHighAvailability() bool {
+// GetHighAvailability returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetHighAvailability() bool {
 	return v.HighAvailability
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment struct {
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment struct {
 	// Get the environment.
-	Environment GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment `json:"environment"`
+	Environment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironment) GetEnvironment() GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment {
+// GetEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment) GetEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment {
 	return v.Environment
 }
 
-// GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
 // An environment represents a runtime environment for workloads.
 //
 // Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment struct {
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment struct {
 	// Unique name of the environment.
 	Name string `json:"name"`
 }
 
-// GetName returns GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamPostgresInstancesPostgresInstanceConnectionNodesPostgresInstanceTeamEnvironmentEnvironment) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
-// GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection includes the requested fields of the GraphQL type SqlInstanceConnection.
-type GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection struct {
-	Nodes []GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance `json:"nodes"`
+// GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection includes the requested fields of the GraphQL type SqlInstanceConnection.
+type GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection struct {
+	Nodes []GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance `json:"nodes"`
 }
 
-// GetNodes returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnection) GetNodes() []GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance {
+// GetNodes returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnection) GetNodes() []GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance {
 	return v.Nodes
 }
 
-// GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance includes the requested fields of the GraphQL type SqlInstance.
-type GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance struct {
-	Name             string                                                                                       `json:"name"`
-	TeamEnvironment  GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment `json:"teamEnvironment"`
-	Version          *string                                                                                      `json:"version"`
-	HighAvailability bool                                                                                         `json:"highAvailability"`
+// GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance includes the requested fields of the GraphQL type SqlInstance.
+type GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance struct {
+	Name             string                                                                                      `json:"name"`
+	TeamEnvironment  GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment `json:"teamEnvironment"`
+	Version          *string                                                                                     `json:"version"`
+	HighAvailability bool                                                                                        `json:"highAvailability"`
 	// Indicates whether audit logging is enabled for this SQL instance and provides a link to the logs if set.
-	AuditLog *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog `json:"auditLog"`
-	State    SqlInstanceState                                                                       `json:"state"`
+	AuditLog *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog `json:"auditLog"`
+	State    SqlInstanceState                                                                      `json:"state"`
 }
 
-// GetName returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetName() string {
 	return v.Name
 }
 
-// GetTeamEnvironment returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetTeamEnvironment() GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment {
+// GetTeamEnvironment returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetTeamEnvironment() GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment {
 	return v.TeamEnvironment
 }
 
-// GetVersion returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.Version, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetVersion() *string {
+// GetVersion returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.Version, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetVersion() *string {
 	return v.Version
 }
 
-// GetHighAvailability returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.HighAvailability, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetHighAvailability() bool {
+// GetHighAvailability returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetHighAvailability() bool {
 	return v.HighAvailability
 }
 
-// GetAuditLog returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.AuditLog, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetAuditLog() *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog {
+// GetAuditLog returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.AuditLog, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetAuditLog() *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog {
 	return v.AuditLog
 }
 
-// GetState returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.State, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetState() SqlInstanceState {
+// GetState returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance.State, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstance) GetState() SqlInstanceState {
 	return v.State
 }
 
-// GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog includes the requested fields of the GraphQL type AuditLog.
-type GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog struct {
+// GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog includes the requested fields of the GraphQL type AuditLog.
+type GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog struct {
 	// Link to the audit log for this SQL instance.
 	LogUrl string `json:"logUrl"`
 }
 
-// GetLogUrl returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog.LogUrl, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog) GetLogUrl() string {
+// GetLogUrl returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog.LogUrl, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceAuditLog) GetLogUrl() string {
 	return v.LogUrl
 }
 
-// GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment struct {
+// GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment struct {
 	// Get the environment.
-	Environment GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment `json:"environment"`
+	Environment GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment) GetEnvironment() GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment {
+// GetEnvironment returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironment) GetEnvironment() GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment {
 	return v.Environment
 }
 
-// GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
 // An environment represents a runtime environment for workloads.
 //
 // Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment struct {
+type GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment struct {
 	// Unique name of the environment.
 	Name string `json:"name"`
 }
 
-// GetName returns GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresInstancesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamSqlInstancesSqlInstanceConnectionNodesSqlInstanceTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
@@ -31914,41 +31914,41 @@ var AllOrderDirection = []OrderDirection{
 }
 
 // Input for filtering Postgres instances.
-type PostgresInstanceFilter struct {
+type PostgresBranchFilter struct {
 	// Input for filtering Postgres instances.
 	Name *string `json:"name"`
 	// Input for filtering Postgres instances.
 	Environments []string `json:"environments"`
 	// Input for filtering Postgres instances.
-	States []PostgresInstanceState `json:"states"`
+	States []PostgresBranchState `json:"states"`
 	// Input for filtering Postgres instances.
 	Labels []LabelFilter `json:"labels"`
 }
 
-// GetName returns PostgresInstanceFilter.Name, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetName() *string { return v.Name }
+// GetName returns PostgresBranchFilter.Name, and is useful for accessing the field via an interface.
+func (v *PostgresBranchFilter) GetName() *string { return v.Name }
 
-// GetEnvironments returns PostgresInstanceFilter.Environments, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetEnvironments() []string { return v.Environments }
+// GetEnvironments returns PostgresBranchFilter.Environments, and is useful for accessing the field via an interface.
+func (v *PostgresBranchFilter) GetEnvironments() []string { return v.Environments }
 
-// GetStates returns PostgresInstanceFilter.States, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetStates() []PostgresInstanceState { return v.States }
+// GetStates returns PostgresBranchFilter.States, and is useful for accessing the field via an interface.
+func (v *PostgresBranchFilter) GetStates() []PostgresBranchState { return v.States }
 
-// GetLabels returns PostgresInstanceFilter.Labels, and is useful for accessing the field via an interface.
-func (v *PostgresInstanceFilter) GetLabels() []LabelFilter { return v.Labels }
+// GetLabels returns PostgresBranchFilter.Labels, and is useful for accessing the field via an interface.
+func (v *PostgresBranchFilter) GetLabels() []LabelFilter { return v.Labels }
 
-type PostgresInstanceState string
+type PostgresBranchState string
 
 const (
-	PostgresInstanceStateAvailable   PostgresInstanceState = "AVAILABLE"
-	PostgresInstanceStateProgressing PostgresInstanceState = "PROGRESSING"
-	PostgresInstanceStateDegraded    PostgresInstanceState = "DEGRADED"
+	PostgresBranchStateAvailable   PostgresBranchState = "AVAILABLE"
+	PostgresBranchStateProgressing PostgresBranchState = "PROGRESSING"
+	PostgresBranchStateDegraded    PostgresBranchState = "DEGRADED"
 )
 
-var AllPostgresInstanceState = []PostgresInstanceState{
-	PostgresInstanceStateAvailable,
-	PostgresInstanceStateProgressing,
-	PostgresInstanceStateDegraded,
+var AllPostgresBranchState = []PostgresBranchState{
+	PostgresBranchStateAvailable,
+	PostgresBranchStateProgressing,
+	PostgresBranchStateDegraded,
 }
 
 // RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload includes the requested fields of the GraphQL type RemoveConfigValuePayload.
@@ -34601,23 +34601,23 @@ func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
 // GetFilter returns __GetTeamKafkaTopicsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamKafkaTopicsInput) GetFilter() *KafkaTopicFilter { return v.Filter }
 
-// __GetTeamPostgresInstancesInput is used internally by genqlient
-type __GetTeamPostgresInstancesInput struct {
-	Team           string                  `json:"team"`
-	PostgresFilter *PostgresInstanceFilter `json:"postgresFilter"`
-	SqlFilter      *SqlInstanceFilter      `json:"sqlFilter"`
+// __GetTeamPostgresBranchesInput is used internally by genqlient
+type __GetTeamPostgresBranchesInput struct {
+	Team           string                `json:"team"`
+	PostgresFilter *PostgresBranchFilter `json:"postgresFilter"`
+	SqlFilter      *SqlInstanceFilter    `json:"sqlFilter"`
 }
 
-// GetTeam returns __GetTeamPostgresInstancesInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresInstancesInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetTeamPostgresBranchesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresBranchesInput) GetTeam() string { return v.Team }
 
-// GetPostgresFilter returns __GetTeamPostgresInstancesInput.PostgresFilter, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresInstancesInput) GetPostgresFilter() *PostgresInstanceFilter {
+// GetPostgresFilter returns __GetTeamPostgresBranchesInput.PostgresFilter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresBranchesInput) GetPostgresFilter() *PostgresBranchFilter {
 	return v.PostgresFilter
 }
 
-// GetSqlFilter returns __GetTeamPostgresInstancesInput.SqlFilter, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresInstancesInput) GetSqlFilter() *SqlInstanceFilter { return v.SqlFilter }
+// GetSqlFilter returns __GetTeamPostgresBranchesInput.SqlFilter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresBranchesInput) GetSqlFilter() *SqlInstanceFilter { return v.SqlFilter }
 
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
@@ -37688,11 +37688,11 @@ func GetTeamKafkaTopics(
 	return data_, err_
 }
 
-// The query executed by GetTeamPostgresInstances.
-const GetTeamPostgresInstances_Operation = `
-query GetTeamPostgresInstances ($team: Slug!, $postgresFilter: PostgresInstanceFilter, $sqlFilter: SqlInstanceFilter) {
+// The query executed by GetTeamPostgresBranches.
+const GetTeamPostgresBranches_Operation = `
+query GetTeamPostgresBranches ($team: Slug!, $postgresFilter: PostgresBranchFilter, $sqlFilter: SqlInstanceFilter) {
 	team(slug: $team) {
-		postgresInstances(first: 1000, filter: $postgresFilter) {
+		postgresBranches(first: 1000, filter: $postgresFilter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -37727,24 +37727,24 @@ query GetTeamPostgresInstances ($team: Slug!, $postgresFilter: PostgresInstanceF
 }
 `
 
-func GetTeamPostgresInstances(
+func GetTeamPostgresBranches(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
-	postgresFilter *PostgresInstanceFilter,
+	postgresFilter *PostgresBranchFilter,
 	sqlFilter *SqlInstanceFilter,
-) (data_ *GetTeamPostgresInstancesResponse, err_ error) {
+) (data_ *GetTeamPostgresBranchesResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetTeamPostgresInstances",
-		Query:  GetTeamPostgresInstances_Operation,
-		Variables: &__GetTeamPostgresInstancesInput{
+		OpName: "GetTeamPostgresBranches",
+		Query:  GetTeamPostgresBranches_Operation,
+		Variables: &__GetTeamPostgresBranchesInput{
 			Team:           team,
 			PostgresFilter: postgresFilter,
 			SqlFilter:      sqlFilter,
 		},
 	}
 
-	data_ = &GetTeamPostgresInstancesResponse{}
+	data_ = &GetTeamPostgresBranchesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

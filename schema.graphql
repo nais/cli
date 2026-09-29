@@ -986,12 +986,12 @@ OpenSearch instance referenced by the workload.
 """
 Postgres instances referenced by the application. This does not currently support pagination, but will return all available Postgres instances.
 """
-	postgresInstances(
+	postgresBranches(
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: PostgresInstanceOrder
-	): PostgresInstanceConnection!
+		orderBy: PostgresBranchOrder
+	): PostgresBranchConnection!
 """
 Secrets used by the application.
 """
@@ -2907,17 +2907,17 @@ Whether or not the OpenSearch instance was deleted.
 	openSearchDeleted: Boolean
 }
 
-input DeletePostgresInput {
+input DeletePostgresBranchInput {
 	name: String!
 	environmentName: String!
 	teamSlug: Slug!
 }
 
-type DeletePostgresPayload {
+type DeletePostgresBranchPayload {
 """
-Whether or not the Postgres instance was deleted.
+Whether or not the Postgres branch was deleted.
 """
-	postgresDeleted: Boolean
+	postgresBranchDeleted: Boolean
 }
 
 input DeleteSecretInput {
@@ -4623,12 +4623,12 @@ OpenSearch instance referenced by the workload.
 """
 Postgres instances referenced by the job. This does not currently support pagination, but will return all available Postgres instances.
 """
-	postgresInstances(
+	postgresBranches(
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: PostgresInstanceOrder
-	): PostgresInstanceConnection!
+		orderBy: PostgresBranchOrder
+	): PostgresBranchConnection!
 """
 Secrets used by the job.
 """
@@ -5925,11 +5925,11 @@ Grant temporary access to a Postgres cluster.
 		input: GrantPostgresAccessInput!
 	): GrantPostgresAccessPayload!
 """
-Delete an existing Postgres instance.
+Delete an inactive Postgres branch.
 """
-	deletePostgres(
-		input: DeletePostgresInput!
-	): DeletePostgresPayload!
+	deletePostgresBranch(
+		input: DeletePostgresBranchInput!
+	): DeletePostgresBranchPayload!
 """
 Enable a reconciler
 
@@ -7011,7 +7011,7 @@ type PostgresGrantAccessActivityLogEntryData {
 	until: Time!
 }
 
-type PostgresInstance implements Persistence & Node{
+type PostgresBranch implements Persistence & Node{
 	id: ID!
 	name: String!
 	team: Team!
@@ -7041,7 +7041,7 @@ Get items before this cursor.
 """
 Current state of the Postgres cluster.
 """
-	state: PostgresInstanceState!
+	state: PostgresBranchState!
 """
 User-defined labels attached to this instance.
 """
@@ -7054,7 +7054,7 @@ type Postgres implements Node {
 	majorVersion: String!
 	highAvailability: Boolean!
 	resources: PostgresResources!
-	activeInstance: String
+	activeBranch: String
 	labels: [ResourceLabel!]!
 }
 
@@ -7064,26 +7064,26 @@ type PostgresResources {
 	diskSize: String
 }
 
-type PostgresInstanceConnection {
+type PostgresBranchConnection {
 	pageInfo: PageInfo!
-	nodes: [PostgresInstance!]!
-	edges: [PostgresInstanceEdge!]!
+	nodes: [PostgresBranch!]!
+	edges: [PostgresBranchEdge!]!
 """
 Facets for Postgres instances. Provides distribution counts to help narrow down results.
 Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
 """
-	facets: PostgresInstanceFacets
+	facets: PostgresBranchFacets
 }
 
-type PostgresInstanceEdge {
+type PostgresBranchEdge {
 	cursor: Cursor!
-	node: PostgresInstance!
+	node: PostgresBranch!
 }
 
 """
 Facets for Postgres instances, providing distribution counts across different dimensions.
 """
-type PostgresInstanceFacets {
+type PostgresBranchFacets {
 """
 Distribution of instances by environment.
 """
@@ -7091,7 +7091,7 @@ Distribution of instances by environment.
 """
 Distribution of instances by state.
 """
-	states: [PostgresInstanceStateFacetItem!]!
+	states: [PostgresBranchStateFacetItem!]!
 """
 Distribution of instances by user-defined labels.
 """
@@ -7101,7 +7101,7 @@ Distribution of instances by user-defined labels.
 """
 Input for filtering Postgres instances.
 """
-input PostgresInstanceFilter {
+input PostgresBranchFilter {
 """
 Input for filtering Postgres instances.
 """
@@ -7113,24 +7113,24 @@ Input for filtering Postgres instances.
 """
 Input for filtering Postgres instances.
 """
-	states: [PostgresInstanceState!]
+	states: [PostgresBranchState!]
 """
 Input for filtering Postgres instances.
 """
 	labels: [LabelFilter!]
 }
 
-input PostgresInstanceOrder {
-	field: PostgresInstanceOrderField!
+input PostgresBranchOrder {
+	field: PostgresBranchOrderField!
 	direction: OrderDirection!
 }
 
-enum PostgresInstanceOrderField {
+enum PostgresBranchOrderField {
 	NAME
 	ENVIRONMENT
 }
 
-enum PostgresInstanceState {
+enum PostgresBranchState {
 	AVAILABLE
 	PROGRESSING
 	DEGRADED
@@ -7139,11 +7139,11 @@ enum PostgresInstanceState {
 """
 A single facet item for Postgres instance states.
 """
-type PostgresInstanceStateFacetItem {
+type PostgresBranchStateFacetItem {
 """
 The Postgres instance state.
 """
-	state: PostgresInstanceState!
+	state: PostgresBranchState!
 """
 Number of matching instances.
 """
@@ -8469,7 +8469,7 @@ Search filter for filtering search results.
 """
 Types that can be searched for.
 """
-union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresInstance | SqlInstance | Valkey
+union SearchNode =Team | Application | BigQueryDataset | Bucket | Job | KafkaTopic | OpenSearch | PostgresBranch | SqlInstance | Valkey
 
 """
 Search node connection.
@@ -8520,7 +8520,7 @@ Search for applications.
 	JOB
 	KAFKA_TOPIC
 	OPENSEARCH
-	POSTGRES
+	POSTGRES_BRANCH
 	SQL_INSTANCE
 	VALKEY
 }
@@ -10569,7 +10569,7 @@ Filtering options for items returned from the connection.
 """
 Postgres instances owned by the team.
 """
-	postgresInstances(
+	postgresBranches(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
 """
@@ -10589,12 +10589,12 @@ Get items before this cursor.
 """
 Ordering options for items returned from the connection.
 """
-		orderBy: PostgresInstanceOrder
+		orderBy: PostgresBranchOrder
 """
 Filtering options for items returned from the connection.
 """
-		filter: PostgresInstanceFilter
-	): PostgresInstanceConnection!
+		filter: PostgresBranchFilter
+	): PostgresBranchConnection!
 	repositories(
 """
 Get the first n items in the connection. This can be used in combination with the after parameter.
@@ -11213,9 +11213,9 @@ OpenSearch instance in the team environment.
 """
 Postgres instance in the team environment.
 """
-	postgresInstance(
+	postgresBranch(
 		name: String!
-	): PostgresInstance!
+	): PostgresBranch!
 """
 Get a secret by name.
 """
@@ -11473,7 +11473,7 @@ Total number of OpenSearch instances.
 	total: Int!
 }
 
-type TeamInventoryCountPostgresInstances {
+type TeamInventoryCountPostgresBranches {
 """
 Total number of Postgres instances.
 """
@@ -11518,7 +11518,7 @@ Config inventory count for a team.
 	jobs: TeamInventoryCountJobs!
 	kafkaTopics: TeamInventoryCountKafkaTopics!
 	openSearches: TeamInventoryCountOpenSearches!
-	postgresInstances: TeamInventoryCountPostgresInstances!
+	postgresBranches: TeamInventoryCountPostgresBranches!
 """
 Secret inventory count for a team.
 """
@@ -14090,9 +14090,9 @@ Interface for workloads.
 """
 Interface for workloads.
 """
-	postgresInstances(
-		orderBy: PostgresInstanceOrder
-	): PostgresInstanceConnection!
+	postgresBranches(
+		orderBy: PostgresBranchOrder
+	): PostgresBranchConnection!
 """
 Interface for workloads.
 """

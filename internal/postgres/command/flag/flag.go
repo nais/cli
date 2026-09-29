@@ -104,7 +104,7 @@ type List struct {
 	Labels labels.LabelFilters `name:"label" short:"l" usage:"Filter by label in |KEY=VALUE| form. Can be repeated."`
 }
 
-func (*List) LabelFacetResource() string { return "postgresInstances" }
+func (*List) LabelFacetResource() string { return "postgresBranches" }
 
 type Output string
 
