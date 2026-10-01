@@ -12,7 +12,7 @@ import (
 
 func verifyAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.VerifyAudit{Postgres: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres verify-audit", "nais cloudsql verify-audit", &naistrix.Command{
 		Name:        "verify-audit",
 		Title:       "Verify audit extension and configuration in SQL instance database.",
 		Description: "This verifies that the pgaudit extension is installed and that audit logging is properly configured for the application user.",
@@ -28,5 +28,5 @@ func verifyAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			}
 			return err
 		},
-	}
+	})
 }

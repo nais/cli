@@ -12,6 +12,7 @@ import (
 	appCommand "github.com/nais/cli/internal/app/command"
 	applyCommand "github.com/nais/cli/internal/apply/command"
 	authCommand "github.com/nais/cli/internal/auth/command"
+	cloudsqlCommand "github.com/nais/cli/internal/cloudsql/command"
 	configCommand "github.com/nais/cli/internal/config/command"
 	debugCommand "github.com/nais/cli/internal/debug/command"
 	"github.com/nais/cli/internal/flags"
@@ -86,6 +87,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 		naisdeviceCommand.Naisdevice(globalFlags),
 		opensearchCommand.OpenSearch(globalFlags),
 		postgresCommand.Postgres(globalFlags),
+		cloudsqlCommand.CloudSQL(globalFlags),
 		secretCommand.Secrets(globalFlags),
 		statusCommand.Status(globalFlags),
 		validateCommand.Validate(globalFlags),

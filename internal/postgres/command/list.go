@@ -13,7 +13,7 @@ import (
 func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.List{Postgres: parentFlags}
 
-	return &naistrix.Command{
+	return legacyCommand("postgres list", "nais cloudsql list for Cloud SQL or nais alpha postgres list for Nais Postgres", &naistrix.Command{
 		Name:        "list",
 		Title:       "List Postgres branches and Cloud SQL instances for a team.",
 		Description: "List NAIS Postgres branches and Google Cloud SQL Postgres instances owned by a team.",
@@ -45,5 +45,5 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-	}
+	})
 }

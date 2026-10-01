@@ -15,7 +15,7 @@ func proxyCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Port:     5432,
 		Host:     "localhost",
 	}
-	return &naistrix.Command{
+	return legacyCommand("postgres proxy", "nais cloudsql proxy", &naistrix.Command{
 		Name:        "proxy",
 		Title:       "Create a proxy to a SQL instance.",
 		Description: "Allows your user to connect to databases and starts a proxy.",
@@ -27,5 +27,5 @@ func proxyCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return postgres.RunProxy(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
-	}
+	})
 }

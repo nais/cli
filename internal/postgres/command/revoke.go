@@ -18,7 +18,7 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Postgres: parentFlags,
 		Schema:   "public",
 	}
-	return &naistrix.Command{
+	return legacyCommand("postgres revoke", "nais cloudsql revoke", &naistrix.Command{
 		Name:  "revoke",
 		Title: `Revoke access to your SQL instance for the role "cloudsqliamuser".`,
 		Description: heredoc.Doc(`
@@ -42,5 +42,5 @@ func revokeCommand(parentFlags *flag.Postgres) *naistrix.Command {
 
 			return postgres.RevokeAccess(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
-	}
+	})
 }

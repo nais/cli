@@ -12,7 +12,7 @@ import (
 
 func enableAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	flags := &flag.EnableAudit{Postgres: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres enable-audit", "nais cloudsql enable-audit", &naistrix.Command{
 		Name:        "enable-audit",
 		Title:       "Enable audit extension in SQL instance database.",
 		Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
@@ -28,5 +28,5 @@ func enableAuditCommand(parentFlags *flag.Postgres) *naistrix.Command {
 			}
 			return err
 		},
-	}
+	})
 }

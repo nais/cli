@@ -30,7 +30,7 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 		User:      parentFlags,
 		Privilege: "select",
 	}
-	return &naistrix.Command{
+	return legacyCommand("postgres users add", "nais cloudsql users add", &naistrix.Command{
 		Name:        "add",
 		Title:       "Add a user to a SQL instance.",
 		Description: "Will grant a user access to tables in public schema.",
@@ -43,12 +43,12 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return postgres.AddUser(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), args.Get("username"), args.Get("password"), flags, out)
 		},
-	}
+	})
 }
 
 func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserList{User: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres users list", "nais cloudsql users list", &naistrix.Command{
 		Name:        "list",
 		Title:       "List users in a SQL instance database.",
 		Description: "List all users in a Postgres SQL instance database for a given application.",
@@ -59,12 +59,12 @@ func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return postgres.ListUsers(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
-	}
+	})
 }
 
 func dropCommand(parentFlags *flag.User) *naistrix.Command {
 	flags := &flag.UserDrop{User: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres users drop", "nais cloudsql users drop", &naistrix.Command{
 		Name:        "drop",
 		Title:       "Drop a user from a SQL instance database.",
 		Description: "Remove a user from a Postgres SQL instance database.",
@@ -76,5 +76,5 @@ func dropCommand(parentFlags *flag.User) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return postgres.DropUser(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), args.Get("username"), flags, out)
 		},
-	}
+	})
 }

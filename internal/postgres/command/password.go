@@ -17,7 +17,7 @@ func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Description: "Commands for managing Postgres instance passwords, including password rotation.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
-			{
+			legacyCommand("postgres password rotate", "nais cloudsql password rotate", &naistrix.Command{
 				Name:        "rotate",
 				Title:       "Rotate the SQL instance password.",
 				Description: "The rotation is done in GCP and in the Kubernetes secret.",
@@ -28,7 +28,7 @@ func passwordCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 					return postgres.RotatePassword(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 				},
-			},
+			}),
 		},
 	}
 }

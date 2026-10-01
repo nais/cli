@@ -47,7 +47,7 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		flags.DiskSize = v
 	}
 
-	return &naistrix.Command{
+	return legacyCommand("postgres migrate setup", "nais cloudsql migrate setup", &naistrix.Command{
 		Name:        "setup",
 		Title:       "Make necessary setup for a new SQL instance migration.",
 		Description: "Setup will create a new (target) instance with updated configuration, and enable continuous replication of data from the source instance.",
@@ -70,12 +70,12 @@ func migrateSetupCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return setup.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
-	}
+	})
 }
 
 func migratePromoteCommand(parentFlags *flag.Migrate) *naistrix.Command {
 	flags := &flag.MigratePromote{Migrate: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres migrate promote", "nais cloudsql migrate promote", &naistrix.Command{
 		Name:        "promote",
 		Title:       "Promote the migrated instance to the new primary instance.",
 		Description: "Promote will promote the target instance to the new primary instance, and update the application to use the new instance.",
@@ -87,12 +87,12 @@ func migratePromoteCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return promote.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
-	}
+	})
 }
 
 func migrateFinalizeCommand(parentFlags *flag.Migrate) *naistrix.Command {
 	flags := &flag.MigrateFinalize{Migrate: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres migrate finalize", "nais cloudsql migrate finalize", &naistrix.Command{
 		Name:        "finalize",
 		Title:       "Finalize the migration.",
 		Description: "Finalize will remove the source instance and associated resources after a successful migration.",
@@ -104,12 +104,12 @@ func migrateFinalizeCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return finalize.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags.DryRun)
 		},
-	}
+	})
 }
 
 func migrateRollbackCommand(parentFlags *flag.Migrate) *naistrix.Command {
 	flags := &flag.MigrateRollback{Migrate: parentFlags}
-	return &naistrix.Command{
+	return legacyCommand("postgres migrate rollback", "nais cloudsql migrate rollback", &naistrix.Command{
 		Name:        "rollback",
 		Title:       "Roll back the migration.",
 		Description: "Rollback will roll back the migration, and restore the application to use the original instance.",
@@ -121,5 +121,5 @@ func migrateRollbackCommand(parentFlags *flag.Migrate) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return rollback.Run(ctx, args.Get("app_name"), args.Get("target_sql_instance_name"), flags.Team, string(flags.Environment), flags)
 		},
-	}
+	})
 }

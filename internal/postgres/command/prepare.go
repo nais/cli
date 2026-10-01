@@ -19,7 +19,7 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 		Schema:   "public",
 	}
 
-	return &naistrix.Command{
+	return legacyCommand("postgres prepare", "nais cloudsql prepare", &naistrix.Command{
 		Name:  "prepare",
 		Title: "Prepare your SQL instance for use with personal accounts.",
 		Description: heredoc.Doc(`
@@ -43,5 +43,5 @@ func prepareCommand(parentFlags *flag.Postgres) *naistrix.Command {
 
 			return postgres.PrepareAccess(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},
-	}
+	})
 }
