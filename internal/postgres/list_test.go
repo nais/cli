@@ -33,17 +33,17 @@ func TestInstancesFromTeam(t *testing.T) {
 		{
 			name: "merged and sorted",
 			want: []Instance{
-				{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: boolPtr(true), State: State(gql.SqlInstanceStateRunnable)},
+				{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: new(true), State: State(gql.SqlInstanceStateRunnable)},
 				{Name: output.Link{Name: "orders/main", URL: consoleBaseURL + "/team/my-team/dev/postgres/orders"}, Type: "PostgreSQL", Environment: "dev", Version: "16", HighAvailability: true, State: State(gql.PostgresBranchStateAvailable)},
 				{Name: output.Link{Name: "orders/preview", URL: consoleBaseURL + "/team/my-team/prod/postgres/orders"}, Type: "PostgreSQL", Environment: "prod", Version: "16", HighAvailability: true, State: State(gql.PostgresBranchStateProgressing)},
-				{Name: output.Link{Name: "other", URL: consoleBaseURL + "/team/my-team/prod/cloudsql/other"}, Type: "Cloud SQL", Environment: "prod", HighAvailability: true, Audit: boolPtr(false), State: State(gql.SqlInstanceStateStopped)},
+				{Name: output.Link{Name: "other", URL: consoleBaseURL + "/team/my-team/prod/cloudsql/other"}, Type: "Cloud SQL", Environment: "prod", HighAvailability: true, Audit: new(false), State: State(gql.SqlInstanceStateStopped)},
 			},
 		},
 		{
 			name:         "environment filter applies to both providers",
 			environments: []string{"dev"},
 			want: []Instance{
-				{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: boolPtr(true), State: State(gql.SqlInstanceStateRunnable)},
+				{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: new(true), State: State(gql.SqlInstanceStateRunnable)},
 				{Name: output.Link{Name: "orders/main", URL: consoleBaseURL + "/team/my-team/dev/postgres/orders"}, Type: "PostgreSQL", Environment: "dev", Version: "16", HighAvailability: true, State: State(gql.PostgresBranchStateAvailable)},
 			},
 		},
@@ -58,4 +58,5 @@ func TestInstancesFromTeam(t *testing.T) {
 	}
 }
 
-func boolPtr(value bool) *bool { return &value }
+//go:fix inline
+func boolPtr(value bool) *bool { return new(value) }

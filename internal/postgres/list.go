@@ -157,7 +157,7 @@ func instancesFromTeam(teamData gql.GetTeamPostgresBranchesTeam, team string, en
 			Environment:      env,
 			Version:          ptr.Deref(s.Version, ""),
 			HighAvailability: s.HighAvailability,
-			Audit:            ptr.To(s.AuditLog != nil),
+			Audit:            new(s.AuditLog != nil),
 			State:            State(s.State),
 		})
 	}
