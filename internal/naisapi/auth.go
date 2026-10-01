@@ -2,6 +2,7 @@ package naisapi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/nais/cli/internal/naisapi/auth"
@@ -48,7 +49,17 @@ func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
 }
 
 // Login logs the user in to allow authenticated requests to the Nais API.
+// It does nothing if the user already has a valid session.
 func Login(ctx context.Context, out *naistrix.OutputWriter) error {
+	user, err := auth.OIDC(ctx)
+	switch {
+	case err == nil:
+		out.Printf("Already logged in as %s.\n", user.Email())
+		return nil
+	case !errors.Is(err, ErrNeedsLogin):
+		return err
+	}
+
 	return auth.OIDCLogin(ctx, out)
 }
 

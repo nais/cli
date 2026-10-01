@@ -70,20 +70,6 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 // The user's secret is saved in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
-	user, err := OIDC(ctx)
-	if err == nil {
-		// The access token may be expired, in which case it is refreshed here.
-		// A failed refresh means the session is gone and we must log in again.
-		_, err = user.AccessToken()
-	}
-	if err == nil {
-		out.Printf("Already logged in as %s.\n", user.Email())
-		return nil
-	}
-	if !errors.Is(err, ErrNeedsOIDCLogin) {
-		return err
-	}
-
 	client, err := newOidcClient(ctx)
 	if err != nil {
 		return err
