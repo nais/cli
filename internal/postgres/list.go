@@ -71,6 +71,7 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 							}
 						}
 						postgres {
+							name
 							majorVersion
 							highAvailability
 						}
@@ -116,9 +117,13 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 		return nil, err
 	}
 
+	return instancesFromTeam(resp.Team, team, environments), nil
+}
+
+func instancesFromTeam(teamData gql.GetTeamPostgresBranchesTeam, team string, environments []string) []Instance {
 	var ret []Instance
 
-	for _, p := range resp.Team.PostgresBranches.Nodes {
+	for _, p := range teamData.PostgresBranches.Nodes {
 		env := p.TeamEnvironment.Environment.Name
 		if len(environments) > 0 && !slices.Contains(environments, env) {
 			continue
@@ -126,8 +131,8 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 
 		ret = append(ret, Instance{
 			Name: output.Link{
-				Name: p.Name,
-				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Name),
+				Name: p.Postgres.Name + "/" + p.Name,
+				URL:  fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, p.Postgres.Name),
 			},
 			Type:             "PostgreSQL",
 			Environment:      env,
@@ -137,7 +142,7 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 		})
 	}
 
-	for _, s := range resp.Team.SqlInstances.Nodes {
+	for _, s := range teamData.SqlInstances.Nodes {
 		env := s.TeamEnvironment.Environment.Name
 		if len(environments) > 0 && !slices.Contains(environments, env) {
 			continue
@@ -164,5 +169,5 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 		return ret[i].Name.Name < ret[j].Name.Name
 	})
 
-	return ret, nil
+	return ret
 }
