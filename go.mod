@@ -34,6 +34,7 @@ require (
 	github.com/nais/naistrix v0.35.0
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.83
+	github.com/quic-go/quic-go v0.59.1
 	github.com/sethvargo/go-retry v0.3.0
 	github.com/stretchr/testify v1.11.1
 	github.com/suessflorian/gqlfetch v0.7.0
@@ -198,6 +199,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
+	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
