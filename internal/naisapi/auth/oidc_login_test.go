@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
@@ -9,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
@@ -17,12 +15,11 @@ import (
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jws"
 	"github.com/lestrrat-go/jwx/v3/jwt"
-	"github.com/nais/naistrix"
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
 )
 
-func TestOIDCLoginWithExistingSession(t *testing.T) {
+func TestOIDCWithStoredSession(t *testing.T) {
 	keyring.MockInit()
 	path := filepath.Join(t.TempDir(), "config.yaml")
 	ConfigFilePath = &path
@@ -91,12 +88,11 @@ func TestOIDCLoginWithExistingSession(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var output bytes.Buffer
-	out := naistrix.NewOutputWriter(&output, new(naistrix.Count))
-	if err := OIDCLogin(context.Background(), out); err != nil {
+	user, err := OIDC(context.Background())
+	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(output.String(), "Already logged in as user@example.com") {
-		t.Errorf("unexpected login output: %q", output.String())
+	if got, want := user.Email(), "user@example.com"; got != want {
+		t.Errorf("Email() = %q, want %q", got, want)
 	}
 }
