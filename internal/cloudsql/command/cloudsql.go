@@ -53,7 +53,7 @@ func warnIfLegacyAlias(args []string, w io.Writer) {
 			continue
 		}
 		if arg == "postgres" || arg == "pg" {
-			_, _ = fmt.Fprintf(w, "Warning: nais %s is deprecated and now only manages Cloud SQL; use nais cloudsql instead. For Nais Postgres, use nais alpha postgres.\n", arg)
+			_, _ = fmt.Fprintf(w, "Warning: nais %s has moved to nais cloudsql. Use nais cloudsql instead, as nais %[1]s will stop working for Cloud SQL in the future.\n", arg)
 		}
 		return
 	}

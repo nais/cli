@@ -22,7 +22,7 @@ func TestWarnIfLegacyAlias(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			var buf bytes.Buffer
 			warnIfLegacyAlias(tt.args, &buf)
-			if got := strings.Contains(buf.String(), "deprecated"); got != tt.warn {
+			if got := strings.Contains(buf.String(), "has moved to nais cloudsql"); got != tt.warn {
 				t.Fatalf("warned=%v, want %v (%q)", got, tt.warn, buf.String())
 			}
 		})
