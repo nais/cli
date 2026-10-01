@@ -15,7 +15,9 @@ func CloudSQL(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
-		Name:        "cloudsql",
+		Name: "cloudsql",
+		// TODO: Remove the aliases once users have moved from the old `nais postgres` (Cloud SQL) commands.
+		Aliases:     []string{"postgres", "pg"},
 		Title:       "Manage Google Cloud SQL instances.",
 		Description: "Manage Google Cloud SQL instances, including listing, migration, user management, password rotation, and direct database access.",
 		StickyFlags: flags,
