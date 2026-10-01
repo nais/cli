@@ -1,12 +1,14 @@
 package relay
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/pem"
 	"io"
 	"math/big"
@@ -17,6 +19,12 @@ import (
 	"time"
 
 	"github.com/quic-go/quic-go/http3"
+)
+
+// 32 bytes, unpadded base64url, as issued by the relay contract.
+var (
+	proofToken  = base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{1}, 32))
+	deniedToken = base64.RawURLEncoding.EncodeToString(bytes.Repeat([]byte{2}, 32))
 )
 
 func TestConnectStreamsAfterHalfClose(t *testing.T) {
@@ -47,11 +55,11 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") == "Bearer denied" {
+		if r.Header.Get("Authorization") == "Bearer "+deniedToken {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		if r.Method != http.MethodConnect || r.Host != "localhost:"+strings.Split(packet.LocalAddr().String(), ":")[1] || r.Header.Get("Authorization") != "Bearer proof" || r.Header.Get("Relay-Access") != "team/access" {
+		if r.Method != http.MethodConnect || r.Host != "localhost:"+strings.Split(packet.LocalAddr().String(), ":")[1] || r.Header.Get("Authorization") != "Bearer "+proofToken || r.Header.Get("Relay-Access") != "team/access" {
 			t.Errorf("unexpected CONNECT: method=%s host=%s auth=%s access=%s", r.Method, r.Host, r.Header.Get("Authorization"), r.Header.Get("Relay-Access"))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -89,7 +97,7 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 	defer func() { _ = local.Close() }()
 	done := make(chan error, 1)
 	go func() {
-		done <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: "proof"}, local)
+		done <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: proofToken}, local)
 	}()
 	_, _ = client.Write([]byte("hello"))
 	_ = client.(*net.TCPConn).CloseWrite()
@@ -112,7 +120,7 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 	defer func() { _ = deniedLocal.Close() }()
 	denied := make(chan error, 1)
 	go func() {
-		denied <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: "denied"}, deniedLocal)
+		denied <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: deniedToken}, deniedLocal)
 	}()
 	select {
 	case err := <-denied:
@@ -126,8 +134,28 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 
 func TestRequestRejectsUntrustedEndpoint(t *testing.T) {
 	for _, endpoint := range []string{"http://relay", "https://relay/path", "https://user@relay", "https://relay?target=db"} {
-		if _, err := (Tunnel{Endpoint: endpoint, Access: "team/access", Token: "proof"}).request(context.Background(), nil); err == nil {
+		if _, err := (Tunnel{Endpoint: endpoint, Access: "team/access", Token: proofToken}).request(context.Background(), nil); err == nil {
 			t.Errorf("accepted %q", endpoint)
 		}
+	}
+}
+
+func TestRequestRejectsMalformedTokensWithoutEchoingThem(t *testing.T) {
+	for name, token := range map[string]string{
+		"empty":         "",
+		"short":         "c2hvcnQ",
+		"padded":        base64.URLEncoding.EncodeToString(bytes.Repeat([]byte{1}, 32)),
+		"newline":       proofToken + "\n",
+		"not-base64url": strings.Repeat("!", 43),
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := (Tunnel{Endpoint: "https://relay.example:8443", Access: "team/access", Token: token}).request(context.Background(), nil)
+			if err == nil {
+				t.Fatal("expected malformed token to be rejected")
+			}
+			if token != "" && strings.Contains(err.Error(), token) {
+				t.Fatalf("error leaks token: %v", err)
+			}
+		})
 	}
 }

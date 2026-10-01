@@ -3,6 +3,7 @@ package relay
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -23,7 +24,8 @@ func (t Tunnel) request(ctx context.Context, body io.Reader) (*http.Request, err
 	if err != nil || u.Scheme != "https" || u.Host == "" || u.Path != "" || u.RawQuery != "" || u.User != nil || u.Fragment != "" {
 		return nil, fmt.Errorf("invalid relay endpoint")
 	}
-	if !strings.Contains(t.Access, "/") || t.Token == "" {
+	// Validate before building headers: the HTTP stack echoes invalid header values in its errors.
+	if !strings.Contains(t.Access, "/") || !validToken(t.Token) {
 		return nil, fmt.Errorf("invalid relay access credentials")
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodConnect, t.Endpoint, body)
@@ -34,6 +36,13 @@ func (t Tunnel) request(ctx context.Context, body io.Reader) (*http.Request, err
 	req.Header.Set("Authorization", "Bearer "+t.Token)
 	req.Header.Set("Relay-Access", t.Access)
 	return req, nil
+}
+
+// validToken accepts only the relay contract: unpadded base64url of 32 bytes.
+func validToken(token string) bool {
+	raw, err := base64.RawURLEncoding.DecodeString(token)
+	// The decoder silently skips \r and \n, so also require the canonical encoding.
+	return err == nil && len(raw) == 32 && base64.RawURLEncoding.EncodeToString(raw) == token
 }
 
 // Serve forwards each TCP connection to the relay until ctx is cancelled.

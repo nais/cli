@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/nais/cli/internal/alpha/postgres"
@@ -28,7 +29,17 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 		Description: "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			connection, err := requestAccess(ctx, args.Get("postgres"), f)
+			// SIGTERM must run the deferred cleanup (CA file, relay). Ctrl-C aborts the setup, but once
+			// psql runs it is left to psql (query cancellation) and ignored here until cleanup is done.
+			ctx, stopTerm := signal.NotifyContext(ctx, syscall.SIGTERM)
+			defer stopTerm()
+			setupCtx, stopSetup := signal.NotifyContext(ctx, os.Interrupt)
+			connection, err := requestAccess(setupCtx, args.Get("postgres"), f)
+			// Register the ignore-channel before releasing the setup handler so there is no unhandled window.
+			interrupts := make(chan os.Signal, 1)
+			signal.Notify(interrupts, os.Interrupt)
+			defer signal.Stop(interrupts)
+			stopSetup()
 			if err != nil {
 				return err
 			}
@@ -69,10 +80,6 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 				"PGUSER="+connection.Username, "PGPASSWORD="+connection.Password, "PGDATABASE="+f.Database,
 				"PGSSLMODE=verify-full", "PGSSLROOTCERT="+ca.Name(), "PGCONNECT_TIMEOUT=10")
 			out.Println("Connecting with verified PostgreSQL TLS through the local relay...")
-			// psql handles Ctrl-C itself (query cancellation); do not terminate its relay.
-			interrupts := make(chan os.Signal, 1)
-			signal.Notify(interrupts, os.Interrupt)
-			defer signal.Stop(interrupts)
 			return cmd.Run()
 		},
 	}
@@ -85,6 +92,8 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 		Description: "Request personal access and listen on loopback. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Credentials are not printed unless --print-password is set.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+			defer stop()
 			if net.ParseIP(f.Host) == nil || !net.ParseIP(f.Host).IsLoopback() {
 				return fmt.Errorf("--host must be a loopback IP address")
 			}
@@ -159,7 +168,9 @@ func requestAccess(ctx context.Context, name string, f *flag.Access) (postgres.C
 	}
 	branch := f.Branch
 	if branch == "" {
-		branch, err = api.ActiveBranch(ctx, f.Team, string(f.Environment), name)
+		lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		branch, err = api.ActiveBranch(lookupCtx, f.Team, string(f.Environment), name)
 		if err != nil {
 			return postgres.Connection{}, err
 		}

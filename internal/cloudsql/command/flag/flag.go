@@ -73,10 +73,6 @@ type VerifyAudit struct {
 	*CloudSQL
 }
 
-type Grant struct {
-	*CloudSQL
-}
-
 type Prepare struct {
 	*CloudSQL
 	AllPrivileges bool   `name:"all-privileges" usage:"Grant all privileges on the schema to the current user."`

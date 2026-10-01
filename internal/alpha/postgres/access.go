@@ -119,13 +119,14 @@ func waitForAccess(ctx context.Context, api AccessAPI, team, environment, name s
 }
 
 func CreateAndWait(ctx context.Context, api AccessAPI, input gql.CreatePostgresAccessInput) (Connection, error) {
-	name, err := api.Create(ctx, input)
+	// Bound creation and polling together; a stalled API must not hang the command.
+	setupCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	name, err := api.Create(setupCtx, input)
 	if err != nil {
 		return Connection{}, fmt.Errorf("create postgres access: %w", err)
 	}
-	pollCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-	connection, err := waitForAccess(pollCtx, api, input.TeamSlug, input.EnvironmentName, name, time.Second)
+	connection, err := waitForAccess(setupCtx, api, input.TeamSlug, input.EnvironmentName, name, time.Second)
 	if err != nil {
 		return Connection{}, fmt.Errorf("access %q was created but is not ready (it expires after its requested TTL): %w", name, err)
 	}
