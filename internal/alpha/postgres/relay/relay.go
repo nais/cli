@@ -39,8 +39,8 @@ func (t Tunnel) request(ctx context.Context, body io.Reader) (*http.Request, err
 // Serve forwards each TCP connection to the relay until ctx is cancelled.
 func Serve(ctx context.Context, listener net.Listener, tunnel Tunnel) error {
 	transport := &http3.Transport{}
-	defer transport.Close()
-	defer listener.Close()
+	defer func() { _ = transport.Close() }()
+	defer func() { _ = listener.Close() }()
 	stop := context.AfterFunc(ctx, func() { _ = listener.Close() })
 	defer stop()
 	for {
@@ -52,7 +52,7 @@ func Serve(ctx context.Context, listener net.Listener, tunnel Tunnel) error {
 			return fmt.Errorf("accept local connection: %w", err)
 		}
 		go func() {
-			defer conn.Close()
+			defer func() { _ = conn.Close() }()
 			if err := forward(ctx, transport, tunnel, conn); err != nil && ctx.Err() == nil {
 				// An individual connection must not terminate other local clients.
 				// Callers can retry; no credentials are included in the error.
@@ -68,8 +68,8 @@ func forward(ctx context.Context, transport *http3.Transport, tunnel Tunnel, loc
 	stop := context.AfterFunc(ctx, func() { _ = local.Close() })
 	defer stop()
 	reader, writer := io.Pipe()
-	defer reader.Close()
-	defer writer.Close()
+	defer func() { _ = reader.Close() }()
+	defer func() { _ = writer.Close() }()
 	req, err := tunnel.request(ctx, reader)
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func forward(ctx context.Context, transport *http3.Transport, tunnel Tunnel, loc
 		<-done
 		return fmt.Errorf("relay CONNECT: %w", err)
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 	if response.StatusCode != http.StatusOK {
 		_ = local.Close()
 		_ = reader.Close()

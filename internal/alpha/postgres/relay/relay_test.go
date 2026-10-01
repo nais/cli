@@ -70,23 +70,23 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 	go func() { defer close(serverDone); _ = server.Serve(packet) }()
 	defer func() { _ = server.Close(); <-serverDone; _ = packet.Close() }()
 	transport := &http3.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, ServerName: "localhost"}}
-	defer transport.Close()
+	defer func() { _ = transport.Close() }()
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer listener.Close()
+	defer func() { _ = listener.Close() }()
 	client, err := net.Dial("tcp", listener.Addr().String())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 	_ = client.SetDeadline(time.Now().Add(5 * time.Second))
 	local, err := listener.Accept()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer local.Close()
+	defer func() { _ = local.Close() }()
 	done := make(chan error, 1)
 	go func() {
 		done <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: "proof"}, local)
@@ -104,12 +104,12 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer deniedClient.Close()
+	defer func() { _ = deniedClient.Close() }()
 	deniedLocal, err := listener.Accept()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer deniedLocal.Close()
+	defer func() { _ = deniedLocal.Close() }()
 	denied := make(chan error, 1)
 	go func() {
 		denied <- forward(context.Background(), transport, Tunnel{Endpoint: "https://localhost:" + strings.Split(packet.LocalAddr().String(), ":")[1], Access: "team/access", Token: "denied"}, deniedLocal)

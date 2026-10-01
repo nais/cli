@@ -47,8 +47,8 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			defer os.Remove(ca.Name())
-			defer ca.Close()
+			defer func() { _ = os.Remove(ca.Name()) }()
+			defer func() { _ = ca.Close() }()
 			if err := ca.Chmod(0o600); err != nil {
 				return err
 			}
@@ -106,7 +106,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 				_ = listener.Close()
 				return err
 			}
-			defer os.Remove(ca.Name())
+			defer func() { _ = os.Remove(ca.Name()) }()
 			if _, err := ca.WriteString(connection.CACertificate); err != nil {
 				_ = ca.Close()
 				_ = listener.Close()

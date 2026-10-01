@@ -85,7 +85,7 @@ func instancesFromTeam(teamData gql.GetTeamCloudSQLInstancesTeam, team string, e
 		ret = append(ret, Instance{
 			Name: output.Link{Name: s.Name, URL: fmt.Sprintf("%s/team/%s/%s/cloudsql/%s", consoleBaseURL, team, env, s.Name)},
 			Type: "Cloud SQL", Environment: env, Version: ptr.Deref(s.Version, ""),
-			HighAvailability: s.HighAvailability, Audit: ptr.To(s.AuditLog != nil), State: State(s.State),
+			HighAvailability: s.HighAvailability, Audit: new(s.AuditLog != nil), State: State(s.State),
 		})
 	}
 	sort.Slice(ret, func(i, j int) bool {

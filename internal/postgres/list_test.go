@@ -57,6 +57,3 @@ func TestInstancesFromTeam(t *testing.T) {
 		})
 	}
 }
-
-//go:fix inline
-func boolPtr(value bool) *bool { return new(value) }

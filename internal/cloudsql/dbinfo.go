@@ -20,8 +20,6 @@ type DBInfo struct {
 	appName       string
 }
 
-func (d *DBInfo) AppName() string { return d.appName }
-
 func NewDBInfo(_ context.Context, appName, team, environment string) (*CloudSQLDBInfo, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, &clientcmd.ConfigOverrides{CurrentContext: environment})

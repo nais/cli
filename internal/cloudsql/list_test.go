@@ -24,11 +24,11 @@ func TestInstancesFromTeam(t *testing.T) {
 		want         []Instance
 	}{
 		{name: "sorted", want: []Instance{
-			{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: boolPtr(true), State: State(gql.SqlInstanceStateRunnable)},
-			{Name: output.Link{Name: "other", URL: consoleBaseURL + "/team/my-team/prod/cloudsql/other"}, Type: "Cloud SQL", Environment: "prod", HighAvailability: true, Audit: boolPtr(false), State: State(gql.SqlInstanceStateStopped)},
+			{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: new(true), State: State(gql.SqlInstanceStateRunnable)},
+			{Name: output.Link{Name: "other", URL: consoleBaseURL + "/team/my-team/prod/cloudsql/other"}, Type: "Cloud SQL", Environment: "prod", HighAvailability: true, Audit: new(false), State: State(gql.SqlInstanceStateStopped)},
 		}},
 		{name: "environment filter", environments: []string{"dev"}, want: []Instance{
-			{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: boolPtr(true), State: State(gql.SqlInstanceStateRunnable)},
+			{Name: output.Link{Name: "legacy", URL: consoleBaseURL + "/team/my-team/dev/cloudsql/legacy"}, Type: "Cloud SQL", Environment: "dev", Version: "POSTGRES_14", Audit: new(true), State: State(gql.SqlInstanceStateRunnable)},
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -38,4 +38,3 @@ func TestInstancesFromTeam(t *testing.T) {
 		})
 	}
 }
-func boolPtr(value bool) *bool { return &value }
