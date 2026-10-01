@@ -1,0 +1,46 @@
+package command
+
+import (
+	"context"
+	"fmt"
+
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
+	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/nais/cli/internal/cloudsql"
+	"github.com/nais/cli/internal/cloudsql/command/flag"
+	"github.com/nais/cli/internal/validation"
+	"github.com/nais/naistrix"
+	"github.com/nais/naistrix/input"
+)
+
+func revokeCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
+	flags := &flag.Revoke{
+		CloudSQL: parentFlags,
+		Schema:   "public",
+	}
+	return &naistrix.Command{
+		Name:  "revoke",
+		Title: `Revoke access to your SQL instance for the role "cloudsqliamuser".`,
+		Description: heredoc.Doc(`
+			Revoke will revoke the role "cloudsqliamuser" access to the tables in the SQL instance.
+
+			This is done by connecting using the application credentials and modify the permissions on the public schema.
+
+			This operation is only required to run once for each SQL instance.
+		`),
+		Args: []naistrix.Argument{
+			{Name: "app_name"},
+		},
+		Flags:        flags,
+		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
+			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				return err
+			} else if !result {
+				return fmt.Errorf("cancelled by user")
+			}
+
+			return cloudsql.RevokeAccess(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
+		},
+	}
+}
