@@ -20572,16 +20572,18 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetDesiredMajor() OpenSe
 	return v.DesiredMajor
 }
 
-// GetPostgresAccessAlphaResponse is returned by GetPostgresAccessAlpha on success.
-type GetPostgresAccessAlphaResponse struct {
+// GetPostgresAccessConnectionAlphaResponse is returned by GetPostgresAccessConnectionAlpha on success.
+type GetPostgresAccessConnectionAlphaResponse struct {
 	// Get a team by its slug.
-	Team GetPostgresAccessAlphaTeam `json:"team"`
+	Team GetPostgresAccessConnectionAlphaTeam `json:"team"`
 }
 
-// GetTeam returns GetPostgresAccessAlphaResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaResponse) GetTeam() GetPostgresAccessAlphaTeam { return v.Team }
+// GetTeam returns GetPostgresAccessConnectionAlphaResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaResponse) GetTeam() GetPostgresAccessConnectionAlphaTeam {
+	return v.Team
+}
 
-// GetPostgresAccessAlphaTeam includes the requested fields of the GraphQL type Team.
+// GetPostgresAccessConnectionAlphaTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -20589,60 +20591,48 @@ func (v *GetPostgresAccessAlphaResponse) GetTeam() GetPostgresAccessAlphaTeam { 
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetPostgresAccessAlphaTeam struct {
+type GetPostgresAccessConnectionAlphaTeam struct {
 	// Get a specific environment for the team.
-	Environment GetPostgresAccessAlphaTeamEnvironment `json:"environment"`
+	Environment GetPostgresAccessConnectionAlphaTeamEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetPostgresAccessAlphaTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeam) GetEnvironment() GetPostgresAccessAlphaTeamEnvironment {
+// GetEnvironment returns GetPostgresAccessConnectionAlphaTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeam) GetEnvironment() GetPostgresAccessConnectionAlphaTeamEnvironment {
 	return v.Environment
 }
 
-// GetPostgresAccessAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetPostgresAccessAlphaTeamEnvironment struct {
+// GetPostgresAccessConnectionAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresAccessConnectionAlphaTeamEnvironment struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get a PostgresAccess and its state. Available to authorized team members.
-	PostgresAccess GetPostgresAccessAlphaTeamEnvironmentPostgresAccess `json:"postgresAccess"`
+	PostgresAccess GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess `json:"postgresAccess"`
 }
 
-// GetPostgresAccess returns GetPostgresAccessAlphaTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironment) GetPostgresAccess() GetPostgresAccessAlphaTeamEnvironmentPostgresAccess {
+// GetPostgresAccess returns GetPostgresAccessConnectionAlphaTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironment) GetPostgresAccess() GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess {
 	return v.PostgresAccess
 }
 
-// GetPostgresAccessAlphaTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
 // The GraphQL type's documentation follows.
 //
 // A time-limited personal access request for a Postgres branch.
-type GetPostgresAccessAlphaTeamEnvironmentPostgresAccess struct {
-	// High-level state of the access.
-	State PostgresAccessState `json:"state"`
-	// Human-readable message for the current state.
-	Message *string `json:"message"`
+type GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get connection materials for this ready access. Only its owner can read them.
-	Connection *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails `json:"connection"`
+	Connection *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails `json:"connection"`
 }
 
-// GetState returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccess.State, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccess) GetState() PostgresAccessState {
-	return v.State
-}
-
-// GetMessage returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccess.Message, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccess) GetMessage() *string { return v.Message }
-
-// GetConnection returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccess.Connection, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccess) GetConnection() *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails {
+// GetConnection returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess.Connection, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess) GetConnection() *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails {
 	return v.Connection
 }
 
-// GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails includes the requested fields of the GraphQL type PostgresAccessConnectionDetails.
+// GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails includes the requested fields of the GraphQL type PostgresAccessConnectionDetails.
 // The GraphQL type's documentation follows.
 //
 // Sensitive connection materials for a ready personal Postgres access.
-type GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails struct {
+type GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails struct {
 	// Database username for the caller's personal role.
 	Username string `json:"username"`
 	// Short-lived password for the caller's database role.
@@ -20659,39 +20649,101 @@ type GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccess
 	RelayToken string `json:"relayToken"`
 }
 
-// GetUsername returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Username, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetUsername() string {
+// GetUsername returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Username, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetUsername() string {
 	return v.Username
 }
 
-// GetPassword returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Password, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetPassword() string {
+// GetPassword returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Password, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetPassword() string {
 	return v.Password
 }
 
-// GetCaCertificate returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.CaCertificate, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetCaCertificate() string {
+// GetCaCertificate returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.CaCertificate, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetCaCertificate() string {
 	return v.CaCertificate
 }
 
-// GetServerName returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.ServerName, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetServerName() string {
+// GetServerName returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.ServerName, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetServerName() string {
 	return v.ServerName
 }
 
-// GetRelayEndpoint returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayEndpoint, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayEndpoint() string {
+// GetRelayEndpoint returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayEndpoint, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayEndpoint() string {
 	return v.RelayEndpoint
 }
 
-// GetRelayAccess returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayAccess, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayAccess() string {
+// GetRelayAccess returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayAccess() string {
 	return v.RelayAccess
 }
 
-// GetRelayToken returns GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayToken, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayToken() string {
+// GetRelayToken returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayToken, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayToken() string {
 	return v.RelayToken
+}
+
+// GetPostgresAccessStatusAlphaResponse is returned by GetPostgresAccessStatusAlpha on success.
+type GetPostgresAccessStatusAlphaResponse struct {
+	// Get a team by its slug.
+	Team GetPostgresAccessStatusAlphaTeam `json:"team"`
+}
+
+// GetTeam returns GetPostgresAccessStatusAlphaResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusAlphaResponse) GetTeam() GetPostgresAccessStatusAlphaTeam {
+	return v.Team
+}
+
+// GetPostgresAccessStatusAlphaTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetPostgresAccessStatusAlphaTeam struct {
+	// Get a specific environment for the team.
+	Environment GetPostgresAccessStatusAlphaTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetPostgresAccessStatusAlphaTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusAlphaTeam) GetEnvironment() GetPostgresAccessStatusAlphaTeamEnvironment {
+	return v.Environment
+}
+
+// GetPostgresAccessStatusAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresAccessStatusAlphaTeamEnvironment struct {
+	// EXPERIMENTAL: DO NOT USE
+	// Get a PostgresAccess and its state. Available to authorized team members.
+	PostgresAccess GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess `json:"postgresAccess"`
+}
+
+// GetPostgresAccess returns GetPostgresAccessStatusAlphaTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusAlphaTeamEnvironment) GetPostgresAccess() GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess {
+	return v.PostgresAccess
+}
+
+// GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// The GraphQL type's documentation follows.
+//
+// A time-limited personal access request for a Postgres branch.
+type GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess struct {
+	// High-level state of the access.
+	State PostgresAccessState `json:"state"`
+	// Human-readable message for the current state.
+	Message *string `json:"message"`
+}
+
+// GetState returns GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess.State, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess) GetState() PostgresAccessState {
+	return v.State
+}
+
+// GetMessage returns GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess.Message, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess) GetMessage() *string {
+	return v.Message
 }
 
 // GetSecretActivityResponse is returned by GetSecretActivity on success.
@@ -35393,21 +35445,37 @@ func (v *__GetOpenSearchInput) GetEnvironmentName() string { return v.Environmen
 // GetTeamSlug returns __GetOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
-// __GetPostgresAccessAlphaInput is used internally by genqlient
-type __GetPostgresAccessAlphaInput struct {
+// __GetPostgresAccessConnectionAlphaInput is used internally by genqlient
+type __GetPostgresAccessConnectionAlphaInput struct {
 	Team        string `json:"team"`
 	Environment string `json:"environment"`
 	Name        string `json:"name"`
 }
 
-// GetTeam returns __GetPostgresAccessAlphaInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessAlphaInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetPostgresAccessConnectionAlphaInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionAlphaInput) GetTeam() string { return v.Team }
 
-// GetEnvironment returns __GetPostgresAccessAlphaInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessAlphaInput) GetEnvironment() string { return v.Environment }
+// GetEnvironment returns __GetPostgresAccessConnectionAlphaInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionAlphaInput) GetEnvironment() string { return v.Environment }
 
-// GetName returns __GetPostgresAccessAlphaInput.Name, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessAlphaInput) GetName() string { return v.Name }
+// GetName returns __GetPostgresAccessConnectionAlphaInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionAlphaInput) GetName() string { return v.Name }
+
+// __GetPostgresAccessStatusAlphaInput is used internally by genqlient
+type __GetPostgresAccessStatusAlphaInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+}
+
+// GetTeam returns __GetPostgresAccessStatusAlphaInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusAlphaInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetPostgresAccessStatusAlphaInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusAlphaInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __GetPostgresAccessStatusAlphaInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusAlphaInput) GetName() string { return v.Name }
 
 // __GetSecretActivityInput is used internally by genqlient
 type __GetSecretActivityInput struct {
@@ -38299,14 +38367,12 @@ func GetOpenSearch(
 	return data_, err_
 }
 
-// The query executed by GetPostgresAccessAlpha.
-const GetPostgresAccessAlpha_Operation = `
-query GetPostgresAccessAlpha ($team: Slug!, $environment: String!, $name: String!) {
+// The query executed by GetPostgresAccessConnectionAlpha.
+const GetPostgresAccessConnectionAlpha_Operation = `
+query GetPostgresAccessConnectionAlpha ($team: Slug!, $environment: String!, $name: String!) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			postgresAccess(name: $name) {
-				state
-				message
 				connection {
 					username
 					password
@@ -38322,24 +38388,67 @@ query GetPostgresAccessAlpha ($team: Slug!, $environment: String!, $name: String
 }
 `
 
-func GetPostgresAccessAlpha(
+func GetPostgresAccessConnectionAlpha(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
 	environment string,
 	name string,
-) (data_ *GetPostgresAccessAlphaResponse, err_ error) {
+) (data_ *GetPostgresAccessConnectionAlphaResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetPostgresAccessAlpha",
-		Query:  GetPostgresAccessAlpha_Operation,
-		Variables: &__GetPostgresAccessAlphaInput{
+		OpName: "GetPostgresAccessConnectionAlpha",
+		Query:  GetPostgresAccessConnectionAlpha_Operation,
+		Variables: &__GetPostgresAccessConnectionAlphaInput{
 			Team:        team,
 			Environment: environment,
 			Name:        name,
 		},
 	}
 
-	data_ = &GetPostgresAccessAlphaResponse{}
+	data_ = &GetPostgresAccessConnectionAlphaResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetPostgresAccessStatusAlpha.
+const GetPostgresAccessStatusAlpha_Operation = `
+query GetPostgresAccessStatusAlpha ($team: Slug!, $environment: String!, $name: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			postgresAccess(name: $name) {
+				state
+				message
+			}
+		}
+	}
+}
+`
+
+func GetPostgresAccessStatusAlpha(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+) (data_ *GetPostgresAccessStatusAlphaResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetPostgresAccessStatusAlpha",
+		Query:  GetPostgresAccessStatusAlpha_Operation,
+		Variables: &__GetPostgresAccessStatusAlphaInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+		},
+	}
+
+	data_ = &GetPostgresAccessStatusAlphaResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

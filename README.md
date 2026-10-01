@@ -12,7 +12,7 @@ See the [CLI documentation](https://cli.nais.io) for usage instructions.
 mise install
 ```
 
-### Build nais cli
+### Build Nais CLI
 
 ```
 mise run build
@@ -24,7 +24,7 @@ mise run build
 mise run test
 ```
 
-### Verify nais cli
+### Verify Nais CLI
 
 ```
 ./bin/nais --version
