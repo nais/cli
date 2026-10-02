@@ -10,7 +10,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-// Access is the status of a personal access. It carries no credentials.
+// Access is the status of a personal access.
 type Access struct {
 	State   gql.PostgresAccessState
 	Message string
