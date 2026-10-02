@@ -23,11 +23,10 @@ func prepareCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Name:  "prepare",
 		Title: "Prepare your SQL instance for use with personal accounts.",
 		Description: heredoc.Doc(`
-			Prepare will prepare the SQL instance by connecting using the application credentials and modify the permissions on the public schema.
-
-			All IAM users in your GCP project will be able to connect to the instance.
-
-			This operation is only required to run once for each SQL instance.
+			Prepare grants access to tables and sequences in the chosen schema using the application credentials.
+			By default, access is granted to cloudsqliamuser (individual IAM database users).
+			Use --group to grant access to an existing Cloud SQL IAM group instead.
+			Group membership determines who inherits the group's database privileges.
 		`),
 		Args: []naistrix.Argument{
 			{Name: "app_name"},

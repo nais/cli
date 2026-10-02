@@ -75,8 +75,9 @@ type VerifyAudit struct {
 
 type Prepare struct {
 	*CloudSQL
-	AllPrivileges bool   `name:"all-privileges" usage:"Grant all privileges on the schema to the current user."`
+	AllPrivileges bool   `name:"all-privileges" usage:"Grant all privileges on the schema to the recipient."`
 	Schema        string `name:"schema" usage:"Schema to grant access to."`
+	Group         string `name:"group" usage:"Grant access to this Cloud SQL IAM group instead of cloudsqliamuser."`
 }
 
 type Proxy struct {
@@ -92,6 +93,7 @@ type Psql struct {
 type Revoke struct {
 	*CloudSQL
 	Schema string `name:"schema" usage:"The schema to revoke privileges from."`
+	Group  string `name:"group" usage:"Revoke access from this Cloud SQL IAM group instead of cloudsqliamuser."`
 }
 
 type List struct {
