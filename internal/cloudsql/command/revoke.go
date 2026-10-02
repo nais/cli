@@ -20,13 +20,10 @@ func revokeCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 	}
 	return &naistrix.Command{
 		Name:  "revoke",
-		Title: `Revoke access to your SQL instance for the role "cloudsqliamuser".`,
+		Title: "Revoke database access granted by prepare.",
 		Description: heredoc.Doc(`
-			Revoke will revoke the role "cloudsqliamuser" access to the tables in the SQL instance.
-
-			This is done by connecting using the application credentials and modify the permissions on the public schema.
-
-			This operation is only required to run once for each SQL instance.
+			Revoke removes access for cloudsqliamuser by default, or for an existing Cloud SQL IAM group with --group.
+			This uses the application credentials and affects tables, sequences and default privileges in the chosen schema.
 		`),
 		Args: []naistrix.Argument{
 			{Name: "app_name"},
