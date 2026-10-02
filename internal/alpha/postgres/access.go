@@ -42,11 +42,11 @@ func NewAPI(ctx context.Context) (AccessAPI, error) {
 
 func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, name string) (string, error) {
 	_ = `# @genqlient
- query GetActivePostgresBranchAlpha($team: Slug!, $environment: String!, $postgres: String!) {
+ query GetActivePostgresBranch($team: Slug!, $environment: String!, $postgres: String!) {
   team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) { activeBranch { name } } } }
  }
  `
-	result, err := gql.GetActivePostgresBranchAlpha(ctx, a.client, team, environment, name)
+	result, err := gql.GetActivePostgresBranch(ctx, a.client, team, environment, name)
 	if err != nil {
 		return "", err
 	}
@@ -58,11 +58,11 @@ func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, n
 
 func (a graphqlAccessAPI) Create(ctx context.Context, input gql.CreatePostgresAccessInput) (string, error) {
 	_ = `# @genqlient
- mutation CreatePostgresAccessAlpha($input: CreatePostgresAccessInput!) {
+ mutation CreatePostgresAccess($input: CreatePostgresAccessInput!) {
   createPostgresAccess(input: $input) { name }
  }
  `
-	result, err := gql.CreatePostgresAccessAlpha(ctx, a.client, input)
+	result, err := gql.CreatePostgresAccess(ctx, a.client, input)
 	if err != nil {
 		return "", err
 	}
@@ -71,11 +71,11 @@ func (a graphqlAccessAPI) Create(ctx context.Context, input gql.CreatePostgresAc
 
 func (a graphqlAccessAPI) Status(ctx context.Context, team, environment, name string) (Access, error) {
 	_ = `# @genqlient
- query GetPostgresAccessStatusAlpha($team: Slug!, $environment: String!, $name: String!) {
+ query GetPostgresAccessStatus($team: Slug!, $environment: String!, $name: String!) {
   team(slug: $team) { environment(name: $environment) { postgresAccess(name: $name) { state message } } }
  }
  `
-	result, err := gql.GetPostgresAccessStatusAlpha(ctx, a.client, team, environment, name)
+	result, err := gql.GetPostgresAccessStatus(ctx, a.client, team, environment, name)
 	if err != nil {
 		return Access{}, err
 	}
@@ -89,13 +89,13 @@ func (a graphqlAccessAPI) Status(ctx context.Context, team, environment, name st
 
 func (a graphqlAccessAPI) Connection(ctx context.Context, team, environment, name string) (Connection, error) {
 	_ = `# @genqlient
- query GetPostgresAccessConnectionAlpha($team: Slug!, $environment: String!, $name: String!) {
+ query GetPostgresAccessConnection($team: Slug!, $environment: String!, $name: String!) {
   team(slug: $team) { environment(name: $environment) { postgresAccess(name: $name) {
    connection { username password caCertificate serverName relayEndpoint relayAccess relayToken }
   } } }
  }
  `
-	result, err := gql.GetPostgresAccessConnectionAlpha(ctx, a.client, team, environment, name)
+	result, err := gql.GetPostgresAccessConnection(ctx, a.client, team, environment, name)
 	if err != nil {
 		return Connection{}, err
 	}

@@ -1044,31 +1044,18 @@ func (v *CreateOpenSearchResponse) GetCreateOpenSearch() CreateOpenSearchCreateO
 	return v.CreateOpenSearch
 }
 
-// CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload includes the requested fields of the GraphQL type CreatePostgresAccessPayload.
+// CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload includes the requested fields of the GraphQL type CreatePostgresAccessPayload.
 // The GraphQL type's documentation follows.
 //
 // Result of creating a personal Postgres access.
-type CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload struct {
+type CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload struct {
 	// Name of the newly created PostgresAccess resource.
 	Name string `json:"name"`
 }
 
-// GetName returns CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload.Name, and is useful for accessing the field via an interface.
-func (v *CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload) GetName() string {
+// GetName returns CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload.Name, and is useful for accessing the field via an interface.
+func (v *CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload) GetName() string {
 	return v.Name
-}
-
-// CreatePostgresAccessAlphaResponse is returned by CreatePostgresAccessAlpha on success.
-type CreatePostgresAccessAlphaResponse struct {
-	// EXPERIMENTAL: DO NOT USE
-	// Create time-limited personal access to a NAIS Postgres branch through the brokered PostgresAccess and relay flow.
-	// When the access is ready, retrieve its connection materials through PostgresAccess.connection.
-	CreatePostgresAccess CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload `json:"createPostgresAccess"`
-}
-
-// GetCreatePostgresAccess returns CreatePostgresAccessAlphaResponse.CreatePostgresAccess, and is useful for accessing the field via an interface.
-func (v *CreatePostgresAccessAlphaResponse) GetCreatePostgresAccess() CreatePostgresAccessAlphaCreatePostgresAccessCreatePostgresAccessPayload {
-	return v.CreatePostgresAccess
 }
 
 // Input for creating a time-limited personal Postgres access.
@@ -1109,6 +1096,19 @@ func (v *CreatePostgresAccessInput) GetReason() string { return v.Reason }
 
 // GetTtl returns CreatePostgresAccessInput.Ttl, and is useful for accessing the field via an interface.
 func (v *CreatePostgresAccessInput) GetTtl() *string { return v.Ttl }
+
+// CreatePostgresAccessResponse is returned by CreatePostgresAccess on success.
+type CreatePostgresAccessResponse struct {
+	// EXPERIMENTAL: DO NOT USE
+	// Create time-limited personal access to a NAIS Postgres branch through the brokered PostgresAccess and relay flow.
+	// When the access is ready, retrieve its connection materials through PostgresAccess.connection.
+	CreatePostgresAccess CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload `json:"createPostgresAccess"`
+}
+
+// GetCreatePostgresAccess returns CreatePostgresAccessResponse.CreatePostgresAccess, and is useful for accessing the field via an interface.
+func (v *CreatePostgresAccessResponse) GetCreatePostgresAccess() CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload {
+	return v.CreatePostgresAccess
+}
 
 // CreateSecretCreateSecretCreateSecretPayload includes the requested fields of the GraphQL type CreateSecretPayload.
 type CreateSecretCreateSecretCreateSecretPayload struct {
@@ -1861,18 +1861,16 @@ type FindWorkloadsForCveResponse struct {
 // GetCve returns FindWorkloadsForCveResponse.Cve, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveResponse) GetCve() FindWorkloadsForCveCveCVE { return v.Cve }
 
-// GetActivePostgresBranchAlphaResponse is returned by GetActivePostgresBranchAlpha on success.
-type GetActivePostgresBranchAlphaResponse struct {
+// GetActivePostgresBranchResponse is returned by GetActivePostgresBranch on success.
+type GetActivePostgresBranchResponse struct {
 	// Get a team by its slug.
-	Team GetActivePostgresBranchAlphaTeam `json:"team"`
+	Team GetActivePostgresBranchTeam `json:"team"`
 }
 
-// GetTeam returns GetActivePostgresBranchAlphaResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchAlphaResponse) GetTeam() GetActivePostgresBranchAlphaTeam {
-	return v.Team
-}
+// GetTeam returns GetActivePostgresBranchResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetActivePostgresBranchResponse) GetTeam() GetActivePostgresBranchTeam { return v.Team }
 
-// GetActivePostgresBranchAlphaTeam includes the requested fields of the GraphQL type Team.
+// GetActivePostgresBranchTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -1880,52 +1878,52 @@ func (v *GetActivePostgresBranchAlphaResponse) GetTeam() GetActivePostgresBranch
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetActivePostgresBranchAlphaTeam struct {
+type GetActivePostgresBranchTeam struct {
 	// Get a specific environment for the team.
-	Environment GetActivePostgresBranchAlphaTeamEnvironment `json:"environment"`
+	Environment GetActivePostgresBranchTeamEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetActivePostgresBranchAlphaTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchAlphaTeam) GetEnvironment() GetActivePostgresBranchAlphaTeamEnvironment {
+// GetEnvironment returns GetActivePostgresBranchTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetActivePostgresBranchTeam) GetEnvironment() GetActivePostgresBranchTeamEnvironment {
 	return v.Environment
 }
 
-// GetActivePostgresBranchAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetActivePostgresBranchAlphaTeamEnvironment struct {
+// GetActivePostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetActivePostgresBranchTeamEnvironment struct {
 	// Postgres in the team environment.
-	Postgres GetActivePostgresBranchAlphaTeamEnvironmentPostgres `json:"postgres"`
+	Postgres GetActivePostgresBranchTeamEnvironmentPostgres `json:"postgres"`
 }
 
-// GetPostgres returns GetActivePostgresBranchAlphaTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchAlphaTeamEnvironment) GetPostgres() GetActivePostgresBranchAlphaTeamEnvironmentPostgres {
+// GetPostgres returns GetActivePostgresBranchTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
+func (v *GetActivePostgresBranchTeamEnvironment) GetPostgres() GetActivePostgresBranchTeamEnvironmentPostgres {
 	return v.Postgres
 }
 
-// GetActivePostgresBranchAlphaTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
+// GetActivePostgresBranchTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
 // A Postgres whose active branch can change.
-type GetActivePostgresBranchAlphaTeamEnvironmentPostgres struct {
+type GetActivePostgresBranchTeamEnvironmentPostgres struct {
 	// Currently active branch, if selected.
-	ActiveBranch *GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
+	ActiveBranch *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
 }
 
-// GetActiveBranch returns GetActivePostgresBranchAlphaTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchAlphaTeamEnvironmentPostgres) GetActiveBranch() *GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch {
+// GetActiveBranch returns GetActivePostgresBranchTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
+func (v *GetActivePostgresBranchTeamEnvironmentPostgres) GetActiveBranch() *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch {
 	return v.ActiveBranch
 }
 
-// GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
 // The GraphQL type's documentation follows.
 //
 // A named PostgresBranch belonging to a Postgres.
-type GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
+type GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
 	// Local name of this branch within its Postgres.
 	Name string `json:"name"`
 }
 
-// GetName returns GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchAlphaTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
+// GetName returns GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
 	return v.Name
 }
 
@@ -20572,18 +20570,18 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchVersion) GetDesiredMajor() OpenSe
 	return v.DesiredMajor
 }
 
-// GetPostgresAccessConnectionAlphaResponse is returned by GetPostgresAccessConnectionAlpha on success.
-type GetPostgresAccessConnectionAlphaResponse struct {
+// GetPostgresAccessConnectionResponse is returned by GetPostgresAccessConnection on success.
+type GetPostgresAccessConnectionResponse struct {
 	// Get a team by its slug.
-	Team GetPostgresAccessConnectionAlphaTeam `json:"team"`
+	Team GetPostgresAccessConnectionTeam `json:"team"`
 }
 
-// GetTeam returns GetPostgresAccessConnectionAlphaResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaResponse) GetTeam() GetPostgresAccessConnectionAlphaTeam {
+// GetTeam returns GetPostgresAccessConnectionResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionResponse) GetTeam() GetPostgresAccessConnectionTeam {
 	return v.Team
 }
 
-// GetPostgresAccessConnectionAlphaTeam includes the requested fields of the GraphQL type Team.
+// GetPostgresAccessConnectionTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -20591,48 +20589,48 @@ func (v *GetPostgresAccessConnectionAlphaResponse) GetTeam() GetPostgresAccessCo
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetPostgresAccessConnectionAlphaTeam struct {
+type GetPostgresAccessConnectionTeam struct {
 	// Get a specific environment for the team.
-	Environment GetPostgresAccessConnectionAlphaTeamEnvironment `json:"environment"`
+	Environment GetPostgresAccessConnectionTeamEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetPostgresAccessConnectionAlphaTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeam) GetEnvironment() GetPostgresAccessConnectionAlphaTeamEnvironment {
+// GetEnvironment returns GetPostgresAccessConnectionTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeam) GetEnvironment() GetPostgresAccessConnectionTeamEnvironment {
 	return v.Environment
 }
 
-// GetPostgresAccessConnectionAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetPostgresAccessConnectionAlphaTeamEnvironment struct {
+// GetPostgresAccessConnectionTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresAccessConnectionTeamEnvironment struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get a PostgresAccess and its state. Available to authorized team members.
-	PostgresAccess GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess `json:"postgresAccess"`
+	PostgresAccess GetPostgresAccessConnectionTeamEnvironmentPostgresAccess `json:"postgresAccess"`
 }
 
-// GetPostgresAccess returns GetPostgresAccessConnectionAlphaTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironment) GetPostgresAccess() GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess {
+// GetPostgresAccess returns GetPostgresAccessConnectionTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironment) GetPostgresAccess() GetPostgresAccessConnectionTeamEnvironmentPostgresAccess {
 	return v.PostgresAccess
 }
 
-// GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// GetPostgresAccessConnectionTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
 // The GraphQL type's documentation follows.
 //
 // A time-limited personal access request for a Postgres branch.
-type GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess struct {
+type GetPostgresAccessConnectionTeamEnvironmentPostgresAccess struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get connection materials for this ready access. Only its owner can read them.
-	Connection *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails `json:"connection"`
+	Connection *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails `json:"connection"`
 }
 
-// GetConnection returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess.Connection, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccess) GetConnection() *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails {
+// GetConnection returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccess.Connection, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccess) GetConnection() *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails {
 	return v.Connection
 }
 
-// GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails includes the requested fields of the GraphQL type PostgresAccessConnectionDetails.
+// GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails includes the requested fields of the GraphQL type PostgresAccessConnectionDetails.
 // The GraphQL type's documentation follows.
 //
 // Sensitive connection materials for a ready personal Postgres access.
-type GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails struct {
+type GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails struct {
 	// Database username for the caller's personal role.
 	Username string `json:"username"`
 	// Short-lived password for the caller's database role.
@@ -20649,53 +20647,51 @@ type GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPost
 	RelayToken string `json:"relayToken"`
 }
 
-// GetUsername returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Username, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetUsername() string {
+// GetUsername returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Username, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetUsername() string {
 	return v.Username
 }
 
-// GetPassword returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Password, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetPassword() string {
+// GetPassword returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.Password, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetPassword() string {
 	return v.Password
 }
 
-// GetCaCertificate returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.CaCertificate, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetCaCertificate() string {
+// GetCaCertificate returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.CaCertificate, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetCaCertificate() string {
 	return v.CaCertificate
 }
 
-// GetServerName returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.ServerName, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetServerName() string {
+// GetServerName returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.ServerName, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetServerName() string {
 	return v.ServerName
 }
 
-// GetRelayEndpoint returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayEndpoint, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayEndpoint() string {
+// GetRelayEndpoint returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayEndpoint, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayEndpoint() string {
 	return v.RelayEndpoint
 }
 
-// GetRelayAccess returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayAccess, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayAccess() string {
+// GetRelayAccess returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayAccess() string {
 	return v.RelayAccess
 }
 
-// GetRelayToken returns GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayToken, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessConnectionAlphaTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayToken() string {
+// GetRelayToken returns GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails.RelayToken, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessConnectionTeamEnvironmentPostgresAccessConnectionPostgresAccessConnectionDetails) GetRelayToken() string {
 	return v.RelayToken
 }
 
-// GetPostgresAccessStatusAlphaResponse is returned by GetPostgresAccessStatusAlpha on success.
-type GetPostgresAccessStatusAlphaResponse struct {
+// GetPostgresAccessStatusResponse is returned by GetPostgresAccessStatus on success.
+type GetPostgresAccessStatusResponse struct {
 	// Get a team by its slug.
-	Team GetPostgresAccessStatusAlphaTeam `json:"team"`
+	Team GetPostgresAccessStatusTeam `json:"team"`
 }
 
-// GetTeam returns GetPostgresAccessStatusAlphaResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessStatusAlphaResponse) GetTeam() GetPostgresAccessStatusAlphaTeam {
-	return v.Team
-}
+// GetTeam returns GetPostgresAccessStatusResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusResponse) GetTeam() GetPostgresAccessStatusTeam { return v.Team }
 
-// GetPostgresAccessStatusAlphaTeam includes the requested fields of the GraphQL type Team.
+// GetPostgresAccessStatusTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -20703,48 +20699,46 @@ func (v *GetPostgresAccessStatusAlphaResponse) GetTeam() GetPostgresAccessStatus
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetPostgresAccessStatusAlphaTeam struct {
+type GetPostgresAccessStatusTeam struct {
 	// Get a specific environment for the team.
-	Environment GetPostgresAccessStatusAlphaTeamEnvironment `json:"environment"`
+	Environment GetPostgresAccessStatusTeamEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetPostgresAccessStatusAlphaTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessStatusAlphaTeam) GetEnvironment() GetPostgresAccessStatusAlphaTeamEnvironment {
+// GetEnvironment returns GetPostgresAccessStatusTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusTeam) GetEnvironment() GetPostgresAccessStatusTeamEnvironment {
 	return v.Environment
 }
 
-// GetPostgresAccessStatusAlphaTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetPostgresAccessStatusAlphaTeamEnvironment struct {
+// GetPostgresAccessStatusTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresAccessStatusTeamEnvironment struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get a PostgresAccess and its state. Available to authorized team members.
-	PostgresAccess GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess `json:"postgresAccess"`
+	PostgresAccess GetPostgresAccessStatusTeamEnvironmentPostgresAccess `json:"postgresAccess"`
 }
 
-// GetPostgresAccess returns GetPostgresAccessStatusAlphaTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessStatusAlphaTeamEnvironment) GetPostgresAccess() GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess {
+// GetPostgresAccess returns GetPostgresAccessStatusTeamEnvironment.PostgresAccess, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusTeamEnvironment) GetPostgresAccess() GetPostgresAccessStatusTeamEnvironmentPostgresAccess {
 	return v.PostgresAccess
 }
 
-// GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// GetPostgresAccessStatusTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
 // The GraphQL type's documentation follows.
 //
 // A time-limited personal access request for a Postgres branch.
-type GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess struct {
+type GetPostgresAccessStatusTeamEnvironmentPostgresAccess struct {
 	// High-level state of the access.
 	State PostgresAccessState `json:"state"`
 	// Human-readable message for the current state.
 	Message *string `json:"message"`
 }
 
-// GetState returns GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess.State, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess) GetState() PostgresAccessState {
+// GetState returns GetPostgresAccessStatusTeamEnvironmentPostgresAccess.State, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusTeamEnvironmentPostgresAccess) GetState() PostgresAccessState {
 	return v.State
 }
 
-// GetMessage returns GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess.Message, and is useful for accessing the field via an interface.
-func (v *GetPostgresAccessStatusAlphaTeamEnvironmentPostgresAccess) GetMessage() *string {
-	return v.Message
-}
+// GetMessage returns GetPostgresAccessStatusTeamEnvironmentPostgresAccess.Message, and is useful for accessing the field via an interface.
+func (v *GetPostgresAccessStatusTeamEnvironmentPostgresAccess) GetMessage() *string { return v.Message }
 
 // GetSecretActivityResponse is returned by GetSecretActivity on success.
 type GetSecretActivityResponse struct {
@@ -30866,18 +30860,16 @@ func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTea
 	return v.Name
 }
 
-// GetTeamPostgresBranchesAlphaResponse is returned by GetTeamPostgresBranchesAlpha on success.
-type GetTeamPostgresBranchesAlphaResponse struct {
+// GetTeamPostgresBranchesResponse is returned by GetTeamPostgresBranches on success.
+type GetTeamPostgresBranchesResponse struct {
 	// Get a team by its slug.
-	Team GetTeamPostgresBranchesAlphaTeam `json:"team"`
+	Team GetTeamPostgresBranchesTeam `json:"team"`
 }
 
-// GetTeam returns GetTeamPostgresBranchesAlphaResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaResponse) GetTeam() GetTeamPostgresBranchesAlphaTeam {
-	return v.Team
-}
+// GetTeam returns GetTeamPostgresBranchesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesResponse) GetTeam() GetTeamPostgresBranchesTeam { return v.Team }
 
-// GetTeamPostgresBranchesAlphaTeam includes the requested fields of the GraphQL type Team.
+// GetTeamPostgresBranchesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -30885,65 +30877,65 @@ func (v *GetTeamPostgresBranchesAlphaResponse) GetTeam() GetTeamPostgresBranches
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetTeamPostgresBranchesAlphaTeam struct {
+type GetTeamPostgresBranchesTeam struct {
 	// Postgres branches owned by the team.
-	PostgresBranches GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection `json:"postgresBranches"`
+	PostgresBranches GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection `json:"postgresBranches"`
 }
 
-// GetPostgresBranches returns GetTeamPostgresBranchesAlphaTeam.PostgresBranches, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeam) GetPostgresBranches() GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection {
+// GetPostgresBranches returns GetTeamPostgresBranchesTeam.PostgresBranches, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeam) GetPostgresBranches() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection {
 	return v.PostgresBranches
 }
 
-// GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
-type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection struct {
-	Nodes []GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection struct {
+	Nodes []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
 }
 
-// GetNodes returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnection) GetNodes() []GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
+// GetNodes returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection) GetNodes() []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
 	return v.Nodes
 }
 
-// GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
 // The GraphQL type's documentation follows.
 //
 // A named PostgresBranch belonging to a Postgres.
-type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
 	// Local name of this branch within its Postgres.
-	Name            string                                                                                                     `json:"name"`
-	TeamEnvironment GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment `json:"teamEnvironment"`
+	Name            string                                                                                                `json:"name"`
+	TeamEnvironment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment `json:"teamEnvironment"`
 	// Postgres owning this PostgresBranch.
-	Postgres GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres `json:"postgres"`
+	Postgres GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres `json:"postgres"`
 	// Current observed state of the branch.
 	State PostgresBranchState `json:"state"`
 }
 
-// GetName returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
 	return v.Name
 }
 
-// GetTeamEnvironment returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetTeamEnvironment() GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment {
+// GetTeamEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetTeamEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment {
 	return v.TeamEnvironment
 }
 
-// GetPostgres returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Postgres, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetPostgres() GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres {
+// GetPostgres returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Postgres, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetPostgres() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres {
 	return v.Postgres
 }
 
-// GetState returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
+// GetState returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
 	return v.State
 }
 
-// GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres includes the requested fields of the GraphQL type Postgres.
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
 // A Postgres whose active branch can change.
-type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres struct {
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
 	// Configured PostgreSQL major version.
@@ -30952,45 +30944,45 @@ type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNod
 	HighAvailability bool `json:"highAvailability"`
 }
 
-// GetName returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetName() string {
 	return v.Name
 }
 
-// GetMajorVersion returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.MajorVersion, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetMajorVersion() string {
+// GetMajorVersion returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetMajorVersion() string {
 	return v.MajorVersion
 }
 
-// GetHighAvailability returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.HighAvailability, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetHighAvailability() bool {
+// GetHighAvailability returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetHighAvailability() bool {
 	return v.HighAvailability
 }
 
-// GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment struct {
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment struct {
 	// Get the environment.
-	Environment GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment `json:"environment"`
+	Environment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment `json:"environment"`
 }
 
-// GetEnvironment returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment) GetEnvironment() GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment {
+// GetEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment) GetEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment {
 	return v.Environment
 }
 
-// GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
 // An environment represents a runtime environment for workloads.
 //
 // Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment struct {
+type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment struct {
 	// Unique name of the environment.
 	Name string `json:"name"`
 }
 
-// GetName returns GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesAlphaTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment) GetName() string {
+// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
 
@@ -34885,13 +34877,13 @@ type __CreateOpenSearchInput struct {
 // GetInput returns __CreateOpenSearchInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreateOpenSearchInput) GetInput() CreateOpenSearchInput { return v.Input }
 
-// __CreatePostgresAccessAlphaInput is used internally by genqlient
-type __CreatePostgresAccessAlphaInput struct {
+// __CreatePostgresAccessInput is used internally by genqlient
+type __CreatePostgresAccessInput struct {
 	Input CreatePostgresAccessInput `json:"input"`
 }
 
-// GetInput returns __CreatePostgresAccessAlphaInput.Input, and is useful for accessing the field via an interface.
-func (v *__CreatePostgresAccessAlphaInput) GetInput() CreatePostgresAccessInput { return v.Input }
+// GetInput returns __CreatePostgresAccessInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreatePostgresAccessInput) GetInput() CreatePostgresAccessInput { return v.Input }
 
 // __CreateSecretInput is used internally by genqlient
 type __CreateSecretInput struct {
@@ -35053,21 +35045,21 @@ type __FindWorkloadsForCveInput struct {
 // GetIdentifier returns __FindWorkloadsForCveInput.Identifier, and is useful for accessing the field via an interface.
 func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifier }
 
-// __GetActivePostgresBranchAlphaInput is used internally by genqlient
-type __GetActivePostgresBranchAlphaInput struct {
+// __GetActivePostgresBranchInput is used internally by genqlient
+type __GetActivePostgresBranchInput struct {
 	Team        string `json:"team"`
 	Environment string `json:"environment"`
 	Postgres    string `json:"postgres"`
 }
 
-// GetTeam returns __GetActivePostgresBranchAlphaInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchAlphaInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetActivePostgresBranchInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetActivePostgresBranchInput) GetTeam() string { return v.Team }
 
-// GetEnvironment returns __GetActivePostgresBranchAlphaInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchAlphaInput) GetEnvironment() string { return v.Environment }
+// GetEnvironment returns __GetActivePostgresBranchInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetActivePostgresBranchInput) GetEnvironment() string { return v.Environment }
 
-// GetPostgres returns __GetActivePostgresBranchAlphaInput.Postgres, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchAlphaInput) GetPostgres() string { return v.Postgres }
+// GetPostgres returns __GetActivePostgresBranchInput.Postgres, and is useful for accessing the field via an interface.
+func (v *__GetActivePostgresBranchInput) GetPostgres() string { return v.Postgres }
 
 // __GetAllConfigsInput is used internally by genqlient
 type __GetAllConfigsInput struct {
@@ -35445,37 +35437,37 @@ func (v *__GetOpenSearchInput) GetEnvironmentName() string { return v.Environmen
 // GetTeamSlug returns __GetOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__GetOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
-// __GetPostgresAccessConnectionAlphaInput is used internally by genqlient
-type __GetPostgresAccessConnectionAlphaInput struct {
+// __GetPostgresAccessConnectionInput is used internally by genqlient
+type __GetPostgresAccessConnectionInput struct {
 	Team        string `json:"team"`
 	Environment string `json:"environment"`
 	Name        string `json:"name"`
 }
 
-// GetTeam returns __GetPostgresAccessConnectionAlphaInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessConnectionAlphaInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetPostgresAccessConnectionInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionInput) GetTeam() string { return v.Team }
 
-// GetEnvironment returns __GetPostgresAccessConnectionAlphaInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessConnectionAlphaInput) GetEnvironment() string { return v.Environment }
+// GetEnvironment returns __GetPostgresAccessConnectionInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionInput) GetEnvironment() string { return v.Environment }
 
-// GetName returns __GetPostgresAccessConnectionAlphaInput.Name, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessConnectionAlphaInput) GetName() string { return v.Name }
+// GetName returns __GetPostgresAccessConnectionInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessConnectionInput) GetName() string { return v.Name }
 
-// __GetPostgresAccessStatusAlphaInput is used internally by genqlient
-type __GetPostgresAccessStatusAlphaInput struct {
+// __GetPostgresAccessStatusInput is used internally by genqlient
+type __GetPostgresAccessStatusInput struct {
 	Team        string `json:"team"`
 	Environment string `json:"environment"`
 	Name        string `json:"name"`
 }
 
-// GetTeam returns __GetPostgresAccessStatusAlphaInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessStatusAlphaInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetPostgresAccessStatusInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusInput) GetTeam() string { return v.Team }
 
-// GetEnvironment returns __GetPostgresAccessStatusAlphaInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessStatusAlphaInput) GetEnvironment() string { return v.Environment }
+// GetEnvironment returns __GetPostgresAccessStatusInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusInput) GetEnvironment() string { return v.Environment }
 
-// GetName returns __GetPostgresAccessStatusAlphaInput.Name, and is useful for accessing the field via an interface.
-func (v *__GetPostgresAccessStatusAlphaInput) GetName() string { return v.Name }
+// GetName returns __GetPostgresAccessStatusInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetPostgresAccessStatusInput) GetName() string { return v.Name }
 
 // __GetSecretActivityInput is used internally by genqlient
 type __GetSecretActivityInput struct {
@@ -35599,17 +35591,17 @@ func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
 // GetFilter returns __GetTeamKafkaTopicsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamKafkaTopicsInput) GetFilter() *KafkaTopicFilter { return v.Filter }
 
-// __GetTeamPostgresBranchesAlphaInput is used internally by genqlient
-type __GetTeamPostgresBranchesAlphaInput struct {
+// __GetTeamPostgresBranchesInput is used internally by genqlient
+type __GetTeamPostgresBranchesInput struct {
 	Team           string                `json:"team"`
 	PostgresFilter *PostgresBranchFilter `json:"postgresFilter"`
 }
 
-// GetTeam returns __GetTeamPostgresBranchesAlphaInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresBranchesAlphaInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetTeamPostgresBranchesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresBranchesInput) GetTeam() string { return v.Team }
 
-// GetPostgresFilter returns __GetTeamPostgresBranchesAlphaInput.PostgresFilter, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresBranchesAlphaInput) GetPostgresFilter() *PostgresBranchFilter {
+// GetPostgresFilter returns __GetTeamPostgresBranchesInput.PostgresFilter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresBranchesInput) GetPostgresFilter() *PostgresBranchFilter {
 	return v.PostgresFilter
 }
 
@@ -36394,29 +36386,29 @@ func CreateOpenSearchCredentials(
 	return data_, err_
 }
 
-// The mutation executed by CreatePostgresAccessAlpha.
-const CreatePostgresAccessAlpha_Operation = `
-mutation CreatePostgresAccessAlpha ($input: CreatePostgresAccessInput!) {
+// The mutation executed by CreatePostgresAccess.
+const CreatePostgresAccess_Operation = `
+mutation CreatePostgresAccess ($input: CreatePostgresAccessInput!) {
 	createPostgresAccess(input: $input) {
 		name
 	}
 }
 `
 
-func CreatePostgresAccessAlpha(
+func CreatePostgresAccess(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	input CreatePostgresAccessInput,
-) (data_ *CreatePostgresAccessAlphaResponse, err_ error) {
+) (data_ *CreatePostgresAccessResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "CreatePostgresAccessAlpha",
-		Query:  CreatePostgresAccessAlpha_Operation,
-		Variables: &__CreatePostgresAccessAlphaInput{
+		OpName: "CreatePostgresAccess",
+		Query:  CreatePostgresAccess_Operation,
+		Variables: &__CreatePostgresAccessInput{
 			Input: input,
 		},
 	}
 
-	data_ = &CreatePostgresAccessAlphaResponse{}
+	data_ = &CreatePostgresAccessResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -36910,9 +36902,9 @@ func FindWorkloadsForCve(
 	return data_, err_
 }
 
-// The query executed by GetActivePostgresBranchAlpha.
-const GetActivePostgresBranchAlpha_Operation = `
-query GetActivePostgresBranchAlpha ($team: Slug!, $environment: String!, $postgres: String!) {
+// The query executed by GetActivePostgresBranch.
+const GetActivePostgresBranch_Operation = `
+query GetActivePostgresBranch ($team: Slug!, $environment: String!, $postgres: String!) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			postgres(name: $postgres) {
@@ -36925,24 +36917,24 @@ query GetActivePostgresBranchAlpha ($team: Slug!, $environment: String!, $postgr
 }
 `
 
-func GetActivePostgresBranchAlpha(
+func GetActivePostgresBranch(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
 	environment string,
 	postgres string,
-) (data_ *GetActivePostgresBranchAlphaResponse, err_ error) {
+) (data_ *GetActivePostgresBranchResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetActivePostgresBranchAlpha",
-		Query:  GetActivePostgresBranchAlpha_Operation,
-		Variables: &__GetActivePostgresBranchAlphaInput{
+		OpName: "GetActivePostgresBranch",
+		Query:  GetActivePostgresBranch_Operation,
+		Variables: &__GetActivePostgresBranchInput{
 			Team:        team,
 			Environment: environment,
 			Postgres:    postgres,
 		},
 	}
 
-	data_ = &GetActivePostgresBranchAlphaResponse{}
+	data_ = &GetActivePostgresBranchResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -38367,9 +38359,9 @@ func GetOpenSearch(
 	return data_, err_
 }
 
-// The query executed by GetPostgresAccessConnectionAlpha.
-const GetPostgresAccessConnectionAlpha_Operation = `
-query GetPostgresAccessConnectionAlpha ($team: Slug!, $environment: String!, $name: String!) {
+// The query executed by GetPostgresAccessConnection.
+const GetPostgresAccessConnection_Operation = `
+query GetPostgresAccessConnection ($team: Slug!, $environment: String!, $name: String!) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			postgresAccess(name: $name) {
@@ -38388,24 +38380,24 @@ query GetPostgresAccessConnectionAlpha ($team: Slug!, $environment: String!, $na
 }
 `
 
-func GetPostgresAccessConnectionAlpha(
+func GetPostgresAccessConnection(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
 	environment string,
 	name string,
-) (data_ *GetPostgresAccessConnectionAlphaResponse, err_ error) {
+) (data_ *GetPostgresAccessConnectionResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetPostgresAccessConnectionAlpha",
-		Query:  GetPostgresAccessConnectionAlpha_Operation,
-		Variables: &__GetPostgresAccessConnectionAlphaInput{
+		OpName: "GetPostgresAccessConnection",
+		Query:  GetPostgresAccessConnection_Operation,
+		Variables: &__GetPostgresAccessConnectionInput{
 			Team:        team,
 			Environment: environment,
 			Name:        name,
 		},
 	}
 
-	data_ = &GetPostgresAccessConnectionAlphaResponse{}
+	data_ = &GetPostgresAccessConnectionResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -38417,9 +38409,9 @@ func GetPostgresAccessConnectionAlpha(
 	return data_, err_
 }
 
-// The query executed by GetPostgresAccessStatusAlpha.
-const GetPostgresAccessStatusAlpha_Operation = `
-query GetPostgresAccessStatusAlpha ($team: Slug!, $environment: String!, $name: String!) {
+// The query executed by GetPostgresAccessStatus.
+const GetPostgresAccessStatus_Operation = `
+query GetPostgresAccessStatus ($team: Slug!, $environment: String!, $name: String!) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			postgresAccess(name: $name) {
@@ -38431,24 +38423,24 @@ query GetPostgresAccessStatusAlpha ($team: Slug!, $environment: String!, $name: 
 }
 `
 
-func GetPostgresAccessStatusAlpha(
+func GetPostgresAccessStatus(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
 	environment string,
 	name string,
-) (data_ *GetPostgresAccessStatusAlphaResponse, err_ error) {
+) (data_ *GetPostgresAccessStatusResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetPostgresAccessStatusAlpha",
-		Query:  GetPostgresAccessStatusAlpha_Operation,
-		Variables: &__GetPostgresAccessStatusAlphaInput{
+		OpName: "GetPostgresAccessStatus",
+		Query:  GetPostgresAccessStatus_Operation,
+		Variables: &__GetPostgresAccessStatusInput{
 			Team:        team,
 			Environment: environment,
 			Name:        name,
 		},
 	}
 
-	data_ = &GetPostgresAccessStatusAlphaResponse{}
+	data_ = &GetPostgresAccessStatusResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -38896,9 +38888,9 @@ func GetTeamKafkaTopics(
 	return data_, err_
 }
 
-// The query executed by GetTeamPostgresBranchesAlpha.
-const GetTeamPostgresBranchesAlpha_Operation = `
-query GetTeamPostgresBranchesAlpha ($team: Slug!, $postgresFilter: PostgresBranchFilter) {
+// The query executed by GetTeamPostgresBranches.
+const GetTeamPostgresBranches_Operation = `
+query GetTeamPostgresBranches ($team: Slug!, $postgresFilter: PostgresBranchFilter) {
 	team(slug: $team) {
 		postgresBranches(first: 1000, filter: $postgresFilter) {
 			nodes {
@@ -38920,22 +38912,22 @@ query GetTeamPostgresBranchesAlpha ($team: Slug!, $postgresFilter: PostgresBranc
 }
 `
 
-func GetTeamPostgresBranchesAlpha(
+func GetTeamPostgresBranches(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
 	postgresFilter *PostgresBranchFilter,
-) (data_ *GetTeamPostgresBranchesAlphaResponse, err_ error) {
+) (data_ *GetTeamPostgresBranchesResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetTeamPostgresBranchesAlpha",
-		Query:  GetTeamPostgresBranchesAlpha_Operation,
-		Variables: &__GetTeamPostgresBranchesAlphaInput{
+		OpName: "GetTeamPostgresBranches",
+		Query:  GetTeamPostgresBranches_Operation,
+		Variables: &__GetTeamPostgresBranchesInput{
 			Team:           team,
 			PostgresFilter: postgresFilter,
 		},
 	}
 
-	data_ = &GetTeamPostgresBranchesAlphaResponse{}
+	data_ = &GetTeamPostgresBranchesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
