@@ -10,13 +10,13 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-// Access contains the brokered connection materials. Do not log this value.
+// Access is the status of a personal access.
 type Access struct {
-	State      gql.PostgresAccessState
-	Message    string
-	Connection *Connection
+	State   gql.PostgresAccessState
+	Message string
 }
 
+// Connection contains the brokered connection materials. Do not log this value.
 type Connection struct {
 	Username, Password, CACertificate, ServerName, RelayEndpoint, RelayAccess, RelayToken string
 }
@@ -24,7 +24,10 @@ type Connection struct {
 type AccessAPI interface {
 	ActiveBranch(context.Context, string, string, string) (string, error)
 	Create(context.Context, gql.CreatePostgresAccessInput) (string, error)
-	Get(context.Context, string, string, string) (Access, error)
+	// Status never requests credentials, so polling cannot fail on a not-yet-ready access.
+	Status(context.Context, string, string, string) (Access, error)
+	// Connection is only requested once Status reports READY.
+	Connection(context.Context, string, string, string) (Connection, error)
 }
 
 type graphqlAccessAPI struct{ client graphql.Client }
@@ -39,11 +42,11 @@ func NewAPI(ctx context.Context) (AccessAPI, error) {
 
 func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, name string) (string, error) {
 	_ = `# @genqlient
- query GetActivePostgresBranchAlpha($team: Slug!, $environment: String!, $postgres: String!) {
+ query GetActivePostgresBranch($team: Slug!, $environment: String!, $postgres: String!) {
   team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) { activeBranch { name } } } }
  }
  `
-	result, err := gql.GetActivePostgresBranchAlpha(ctx, a.client, team, environment, name)
+	result, err := gql.GetActivePostgresBranch(ctx, a.client, team, environment, name)
 	if err != nil {
 		return "", err
 	}
@@ -55,26 +58,24 @@ func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, n
 
 func (a graphqlAccessAPI) Create(ctx context.Context, input gql.CreatePostgresAccessInput) (string, error) {
 	_ = `# @genqlient
- mutation CreatePostgresAccessAlpha($input: CreatePostgresAccessInput!) {
+ mutation CreatePostgresAccess($input: CreatePostgresAccessInput!) {
   createPostgresAccess(input: $input) { name }
  }
  `
-	result, err := gql.CreatePostgresAccessAlpha(ctx, a.client, input)
+	result, err := gql.CreatePostgresAccess(ctx, a.client, input)
 	if err != nil {
 		return "", err
 	}
 	return result.CreatePostgresAccess.Name, nil
 }
 
-func (a graphqlAccessAPI) Get(ctx context.Context, team, environment, name string) (Access, error) {
+func (a graphqlAccessAPI) Status(ctx context.Context, team, environment, name string) (Access, error) {
 	_ = `# @genqlient
- query GetPostgresAccessAlpha($team: Slug!, $environment: String!, $name: String!) {
-  team(slug: $team) { environment(name: $environment) { postgresAccess(name: $name) {
-   state message connection { username password caCertificate serverName relayEndpoint relayAccess relayToken }
-  } } }
+ query GetPostgresAccessStatus($team: Slug!, $environment: String!, $name: String!) {
+  team(slug: $team) { environment(name: $environment) { postgresAccess(name: $name) { state message } } }
  }
  `
-	result, err := gql.GetPostgresAccessAlpha(ctx, a.client, team, environment, name)
+	result, err := gql.GetPostgresAccessStatus(ctx, a.client, team, environment, name)
 	if err != nil {
 		return Access{}, err
 	}
@@ -83,25 +84,41 @@ func (a graphqlAccessAPI) Get(ctx context.Context, team, environment, name strin
 	if got.Message != nil {
 		access.Message = *got.Message
 	}
-	if got.Connection != nil {
-		c := got.Connection
-		access.Connection = &Connection{c.Username, c.Password, c.CaCertificate, c.ServerName, c.RelayEndpoint, c.RelayAccess, c.RelayToken}
-	}
 	return access, nil
+}
+
+func (a graphqlAccessAPI) Connection(ctx context.Context, team, environment, name string) (Connection, error) {
+	_ = `# @genqlient
+ query GetPostgresAccessConnection($team: Slug!, $environment: String!, $name: String!) {
+  team(slug: $team) { environment(name: $environment) { postgresAccess(name: $name) {
+   connection { username password caCertificate serverName relayEndpoint relayAccess relayToken }
+  } } }
+ }
+ `
+	result, err := gql.GetPostgresAccessConnection(ctx, a.client, team, environment, name)
+	if err != nil {
+		return Connection{}, err
+	}
+	c := result.Team.Environment.PostgresAccess.Connection
+	if c == nil {
+		return Connection{}, fmt.Errorf("postgres access %q is ready without connection materials", name)
+	}
+	return Connection{c.Username, c.Password, c.CaCertificate, c.ServerName, c.RelayEndpoint, c.RelayAccess, c.RelayToken}, nil
 }
 
 func waitForAccess(ctx context.Context, api AccessAPI, team, environment, name string, interval time.Duration) (Connection, error) {
 	for {
-		access, err := api.Get(ctx, team, environment, name)
+		access, err := api.Status(ctx, team, environment, name)
 		if err != nil {
-			return Connection{}, fmt.Errorf("retrieve postgres access: %w", err)
+			return Connection{}, fmt.Errorf("retrieve postgres access status: %w", err)
 		}
 		switch access.State {
 		case gql.PostgresAccessStateReady:
-			if access.Connection == nil {
-				return Connection{}, fmt.Errorf("postgres access %q is ready without connection materials", name)
+			connection, err := api.Connection(ctx, team, environment, name)
+			if err != nil {
+				return Connection{}, fmt.Errorf("retrieve postgres access connection: %w", err)
 			}
-			return *access.Connection, nil
+			return connection, nil
 		case gql.PostgresAccessStateFailed, gql.PostgresAccessStateExpired:
 			return Connection{}, fmt.Errorf("postgres access %q is %s: %s", name, access.State, access.Message)
 		case gql.PostgresAccessStatePending:

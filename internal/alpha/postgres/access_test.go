@@ -11,8 +11,11 @@ import (
 )
 
 type fakeAccessAPI struct {
-	states []Access
-	calls  int
+	states          []Access
+	connection      Connection
+	connectionErr   error
+	calls           int
+	connectionCalls int
 }
 
 func (f *fakeAccessAPI) ActiveBranch(context.Context, string, string, string) (string, error) {
@@ -23,7 +26,7 @@ func (f *fakeAccessAPI) Create(context.Context, gql.CreatePostgresAccessInput) (
 	return "access-1", nil
 }
 
-func (f *fakeAccessAPI) Get(context.Context, string, string, string) (Access, error) {
+func (f *fakeAccessAPI) Status(context.Context, string, string, string) (Access, error) {
 	index := f.calls
 	f.calls++
 	if index >= len(f.states) {
@@ -32,19 +35,26 @@ func (f *fakeAccessAPI) Get(context.Context, string, string, string) (Access, er
 	return f.states[index], nil
 }
 
+func (f *fakeAccessAPI) Connection(context.Context, string, string, string) (Connection, error) {
+	f.connectionCalls++
+	return f.connection, f.connectionErr
+}
+
 func TestWaitForAccess(t *testing.T) {
 	for _, tt := range []struct {
-		name   string
-		states []Access
-		want   string
+		name          string
+		states        []Access
+		connectionErr error
+		want          string
+		wantConnCalls int
 	}{
-		{"ready", []Access{{State: gql.PostgresAccessStatePending}, {State: gql.PostgresAccessStateReady, Connection: &Connection{Username: "alice"}}}, ""},
-		{"failed", []Access{{State: gql.PostgresAccessStateFailed, Message: "database unavailable"}}, "database unavailable"},
-		{"expired", []Access{{State: gql.PostgresAccessStateExpired}}, "EXPIRED"},
-		{"missing materials", []Access{{State: gql.PostgresAccessStateReady}}, "without connection materials"},
+		{"ready after pending", []Access{{State: gql.PostgresAccessStatePending}, {State: gql.PostgresAccessStatePending}, {State: gql.PostgresAccessStateReady}}, nil, "", 1},
+		{"failed", []Access{{State: gql.PostgresAccessStateFailed, Message: "database unavailable"}}, nil, "database unavailable", 0},
+		{"expired", []Access{{State: gql.PostgresAccessStateExpired}}, nil, "EXPIRED", 0},
+		{"ready but connection fails", []Access{{State: gql.PostgresAccessStateReady}}, errors.New("secret missing"), "secret missing", 1},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			fake := &fakeAccessAPI{states: tt.states}
+			fake := &fakeAccessAPI{states: tt.states, connection: Connection{Username: "alice"}, connectionErr: tt.connectionErr}
 			got, err := waitForAccess(context.Background(), fake, "team", "dev", "access-1", time.Millisecond)
 			if tt.want == "" {
 				if err != nil || got.Username != "alice" {
@@ -55,6 +65,10 @@ func TestWaitForAccess(t *testing.T) {
 			}
 			if fake.calls != len(tt.states) {
 				t.Fatalf("polled %d times, want %d", fake.calls, len(tt.states))
+			}
+			// Credentials are only requested once the access is ready.
+			if fake.connectionCalls != tt.wantConnCalls {
+				t.Fatalf("connection fetched %d times, want %d", fake.connectionCalls, tt.wantConnCalls)
 			}
 		})
 	}

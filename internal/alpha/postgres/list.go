@@ -38,7 +38,7 @@ func (s State) String() string {
 
 func GetTeamPostgresBranches(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]Instance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgresBranchesAlpha($team: Slug!, $postgresFilter: PostgresBranchFilter) {
+		query GetTeamPostgresBranches($team: Slug!, $postgresFilter: PostgresBranchFilter) {
 			team(slug: $team) {
 				postgresBranches(first: 1000, filter: $postgresFilter) {
 					nodes {
@@ -55,14 +55,14 @@ func GetTeamPostgresBranches(ctx context.Context, team string, environments []st
 	if err != nil {
 		return nil, err
 	}
-	resp, err := gql.GetTeamPostgresBranchesAlpha(ctx, client, team, &gql.PostgresBranchFilter{Environments: environments, Labels: labelFilters})
+	resp, err := gql.GetTeamPostgresBranches(ctx, client, team, &gql.PostgresBranchFilter{Environments: environments, Labels: labelFilters})
 	if err != nil {
 		return nil, err
 	}
 	return instancesFromTeam(resp.Team, team, environments), nil
 }
 
-func instancesFromTeam(data gql.GetTeamPostgresBranchesAlphaTeam, team string, environments []string) []Instance {
+func instancesFromTeam(data gql.GetTeamPostgresBranchesTeam, team string, environments []string) []Instance {
 	var ret []Instance
 	for _, p := range data.PostgresBranches.Nodes {
 		env := p.TeamEnvironment.Environment.Name

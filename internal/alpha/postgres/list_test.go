@@ -14,7 +14,7 @@ func TestInstancesFromTeam(t *testing.T) {
 		{"name":"preview","teamEnvironment":{"environment":{"name":"prod"}},"postgres":{"name":"orders","majorVersion":"16","highAvailability":true},"state":"PROGRESSING"},
 		{"name":"main","teamEnvironment":{"environment":{"name":"dev"}},"postgres":{"name":"orders","majorVersion":"16","highAvailability":true},"state":"AVAILABLE"}
 	]}}`
-	var data gql.GetTeamPostgresBranchesAlphaTeam
+	var data gql.GetTeamPostgresBranchesTeam
 	if err := json.Unmarshal([]byte(teamData), &data); err != nil {
 		t.Fatal(err)
 	}
