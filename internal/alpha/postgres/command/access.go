@@ -16,6 +16,7 @@ import (
 	"github.com/nais/cli/internal/alpha/postgres/relay"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"golang.org/x/term"
 )
 
 func accessFlags(parent *flag.Postgres) *flag.Access {
@@ -28,13 +29,14 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 		Name: "psql", Title: "Connect to Nais Postgres via psql (experimental).",
 		Description: "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			// SIGTERM must run the deferred cleanup (CA file, relay). Ctrl-C aborts the setup, but once
 			// psql runs it is left to psql (query cancellation) and ignored here until cleanup is done.
 			ctx, stopTerm := signal.NotifyContext(ctx, syscall.SIGTERM)
 			defer stopTerm()
 			setupCtx, stopSetup := signal.NotifyContext(ctx, os.Interrupt)
-			connection, err := requestAccess(setupCtx, args.Get("postgres"), f)
+			connection, err := requestAccess(setupCtx, args.Get("postgres"), f, out)
 			// Register the ignore-channel before releasing the setup handler so there is no unhandled window.
 			interrupts := make(chan os.Signal, 1)
 			signal.Notify(interrupts, os.Interrupt)
@@ -91,6 +93,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally (experimental).",
 		Description: "Request personal access and listen on loopback. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Credentials are not printed unless --print-password is set.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 			defer stop()
@@ -102,7 +105,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 			}
 			connection, err := requestAccess(ctx, args.Get("postgres"), &flag.Access{
 				Postgres: f.Postgres, Branch: f.Branch, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
-			})
+			}, out)
 			if err != nil {
 				return err
 			}
@@ -147,9 +150,9 @@ func withoutPostgresEnv(env []string) []string {
 	return ret
 }
 
-func requestAccess(ctx context.Context, name string, f *flag.Access) (postgres.Connection, error) {
-	if f.Team == "" || f.Environment == "" {
-		return postgres.Connection{}, fmt.Errorf("--team and --environment are required")
+func requestAccess(ctx context.Context, name string, f *flag.Access, out *naistrix.OutputWriter) (postgres.Connection, error) {
+	if f.Team == "" {
+		return postgres.Connection{}, fmt.Errorf("missing required team, specify a team using `nais defaults set team <team>` or by using the -t, --team flag")
 	}
 	if len(strings.TrimSpace(f.Reason)) < 10 {
 		return postgres.Connection{}, fmt.Errorf("--reason must contain at least 10 characters")
@@ -162,6 +165,21 @@ func requestAccess(ctx context.Context, name string, f *flag.Access) (postgres.C
 	if !ok {
 		return postgres.Connection{}, fmt.Errorf("--access-level must be read, write, or admin")
 	}
+	environment, err := resolvePostgresEnvironment(ctx, f.Team, name, string(f.Environment))
+	if err != nil {
+		return postgres.Connection{}, err
+	}
+	var spinner *accessSpinner
+	if term.IsTerminal(int(os.Stderr.Fd())) {
+		spinner = newAccessSpinner(os.Stderr)
+		defer func() {
+			if spinner != nil {
+				spinner.Stop()
+			}
+		}()
+	} else {
+		out.Println("Preparing personal Postgres access...")
+	}
 	api, err := postgres.NewAPI(ctx)
 	if err != nil {
 		return postgres.Connection{}, err
@@ -170,14 +188,20 @@ func requestAccess(ctx context.Context, name string, f *flag.Access) (postgres.C
 	if branch == "" {
 		lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		branch, err = api.ActiveBranch(lookupCtx, f.Team, string(f.Environment), name)
+		branch, err = api.ActiveBranch(lookupCtx, f.Team, environment, name)
 		if err != nil {
 			return postgres.Connection{}, err
 		}
 	}
 	ttl := f.TTL.String()
-	return postgres.CreateAndWait(ctx, api, gql.CreatePostgresAccessInput{
-		Postgres: name, Branch: branch, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
+	connection, err := postgres.CreateAndWait(ctx, api, gql.CreatePostgresAccessInput{
+		Postgres: name, Branch: branch, TeamSlug: f.Team, EnvironmentName: environment,
 		AccessLevel: level, Reason: f.Reason, Ttl: &ttl,
 	})
+	if err == nil && spinner != nil {
+		spinner.Stop()
+		spinner = nil
+		out.Println("Postgres access ready.")
+	}
+	return connection, err
 }
