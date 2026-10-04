@@ -2,6 +2,7 @@ package flag
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -70,7 +71,7 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 	}
 	instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
 	if err != nil {
-		return nil, "Unable to fetch Postgres branches."
+		return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
 	}
 	name := args.Get("postgres")
 	environment := string(f.Environment)

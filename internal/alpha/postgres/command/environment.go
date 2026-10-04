@@ -56,7 +56,7 @@ func autoCompletePostgresNames(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		}
 		instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
 		if err != nil {
-			return nil, "Unable to fetch Postgres names."
+			return nil, fmt.Sprintf("Unable to fetch Postgres names: %v", err)
 		}
 		names := postgresNames(instances, string(f.Environment))
 		if len(names) == 1 {
@@ -92,7 +92,7 @@ func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		}
 		instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
 		if err != nil {
-			return nil, "Unable to fetch Postgres branches."
+			return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
 		}
 		return branchSuggestions(instances, args.Get("postgres"), string(f.Environment))
 	}
