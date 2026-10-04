@@ -35,4 +35,22 @@ func TestPostgresChoices(t *testing.T) {
 	if got := postgresEnvironments(instances, "missing"); len(got) != 0 {
 		t.Errorf("environments for missing Postgres = %v, want none", got)
 	}
+	if got, want := postgresBranches(instances, "relay-test", "dev-gcp"), []string{"main", "restore"}; !slices.Equal(got, want) {
+		t.Errorf("dev branches = %v, want %v", got, want)
+	}
+	if got, want := postgresBranches(instances, "relay-test", "prod-gcp"), []string{"main"}; !slices.Equal(got, want) {
+		t.Errorf("prod branches = %v, want %v", got, want)
+	}
+	if got := postgresBranches(instances, "other", "dev-gcp"); len(got) != 0 {
+		t.Errorf("other Postgres branches in dev = %v, want none", got)
+	}
+	if got, help := branchSuggestions(instances, "relay-test", ""); len(got) != 0 || help == "" {
+		t.Errorf("ambiguous environment completed branches: %v, %q", got, help)
+	}
+	if got, _ := branchSuggestions(instances, "other", ""); !slices.Equal(got, []string{"main"}) {
+		t.Errorf("single-environment branches = %v, want [main]", got)
+	}
+	if got, _ := branchSuggestions(instances, "relay-test", "prod-gcp"); !slices.Equal(got, []string{"main"}) {
+		t.Errorf("explicit-environment branches = %v, want [main]", got)
+	}
 }

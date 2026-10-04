@@ -16,7 +16,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "postgres", Title: "Manage Nais Postgres instances (experimental).",
 		Description: "Experimental commands for Nais Postgres branches and brokered personal access.", StickyFlags: flags,
-		SubCommands: []*naistrix.Command{listCommand(flags), psqlCommand(flags), proxyCommand(flags)},
+		SubCommands: []*naistrix.Command{listCommand(flags), branchCommand(flags), psqlCommand(flags), proxyCommand(flags)},
 	}
 }
 
