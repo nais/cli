@@ -90,6 +90,10 @@ type Psql struct {
 	*CloudSQL
 }
 
+type Grant struct {
+	*CloudSQL
+}
+
 type Revoke struct {
 	*CloudSQL
 	Schema string `name:"schema" usage:"The schema to revoke privileges from."`

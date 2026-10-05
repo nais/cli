@@ -32,6 +32,7 @@ func CloudSQL(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			usersCommand(flags),
 			enableAuditCommand(flags),
 			verifyAuditCommand(flags),
+			grantCommand(flags),
 			prepareCommand(flags),
 			proxyCommand(flags),
 			psqlCommand(flags),

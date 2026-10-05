@@ -17,6 +17,64 @@ import (
 	"github.com/nais/naistrix"
 )
 
+func GrantAndCreateSQLUser(ctx context.Context, appName, team, environment string, out *naistrix.OutputWriter) error {
+	dbInfo, err := NewDBInfo(ctx, appName, team, environment)
+	if err != nil {
+		return err
+	}
+
+	projectID, err := dbInfo.ProjectID(ctx)
+	if err != nil {
+		return err
+	}
+
+	connectionName, err := dbInfo.ConnectionName(ctx)
+	if err != nil {
+		return err
+	}
+
+	out.Println("Grant user access")
+	err = grantUserAccess(ctx, projectID, "roles/cloudsql.admin", 5*time.Minute, out)
+	if err != nil {
+		return err
+	}
+
+	out.Println("Create sql user")
+	err = createSQLUser(ctx, projectID, connectionName)
+	if err != nil {
+		return fmt.Errorf("error creating SQL user. One might already exist: %v", err)
+	}
+
+	return nil
+}
+
+func createSQLUser(ctx context.Context, projectID, instance string) error {
+	email, err := currentEmail(ctx)
+	if err != nil {
+		return err
+	}
+
+	args := []string{
+		"sql",
+		"users",
+		"create",
+		email,
+		"--instance", strings.Split(instance, ":")[2],
+		"--type", "cloud_iam_user",
+		"--project", projectID,
+	}
+
+	buf := &bytes.Buffer{}
+	cmd := exec.CommandContext(ctx, "gcloud", args...)
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		_, _ = io.Copy(os.Stdout, buf)
+		return fmt.Errorf("error running gcloud command: %w", err)
+	}
+	return nil
+}
+
 func currentEmail(ctx context.Context) (string, error) {
 	cmd := exec.CommandContext(ctx, "gcloud", "config", "get-value", "account")
 	out, err := cmd.Output()
