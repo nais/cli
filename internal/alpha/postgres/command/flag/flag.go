@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/alpha/postgres"
@@ -69,17 +68,16 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 	if f.Team == "" || args.Get("postgres") == "" {
 		return nil, "Select a Postgres first (and specify a team)."
 	}
-	instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
-	if err != nil {
-		return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
-	}
 	name := args.Get("postgres")
 	environment := string(f.Environment)
 	if environment == "" {
+		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
+		if err != nil {
+			return nil, fmt.Sprintf("Unable to fetch Postgres environments: %v", err)
+		}
 		envs := make(map[string]bool)
 		for _, instance := range instances {
-			pg, _, _ := strings.Cut(instance.Name.Name, "/")
-			if pg == name {
+			if instance.Name.Name == name {
 				envs[instance.Environment] = true
 			}
 		}
@@ -90,12 +88,13 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 			environment = env
 		}
 	}
-	var branches []string
-	for _, instance := range instances {
-		pg, branch, ok := strings.Cut(instance.Name.Name, "/")
-		if ok && pg == name && instance.Environment == environment {
-			branches = append(branches, branch)
-		}
+	status, err := postgres.GetBranchStatus(ctx, f.Team, environment, name)
+	if err != nil {
+		return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
+	}
+	branches := make([]string, 0, len(status.Branches))
+	for _, branch := range status.Branches {
+		branches = append(branches, branch.Name)
 	}
 	sort.Strings(branches)
 	return branches, ""
