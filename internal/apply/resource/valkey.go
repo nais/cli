@@ -24,7 +24,7 @@ type valkeySpec struct {
 	Memory               string             `yaml:"memory"`
 	Tier                 string             `yaml:"tier"`
 	MaxMemoryPolicy      string             `yaml:"maxMemoryPolicy"`
-	Databases            int                `yaml:"databases"`
+	Databases            *int               `yaml:"databases"`
 	NotifyKeyspaceEvents string             `yaml:"notifyKeyspaceEvents"`
 	Persistence          *valkeyPersistence `yaml:"persistence"`
 }

@@ -16,7 +16,7 @@ type Valkey struct {
 	// MaxMemoryPolicy is the max memory policy of the Valkey instance, e.g. "allkeys-lru".
 	MaxMemoryPolicy gql.ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty" toml:"maxMemoryPolicy,omitempty" jsonschema:"enum=ALLKEYS_LFU,enum=ALLKEYS_LRU,enum=ALLKEYS_RANDOM,enum=NO_EVICTION,enum=VOLATILE_LFU,enum=VOLATILE_LRU,enum=VOLATILE_RANDOM,enum=VOLATILE_TTL"`
 	// Databases is the number of logical databases to provision.
-	Databases int `json:"databases,omitempty" toml:"databases,omitempty"`
+	Databases *int `json:"databases,omitempty" toml:"databases,omitempty"`
 	// NotifyKeyspaceEvents configures Valkey keyspace notifications, e.g. "Ex".
 	NotifyKeyspaceEvents string `json:"notifyKeyspaceEvents,omitempty" toml:"notifyKeyspaceEvents,omitempty"`
 
@@ -62,7 +62,7 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		Tier:                 data.Tier,
 		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
-		Databases:            new(data.Databases),
+		Databases:            data.Databases,
 	})
 	if err != nil {
 		return nil, err
@@ -218,7 +218,7 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		Tier:                 data.Tier,
 		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
-		Databases:            new(data.Databases),
+		Databases:            data.Databases,
 		Labels:               labels,
 	})
 	if err != nil {
