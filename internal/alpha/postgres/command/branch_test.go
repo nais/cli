@@ -2,6 +2,7 @@ package command
 
 import (
 	"bytes"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -42,6 +43,29 @@ func TestBranchStatusShowsRequestedAndObservedSeparately(t *testing.T) {
 				t.Errorf("pending indicator = %v, want %v: %q", got, tc.pending, text)
 			}
 		})
+	}
+}
+
+func TestBranchListShowsObservedAndPendingActivation(t *testing.T) {
+	status := postgres.BranchStatus{
+		Active: "main", DesiredActive: "restore",
+		Branches: []postgres.Branch{
+			{Name: "main", State: gql.PostgresBranchStateAvailable},
+			{Name: "restore", State: gql.PostgresBranchStateAvailable},
+		},
+	}
+	want := []branchListRow{
+		{Name: "main", State: postgres.State(gql.PostgresBranchStateAvailable), Active: "Yes"},
+		{Name: "restore", State: postgres.State(gql.PostgresBranchStateAvailable), Requested: "Yes"},
+	}
+	if got := branchListRows(status); !reflect.DeepEqual(got, want) {
+		t.Errorf("branchListRows() = %#v, want %#v", got, want)
+	}
+	status.Active = "restore"
+	want[0].Active = ""
+	want[1].Active, want[1].Requested = "Yes", ""
+	if got := branchListRows(status); !reflect.DeepEqual(got, want) {
+		t.Errorf("branchListRows() after activation = %#v, want %#v", got, want)
 	}
 }
 

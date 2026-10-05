@@ -57,7 +57,7 @@ type (
 	}
 )
 
-func (*List) LabelFacetResource() string { return "postgresBranches" }
+func (*List) LabelFacetResource() string { return "postgreses" }
 
 // BranchSource completes source branches for the selected Postgres and environment.
 type BranchSource string

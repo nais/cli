@@ -15,25 +15,34 @@ func TestPostgresChoices(t *testing.T) {
 		{Name: output.Link{Name: "relay-test/main"}, Environment: "prod-gcp"},
 		{Name: output.Link{Name: "other/main"}, Environment: "prod-gcp"},
 	}
+	postgreses := []postgres.PostgresInstance{
+		{Name: output.Link{Name: "relay-test"}, Environment: "dev-gcp"},
+		{Name: output.Link{Name: "relay-test"}, Environment: "prod-gcp"},
+		{Name: output.Link{Name: "other"}, Environment: "prod-gcp"},
+		{Name: output.Link{Name: "branchless"}, Environment: "dev-gcp"},
+	}
 	for _, tc := range []struct {
 		name, environment string
 		want              []string
 	}{
-		{name: "all instances", want: []string{"other", "relay-test"}},
-		{name: "instances in dev", environment: "dev-gcp", want: []string{"relay-test"}},
+		{name: "all instances", want: []string{"branchless", "other", "relay-test"}},
+		{name: "instances in dev", environment: "dev-gcp", want: []string{"branchless", "relay-test"}},
 		{name: "instances in prod", environment: "prod-gcp", want: []string{"other", "relay-test"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := postgresNames(instances, tc.environment); !slices.Equal(got, tc.want) {
+			if got := postgresNames(postgreses, tc.environment); !slices.Equal(got, tc.want) {
 				t.Errorf("names = %v, want %v", got, tc.want)
 			}
 		})
 	}
-	if got, want := postgresEnvironments(instances, "relay-test"), []string{"dev-gcp", "prod-gcp"}; !slices.Equal(got, want) {
+	if got, want := postgresEnvironments(postgreses, "relay-test"), []string{"dev-gcp", "prod-gcp"}; !slices.Equal(got, want) {
 		t.Errorf("environments = %v, want %v", got, want)
 	}
-	if got := postgresEnvironments(instances, "missing"); len(got) != 0 {
+	if got := postgresEnvironments(postgreses, "missing"); len(got) != 0 {
 		t.Errorf("environments for missing Postgres = %v, want none", got)
+	}
+	if got, want := postgresEnvironments(postgreses, "branchless"), []string{"dev-gcp"}; !slices.Equal(got, want) {
+		t.Errorf("branchless environments = %v, want %v", got, want)
 	}
 	if got, want := postgresBranches(instances, "relay-test", "dev-gcp"), []string{"main", "restore"}; !slices.Equal(got, want) {
 		t.Errorf("dev branches = %v, want %v", got, want)

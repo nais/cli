@@ -154,8 +154,18 @@ A user was granted access to a Postgres cluster
 	POSTGRES_PERSONAL_ACCESS_CREATED
 	"Personal Postgres connection materials were retrieved"
 	POSTGRES_PERSONAL_ACCESS_CONNECTION
-	"A Postgres branch was deleted"
+	"A Postgres branch was deleted (historical entries without branch name)"
 	POSTGRES_DELETED
+	"A Postgres was created"
+	POSTGRES_CREATED
+	"A Postgres was updated"
+	POSTGRES_UPDATED
+	"A Postgres branch was created."
+	POSTGRES_BRANCH_CREATED
+	"A Postgres branch was activated."
+	POSTGRES_BRANCH_ACTIVATED
+	"A Postgres branch was deleted."
+	POSTGRES_BRANCH_DELETED
 """
 Reconciler enabled activity log entry.
 """
@@ -7005,6 +7015,65 @@ interface Persistence {
 	labels: [ResourceLabel!]!
 }
 
+"An activity log entry for creating, activating or deleting a Postgres branch."
+type PostgresBranchActivityLogEntry implements ActivityLogEntry & Node {
+	id: ID!
+	actor: String!
+	gitHubActorClaims: GitHubActorClaims
+	createdAt: Time!
+	message: String!
+	resourceType: ActivityLogEntryResourceType!
+	"Name of the Postgres containing the branch."
+	resourceName: String!
+	teamSlug: Slug!
+	environmentName: String
+	data: PostgresBranchActivityLogEntryData!
+}
+
+type PostgresBranchActivityLogEntryData {
+	branch: String!
+	"Source branch, populated for branch creation."
+	sourceBranch: String
+	"Recovery instant, populated for branch creation."
+	targetTime: Time
+}
+
+type PostgresCreatedActivityLogEntry implements ActivityLogEntry & Node {
+	id: ID!
+	actor: String!
+	gitHubActorClaims: GitHubActorClaims
+	createdAt: Time!
+	message: String!
+	resourceType: ActivityLogEntryResourceType!
+	resourceName: String!
+	teamSlug: Slug!
+	environmentName: String
+}
+
+"Activity log entry for a Postgres that was updated."
+type PostgresUpdatedActivityLogEntry implements ActivityLogEntry & Node {
+	id: ID!
+	actor: String!
+	gitHubActorClaims: GitHubActorClaims
+	createdAt: Time!
+	message: String!
+	resourceType: ActivityLogEntryResourceType!
+	resourceName: String!
+	teamSlug: Slug!
+	environmentName: String
+	data: PostgresUpdatedActivityLogEntryData!
+}
+
+type PostgresUpdatedActivityLogEntryData {
+	updatedFields: [PostgresUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+type PostgresUpdatedActivityLogEntryDataUpdatedField {
+	field: String!
+	oldValue: String
+	newValue: String
+}
+
 type PostgresDeletedActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -7184,6 +7253,8 @@ Get items before this cursor.
 type Postgres implements Node {
 	"Opaque identifier for this Postgres."
 	id: ID!
+	"Team environment containing this Postgres."
+	teamEnvironment: TeamEnvironment!
 	"Name of this Postgres."
 	name: String!
 	"Configured PostgreSQL major version."
@@ -7202,6 +7273,34 @@ type Postgres implements Node {
 	branches(first: Int, after: Cursor, last: Int, before: Cursor, orderBy: PostgresBranchOrder): PostgresBranchConnection!
 	"User-defined labels on this Postgres."
 	labels: [ResourceLabel!]!
+}
+
+"A paginated list of Postgres databases."
+type PostgresConnection {
+	pageInfo: PageInfo!
+	nodes: [Postgres!]!
+	edges: [PostgresEdge!]!
+	"Labels across team Postgres databases, independent of pagination."
+	facets: PostgresFacets!
+}
+
+"Facets for Postgres databases."
+type PostgresFacets {
+	"User-defined labels on team Postgres databases."
+	labels: [LabelFacetItem!]!
+}
+
+type PostgresEdge {
+	cursor: Cursor!
+	node: Postgres!
+}
+
+"Filter Postgres databases by environment and user-defined labels."
+input PostgresFilter {
+	"Filter by environments."
+	environments: [String!]
+	"All listed labels must match."
+	labels: [LabelFilter!]
 }
 
 "Resource requests configured on Postgres. Omitted requests are null."
@@ -10757,6 +10856,14 @@ Filtering options for items returned from the connection.
 """
 		filter: OpenSearchFilter
 	): OpenSearchConnection!
+"Postgres databases owned by the team, including those without branches."
+	postgreses(
+		first: Int
+		after: Cursor
+		last: Int
+		before: Cursor
+		filter: PostgresFilter
+	): PostgresConnection!
 "Postgres branches owned by the team."
 	postgresBranches(
 """
