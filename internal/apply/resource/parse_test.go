@@ -48,7 +48,7 @@ spec:
 	want := valkeySpec{
 		Memory:               "4GB",
 		Tier:                 "HighAvailability",
-		Databases:            16,
+		Databases:            new(16),
 		MaxMemoryPolicy:      "allkeys-lru",
 		NotifyKeyspaceEvents: "Ex",
 		Persistence:          &valkeyPersistence{Disabled: false},

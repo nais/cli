@@ -41,9 +41,7 @@
             go
             golangci-lint-langserver
             gopls
-            python3
-            python3Packages.python-lsp-server
-            black
+            mise
           ];
         };
       });
