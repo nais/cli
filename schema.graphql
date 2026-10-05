@@ -2943,6 +2943,34 @@ enum PostgresAccessLevel {
 	READWRITECREATE
 }
 
+"Recovery request for a new, inactive branch."
+input CreatePostgresBranchInput {
+	postgres: String!
+	branch: String!
+	sourceBranch: String!
+	targetTime: Time!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+"Result of creating a branch; provisioning continues asynchronously."
+type CreatePostgresBranchPayload {
+	postgresBranch: PostgresBranch!
+}
+
+"Select an available branch for normal workloads."
+input ActivatePostgresBranchInput {
+	postgres: String!
+	branch: String!
+	environmentName: String!
+	teamSlug: Slug!
+}
+
+"Result of requesting activation; compare desiredActiveBranch to activeBranch while reconciling."
+type ActivatePostgresBranchPayload {
+	postgres: Postgres!
+}
+
 input DeletePostgresBranchInput {
 	"Name of the Postgres containing the branch."
 	postgres: String!
@@ -5967,6 +5995,10 @@ Grant temporary access to a Postgres cluster.
 	When the access is ready, retrieve its connection materials through PostgresAccess.connection.
 	"""
 	createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
+	"Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time."
+	createPostgresBranch(input: CreatePostgresBranchInput!): CreatePostgresBranchPayload!
+	"Request activation of an available PostgresBranch. The observed active branch may lag behind the request."
+	activatePostgresBranch(input: ActivatePostgresBranchInput!): ActivatePostgresBranchPayload!
 "Delete a PostgresBranch that is not active on its Postgres."
 	deletePostgresBranch(
 		input: DeletePostgresBranchInput!
@@ -7160,7 +7192,9 @@ type Postgres implements Node {
 	highAvailability: Boolean!
 	"Requested CPU, memory and disk size, when present on this Postgres."
 	resources: PostgresResources!
-	"Currently active branch, if selected."
+	"Branch requested for activation; may differ from the observed active branch while reconciliation runs."
+	desiredActiveBranch: String
+	"Currently observed active branch, if selected."
 	activeBranch: PostgresBranch
 	"Branch with this local name in this Postgres."
 	branch(name: String!): PostgresBranch!
