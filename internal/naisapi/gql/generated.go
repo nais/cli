@@ -144,8 +144,18 @@ const (
 	ActivityLogActivityTypePostgresPersonalAccessCreated ActivityLogActivityType = "POSTGRES_PERSONAL_ACCESS_CREATED"
 	// Personal Postgres connection materials were retrieved
 	ActivityLogActivityTypePostgresPersonalAccessConnection ActivityLogActivityType = "POSTGRES_PERSONAL_ACCESS_CONNECTION"
-	// A Postgres branch was deleted
+	// A Postgres branch was deleted (historical entries without branch name)
 	ActivityLogActivityTypePostgresDeleted ActivityLogActivityType = "POSTGRES_DELETED"
+	// A Postgres was created
+	ActivityLogActivityTypePostgresCreated ActivityLogActivityType = "POSTGRES_CREATED"
+	// A Postgres was updated
+	ActivityLogActivityTypePostgresUpdated ActivityLogActivityType = "POSTGRES_UPDATED"
+	// A Postgres branch was created.
+	ActivityLogActivityTypePostgresBranchCreated ActivityLogActivityType = "POSTGRES_BRANCH_CREATED"
+	// A Postgres branch was activated.
+	ActivityLogActivityTypePostgresBranchActivated ActivityLogActivityType = "POSTGRES_BRANCH_ACTIVATED"
+	// A Postgres branch was deleted.
+	ActivityLogActivityTypePostgresBranchDeleted ActivityLogActivityType = "POSTGRES_BRANCH_DELETED"
 	// Reconciler enabled activity log entry.
 	ActivityLogActivityTypeReconcilerEnabled ActivityLogActivityType = "RECONCILER_ENABLED"
 	// Reconciler disabled activity log entry.
@@ -257,6 +267,11 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypePostgresPersonalAccessCreated,
 	ActivityLogActivityTypePostgresPersonalAccessConnection,
 	ActivityLogActivityTypePostgresDeleted,
+	ActivityLogActivityTypePostgresCreated,
+	ActivityLogActivityTypePostgresUpdated,
+	ActivityLogActivityTypePostgresBranchCreated,
+	ActivityLogActivityTypePostgresBranchActivated,
+	ActivityLogActivityTypePostgresBranchDeleted,
 	ActivityLogActivityTypeReconcilerEnabled,
 	ActivityLogActivityTypeReconcilerDisabled,
 	ActivityLogActivityTypeReconcilerConfigured,
@@ -1262,6 +1277,78 @@ func (v *CreatePostgresBranchResponse) GetCreatePostgresBranch() CreatePostgresB
 	return v.CreatePostgresBranch
 }
 
+// CreatePostgresCreatePostgresCreatePostgresPayload includes the requested fields of the GraphQL type CreatePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of creating a Postgres.
+type CreatePostgresCreatePostgresCreatePostgresPayload struct {
+	Postgres CreatePostgresCreatePostgresCreatePostgresPayloadPostgres `json:"postgres"`
+}
+
+// GetPostgres returns CreatePostgresCreatePostgresCreatePostgresPayload.Postgres, and is useful for accessing the field via an interface.
+func (v *CreatePostgresCreatePostgresCreatePostgresPayload) GetPostgres() CreatePostgresCreatePostgresCreatePostgresPayloadPostgres {
+	return v.Postgres
+}
+
+// CreatePostgresCreatePostgresCreatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type CreatePostgresCreatePostgresCreatePostgresPayloadPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns CreatePostgresCreatePostgresCreatePostgresPayloadPostgres.Name, and is useful for accessing the field via an interface.
+func (v *CreatePostgresCreatePostgresCreatePostgresPayloadPostgres) GetName() string { return v.Name }
+
+// Input for creating a Postgres.
+type CreatePostgresInput struct {
+	Name             string  `json:"name"`
+	EnvironmentName  string  `json:"environmentName"`
+	TeamSlug         string  `json:"teamSlug"`
+	MajorVersion     string  `json:"majorVersion"`
+	HighAvailability *bool   `json:"highAvailability,omitempty"`
+	Cpu              *string `json:"cpu,omitempty"`
+	Memory           *string `json:"memory,omitempty"`
+	DiskSize         *string `json:"diskSize,omitempty"`
+}
+
+// GetName returns CreatePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns CreatePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns CreatePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMajorVersion returns CreatePostgresInput.MajorVersion, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetMajorVersion() string { return v.MajorVersion }
+
+// GetHighAvailability returns CreatePostgresInput.HighAvailability, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetHighAvailability() *bool { return v.HighAvailability }
+
+// GetCpu returns CreatePostgresInput.Cpu, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns CreatePostgresInput.Memory, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns CreatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// CreatePostgresResponse is returned by CreatePostgres on success.
+type CreatePostgresResponse struct {
+	// Create a new Postgres. Its first branch, main, is created and activated by the platform.
+	CreatePostgres CreatePostgresCreatePostgresCreatePostgresPayload `json:"createPostgres"`
+}
+
+// GetCreatePostgres returns CreatePostgresResponse.CreatePostgres, and is useful for accessing the field via an interface.
+func (v *CreatePostgresResponse) GetCreatePostgres() CreatePostgresCreatePostgresCreatePostgresPayload {
+	return v.CreatePostgres
+}
+
 // CreateSecretCreateSecretCreateSecretPayload includes the requested fields of the GraphQL type CreateSecretPayload.
 type CreateSecretCreateSecretCreateSecretPayload struct {
 	// The created secret.
@@ -1562,6 +1649,46 @@ type DeletePostgresBranchResponse struct {
 // GetDeletePostgresBranch returns DeletePostgresBranchResponse.DeletePostgresBranch, and is useful for accessing the field via an interface.
 func (v *DeletePostgresBranchResponse) GetDeletePostgresBranch() DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload {
 	return v.DeletePostgresBranch
+}
+
+// DeletePostgresDeletePostgresDeletePostgresPayload includes the requested fields of the GraphQL type DeletePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of accepting a Postgres deletion request, not proof of cleanup.
+type DeletePostgresDeletePostgresDeletePostgresPayload struct {
+	DeletionRequested bool `json:"deletionRequested"`
+}
+
+// GetDeletionRequested returns DeletePostgresDeletePostgresDeletePostgresPayload.DeletionRequested, and is useful for accessing the field via an interface.
+func (v *DeletePostgresDeletePostgresDeletePostgresPayload) GetDeletionRequested() bool {
+	return v.DeletionRequested
+}
+
+// Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+type DeletePostgresInput struct {
+	Name            string `json:"name"`
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetName returns DeletePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetName() string { return v.Name }
+
+// GetTeamSlug returns DeletePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns DeletePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// DeletePostgresResponse is returned by DeletePostgres on success.
+type DeletePostgresResponse struct {
+	// Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
+	DeletePostgres DeletePostgresDeletePostgresDeletePostgresPayload `json:"deletePostgres"`
+}
+
+// GetDeletePostgres returns DeletePostgresResponse.DeletePostgres, and is useful for accessing the field via an interface.
+func (v *DeletePostgresResponse) GetDeletePostgres() DeletePostgresDeletePostgresDeletePostgresPayload {
+	return v.DeletePostgres
 }
 
 // DeleteSecretDeleteSecretDeleteSecretPayload includes the requested fields of the GraphQL type DeleteSecretPayload.
@@ -5716,10 +5843,16 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
@@ -5835,6 +5968,16 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
@@ -5842,6 +5985,8 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -6008,6 +6153,21 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 	case "OpenSearchUpdatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "PostgresDeletedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -6019,6 +6179,9 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "PostgresPersonalAccessCreatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ReconcilerConfiguredActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
@@ -6335,6 +6498,46 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry:
+		typename = "PostgresBranchActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry:
 		typename = "PostgresDeletedActivityLogEntry"
 
@@ -6365,6 +6568,14 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
@@ -7557,6 +7768,205 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 	return v.EnvironmentName
 }
 
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -7712,6 +8122,47 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 
 // GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -11150,10 +11601,16 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
@@ -11269,6 +11726,16 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
@@ -11276,6 +11743,8 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -11442,6 +11911,21 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 	case "OpenSearchUpdatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "PostgresDeletedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -11453,6 +11937,9 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 		return json.Unmarshal(b, *v)
 	case "PostgresPersonalAccessCreatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ReconcilerConfiguredActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
@@ -11769,6 +12256,46 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry:
+		typename = "PostgresBranchActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry:
 		typename = "PostgresDeletedActivityLogEntry"
 
@@ -11799,6 +12326,14 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
@@ -12991,6 +13526,205 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 	return v.EnvironmentName
 }
 
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -13146,6 +13880,47 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 
 // GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -15432,10 +16207,16 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
@@ -15551,6 +16332,16 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
@@ -15558,6 +16349,8 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -15724,6 +16517,21 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 	case "OpenSearchUpdatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "PostgresDeletedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -15735,6 +16543,9 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "PostgresPersonalAccessCreatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ReconcilerConfiguredActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
@@ -16051,6 +16862,46 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry:
+		typename = "PostgresBranchActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry:
 		typename = "PostgresDeletedActivityLogEntry"
 
@@ -16081,6 +16932,14 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
@@ -17273,6 +18132,205 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 	return v.EnvironmentName
 }
 
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -17428,6 +18486,47 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 
 // GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -21327,10 +22426,16 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
@@ -21446,6 +22551,16 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
@@ -21453,6 +22568,8 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -21619,6 +22736,21 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 	case "OpenSearchUpdatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "PostgresDeletedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -21630,6 +22762,9 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "PostgresPersonalAccessCreatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ReconcilerConfiguredActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
@@ -21946,6 +23081,46 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry:
+		typename = "PostgresBranchActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry:
 		typename = "PostgresDeletedActivityLogEntry"
 
@@ -21976,6 +23151,14 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
@@ -23168,6 +24351,205 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 	return v.EnvironmentName
 }
 
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -23323,6 +24705,47 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 
 // GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetEnvironmentName() *string {
 	return v.EnvironmentName
 }
 
@@ -25416,10 +26839,16 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchCredentialsCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerDisabledActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerEnabledActivityLogEntry
@@ -25545,6 +26974,16 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
@@ -25552,6 +26991,8 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresGr
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -25718,6 +27159,21 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 	case "OpenSearchUpdatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
 	case "PostgresDeletedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry)
 		return json.Unmarshal(b, *v)
@@ -25729,6 +27185,9 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "PostgresPersonalAccessCreatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "ReconcilerConfiguredActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry)
@@ -26045,6 +27504,46 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearchUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry:
+		typename = "PostgresBranchActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry:
 		typename = "PostgresDeletedActivityLogEntry"
 
@@ -26075,6 +27574,14 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesReconcilerConfiguredActivityLogEntry:
@@ -27575,6 +29082,275 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesOpenSearch
 	return v.ResourceName
 }
 
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchCreatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresBranchDeletedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresCreatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresDeletedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -27786,6 +29562,61 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPe
 
 // GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresUpdatedActivityLogEntry) GetResourceName() string {
 	return v.ResourceName
 }
 
@@ -31269,16 +33100,16 @@ func (v *GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnectionNodesKafkaTopicTea
 	return v.Name
 }
 
-// GetTeamPostgresBranchesResponse is returned by GetTeamPostgresBranches on success.
-type GetTeamPostgresBranchesResponse struct {
+// GetTeamPostgresesResponse is returned by GetTeamPostgreses on success.
+type GetTeamPostgresesResponse struct {
 	// Get a team by its slug.
-	Team GetTeamPostgresBranchesTeam `json:"team"`
+	Team GetTeamPostgresesTeam `json:"team"`
 }
 
-// GetTeam returns GetTeamPostgresBranchesResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesResponse) GetTeam() GetTeamPostgresBranchesTeam { return v.Team }
+// GetTeam returns GetTeamPostgresesResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesResponse) GetTeam() GetTeamPostgresesTeam { return v.Team }
 
-// GetTeamPostgresBranchesTeam includes the requested fields of the GraphQL type Team.
+// GetTeamPostgresesTeam includes the requested fields of the GraphQL type Team.
 // The GraphQL type's documentation follows.
 //
 // The team type represents a team on the [Nais platform](https://nais.io/).
@@ -31286,113 +33117,139 @@ func (v *GetTeamPostgresBranchesResponse) GetTeam() GetTeamPostgresBranchesTeam 
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetTeamPostgresBranchesTeam struct {
-	// Postgres branches owned by the team.
-	PostgresBranches GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection `json:"postgresBranches"`
+type GetTeamPostgresesTeam struct {
+	// Postgres databases owned by the team, including those without branches.
+	Postgreses GetTeamPostgresesTeamPostgresesPostgresConnection `json:"postgreses"`
 }
 
-// GetPostgresBranches returns GetTeamPostgresBranchesTeam.PostgresBranches, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeam) GetPostgresBranches() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection {
-	return v.PostgresBranches
+// GetPostgreses returns GetTeamPostgresesTeam.Postgreses, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeam) GetPostgreses() GetTeamPostgresesTeamPostgresesPostgresConnection {
+	return v.Postgreses
 }
 
-// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
-type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection struct {
-	Nodes []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
+// GetTeamPostgresesTeamPostgresesPostgresConnection includes the requested fields of the GraphQL type PostgresConnection.
+// The GraphQL type's documentation follows.
+//
+// A paginated list of Postgres databases.
+type GetTeamPostgresesTeamPostgresesPostgresConnection struct {
+	Nodes    []GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres `json:"nodes"`
+	PageInfo GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo        `json:"pageInfo"`
 }
 
-// GetNodes returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnection) GetNodes() []GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
+// GetNodes returns GetTeamPostgresesTeamPostgresesPostgresConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnection) GetNodes() []GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres {
 	return v.Nodes
 }
 
-// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name            string                                                                                                `json:"name"`
-	TeamEnvironment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment `json:"teamEnvironment"`
-	// Postgres owning this PostgresBranch.
-	Postgres GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres `json:"postgres"`
-	// Current observed state of the branch.
-	State PostgresBranchState `json:"state"`
+// GetPageInfo returns GetTeamPostgresesTeamPostgresesPostgresConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnection) GetPageInfo() GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo {
+	return v.PageInfo
 }
 
-// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetTeamEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetTeamEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment {
-	return v.TeamEnvironment
-}
-
-// GetPostgres returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Postgres, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetPostgres() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres {
-	return v.Postgres
-}
-
-// GetState returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
-	return v.State
-}
-
-// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres includes the requested fields of the GraphQL type Postgres.
+// GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
 // A Postgres whose active branch can change.
-type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres struct {
+type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
+	// Team environment containing this Postgres.
+	TeamEnvironment GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment `json:"teamEnvironment"`
 	// Configured PostgreSQL major version.
 	MajorVersion string `json:"majorVersion"`
 	// Whether high availability is configured.
 	HighAvailability bool `json:"highAvailability"`
+	// Currently observed active branch, if selected.
+	ActiveBranch *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch `json:"activeBranch"`
 }
 
-// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetName() string {
+// GetName returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetName() string {
 	return v.Name
 }
 
-// GetMajorVersion returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.MajorVersion, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetMajorVersion() string {
+// GetTeamEnvironment returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetTeamEnvironment() GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetMajorVersion returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetMajorVersion() string {
 	return v.MajorVersion
 }
 
-// GetHighAvailability returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres.HighAvailability, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchPostgres) GetHighAvailability() bool {
+// GetHighAvailability returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetHighAvailability() bool {
 	return v.HighAvailability
 }
 
-// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment struct {
-	// Get the environment.
-	Environment GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment `json:"environment"`
+// GetActiveBranch returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.ActiveBranch, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetActiveBranch() *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch {
+	return v.ActiveBranch
 }
 
-// GetEnvironment returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironment) GetEnvironment() GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment {
+// GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// The GraphQL type's documentation follows.
+//
+// A named PostgresBranch belonging to a Postgres.
+type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch struct {
+	// Local name of this branch within its Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch) GetName() string {
+	return v.Name
+}
+
+// GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment struct {
+	// Get the environment.
+	Environment GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment) GetEnvironment() GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment {
 	return v.Environment
 }
 
-// GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
 // The GraphQL type's documentation follows.
 //
 // An environment represents a runtime environment for workloads.
 //
 // Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment struct {
+type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment struct {
 	// Unique name of the environment.
 	Name string `json:"name"`
 }
 
-// GetName returns GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresBranchesTeamPostgresBranchesPostgresBranchConnectionNodesPostgresBranchTeamEnvironmentEnvironment) GetName() string {
+// GetName returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
 }
 
 // GetTeamVulnerabilitySummaryResponse is returned by GetTeamVulnerabilitySummary on success.
@@ -33240,30 +35097,6 @@ var AllPostgresAccessState = []PostgresAccessState{
 	PostgresAccessStateExpired,
 }
 
-// Input for filtering Postgres branches.
-type PostgresBranchFilter struct {
-	// Filter by the name of the branch.
-	Name *string `json:"name"`
-	// Filter by environments.
-	Environments []string `json:"environments"`
-	// Filter by branch state.
-	States []PostgresBranchState `json:"states"`
-	// Filter by user-defined labels. All listed labels must match.
-	Labels []LabelFilter `json:"labels"`
-}
-
-// GetName returns PostgresBranchFilter.Name, and is useful for accessing the field via an interface.
-func (v *PostgresBranchFilter) GetName() *string { return v.Name }
-
-// GetEnvironments returns PostgresBranchFilter.Environments, and is useful for accessing the field via an interface.
-func (v *PostgresBranchFilter) GetEnvironments() []string { return v.Environments }
-
-// GetStates returns PostgresBranchFilter.States, and is useful for accessing the field via an interface.
-func (v *PostgresBranchFilter) GetStates() []PostgresBranchState { return v.States }
-
-// GetLabels returns PostgresBranchFilter.Labels, and is useful for accessing the field via an interface.
-func (v *PostgresBranchFilter) GetLabels() []LabelFilter { return v.Labels }
-
 // Reconciliation and observed health of a PostgresBranch.
 type PostgresBranchState string
 
@@ -33991,6 +35824,20 @@ func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetEmail
 	return v.Email
 }
 
+// Filter a team's Postgres databases by environment and user-defined labels.
+type TeamPostgresFilter struct {
+	// Filter by environments.
+	Environments []string `json:"environments"`
+	// All listed labels must match.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetEnvironments returns TeamPostgresFilter.Environments, and is useful for accessing the field via an interface.
+func (v *TeamPostgresFilter) GetEnvironments() []string { return v.Environments }
+
+// GetLabels returns TeamPostgresFilter.Labels, and is useful for accessing the field via an interface.
+func (v *TeamPostgresFilter) GetLabels() []LabelFilter { return v.Labels }
+
 // TeamStatusMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // TeamStatusMeAuthenticatedUser is implemented by the following types:
@@ -34513,6 +36360,74 @@ func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetI
 func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetName() string {
 	return v.Name
 }
+
+// Input for updating a Postgres. Omitted fields are left unchanged.
+type UpdatePostgresInput struct {
+	Name             string  `json:"name"`
+	EnvironmentName  string  `json:"environmentName"`
+	TeamSlug         string  `json:"teamSlug"`
+	HighAvailability *bool   `json:"highAvailability,omitempty"`
+	Cpu              *string `json:"cpu,omitempty"`
+	Memory           *string `json:"memory,omitempty"`
+	DiskSize         *string `json:"diskSize,omitempty"`
+}
+
+// GetName returns UpdatePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns UpdatePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns UpdatePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetHighAvailability returns UpdatePostgresInput.HighAvailability, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetHighAvailability() *bool { return v.HighAvailability }
+
+// GetCpu returns UpdatePostgresInput.Cpu, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns UpdatePostgresInput.Memory, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns UpdatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// UpdatePostgresResponse is returned by UpdatePostgres on success.
+type UpdatePostgresResponse struct {
+	// Update an existing Postgres. The PostgreSQL major version cannot be changed.
+	UpdatePostgres UpdatePostgresUpdatePostgresUpdatePostgresPayload `json:"updatePostgres"`
+}
+
+// GetUpdatePostgres returns UpdatePostgresResponse.UpdatePostgres, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresResponse) GetUpdatePostgres() UpdatePostgresUpdatePostgresUpdatePostgresPayload {
+	return v.UpdatePostgres
+}
+
+// UpdatePostgresUpdatePostgresUpdatePostgresPayload includes the requested fields of the GraphQL type UpdatePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of updating a Postgres.
+type UpdatePostgresUpdatePostgresUpdatePostgresPayload struct {
+	Postgres UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres `json:"postgres"`
+}
+
+// GetPostgres returns UpdatePostgresUpdatePostgresUpdatePostgresPayload.Postgres, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresUpdatePostgresUpdatePostgresPayload) GetPostgres() UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres {
+	return v.Postgres
+}
+
+// UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres.Name, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres) GetName() string { return v.Name }
 
 // UpdateSecretValueResponse is returned by UpdateSecretValue on success.
 type UpdateSecretValueResponse struct {
@@ -35310,6 +37225,14 @@ type __CreatePostgresBranchInput struct {
 // GetInput returns __CreatePostgresBranchInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreatePostgresBranchInput) GetInput() CreatePostgresBranchInput { return v.Input }
 
+// __CreatePostgresInput is used internally by genqlient
+type __CreatePostgresInput struct {
+	Input CreatePostgresInput `json:"input"`
+}
+
+// GetInput returns __CreatePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreatePostgresInput) GetInput() CreatePostgresInput { return v.Input }
+
 // __CreateSecretInput is used internally by genqlient
 type __CreateSecretInput struct {
 	Name        string `json:"name"`
@@ -35429,6 +37352,14 @@ type __DeletePostgresBranchInput struct {
 
 // GetInput returns __DeletePostgresBranchInput.Input, and is useful for accessing the field via an interface.
 func (v *__DeletePostgresBranchInput) GetInput() DeletePostgresBranchInput { return v.Input }
+
+// __DeletePostgresInput is used internally by genqlient
+type __DeletePostgresInput struct {
+	Input DeletePostgresInput `json:"input"`
+}
+
+// GetInput returns __DeletePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__DeletePostgresInput) GetInput() DeletePostgresInput { return v.Input }
 
 // __DeleteSecretInput is used internally by genqlient
 type __DeleteSecretInput struct {
@@ -36060,19 +37991,21 @@ func (v *__GetTeamKafkaTopicsInput) GetTeam() string { return v.Team }
 // GetFilter returns __GetTeamKafkaTopicsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamKafkaTopicsInput) GetFilter() *KafkaTopicFilter { return v.Filter }
 
-// __GetTeamPostgresBranchesInput is used internally by genqlient
-type __GetTeamPostgresBranchesInput struct {
-	Team           string                `json:"team"`
-	PostgresFilter *PostgresBranchFilter `json:"postgresFilter"`
+// __GetTeamPostgresesInput is used internally by genqlient
+type __GetTeamPostgresesInput struct {
+	Team   string              `json:"team"`
+	After  *string             `json:"after"`
+	Filter *TeamPostgresFilter `json:"filter"`
 }
 
-// GetTeam returns __GetTeamPostgresBranchesInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresBranchesInput) GetTeam() string { return v.Team }
+// GetTeam returns __GetTeamPostgresesInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresesInput) GetTeam() string { return v.Team }
 
-// GetPostgresFilter returns __GetTeamPostgresBranchesInput.PostgresFilter, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresBranchesInput) GetPostgresFilter() *PostgresBranchFilter {
-	return v.PostgresFilter
-}
+// GetAfter returns __GetTeamPostgresesInput.After, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresesInput) GetAfter() *string { return v.After }
+
+// GetFilter returns __GetTeamPostgresesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetTeamPostgresesInput) GetFilter() *TeamPostgresFilter { return v.Filter }
 
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
@@ -36417,6 +38350,14 @@ type __UpdateOpenSearchInput struct {
 
 // GetInput returns __UpdateOpenSearchInput.Input, and is useful for accessing the field via an interface.
 func (v *__UpdateOpenSearchInput) GetInput() UpdateOpenSearchInput { return v.Input }
+
+// __UpdatePostgresInput is used internally by genqlient
+type __UpdatePostgresInput struct {
+	Input UpdatePostgresInput `json:"input"`
+}
+
+// GetInput returns __UpdatePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__UpdatePostgresInput) GetInput() UpdatePostgresInput { return v.Input }
 
 // __UpdateSecretValueInput is used internally by genqlient
 type __UpdateSecretValueInput struct {
@@ -36894,6 +38835,42 @@ func CreateOpenSearchCredentials(
 	return data_, err_
 }
 
+// The mutation executed by CreatePostgres.
+const CreatePostgres_Operation = `
+mutation CreatePostgres ($input: CreatePostgresInput!) {
+	createPostgres(input: $input) {
+		postgres {
+			name
+		}
+	}
+}
+`
+
+func CreatePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input CreatePostgresInput,
+) (data_ *CreatePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreatePostgres",
+		Query:  CreatePostgres_Operation,
+		Variables: &__CreatePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &CreatePostgresResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by CreatePostgresAccess.
 const CreatePostgresAccess_Operation = `
 mutation CreatePostgresAccess ($input: CreatePostgresAccessInput!) {
@@ -37232,6 +39209,40 @@ func DeleteOpenSearch(
 	}
 
 	data_ = &DeleteOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeletePostgres.
+const DeletePostgres_Operation = `
+mutation DeletePostgres ($input: DeletePostgresInput!) {
+	deletePostgres(input: $input) {
+		deletionRequested
+	}
+}
+`
+
+func DeletePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input DeletePostgresInput,
+) (data_ *DeletePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeletePostgres",
+		Query:  DeletePostgres_Operation,
+		Variables: &__DeletePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &DeletePostgresResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -39569,11 +41580,11 @@ func GetTeamKafkaTopics(
 	return data_, err_
 }
 
-// The query executed by GetTeamPostgresBranches.
-const GetTeamPostgresBranches_Operation = `
-query GetTeamPostgresBranches ($team: Slug!, $postgresFilter: PostgresBranchFilter) {
+// The query executed by GetTeamPostgreses.
+const GetTeamPostgreses_Operation = `
+query GetTeamPostgreses ($team: Slug!, $after: Cursor, $filter: TeamPostgresFilter) {
 	team(slug: $team) {
-		postgresBranches(first: 1000, filter: $postgresFilter) {
+		postgreses(first: 100, after: $after, filter: $filter) {
 			nodes {
 				name
 				teamEnvironment {
@@ -39581,34 +41592,39 @@ query GetTeamPostgresBranches ($team: Slug!, $postgresFilter: PostgresBranchFilt
 						name
 					}
 				}
-				postgres {
+				majorVersion
+				highAvailability
+				activeBranch {
 					name
-					majorVersion
-					highAvailability
 				}
-				state
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
 			}
 		}
 	}
 }
 `
 
-func GetTeamPostgresBranches(
+func GetTeamPostgreses(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	team string,
-	postgresFilter *PostgresBranchFilter,
-) (data_ *GetTeamPostgresBranchesResponse, err_ error) {
+	after *string,
+	filter *TeamPostgresFilter,
+) (data_ *GetTeamPostgresesResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "GetTeamPostgresBranches",
-		Query:  GetTeamPostgresBranches_Operation,
-		Variables: &__GetTeamPostgresBranchesInput{
-			Team:           team,
-			PostgresFilter: postgresFilter,
+		OpName: "GetTeamPostgreses",
+		Query:  GetTeamPostgreses_Operation,
+		Variables: &__GetTeamPostgresesInput{
+			Team:   team,
+			After:  after,
+			Filter: filter,
 		},
 	}
 
-	data_ = &GetTeamPostgresBranchesResponse{}
+	data_ = &GetTeamPostgresesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -40639,6 +42655,42 @@ func UpdateOpenSearch(
 	}
 
 	data_ = &UpdateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdatePostgres.
+const UpdatePostgres_Operation = `
+mutation UpdatePostgres ($input: UpdatePostgresInput!) {
+	updatePostgres(input: $input) {
+		postgres {
+			name
+		}
+	}
+}
+`
+
+func UpdatePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input UpdatePostgresInput,
+) (data_ *UpdatePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdatePostgres",
+		Query:  UpdatePostgres_Operation,
+		Variables: &__UpdatePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &UpdatePostgresResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -13,14 +13,13 @@ import (
 	"github.com/nais/naistrix/input"
 )
 
-func postgresNames(instances []postgres.Instance, environment string) []string {
+func postgresNames(instances []postgres.PostgresInstance, environment string) []string {
 	seen := make(map[string]bool)
 	for _, instance := range instances {
 		if environment != "" && instance.Environment != environment {
 			continue
 		}
-		name, _, _ := strings.Cut(instance.Name.Name, "/")
-		seen[name] = true
+		seen[instance.Name.Name] = true
 	}
 	names := make([]string, 0, len(seen))
 	for name := range seen {
@@ -30,11 +29,10 @@ func postgresNames(instances []postgres.Instance, environment string) []string {
 	return names
 }
 
-func postgresEnvironments(instances []postgres.Instance, name string) []string {
+func postgresEnvironments(instances []postgres.PostgresInstance, name string) []string {
 	seen := make(map[string]bool)
 	for _, instance := range instances {
-		postgresName, _, _ := strings.Cut(instance.Name.Name, "/")
-		if postgresName == name {
+		if instance.Name.Name == name {
 			seen[instance.Environment] = true
 		}
 	}
@@ -54,7 +52,7 @@ func autoCompletePostgresNames(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		if f.Team == "" {
 			return nil, "Please provide team to auto-complete Postgres names. 'nais defaults set team <team>', or '--team <team>' flag."
 		}
-		instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
+		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
 		if err != nil {
 			return nil, fmt.Sprintf("Unable to fetch Postgres names: %v", err)
 		}
@@ -66,20 +64,38 @@ func autoCompletePostgresNames(f *flag.Postgres) naistrix.AutoCompleteFunc {
 	}
 }
 
-func postgresBranches(instances []postgres.Instance, name, environment string) []string {
-	seen := make(map[string]bool)
-	for _, instance := range instances {
-		postgresName, branch, ok := strings.Cut(instance.Name.Name, "/")
-		if ok && postgresName == name && instance.Environment == environment {
-			seen[branch] = true
-		}
+func branchCompletionEnvironment(instances []postgres.PostgresInstance, name, provided string) (string, string) {
+	if provided != "" {
+		return provided, ""
 	}
-	branches := make([]string, 0, len(seen))
-	for branch := range seen {
-		branches = append(branches, branch)
+	envs := postgresEnvironments(instances, name)
+	if len(envs) != 1 {
+		return "", "Specify --environment to complete branches for this Postgres."
 	}
-	sort.Strings(branches)
-	return branches
+	return envs[0], ""
+}
+
+func resolveBranchCompletionEnvironment(ctx context.Context, team, name, provided string) (string, string) {
+	if provided != "" {
+		return provided, ""
+	}
+	instances, err := postgres.GetTeamPostgreses(ctx, team, nil, nil)
+	if err != nil {
+		return "", fmt.Sprintf("Unable to fetch Postgres environments: %v", err)
+	}
+	return branchCompletionEnvironment(instances, name, provided)
+}
+
+func branchSuggestions(branches []postgres.Branch) ([]string, string) {
+	names := make([]string, 0, len(branches))
+	for _, branch := range branches {
+		names = append(names, branch.Name)
+	}
+	sort.Strings(names)
+	if len(names) == 1 {
+		return names, ""
+	}
+	return names, "Select a Postgres branch."
 }
 
 func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
@@ -90,34 +106,24 @@ func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		if args.Len() != 1 || f.Team == "" {
 			return nil, ""
 		}
-		instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
+		name := args.Get("postgres")
+		env, help := resolveBranchCompletionEnvironment(ctx, f.Team, name, string(f.Environment))
+		if help != "" {
+			return nil, help
+		}
+		status, err := postgres.GetBranchStatus(ctx, f.Team, env, name)
 		if err != nil {
 			return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
 		}
-		return branchSuggestions(instances, args.Get("postgres"), string(f.Environment))
+		return branchSuggestions(status.Branches)
 	}
-}
-
-func branchSuggestions(instances []postgres.Instance, name, environment string) ([]string, string) {
-	if environment == "" {
-		envs := postgresEnvironments(instances, name)
-		if len(envs) != 1 {
-			return nil, "Specify --environment to complete branches for this Postgres."
-		}
-		environment = envs[0]
-	}
-	branches := postgresBranches(instances, name, environment)
-	if len(branches) == 1 {
-		return branches, ""
-	}
-	return branches, "Select a Postgres branch."
 }
 
 func resolvePostgresEnvironment(ctx context.Context, team, name, provided string) (string, error) {
 	if provided != "" {
 		return provided, nil
 	}
-	instances, err := postgres.GetTeamPostgresBranches(ctx, team, nil, nil)
+	instances, err := postgres.GetTeamPostgreses(ctx, team, nil, nil)
 	if err != nil {
 		return "", fmt.Errorf("fetching environments for Postgres %q: %w", name, err)
 	}

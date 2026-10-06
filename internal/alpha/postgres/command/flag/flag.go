@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/nais/cli/internal/alpha/postgres"
@@ -33,6 +32,27 @@ type (
 		Port          int           `name:"port" usage:"Local port (default random)."`
 		PrintPassword bool          `name:"print-password" usage:"Print the database password to stdout (sensitive)."`
 	}
+	InstanceCreate struct {
+		*Postgres
+		Yes              bool            `name:"yes" short:"y" usage:"Confirm without a prompt."`
+		Version          PostgresVersion `name:"version" usage:"PostgreSQL major version (18)."`
+		HighAvailability bool            `name:"high-availability" usage:"Enable high availability (third instance and synchronous replication)."`
+		CPU              string          `name:"cpu" usage:"Requested CPU, e.g. 100m."`
+		Memory           string          `name:"memory" usage:"Requested memory, e.g. 512Mi."`
+		DiskSize         string          `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+	}
+	InstanceDelete struct {
+		*Postgres
+		Yes bool `name:"yes" short:"y" usage:"Confirm irreversible deletion without a prompt."`
+	}
+	InstanceUpdate struct {
+		*Postgres
+		Yes              bool             `name:"yes" short:"y" usage:"Confirm without a prompt."`
+		HighAvailability HighAvailability `name:"high-availability" usage:"Enable or disable high availability (true or false)."`
+		CPU              string           `name:"cpu" usage:"Requested CPU, e.g. 100m."`
+		Memory           string           `name:"memory" usage:"Requested memory, e.g. 512Mi."`
+		DiskSize         string           `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+	}
 	BranchList struct {
 		*Postgres
 		Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
@@ -57,7 +77,7 @@ type (
 	}
 )
 
-func (*List) LabelFacetResource() string { return "postgresBranches" }
+func (*List) LabelFacetResource() string { return "postgreses" }
 
 // BranchSource completes source branches for the selected Postgres and environment.
 type BranchSource string
@@ -69,17 +89,16 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 	if f.Team == "" || args.Get("postgres") == "" {
 		return nil, "Select a Postgres first (and specify a team)."
 	}
-	instances, err := postgres.GetTeamPostgresBranches(ctx, f.Team, nil, nil)
-	if err != nil {
-		return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
-	}
 	name := args.Get("postgres")
 	environment := string(f.Environment)
 	if environment == "" {
+		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
+		if err != nil {
+			return nil, fmt.Sprintf("Unable to fetch Postgres environments: %v", err)
+		}
 		envs := make(map[string]bool)
 		for _, instance := range instances {
-			pg, _, _ := strings.Cut(instance.Name.Name, "/")
-			if pg == name {
+			if instance.Name.Name == name {
 				envs[instance.Environment] = true
 			}
 		}
@@ -90,15 +109,34 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 			environment = env
 		}
 	}
-	var branches []string
-	for _, instance := range instances {
-		pg, branch, ok := strings.Cut(instance.Name.Name, "/")
-		if ok && pg == name && instance.Environment == environment {
-			branches = append(branches, branch)
-		}
+	status, err := postgres.GetBranchStatus(ctx, f.Team, environment, name)
+	if err != nil {
+		return nil, fmt.Sprintf("Unable to fetch Postgres branches: %v", err)
+	}
+	branches := make([]string, 0, len(status.Branches))
+	for _, branch := range status.Branches {
+		branches = append(branches, branch.Name)
 	}
 	sort.Strings(branches)
 	return branches, ""
+}
+
+// PostgresVersion completes supported major versions for creation.
+type PostgresVersion string
+
+var _ naistrix.FlagAutoCompleter = (*PostgresVersion)(nil)
+
+func (*PostgresVersion) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"18"}, "Supported PostgreSQL versions."
+}
+
+// HighAvailability completes explicit update values, including false.
+type HighAvailability string
+
+var _ naistrix.FlagAutoCompleter = (*HighAvailability)(nil)
+
+func (*HighAvailability) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"true", "false"}, "High availability values."
 }
 
 type Output string

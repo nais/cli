@@ -45,18 +45,31 @@ func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 				out.Println("No Postgres branches found.")
 				return nil
 			}
-			rows := make([]branchListRow, 0, len(status.Branches))
-			for _, b := range status.Branches {
-				rows = append(rows, branchListRow{Name: b.Name, State: postgres.State(b.State)})
-			}
-			return out.Table().Render(rows)
+			return out.Table().Render(branchListRows(status))
 		},
 	}
 }
 
 type branchListRow struct {
-	Name  string
-	State postgres.State
+	Name      string
+	State     postgres.State
+	Active    string
+	Requested string
+}
+
+func branchListRows(status postgres.BranchStatus) []branchListRow {
+	rows := make([]branchListRow, 0, len(status.Branches))
+	for _, b := range status.Branches {
+		row := branchListRow{Name: b.Name, State: postgres.State(b.State)}
+		if b.Name == status.Active {
+			row.Active = "Yes"
+		}
+		if b.Name == status.DesiredActive && status.DesiredActive != status.Active {
+			row.Requested = "Yes"
+		}
+		rows = append(rows, row)
+	}
+	return rows
 }
 
 func branchStatusCommand(parent *flag.Postgres) *naistrix.Command {
