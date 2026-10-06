@@ -20,16 +20,21 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 		Description: "Request a new Postgres instance. Provisioning continues asynchronously.",
 		Args:        []naistrix.Argument{{Name: "postgres"}},
 		Examples: []naistrix.Example{
-			{Description: "Request a Postgres with platform defaults.", Command: "my-postgres -t my-team -e dev-gcp"},
+			{Description: "Select the destination environment interactively and request a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
+			{Description: "Request a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
 			{Description: "Request a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
-		ValidateFunc: validation.RequireTeamAndEnvironment(f),
+		ValidateFunc: validation.RequireTeam(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if f.Version != "18" {
 				return fmt.Errorf("--version must be 18")
 			}
+			env, err := resolvePostgresCreateEnvironment(ctx, string(f.Environment))
+			if err != nil {
+				return err
+			}
 			name := args.Get("postgres")
-			rows := instanceTarget(name, f.Team, string(f.Environment))
+			rows := instanceTarget(name, f.Team, env)
 			rows = append(rows, []string{"Version", string(f.Version)}, []string{"High availability", fmt.Sprint(f.HighAvailability)})
 			for _, setting := range []struct{ label, value string }{{"CPU", f.CPU}, {"Memory", f.Memory}, {"Disk size", f.DiskSize}} {
 				if setting.value != "" {
@@ -50,14 +55,15 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 				}
 			}
 			created, err := postgres.CreateInstance(ctx, gql.CreatePostgresInput{
-				Name: name, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
+				Name: name, TeamSlug: f.Team, EnvironmentName: env,
 				MajorVersion: string(f.Version), HighAvailability: enabledHA(f.HighAvailability),
 				Cpu: optional(f.CPU), Memory: optional(f.Memory), DiskSize: optional(f.DiskSize),
 			})
 			if err != nil {
 				return err
 			}
-			out.Printf("Postgres %q creation requested in %q; provisioning may still be in progress.\n", created, f.Environment)
+			out.Printf("Postgres %q creation requested in %q; provisioning may still be in progress.\n", created, env)
+			out.Printf("Check progress: %s\n", postgresStatusCommandLine(created, f.Team, env))
 			return nil
 		},
 	}
@@ -67,7 +73,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.InstanceUpdate{Postgres: parent}
 	return &naistrix.Command{
 		Name: "update", Title: "Update a Postgres instance.", Flags: f,
-		Description: "Request changes to the provided fields. A subsequent nais apply may overwrite API updates on manifest-managed Postgres.",
+		Description: "Compare configured values with the requested changes before updating provided fields. Current resource values are configured requests, not effective runtime resources or SQL readiness. A subsequent nais apply may overwrite API updates on manifest-managed Postgres.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, AutoCompleteFunc: autoCompletePostgresNames(parent),
 		Examples: []naistrix.Example{
 			{Description: "Change requested CPU and memory.", Command: "my-postgres -t my-team -e dev-gcp --cpu 200m --memory 1Gi"},
@@ -86,13 +92,36 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			rows := instanceTarget(name, f.Team, env)
-			for _, setting := range []struct{ label, value string }{{"High availability", string(f.HighAvailability)}, {"CPU", f.CPU}, {"Memory", f.Memory}, {"Disk size", f.DiskSize}} {
-				if setting.value != "" {
-					rows = append(rows, []string{setting.label, setting.value})
-				}
+			current, err := postgres.GetPostgres(ctx, parent.Team, env, name)
+			if err != nil {
+				return err
 			}
-			out.Warnln("API updates to manifest-managed Postgres can be overwritten by a subsequent nais apply. Only the listed settings will change:")
+			rows := [][]string{{"Setting", "Current", "Requested"}}
+			if changes.HighAvailability != nil {
+				rows = append(rows, []string{"High availability", fmt.Sprint(current.HighAvailability), fmt.Sprint(*changes.HighAvailability)})
+			}
+			for _, setting := range []struct {
+				label              string
+				current, requested *string
+			}{
+				{"CPU", current.Resources.Cpu, changes.Cpu},
+				{"Memory", current.Resources.Memory, changes.Memory},
+				{"Disk size", current.Resources.DiskSize, changes.DiskSize},
+			} {
+				if setting.requested == nil {
+					continue
+				}
+				value := "(not configured)"
+				if setting.current != nil {
+					value = *setting.current
+				}
+				rows = append(rows, []string{setting.label, value, *setting.requested})
+			}
+			out.Warnln("API updates to manifest-managed Postgres can be overwritten by a subsequent nais apply. Only the listed settings are requested:")
+			if err := out.Table(output.TableWithMargins()).Render(instanceTarget(name, f.Team, env)); err != nil {
+				return err
+			}
+			out.Println("Current values are a configured snapshot; resource requests do not describe effective runtime resources or SQL readiness.")
 			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
 				return err
 			}

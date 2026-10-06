@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 	"github.com/nais/naistrix/output"
@@ -95,41 +97,78 @@ func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchCreate{Postgres: parent}
 	return &naistrix.Command{
 		Name: "create", Title: "Create an inactive Postgres branch from a point in time.", Flags: f,
+		Description: "Use create <postgres> [<new-branch>]. If the new branch name is omitted, prompt for it interactively. An explicit or default environment is used directly; otherwise resolve from the named Postgres, auto-selecting its sole environment or prompting for multiple (require -e noninteractively when ambiguous).",
 		Examples: []naistrix.Example{
+			{Description: "Prompt for a new branch name and restore from five minutes ago.", Command: "my-postgres --ago 5m"},
 			{Description: "Restore from the active branch as it was two hours ago.", Command: "my-postgres restored --ago 2h"},
 			{Description: "Restore from the active branch at a UTC timestamp (Z means UTC).", Command: "my-postgres restored --at 2026-10-06T10:00:00Z"},
 			{Description: "Restore from a specific source branch.", Command: "my-postgres restored --from main --at 2026-10-06T10:00:00Z"},
 		},
-		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
+		Args:             []naistrix.Argument{{Name: "postgres", Repeatable: true}},
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
+		ValidateFunc: naistrix.ValidateFuncs(
+			validation.RequireTeam(f),
+			func(_ context.Context, args *naistrix.Arguments) error {
+				values := args.All()
+				if len(values) < 1 || len(values) > 2 {
+					return fmt.Errorf("expected a Postgres and optional new branch: create <postgres> [<new-branch>]")
+				}
+				if strings.TrimSpace(values[0]) == "" {
+					return fmt.Errorf("Postgres name must not be empty")
+				}
+				if len(values) == 2 && strings.TrimSpace(values[1]) == "" {
+					return fmt.Errorf("new branch name must not be empty")
+				}
+				return nil
+			},
+		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			at, err := resolveRecoveryTime(f.At, f.Ago, time.Now())
 			if err != nil {
 				return err
 			}
-			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
+			values := args.All()
+			name := values[0]
+			var branch string
+			if len(values) == 2 {
+				branch = values[1]
+			} else {
+				entered, err := input.Input("Name of the new branch")
+				if errors.Is(err, input.ErrNotInteractive) {
+					return fmt.Errorf("specify the new branch name as the second positional argument, e.g. nais alpha postgres branch create mypg 5m-restore --ago 5m")
+				}
+				if err != nil {
+					return fmt.Errorf("prompting for new branch name: %w", err)
+				}
+				branch = strings.TrimSpace(entered)
+				if branch == "" {
+					return fmt.Errorf("new branch name must not be empty")
+				}
+			}
+			env, err := branchEnvironment(ctx, parent, name)
 			if err != nil {
 				return err
 			}
 			source := string(f.From)
 			if source == "" {
-				status, err := postgres.GetBranchStatus(ctx, parent.Team, env, args.Get("postgres"))
+				status, err := postgres.GetBranchStatus(ctx, parent.Team, env, name)
 				if err != nil {
 					return err
 				}
 				source = status.Active
 				if source == "" {
-					return fmt.Errorf("no active branch is known for Postgres %q; specify a source branch with --from", args.Get("postgres"))
+					return fmt.Errorf("no active branch is known for Postgres %q; specify a source branch with --from", name)
 				}
 			}
 			b, err := postgres.CreateBranch(ctx, gql.CreatePostgresBranchInput{
-				Postgres: args.Get("postgres"), Branch: args.Get("branch"), SourceBranch: source,
+				Postgres: name, Branch: branch, SourceBranch: source,
 				TargetTime: at, EnvironmentName: env, TeamSlug: parent.Team,
 			})
 			if err != nil {
 				return err
 			}
 			out.Printf("Branch %q created; observed state: %s. Provisioning may still be in progress.\n", b.Name, postgres.State(b.State).String())
+			out.Printf("Check progress: nais alpha postgres branch status %s %s -t %s -e %s\n", quoteShellArgument(name), quoteShellArgument(b.Name), quoteShellArgument(parent.Team), quoteShellArgument(env))
 			return nil
 		},
 	}

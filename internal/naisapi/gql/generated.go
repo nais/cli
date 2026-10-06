@@ -22248,6 +22248,187 @@ func (v *GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchCon
 	return v.State
 }
 
+// GetPostgresResponse is returned by GetPostgres on success.
+type GetPostgresResponse struct {
+	// Get a team by its slug.
+	Team GetPostgresTeam `json:"team"`
+}
+
+// GetTeam returns GetPostgresResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresResponse) GetTeam() GetPostgresTeam { return v.Team }
+
+// GetPostgresTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetPostgresTeam struct {
+	// Get a specific environment for the team.
+	Environment GetPostgresTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetPostgresTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeam) GetEnvironment() GetPostgresTeamEnvironment { return v.Environment }
+
+// GetPostgresTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresTeamEnvironment struct {
+	// Postgres in the team environment.
+	Postgres GetPostgresTeamEnvironmentPostgres `json:"postgres"`
+}
+
+// GetPostgres returns GetPostgresTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironment) GetPostgres() GetPostgresTeamEnvironmentPostgres {
+	return v.Postgres
+}
+
+// GetPostgresTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type GetPostgresTeamEnvironmentPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+	// Configured PostgreSQL major version.
+	MajorVersion string `json:"majorVersion"`
+	// Whether high availability is configured.
+	HighAvailability bool `json:"highAvailability"`
+	// Requested CPU, memory and disk size, when present on this Postgres.
+	Resources GetPostgresTeamEnvironmentPostgresResources `json:"resources"`
+	// User-defined labels on this Postgres.
+	Labels []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel `json:"labels"`
+	// Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+	DesiredActiveBranch *string `json:"desiredActiveBranch"`
+	// Currently observed active branch, if selected.
+	ActiveBranch *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
+	// Branches belonging to this Postgres.
+	Branches GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection `json:"branches"`
+}
+
+// GetName returns GetPostgresTeamEnvironmentPostgres.Name, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetName() string { return v.Name }
+
+// GetMajorVersion returns GetPostgresTeamEnvironmentPostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetMajorVersion() string { return v.MajorVersion }
+
+// GetHighAvailability returns GetPostgresTeamEnvironmentPostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetHighAvailability() bool { return v.HighAvailability }
+
+// GetResources returns GetPostgresTeamEnvironmentPostgres.Resources, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetResources() GetPostgresTeamEnvironmentPostgresResources {
+	return v.Resources
+}
+
+// GetLabels returns GetPostgresTeamEnvironmentPostgres.Labels, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetLabels() []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel {
+	return v.Labels
+}
+
+// GetDesiredActiveBranch returns GetPostgresTeamEnvironmentPostgres.DesiredActiveBranch, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetDesiredActiveBranch() *string {
+	return v.DesiredActiveBranch
+}
+
+// GetActiveBranch returns GetPostgresTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetActiveBranch() *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch {
+	return v.ActiveBranch
+}
+
+// GetBranches returns GetPostgresTeamEnvironmentPostgres.Branches, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetBranches() GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection {
+	return v.Branches
+}
+
+// GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// The GraphQL type's documentation follows.
+//
+// A named PostgresBranch belonging to a Postgres.
+type GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
+	// Local name of this branch within its Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
+	return v.Name
+}
+
+// GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
+type GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection struct {
+	Nodes []GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
+}
+
+// GetNodes returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection) GetNodes() []GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
+	return v.Nodes
+}
+
+// GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// The GraphQL type's documentation follows.
+//
+// A named PostgresBranch belonging to a Postgres.
+type GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
+	// Local name of this branch within its Postgres.
+	Name string `json:"name"`
+	// Current observed state of the branch.
+	State PostgresBranchState `json:"state"`
+}
+
+// GetName returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
+	return v.Name
+}
+
+// GetState returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
+	return v.State
+}
+
+// GetPostgresTeamEnvironmentPostgresLabelsResourceLabel includes the requested fields of the GraphQL type ResourceLabel.
+// The GraphQL type's documentation follows.
+//
+// A user-defined label attached to a resource.
+//
+// Labels are key-value pairs that teams can use to organize and filter their
+// resources. Both the key and the value may contain letters, numbers, hyphens,
+// underscores and dots, and may be at most 63 characters long.
+type GetPostgresTeamEnvironmentPostgresLabelsResourceLabel struct {
+	// The label key.
+	Key string `json:"key"`
+	// The label value.
+	Value string `json:"value"`
+}
+
+// GetKey returns GetPostgresTeamEnvironmentPostgresLabelsResourceLabel.Key, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresLabelsResourceLabel) GetKey() string { return v.Key }
+
+// GetValue returns GetPostgresTeamEnvironmentPostgresLabelsResourceLabel.Value, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresLabelsResourceLabel) GetValue() string { return v.Value }
+
+// GetPostgresTeamEnvironmentPostgresResources includes the requested fields of the GraphQL type PostgresResources.
+// The GraphQL type's documentation follows.
+//
+// Resource requests configured on Postgres. Omitted requests are null.
+type GetPostgresTeamEnvironmentPostgresResources struct {
+	// Requested CPU.
+	Cpu *string `json:"cpu"`
+	// Requested memory.
+	Memory *string `json:"memory"`
+	// Requested disk size.
+	DiskSize *string `json:"diskSize"`
+}
+
+// GetCpu returns GetPostgresTeamEnvironmentPostgresResources.Cpu, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresResources) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns GetPostgresTeamEnvironmentPostgresResources.Memory, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresResources) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns GetPostgresTeamEnvironmentPostgresResources.DiskSize, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresResources) GetDiskSize() *string { return v.DiskSize }
+
 // GetSecretActivityResponse is returned by GetSecretActivity on success.
 type GetSecretActivityResponse struct {
 	// Get a team by its slug.
@@ -37869,6 +38050,22 @@ func (v *__GetPostgresBranchStatusInput) GetEnvironment() string { return v.Envi
 // GetPostgres returns __GetPostgresBranchStatusInput.Postgres, and is useful for accessing the field via an interface.
 func (v *__GetPostgresBranchStatusInput) GetPostgres() string { return v.Postgres }
 
+// __GetPostgresInput is used internally by genqlient
+type __GetPostgresInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Postgres    string `json:"postgres"`
+}
+
+// GetTeam returns __GetPostgresInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetPostgresInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresInput) GetEnvironment() string { return v.Environment }
+
+// GetPostgres returns __GetPostgresInput.Postgres, and is useful for accessing the field via an interface.
+func (v *__GetPostgresInput) GetPostgres() string { return v.Postgres }
+
 // __GetSecretActivityInput is used internally by genqlient
 type __GetSecretActivityInput struct {
 	Team          string                    `json:"team"`
@@ -40989,6 +41186,69 @@ func GetOpenSearch(
 	}
 
 	data_ = &GetOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetPostgres.
+const GetPostgres_Operation = `
+query GetPostgres ($team: Slug!, $environment: String!, $postgres: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			postgres(name: $postgres) {
+				name
+				majorVersion
+				highAvailability
+				resources {
+					cpu
+					memory
+					diskSize
+				}
+				labels {
+					key
+					value
+				}
+				desiredActiveBranch
+				activeBranch {
+					name
+				}
+				branches(first: 1000) {
+					nodes {
+						name
+						state
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetPostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	postgres string,
+) (data_ *GetPostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetPostgres",
+		Query:  GetPostgres_Operation,
+		Variables: &__GetPostgresInput{
+			Team:        team,
+			Environment: environment,
+			Postgres:    postgres,
+		},
+	}
+
+	data_ = &GetPostgresResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

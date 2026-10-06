@@ -10,7 +10,6 @@ import (
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"k8s.io/utils/ptr"
@@ -41,7 +40,6 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 		Flags:       f,
 		Args:        defaultArgs,
 		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
 			validateArgs,
 			func(_ context.Context, args *naistrix.Arguments) error {
 				if f.ToFile != "" && f.Key == "" {
