@@ -59,8 +59,9 @@ type (
 	}
 	BranchCreate struct {
 		*Postgres
-		From BranchSource `name:"from" usage:"Source branch to recover from (required)."`
-		At   string       `name:"at" usage:"UTC recovery point in RFC3339 format ending in Z (required)."`
+		From BranchSource `name:"from" usage:"Source branch to recover from (defaults to the active branch)."`
+		At   string       `name:"at" usage:"UTC recovery point, e.g. 2026-10-06T10:00:00Z (use either --at or --ago)."`
+		Ago  string       `name:"ago" usage:"Recover from this long ago, e.g. 2h, 30m or 1h30m (use either --at or --ago)."`
 	}
 	BranchActivate struct {
 		*Postgres
