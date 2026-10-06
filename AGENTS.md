@@ -54,6 +54,13 @@ mise run build
 - **Formattering**: `gofumpt`
 - **Commit-meldinger**: Conventional Commits (se `script/semantic-commit-hook.sh`)
 
+## Postgres CLI completion contract
+
+- Complete Postgres names from `Team.postgreses` (`GetTeamPostgreses`), including instances without branches; branch names come from the selected Postgres's nested `branches`.
+- With no environment, resolve from that Postgres's team environments: auto-select one, prompt for multiple, or require `-e` when noninteractive. Propagate API/auth errors in completion help (including login guidance).
+- Top-level `postgres create <postgres>` must not suggest existing names; update/delete may. `--version` suggests 18; update `--high-availability` suggests true/false.
+- Global `--environment` completion lists all environments; do not shadow it or add command-specific global flag completion. Deploy the API schema/mutations before the CLI; completion and listing require the API's `Team.postgreses` contract.
+
 ## Lokal utvikling
 
 ```bash

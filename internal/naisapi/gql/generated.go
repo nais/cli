@@ -1277,6 +1277,78 @@ func (v *CreatePostgresBranchResponse) GetCreatePostgresBranch() CreatePostgresB
 	return v.CreatePostgresBranch
 }
 
+// CreatePostgresCreatePostgresCreatePostgresPayload includes the requested fields of the GraphQL type CreatePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of creating a Postgres.
+type CreatePostgresCreatePostgresCreatePostgresPayload struct {
+	Postgres CreatePostgresCreatePostgresCreatePostgresPayloadPostgres `json:"postgres"`
+}
+
+// GetPostgres returns CreatePostgresCreatePostgresCreatePostgresPayload.Postgres, and is useful for accessing the field via an interface.
+func (v *CreatePostgresCreatePostgresCreatePostgresPayload) GetPostgres() CreatePostgresCreatePostgresCreatePostgresPayloadPostgres {
+	return v.Postgres
+}
+
+// CreatePostgresCreatePostgresCreatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type CreatePostgresCreatePostgresCreatePostgresPayloadPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns CreatePostgresCreatePostgresCreatePostgresPayloadPostgres.Name, and is useful for accessing the field via an interface.
+func (v *CreatePostgresCreatePostgresCreatePostgresPayloadPostgres) GetName() string { return v.Name }
+
+// Input for creating a Postgres.
+type CreatePostgresInput struct {
+	Name             string  `json:"name"`
+	EnvironmentName  string  `json:"environmentName"`
+	TeamSlug         string  `json:"teamSlug"`
+	MajorVersion     string  `json:"majorVersion"`
+	HighAvailability *bool   `json:"highAvailability,omitempty"`
+	Cpu              *string `json:"cpu,omitempty"`
+	Memory           *string `json:"memory,omitempty"`
+	DiskSize         *string `json:"diskSize,omitempty"`
+}
+
+// GetName returns CreatePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns CreatePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns CreatePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetMajorVersion returns CreatePostgresInput.MajorVersion, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetMajorVersion() string { return v.MajorVersion }
+
+// GetHighAvailability returns CreatePostgresInput.HighAvailability, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetHighAvailability() *bool { return v.HighAvailability }
+
+// GetCpu returns CreatePostgresInput.Cpu, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns CreatePostgresInput.Memory, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns CreatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// CreatePostgresResponse is returned by CreatePostgres on success.
+type CreatePostgresResponse struct {
+	// Create a new Postgres. Its first branch, main, is created and activated by the platform.
+	CreatePostgres CreatePostgresCreatePostgresCreatePostgresPayload `json:"createPostgres"`
+}
+
+// GetCreatePostgres returns CreatePostgresResponse.CreatePostgres, and is useful for accessing the field via an interface.
+func (v *CreatePostgresResponse) GetCreatePostgres() CreatePostgresCreatePostgresCreatePostgresPayload {
+	return v.CreatePostgres
+}
+
 // CreateSecretCreateSecretCreateSecretPayload includes the requested fields of the GraphQL type CreateSecretPayload.
 type CreateSecretCreateSecretCreateSecretPayload struct {
 	// The created secret.
@@ -1577,6 +1649,46 @@ type DeletePostgresBranchResponse struct {
 // GetDeletePostgresBranch returns DeletePostgresBranchResponse.DeletePostgresBranch, and is useful for accessing the field via an interface.
 func (v *DeletePostgresBranchResponse) GetDeletePostgresBranch() DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload {
 	return v.DeletePostgresBranch
+}
+
+// DeletePostgresDeletePostgresDeletePostgresPayload includes the requested fields of the GraphQL type DeletePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of accepting a Postgres deletion request, not proof of cleanup.
+type DeletePostgresDeletePostgresDeletePostgresPayload struct {
+	DeletionRequested bool `json:"deletionRequested"`
+}
+
+// GetDeletionRequested returns DeletePostgresDeletePostgresDeletePostgresPayload.DeletionRequested, and is useful for accessing the field via an interface.
+func (v *DeletePostgresDeletePostgresDeletePostgresPayload) GetDeletionRequested() bool {
+	return v.DeletionRequested
+}
+
+// Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+type DeletePostgresInput struct {
+	Name            string `json:"name"`
+	TeamSlug        string `json:"teamSlug"`
+	EnvironmentName string `json:"environmentName"`
+}
+
+// GetName returns DeletePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetName() string { return v.Name }
+
+// GetTeamSlug returns DeletePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetEnvironmentName returns DeletePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *DeletePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// DeletePostgresResponse is returned by DeletePostgres on success.
+type DeletePostgresResponse struct {
+	// Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
+	DeletePostgres DeletePostgresDeletePostgresDeletePostgresPayload `json:"deletePostgres"`
+}
+
+// GetDeletePostgres returns DeletePostgresResponse.DeletePostgres, and is useful for accessing the field via an interface.
+func (v *DeletePostgresResponse) GetDeletePostgres() DeletePostgresDeletePostgresDeletePostgresPayload {
+	return v.DeletePostgres
 }
 
 // DeleteSecretDeleteSecretDeleteSecretPayload includes the requested fields of the GraphQL type DeleteSecretPayload.
@@ -34151,20 +34263,6 @@ var AllPostgresBranchState = []PostgresBranchState{
 	PostgresBranchStateDegraded,
 }
 
-// Filter Postgres databases by environment and user-defined labels.
-type PostgresFilter struct {
-	// Filter by environments.
-	Environments []string `json:"environments"`
-	// All listed labels must match.
-	Labels []LabelFilter `json:"labels"`
-}
-
-// GetEnvironments returns PostgresFilter.Environments, and is useful for accessing the field via an interface.
-func (v *PostgresFilter) GetEnvironments() []string { return v.Environments }
-
-// GetLabels returns PostgresFilter.Labels, and is useful for accessing the field via an interface.
-func (v *PostgresFilter) GetLabels() []LabelFilter { return v.Labels }
-
 // RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload includes the requested fields of the GraphQL type RemoveConfigValuePayload.
 type RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload struct {
 	// The updated config.
@@ -34874,6 +34972,20 @@ func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetEmail
 	return v.Email
 }
 
+// Filter a team's Postgres databases by environment and user-defined labels.
+type TeamPostgresFilter struct {
+	// Filter by environments.
+	Environments []string `json:"environments"`
+	// All listed labels must match.
+	Labels []LabelFilter `json:"labels"`
+}
+
+// GetEnvironments returns TeamPostgresFilter.Environments, and is useful for accessing the field via an interface.
+func (v *TeamPostgresFilter) GetEnvironments() []string { return v.Environments }
+
+// GetLabels returns TeamPostgresFilter.Labels, and is useful for accessing the field via an interface.
+func (v *TeamPostgresFilter) GetLabels() []LabelFilter { return v.Labels }
+
 // TeamStatusMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // TeamStatusMeAuthenticatedUser is implemented by the following types:
@@ -35396,6 +35508,74 @@ func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetI
 func (v *UpdateOpenSearchUpdateOpenSearchUpdateOpenSearchPayloadOpenSearch) GetName() string {
 	return v.Name
 }
+
+// Input for updating a Postgres. Omitted fields are left unchanged.
+type UpdatePostgresInput struct {
+	Name             string  `json:"name"`
+	EnvironmentName  string  `json:"environmentName"`
+	TeamSlug         string  `json:"teamSlug"`
+	HighAvailability *bool   `json:"highAvailability,omitempty"`
+	Cpu              *string `json:"cpu,omitempty"`
+	Memory           *string `json:"memory,omitempty"`
+	DiskSize         *string `json:"diskSize,omitempty"`
+}
+
+// GetName returns UpdatePostgresInput.Name, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetName() string { return v.Name }
+
+// GetEnvironmentName returns UpdatePostgresInput.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetEnvironmentName() string { return v.EnvironmentName }
+
+// GetTeamSlug returns UpdatePostgresInput.TeamSlug, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetTeamSlug() string { return v.TeamSlug }
+
+// GetHighAvailability returns UpdatePostgresInput.HighAvailability, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetHighAvailability() *bool { return v.HighAvailability }
+
+// GetCpu returns UpdatePostgresInput.Cpu, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns UpdatePostgresInput.Memory, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns UpdatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// UpdatePostgresResponse is returned by UpdatePostgres on success.
+type UpdatePostgresResponse struct {
+	// Update an existing Postgres. The PostgreSQL major version cannot be changed.
+	UpdatePostgres UpdatePostgresUpdatePostgresUpdatePostgresPayload `json:"updatePostgres"`
+}
+
+// GetUpdatePostgres returns UpdatePostgresResponse.UpdatePostgres, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresResponse) GetUpdatePostgres() UpdatePostgresUpdatePostgresUpdatePostgresPayload {
+	return v.UpdatePostgres
+}
+
+// UpdatePostgresUpdatePostgresUpdatePostgresPayload includes the requested fields of the GraphQL type UpdatePostgresPayload.
+// The GraphQL type's documentation follows.
+//
+// Result of updating a Postgres.
+type UpdatePostgresUpdatePostgresUpdatePostgresPayload struct {
+	Postgres UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres `json:"postgres"`
+}
+
+// GetPostgres returns UpdatePostgresUpdatePostgresUpdatePostgresPayload.Postgres, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresUpdatePostgresUpdatePostgresPayload) GetPostgres() UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres {
+	return v.Postgres
+}
+
+// UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+}
+
+// GetName returns UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres.Name, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres) GetName() string { return v.Name }
 
 // UpdateSecretValueResponse is returned by UpdateSecretValue on success.
 type UpdateSecretValueResponse struct {
@@ -36193,6 +36373,14 @@ type __CreatePostgresBranchInput struct {
 // GetInput returns __CreatePostgresBranchInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreatePostgresBranchInput) GetInput() CreatePostgresBranchInput { return v.Input }
 
+// __CreatePostgresInput is used internally by genqlient
+type __CreatePostgresInput struct {
+	Input CreatePostgresInput `json:"input"`
+}
+
+// GetInput returns __CreatePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreatePostgresInput) GetInput() CreatePostgresInput { return v.Input }
+
 // __CreateSecretInput is used internally by genqlient
 type __CreateSecretInput struct {
 	Name        string `json:"name"`
@@ -36312,6 +36500,14 @@ type __DeletePostgresBranchInput struct {
 
 // GetInput returns __DeletePostgresBranchInput.Input, and is useful for accessing the field via an interface.
 func (v *__DeletePostgresBranchInput) GetInput() DeletePostgresBranchInput { return v.Input }
+
+// __DeletePostgresInput is used internally by genqlient
+type __DeletePostgresInput struct {
+	Input DeletePostgresInput `json:"input"`
+}
+
+// GetInput returns __DeletePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__DeletePostgresInput) GetInput() DeletePostgresInput { return v.Input }
 
 // __DeleteSecretInput is used internally by genqlient
 type __DeleteSecretInput struct {
@@ -36945,9 +37141,9 @@ func (v *__GetTeamKafkaTopicsInput) GetFilter() *KafkaTopicFilter { return v.Fil
 
 // __GetTeamPostgresesInput is used internally by genqlient
 type __GetTeamPostgresesInput struct {
-	Team   string          `json:"team"`
-	After  *string         `json:"after"`
-	Filter *PostgresFilter `json:"filter"`
+	Team   string              `json:"team"`
+	After  *string             `json:"after"`
+	Filter *TeamPostgresFilter `json:"filter"`
 }
 
 // GetTeam returns __GetTeamPostgresesInput.Team, and is useful for accessing the field via an interface.
@@ -36957,7 +37153,7 @@ func (v *__GetTeamPostgresesInput) GetTeam() string { return v.Team }
 func (v *__GetTeamPostgresesInput) GetAfter() *string { return v.After }
 
 // GetFilter returns __GetTeamPostgresesInput.Filter, and is useful for accessing the field via an interface.
-func (v *__GetTeamPostgresesInput) GetFilter() *PostgresFilter { return v.Filter }
+func (v *__GetTeamPostgresesInput) GetFilter() *TeamPostgresFilter { return v.Filter }
 
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
@@ -37302,6 +37498,14 @@ type __UpdateOpenSearchInput struct {
 
 // GetInput returns __UpdateOpenSearchInput.Input, and is useful for accessing the field via an interface.
 func (v *__UpdateOpenSearchInput) GetInput() UpdateOpenSearchInput { return v.Input }
+
+// __UpdatePostgresInput is used internally by genqlient
+type __UpdatePostgresInput struct {
+	Input UpdatePostgresInput `json:"input"`
+}
+
+// GetInput returns __UpdatePostgresInput.Input, and is useful for accessing the field via an interface.
+func (v *__UpdatePostgresInput) GetInput() UpdatePostgresInput { return v.Input }
 
 // __UpdateSecretValueInput is used internally by genqlient
 type __UpdateSecretValueInput struct {
@@ -37779,6 +37983,42 @@ func CreateOpenSearchCredentials(
 	return data_, err_
 }
 
+// The mutation executed by CreatePostgres.
+const CreatePostgres_Operation = `
+mutation CreatePostgres ($input: CreatePostgresInput!) {
+	createPostgres(input: $input) {
+		postgres {
+			name
+		}
+	}
+}
+`
+
+func CreatePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input CreatePostgresInput,
+) (data_ *CreatePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreatePostgres",
+		Query:  CreatePostgres_Operation,
+		Variables: &__CreatePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &CreatePostgresResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by CreatePostgresAccess.
 const CreatePostgresAccess_Operation = `
 mutation CreatePostgresAccess ($input: CreatePostgresAccessInput!) {
@@ -38117,6 +38357,40 @@ func DeleteOpenSearch(
 	}
 
 	data_ = &DeleteOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by DeletePostgres.
+const DeletePostgres_Operation = `
+mutation DeletePostgres ($input: DeletePostgresInput!) {
+	deletePostgres(input: $input) {
+		deletionRequested
+	}
+}
+`
+
+func DeletePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input DeletePostgresInput,
+) (data_ *DeletePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "DeletePostgres",
+		Query:  DeletePostgres_Operation,
+		Variables: &__DeletePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &DeletePostgresResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -40456,7 +40730,7 @@ func GetTeamKafkaTopics(
 
 // The query executed by GetTeamPostgreses.
 const GetTeamPostgreses_Operation = `
-query GetTeamPostgreses ($team: Slug!, $after: Cursor, $filter: PostgresFilter) {
+query GetTeamPostgreses ($team: Slug!, $after: Cursor, $filter: TeamPostgresFilter) {
 	team(slug: $team) {
 		postgreses(first: 100, after: $after, filter: $filter) {
 			nodes {
@@ -40486,7 +40760,7 @@ func GetTeamPostgreses(
 	client_ graphql.Client,
 	team string,
 	after *string,
-	filter *PostgresFilter,
+	filter *TeamPostgresFilter,
 ) (data_ *GetTeamPostgresesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetTeamPostgreses",
@@ -41529,6 +41803,42 @@ func UpdateOpenSearch(
 	}
 
 	data_ = &UpdateOpenSearchResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdatePostgres.
+const UpdatePostgres_Operation = `
+mutation UpdatePostgres ($input: UpdatePostgresInput!) {
+	updatePostgres(input: $input) {
+		postgres {
+			name
+		}
+	}
+}
+`
+
+func UpdatePostgres(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input UpdatePostgresInput,
+) (data_ *UpdatePostgresResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdatePostgres",
+		Query:  UpdatePostgres_Operation,
+		Variables: &__UpdatePostgresInput{
+			Input: input,
+		},
+	}
+
+	data_ = &UpdatePostgresResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

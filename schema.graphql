@@ -2953,6 +2953,39 @@ enum PostgresAccessLevel {
 	READWRITECREATE
 }
 
+"Input for creating a Postgres."
+input CreatePostgresInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	majorVersion: String!
+	highAvailability: Boolean
+	cpu: String
+	memory: String
+	diskSize: String
+}
+
+"Result of creating a Postgres."
+type CreatePostgresPayload {
+	postgres: Postgres!
+}
+
+"Input for updating a Postgres. Omitted fields are left unchanged."
+input UpdatePostgresInput {
+	name: String!
+	environmentName: String!
+	teamSlug: Slug!
+	highAvailability: Boolean
+	cpu: String
+	memory: String
+	diskSize: String
+}
+
+"Result of updating a Postgres."
+type UpdatePostgresPayload {
+	postgres: Postgres!
+}
+
 "Recovery request for a new, inactive branch."
 input CreatePostgresBranchInput {
 	postgres: String!
@@ -2979,6 +3012,18 @@ input ActivatePostgresBranchInput {
 "Result of requesting activation; compare desiredActiveBranch to activeBranch while reconciling."
 type ActivatePostgresBranchPayload {
 	postgres: Postgres!
+}
+
+"Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform."
+input DeletePostgresInput {
+	name: String!
+	teamSlug: Slug!
+	environmentName: String!
+}
+
+"Result of accepting a Postgres deletion request, not proof of cleanup."
+type DeletePostgresPayload {
+	deletionRequested: Boolean!
 }
 
 input DeletePostgresBranchInput {
@@ -6005,6 +6050,10 @@ Grant temporary access to a Postgres cluster.
 	When the access is ready, retrieve its connection materials through PostgresAccess.connection.
 	"""
 	createPostgresAccess(input: CreatePostgresAccessInput!): CreatePostgresAccessPayload!
+	"Create a new Postgres. Its first branch, main, is created and activated by the platform."
+	createPostgres(input: CreatePostgresInput!): CreatePostgresPayload!
+	"Update an existing Postgres. The PostgreSQL major version cannot be changed."
+	updatePostgres(input: UpdatePostgresInput!): UpdatePostgresPayload!
 	"Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time."
 	createPostgresBranch(input: CreatePostgresBranchInput!): CreatePostgresBranchPayload!
 	"Request activation of an available PostgresBranch. The observed active branch may lag behind the request."
@@ -6013,6 +6062,8 @@ Grant temporary access to a Postgres cluster.
 	deletePostgresBranch(
 		input: DeletePostgresBranchInput!
 	): DeletePostgresBranchPayload!
+	"Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous."
+	deletePostgres(input: DeletePostgresInput!): DeletePostgresPayload!
 """
 Enable a reconciler
 
@@ -7295,8 +7346,8 @@ type PostgresEdge {
 	node: Postgres!
 }
 
-"Filter Postgres databases by environment and user-defined labels."
-input PostgresFilter {
+"Filter a team's Postgres databases by environment and user-defined labels."
+input TeamPostgresFilter {
 	"Filter by environments."
 	environments: [String!]
 	"All listed labels must match."
@@ -10862,7 +10913,7 @@ Filtering options for items returned from the connection.
 		after: Cursor
 		last: Int
 		before: Cursor
-		filter: PostgresFilter
+		filter: TeamPostgresFilter
 	): PostgresConnection!
 	repositories(
 """

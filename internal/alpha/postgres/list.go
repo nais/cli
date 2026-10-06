@@ -35,7 +35,7 @@ func (s State) String() string {
 
 func GetTeamPostgreses(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]PostgresInstance, error) {
 	_ = `# @genqlient
-		query GetTeamPostgreses($team: Slug!, $after: Cursor, $filter: PostgresFilter) {
+		query GetTeamPostgreses($team: Slug!, $after: Cursor, $filter: TeamPostgresFilter) {
 			team(slug: $team) {
 				postgreses(first: 100, after: $after, filter: $filter) {
 					nodes { name teamEnvironment { environment { name } } majorVersion highAvailability activeBranch { name } }
@@ -48,7 +48,7 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 	if err != nil {
 		return nil, err
 	}
-	filter := &gql.PostgresFilter{Environments: environments, Labels: labelFilters}
+	filter := &gql.TeamPostgresFilter{Environments: environments, Labels: labelFilters}
 	var ret []PostgresInstance
 	var after *string
 	for {

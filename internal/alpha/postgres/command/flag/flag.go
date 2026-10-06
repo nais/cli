@@ -32,6 +32,27 @@ type (
 		Port          int           `name:"port" usage:"Local port (default random)."`
 		PrintPassword bool          `name:"print-password" usage:"Print the database password to stdout (sensitive)."`
 	}
+	InstanceCreate struct {
+		*Postgres
+		Yes              bool            `name:"yes" short:"y" usage:"Confirm without a prompt."`
+		Version          PostgresVersion `name:"version" usage:"PostgreSQL major version (18)."`
+		HighAvailability bool            `name:"high-availability" usage:"Enable high availability (third instance and synchronous replication)."`
+		CPU              string          `name:"cpu" usage:"Requested CPU, e.g. 100m."`
+		Memory           string          `name:"memory" usage:"Requested memory, e.g. 512Mi."`
+		DiskSize         string          `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+	}
+	InstanceDelete struct {
+		*Postgres
+		Yes bool `name:"yes" short:"y" usage:"Confirm irreversible deletion without a prompt."`
+	}
+	InstanceUpdate struct {
+		*Postgres
+		Yes              bool             `name:"yes" short:"y" usage:"Confirm without a prompt."`
+		HighAvailability HighAvailability `name:"high-availability" usage:"Enable or disable high availability (true or false)."`
+		CPU              string           `name:"cpu" usage:"Requested CPU, e.g. 100m."`
+		Memory           string           `name:"memory" usage:"Requested memory, e.g. 512Mi."`
+		DiskSize         string           `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+	}
 	BranchList struct {
 		*Postgres
 		Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
@@ -98,6 +119,24 @@ func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Argument
 	}
 	sort.Strings(branches)
 	return branches, ""
+}
+
+// PostgresVersion completes supported major versions for creation.
+type PostgresVersion string
+
+var _ naistrix.FlagAutoCompleter = (*PostgresVersion)(nil)
+
+func (*PostgresVersion) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"18"}, "Supported PostgreSQL versions."
+}
+
+// HighAvailability completes explicit update values, including false.
+type HighAvailability string
+
+var _ naistrix.FlagAutoCompleter = (*HighAvailability)(nil)
+
+func (*HighAvailability) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"true", "false"}, "High availability values."
 }
 
 type Output string
