@@ -9,6 +9,7 @@ import (
 
 	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
+	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 )
@@ -117,6 +118,29 @@ func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		}
 		return branchSuggestions(status.Branches)
 	}
+}
+
+func resolvePostgresCreateEnvironment(ctx context.Context, provided string) (string, error) {
+	if provided != "" {
+		return provided, nil
+	}
+	const hint = "specify an environment using `nais defaults set environment <environment>` or by using the -e, --environment flag"
+	envs, err := naisapi.GetAllEnvironments(ctx)
+	if err != nil {
+		return "", fmt.Errorf("fetching environments: %w", err)
+	}
+	if len(envs) == 0 {
+		return "", fmt.Errorf("missing required environment, %s", hint)
+	}
+	sort.Strings(envs)
+	selected, err := input.Select("Select environment to create Postgres in", envs)
+	if errors.Is(err, input.ErrNotInteractive) {
+		return "", fmt.Errorf("missing required environment, %s", hint)
+	}
+	if err != nil {
+		return "", err
+	}
+	return selected, nil
 }
 
 func resolvePostgresEnvironment(ctx context.Context, team, name, provided string) (string, error) {

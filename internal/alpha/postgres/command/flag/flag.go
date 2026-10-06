@@ -18,7 +18,7 @@ type (
 		*Postgres
 		Branch      string        `name:"branch" usage:"Branch to access (defaults to the active branch)."`
 		AccessLevel string        `name:"access-level" usage:"Access level: read, write, or admin."`
-		Reason      string        `name:"reason" usage:"Reason for personal access (at least 10 characters)."`
+		Reason      string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL         time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
 		Database    string        `name:"database" usage:"Database name for psql (default app)."`
 	}
@@ -26,7 +26,7 @@ type (
 		*Postgres
 		Branch        string        `name:"branch" usage:"Branch to access (defaults to the active branch)."`
 		AccessLevel   string        `name:"access-level" usage:"Access level: read, write, or admin."`
-		Reason        string        `name:"reason" usage:"Reason for personal access (at least 10 characters)."`
+		Reason        string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL           time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
 		Host          string        `name:"host" usage:"Local loopback address (default 127.0.0.1)."`
 		Port          int           `name:"port" usage:"Local port (default random)."`
@@ -87,10 +87,11 @@ var _ naistrix.FlagAutoCompleter = (*BranchSource)(nil)
 
 func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	f := flags.(*BranchCreate)
-	if f.Team == "" || args.Get("postgres") == "" {
+	values := args.All()
+	if f.Team == "" || len(values) == 0 || values[0] == "" {
 		return nil, "Select a Postgres first (and specify a team)."
 	}
-	name := args.Get("postgres")
+	name := values[0]
 	environment := string(f.Environment)
 	if environment == "" {
 		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
