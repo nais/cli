@@ -203,7 +203,7 @@ func TestPostgresUpdateComparison(t *testing.T) {
 			}
 			if len(tt.wantRows) > 0 {
 				var rows []string
-				for _, line := range strings.Split(output.String(), "\n") {
+				for line := range strings.SplitSeq(output.String(), "\n") {
 					line = strings.NewReplacer("|", " ", "│", " ").Replace(line)
 					rows = append(rows, strings.Join(strings.Fields(line), " "))
 				}
