@@ -33,9 +33,9 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 
 	const hint = "missing required environment, specify an environment using `nais defaults set environment <environment>` or by using the -e, --environment flag"
 	for _, tt := range []struct {
-		name, config, response, wantError string
-		args                              []string
-		wantOperations                    []string
+		name, config, response, createError, wantError string
+		args                                           []string
+		wantOperations                                 []string
 	}{
 		{name: "explicit environment bypasses discovery", args: []string{"-t", "my-team", "-e", "dev-gcp", "--yes"}, wantOperations: []string{"CreatePostgres"}},
 		{name: "default environment bypasses discovery", config: "environment: dev-gcp\n", args: []string{"-t", "my-team", "--yes"}, wantOperations: []string{"CreatePostgres"}},
@@ -48,6 +48,8 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 		{name: "discovery failure is propagated", args: []string{"-t", "my-team", "--yes"}, response: `{"errors":[{"message":"access denied"}]}`, wantError: "fetching environments:", wantOperations: []string{"Environments"}},
 		{name: "team is required before discovery", args: []string{"--yes"}, wantError: "missing required team"},
 		{name: "invalid version fails before discovery", args: []string{"-t", "my-team", "--version", "17", "--yes"}, wantError: "--version must be 18"},
+		{name: "confirmation unavailable stops creation", args: []string{"-t", "my-team", "-e", "dev-gcp"}, wantError: "no interactive terminal available"},
+		{name: "rejected mutation has no hint", args: []string{"-t", "my-team", "-e", "dev-gcp", "--yes"}, createError: "creation rejected", wantError: "creation rejected", wantOperations: []string{"CreatePostgres"}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var operations []string
@@ -69,6 +71,9 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				case "CreatePostgres":
 					created = request.Variables.Input
 					response = `{"data":{"createPostgres":{"postgres":{"name":"orders"}}}}`
+					if tt.createError != "" {
+						response = `{"errors":[{"message":"creation rejected"}]}`
+					}
 				default:
 					t.Errorf("unexpected operation: %s", request.OperationName)
 				}
@@ -80,6 +85,11 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 			defer server.Close()
 			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
 			t.Setenv("HOME", t.TempDir())
+			t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+			t.Setenv("APPDATA", t.TempDir())
+			t.Setenv("NAIS_TEAM", "")
+			t.Setenv("NAIS_ENVIRONMENT", "")
+			t.Setenv("NAIS_CONFIG", "")
 			config := filepath.Join(t.TempDir(), "config.yaml")
 			contents := tt.config
 			if contents == "" {
@@ -89,7 +99,7 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				t.Fatal(err)
 			}
 			var output bytes.Buffer
-			app, global, err := naistrix.NewApplication("postgres-create-test", "Test Postgres creation", "test", naistrix.ApplicationWithWriter(&output))
+			app, global, err := naistrix.NewApplication("nais", "Test Postgres creation", "test", naistrix.ApplicationWithWriter(&output))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -101,11 +111,14 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 			if err := app.AddCommand(instanceCreateCommand(parent)); err != nil {
 				t.Fatal(err)
 			}
-			args := append([]string{"--config", config, "create", "orders"}, tt.args...)
+			args := append([]string{"--config", config, "--no-colors", "create", "orders"}, tt.args...)
 			err = app.Run(naistrix.RunWithArgs(args))
 			if tt.wantError != "" {
 				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
 					t.Errorf("error = %v; want %q", err, tt.wantError)
+				}
+				if strings.Contains(output.String(), "Check status:") || strings.Contains(output.String(), "Creation requested.") {
+					t.Errorf("accepted output shown for failure: %s", output.String())
 				}
 				if tt.name == "discovery failure is propagated" && (err == nil || !strings.Contains(err.Error(), "access denied")) {
 					t.Errorf("missing API error: %v", err)
@@ -117,7 +130,11 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				if created.Name != "orders" || created.TeamSlug != "my-team" || created.EnvironmentName != "dev-gcp" || created.MajorVersion != "18" {
 					t.Errorf("unexpected create input: %+v", created)
 				}
-				if !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") || !strings.Contains(output.String(), `Postgres "orders" creation requested in "dev-gcp"`) || !strings.Contains(output.String(), "Check progress: nais alpha postgres status orders -t my-team -e dev-gcp\n") {
+				wantHint := "Check status: nais alpha postgres get orders --config " + quoteShellArgument(config) + " -t my-team"
+				if tt.name != "default environment bypasses discovery" {
+					wantHint += " -e dev-gcp"
+				}
+				if !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") || !strings.Contains(output.String(), "orders · dev-gcp\nCreation requested.\n\n") || !strings.Contains(output.String(), wantHint+"\n") {
 					t.Errorf("missing or incorrect destination in confirmation/result: %s", output.String())
 				}
 			}

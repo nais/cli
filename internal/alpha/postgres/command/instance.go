@@ -62,8 +62,9 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			out.Printf("Postgres %q creation requested in %q; provisioning may still be in progress.\n", created, env)
-			out.Printf("Check progress: %s\n", postgresStatusCommandLine(created, f.Team, env))
+			printPostgresHeading(out, created, env)
+			out.Println("Creation requested.")
+			out.Printf("\nCheck status: %s\n", postgresGetCommandLine(created, f.Team, env, f.Config))
 			return nil
 		},
 	}

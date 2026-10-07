@@ -2,12 +2,13 @@ package command
 
 import (
 	"context"
-	"fmt"
+	"strings"
 
 	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/pterm/pterm"
 )
 
 type postgresDetails struct {
@@ -15,6 +16,7 @@ type postgresDetails struct {
 	Team             string                   `json:"team"`
 	Environment      string                   `json:"environment"`
 	Version          string                   `json:"version"`
+	Status           string                   `json:"status"`
 	HighAvailability bool                     `json:"highAvailability"`
 	Resources        postgresResourceRequests `json:"resources"`
 	Labels           []postgresLabel          `json:"labels"`
@@ -40,11 +42,15 @@ type postgresDetailsBranch struct {
 	Requested bool `json:"requested"`
 }
 
+func printPostgresHeading(out *naistrix.OutputWriter, name, environment string) {
+	out.Printf("%s · %s\n", pterm.NewStyle(pterm.Bold).Sprint(name), pterm.FgGray.Sprint(environment))
+}
+
 func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchList{Postgres: parent}
 	return &naistrix.Command{
-		Name: "get", Title: "Get Postgres configuration and branches.",
-		Description: "Show configured version, high availability, resource requests, labels, and branch observations. Omitted resource requests are not configured; defaults are not inferred. Use 'nais alpha postgres status' to check branch-based readiness.",
+		Name: "get", Title: "Get Postgres details and readiness.",
+		Description: "Show configured settings and a coarse platform-reported status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. Detailed provisioning stages are unavailable. Use branch commands to inspect branches.",
 		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
 		Examples: []naistrix.Example{
@@ -88,6 +94,7 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 					Requested: b.Name == detail.RequestedBranch,
 				})
 			}
+			detail.Status = postgresReadiness(status)
 			if f.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 			}
@@ -97,41 +104,38 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 				}
 				return *value
 			}
-			active := detail.ActiveBranch
-			if active == "" {
-				active = "(none)"
+			printPostgresHeading(out, detail.Name, detail.Environment)
+			style := pterm.NewStyle()
+			switch detail.Status {
+			case "Ready":
+				style = pterm.NewStyle(pterm.FgGreen)
+			case "Not ready yet", "Updating":
+				style = pterm.NewStyle(pterm.FgYellow)
+			case "Needs attention":
+				style = pterm.NewStyle(pterm.FgRed)
 			}
-			rows := [][]string{
-				{"Field", "Value"},
-				{"Name", detail.Name},
-				{"Team", detail.Team},
-				{"Environment", detail.Environment},
-				{"Version", detail.Version},
-				{"High availability", fmt.Sprint(detail.HighAvailability)},
-				{"Requested CPU", requested(detail.Resources.CPU)},
-				{"Requested memory", requested(detail.Resources.Memory)},
-				{"Requested disk size", requested(detail.Resources.DiskSize)},
-				{"Active branch", active},
+			out.Printf("  %-18s %s\n\n", "Status:", style.Sprint(detail.Status))
+			ha := "No"
+			if detail.HighAvailability {
+				ha = "Yes"
 			}
-			if detail.RequestedBranch != "" {
-				rows = append(rows, []string{"Requested branch (activation pending)", detail.RequestedBranch})
+			for _, setting := range []struct{ label, value string }{
+				{"Version:", detail.Version},
+				{"High availability:", ha},
+				{"CPU:", requested(detail.Resources.CPU)},
+				{"Memory:", requested(detail.Resources.Memory)},
+				{"Disk:", requested(detail.Resources.DiskSize)},
+			} {
+				out.Printf("  %-18s %s\n", setting.label, setting.value)
 			}
-			out.Println("Postgres configuration")
-			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
-				return err
+			if len(detail.Labels) > 0 {
+				labels := make([]string, 0, len(detail.Labels))
+				for _, label := range detail.Labels {
+					labels = append(labels, label.Key+"="+label.Value)
+				}
+				out.Printf("\n  %-18s %s\n", "Labels:", strings.Join(labels, ", "))
 			}
-			out.Println("Labels")
-			if len(detail.Labels) == 0 {
-				out.Println("No labels configured.")
-			} else if err := out.Table().Render(detail.Labels); err != nil {
-				return err
-			}
-			out.Println("Branches")
-			if len(status.Branches) == 0 {
-				out.Println("No Postgres branches found.")
-				return nil
-			}
-			return out.Table().Render(branchListRows(status))
+			return nil
 		},
 	}
 }
