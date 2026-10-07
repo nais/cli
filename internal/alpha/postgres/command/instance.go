@@ -17,12 +17,12 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.InstanceCreate{Postgres: parent, Version: "18"}
 	return &naistrix.Command{
 		Name: "create", Title: "Create a Postgres instance.", Flags: f,
-		Description: "Request a new Postgres instance. Provisioning continues asynchronously.",
+		Description: "Create a new Postgres instance. Provisioning continues asynchronously.",
 		Args:        []naistrix.Argument{{Name: "postgres"}},
 		Examples: []naistrix.Example{
-			{Description: "Select the destination environment interactively and request a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
-			{Description: "Request a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
-			{Description: "Request a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
+			{Description: "Select the destination environment interactively and create a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
+			{Description: "Create a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
+			{Description: "Create a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
 		ValidateFunc: validation.RequireTeam(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -41,12 +41,12 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 					rows = append(rows, []string{setting.label, setting.value})
 				}
 			}
-			out.Infoln("You are about to request a Postgres with this configuration (omitted resources use platform defaults):")
+			out.Infoln("Create Postgres with this configuration (omitted resources use platform defaults):")
 			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
 				return err
 			}
 			if !f.Yes {
-				ok, err := input.Confirm("Request Postgres creation?")
+				ok, err := input.Confirm("Create Postgres?", input.ConfirmWithDefaultTrue())
 				if err != nil {
 					return err
 				}
@@ -63,8 +63,8 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 				return err
 			}
 			printPostgresHeading(out, created, env)
-			out.Println("Creation requested.")
-			out.Printf("\nCheck status: %s\n", postgresGetCommandLine(created, f.Team, env, f.Config))
+			out.Println("Started creation of postgres. Run this command to check status:")
+			out.Println(postgresGetCommandLine(created, f.Team, env, f.Config))
 			return nil
 		},
 	}

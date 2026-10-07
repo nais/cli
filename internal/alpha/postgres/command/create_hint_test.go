@@ -120,9 +120,9 @@ func TestCreateHintKeepsAcceptedTarget(t *testing.T) {
 				want += " --config '" + file + "'"
 			}
 			want += tt.wantScope
-			_, hint, found := strings.Cut(output.String(), "Check status: ")
+			_, hint, found := strings.Cut(output.String(), "Started creation of postgres. Run this command to check status:\n")
 			hint = strings.TrimSpace(hint)
-			if !found || hint != want || !strings.Contains(output.String(), "created-orders · dev-gcp\nCreation requested.\n\n") {
+			if !found || hint != want || !strings.Contains(output.String(), "created-orders · dev-gcp\nStarted creation of postgres. Run this command to check status:\n") {
 				t.Fatalf("accepted output = %q; want hint %q", output.String(), want)
 			}
 			if strings.Contains(output.String(), "\x1b[") || strings.Contains(output.String(), "may still") {

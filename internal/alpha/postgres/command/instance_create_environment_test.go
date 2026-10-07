@@ -117,7 +117,7 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
 					t.Errorf("error = %v; want %q", err, tt.wantError)
 				}
-				if strings.Contains(output.String(), "Check status:") || strings.Contains(output.String(), "Creation requested.") {
+				if strings.Contains(output.String(), "Run this command to check status:") || strings.Contains(output.String(), "Started creation of postgres.") {
 					t.Errorf("accepted output shown for failure: %s", output.String())
 				}
 				if tt.name == "discovery failure is propagated" && (err == nil || !strings.Contains(err.Error(), "access denied")) {
@@ -130,11 +130,11 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				if created.Name != "orders" || created.TeamSlug != "my-team" || created.EnvironmentName != "dev-gcp" || created.MajorVersion != "18" {
 					t.Errorf("unexpected create input: %+v", created)
 				}
-				wantHint := "Check status: nais alpha postgres get orders --config " + quoteShellArgument(config) + " -t my-team"
+				wantHint := "Started creation of postgres. Run this command to check status:\nnais alpha postgres get orders --config " + quoteShellArgument(config) + " -t my-team"
 				if tt.name != "default environment bypasses discovery" {
 					wantHint += " -e dev-gcp"
 				}
-				if !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") || !strings.Contains(output.String(), "orders · dev-gcp\nCreation requested.\n\n") || !strings.Contains(output.String(), wantHint+"\n") {
+				if !strings.Contains(output.String(), "Create Postgres with this configuration (omitted resources use platform defaults):") || !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") || !strings.Contains(output.String(), "orders · dev-gcp\n") || !strings.Contains(output.String(), wantHint+"\n") {
 					t.Errorf("missing or incorrect destination in confirmation/result: %s", output.String())
 				}
 			}
