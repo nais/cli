@@ -1,15 +1,98 @@
 package apply
 
 import (
+	"context"
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
+	applyflag "github.com/nais/cli/internal/apply/command/flag"
+	cliflags "github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 	"gopkg.in/yaml.v3"
 )
+
+func TestRender_SetListsThroughCLI(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		sets    []string
+		want    []any
+		wantErr string
+	}{
+		{
+			name: "list replaces base and mixin",
+			sets: []string{"spec.env=[{name: LOG_LEVEL, value: debug}]"},
+			want: []any{map[string]any{"name": "LOG_LEVEL", "value": "debug"}},
+		},
+		{
+			name: "list replacement then indexed updates in order",
+			sets: []string{
+				`spec.env=[{name: LOG_LEVEL, value: info}, {name: OTHER, value: "hello, world=ok"}]`,
+				"spec.env[0].value=warn", "spec.env[0].value=debug",
+			},
+			want: []any{
+				map[string]any{"name": "LOG_LEVEL", "value": "debug"},
+				map[string]any{"name": "OTHER", "value": "hello, world=ok"},
+			},
+		},
+		{
+			name: "indices address merged list",
+			sets: []string{"spec.env[1].value=debug"},
+			want: []any{
+				map[string]any{"name": "BASE", "value": "base"},
+				map[string]any{"name": "MIXIN", "value": "debug"},
+			},
+		},
+		{name: "empty list clears base and mixin", sets: []string{"spec.env=[]"}, want: []any{}},
+		{name: "empty flag is rejected", sets: []string{""}, wantErr: "expected KEY=VALUE"},
+		{name: "out of range is rejected", sets: []string{"spec.env[2].value=debug"}, wantErr: "out of range"},
+		{name: "missing indexed list is rejected", sets: []string{"spec.missing[0]=debug"}, wantErr: "existing list"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  env:\n    - name: BASE\n      value: base\n")
+			mixin := writeFile(t, dir, "mixin.yaml", "spec:\n  env:\n    - name: MIXIN\n      value: mixin\n")
+			app, _, err := naistrix.NewApplication("test", "Test application", "v0.0.0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			flags := &applyflag.Apply{GlobalFlags: &cliflags.GlobalFlags{}}
+			var rendered []byte
+			err = app.AddCommand(&naistrix.Command{
+				Name: "apply", Title: "Render manifest", Flags: flags,
+				RunFunc: func(_ context.Context, _ *naistrix.Arguments, _ *naistrix.OutputWriter) error {
+					var err error
+					rendered, err = render(base, mixin, "", flags.Set, discardWriter())
+					return err
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			args := []string{"--config", filepath.Join(dir, "config.yaml"), "apply"}
+			for _, set := range tc.sets {
+				args = append(args, "--set", set)
+			}
+			err = app.Run(naistrix.RunWithArgs(args))
+			if tc.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+					t.Fatalf("got %v, want error containing %q", err, tc.wantErr)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := renderToMap(t, rendered)["spec"].(map[string]any)["env"]
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("env = %#v, want %#v", got, tc.want)
+			}
+		})
+	}
+}
 
 func writeFile(t *testing.T, dir, name, content string) string {
 	t.Helper()
