@@ -19,6 +19,28 @@ nais alpha apply <config-file> --environment <env> --team <team>
 - `--allow-ignored-fields` — warn instead of failing when a manifest contains fields that `nais apply` ignores (e.g. `metadata.namespace`, `metadata.annotations`)
 - `--wait` — wait for applied resources to become ready before returning. Currently supported for `Application` resources; other kinds (Valkey, OpenSearch) are skipped
 - `--timeout` — maximum time to wait for resources to become ready when `--wait` is set (default `10m`). Examples: `30s`, `5m`, `10m`
+- `--set` — replace a field with a YAML value using `KEY=VALUE`. Repeat for multiple overrides; commas within an argument are preserved
+
+## Field overrides
+
+For a single manifest, `--set` accepts dotted paths and zero-based list indices:
+
+```shell
+nais apply app.yaml --environment dev-gcp --team nais --dry-run \
+  --set 'spec.env=[{name: LOG_LEVEL, value: info}, {name: OTHER, value: keep}]' \
+  --set 'spec.env[0].value=debug'
+```
+
+Values are parsed as YAML, including scalars, maps, and lists. Assigning a list
+replaces the entire list; `--set 'spec.env=[]'` clears it. This differs from
+mixins, which concatenate lists. Overrides run after mixin merging, in flag order,
+so the last assignment to the same field wins.
+
+Indexed updates preserve other elements and fields. The list and indexed element
+must already exist; missing lists and out-of-range indices are errors. Missing
+intermediate maps are created, but lists are never implicitly extended.
+Quote the entire `KEY=VALUE` argument to protect spaces and brackets from the shell.
+`--set` is not supported when applying a directory.
 
 ## Waiting for readiness
 

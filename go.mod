@@ -2,6 +2,8 @@ module github.com/nais/cli
 
 go 1.26.9
 
+replace github.com/nais/naistrix => ../naistrix
+
 tool (
 	github.com/Khan/genqlient
 	github.com/goreleaser/nfpm/v2/cmd/nfpm
