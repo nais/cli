@@ -34,7 +34,7 @@ require (
 	github.com/nais/naistrix v0.35.0
 	github.com/pterm/pterm v0.12.83
 	github.com/quic-go/quic-go v0.59.1
-	github.com/sethvargo/go-retry v0.3.0
+	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/suessflorian/gqlfetch v0.7.0
 	github.com/vektah/gqlparser/v2 v2.5.33
@@ -214,7 +214,6 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/cobra v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	github.com/spf13/viper v1.21.0 // indirect
 	github.com/standard-webhooks/standard-webhooks/libraries v0.0.1 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
