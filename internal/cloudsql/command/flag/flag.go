@@ -13,33 +13,6 @@ type CloudSQL struct {
 	Reason string `name:"reason" short:"r" usage:"Justification for accessing the database. Required for audit logging."`
 }
 
-type Migrate struct {
-	*CloudSQL
-	DryRun bool `name:"dry-run" usage:"Perform a dry run of the migration without applying changes."`
-}
-
-type MigrateSetup struct {
-	*Migrate
-	Tier           string `name:"tier" usage:"The |TIER| of the new instance."`
-	DiskAutoResize bool   `name:"disk-auto-resize" usage:"Enable automatic disk resizing for the new instance."`
-	DiskSize       int    `name:"disk-size" usage:"The |DISK_SIZE| of the new instance."`
-	InstanceType   string `name:"instance-type" usage:"The |TYPE| of the new instance."`
-	NoWait         bool   `name:"no-wait" usage:"Do not wait for the job to complete."`
-}
-
-type MigratePromote struct {
-	*Migrate
-	NoWait bool `name:"no-wait" usage:"Do not wait for the job to complete."`
-}
-
-type MigrateFinalize struct {
-	*Migrate
-}
-
-type MigrateRollback struct {
-	*Migrate
-}
-
 type Password struct {
 	*CloudSQL
 }
