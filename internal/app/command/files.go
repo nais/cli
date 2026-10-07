@@ -17,7 +17,7 @@ func files(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "files",
 		Title:       "Show mounted files for an application.",
-		Description: "Lists all files mounted into the application from Secrets and Configs, with their paths and sources. Use 'nais secret view' to inspect secret contents.",
+		Description: "Lists all files mounted into the application from Secrets and Configs, with their paths and sources. Use 'nais secret get <name> --with-values' to inspect secret contents.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
@@ -46,11 +46,6 @@ func files(parentFlags *flag.App) *naistrix.Command {
 
 			if err := out.Table().Render(ret); err != nil {
 				return err
-			}
-
-			if app.HasSecretFiles(ret) {
-				out.Println("")
-				out.Printf("To view secret contents, use 'nais secret view <name> -e %s'.\n", environment)
 			}
 
 			return nil

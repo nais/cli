@@ -144,7 +144,7 @@ func TestBranchCreateSource(t *testing.T) {
 						t.Errorf("unexpected relative recovery time: %v", created.TargetTime)
 					}
 				}
-				if !strings.Contains(output.String(), `Branch "restored" created`) {
+				if !strings.Contains(output.String(), `Started creating branch "restored".`) {
 					t.Errorf("missing creation result: %s", output.String())
 				}
 			}

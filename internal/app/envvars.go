@@ -121,18 +121,3 @@ func GetApplicationEnvVars(ctx context.Context, slug, name, env string) ([]EnvVa
 	}
 	return ret, nil
 }
-
-// UniqueSecretNames returns deduplicated secret names from env vars.
-func UniqueSecretNames(vars []EnvVar) []string {
-	seen := make(map[string]struct{})
-	var names []string
-	for _, v := range vars {
-		if v.Source.Kind == "SECRET" {
-			if _, ok := seen[v.Source.Name]; !ok {
-				seen[v.Source.Name] = struct{}{}
-				names = append(names, v.Source.Name)
-			}
-		}
-	}
-	return names
-}

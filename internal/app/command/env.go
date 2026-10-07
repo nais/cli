@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"strings"
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
@@ -18,7 +17,7 @@ func env(parentFlags *flag.App) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "env",
 		Title:       "Show environment variables for an application.",
-		Description: "Lists all environment variables configured for the application with their values and sources. Secret values are hidden — use 'nais secret view' to reveal them.",
+		Description: "Lists all environment variables configured for the application with their values and sources. Secret values are hidden — use 'nais secret get <name> --with-values' to reveal them.",
 		Args: []naistrix.Argument{
 			{Name: "name"},
 		},
@@ -47,12 +46,6 @@ func env(parentFlags *flag.App) *naistrix.Command {
 
 			if err := out.Table().Render(ret); err != nil {
 				return err
-			}
-
-			if secretNames := app.UniqueSecretNames(ret); len(secretNames) > 0 {
-				out.Println("")
-				out.Printf("Secret values hidden. Use 'nais secret view <name> -e %s' to reveal.\n", environment)
-				out.Printf("Secrets in use: %s\n", strings.Join(secretNames, ", "))
 			}
 
 			return nil

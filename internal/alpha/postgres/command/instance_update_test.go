@@ -20,12 +20,12 @@ func TestPostgresUpdateComparison(t *testing.T) {
 	const configured = `{"name":"orders","majorVersion":"18","highAvailability":true,"resources":{"cpu":"100m","memory":"512Mi","diskSize":"10Gi"},"labels":[],"branches":{"nodes":[]}}`
 	const unconfigured = `{"name":"orders","majorVersion":"18","highAvailability":false,"resources":{"cpu":null,"memory":null,"diskSize":null},"labels":[],"branches":{"nodes":[]}}`
 	for _, tt := range []struct {
-		name, metadata, config, lookupError, discoveryError, wantError string
-		args                                                           []string
-		resolveEnvironment, omitTeam, omitName, confirm                bool
-		wantRows                                                       []string
-		wantChanges                                                    string
-		wantOperations                                                 []string
+		name, metadata, config, lookupError, discoveryError, updateError, wantError string
+		args                                                                        []string
+		resolveEnvironment, omitTeam, omitName, confirm                             bool
+		wantRows                                                                    []string
+		wantChanges                                                                 string
+		wantOperations                                                              []string
 	}{
 		{
 			name: "all provided configured values including false HA", metadata: configured,
@@ -64,6 +64,10 @@ func TestPostgresUpdateComparison(t *testing.T) {
 		{
 			name: "environment resolved from existing Postgres", resolveEnvironment: true, metadata: configured,
 			args: []string{"--cpu", "200m"}, wantRows: []string{"CPU 100m 200m"}, wantChanges: `{"cpu":"200m"}`, wantOperations: []string{"GetTeamPostgreses", "GetPostgres", "UpdatePostgres"},
+		},
+		{
+			name: "update failure has no success or hint", metadata: configured, args: []string{"--cpu", "200m"}, updateError: "access denied",
+			wantRows: []string{"CPU 100m 200m"}, wantError: "access denied", wantOperations: []string{"GetPostgres", "UpdatePostgres"},
 		},
 		{
 			name: "lookup failure stops before confirmation", args: []string{"--cpu", "200m"}, lookupError: "access denied", confirm: true,
@@ -130,6 +134,9 @@ func TestPostgresUpdateComparison(t *testing.T) {
 				case "UpdatePostgres":
 					updated = request.Variables.Input
 					response = `{"data":{"updatePostgres":{"postgres":{"name":"orders"}}}}`
+					if tt.updateError != "" {
+						response = fmt.Sprintf(`{"errors":[{"message":%q}]}`, tt.updateError)
+					}
 				default:
 					t.Errorf("unexpected operation: %s", request.OperationName)
 				}
@@ -141,6 +148,8 @@ func TestPostgresUpdateComparison(t *testing.T) {
 			defer server.Close()
 			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
 			t.Setenv("HOME", t.TempDir())
+			t.Setenv("NAIS_TEAM", "")
+			t.Setenv("NAIS_ENVIRONMENT", "")
 			config := filepath.Join(t.TempDir(), "config.yaml")
 			contents := tt.config
 			if contents == "" {
@@ -180,6 +189,9 @@ func TestPostgresUpdateComparison(t *testing.T) {
 				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
 					t.Errorf("error = %v; want %q", err, tt.wantError)
 				}
+				if strings.Contains(output.String(), "Started updating") {
+					t.Errorf("success appeared after failure: %s", output.String())
+				}
 			} else {
 				if err != nil {
 					t.Fatal(err)
@@ -197,7 +209,7 @@ func TestPostgresUpdateComparison(t *testing.T) {
 						t.Errorf("mutation field %s = %s; want %s", field, updated[field], want)
 					}
 				}
-				if !strings.Contains(output.String(), `Postgres "orders" update requested in "dev-gcp"; reconciliation may still be in progress.`) {
+				if !strings.Contains(output.String(), "Started updating Postgres.") {
 					t.Errorf("missing asynchronous result: %s", output.String())
 				}
 			}
@@ -207,7 +219,7 @@ func TestPostgresUpdateComparison(t *testing.T) {
 					line = strings.NewReplacer("|", " ", "│", " ").Replace(line)
 					rows = append(rows, strings.Join(strings.Fields(line), " "))
 				}
-				for _, want := range append([]string{"Setting Current Requested", "Team my-team", "Environment dev-gcp", "Name orders"}, tt.wantRows...) {
+				for _, want := range append([]string{"Setting Current New", "Team my-team", "Environment dev-gcp", "Name orders"}, tt.wantRows...) {
 					if !slices.Contains(rows, want) {
 						t.Errorf("missing comparison/target row %q: %s", want, output.String())
 					}
@@ -225,7 +237,7 @@ func TestPostgresUpdateComparison(t *testing.T) {
 						}
 					}
 				}
-				if !strings.Contains(output.String(), "can be overwritten by a subsequent nais apply") || !strings.Contains(output.String(), "configured snapshot") || !strings.Contains(output.String(), "effective runtime resources or SQL readiness") {
+				if !strings.Contains(output.String(), "A subsequent nais apply can overwrite changes to manifest-managed Postgres.") || !strings.Contains(output.String(), "configured settings") || !strings.Contains(output.String(), "effective runtime resources or SQL readiness") {
 					t.Errorf("missing manifest/configuration scope warning: %s", output.String())
 				}
 			} else if strings.Contains(output.String(), "Setting") || strings.Contains(output.String(), "subsequent nais apply") {

@@ -52,35 +52,6 @@ func GetBranchStatus(ctx context.Context, team, environment, name string) (Branc
 	return status, nil
 }
 
-// GetNamedBranchStatus returns the requested branch's state and its Postgres activation state.
-func GetNamedBranchStatus(ctx context.Context, team, environment, name, branch string) (BranchStatus, error) {
-	_ = `# @genqlient
-	query GetNamedPostgresBranchStatus($team: Slug!, $environment: String!, $postgres: String!, $branch: String!) {
-		team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) {
-			desiredActiveBranch activeBranch { name }
-			branch(name: $branch) { name state }
-		} } }
-	}
-	`
-	client, err := naisapi.GraphqlClient(ctx)
-	if err != nil {
-		return BranchStatus{}, err
-	}
-	result, err := gql.GetNamedPostgresBranchStatus(ctx, client, team, environment, name, branch)
-	if err != nil {
-		return BranchStatus{}, fmt.Errorf("fetching branch %q of Postgres %q: %w", branch, name, err)
-	}
-	p := result.Team.Environment.Postgres
-	status := BranchStatus{Branches: []Branch{{Name: p.Branch.Name, State: p.Branch.State}}}
-	if p.DesiredActiveBranch != nil {
-		status.DesiredActive = *p.DesiredActiveBranch
-	}
-	if p.ActiveBranch != nil {
-		status.Active = p.ActiveBranch.Name
-	}
-	return status, nil
-}
-
 func CreateBranch(ctx context.Context, input gql.CreatePostgresBranchInput) (Branch, error) {
 	_ = `# @genqlient
 	mutation CreatePostgresBranch($input: CreatePostgresBranchInput!) {

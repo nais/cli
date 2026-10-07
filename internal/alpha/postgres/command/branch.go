@@ -19,8 +19,9 @@ import (
 func branchCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "branch", Title: "Manage branches of a Nais Postgres (experimental).",
+		Description: "Create, list, inspect, activate and delete branches of a Postgres. A branch is a copy of the database restored from a point in time. Only one branch is active at a time.",
 		SubCommands: []*naistrix.Command{
-			branchListCommand(parent), branchStatusCommand(parent), branchCreateCommand(parent),
+			branchListCommand(parent), branchCreateCommand(parent),
 			branchActivateCommand(parent), branchDeleteCommand(parent),
 		},
 	}
@@ -29,7 +30,9 @@ func branchCommand(parent *flag.Postgres) *naistrix.Command {
 func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchList{Postgres: parent}
 	return &naistrix.Command{
-		Name: "list", Title: "List branches of a Postgres.", Args: []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		Name: "list", Title: "List branches of a Postgres.",
+		Description: "List the branches of a Postgres with their status and whether each one is active.",
+		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
@@ -43,6 +46,8 @@ func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 			if f.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(status.Branches)
 			}
+			printPostgresHeading(out, args.Get("postgres"), env)
+			printPendingActivation(out, status)
 			if len(status.Branches) == 0 {
 				out.Println("No Postgres branches found.")
 				return nil
@@ -53,44 +58,21 @@ func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 }
 
 type branchListRow struct {
-	Name      string
-	State     postgres.State
-	Active    string
-	Requested string
+	Name   string
+	Status postgres.State
+	Active string
 }
 
 func branchListRows(status postgres.BranchStatus) []branchListRow {
 	rows := make([]branchListRow, 0, len(status.Branches))
 	for _, b := range status.Branches {
-		row := branchListRow{Name: b.Name, State: postgres.State(b.State)}
+		row := branchListRow{Name: b.Name, Status: postgres.State(b.State), Active: "No"}
 		if b.Name == status.Active {
 			row.Active = "Yes"
-		}
-		if b.Name == status.DesiredActive && status.DesiredActive != status.Active {
-			row.Requested = "Yes"
 		}
 		rows = append(rows, row)
 	}
 	return rows
-}
-
-func branchStatusCommand(parent *flag.Postgres) *naistrix.Command {
-	return &naistrix.Command{
-		Name: "status", Title: "Show a branch's state and requested and observed activation.",
-		Args: []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}}, AutoCompleteFunc: autoCompletePostgresBranches(parent),
-		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
-			if err != nil {
-				return err
-			}
-			status, err := postgres.GetNamedBranchStatus(ctx, parent.Team, env, args.Get("postgres"), args.Get("branch"))
-			if err != nil {
-				return err
-			}
-			printBranchStatus(out, status)
-			return nil
-		},
-	}
 }
 
 func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
@@ -167,8 +149,8 @@ func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			out.Printf("Branch %q created; observed state: %s. Provisioning may still be in progress.\n", b.Name, postgres.State(b.State).String())
-			out.Printf("Check progress: nais alpha postgres branch status %s %s -t %s -e %s\n", quoteShellArgument(name), quoteShellArgument(b.Name), quoteShellArgument(parent.Team), quoteShellArgument(env))
+			out.Printf("Started creating branch %q. Run this command to check status:\n", b.Name)
+			out.Println(branchListCommandLine(name, parent.Team, env, parent.Config))
 			return nil
 		},
 	}
@@ -178,6 +160,7 @@ func branchActivateCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchActivate{Postgres: parent}
 	return &naistrix.Command{
 		Name: "activate", Title: "Request activation of a Postgres branch.", Flags: f,
+		Description:      "Request that a branch becomes the active branch of the Postgres. Activation continues asynchronously; use branch list to check progress.",
 		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
 		AutoCompleteFunc: autoCompletePostgresBranches(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -200,8 +183,16 @@ func branchActivateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			out.Println("Activation requested; reconciliation may still be in progress.")
-			printBranchStatus(out, status)
+			printPostgresHeading(out, args.Get("postgres"), env)
+			if status.DesiredActive != "" && status.DesiredActive != status.Active {
+				printPendingActivation(out, status)
+			} else if status.Active == args.Get("branch") {
+				out.Printf("Branch %q is active.\n", status.Active)
+			} else {
+				out.Printf("Started activating branch %q.\n", args.Get("branch"))
+			}
+			out.Println("Run this command to check status:")
+			out.Println(branchListCommandLine(args.Get("postgres"), parent.Team, env, parent.Config))
 			return nil
 		},
 	}
@@ -211,6 +202,7 @@ func branchDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchDelete{Postgres: parent}
 	return &naistrix.Command{
 		Name: "delete", Title: "Delete an inactive Postgres branch.", Flags: f,
+		Description:      "Delete a branch that is not active. You are asked to confirm unless --yes is given.",
 		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
 		AutoCompleteFunc: autoCompletePostgresBranches(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -249,20 +241,15 @@ func branchEnvironment(ctx context.Context, f *flag.Postgres, name string) (stri
 	return resolvePostgresEnvironment(ctx, f.Team, name, string(f.Environment))
 }
 
-func printBranchStatus(out *naistrix.OutputWriter, status postgres.BranchStatus) {
-	value := func(s string) string {
-		if s == "" {
-			return "(none)"
-		}
-		return s
+func printPendingActivation(out *naistrix.OutputWriter, status postgres.BranchStatus) {
+	if status.DesiredActive == "" || status.DesiredActive == status.Active {
+		return
 	}
-	out.Printf("Requested active branch: %s\nObserved active branch: %s\n", value(status.DesiredActive), value(status.Active))
-	if status.DesiredActive != "" && status.DesiredActive != status.Active {
-		out.Println("Activation pending: requested and observed branches differ.")
+	current := status.Active
+	if current == "" {
+		current = "unknown"
 	}
-	for _, b := range status.Branches {
-		out.Printf("%s\t%s\n", b.Name, postgres.State(b.State).String())
-	}
+	out.Printf("Waiting to activate %s. Current active branch: %s.\n", status.DesiredActive, current)
 }
 
 func resolveRecoveryTime(at, ago string, now time.Time) (time.Time, error) {

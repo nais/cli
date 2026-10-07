@@ -1,12 +1,9 @@
 package command
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/spf13/viper"
 )
 
 func quoteShellArgument(value string) string {
@@ -17,13 +14,16 @@ func quoteShellArgument(value string) string {
 }
 
 func postgresGetCommandLine(name, team, environment, configFile string) string {
-	command := "nais alpha postgres get " + quoteShellArgument(name)
-	validDefaults := true
+	return postgresCommandLine("nais alpha postgres get "+quoteShellArgument(name), team, environment, configFile)
+}
+
+func branchListCommandLine(name, team, environment, configFile string) string {
+	return postgresCommandLine("nais alpha postgres branch list "+quoteShellArgument(name), team, environment, configFile)
+}
+
+func postgresCommandLine(command, team, environment, configFile string) string {
 	if configFile != "" {
-		absolute, err := filepath.Abs(configFile)
-		if err != nil {
-			validDefaults = false
-		} else {
+		if absolute, err := filepath.Abs(configFile); err == nil {
 			configFile = absolute
 		}
 		configDir, err := os.UserConfigDir()
@@ -31,20 +31,5 @@ func postgresGetCommandLine(name, team, environment, configFile string) string {
 			command += " --config " + quoteShellArgument(configFile)
 		}
 	}
-	defaults := viper.New()
-	defaults.SetEnvPrefix("NAIS")
-	defaults.AutomaticEnv()
-	if configFile != "" && validDefaults {
-		defaults.SetConfigFile(configFile)
-		if err := defaults.ReadInConfig(); err != nil && !errors.Is(err, os.ErrNotExist) {
-			validDefaults = false
-		}
-	}
-	if !validDefaults || defaults.GetString("team") != team {
-		command += " -t " + quoteShellArgument(team)
-	}
-	if !validDefaults || defaults.GetString("environment") != environment {
-		command += " -e " + quoteShellArgument(environment)
-	}
-	return command
+	return command + " -t " + quoteShellArgument(team) + " -e " + quoteShellArgument(environment)
 }

@@ -24,13 +24,13 @@ type State string
 func (s State) String() string {
 	switch s {
 	case State(gql.PostgresBranchStateAvailable):
-		return "Available"
+		return "Ready"
 	case State(gql.PostgresBranchStateProgressing):
-		return "Progressing"
+		return "Not ready yet"
 	case State(gql.PostgresBranchStateDegraded):
-		return "<error>Degraded</error>"
+		return "Needs attention"
 	}
-	return "<info>Unknown</info>"
+	return "Unknown"
 }
 
 func GetTeamPostgreses(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]PostgresInstance, error) {

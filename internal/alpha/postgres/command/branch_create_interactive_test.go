@@ -23,28 +23,23 @@ func TestBranchCreateNameAndProgress(t *testing.T) {
 		name, config, returnedName, apiError, wantError string
 		positionals, extraFlags                         []string
 		omitTeam, omitTime, resolveEnvironment          bool
-		wantHint                                        string
 		wantOperations                                  []string
 	}{
 		{
-			name: "explicit branch bypasses prompt and hint uses returned name", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned",
-			wantHint: "Check progress: nais alpha postgres branch status orders 5m-returned -t my-team -e dev-gcp\n", wantOperations: []string{"CreatePostgresBranch"},
+			name: "explicit branch bypasses prompt", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned",
+			wantOperations: []string{"CreatePostgresBranch"},
 		},
 		{
-			name: "default environment in progress hint", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned", config: "environment: dev-gcp\n", resolveEnvironment: true,
-			wantHint: "Check progress: nais alpha postgres branch status orders 5m-returned -t my-team -e dev-gcp\n", wantOperations: []string{"CreatePostgresBranch"},
+			name: "default environment", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned", config: "environment: dev-gcp\n", resolveEnvironment: true,
+			wantOperations: []string{"CreatePostgresBranch"},
 		},
 		{
 			name: "explicit environment overrides default", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned", config: "environment: prod-gcp\n",
-			wantHint: "Check progress: nais alpha postgres branch status orders 5m-returned -t my-team -e dev-gcp\n", wantOperations: []string{"CreatePostgresBranch"},
+			wantOperations: []string{"CreatePostgresBranch"},
 		},
 		{
-			name: "resolved environment in progress hint", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned", resolveEnvironment: true,
-			wantHint: "Check progress: nais alpha postgres branch status orders 5m-returned -t my-team -e dev-gcp\n", wantOperations: []string{"GetTeamPostgreses", "CreatePostgresBranch"},
-		},
-		{
-			name: "progress hint quotes returned name", positionals: []string{"orders", "5m-restore"}, returnedName: "restore'quoted",
-			wantHint: "Check progress: nais alpha postgres branch status orders 'restore'\"'\"'quoted' -t my-team -e dev-gcp\n", wantOperations: []string{"CreatePostgresBranch"},
+			name: "resolved environment", positionals: []string{"orders", "5m-restore"}, returnedName: "5m-returned", resolveEnvironment: true,
+			wantOperations: []string{"GetTeamPostgreses", "CreatePostgresBranch"},
 		},
 		{
 			name: "missing branch requires positional argument noninteractively", positionals: []string{"orders"}, resolveEnvironment: true,
@@ -63,7 +58,7 @@ func TestBranchCreateNameAndProgress(t *testing.T) {
 			wantError: "invalid branch name", wantOperations: []string{"CreatePostgresBranch"},
 		},
 		{
-			name: "API failure produces no progress hint", positionals: []string{"orders", "5m-restore"}, apiError: "access denied",
+			name: "API failure", positionals: []string{"orders", "5m-restore"}, apiError: "access denied",
 			wantError: "access denied", wantOperations: []string{"CreatePostgresBranch"},
 		},
 	} {
@@ -118,6 +113,8 @@ func TestBranchCreateNameAndProgress(t *testing.T) {
 			defer server.Close()
 			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
 			t.Setenv("HOME", t.TempDir())
+			t.Setenv("NAIS_TEAM", "")
+			t.Setenv("NAIS_ENVIRONMENT", "")
 			config := filepath.Join(t.TempDir(), "config.yaml")
 			contents := tt.config
 			if contents == "" {
@@ -158,16 +155,8 @@ func TestBranchCreateNameAndProgress(t *testing.T) {
 				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
 					t.Errorf("error = %v; want %q", err, tt.wantError)
 				}
-				if strings.Contains(output.String(), "Check progress:") {
-					t.Errorf("progress hint shown for failure: %s", output.String())
-				}
-			} else {
-				if err != nil {
-					t.Fatal(err)
-				}
-				if !strings.Contains(output.String(), tt.wantHint) || !strings.Contains(output.String(), fmt.Sprintf("Branch %q created", tt.returnedName)) {
-					t.Errorf("missing returned branch result/progress hint: %s", output.String())
-				}
+			} else if err != nil {
+				t.Fatal(err)
 			}
 			if slices.Contains(operations, "CreatePostgresBranch") {
 				if created.Postgres != tt.positionals[0] || created.Branch != tt.positionals[1] || created.TeamSlug != "my-team" || created.EnvironmentName != "dev-gcp" || created.SourceBranch != "main" {

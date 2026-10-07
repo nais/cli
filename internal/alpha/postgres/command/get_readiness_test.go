@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/nais/cli/internal/alpha/postgres"
-	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
@@ -40,28 +39,5 @@ func TestPostgresReadiness(t *testing.T) {
 				t.Errorf("status = %q; want %q", got, tt.wantStatus)
 			}
 		})
-	}
-}
-
-func TestPostgresStatusRemainsOnlyForBranches(t *testing.T) {
-	pg := Postgres(&flags.GlobalFlags{})
-	var branchStatus bool
-	for _, cmd := range pg.SubCommands {
-		if cmd.Name == "status" {
-			t.Error("top-level status must not be registered")
-		}
-		for _, alias := range cmd.Aliases {
-			if alias == "status" {
-				t.Error("top-level status must not be aliased")
-			}
-		}
-		if cmd.Name == "branch" {
-			for _, child := range cmd.SubCommands {
-				branchStatus = branchStatus || child.Name == "status"
-			}
-		}
-	}
-	if !branchStatus {
-		t.Error("branch status must remain registered")
 	}
 }

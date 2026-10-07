@@ -97,7 +97,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			rows := [][]string{{"Setting", "Current", "Requested"}}
+			rows := [][]string{{"Setting", "Current", "New"}}
 			if changes.HighAvailability != nil {
 				rows = append(rows, []string{"High availability", fmt.Sprint(current.HighAvailability), fmt.Sprint(*changes.HighAvailability)})
 			}
@@ -118,11 +118,11 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 				}
 				rows = append(rows, []string{setting.label, value, *setting.requested})
 			}
-			out.Warnln("API updates to manifest-managed Postgres can be overwritten by a subsequent nais apply. Only the listed settings are requested:")
+			out.Warnln("A subsequent nais apply can overwrite changes to manifest-managed Postgres.")
 			if err := out.Table(output.TableWithMargins()).Render(instanceTarget(name, f.Team, env)); err != nil {
 				return err
 			}
-			out.Println("Current values are a configured snapshot; resource requests do not describe effective runtime resources or SQL readiness.")
+			out.Println("Current values are configured settings, not effective runtime resources or SQL readiness.")
 			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
 				return err
 			}
@@ -140,7 +140,9 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			out.Printf("Postgres %q update requested in %q; reconciliation may still be in progress.\n", updated, env)
+			printPostgresHeading(out, updated, env)
+			out.Println("Started updating Postgres. Run this command to check status:")
+			out.Println(postgresGetCommandLine(updated, f.Team, env, f.Config))
 			return nil
 		},
 	}
@@ -176,7 +178,7 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 			if !requested {
 				return fmt.Errorf("Postgres %q deletion was not requested", name)
 			}
-			out.Printf("Postgres %q deletion requested in %q; cleanup pending.\n", name, env)
+			out.Printf("Started deleting Postgres %q in %q.\n", name, env)
 			return nil
 		},
 	}

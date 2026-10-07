@@ -42,7 +42,11 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 			if len(ret) == 0 {
-				out.Println("Team has no Nais Postgres databases.")
+				if len(environments) > 0 || len(labelFilters) > 0 {
+					out.Println("No Postgres databases match these filters.")
+				} else {
+					out.Println("No Postgres databases found.")
+				}
 				return nil
 			}
 			return out.Table().Render(ret)

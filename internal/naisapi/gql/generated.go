@@ -21468,107 +21468,6 @@ func (v *GetLatestJobRunStateTeamJobsJobConnectionNodesJobRunsJobRunConnectionNo
 	return v.State
 }
 
-// GetNamedPostgresBranchStatusResponse is returned by GetNamedPostgresBranchStatus on success.
-type GetNamedPostgresBranchStatusResponse struct {
-	// Get a team by its slug.
-	Team GetNamedPostgresBranchStatusTeam `json:"team"`
-}
-
-// GetTeam returns GetNamedPostgresBranchStatusResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusResponse) GetTeam() GetNamedPostgresBranchStatusTeam {
-	return v.Team
-}
-
-// GetNamedPostgresBranchStatusTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
-type GetNamedPostgresBranchStatusTeam struct {
-	// Get a specific environment for the team.
-	Environment GetNamedPostgresBranchStatusTeamEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns GetNamedPostgresBranchStatusTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeam) GetEnvironment() GetNamedPostgresBranchStatusTeamEnvironment {
-	return v.Environment
-}
-
-// GetNamedPostgresBranchStatusTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetNamedPostgresBranchStatusTeamEnvironment struct {
-	// Postgres in the team environment.
-	Postgres GetNamedPostgresBranchStatusTeamEnvironmentPostgres `json:"postgres"`
-}
-
-// GetPostgres returns GetNamedPostgresBranchStatusTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironment) GetPostgres() GetNamedPostgresBranchStatusTeamEnvironmentPostgres {
-	return v.Postgres
-}
-
-// GetNamedPostgresBranchStatusTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
-// The GraphQL type's documentation follows.
-//
-// A Postgres whose active branch can change.
-type GetNamedPostgresBranchStatusTeamEnvironmentPostgres struct {
-	// Branch requested for activation; may differ from the observed active branch while reconciliation runs.
-	DesiredActiveBranch *string `json:"desiredActiveBranch"`
-	// Currently observed active branch, if selected.
-	ActiveBranch *GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
-	// Branch with this local name in this Postgres.
-	Branch GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch `json:"branch"`
-}
-
-// GetDesiredActiveBranch returns GetNamedPostgresBranchStatusTeamEnvironmentPostgres.DesiredActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgres) GetDesiredActiveBranch() *string {
-	return v.DesiredActiveBranch
-}
-
-// GetActiveBranch returns GetNamedPostgresBranchStatusTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgres) GetActiveBranch() *GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// GetBranch returns GetNamedPostgresBranchStatusTeamEnvironmentPostgres.Branch, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgres) GetBranch() GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch {
-	return v.Branch
-}
-
-// GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-	// Current observed state of the branch.
-	State PostgresBranchState `json:"state"`
-}
-
-// GetName returns GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch) GetName() string { return v.Name }
-
-// GetState returns GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *GetNamedPostgresBranchStatusTeamEnvironmentPostgresBranch) GetState() PostgresBranchState {
-	return v.State
-}
-
 // GetOpenSearchResponse is returned by GetOpenSearch on success.
 type GetOpenSearchResponse struct {
 	// Get a team by its slug.
@@ -37966,26 +37865,6 @@ func (v *__GetLatestJobRunStateInput) GetName() string { return v.Name }
 // GetEnv returns __GetLatestJobRunStateInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetLatestJobRunStateInput) GetEnv() []string { return v.Env }
 
-// __GetNamedPostgresBranchStatusInput is used internally by genqlient
-type __GetNamedPostgresBranchStatusInput struct {
-	Team        string `json:"team"`
-	Environment string `json:"environment"`
-	Postgres    string `json:"postgres"`
-	Branch      string `json:"branch"`
-}
-
-// GetTeam returns __GetNamedPostgresBranchStatusInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetNamedPostgresBranchStatusInput) GetTeam() string { return v.Team }
-
-// GetEnvironment returns __GetNamedPostgresBranchStatusInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetNamedPostgresBranchStatusInput) GetEnvironment() string { return v.Environment }
-
-// GetPostgres returns __GetNamedPostgresBranchStatusInput.Postgres, and is useful for accessing the field via an interface.
-func (v *__GetNamedPostgresBranchStatusInput) GetPostgres() string { return v.Postgres }
-
-// GetBranch returns __GetNamedPostgresBranchStatusInput.Branch, and is useful for accessing the field via an interface.
-func (v *__GetNamedPostgresBranchStatusInput) GetBranch() string { return v.Branch }
-
 // __GetOpenSearchInput is used internally by genqlient
 type __GetOpenSearchInput struct {
 	Name            string `json:"name"`
@@ -41066,57 +40945,6 @@ func GetLatestJobRunState(
 	}
 
 	data_ = &GetLatestJobRunStateResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetNamedPostgresBranchStatus.
-const GetNamedPostgresBranchStatus_Operation = `
-query GetNamedPostgresBranchStatus ($team: Slug!, $environment: String!, $postgres: String!, $branch: String!) {
-	team(slug: $team) {
-		environment(name: $environment) {
-			postgres(name: $postgres) {
-				desiredActiveBranch
-				activeBranch {
-					name
-				}
-				branch(name: $branch) {
-					name
-					state
-				}
-			}
-		}
-	}
-}
-`
-
-func GetNamedPostgresBranchStatus(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-	environment string,
-	postgres string,
-	branch string,
-) (data_ *GetNamedPostgresBranchStatusResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetNamedPostgresBranchStatus",
-		Query:  GetNamedPostgresBranchStatus_Operation,
-		Variables: &__GetNamedPostgresBranchStatusInput{
-			Team:        team,
-			Environment: environment,
-			Postgres:    postgres,
-			Branch:      branch,
-		},
-	}
-
-	data_ = &GetNamedPostgresBranchStatusResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

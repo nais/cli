@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/valkey"
 	"github.com/nais/cli/internal/valkey/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
+	"github.com/pterm/pterm"
 )
 
 func get(parentFlags *flag.Valkey) *naistrix.Command {
@@ -43,13 +45,39 @@ func get(parentFlags *flag.Valkey) *naistrix.Command {
 				return fmt.Errorf("fetching existing Valkey instance: %w", err)
 			}
 
-			out.Println("Valkey instance details")
-			if err = out.Table(output.TableWithMargins()).Render(valkey.FormatDetails(metadata, existing)); err != nil {
-				return fmt.Errorf("rendering table: %w", err)
-			}
-
-			out.Println("Valkey access list")
-			return out.Table(output.TableWithTopMargin()).Render(valkey.FormatAccessList(metadata, existing))
+			return renderValkeyDetails(out, metadata, existing)
 		},
 	}
+}
+
+func renderValkeyDetails(out *naistrix.OutputWriter, metadata valkey.Metadata, existing *gql.GetValkeyTeamEnvironmentValkey) error {
+	settings := valkey.FormatDetails(metadata, existing)[1:]
+	width := len("Status:")
+	for _, setting := range settings {
+		if len(setting[0])+1 > width {
+			width = len(setting[0]) + 1
+		}
+	}
+
+	out.Printf("%s · %s\n", pterm.NewStyle(pterm.Bold).Sprint(metadata.Name), pterm.FgGray.Sprint(metadata.EnvironmentName))
+	out.Println(fmt.Sprintf("  %-*s %s", width, "Status:", state(existing.State)))
+	out.Println()
+	for _, setting := range settings {
+		switch setting[0] {
+		case "Name", "Environment", "State":
+			continue
+		}
+		out.Printf("  %-*s %s\n", width, setting[0]+":", setting[1])
+	}
+
+	out.Println("\nAccess")
+	access := valkey.FormatAccessList(metadata, existing)
+	if len(access) == 1 {
+		out.Println("No workloads have access.")
+		return nil
+	}
+	if err := out.Table(output.TableWithTopMargin()).Render(access); err != nil {
+		return fmt.Errorf("rendering access table: %w", err)
+	}
+	return nil
 }

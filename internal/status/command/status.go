@@ -26,11 +26,11 @@ type workloadsWithIssues []workload
 
 func (f workloadsWithIssues) String() string {
 	if len(f) == 0 {
-		return "No issues detected"
+		return "No critical issues detected"
 	}
 
 	var b strings.Builder
-	_, _ = fmt.Fprintf(&b, "%v workloads with issues\n\n", len(f))
+	_, _ = fmt.Fprintf(&b, "%v resources with critical issues\n\n", len(f))
 	for _, w := range f {
 		_, _ = fmt.Fprintf(&b, "%s (%s): %s\n", w.Kind, w.Environment, w.Name)
 		_, _ = fmt.Fprintf(&b, "%s\n\n", strings.Join(w.Messages, "\n"))
@@ -40,10 +40,10 @@ func (f workloadsWithIssues) String() string {
 }
 
 type statusEntry struct {
-	Team      output.Link         `json:"team"`
-	Workloads int                 `json:"workloads"`
-	NotNais   int                 `heading:"Not Nais" json:"notNais"`
-	Issues    workloadsWithIssues `heading:"Critical Issues" json:"failing"`
+	Team              output.Link         `json:"team"`
+	Workloads         int                 `json:"workloads"`
+	AffectedResources int                 `heading:"Affected resources" json:"notNais"`
+	Issues            workloadsWithIssues `heading:"Critical Issues" json:"failing"`
 }
 
 func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
@@ -94,9 +94,9 @@ func Status(parentFlags *flags.GlobalFlags) *naistrix.Command {
 						Name: t.Team.Slug,
 						URL:  fmt.Sprintf("https://%s/team/%s", user.ConsoleHost(), t.Team.Slug),
 					},
-					Workloads: t.Team.Workloads.PageInfo.TotalCount,
-					NotNais:   len(resourceMap),
-					Issues:    make(workloadsWithIssues, 0, len(resourceOrder)),
+					Workloads:         t.Team.Workloads.PageInfo.TotalCount,
+					AffectedResources: len(resourceMap),
+					Issues:            make(workloadsWithIssues, 0, len(resourceOrder)),
 				}
 				for _, key := range resourceOrder {
 					n.Issues = append(n.Issues, *resourceMap[key])
