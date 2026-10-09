@@ -33,7 +33,7 @@ func add(parentFlags *flag.Member) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "member"},
+			{Name: "member", Prompt: "Email address of the user to add to the team"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

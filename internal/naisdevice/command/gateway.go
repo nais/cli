@@ -93,7 +93,7 @@ func describeCommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Description: "Show detailed information about a specific gateway, including its endpoint, IP addresses, routes, and access group IDs.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "gateway"},
+			{Name: "gateway", Prompt: "Name of the gateway to inspect"},
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) (completions []string, activeHelp string) {
 			gateways, err := naisdevice.GetGateways(ctx)
@@ -149,7 +149,7 @@ func grantAccessCommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Description: "Request just-in-time access (JITA) to one or more privileged gateways. Only gateways that require JITA are affected; non-privileged gateways are already connected automatically.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "gateway", Repeatable: true},
+			{Name: "gateway", Prompt: "Name of a privileged gateway to request access to", Repeatable: true},
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			gateways, err := naisdevice.GetGateways(ctx)

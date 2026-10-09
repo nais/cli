@@ -18,7 +18,7 @@ func labelsSet(parentFlags *flag.Labels) *naistrix.Command {
 		Title:       "Set labels for an application.",
 		Description: "Sets one or more labels on an application. Use --label KEY=VALUE and repeat the flag for multiple labels.",
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to set labels for"},
 		},
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {

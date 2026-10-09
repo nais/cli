@@ -33,7 +33,7 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "path"},
+			{Name: "path", Prompt: "Path to a Nais manifest file or directory to apply"},
 		},
 		AutoCompleteExtensions: []string{"yaml", "yml"},
 		Flags:                  flags,

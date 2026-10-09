@@ -22,7 +22,7 @@ func passwordCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 				Title:       "Rotate the SQL instance password.",
 				Description: "The rotation is done in GCP and in the Kubernetes secret.",
 				Args: []naistrix.Argument{
-					{Name: "app_name"},
+					{Name: "app_name", Prompt: "Name of the application whose Cloud SQL password should be rotated"},
 				},
 				ValidateFunc: validation.RequireTeamAndEnvironment(flags),
 				RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

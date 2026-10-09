@@ -22,8 +22,8 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "It adds an ACL entry for a user on a Kafka Topic with the specified access level.",
 		Flags:       grantAccessTopicFlags,
 		Args: []naistrix.Argument{
-			{Name: "username"},
-			{Name: "topic"},
+			{Name: "username", Prompt: "Name of the Kafka service user to grant access to"},
+			{Name: "topic", Prompt: "Name of the Kafka topic to grant access to"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireTeamAndEnvironment(grantAccessTopicFlags),

@@ -21,7 +21,7 @@ func del(parentFlags *flag.App) *naistrix.Command {
 		Description: "Permanently deletes an application.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to delete"},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")

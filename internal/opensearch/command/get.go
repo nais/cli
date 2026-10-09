@@ -21,7 +21,7 @@ func get(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command describes an OpenSearch instance, listing its current configuration and access list.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to inspect"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),

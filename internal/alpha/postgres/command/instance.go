@@ -18,7 +18,7 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "create", Title: "Create a Postgres instance.", Flags: f,
 		Description: "Create a new Postgres instance. Provisioning continues asynchronously.",
-		Args:        []naistrix.Argument{{Name: "postgres"}},
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the new Postgres instance"}},
 		Examples: []naistrix.Example{
 			{Description: "Select the destination environment interactively and create a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
 			{Description: "Create a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
@@ -75,7 +75,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "update", Title: "Update a Postgres instance.", Flags: f,
 		Description: "Compare configured values with the requested changes before updating provided fields. Current resource values are configured requests, not effective runtime resources or SQL readiness. A subsequent nais apply may overwrite API updates on manifest-managed Postgres.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, AutoCompleteFunc: autoCompletePostgresNames(parent),
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to update"}}, AutoCompleteFunc: autoCompletePostgresNames(parent),
 		Examples: []naistrix.Example{
 			{Description: "Change requested CPU and memory.", Command: "my-postgres -t my-team -e dev-gcp --cpu 200m --memory 1Gi"},
 			{Description: "Disable high availability.", Command: "my-postgres -t my-team -e dev-gcp --high-availability false"},
@@ -153,7 +153,7 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "delete", Title: "Request deletion of an entire Postgres instance.", Flags: f,
 		Description: "Irreversibly delete a Postgres and all its branches and data. Unlike branch delete, this removes the whole instance. Workloads and bindings must no longer reference it.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, AutoCompleteFunc: autoCompletePostgresNames(parent),
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to delete"}}, AutoCompleteFunc: autoCompletePostgresNames(parent),
 		Examples: []naistrix.Example{{Description: "Request deletion of an entire Postgres after removing its consumers.", Command: "my-postgres -t my-team -e dev-gcp"}},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if parent.Team == "" {

@@ -17,7 +17,7 @@ func verifyAuditCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Title:       "Verify audit extension and configuration in SQL instance database.",
 		Description: "This verifies that the pgaudit extension is installed and that audit logging is properly configured for the application user.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL audit configuration you want to verify"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

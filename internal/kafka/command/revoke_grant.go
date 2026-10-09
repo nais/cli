@@ -18,9 +18,9 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 		Title:       "Revoke a user's service-user access to a Kafka topic.",
 		Description: "Removes an ACL entry for a user on a Kafka topic with the specified access level.",
 		Args: []naistrix.Argument{
-			{Name: "username"},
-			{Name: "topic"},
-			{Name: "access", Choices: flag.KafkaTopicGrantAccessChoices(), ChoicesCaseInsensitive: true},
+			{Name: "username", Prompt: "Name of the Kafka service user to revoke access from"},
+			{Name: "topic", Prompt: "Name of the Kafka topic to revoke access to"},
+			{Name: "access", Prompt: "Access level to revoke", Choices: flag.KafkaTopicGrantAccessChoices(), ChoicesCaseInsensitive: true},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireTeamAndEnvironment(parentFlags),

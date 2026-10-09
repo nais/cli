@@ -15,7 +15,7 @@ func get() *naistrix.Command {
 		Title:       "Get a naisdevice setting.",
 		Description: "Retrieve the current value of a naisdevice configuration setting. Available settings include autoconnect.",
 		Args: []naistrix.Argument{
-			{Name: "setting"},
+			{Name: "setting", Prompt: "Name of the naisdevice setting to inspect"},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			setting := args.Get("setting")

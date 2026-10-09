@@ -33,8 +33,8 @@ func setEnv(parentFlags *flag.Job) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name"},
-			{Name: "env_vars", Repeatable: true},
+			{Name: "name", Prompt: "Name of the job to update environment variables for"},
+			{Name: "env_vars", Prompt: "Environment variable to set (KEY=VALUE) or remove (KEY-)", Repeatable: true},
 		},
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {

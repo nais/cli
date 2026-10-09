@@ -19,7 +19,7 @@ func listGrants(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "Shows the workloads that have been granted access to a Kafka topic.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "topic"},
+			{Name: "topic", Prompt: "Name of the Kafka topic to list grants for"},
 		},
 		ValidateFunc:     validation.RequireTeamAndEnvironment(flags),
 		AutoCompleteFunc: autoCompleteKafkaTopicName(flags.Kafka, 0),

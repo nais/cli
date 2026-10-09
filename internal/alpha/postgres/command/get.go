@@ -51,7 +51,7 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "get", Title: "Get Postgres details and readiness.",
 		Description: "Show configured settings and a coarse platform-reported status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. Detailed provisioning stages are unavailable. Use branch commands to inspect branches.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to inspect"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
 		Examples: []naistrix.Example{
 			{Description: "Describe a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},

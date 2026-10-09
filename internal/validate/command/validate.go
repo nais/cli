@@ -16,7 +16,7 @@ func Validate(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Title:       "Validate one or more Nais manifest files.",
 		Description: "Validate Nais manifest files (YAML/JSON) against the Nais JSON schema. Accepts one or more file paths.",
 		Args: []naistrix.Argument{
-			{Name: "file", Repeatable: true},
+			{Name: "file", Prompt: "Path to a Nais manifest file to validate", Repeatable: true},
 		},
 		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
 		Flags:                  flags,

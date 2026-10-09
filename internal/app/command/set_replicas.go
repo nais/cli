@@ -26,7 +26,7 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to scale"},
 		},
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {

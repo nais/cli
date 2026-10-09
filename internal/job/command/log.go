@@ -29,7 +29,7 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Show logs for a job.",
 		Description: "Fetch and stream logs from a job.",
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the job to show logs for"},
 		},
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {

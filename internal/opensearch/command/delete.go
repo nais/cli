@@ -20,7 +20,7 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command deletes an existing OpenSearch instance.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to delete"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),

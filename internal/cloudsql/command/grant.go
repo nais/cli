@@ -21,7 +21,7 @@ func grantCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 			Not needed if you are a member of a Cloud SQL IAM group on the instance; use prepare --group to grant access to the group instead.
 		`),
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database you need access to"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

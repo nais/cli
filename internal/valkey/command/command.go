@@ -34,7 +34,7 @@ func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 }
 
 var defaultArgs = []naistrix.Argument{
-	{Name: "name"},
+	{Name: "name", Prompt: "Name of the Valkey instance"},
 }
 
 func validateArgs(_ context.Context, args *naistrix.Arguments) error {

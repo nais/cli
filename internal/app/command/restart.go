@@ -19,7 +19,7 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 		Description: "Triggers a rolling restart of the application.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to restart"},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")

@@ -47,7 +47,7 @@ func setImage(parentFlags *flag.App) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to change the image for"},
 		},
 		Flags:            flags,
 		AutoCompleteFunc: autoCompleteAppNames(parentFlags),

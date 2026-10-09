@@ -26,7 +26,7 @@ func revokeCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 			This uses the application credentials and affects tables, sequences and default privileges in the chosen schema.
 		`),
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database access should be revoked"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

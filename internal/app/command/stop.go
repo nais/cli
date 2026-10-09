@@ -21,7 +21,7 @@ func stop(parentFlags *flag.App) *naistrix.Command {
 		Description: "Stops an application by setting replicas to 0. Changes are temporary and will be overwritten on next deploy.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the application to stop"},
 		},
 		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {
 			if flags.Environment == "" {

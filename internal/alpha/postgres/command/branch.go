@@ -32,7 +32,7 @@ func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "list", Title: "List branches of a Postgres.",
 		Description: "List the branches of a Postgres with their status and whether each one is active.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to list branches for"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
@@ -86,7 +86,7 @@ func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Restore from the active branch at a UTC timestamp (Z means UTC).", Command: "my-postgres restored --at 2026-10-06T10:00:00Z"},
 			{Description: "Restore from a specific source branch.", Command: "my-postgres restored --from main --at 2026-10-06T10:00:00Z"},
 		},
-		Args:             []naistrix.Argument{{Name: "postgres", Repeatable: true}},
+		Args:             []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance; optionally add a new branch name next", Repeatable: true}},
 		AutoCompleteFunc: autoCompletePostgresNames(parent),
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireTeam(f),
@@ -161,7 +161,7 @@ func branchActivateCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "activate", Title: "Request activation of a Postgres branch.", Flags: f,
 		Description:      "Request that a branch becomes the active branch of the Postgres. Activation continues asynchronously; use branch list to check progress.",
-		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
+		Args:             []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance"}, {Name: "branch", Prompt: "Name of the branch to activate"}},
 		AutoCompleteFunc: autoCompletePostgresBranches(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
@@ -203,7 +203,7 @@ func branchDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "delete", Title: "Delete an inactive Postgres branch.", Flags: f,
 		Description:      "Delete an inactive branch, even if workloads still use it. Referring apps/jobs are listed with a warning before confirmation. --yes skips confirmation, not the usage check or warning.",
-		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
+		Args:             []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance"}, {Name: "branch", Prompt: "Name of the inactive branch to delete"}},
 		AutoCompleteFunc: autoCompletePostgresBranches(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))

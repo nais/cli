@@ -21,7 +21,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "Creates temporary credentials for accessing an OpenSearch instance. The credentials are printed to stdout as environment variables.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to create credentials for"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),

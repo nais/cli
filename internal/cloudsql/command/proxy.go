@@ -20,7 +20,7 @@ func proxyCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Title:       "Create a proxy to a SQL instance.",
 		Description: "Allows your user to connect to databases and starts a proxy.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL instance you want to proxy"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

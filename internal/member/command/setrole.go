@@ -30,8 +30,8 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "role", Choices: teamMemberRoleChoices(), ChoicesCaseInsensitive: true},
-			{Name: "member"},
+			{Name: "role", Prompt: "Role to assign to the team member", Choices: teamMemberRoleChoices(), ChoicesCaseInsensitive: true},
+			{Name: "member", Prompt: "Email address of the team member to assign the role to"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

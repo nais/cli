@@ -13,8 +13,8 @@ func set() *naistrix.Command {
 		Title:       "Set a configuration value.",
 		Description: "Set a naisdevice configuration value. The setting name and a boolean value (true/false) are required.",
 		Args: []naistrix.Argument{
-			{Name: "setting"},
-			{Name: "value", Choices: []string{"true", "false"}, ChoicesCaseInsensitive: true},
+			{Name: "setting", Prompt: "Name of the naisdevice setting to update"},
+			{Name: "value", Prompt: "Value to set", Choices: []string{"true", "false"}, ChoicesCaseInsensitive: true},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

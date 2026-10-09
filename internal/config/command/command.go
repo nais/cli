@@ -34,7 +34,7 @@ func Config(parentFlags *flags.GlobalFlags) *naistrix.Command {
 }
 
 var defaultArgs = []naistrix.Argument{
-	{Name: "name"},
+	{Name: "name", Prompt: "Name of the config"},
 }
 
 func validateArgs(_ context.Context, args *naistrix.Arguments) error {
