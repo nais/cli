@@ -98,13 +98,3 @@ func GetApplicationFiles(ctx context.Context, slug, name, env string) ([]Mounted
 	}
 	return ret, nil
 }
-
-// HasSecretFiles returns true if any mounted file comes from a Secret source.
-func HasSecretFiles(files []MountedFile) bool {
-	for _, f := range files {
-		if f.Source.Kind == "SECRET" {
-			return true
-		}
-	}
-	return false
-}
