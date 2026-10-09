@@ -23,7 +23,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command updates an existing Opensearch instance.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to update"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),

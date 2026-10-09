@@ -35,9 +35,9 @@ func addCommand(parentFlags *flag.User) *naistrix.Command {
 		Title:       "Add a user to a SQL instance.",
 		Description: "Will grant a user access to tables in public schema.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
-			{Name: "username"},
-			{Name: "password"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database should have a user added"},
+			{Name: "username", Prompt: "Username of the new database user"},
+			{Name: "password", Prompt: "Password for the new database user"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -53,7 +53,7 @@ func listUsersCommand(parentFlags *flag.User) *naistrix.Command {
 		Title:       "List users in a SQL instance database.",
 		Description: "List all users in a Cloud SQL instance database for a given application.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database users you want to list"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -69,8 +69,8 @@ func dropCommand(parentFlags *flag.User) *naistrix.Command {
 		Title:       "Drop a user from a SQL instance database.",
 		Description: "Remove a user from a Cloud SQL instance database.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
-			{Name: "username"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database should have a user removed"},
+			{Name: "username", Prompt: "Username of the database user to remove"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

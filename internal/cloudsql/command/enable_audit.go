@@ -17,7 +17,7 @@ func enableAuditCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Title:       "Enable audit extension in SQL instance database.",
 		Description: "This is done by creating pgaudit extension in the database and enabling audit logging for personal user accounts.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database should have auditing enabled"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

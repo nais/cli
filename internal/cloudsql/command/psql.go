@@ -16,7 +16,7 @@ func psqlCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Title:       "Connect to the database using psql.",
 		Description: "Create a shell to the SQL instance by opening a proxy on a random port (see the proxy command for more info) and opening a psql shell.",
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database you want to connect to"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

@@ -30,7 +30,7 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "psql", Title: "Connect to Nais Postgres via psql (experimental).",
 		Description: "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification. If --reason is omitted, prompt for an audit reason interactively.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to connect to"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			request, err := prepareAccessRequest(args.Get("postgres"), f, out)
@@ -98,7 +98,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally (experimental).",
 		Description: "Request personal access and listen on loopback. If --reason is omitted, prompt for an audit reason interactively. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Credentials are not printed unless --print-password is set.",
-		Args:        []naistrix.Argument{{Name: "postgres"}}, Flags: f,
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy"}}, Flags: f,
 		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if net.ParseIP(f.Host) == nil || !net.ParseIP(f.Host).IsLoopback() {

@@ -23,6 +23,27 @@ func TestHelpForAllCommands(t *testing.T) {
 	}
 }
 
+func TestAllArgumentsHavePrompts(t *testing.T) {
+	app, _, err := New(io.Discard)
+	if err != nil {
+		t.Fatalf("unable to create application: %v", err)
+	}
+
+	var checkCommands func([]*naistrix.Command, string)
+	checkCommands = func(commands []*naistrix.Command, parent string) {
+		for _, cmd := range commands {
+			path := parent + " " + cmd.Name
+			for _, arg := range cmd.Args {
+				if strings.TrimSpace(arg.Prompt) == "" {
+					t.Errorf("command %q argument %q is missing a prompt", path, arg.Name)
+				}
+			}
+			checkCommands(cmd.SubCommands, path)
+		}
+	}
+	checkCommands(app.Commands, "nais")
+}
+
 func runCommand(t *testing.T, ctx context.Context, app *naistrix.Application, cmd *naistrix.Command, parentCommands []string) {
 	t.Helper()
 

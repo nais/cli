@@ -24,7 +24,7 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			You can only reconnect to the debug session if the pod is running.
 		`),
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application to debug"},
 		},
 		Flags:        debugFlags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(debugFlags),

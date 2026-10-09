@@ -29,7 +29,7 @@ func prepareCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 			Group membership determines who inherits the group's database privileges.
 		`),
 		Args: []naistrix.Argument{
-			{Name: "app_name"},
+			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database should have access prepared"},
 		},
 		Flags:        flags,
 		ValidateFunc: validation.RequireTeamAndEnvironment(flags),

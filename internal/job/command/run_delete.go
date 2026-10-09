@@ -17,7 +17,7 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Delete a job run.",
 		Description: "This command deletes an individual job run (a Kubernetes batch/v1 Job).",
 		Args: []naistrix.Argument{
-			{Name: "run-name"},
+			{Name: "run-name", Prompt: "Name of the job run to delete"},
 		},
 		Flags: flags,
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {

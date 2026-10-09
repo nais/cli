@@ -22,7 +22,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command creates an OpenSearch instance.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name"},
+			{Name: "name", Prompt: "Name of the new OpenSearch instance"},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireEnvironment(flags),
