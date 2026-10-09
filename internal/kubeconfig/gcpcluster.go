@@ -81,8 +81,7 @@ func getGCPClusters(ctx context.Context, project project, options filterOptions,
 	call := svc.Projects.Locations.Clusters.List("projects/" + project.ID + "/locations/-")
 	response, err := call.Do()
 	if err != nil {
-		var googleErr *googleapi.Error
-		if errors.As(err, &googleErr) {
+		if googleErr, ok := errors.AsType[*googleapi.Error](err); ok {
 			if googleErr.Code == http.StatusForbidden {
 				if options.verbose {
 					out.Printf("No access to project %s, skipping\n", project.ID)
