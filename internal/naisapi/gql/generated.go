@@ -22147,6 +22147,314 @@ func (v *GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchCon
 	return v.State
 }
 
+// GetPostgresBranchWorkloadsResponse is returned by GetPostgresBranchWorkloads on success.
+type GetPostgresBranchWorkloadsResponse struct {
+	// Get a team by its slug.
+	Team GetPostgresBranchWorkloadsTeam `json:"team"`
+}
+
+// GetTeam returns GetPostgresBranchWorkloadsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsResponse) GetTeam() GetPostgresBranchWorkloadsTeam { return v.Team }
+
+// GetPostgresBranchWorkloadsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetPostgresBranchWorkloadsTeam struct {
+	// Get a specific environment for the team.
+	Environment GetPostgresBranchWorkloadsTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetPostgresBranchWorkloadsTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeam) GetEnvironment() GetPostgresBranchWorkloadsTeamEnvironment {
+	return v.Environment
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetPostgresBranchWorkloadsTeamEnvironment struct {
+	// Postgres in the team environment.
+	Postgres GetPostgresBranchWorkloadsTeamEnvironmentPostgres `json:"postgres"`
+}
+
+// GetPostgres returns GetPostgresBranchWorkloadsTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironment) GetPostgres() GetPostgresBranchWorkloadsTeamEnvironmentPostgres {
+	return v.Postgres
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgres struct {
+	// Branch with this local name in this Postgres.
+	Branch GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch `json:"branch"`
+}
+
+// GetBranch returns GetPostgresBranchWorkloadsTeamEnvironmentPostgres.Branch, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgres) GetBranch() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch {
+	return v.Branch
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// The GraphQL type's documentation follows.
+//
+// A named PostgresBranch belonging to a Postgres.
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch struct {
+	// Workloads using this branch while it is active.
+	Workloads GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection `json:"workloads"`
+}
+
+// GetWorkloads returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch.Workloads, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch) GetWorkloads() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection struct {
+	// List of nodes.
+	Nodes []GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+	// Pagination information.
+	PageInfo GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) GetNodes() []GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload {
+	return v.Nodes
+}
+
+// GetPageInfo returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) GetPageInfo() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo {
+	return v.PageInfo
+}
+
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+
+	PageInfo GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
+}
+
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection, error) {
+	var retval __premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes: %w", err)
+			}
+		}
+	}
+	retval.PageInfo = v.PageInfo
+	return &retval, nil
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication struct {
+	Typename *string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+}
+
+// GetTypename returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob struct {
+	Typename *string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+}
+
+// GetTypename returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) GetName() string {
+	return v.Name
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload interface {
+	implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+}
+
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload() {
+}
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload() {
+}
+
+func __unmarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
+	}
+}
+
+// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // GetPostgresResponse is returned by GetPostgres on success.
 type GetPostgresResponse struct {
 	// Get a team by its slug.
@@ -37929,6 +38237,30 @@ func (v *__GetPostgresBranchStatusInput) GetEnvironment() string { return v.Envi
 // GetPostgres returns __GetPostgresBranchStatusInput.Postgres, and is useful for accessing the field via an interface.
 func (v *__GetPostgresBranchStatusInput) GetPostgres() string { return v.Postgres }
 
+// __GetPostgresBranchWorkloadsInput is used internally by genqlient
+type __GetPostgresBranchWorkloadsInput struct {
+	Team        string  `json:"team"`
+	Environment string  `json:"environment"`
+	Postgres    string  `json:"postgres"`
+	Branch      string  `json:"branch"`
+	After       *string `json:"after"`
+}
+
+// GetTeam returns __GetPostgresBranchWorkloadsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetPostgresBranchWorkloadsInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetPostgresBranchWorkloadsInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetPostgresBranchWorkloadsInput) GetEnvironment() string { return v.Environment }
+
+// GetPostgres returns __GetPostgresBranchWorkloadsInput.Postgres, and is useful for accessing the field via an interface.
+func (v *__GetPostgresBranchWorkloadsInput) GetPostgres() string { return v.Postgres }
+
+// GetBranch returns __GetPostgresBranchWorkloadsInput.Branch, and is useful for accessing the field via an interface.
+func (v *__GetPostgresBranchWorkloadsInput) GetBranch() string { return v.Branch }
+
+// GetAfter returns __GetPostgresBranchWorkloadsInput.After, and is useful for accessing the field via an interface.
+func (v *__GetPostgresBranchWorkloadsInput) GetAfter() *string { return v.After }
+
 // __GetPostgresInput is used internally by genqlient
 type __GetPostgresInput struct {
 	Team        string `json:"team"`
@@ -41221,6 +41553,63 @@ func GetPostgresBranchStatus(
 	}
 
 	data_ = &GetPostgresBranchStatusResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetPostgresBranchWorkloads.
+const GetPostgresBranchWorkloads_Operation = `
+query GetPostgresBranchWorkloads ($team: Slug!, $environment: String!, $postgres: String!, $branch: String!, $after: Cursor) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			postgres(name: $postgres) {
+				branch(name: $branch) {
+					workloads(first: 100, after: $after) {
+						nodes {
+							__typename
+							name
+						}
+						pageInfo {
+							hasNextPage
+							endCursor
+						}
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetPostgresBranchWorkloads(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	postgres string,
+	branch string,
+	after *string,
+) (data_ *GetPostgresBranchWorkloadsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetPostgresBranchWorkloads",
+		Query:  GetPostgresBranchWorkloads_Operation,
+		Variables: &__GetPostgresBranchWorkloadsInput{
+			Team:        team,
+			Environment: environment,
+			Postgres:    postgres,
+			Branch:      branch,
+			After:       after,
+		},
+	}
+
+	data_ = &GetPostgresBranchWorkloadsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

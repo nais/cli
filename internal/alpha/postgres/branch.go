@@ -52,6 +52,52 @@ func GetBranchStatus(ctx context.Context, team, environment, name string) (Branc
 	return status, nil
 }
 
+type BranchWorkload struct {
+	Kind string
+	Name string
+}
+
+// GetBranchWorkloads lists apps/jobs selecting the branch before deletion.
+func GetBranchWorkloads(ctx context.Context, team, environment, postgres, branch string) ([]BranchWorkload, error) {
+	_ = `# @genqlient
+	query GetPostgresBranchWorkloads($team: Slug!, $environment: String!, $postgres: String!, $branch: String!, $after: Cursor) {
+		team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) {
+			branch(name: $branch) { workloads(first: 100, after: $after) {
+				nodes { __typename name }
+				pageInfo { hasNextPage endCursor }
+			} }
+		} } }
+	}
+	`
+	client, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var workloads []BranchWorkload
+	var after *string
+	for {
+		result, err := gql.GetPostgresBranchWorkloads(ctx, client, team, environment, postgres, branch, after)
+		if err != nil {
+			return nil, fmt.Errorf("fetching workloads for Postgres %q branch %q before deletion: %w", postgres, branch, err)
+		}
+		page := result.Team.Environment.Postgres.Branch.Workloads
+		for _, workload := range page.Nodes {
+			if workload == nil || workload.GetTypename() == nil {
+				return nil, fmt.Errorf("branch workload list contains an invalid workload")
+			}
+			workloads = append(workloads, BranchWorkload{Kind: *workload.GetTypename(), Name: workload.GetName()})
+		}
+		if !page.PageInfo.HasNextPage {
+			return workloads, nil
+		}
+		next := page.PageInfo.EndCursor
+		if next == nil || after != nil && *next == *after {
+			return nil, fmt.Errorf("branch workload list has another page but no new cursor")
+		}
+		after = next
+	}
+}
+
 func CreateBranch(ctx context.Context, input gql.CreatePostgresBranchInput) (Branch, error) {
 	_ = `# @genqlient
 	mutation CreatePostgresBranch($input: CreatePostgresBranchInput!) {

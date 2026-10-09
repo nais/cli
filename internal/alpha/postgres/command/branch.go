@@ -19,7 +19,7 @@ import (
 func branchCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "branch", Title: "Manage branches of a Nais Postgres (experimental).",
-		Description: "Create, list, inspect, activate and delete branches of a Postgres. A branch is a copy of the database restored from a point in time. Only one branch is active at a time.",
+		Description: "Create, list, inspect, activate and delete branches of a Postgres. A branch is a copy of the database restored from a point in time. Only one branch is active at a time; workloads can also select a branch explicitly with uses.postgres[].branch.",
 		SubCommands: []*naistrix.Command{
 			branchListCommand(parent), branchCreateCommand(parent),
 			branchActivateCommand(parent), branchDeleteCommand(parent),
@@ -202,13 +202,23 @@ func branchDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchDelete{Postgres: parent}
 	return &naistrix.Command{
 		Name: "delete", Title: "Delete an inactive Postgres branch.", Flags: f,
-		Description:      "Delete a branch that is not active. You are asked to confirm unless --yes is given.",
+		Description:      "Delete an inactive branch, even if workloads still use it. Referring apps/jobs are listed with a warning before confirmation. --yes skips confirmation, not the usage check or warning.",
 		Args:             []naistrix.Argument{{Name: "postgres"}, {Name: "branch"}},
 		AutoCompleteFunc: autoCompletePostgresBranches(parent),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
 			if err != nil {
 				return err
+			}
+			workloads, err := postgres.GetBranchWorkloads(ctx, parent.Team, env, args.Get("postgres"), args.Get("branch"))
+			if err != nil {
+				return err
+			}
+			if len(workloads) > 0 {
+				out.Warnf("Branch %q of Postgres %q in %q is used by the following workloads; deleting it will make their database connections unavailable:\n", args.Get("branch"), args.Get("postgres"), env)
+				if err := out.Table().Render(workloads); err != nil {
+					return err
+				}
 			}
 			if !f.Yes {
 				ok, err := input.Confirm(fmt.Sprintf("Delete branch %q of Postgres %q in %q?", args.Get("branch"), args.Get("postgres"), env))
@@ -228,7 +238,7 @@ func branchDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 			if !deleted {
 				return fmt.Errorf("branch %q was not deleted", args.Get("branch"))
 			}
-			out.Printf("Deleted branch %q of Postgres %q in %q.\n", args.Get("branch"), args.Get("postgres"), env)
+			out.Printf("Started deleting branch %q of Postgres %q in %q.\n", args.Get("branch"), args.Get("postgres"), env)
 			return nil
 		},
 	}
