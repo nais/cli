@@ -17,7 +17,7 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "apply",
 		Title:       "Apply resources.",
-		Description: "Apply Nais resource manifests (YAML) to a specific team and environment. Accepts a single file or a directory containing multiple manifests. When a directory is given, mixin files (<base>.<env>.yaml) are auto-loaded and --set/--mixin flags are disabled.",
+		Description: "Apply Nais resource manifests (YAML) to a specific team and environment. Accepts a single file or a directory containing multiple manifests. When a directory is given, mixin files (<base>.<env>.yaml) are auto-loaded and --set/--append/--mixin flags are disabled.",
 		Examples: []naistrix.Example{
 			{
 				Description: "Replace the environment variable list.",
@@ -26,6 +26,10 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			{
 				Description: "Update a field in an existing list element.",
 				Command:     "app.yaml --environment dev-gcp --team nais --set 'spec.env[0].value=debug'",
+			},
+			{
+				Description: "Append an environment variable without replacing existing entries.",
+				Command:     "app.yaml --environment dev-gcp --team nais --append 'spec.env={name: LOG_LEVEL, value: debug}'",
 			},
 		},
 		Args: []naistrix.Argument{

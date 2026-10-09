@@ -20,6 +20,7 @@ nais alpha apply <config-file> --environment <env> --team <team>
 - `--wait` — wait for applied resources to become ready before returning. Currently supported for `Application` resources; other kinds (Valkey, OpenSearch) are skipped
 - `--timeout` — maximum time to wait for resources to become ready when `--wait` is set (default `10m`). Examples: `30s`, `5m`, `10m`
 - `--set` — replace a field with a YAML value using `KEY=VALUE`. Repeat for multiple overrides; commas within an argument are preserved
+- `--append` — append one YAML value to a list using `KEY=VALUE`. Creates missing lists; repeat for multiple elements
 
 ## Field overrides
 
@@ -40,7 +41,26 @@ Indexed updates preserve other elements and fields. The list and indexed element
 must already exist; missing lists and out-of-range indices are errors. Missing
 intermediate maps are created, but lists are never implicitly extended.
 Quote the entire `KEY=VALUE` argument to protect spaces and brackets from the shell.
-`--set` is not supported when applying a directory.
+`--set` and `--append` are not supported when applying a directory.
+
+### Appending to lists
+
+```shell
+nais apply app.yaml --environment dev-gcp --team nais --dry-run \
+  --append 'spec.env={name: LOG_LEVEL, value: debug}' \
+  --append 'spec.env={name: OTHER, value: keep}'
+```
+
+Each argument adds exactly one element; a YAML list value becomes a nested list
+element, not multiple elements. Existing elements are preserved, including those
+added by a mixin. Missing target lists and intermediate maps are created, while
+existing non-list targets (including `null`) are errors. Indexed paths are also
+supported, e.g. `--append 'spec.groups[0].members=alice'`; indexed elements must
+already exist.
+
+The order is always base, mixin, all `--set` overrides, then all `--append`
+operations, regardless of their positions on the command line. Repeated
+`--append` flags are processed in the order provided, without deduplication.
 
 ## Waiting for readiness
 
