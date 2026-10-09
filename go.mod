@@ -1,6 +1,6 @@
 module github.com/nais/cli
 
-go 1.26.9
+go 1.26.4
 
 tool (
 	github.com/Khan/genqlient
@@ -26,7 +26,7 @@ require (
 	github.com/lestrrat-go/jwx/v3 v3.1.1
 	github.com/lib/pq v1.12.3
 	github.com/mailgun/raymond/v2 v2.0.48
-	github.com/mark3labs/mcp-go v0.54.1
+	github.com/mark3labs/mcp-go v1.2.1
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v1.16.1
 	github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421

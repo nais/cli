@@ -1,8 +1,8 @@
 [tools]
-git-cliff = "2.10.1"
-go = "1.26.9"
-golangci-lint = "2.12.2"
-yamlfmt = "0.17.2"
+git-cliff = "2.14.2"
+go = "1.27.2"
+golangci-lint = "2.14.0"
+yamlfmt = "0.21.0"
 
 [settings]
 pin = true
