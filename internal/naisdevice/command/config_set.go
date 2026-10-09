@@ -2,8 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
-	"strconv"
 
 	"github.com/nais/cli/internal/naisdevice"
 	"github.com/nais/naistrix"
@@ -16,15 +14,12 @@ func set() *naistrix.Command {
 		Description: "Set a naisdevice configuration value. The setting name and a boolean value (true/false) are required.",
 		Args: []naistrix.Argument{
 			{Name: "setting"},
-			{Name: "value"},
+			{Name: "value", Choices: []string{"true", "false"}, ChoicesCaseInsensitive: true},
 		},
 		AutoCompleteFunc: naisdevice.AutocompleteSet,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			setting := args.Get("setting")
-			value, err := strconv.ParseBool(args.Get("value"))
-			if err != nil {
-				return fmt.Errorf("invalid bool value: %v", err)
-			}
+			value := args.Get("value") == "true"
 
 			if err := naisdevice.SetConfig(ctx, setting, value); err != nil {
 				return err

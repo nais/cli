@@ -20,7 +20,7 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "username"},
 			{Name: "topic"},
-			{Name: "access"},
+			{Name: "access", Choices: flag.KafkaTopicGrantAccessChoices(), ChoicesCaseInsensitive: true},
 		},
 		ValidateFunc: naistrix.ValidateFuncs(
 			validation.RequireTeamAndEnvironment(parentFlags),

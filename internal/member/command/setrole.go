@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"strings"
 
 	"github.com/nais/cli/internal/member"
 	"github.com/nais/cli/internal/member/command/flag"
@@ -21,20 +22,21 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 		Examples: []naistrix.Example{
 			{
 				Description: "Assign some-user@example.com as owner.",
-				Command:     "OWNER some-user@example.com",
+				Command:     "owner some-user@example.com",
 			},
 			{
 				Description: "Assign some-user@example.com as member.",
-				Command:     "MEMBER some-user@example.com",
+				Command:     "member some-user@example.com",
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "role"},
+			{Name: "role", Choices: teamMemberRoleChoices(), ChoicesCaseInsensitive: true},
 			{Name: "member"},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if err := member.SetRole(ctx, flags.Team, args.Get("member"), gql.TeamMemberRole(args.Get("role"))); err != nil {
+			role := gql.TeamMemberRole(strings.ToUpper(args.Get("role")))
+			if err := member.SetRole(ctx, flags.Team, args.Get("member"), role); err != nil {
 				return naistrix.Errorf("Unable to set role %q for member %q in team %q\n\n%s", args.Get("role"), args.Get("member"), flags.Team, err)
 			}
 
@@ -43,7 +45,7 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 		},
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
 			if args.Len() == 0 {
-				return toStrings(gql.AllTeamMemberRole), "Choose the role to assign to the team member."
+				return teamMemberRoleChoices(), "Choose the role to assign to the team member."
 			}
 
 			if args.Len() == 1 {
@@ -65,10 +67,10 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 	}
 }
 
-func toStrings[T ~string](in []T) []string {
-	ret := make([]string, len(in))
-	for i, s := range in {
-		ret[i] = string(s)
+func teamMemberRoleChoices() []string {
+	ret := make([]string, len(gql.AllTeamMemberRole))
+	for i, role := range gql.AllTeamMemberRole {
+		ret[i] = strings.ToLower(string(role))
 	}
 	return ret
 }

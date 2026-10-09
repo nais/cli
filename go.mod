@@ -31,7 +31,7 @@ require (
 	github.com/nais/device v1.16.1
 	github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421
 	github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c
-	github.com/nais/naistrix v0.37.1
+	github.com/nais/naistrix v0.38.0
 	github.com/pterm/pterm v0.12.83
 	github.com/quic-go/quic-go v0.59.1
 	github.com/stretchr/testify v1.12.1

@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
 
@@ -31,11 +32,20 @@ func (o *CredentialsOutput) AutoComplete(context.Context, *naistrix.Arguments, s
 }
 
 func (a *KafkaTopicGrantAccess) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	return []string{"read", "write", "readwrite"}, "Available access levels."
+	return KafkaTopicGrantAccessChoices(), "Available access levels."
+}
+
+// KafkaTopicGrantAccessChoices returns the GraphQL access levels in their CLI lowercase form.
+func KafkaTopicGrantAccessChoices() []string {
+	choices := make([]string, len(gql.AllKafkaTopicGrantAccess))
+	for i, access := range gql.AllKafkaTopicGrantAccess {
+		choices[i] = strings.ToLower(string(access))
+	}
+	return choices
 }
 
 func (a KafkaTopicGrantAccess) Validate() error {
-	valid := []string{"read", "write", "readwrite"}
+	valid := KafkaTopicGrantAccessChoices()
 	if a == "" {
 		return naistrix.Errorf("access level is required, must be one of: %s", strings.Join(valid, ", "))
 	}

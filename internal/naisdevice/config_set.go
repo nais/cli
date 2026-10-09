@@ -69,7 +69,7 @@ func SetConfig(ctx context.Context, setting string, value bool) error {
 	case "iloveninetiesboybands":
 		configResponse.Config.ILoveNinetiesBoybands = value
 	default:
-		return fmt.Errorf("setting must be one of [%v]", strings.Join(GetAllowedSettings(false, false), ", "))
+		return fmt.Errorf("setting must be one of: %v", strings.Join(GetAllowedSettings(false, false), ", "))
 	}
 
 	setConfigRequest := &pb.SetAgentConfigurationRequest{Config: configResponse.Config}
