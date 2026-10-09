@@ -14,17 +14,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// render resolves the manifest to apply by applying mixin and --set overrides on
-// top of the base file.
+// render resolves the manifest by applying mixin, --set, and --append overrides.
 //
-// When neither a mixin nor any --set overrides are in play, the base file is
+// When no mixin or field overrides are in play, the base file is
 // returned unchanged (preserving multi-document files). Otherwise the base must
 // contain exactly one YAML document, onto which the mixin is deep-merged and the
-// --set overrides applied, in that order (base < mixin < set).
+// --set and --append overrides applied, in that order (base < mixin < set < append).
 //
 // If mixinPath is empty, an adjacent "<base>.<env>.yaml" file is auto-loaded when
 // it exists.
-func render(basePath, mixinPath, environment string, sets []string, out *naistrix.OutputWriter) ([]byte, error) {
+func render(basePath, mixinPath, environment string, sets, appends []string, out *naistrix.OutputWriter) ([]byte, error) {
 	if basePath == "" {
 		return nil, fmt.Errorf("file path cannot be empty")
 	}
@@ -46,7 +45,7 @@ func render(basePath, mixinPath, environment string, sets []string, out *naistri
 		}
 	}
 
-	if mixinPath == "" && len(sets) == 0 {
+	if mixinPath == "" && len(sets) == 0 && len(appends) == 0 {
 		return baseData, nil
 	}
 
@@ -78,6 +77,15 @@ func render(basePath, mixinPath, environment string, sets []string, out *naistri
 			return nil, fmt.Errorf("invalid --set %q: expected KEY=VALUE", s)
 		}
 		if err := applySet(merged, key, value); err != nil {
+			return nil, err
+		}
+	}
+	for _, s := range appends {
+		key, value, ok := splitSet(s)
+		if !ok {
+			return nil, fmt.Errorf("invalid --append %q: expected KEY=VALUE", s)
+		}
+		if err := applyAppend(merged, key, value); err != nil {
 			return nil, err
 		}
 	}
@@ -136,7 +144,7 @@ func decodeSingleDocument(data []byte, path string) (map[string]any, error) {
 
 	var extra map[string]any
 	if err := decoder.Decode(&extra); err == nil {
-		return nil, fmt.Errorf("%s contains multiple YAML documents; mixins and --set require a single document", path)
+		return nil, fmt.Errorf("%s contains multiple YAML documents; mixins, --set, and --append require a single document", path)
 	} else if !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("failed to decode YAML from %s: %w", path, err)
 	}
@@ -192,7 +200,7 @@ func renderDir(dirPath, environment string, knownEnvs []string, out *naistrix.Ou
 	var combined []byte
 	for _, name := range baseFiles {
 		basePath := filepath.Join(dirPath, name)
-		data, err := render(basePath, "", environment, nil, out)
+		data, err := render(basePath, "", environment, nil, nil, out)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", name, err)
 		}

@@ -40,6 +40,9 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		if len(flags.Set) > 0 {
 			return fmt.Errorf("--set cannot be used when applying a directory (ambiguous target manifest)")
 		}
+		if len(flags.Append) > 0 {
+			return fmt.Errorf("--append cannot be used when applying a directory (ambiguous target manifest)")
+		}
 		if flags.Mixin != "" {
 			return fmt.Errorf("--mixin cannot be used when applying a directory (mixins are auto-loaded per file)")
 		}
@@ -56,7 +59,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 			return err
 		}
 	} else {
-		data, err = render(filePath, string(flags.Mixin), environment, flags.Set, out)
+		data, err = render(filePath, string(flags.Mixin), environment, flags.Set, flags.Append, out)
 		if err != nil {
 			return err
 		}

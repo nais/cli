@@ -292,6 +292,20 @@ func TestRun_DirectoryWithSetFails(t *testing.T) {
 	mustErrorContains(t, err, "--set cannot be used when applying a directory")
 }
 
+func TestRun_DirectoryWithAppendFails(t *testing.T) {
+	flags := &applyflag.Apply{
+		GlobalFlags: &flagspkg.GlobalFlags{
+			AdditionalFlags: &flagspkg.AdditionalFlags{
+				Team:        "my-team",
+				Environment: "dev",
+			},
+		},
+		Append: []string{"spec.env={name: LOG_LEVEL, value: debug}"},
+	}
+	err := Run(context.Background(), t.TempDir(), flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	mustErrorContains(t, err, "--append cannot be used when applying a directory")
+}
+
 func TestRun_DirectoryWithMixinFlagFails(t *testing.T) {
 	dir := t.TempDir()
 	manifestPath := filepath.Join(dir, "manifests")

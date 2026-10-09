@@ -15,10 +15,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestRender_SetListsThroughCLI(t *testing.T) {
+func TestRender_ListOverridesThroughCLI(t *testing.T) {
 	for _, tc := range []struct {
 		name    string
 		sets    []string
+		args    []string
 		want    []any
 		wantErr string
 	}{
@@ -50,6 +51,36 @@ func TestRender_SetListsThroughCLI(t *testing.T) {
 		{name: "empty flag is rejected", sets: []string{""}, wantErr: "expected KEY=VALUE"},
 		{name: "out of range is rejected", sets: []string{"spec.env[2].value=debug"}, wantErr: "out of range"},
 		{name: "missing indexed list is rejected", sets: []string{"spec.missing[0]=debug"}, wantErr: "existing list"},
+		{
+			name: "append preserves base and mixin",
+			args: []string{"--append", "spec.env={name: LOG_LEVEL, value: debug}"},
+			want: []any{
+				map[string]any{"name": "BASE", "value": "base"},
+				map[string]any{"name": "MIXIN", "value": "mixin"},
+				map[string]any{"name": "LOG_LEVEL", "value": "debug"},
+			},
+		},
+		{
+			name: "append runs after set regardless of flag positions",
+			args: []string{
+				"--append", `spec.env={name: FIRST, value: "hello, world=ok"}`,
+				"--set", "spec.env=[{name: SET, value: keep}]",
+				"--append", "spec.env={name: LAST, value: debug}",
+			},
+			want: []any{
+				map[string]any{"name": "SET", "value": "keep"},
+				map[string]any{"name": "FIRST", "value": "hello, world=ok"},
+				map[string]any{"name": "LAST", "value": "debug"},
+			},
+		},
+		{
+			name: "clear then append",
+			args: []string{"--append", "spec.env={name: LOG_LEVEL, value: debug}", "--set", "spec.env=[]"},
+			want: []any{map[string]any{"name": "LOG_LEVEL", "value": "debug"}},
+		},
+		{name: "empty append is rejected", args: []string{"--append="}, wantErr: "invalid --append"},
+		{name: "invalid append YAML is rejected", args: []string{"--append", "spec.env=["}, wantErr: "invalid --append value"},
+		{name: "non-list append target is rejected", args: []string{"--append", "spec.env[0]=new"}, wantErr: "target is not a list"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -65,7 +96,7 @@ func TestRender_SetListsThroughCLI(t *testing.T) {
 				Name: "apply", Title: "Render manifest", Flags: flags,
 				RunFunc: func(_ context.Context, _ *naistrix.Arguments, _ *naistrix.OutputWriter) error {
 					var err error
-					rendered, err = render(base, mixin, "", flags.Set, discardWriter())
+					rendered, err = render(base, mixin, "", flags.Set, flags.Append, discardWriter())
 					return err
 				},
 			})
@@ -76,6 +107,7 @@ func TestRender_SetListsThroughCLI(t *testing.T) {
 			for _, set := range tc.sets {
 				args = append(args, "--set", set)
 			}
+			args = append(args, tc.args...)
 			err = app.Run(naistrix.RunWithArgs(args))
 			if tc.wantErr != "" {
 				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
@@ -91,6 +123,28 @@ func TestRender_SetListsThroughCLI(t *testing.T) {
 				t.Errorf("env = %#v, want %#v", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestRender_AppendOnly(t *testing.T) {
+	dir := t.TempDir()
+	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec: {}\n")
+	got, err := render(base, "", "", nil, []string{"spec.env={name: LOG_LEVEL, value: debug}"}, discardWriter())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []any{map[string]any{"name": "LOG_LEVEL", "value": "debug"}}
+	if env := renderToMap(t, got)["spec"].(map[string]any)["env"]; !reflect.DeepEqual(env, want) {
+		t.Errorf("env = %#v, want %#v", env, want)
+	}
+}
+
+func TestRender_MultiDocWithAppendFails(t *testing.T) {
+	dir := t.TempDir()
+	base := writeFile(t, dir, "nais.yaml", "---\nkind: A\n---\nkind: B\n")
+	_, err := render(base, "", "", nil, []string{"spec.env=new"}, discardWriter())
+	if err == nil || !strings.Contains(err.Error(), "multiple YAML documents") {
+		t.Fatalf("got %v, want multiple-document error", err)
 	}
 }
 
@@ -120,7 +174,7 @@ func TestRender_NoOverridesReturnsBaseUnchanged(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "---\nkind: A\n---\nkind: B\n")
 
-	got, err := render(base, "", "", nil, discardWriter())
+	got, err := render(base, "", "", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -134,7 +188,7 @@ func TestRender_ExplicitMixinDeepMerges(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: old\n  replicas: 1\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec:\n  image: new\n")
 
-	got, err := render(base, mixin, "", nil, discardWriter())
+	got, err := render(base, mixin, "", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -153,7 +207,7 @@ func TestRender_AutoLoadsEnvMixin(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: old\n")
 	writeFile(t, dir, "nais.dev.yaml", "spec:\n  image: dev\n")
 
-	got, err := render(base, "", "dev", nil, discardWriter())
+	got, err := render(base, "", "dev", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -167,7 +221,7 @@ func TestRender_SetWinsOverMixinAndBase(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: base\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec:\n  image: mixin\n")
 
-	got, err := render(base, mixin, "", []string{"spec.image=set"}, discardWriter())
+	got, err := render(base, mixin, "", []string{"spec.image=set"}, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -180,7 +234,7 @@ func TestRender_SetParsesYAMLValue(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec: {}\n")
 
-	got, err := render(base, "", "", []string{"spec.replicas=3"}, discardWriter())
+	got, err := render(base, "", "", []string{"spec.replicas=3"}, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -194,7 +248,7 @@ func TestRender_MultiDocWithMixinFails(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: A\n---\nkind: B\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec: {}\n")
 
-	_, err := render(base, mixin, "", nil, discardWriter())
+	_, err := render(base, mixin, "", nil, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "multiple YAML documents") {
 		t.Errorf("got %v, want error containing %q", err, "multiple YAML documents")
 	}
@@ -204,7 +258,7 @@ func TestRender_InvalidSetFails(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "kind: A\n")
 
-	_, err := render(base, "", "", []string{"noequals"}, discardWriter())
+	_, err := render(base, "", "", []string{"noequals"}, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "expected KEY=VALUE") {
 		t.Errorf("got %v, want error containing %q", err, "expected KEY=VALUE")
 	}
@@ -214,7 +268,7 @@ func TestRender_UnsupportedExtensionFails(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.json", "{}")
 
-	_, err := render(base, "", "", nil, discardWriter())
+	_, err := render(base, "", "", nil, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "unsupported file extension") {
 		t.Errorf("got %v, want error containing %q", err, "unsupported file extension")
 	}
