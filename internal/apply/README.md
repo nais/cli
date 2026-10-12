@@ -132,21 +132,30 @@ spec:
 
 ```yaml
 version: v1
-kind: Valkey
-metadata:
-  name: my-cache
+type: Valkey
+name: my-cache
 spec:
   tier: SingleNode              # SingleNode | HighAvailability
   memory: "4GB"                 # 1GB | 4GB | 8GB | 14GB | 28GB | 56GB | 112GB | 200GB
+  version: "9.1"                # required; use a quoted version string
   maxMemoryPolicy: allkeys-lru  # optional; see below
   databases: 16                 # optional
   notifyKeyspaceEvents: "Ex"    # optional
-  persistence:                  # optional; parsed but not yet sent to the API
+  persistence:                  # optional
     disabled: false
 ```
 
 **maxMemoryPolicy values:** `allkeys-lfu`, `allkeys-lru`, `allkeys-random`,
 `noeviction`, `volatile-lfu`, `volatile-lru`, `volatile-random`, `volatile-ttl`
+
+Omitting `maxMemoryPolicy` uses the API default on creation and leaves the
+existing policy unchanged on update.
+
+Versions are converted to GraphQL enum names (e.g. `"9.1"` becomes `V9_1`),
+without a CLI-maintained version mapping. The API must support the chosen version.
+`persistence.disabled` controls RDB dumps and backups; setting it to `true`
+means all data is lost on restart. Omitting it leaves the API default on creation
+and the existing setting on update.
 
 ### OpenSearch
 
@@ -194,12 +203,12 @@ binaryData:                        # optional; values must be base64-encoded
 
 ```yaml
 version: v1
-kind: Valkey
-metadata:
-  name: sessions
+type: Valkey
+name: sessions
 spec:
   tier: HighAvailability
   memory: "28GB"
+  version: "9.1"
 ---
 version: v1
 kind: OpenSearch

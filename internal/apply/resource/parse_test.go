@@ -51,7 +51,7 @@ spec:
 		Databases:            new(16),
 		MaxMemoryPolicy:      "allkeys-lru",
 		NotifyKeyspaceEvents: "Ex",
-		Persistence:          &valkeyPersistence{Disabled: false},
+		Persistence:          &valkeyPersistence{Disabled: new(false)},
 	}
 	if diff := cmp.Diff(want, spec); diff != "" {
 		t.Errorf("spec mismatch (-want +got):\n%s", diff)

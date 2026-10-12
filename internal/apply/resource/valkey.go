@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -27,12 +28,11 @@ type valkeySpec struct {
 	Databases            *int               `yaml:"databases"`
 	NotifyKeyspaceEvents string             `yaml:"notifyKeyspaceEvents"`
 	Persistence          *valkeyPersistence `yaml:"persistence"`
+	Version              string             `yaml:"version"`
 }
 
-// valkeyPersistence is parsed so it does not trip the strict spec decoder, but
-// is ignored until the nais-api mutation supports it.
 type valkeyPersistence struct {
-	Disabled bool `yaml:"disabled"`
+	Disabled *bool `yaml:"disabled"`
 }
 
 var (
@@ -68,25 +68,10 @@ func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (A
 		return "", err
 	}
 
-	data := &valkey.Valkey{
-		Databases:            s.Databases,
-		NotifyKeyspaceEvents: s.NotifyKeyspaceEvents,
-		Labels:               m.Labels,
-	}
-
-	var err error
-	if data.Memory, err = enumValue("memory", s.Memory, valkeyMemory); err != nil {
+	data, err := s.toValkey(m.Labels)
+	if err != nil {
 		return "", err
 	}
-	if data.Tier, err = enumValue("tier", s.Tier, valkeyTier); err != nil {
-		return "", err
-	}
-	if s.MaxMemoryPolicy != "" {
-		if data.MaxMemoryPolicy, err = enumValue("maxMemoryPolicy", s.MaxMemoryPolicy, valkeyMaxMemoryPolicy); err != nil {
-			return "", err
-		}
-	}
-	// s.Persistence is parsed but intentionally ignored until the API supports it.
 
 	vmeta := valkey.Metadata{
 		Name:            m.Name,
@@ -108,6 +93,34 @@ func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (A
 		return "", err
 	}
 	return ActionCreated, nil
+}
+
+func (s valkeySpec) toValkey(labels map[string]string) (*valkey.Valkey, error) {
+	data := &valkey.Valkey{
+		Databases:            s.Databases,
+		NotifyKeyspaceEvents: s.NotifyKeyspaceEvents,
+		Labels:               labels,
+	}
+	if s.Version != "" {
+		data.Version = gql.ValkeyMajorVersion("V" + strings.ReplaceAll(s.Version, ".", "_"))
+	}
+	if s.Persistence != nil {
+		data.PersistenceDisabled = s.Persistence.Disabled
+	}
+
+	var err error
+	if data.Memory, err = enumValue("memory", s.Memory, valkeyMemory); err != nil {
+		return nil, err
+	}
+	if data.Tier, err = enumValue("tier", s.Tier, valkeyTier); err != nil {
+		return nil, err
+	}
+	if s.MaxMemoryPolicy != "" {
+		if data.MaxMemoryPolicy, err = enumValue("maxMemoryPolicy", s.MaxMemoryPolicy, valkeyMaxMemoryPolicy); err != nil {
+			return nil, err
+		}
+	}
+	return data, nil
 }
 
 // exists reports whether a Valkey instance with the given name already exists.
