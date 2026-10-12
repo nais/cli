@@ -20,8 +20,6 @@ type Valkey struct {
 	// NotifyKeyspaceEvents configures Valkey keyspace notifications, e.g. "Ex".
 	NotifyKeyspaceEvents string `json:"notifyKeyspaceEvents,omitempty" toml:"notifyKeyspaceEvents,omitempty"`
 
-	Version gql.ValkeyMajorVersion `json:"version,omitempty" toml:"version,omitempty" jsonschema:"enum=V8_1,enum=V9_1"`
-
 	Labels map[string]string `json:"labels,omitempty" toml:"labels,omitempty"`
 }
 
@@ -56,18 +54,12 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		return nil, err
 	}
 
-	version := data.Version
-	if version == "" {
-		version = gql.ValkeyMajorVersionV91
-	}
-
 	resp, err := gql.CreateValkey(ctx, client, gql.CreateValkeyInput{
 		Name:                 metadata.Name,
 		EnvironmentName:      metadata.EnvironmentName,
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		Version:              version,
 		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
 		Databases:            data.Databases,
@@ -193,7 +185,6 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		# @genqlient(for: "UpdateValkeyInput.maxMemoryPolicy", omitempty: true)
 		# @genqlient(for: "UpdateValkeyInput.notifyKeyspaceEvents", omitempty: true)
 		# @genqlient(for: "UpdateValkeyInput.databases", omitempty: true)
-		# @genqlient(for: "UpdateValkeyInput.version", omitempty: true)
 		mutation UpdateValkey(
 		  $input: UpdateValkeyInput!
 		) {
@@ -219,18 +210,12 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		})
 	}
 
-	var version *gql.ValkeyMajorVersion
-	if data.Version != "" {
-		version = new(data.Version)
-	}
-
 	resp, err := gql.UpdateValkey(ctx, client, gql.UpdateValkeyInput{
 		Name:                 metadata.Name,
 		EnvironmentName:      metadata.EnvironmentName,
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		Version:              version,
 		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
 		Databases:            data.Databases,

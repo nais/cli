@@ -27,7 +27,6 @@ type valkeySpec struct {
 	Databases            *int               `yaml:"databases"`
 	NotifyKeyspaceEvents string             `yaml:"notifyKeyspaceEvents"`
 	Persistence          *valkeyPersistence `yaml:"persistence"`
-	Version              string             `yaml:"version"`
 }
 
 // valkeyPersistence is parsed so it does not trip the strict spec decoder, but
@@ -61,13 +60,6 @@ var (
 		"volatile-random": gql.ValkeyMaxMemoryPolicyVolatileRandom,
 		"volatile-ttl":    gql.ValkeyMaxMemoryPolicyVolatileTtl,
 	}
-
-	valkeyVersions = map[string]gql.ValkeyMajorVersion{
-		"v8.1": gql.ValkeyMajorVersionV81,
-		"v9.1": gql.ValkeyMajorVersionV91,
-		"V8_1": gql.ValkeyMajorVersionV81,
-		"V9_1": gql.ValkeyMajorVersionV91,
-	}
 )
 
 func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (Action, error) {
@@ -88,11 +80,6 @@ func (v valkeyResource) Apply(ctx context.Context, meta Metadata, m Manifest) (A
 	}
 	if data.Tier, err = enumValue("tier", s.Tier, valkeyTier); err != nil {
 		return "", err
-	}
-	if s.Version != "" {
-		if data.Version, err = enumValue("version", s.Version, valkeyVersions); err != nil {
-			return "", err
-		}
 	}
 	if s.MaxMemoryPolicy != "" {
 		if data.MaxMemoryPolicy, err = enumValue("maxMemoryPolicy", s.MaxMemoryPolicy, valkeyMaxMemoryPolicy); err != nil {

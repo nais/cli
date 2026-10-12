@@ -36679,7 +36679,7 @@ type UpdateValkeyInput struct {
 	TeamSlug             string                 `json:"teamSlug"`
 	Tier                 ValkeyTier             `json:"tier"`
 	Memory               ValkeyMemory           `json:"memory"`
-	Version              *ValkeyMajorVersion    `json:"version,omitempty"`
+	Version              *ValkeyMajorVersion    `json:"version"`
 	MaxMemoryPolicy      *ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 	NotifyKeyspaceEvents *string                `json:"notifyKeyspaceEvents,omitempty"`
 	Databases            *int                   `json:"databases,omitempty"`
