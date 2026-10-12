@@ -138,6 +138,7 @@ metadata:
 spec:
   tier: SingleNode              # SingleNode | HighAvailability
   memory: "4GB"                 # 1GB | 4GB | 8GB | 14GB | 28GB | 56GB | 112GB | 200GB
+  version: v9.1                 # optional; v8.1 | v9.1 (also V8_1 | V9_1)
   maxMemoryPolicy: allkeys-lru  # optional; see below
   databases: 16                 # optional
   notifyKeyspaceEvents: "Ex"    # optional
@@ -147,6 +148,9 @@ spec:
 
 **maxMemoryPolicy values:** `allkeys-lfu`, `allkeys-lru`, `allkeys-random`,
 `noeviction`, `volatile-lfu`, `volatile-lru`, `volatile-random`, `volatile-ttl`
+
+If `spec.version` is omitted, new instances use v9.1 and existing instances keep
+their current version.
 
 ### OpenSearch
 

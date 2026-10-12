@@ -35,7 +35,8 @@ const testResourceSchema = `{
           "required": ["memory", "tier"],
           "properties": {
             "memory": {"enum": ["1GB", "4GB"]},
-            "tier": {"enum": ["SingleNode", "HighAvailability"]}
+            "tier": {"enum": ["SingleNode", "HighAvailability"]},
+            "version": {"enum": ["v8.1", "v9.1", "V8_1", "V9_1"]}
           }
         }
       }
@@ -143,6 +144,30 @@ spec:
   tier: SingleNode
 `)
 	mustErrorContains(t, err, "Valkey/my-valkey")
+}
+
+func TestRun_DryRunValidatesNativeValkeyVersion(t *testing.T) {
+	withTestResourceSchema(t, gojsonschema.NewStringLoader(testResourceSchema))
+
+	for _, version := range []string{"v8.1", "v9.1", "V8_1", "V9_1", "v10.1"} {
+		t.Run(version, func(t *testing.T) {
+			out, err := writeManifestAndDryRun(t, `
+version: v1
+type: Valkey
+name: my-valkey
+spec:
+  memory: 1GB
+  tier: SingleNode
+  version: `+version)
+			if version == "v10.1" {
+				mustErrorContains(t, err, "spec.version")
+				return
+			}
+			if err != nil {
+				t.Fatalf("Run: %v\noutput:\n%s", err, out)
+			}
+		})
+	}
 }
 
 func TestRun_DryRunRejectsUnknownNativeValkeySpecField(t *testing.T) {
