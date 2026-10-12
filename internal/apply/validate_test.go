@@ -32,10 +32,16 @@ const testResourceSchema = `{
         "spec": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["memory", "tier"],
+          "required": ["memory", "tier", "version"],
           "properties": {
             "memory": {"enum": ["1GB", "4GB"]},
-            "tier": {"enum": ["SingleNode", "HighAvailability"]}
+            "tier": {"enum": ["SingleNode", "HighAvailability"]},
+            "version": {"type": "string", "enum": ["8.1", "9.0", "9.1"]},
+            "persistence": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {"disabled": {"type": "boolean"}}
+            }
           }
         }
       }
@@ -122,6 +128,7 @@ name: my-valkey
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 `)
 	if err != nil {
 		t.Fatalf("Run: %v\noutput:\n%s", err, out)
@@ -141,8 +148,37 @@ name: my-valkey
 spec:
   memory: 999GB
   tier: SingleNode
+  version: "9.1"
 `)
 	mustErrorContains(t, err, "Valkey/my-valkey")
+}
+
+func TestRun_DryRunValidatesValkeyVersion(t *testing.T) {
+	withTestResourceSchema(t, gojsonschema.NewStringLoader(testResourceSchema))
+
+	for _, version := range []string{`"8.1"`, `"9.0"`, `"9.1"`, `"10.2"`, `9.1`, ""} {
+		t.Run(version, func(t *testing.T) {
+			field := ""
+			if version != "" {
+				field = "\n  version: " + version
+			}
+			out, err := writeManifestAndDryRun(t, `
+version: v1
+type: Valkey
+name: my-valkey
+spec:
+  memory: 1GB
+  tier: SingleNode`+field)
+			switch version {
+			case `"8.1"`, `"9.0"`, `"9.1"`:
+				if err != nil {
+					t.Fatalf("Run: %v\noutput:\n%s", err, out)
+				}
+			default:
+				mustErrorContains(t, err, "version")
+			}
+		})
+	}
 }
 
 func TestRun_DryRunRejectsUnknownNativeValkeySpecField(t *testing.T) {
@@ -155,6 +191,7 @@ name: my-valkey
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
   bogusField: nope
 `)
 	mustErrorContains(t, err, "Valkey/my-valkey")
@@ -171,6 +208,7 @@ bogusTopLevel: nope
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 `)
 	mustErrorContains(t, err, "Valkey/my-valkey")
 	mustErrorContains(t, err, "bogusTopLevel")
@@ -256,6 +294,7 @@ name: first
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 ---
 version: v1
 type: Postgres
@@ -282,6 +321,7 @@ name: first
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 ---
 version: v1
 type: Valkey
@@ -290,6 +330,7 @@ namespace: ignored
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 `, dryRun, false)
 		mustErrorContains(t, err, "Valkey/second contains fields not used by nais apply: namespace")
 		mustErrorContains(t, err, "--allow-ignored-fields")
@@ -299,21 +340,23 @@ spec:
 	}
 }
 
-func TestRun_RejectsIgnoredValkeyPersistence(t *testing.T) {
+func TestRun_DryRunAcceptsValkeyPersistence(t *testing.T) {
 	withTestResourceSchema(t, gojsonschema.NewStringLoader(testResourceSchema))
 
-	for _, dryRun := range []bool{false, true} {
-		_, err := writeManifestAndRun(t, `
+	for _, disabled := range []string{"true", "false"} {
+		out, err := writeManifestAndDryRun(t, `
 version: v1
 type: Valkey
 name: my-valkey
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
   persistence:
-    disabled: true
-`, dryRun, false)
-		mustErrorContains(t, err, "persistence")
+    disabled: `+disabled)
+		if err != nil {
+			t.Fatalf("Run: %v\noutput:\n%s", err, out)
+		}
 	}
 }
 
@@ -328,6 +371,7 @@ namespace: ignored
 spec:
   memory: 1GB
   tier: SingleNode
+  version: "9.1"
 `, true, true)
 	if err != nil {
 		t.Fatalf("Run: %v\noutput:\n%s", err, out)

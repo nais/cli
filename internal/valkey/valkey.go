@@ -20,6 +20,9 @@ type Valkey struct {
 	// NotifyKeyspaceEvents configures Valkey keyspace notifications, e.g. "Ex".
 	NotifyKeyspaceEvents string `json:"notifyKeyspaceEvents,omitempty" toml:"notifyKeyspaceEvents,omitempty"`
 
+	Version             gql.ValkeyMajorVersion `json:"version,omitempty" toml:"version,omitempty"`
+	PersistenceDisabled *bool                  `json:"persistenceDisabled,omitempty" toml:"persistenceDisabled,omitempty"`
+
 	Labels map[string]string `json:"labels,omitempty" toml:"labels,omitempty"`
 }
 
@@ -37,6 +40,7 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		# @genqlient(for: "CreateValkeyInput.maxMemoryPolicy", omitempty: true)
 		# @genqlient(for: "CreateValkeyInput.notifyKeyspaceEvents", omitempty: true)
 		# @genqlient(for: "CreateValkeyInput.databases", omitempty: true)
+		# @genqlient(for: "CreateValkeyInput.persistenceDisabled", omitempty: true)
 		mutation CreateValkey(
 		  $input: CreateValkeyInput!
 		) {
@@ -54,13 +58,24 @@ func Create(ctx context.Context, metadata Metadata, data *Valkey) (*gql.CreateVa
 		return nil, err
 	}
 
+	version := data.Version
+	if version == "" {
+		version = gql.ValkeyMajorVersionV91
+	}
+	var maxMemoryPolicy *gql.ValkeyMaxMemoryPolicy
+	if data.MaxMemoryPolicy != "" {
+		maxMemoryPolicy = new(data.MaxMemoryPolicy)
+	}
+
 	resp, err := gql.CreateValkey(ctx, client, gql.CreateValkeyInput{
 		Name:                 metadata.Name,
 		EnvironmentName:      metadata.EnvironmentName,
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
+		Version:              version,
+		PersistenceDisabled:  data.PersistenceDisabled,
+		MaxMemoryPolicy:      maxMemoryPolicy,
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
 		Databases:            data.Databases,
 	})
@@ -185,6 +200,8 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		# @genqlient(for: "UpdateValkeyInput.maxMemoryPolicy", omitempty: true)
 		# @genqlient(for: "UpdateValkeyInput.notifyKeyspaceEvents", omitempty: true)
 		# @genqlient(for: "UpdateValkeyInput.databases", omitempty: true)
+		# @genqlient(for: "UpdateValkeyInput.version", omitempty: true)
+		# @genqlient(for: "UpdateValkeyInput.persistenceDisabled", omitempty: true)
 		mutation UpdateValkey(
 		  $input: UpdateValkeyInput!
 		) {
@@ -210,13 +227,24 @@ func Update(ctx context.Context, metadata Metadata, data *Valkey) (*gql.UpdateVa
 		})
 	}
 
+	var version *gql.ValkeyMajorVersion
+	if data.Version != "" {
+		version = new(data.Version)
+	}
+	var maxMemoryPolicy *gql.ValkeyMaxMemoryPolicy
+	if data.MaxMemoryPolicy != "" {
+		maxMemoryPolicy = new(data.MaxMemoryPolicy)
+	}
+
 	resp, err := gql.UpdateValkey(ctx, client, gql.UpdateValkeyInput{
 		Name:                 metadata.Name,
 		EnvironmentName:      metadata.EnvironmentName,
 		TeamSlug:             metadata.TeamSlug,
 		Memory:               data.Memory,
 		Tier:                 data.Tier,
-		MaxMemoryPolicy:      new(data.MaxMemoryPolicy),
+		Version:              version,
+		PersistenceDisabled:  data.PersistenceDisabled,
+		MaxMemoryPolicy:      maxMemoryPolicy,
 		NotifyKeyspaceEvents: new(data.NotifyKeyspaceEvents),
 		Databases:            data.Databases,
 		Labels:               labels,

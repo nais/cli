@@ -1506,7 +1506,7 @@ type CreateValkeyInput struct {
 	MaxMemoryPolicy      *ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 	NotifyKeyspaceEvents *string                `json:"notifyKeyspaceEvents,omitempty"`
 	Databases            *int                   `json:"databases,omitempty"`
-	PersistenceDisabled  *bool                  `json:"persistenceDisabled"`
+	PersistenceDisabled  *bool                  `json:"persistenceDisabled,omitempty"`
 }
 
 // GetName returns CreateValkeyInput.Name, and is useful for accessing the field via an interface.
@@ -36679,12 +36679,12 @@ type UpdateValkeyInput struct {
 	TeamSlug             string                 `json:"teamSlug"`
 	Tier                 ValkeyTier             `json:"tier"`
 	Memory               ValkeyMemory           `json:"memory"`
-	Version              *ValkeyMajorVersion    `json:"version"`
+	Version              *ValkeyMajorVersion    `json:"version,omitempty"`
 	MaxMemoryPolicy      *ValkeyMaxMemoryPolicy `json:"maxMemoryPolicy,omitempty"`
 	NotifyKeyspaceEvents *string                `json:"notifyKeyspaceEvents,omitempty"`
 	Databases            *int                   `json:"databases,omitempty"`
 	Labels               []ResourceLabelInput   `json:"labels"`
-	PersistenceDisabled  *bool                  `json:"persistenceDisabled"`
+	PersistenceDisabled  *bool                  `json:"persistenceDisabled,omitempty"`
 }
 
 // GetName returns UpdateValkeyInput.Name, and is useful for accessing the field via an interface.
