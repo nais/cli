@@ -6,6 +6,10 @@ See the [CLI documentation](https://cli.nais.io) for usage instructions.
 
 ## Local Development
 
+### Adding a command that uses nais-relay
+
+Follow the [shared relay integration requirements](https://github.com/nais/relay/blob/main/SERVICE-INTEGRATION.md) and fill in the [integration template](https://github.com/nais/relay/blob/main/SERVICE-INTEGRATION-TEMPLATE.md) in the product's design or rollout documentation. A new command needs a product-specific authenticated NAIS API mutation and an approved target policy; the CLI does not create `RelayAccess` resources.
+
 ### Install the required go version:
 
 ```bash
