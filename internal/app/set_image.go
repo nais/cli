@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 )
 
 type ImageRelease struct {
@@ -47,7 +48,7 @@ func GetApplicationImages(ctx context.Context, team, application, env string) (*
 		return nil, fmt.Errorf("application name must be specified to get application images")
 	}
 	if env == "" {
-		return nil, fmt.Errorf("environment must be specified to get application images")
+		return nil, validation.ErrMissingEnvironment
 	}
 
 	client, err := naisapi.GraphqlClient(ctx)

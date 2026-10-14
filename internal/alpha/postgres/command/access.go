@@ -16,6 +16,7 @@ import (
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/alpha/postgres/relay"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 	"golang.org/x/term"
@@ -182,7 +183,7 @@ func resolveAccessReason(provided string, out *naistrix.OutputWriter) (string, e
 // Prepare the audit reason before installing signal handlers: input.Input cannot observe context cancellation.
 func prepareAccessRequest(name string, f *flag.Access, out *naistrix.OutputWriter) (gql.CreatePostgresAccessInput, error) {
 	if f.Team == "" {
-		return gql.CreatePostgresAccessInput{}, fmt.Errorf("missing required team, specify a team using `nais defaults set team <team>` or by using the -t, --team flag")
+		return gql.CreatePostgresAccessInput{}, validation.ErrMissingTeam
 	}
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")

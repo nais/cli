@@ -2,9 +2,14 @@ package validation
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/nais/naistrix"
+)
+
+var (
+	ErrMissingTeam        = errors.New("missing required team, specify -t, --team or set a default team")
+	ErrMissingEnvironment = errors.New("missing required environment, specify -e, --environment or set a default environment")
 )
 
 type teamChecker interface {
@@ -20,7 +25,7 @@ func RequireTeam(f any) naistrix.ValidateFunc {
 			return nil
 		}
 
-		return fmt.Errorf("missing required team, specify a team using `nais defaults set team <team>` or by using the -t, --team flag")
+		return ErrMissingTeam
 	}
 }
 
@@ -37,7 +42,7 @@ func RequireEnvironment(f any) naistrix.ValidateFunc {
 			return nil
 		}
 
-		return fmt.Errorf("missing required environment, specify an environment using `nais defaults set environment <environment>` or by using the -e, --environment flag")
+		return ErrMissingEnvironment
 	}
 }
 

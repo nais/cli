@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -39,7 +40,7 @@ func setEnv(parentFlags *flag.Job) *naistrix.Command {
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("environment must be specified (-e, --environment)")
+				return validation.ErrMissingEnvironment
 			}
 			if len(args.GetRepeatable("env_vars")) == 0 {
 				return fmt.Errorf("at least one environment variable must be specified (KEY=VALUE or KEY-)")

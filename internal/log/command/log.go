@@ -9,6 +9,7 @@ import (
 	"github.com/nais/cli/internal/flags"
 	logflags "github.com/nais/cli/internal/log/command/flag"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -26,7 +27,7 @@ func Log(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Flags:       flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
+				return validation.ErrMissingEnvironment
 			}
 
 			return nil

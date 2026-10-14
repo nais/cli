@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 )
@@ -23,20 +24,18 @@ func resolveEnvironment(ctx context.Context, provided string, out *naistrix.Outp
 		return provided, nil
 	}
 
-	const hint = "specify an environment using `nais defaults set environment <environment>` or by using the -e, --environment flag"
-
 	envs, err := naisapi.GetAllEnvironments(ctx)
 	if err != nil {
 		return "", fmt.Errorf("fetching environments: %w", err)
 	}
 	if len(envs) == 0 {
-		return "", fmt.Errorf("missing required environment, %s", hint)
+		return "", validation.ErrMissingEnvironment
 	}
 	sort.Strings(envs)
 
 	selected, err := input.Select("Select environment to apply to", envs)
 	if errors.Is(err, input.ErrNotInteractive) {
-		return "", fmt.Errorf("missing required environment, %s", hint)
+		return "", validation.ErrMissingEnvironment
 	}
 	if err != nil {
 		return "", err

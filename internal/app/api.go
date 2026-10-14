@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 )
 
 func GetApplicationInstances(ctx context.Context, team, app, env string) ([]string, error) {
@@ -25,7 +26,7 @@ func GetApplicationInstances(ctx context.Context, team, app, env string) ([]stri
 		}
 		`
 	if env == "" {
-		return nil, fmt.Errorf("environment must be specified to get application instances")
+		return nil, validation.ErrMissingEnvironment
 	}
 	if app == "" {
 		return nil, fmt.Errorf("application name must be specified to get application instances")
