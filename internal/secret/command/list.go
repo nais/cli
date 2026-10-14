@@ -31,7 +31,7 @@ func list(parentFlags *flag.Secret) *naistrix.Command {
 		Title:       "List secrets for a team.",
 		Description: "This command lists all secrets for a given team.",
 		Flags:       f,
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all secrets for the team.",
 			},

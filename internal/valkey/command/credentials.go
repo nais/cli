@@ -43,7 +43,7 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create read credentials for a Valkey instance named my-valkey in environment dev, valid for 1 day.",
 				Command:     "my-valkey --environment dev --permission READ --ttl 1d",

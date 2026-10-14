@@ -33,7 +33,7 @@ func list(parentFlags *flag.Config) *naistrix.Command {
 		Title:       "List config for a team.",
 		Description: "This command lists all config for a given team.",
 		Flags:       f,
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all config for the team.",
 			},

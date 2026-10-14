@@ -19,7 +19,7 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 		Name:        "set-role",
 		Title:       "Set role for a team member.",
 		Description: "Only team owners can assign roles.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Assign some-user@example.com as owner.",
 				Command:     "owner some-user@example.com",

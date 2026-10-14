@@ -30,7 +30,7 @@ func unset(parentFlags *flag.Config) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Unset a key from a config.",
 				Command:     "my-config --environment dev --key OLD_SETTING",

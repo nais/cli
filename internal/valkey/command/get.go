@@ -31,7 +31,7 @@ func get(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Describe an existing Valkey instance named some-valkey in environment dev.",
 				Command:     "some-valkey --environment dev",

@@ -53,7 +53,7 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set a key-value pair in a secret.",
 				Command:     "my-secret --environment dev --key DATABASE_URL --value postgres://localhost/mydb",

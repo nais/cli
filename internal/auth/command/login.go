@@ -18,7 +18,7 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 		Name:            "login",
 		Title:           "Log in to the Nais platform.",
 		TopLevelAliases: []string{"login"},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Log in to the Nais platform using gcloud.",
 			},

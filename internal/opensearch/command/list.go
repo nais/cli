@@ -48,7 +48,7 @@ func list(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Title:       "List existing Opensearch instances.",
 		Description: "This command lists all Opensearch instances for a given team.",
 		Flags:       flags,
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all OpenSearches for the team.",
 			},

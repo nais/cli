@@ -22,7 +22,7 @@ func create(parentFlags *flag.Secret) *naistrix.Command {
 			validation.RequireEnvironment(f),
 			validateArgs,
 		),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create a secret named my-secret in environment dev.",
 				Command:     "my-secret --environment dev",

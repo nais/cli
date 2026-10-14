@@ -24,7 +24,7 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 			validateArgs,
 		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a config named my-config in environment dev.",
 				Command:     "my-config --environment dev",

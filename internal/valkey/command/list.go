@@ -46,7 +46,7 @@ func list(parentFlags *flag.Valkey) *naistrix.Command {
 		Title:       "List existing Valkey instances.",
 		Description: "This command lists all Valkey instances for a given team.",
 		Flags:       flags,
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all Valkeys for the team.",
 			},

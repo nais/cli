@@ -18,7 +18,7 @@ func listIssues(parentFlags *flag.Issues) *naistrix.Command {
 		Title:       "List issues.",
 		Description: "This command lists all issues for a given team.",
 		Flags:       flags,
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all issues for the team.",
 			},

@@ -34,7 +34,7 @@ func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set the |MEMORY| for a Valkey instance named some-valkey.",
 				Command:     "some-valkey --memory GB_8",

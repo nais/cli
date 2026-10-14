@@ -31,7 +31,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return flags.Validate()
 			},
 		),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create an OpenSearch instance named some-opensearch with default settings.",
 				Command:     "some-opensearch",
