@@ -53,7 +53,7 @@ func set(parentFlags *flag.Config) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set a key-value pair in a config.",
 				Command:     "my-config --environment dev --key DATABASE_HOST --value db.example.com",

@@ -30,7 +30,7 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Unset a key from a secret.",
 				Command:     "my-secret --environment dev --key OLD_API_KEY",

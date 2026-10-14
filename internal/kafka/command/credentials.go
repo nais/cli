@@ -36,7 +36,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 				return nil
 			},
 		),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create Kafka credentials in environment dev, valid for 1 day, output as environment variables.",
 				Command:     "--environment dev --ttl 1d",

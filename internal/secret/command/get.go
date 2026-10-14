@@ -60,7 +60,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Get details for a secret named my-secret in environment dev.",
 				Command:     "my-secret --environment dev",

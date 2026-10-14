@@ -47,7 +47,7 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 			}
 			return nil
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a job run named my-job-20250318-120000 in environment dev.",
 				Command:     "my-job-20250318-120000 --environment dev",

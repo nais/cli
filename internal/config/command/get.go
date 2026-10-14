@@ -52,7 +52,7 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 			},
 		),
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Get details for a config named my-config in environment dev.",
 				Command:     "my-config --environment dev",

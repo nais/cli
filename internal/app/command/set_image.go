@@ -40,7 +40,7 @@ func setImage(parentFlags *flag.App) *naistrix.Command {
 		Title: "Set the container image for an application.",
 		Description: "Rolls the application back (or forward) to a previously deployed container image. " +
 			"An interactive selector of previous releases is shown. Changes are temporary and will be overwritten on next deploy.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Select an image to roll back to interactively.",
 				Command:     "my-app -e dev",

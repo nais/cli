@@ -19,7 +19,7 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 		Name:        "replicas",
 		Title:       "Set replica count for an application.",
 		Description: "Updates the minimum and maximum replica count for the application. Changes are temporary and will be overwritten on next deploy.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set replicas to min 2, max 5.",
 				Command:     "my-app --min 2 --max 5 -e dev",

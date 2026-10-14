@@ -22,7 +22,7 @@ func add(parentFlags *flag.Member) *naistrix.Command {
 		Name:        "add",
 		Title:       "Add a member to a team.",
 		Description: "Only team owners can add team members.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Add some-user@example.com as a regular member.",
 				Command:     "some-user@example.com",

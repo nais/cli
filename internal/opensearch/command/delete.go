@@ -32,7 +32,7 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete an existing OpenSearch instance named some-opensearch.",
 				Command:     "some-opensearch",

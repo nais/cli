@@ -28,7 +28,7 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 				return flags.Validate()
 			},
 		),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create a Valkey instance named some-valkey with default settings.",
 				Command:     "some-valkey",

@@ -41,7 +41,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set the |MEMORY| for an Opensearch instance named some-opensearch.",
 				Command:     "some-opensearch --memory GB_8",

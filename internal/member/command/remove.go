@@ -17,7 +17,7 @@ func remove(parentFlags *flag.Member) *naistrix.Command {
 		Name:        "remove",
 		Title:       "Remove a member from a team.",
 		Description: "Only team owners can remove members from a team.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Remove some-user@example.com from the team.",
 				Command:     "some-user@example.com",

@@ -31,7 +31,7 @@ func listRuns(parentFlags *flag.Job) *naistrix.Command {
 			}
 			return nil
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "List all runs for a job named my-job in the dev environment.",
 				Command:     "my-job --environment dev",

@@ -33,7 +33,7 @@ func get(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Describe an existing OpenSearch instance named some-opensearch in environment dev.",
 				Command:     "some-opensearch --environment dev",

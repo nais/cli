@@ -30,7 +30,7 @@ func delete(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 			return nil, ""
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete an existing Valkey instance named some-valkey.",
 				Command:     "some-valkey",

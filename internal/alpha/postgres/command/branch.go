@@ -80,7 +80,7 @@ func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "create", Title: "Create an inactive Postgres branch from a point in time.", Flags: f,
 		Description: "Use create <postgres> [<new-branch>]. If the new branch name is omitted, prompt for it interactively. An explicit or default environment is used directly; otherwise resolve from the named Postgres, auto-selecting its sole environment or prompting for multiple (require -e noninteractively when ambiguous).",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{Description: "Prompt for a new branch name and restore from five minutes ago.", Command: "my-postgres --ago 5m"},
 			{Description: "Restore from the active branch as it was two hours ago.", Command: "my-postgres restored --ago 2h"},
 			{Description: "Restore from the active branch at a UTC timestamp (Z means UTC).", Command: "my-postgres restored --at 2026-10-06T10:00:00Z"},

@@ -18,7 +18,7 @@ func setEnv(parentFlags *flag.App) *naistrix.Command {
 		Name:        "env",
 		Title:       "Set environment variables for an application.",
 		Description: "Updates environment variables on the application. Use KEY=VALUE to set and KEY- to remove. Changes are temporary and will be overwritten on next deploy.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set environment variables.",
 				Command:     "my-app FOO=bar BAZ=qux -e dev",

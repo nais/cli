@@ -45,7 +45,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 			return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
 		},
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create read credentials for an OpenSearch instance named my-opensearch in environment dev, valid for 1 day.",
 				Command:     "my-opensearch --environment dev --permission READ --ttl 1d",

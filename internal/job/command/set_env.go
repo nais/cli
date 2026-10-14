@@ -18,7 +18,7 @@ func setEnv(parentFlags *flag.Job) *naistrix.Command {
 		Name:        "env",
 		Title:       "Set environment variables for a job.",
 		Description: "Updates environment variables on the job. Use KEY=VALUE to set and KEY- to remove. Changes are temporary and will be overwritten on next deploy.",
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set environment variables.",
 				Command:     "my-job FOO=bar BAZ=qux -e dev",

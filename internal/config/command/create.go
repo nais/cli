@@ -22,7 +22,7 @@ func create(parentFlags *flag.Config) *naistrix.Command {
 			validation.RequireEnvironment(f),
 			validateArgs,
 		),
-		Examples: []naistrix.Example{
+		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create a config named my-config in environment dev.",
 				Command:     "my-config --environment dev",
