@@ -13,6 +13,7 @@ import (
 	"github.com/nais/cli/internal/job/command/flag"
 	logs "github.com/nais/cli/internal/log/command"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -34,7 +35,7 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
+				return validation.ErrMissingEnvironment
 			}
 			if args.Get("name") == "" {
 				return fmt.Errorf("job name is required")

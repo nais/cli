@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -24,7 +25,7 @@ func listRuns(parentFlags *flag.Job) *naistrix.Command {
 		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
+				return validation.ErrMissingEnvironment
 			}
 			if args.Get("job-name") == "" {
 				return fmt.Errorf("job name is required")

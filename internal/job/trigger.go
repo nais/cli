@@ -9,6 +9,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	clivalidation "github.com/nais/cli/internal/validation"
 	"k8s.io/apimachinery/pkg/util/validation"
 )
 
@@ -29,7 +30,7 @@ func TriggerJob(ctx context.Context, team, name, environment, runName string) (s
 	`
 
 	if environment == "" {
-		return "", fmt.Errorf("exactly one environment must be specified")
+		return "", clivalidation.ErrMissingEnvironment
 	}
 	env := environment
 

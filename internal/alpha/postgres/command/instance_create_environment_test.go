@@ -14,6 +14,7 @@ import (
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -31,7 +32,7 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 		}
 	})
 
-	const hint = "missing required environment, specify an environment using `nais defaults set environment <environment>` or by using the -e, --environment flag"
+	hint := validation.ErrMissingEnvironment.Error()
 	for _, tt := range []struct {
 		name, config, response, createError, wantError string
 		args                                           []string

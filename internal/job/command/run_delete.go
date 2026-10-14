@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -40,7 +41,7 @@ func deleteRun(parentFlags *flag.Job) *naistrix.Command {
 		},
 		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
+				return validation.ErrMissingEnvironment
 			}
 			if args.Get("run-name") == "" {
 				return fmt.Errorf("run name is required")

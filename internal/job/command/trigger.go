@@ -2,10 +2,10 @@ package command
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/nais/cli/internal/job"
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -22,7 +22,7 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 		Flags: flags,
 		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("exactly one environment must be specified")
+				return validation.ErrMissingEnvironment
 			}
 			return nil
 		},

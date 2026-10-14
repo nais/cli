@@ -2,6 +2,7 @@ package validation
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/nais/cli/internal/flags"
@@ -76,6 +77,35 @@ func TestRequireTeam(t *testing.T) {
 			err := validate(context.Background(), nil)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("RequireTeam() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr && !errors.Is(err, ErrMissingTeam) {
+				t.Errorf("RequireTeam() error = %v, want ErrMissingTeam", err)
+			}
+		})
+	}
+}
+
+func TestRequireEnvironment(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		input   any
+		wantErr bool
+	}{
+		{name: "environment selected", input: &flags.AdditionalFlags{Environment: "dev"}},
+		{name: "empty environment", input: &flags.AdditionalFlags{}, wantErr: true},
+		{name: "nil", wantErr: true},
+		{name: "unsupported type", input: "dev", wantErr: true},
+		{name: "embedded environment", input: &flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{Environment: "dev"}}},
+		{name: "nil embedded flags", input: &flags.GlobalFlags{}, wantErr: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			err := RequireEnvironment(tt.input)(context.Background(), nil)
+			if tt.wantErr {
+				if !errors.Is(err, ErrMissingEnvironment) {
+					t.Errorf("RequireEnvironment() error = %v, want ErrMissingEnvironment", err)
+				}
+			} else if err != nil {
+				t.Errorf("RequireEnvironment() error = %v, want nil", err)
 			}
 		})
 	}

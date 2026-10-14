@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/app/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 )
@@ -31,7 +32,7 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 		Flags: flags,
 		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {
 			if flags.Environment == "" {
-				return fmt.Errorf("environment must be specified (-e, --environment)")
+				return validation.ErrMissingEnvironment
 			}
 			if flags.Min < 0 {
 				return fmt.Errorf("--min must be a non-negative integer")

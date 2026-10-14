@@ -246,7 +246,7 @@ func branchDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 
 func branchEnvironment(ctx context.Context, f *flag.Postgres, name string) (string, error) {
 	if f.Team == "" {
-		return "", fmt.Errorf("missing required team, specify -t, --team or set a default team")
+		return "", validation.ErrMissingTeam
 	}
 	return resolvePostgresEnvironment(ctx, f.Team, name, string(f.Environment))
 }

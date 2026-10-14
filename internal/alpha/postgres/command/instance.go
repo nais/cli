@@ -82,7 +82,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if parent.Team == "" {
-				return fmt.Errorf("missing required team, specify -t, --team or set a default team")
+				return validation.ErrMissingTeam
 			}
 			changes, err := updateFields(f)
 			if err != nil {
@@ -159,7 +159,7 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if parent.Team == "" {
-				return fmt.Errorf("missing required team, specify -t, --team or set a default team")
+				return validation.ErrMissingTeam
 			}
 			name := args.Get("postgres")
 			env, err := resolvePostgresEnvironment(ctx, parent.Team, name, string(parent.Environment))
