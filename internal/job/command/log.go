@@ -32,11 +32,9 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the job to show logs for"},
 		},
-		Flags: flags,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
+		ValidateArgsFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if args.Get("name") == "" {
 				return fmt.Errorf("job name is required")
 			}

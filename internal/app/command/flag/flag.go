@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -29,11 +30,11 @@ func (i *instances) AutoComplete(ctx context.Context, args *naistrix.Arguments, 
 	if !ok {
 		return nil, ""
 	}
-	if len(f.Environment) == 0 {
+	if err := validation.RequireEnvironmentFlag(f)(ctx); err != nil {
 		return nil, "Please provide environment (-e, --environment) to auto-complete instances."
 	}
 
-	if len(f.Team) == 0 {
+	if err := validation.RequireTeamFlag(f)(ctx); err != nil {
 		return nil, "Please provide team to auto-complete instances. 'nais defaults set team <team>', or '--team <team>' flag."
 	}
 

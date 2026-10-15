@@ -24,10 +24,10 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the new OpenSearch instance"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				return flags.Validate()
 			},
 		),

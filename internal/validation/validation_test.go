@@ -73,8 +73,8 @@ func TestRequireTeam(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			validate := RequireTeam(tt.input)
-			err := validate(context.Background(), nil)
+			validate := RequireTeamFlag(tt.input)
+			err := validate(context.Background())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("RequireTeam() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -99,7 +99,7 @@ func TestRequireEnvironment(t *testing.T) {
 		{name: "nil embedded flags", input: &flags.GlobalFlags{}, wantErr: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			err := RequireEnvironment(tt.input)(context.Background(), nil)
+			err := RequireEnvironmentFlag(tt.input)(context.Background())
 			if tt.wantErr {
 				if !errors.Is(err, ErrMissingEnvironment) {
 					t.Errorf("RequireEnvironment() error = %v, want ErrMissingEnvironment", err)
@@ -151,8 +151,8 @@ func TestRequireTeamAndEnvironment(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			validate := RequireTeamAndEnvironment(tt.input)
-			err := validate(context.Background(), nil)
+			validate := RequireTeamAndEnvironmentFlags(tt.input)
+			err := validate(context.Background())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("RequireTeamAndEnvironment() error = %v, wantErr %v", err, tt.wantErr)
 			}

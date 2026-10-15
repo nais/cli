@@ -10,11 +10,11 @@ import (
 func Activity(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Activity{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "activity",
-		Title:        "List team activity.",
-		Description:  "View recent activity across all resources in a team, such as deployments, configuration changes, and other events.",
-		StickyFlags:  f,
-		ValidateFunc: validation.RequireTeam(f),
+		Name:              "activity",
+		Title:             "List team activity.",
+		Description:       "View recent activity across all resources in a team, such as deployments, configuration changes, and other events.",
+		StickyFlags:       f,
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		SubCommands: []*naistrix.Command{
 			list(f),
 		},

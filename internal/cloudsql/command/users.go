@@ -12,11 +12,11 @@ import (
 func usersCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 	flags := &flag.User{CloudSQL: parentFlags}
 	return &naistrix.Command{
-		Name:         "users",
-		Title:        "Manage users in your SQL instance.",
-		Description:  "Commands for adding, listing, and dropping users in a Cloud SQL instance.",
-		StickyFlags:  flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Name:              "users",
+		Title:             "Manage users in your SQL instance.",
+		Description:       "Commands for adding, listing, and dropping users in a Cloud SQL instance.",
+		StickyFlags:       flags,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 		SubCommands: []*naistrix.Command{
 			addCommand(flags),
 			dropCommand(flags),

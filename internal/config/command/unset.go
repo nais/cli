@@ -14,15 +14,15 @@ import (
 func unset(parentFlags *flag.Config) *naistrix.Command {
 	f := &flag.Unset{Config: parentFlags}
 	return &naistrix.Command{
-		Name:        "unset",
-		Title:       "Unset a key from a config.",
-		Description: "This command removes a key-value pair from a config.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
-			validateArgs,
-			func(_ context.Context, args *naistrix.Arguments) error {
+		Name:             "unset",
+		Title:            "Unset a key from a config.",
+		Description:      "This command removes a key-value pair from a config.",
+		Flags:            f,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(f),
+			func(context.Context) error {
 				if f.Key == "" {
 					return fmt.Errorf("--key is required")
 				}

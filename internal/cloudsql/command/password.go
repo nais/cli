@@ -24,7 +24,7 @@ func passwordCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 				Args: []naistrix.Argument{
 					{Name: "app_name", Prompt: "Name of the application whose Cloud SQL password should be rotated"},
 				},
-				ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+				ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 				RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 					return cloudsql.RotatePassword(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 				},

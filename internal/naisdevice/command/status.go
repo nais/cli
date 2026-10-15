@@ -44,7 +44,7 @@ func statuscmd(parentFlags *flag.Device) *naistrix.Command {
 
 			return nil
 		},
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
+		ValidateFlagsFunc: func(context.Context) error {
 			if !slices.Contains([]string{"", "yaml", "json"}, string(flags.Output)) {
 				return naistrix.Errorf("%v is not an implemented format", flags.Output)
 			}

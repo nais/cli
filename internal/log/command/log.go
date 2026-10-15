@@ -20,18 +20,12 @@ func Log(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Limit:       100,
 	}
 	return &naistrix.Command{
-		Name:        "log",
-		Aliases:     []string{"logs"},
-		Title:       "Show logs for a team.",
-		Description: "Fetch and stream logs from a team.",
-		Flags:       flags,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
-
-			return nil
-		},
+		Name:              "log",
+		Aliases:           []string{"logs"},
+		Title:             "Show logs for a team.",
+		Description:       "Fetch and stream logs from a team.",
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			user, err := naisapi.GetAuthenticatedUser(ctx)
 			if err != nil {

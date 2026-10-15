@@ -10,12 +10,12 @@ import (
 func Issues(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Issues{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "issues",
-		Aliases:      []string{"issue"},
-		Title:        "Manage issues.",
-		Description:  "Commands for listing and managing critical issues detected for your team's workloads.",
-		StickyFlags:  flags,
-		ValidateFunc: validation.RequireTeam(flags),
+		Name:              "issues",
+		Aliases:           []string{"issue"},
+		Title:             "Manage issues.",
+		Description:       "Commands for listing and managing critical issues detected for your team's workloads.",
+		StickyFlags:       flags,
+		ValidateFlagsFunc: validation.RequireTeamFlag(flags),
 		SubCommands: []*naistrix.Command{
 			listIssues(flags),
 		},

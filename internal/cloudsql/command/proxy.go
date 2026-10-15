@@ -22,8 +22,8 @@ func proxyCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL instance you want to proxy"},
 		},
-		Flags:        flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return cloudsql.RunProxy(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 		},

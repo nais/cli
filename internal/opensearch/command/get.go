@@ -23,13 +23,11 @@ func get(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the OpenSearch instance to inspect"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-		),
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
+		ValidateArgsFunc:  validateArgs,
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
+				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
 			}
 			return nil, ""
 		},

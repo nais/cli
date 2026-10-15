@@ -16,10 +16,14 @@ func Validate(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Title:       "Validate one or more Nais manifest files.",
 		Description: "Validate Nais manifest files (YAML/JSON) against the Nais JSON schema. Accepts one or more file paths.",
 		Args: []naistrix.Argument{
-			{Name: "file", Prompt: "Path to a Nais manifest file to validate", Repeatable: true},
+			{
+				Name:                   "file",
+				Prompt:                 "Path to a Nais manifest file to validate",
+				Repeatable:             true,
+				AutoCompleteExtensions: []string{"yaml", "yml", "json"},
+			},
 		},
-		AutoCompleteExtensions: []string{"yaml", "yml", "json"},
-		Flags:                  flags,
+		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return validate.Run(args.All(), flags, out)
 		},

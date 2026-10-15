@@ -19,13 +19,8 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the job to trigger"},
 		},
-		Flags: flags,
-		ValidateFunc: func(context.Context, *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
-			return nil
-		},
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			ret, err := job.TriggerJob(ctx, flags.Team, args.Get("name"), string(flags.Environment), flags.RunName)
 			if err != nil {

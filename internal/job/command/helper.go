@@ -14,10 +14,6 @@ func autoCompleteJobNames(flags *flag.Job) naistrix.AutoCompleteFunc {
 			return nil, ""
 		}
 
-		if len(flags.Team) == 0 {
-			return nil, "Please provide team to auto-complete job names. 'nais defaults set team <team>', or '--team <team>' flag."
-		}
-
 		if flags.Environment == "" {
 			return nil, "Please provide environment to auto-complete job names. '-e, --environment <environment>' flag."
 		}

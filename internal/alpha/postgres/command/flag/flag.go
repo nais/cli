@@ -9,6 +9,7 @@ import (
 	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -88,7 +89,10 @@ var _ naistrix.FlagAutoCompleter = (*BranchSource)(nil)
 func (s *BranchSource) AutoComplete(ctx context.Context, args *naistrix.Arguments, _ string, flags any) ([]string, string) {
 	f := flags.(*BranchCreate)
 	values := args.All()
-	if f.Team == "" || len(values) == 0 || values[0] == "" {
+	if err := validation.RequireTeamFlag(f)(ctx); err != nil {
+		return nil, "Select a Postgres first (and specify a team)."
+	}
+	if len(values) == 0 || values[0] == "" {
 		return nil, "Select a Postgres first (and specify a team)."
 	}
 	name := values[0]

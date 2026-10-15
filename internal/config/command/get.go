@@ -34,23 +34,21 @@ type ConfigDetail struct {
 func get(parentFlags *flag.Config) *naistrix.Command {
 	f := &flag.Get{Config: parentFlags}
 	return &naistrix.Command{
-		Name:        "get",
-		Title:       "Get details about a config.",
-		Description: "This command shows details about a config, including its key-value pairs, workloads using it, and last modification info.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validateArgs,
-			func(_ context.Context, args *naistrix.Arguments) error {
-				if f.ToFile != "" && f.Key == "" {
-					return fmt.Errorf("--to-file requires --key to specify which key to extract")
-				}
-				if f.Key != "" && f.ToFile == "" {
-					return fmt.Errorf("--key is only used with --to-file")
-				}
-				return nil
-			},
-		),
+		Name:             "get",
+		Title:            "Get details about a config.",
+		Description:      "This command shows details about a config, including its key-value pairs, workloads using it, and last modification info.",
+		Flags:            f,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: func(context.Context) error {
+			if f.ToFile != "" && f.Key == "" {
+				return fmt.Errorf("--to-file requires --key to specify which key to extract")
+			}
+			if f.Key != "" && f.ToFile == "" {
+				return fmt.Errorf("--key is only used with --to-file")
+			}
+			return nil
+		},
 		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{

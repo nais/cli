@@ -28,8 +28,8 @@ func revokeCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL database access should be revoked"},
 		},
-		Flags:        flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
 				return err

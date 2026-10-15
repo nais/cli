@@ -30,21 +30,21 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name", Prompt: "Name of the application to scale"},
 		},
 		Flags: flags,
-		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
-			if flags.Min < 0 {
-				return fmt.Errorf("--min must be a non-negative integer")
-			}
-			if flags.Max < 0 {
-				return fmt.Errorf("--max must be a non-negative integer")
-			}
-			if flags.Min > flags.Max {
-				return fmt.Errorf("--min (%d) cannot be greater than --max (%d)", flags.Min, flags.Max)
-			}
-			return nil
-		},
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
+				if flags.Min < 0 {
+					return fmt.Errorf("--min must be a non-negative integer")
+				}
+				if flags.Max < 0 {
+					return fmt.Errorf("--max must be a non-negative integer")
+				}
+				if flags.Min > flags.Max {
+					return fmt.Errorf("--min (%d) cannot be greater than --max (%d)", flags.Min, flags.Max)
+				}
+				return nil
+			},
+		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
 

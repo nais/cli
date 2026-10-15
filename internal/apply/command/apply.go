@@ -33,19 +33,20 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "path", Prompt: "Path to a Nais manifest file or directory to apply"},
-		},
-		AutoCompleteExtensions: []string{"yaml", "yml"},
-		Flags:                  flags,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeam(flags),
-			func(ctx context.Context, args *naistrix.Arguments) error {
-				if args.Get("path") == "" {
-					return fmt.Errorf("path cannot be empty")
-				}
-				return nil
+			{
+				Name:                   "path",
+				Prompt:                 "Path to a Nais manifest file or directory to apply",
+				AutoCompleteExtensions: []string{"yaml", "yml"},
 			},
-		),
+		},
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireTeamFlag(flags),
+		ValidateArgsFunc: func(ctx context.Context, args *naistrix.Arguments) error {
+			if args.Get("path") == "" {
+				return fmt.Errorf("path cannot be empty")
+			}
+			return nil
+		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return apply.Run(ctx, args.Get("path"), flags, out)
 		},

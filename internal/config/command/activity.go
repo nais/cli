@@ -18,15 +18,13 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 		Limit:  20,
 	}
 	return &naistrix.Command{
-		Name:        "activity",
-		Title:       "Show activity for a config.",
-		Description: "Show the activity log for a specific configuration, including creation, updates, and deletions. Optionally filter by activity type.",
-		Args:        defaultArgs,
-		Flags:       f,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeamAndEnvironment(f),
-			validateArgs,
-		),
+		Name:              "activity",
+		Title:             "Show activity for a config.",
+		Description:       "Show the activity log for a specific configuration, including creation, updates, and deletions. Optionally filter by activity type.",
+		Args:              defaultArgs,
+		Flags:             f,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(f),
+		ValidateArgsFunc:  validateArgs,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			activityTypes, err := activityutil.ParseActivityTypes(f.ActivityType)
 			if err != nil {

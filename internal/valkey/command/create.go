@@ -16,15 +16,15 @@ import (
 func create(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Create{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "create",
-		Title:       "Create a Valkey instance.",
-		Description: "This command creates a Valkey instance.",
-		Flags:       flags,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		Name:             "create",
+		Title:            "Create a Valkey instance.",
+		Description:      "This command creates a Valkey instance.",
+		Flags:            flags,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				return flags.Validate()
 			},
 		),
