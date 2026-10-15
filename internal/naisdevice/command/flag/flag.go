@@ -27,7 +27,7 @@ type Status struct {
 
 type Connect struct {
 	*Device
-	NoWait bool `name:"no-wait" usage:"Do not wait for non-privileged (non-JITA) gateways to become healthy."`
+	NoWait bool `name:"no-wait" usage:"Don't wait for the gateways to become healthy."`
 }
 
 type Gateway struct {
