@@ -44,7 +44,7 @@ func FormatGrpcError(err error) error {
 	return fmt.Errorf("%s: %s", gerr.Code(), gerr.Message())
 }
 
-func Connect(ctx context.Context, out *naistrix.OutputWriter) error {
+func Connect(ctx context.Context, wait bool, out *naistrix.OutputWriter) error {
 	connection, err := AgentConnection()
 	if err != nil {
 		return err
@@ -58,7 +58,15 @@ func Connect(ctx context.Context, out *naistrix.OutputWriter) error {
 		return FormatGrpcError(err)
 	}
 
-	return waitForConnectionState(ctx, client, pb.AgentState_Connected, out)
+	if err := waitForConnectionState(ctx, client, pb.AgentState_Connected, out); err != nil {
+		return err
+	}
+
+	if !wait {
+		return nil
+	}
+
+	return waitForHealthyGateways(ctx, client, out)
 }
 
 func Disconnect(ctx context.Context, out *naistrix.OutputWriter) error {
@@ -94,6 +102,57 @@ func waitForConnectionState(ctx context.Context, client pb.DeviceAgentClient, wa
 		out.Printf("State: %s\n", st.ConnectionState)
 		if st.ConnectionState == wantedAgentState {
 			return nil
+		}
+	}
+
+	return stream.Context().Err()
+}
+
+// waitForHealthyGateways blocks until all gateways not requiring privileged access (JITA) are healthy.
+func waitForHealthyGateways(ctx context.Context, client pb.DeviceAgentClient, out *naistrix.OutputWriter) error {
+	stream, err := client.Status(ctx, &pb.AgentStatusRequest{
+		KeepConnectionOnComplete: true,
+	})
+	if err != nil {
+		return FormatGrpcError(err)
+	}
+
+	out.Println("Waiting for gateways to become healthy...")
+	lastPending := -1
+	for stream.Context().Err() == nil {
+		st, err := stream.Recv()
+		if err != nil {
+			return fmt.Errorf("error while receiving status: %w", err)
+		}
+
+		if st.ConnectionState != pb.AgentState_Connected {
+			continue
+		}
+
+		total, pending := 0, 0
+		for _, gw := range st.Gateways {
+			if gw.RequiresPrivilegedAccess {
+				continue
+			}
+			total++
+			if !gw.Healthy {
+				pending++
+			}
+		}
+
+		// Gateway list may be empty right after connecting; wait until populated.
+		if total == 0 {
+			continue
+		}
+
+		if pending == 0 {
+			out.Printf("All %d gateways healthy\n", total)
+			return nil
+		}
+
+		if pending != lastPending {
+			out.Printf("Gateways healthy: %d/%d\n", total-pending, total)
+			lastPending = pending
 		}
 	}
 
