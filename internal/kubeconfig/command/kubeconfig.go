@@ -25,7 +25,7 @@ func Kubeconfig(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			"nais login"
 		`),
 		Flags: flags,
-		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
+		ValidateArgsFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
 			if _, err := gcloud.ValidateAndGetUserLogin(ctx, false); err != nil {
 				return err
 			}

@@ -26,8 +26,8 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name", Prompt: "Name of the application to debug"},
 		},
-		Flags:        debugFlags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(debugFlags),
+		Flags:             debugFlags,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(debugFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return debug.Run(args.Get("app_name"), debugFlags.Team, string(debugFlags.Environment), debugFlags, out)
 		},

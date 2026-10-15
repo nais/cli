@@ -13,15 +13,13 @@ import (
 func create(parentFlags *flag.Secret) *naistrix.Command {
 	f := &flag.Create{Secret: parentFlags}
 	return &naistrix.Command{
-		Name:        "create",
-		Title:       "Create a new secret.",
-		Description: "This command creates a new empty secret in a team environment.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
-			validateArgs,
-		),
+		Name:              "create",
+		Title:             "Create a new secret.",
+		Description:       "This command creates a new empty secret in a team environment.",
+		Flags:             f,
+		Args:              defaultArgs,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(f),
+		ValidateArgsFunc:  validateArgs,
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create a secret named my-secret in environment dev.",

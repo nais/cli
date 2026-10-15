@@ -22,12 +22,10 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 			{Name: "topic", Prompt: "Name of the Kafka topic to revoke access to"},
 			{Name: "access", Prompt: "Access level to revoke", Choices: flag.KafkaTopicGrantAccessChoices(), ChoicesCaseInsensitive: true},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeamAndEnvironment(parentFlags),
-			func(_ context.Context, args *naistrix.Arguments) error {
-				return flag.KafkaTopicGrantAccess(args.Get("access")).Validate()
-			},
-		),
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(parentFlags),
+		ValidateArgsFunc: func(_ context.Context, args *naistrix.Arguments) error {
+			return flag.KafkaTopicGrantAccess(args.Get("access")).Validate()
+		},
 		AutoCompleteFunc: autoCompleteKafkaGrantArguments(parentFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			subject := kafkaApplicationName(args.Get("username"))
@@ -56,10 +54,6 @@ func autoCompleteKafkaGrantArguments(flags *flag.Kafka) naistrix.AutoCompleteFun
 	return func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
 		if args.Len() > 2 {
 			return nil, ""
-		}
-
-		if flags.Team == "" || flags.Environment == "" {
-			return nil, "Please provide team and environment to auto-complete Kafka grants."
 		}
 
 		switch args.Len() {

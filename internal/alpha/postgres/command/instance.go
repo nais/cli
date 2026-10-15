@@ -24,7 +24,7 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Create a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
 			{Description: "Create a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
-		ValidateFunc: validation.RequireTeam(f),
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if f.Version != "18" {
 				return fmt.Errorf("--version must be 18")
@@ -80,10 +80,8 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Change requested CPU and memory.", Command: "my-postgres -t my-team -e dev-gcp --cpu 200m --memory 1Gi"},
 			{Description: "Disable high availability.", Command: "my-postgres -t my-team -e dev-gcp --high-availability false"},
 		},
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if parent.Team == "" {
-				return validation.ErrMissingTeam
-			}
 			changes, err := updateFields(f)
 			if err != nil {
 				return err
@@ -157,10 +155,8 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 		Examples: []naistrix.CommandExample{
 			{Description: "Request deletion of an entire Postgres after removing its consumers.", Command: "my-postgres -t my-team -e dev-gcp"},
 		},
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if parent.Team == "" {
-				return validation.ErrMissingTeam
-			}
 			name := args.Get("postgres")
 			env, err := resolvePostgresEnvironment(ctx, parent.Team, name, string(parent.Environment))
 			if err != nil {

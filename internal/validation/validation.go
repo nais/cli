@@ -16,10 +16,10 @@ type teamChecker interface {
 	HasTeam() bool
 }
 
-// RequireTeam returns a [naistrix.ValidateFunc] that ensures a team is set on the given argument. The argument to this
-// function is typically a pointer to a flag struct.
-func RequireTeam(f any) naistrix.ValidateFunc {
-	return func(context.Context, *naistrix.Arguments) error {
+// RequireTeamFlag returns a [naistrix.ValidateFlagsFunc] that ensures a team is set on the given argument. The argument
+// to this function is typically a pointer to a flag struct.
+func RequireTeamFlag(f any) naistrix.ValidateFlagsFunc {
+	return func(context.Context) error {
 		c, ok := f.(teamChecker)
 		if ok && c.HasTeam() {
 			return nil
@@ -33,10 +33,10 @@ type envChecker interface {
 	HasEnvironment() bool
 }
 
-// RequireEnvironment returns a [naistrix.ValidateFunc] that ensures an environment is set on the given argument. The
-// argument to this function is typically a pointer to a flag struct.
-func RequireEnvironment(f any) naistrix.ValidateFunc {
-	return func(context.Context, *naistrix.Arguments) error {
+// RequireEnvironmentFlag returns a [naistrix.ValidateFlagsFunc] that ensures an environment is set on the given
+// argument. The argument to this function is typically a pointer to a flag struct.
+func RequireEnvironmentFlag(f any) naistrix.ValidateFlagsFunc {
+	return func(context.Context) error {
 		c, ok := f.(envChecker)
 		if ok && c.HasEnvironment() {
 			return nil
@@ -46,11 +46,11 @@ func RequireEnvironment(f any) naistrix.ValidateFunc {
 	}
 }
 
-// RequireTeamAndEnvironment returns a [naistrix.ValidateFunc] that ensures that the provided argument has both team and
-// environment fields set.
-func RequireTeamAndEnvironment(f any) naistrix.ValidateFunc {
-	return naistrix.ValidateFuncs(
-		RequireTeam(f),
-		RequireEnvironment(f),
+// RequireTeamAndEnvironmentFlags returns a [naistrix.ValidateFlagsFunc] that ensures that the provided argument has
+// both team and environment fields set.
+func RequireTeamAndEnvironmentFlags(f any) naistrix.ValidateFlagsFunc {
+	return naistrix.ValidateFlagsFuncs(
+		RequireTeamFlag(f),
+		RequireEnvironmentFlag(f),
 	)
 }

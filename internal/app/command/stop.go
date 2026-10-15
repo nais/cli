@@ -24,12 +24,7 @@ func stop(parentFlags *flag.App) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the application to stop"},
 		},
-		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
-			return nil
-		},
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
 

@@ -13,11 +13,11 @@ import (
 func workloadIdentityMetadata(parentFlags *flag.Auth) *naistrix.Command {
 	flags := &flag.WorkloadIdentityMetadata{Auth: parentFlags}
 	return &naistrix.Command{
-		Name:         "workload-identity-metadata",
-		Title:        "Fetch the workload identity OIDC metadata for an environment.",
-		Description:  "Resolves the workload identity OIDC issuer for the selected environment and fetches its metadata from /.well-known/openid-configuration, printing the JSON to stdout.",
-		Flags:        flags,
-		ValidateFunc: validation.RequireEnvironment(flags),
+		Name:              "workload-identity-metadata",
+		Title:             "Fetch the workload identity OIDC metadata for an environment.",
+		Description:       "Resolves the workload identity OIDC issuer for the selected environment and fetches its metadata from /.well-known/openid-configuration, printing the JSON to stdout.",
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			issuer, err := auth.GetEnvironmentOIDCIssuer(ctx, string(flags.Environment))
 			if err != nil {

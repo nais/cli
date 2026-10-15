@@ -19,8 +19,8 @@ func verifyAuditCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "app_name", Prompt: "Name of the application whose Cloud SQL audit configuration you want to verify"},
 		},
-		Flags:        flags,
-		ValidateFunc: validation.RequireTeamAndEnvironment(flags),
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			err := cloudsql.VerifyAuditLogging(ctx, args.Get("app_name"), flags.Team, string(flags.Environment), flags, out)
 			if err != nil {

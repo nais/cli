@@ -14,16 +14,14 @@ import (
 func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 	f := &flag.Delete{Config: parentFlags}
 	return &naistrix.Command{
-		Name:        "delete",
-		Title:       "Delete a config.",
-		Description: "This command deletes a config and all its values.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
-			validateArgs,
-		),
-		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
+		Name:              "delete",
+		Title:             "Delete a config.",
+		Description:       "This command deletes a config and all its values.",
+		Flags:             f,
+		Args:              defaultArgs,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(f),
+		ValidateArgsFunc:  validateArgs,
+		AutoCompleteFunc:  autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a config named my-config in environment dev.",

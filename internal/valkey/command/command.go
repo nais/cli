@@ -16,12 +16,12 @@ import (
 func Valkey(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Valkey{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "valkey",
-		Aliases:      []string{"valkeys"},
-		Title:        "Manage Valkey instances.",
-		Description:  "Commands for creating, updating, deleting, and inspecting Valkey instances and their credentials.",
-		StickyFlags:  f,
-		ValidateFunc: validation.RequireTeam(f),
+		Name:              "valkey",
+		Aliases:           []string{"valkeys"},
+		Title:             "Manage Valkey instances.",
+		Description:       "Commands for creating, updating, deleting, and inspecting Valkey instances and their credentials.",
+		StickyFlags:       f,
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		SubCommands: []*naistrix.Command{
 			create(f),
 			credentials(f),
@@ -55,15 +55,7 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteValkeyNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
-	if team == "" {
-		return nil, "Please provide team to auto-complete Valkey instance names. 'nais defaults set team <team>', or '--team <team>' flag."
-	}
-
-	if requireEnvironment && environment == "" {
-		return nil, "Please provide environment to auto-complete Valkey instance names. '-e, --environment <environment>' flag."
-	}
-
+func autoCompleteValkeyNames(ctx context.Context, team, environment string) ([]string, string) {
 	filter := gql.ValkeyFilter{}
 	if environment != "" {
 		filter.Environments = []string{environment}

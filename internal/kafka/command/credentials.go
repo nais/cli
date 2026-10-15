@@ -23,9 +23,9 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 		Title:       "Create temporary credentials for Kafka.",
 		Description: "Creates temporary credentials for accessing Kafka. Output format can be env (default), kcat, or java. The env format prints environment variables to stdout. The kcat and java formats write configuration files to a temporary directory.",
 		Flags:       flags,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				if flags.TTL == "" {
 					return fmt.Errorf("ttl is required, set using --ttl flag (e.g. '1d', '7d')")
 				}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/alpha/postgres/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"github.com/pterm/pterm"
@@ -52,7 +53,8 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 		Name: "get", Title: "Get Postgres details and readiness.",
 		Description: "Show configured settings and a coarse platform-reported status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. Detailed provisioning stages are unavailable. Use branch commands to inspect branches.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to inspect"}}, Flags: f,
-		AutoCompleteFunc: autoCompletePostgresNames(parent),
+		AutoCompleteFunc:  autoCompletePostgresNames(parent),
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		Examples: []naistrix.CommandExample{
 			{Description: "Describe a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
 			{Description: "Resolve the environment of an existing Postgres and show configuration as JSON.", Command: "my-postgres -t my-team --output json"},

@@ -32,7 +32,8 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 		Name: "psql", Title: "Connect to Nais Postgres via psql (experimental).",
 		Description: "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification. If --reason is omitted, prompt for an audit reason interactively.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to connect to"}}, Flags: f,
-		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
+		AutoCompleteFunc:  autoCompletePostgresNames(f.Postgres),
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			request, err := prepareAccessRequest(args.Get("postgres"), f, out)
 			if err != nil {
@@ -100,7 +101,8 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally (experimental).",
 		Description: "Request personal access and listen on loopback. If --reason is omitted, prompt for an audit reason interactively. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Credentials are not printed unless --print-password is set.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy"}}, Flags: f,
-		AutoCompleteFunc: autoCompletePostgresNames(f.Postgres),
+		AutoCompleteFunc:  autoCompletePostgresNames(f.Postgres),
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if net.ParseIP(f.Host) == nil || !net.ParseIP(f.Host).IsLoopback() {
 				return fmt.Errorf("--host must be a loopback IP address")
@@ -182,9 +184,6 @@ func resolveAccessReason(provided string, out *naistrix.OutputWriter) (string, e
 
 // Prepare the audit reason before installing signal handlers: input.Input cannot observe context cancellation.
 func prepareAccessRequest(name string, f *flag.Access, out *naistrix.OutputWriter) (gql.CreatePostgresAccessInput, error) {
-	if f.Team == "" {
-		return gql.CreatePostgresAccessInput{}, validation.ErrMissingTeam
-	}
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")
 	}

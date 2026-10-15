@@ -16,18 +16,16 @@ import (
 func get(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Describe{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "get",
-		Title:       "Get a Valkey instance.",
-		Description: "This command describes a Valkey instance, listing its current configuration and access list.",
-		Flags:       flags,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-		),
+		Name:              "get",
+		Title:             "Get a Valkey instance.",
+		Description:       "This command describes a Valkey instance, listing its current configuration and access list.",
+		Flags:             flags,
+		Args:              defaultArgs,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
+		ValidateArgsFunc:  validateArgs,
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
+				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment))
 			}
 			return nil, ""
 		},

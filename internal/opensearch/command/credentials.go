@@ -23,10 +23,10 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the OpenSearch instance to create credentials for"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				if flags.Permission == "" {
 					return fmt.Errorf("permission is required, set using --permission/-p flag (READ, WRITE, READWRITE, ADMIN)")
 				}
@@ -43,7 +43,7 @@ func credentials(parentFlags *flag.OpenSearch) *naistrix.Command {
 			if args.Len() != 0 {
 				return nil, ""
 			}
-			return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
+			return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
 		},
 		Examples: []naistrix.CommandExample{
 			{

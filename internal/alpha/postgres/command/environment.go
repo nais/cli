@@ -51,9 +51,6 @@ func autoCompletePostgresNames(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		if args.Len() != 0 {
 			return nil, ""
 		}
-		if f.Team == "" {
-			return nil, "Please provide team to auto-complete Postgres names. 'nais defaults set team <team>', or '--team <team>' flag."
-		}
 		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
 		if err != nil {
 			return nil, fmt.Sprintf("Unable to fetch Postgres names: %v", err)
@@ -105,7 +102,7 @@ func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
 		if args.Len() == 0 {
 			return autoCompletePostgresNames(f)(ctx, args, "")
 		}
-		if args.Len() != 1 || f.Team == "" {
+		if args.Len() != 1 {
 			return nil, ""
 		}
 		name := args.Get("postgres")

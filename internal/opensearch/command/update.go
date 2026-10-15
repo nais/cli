@@ -25,10 +25,10 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Args: []naistrix.Argument{
 			{Name: "name", Prompt: "Name of the OpenSearch instance to update"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				if err := flags.Validate(); err != nil {
 					return err
 				}
@@ -37,7 +37,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment), true)
+				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
 			}
 			return nil, ""
 		},

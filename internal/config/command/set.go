@@ -19,15 +19,15 @@ import (
 func set(parentFlags *flag.Config) *naistrix.Command {
 	f := &flag.Set{Config: parentFlags}
 	return &naistrix.Command{
-		Name:        "set",
-		Title:       "Set a key-value pair in a config.",
-		Description: "Set a key-value pair in a config. If the key already exists, its value is updated. If the key does not exist, it is added. Updating a value will cause a restart of workloads referencing the config.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
-			validateArgs,
-			func(_ context.Context, args *naistrix.Arguments) error {
+		Name:             "set",
+		Title:            "Set a key-value pair in a config.",
+		Description:      "Set a key-value pair in a config. If the key already exists, its value is updated. If the key does not exist, it is added. Updating a value will cause a restart of workloads referencing the config.",
+		Flags:            f,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(f),
+			func(context.Context) error {
 				if f.Key == "" {
 					return fmt.Errorf("--key is required")
 				}

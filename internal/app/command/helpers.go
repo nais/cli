@@ -14,10 +14,6 @@ func autoCompleteAppNames(flags *flag.App) naistrix.AutoCompleteFunc {
 			return nil, ""
 		}
 
-		if len(flags.Team) == 0 {
-			return nil, "Please provide team to auto-complete application names. 'nais defaults set team <team>', or '--team <team>' flag."
-		}
-
 		apps, err := app.GetApplicationNames(ctx, flags.Team)
 		if err != nil {
 			return nil, "Unable to fetch application names."

@@ -35,11 +35,11 @@ func TestSetRoleArgumentChoices(t *testing.T) {
 	}
 }
 
-func TestSetRoleMemberChoicesRequireTeam(t *testing.T) {
-	cmd := setRole(&flag.Member{GlobalFlags: &flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{}}})
-	_, err := cmd.Args[1].ChoicesFunc(context.Background(), nil)
+func TestMembersRequireTeam(t *testing.T) {
+	cmd := Members(&flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{}})
+	err := cmd.ValidateFlagsFunc(t.Context())
 	if !errors.Is(err, validation.ErrMissingTeam) {
-		t.Errorf("member choices error = %v, want ErrMissingTeam", err)
+		t.Errorf("command validation error = %v, want ErrMissingTeam", err)
 	}
 }
 
@@ -204,7 +204,7 @@ func TestSetRoleDynamicMemberChoices(t *testing.T) {
 					t.Fatal(err)
 				}
 				got := output.String()
-				if !strings.HasPrefix(got, "_activeHelp_ Argument completion failed:") || !strings.Contains(got, tt.wantError) || !strings.HasSuffix(got, "\n:4\n") || strings.Count(got, "\n") != 2 {
+				if !strings.HasPrefix(got, "_activeHelp_ Completion failed:") || !strings.Contains(got, tt.wantError) || !strings.HasSuffix(got, "\n:4\n") || strings.Count(got, "\n") != 2 {
 					t.Errorf("completion = %q, want a single active help error containing %q and NoFileComp directive", got, tt.wantError)
 				}
 			} else if tt.wantError != "" {

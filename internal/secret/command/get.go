@@ -36,29 +36,27 @@ type SecretDetail struct {
 func get(parentFlags *flag.Secret) *naistrix.Command {
 	f := &flag.Get{Secret: parentFlags}
 	return &naistrix.Command{
-		Name:        "get",
-		Title:       "Get details about a secret.",
-		Description: "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validateArgs,
-			func(_ context.Context, args *naistrix.Arguments) error {
-				if f.ToFile != "" && f.Key == "" {
-					return fmt.Errorf("--to-file requires --key to specify which key to extract")
-				}
-				if f.Key != "" && f.ToFile == "" {
-					return fmt.Errorf("--key is only used with --to-file")
-				}
-				if f.Reason != "" && !f.WithValues && f.ToFile == "" {
-					return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
-				}
-				if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
-					return fmt.Errorf("reason must be at least 10 characters")
-				}
-				return nil
-			},
-		),
+		Name:             "get",
+		Title:            "Get details about a secret.",
+		Description:      "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
+		Flags:            f,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: func(context.Context) error {
+			if f.ToFile != "" && f.Key == "" {
+				return fmt.Errorf("--to-file requires --key to specify which key to extract")
+			}
+			if f.Key != "" && f.ToFile == "" {
+				return fmt.Errorf("--key is only used with --to-file")
+			}
+			if f.Reason != "" && !f.WithValues && f.ToFile == "" {
+				return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
+			}
+			if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
+				return fmt.Errorf("reason must be at least 10 characters")
+			}
+			return nil
+		},
 		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{

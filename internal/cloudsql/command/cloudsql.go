@@ -37,7 +37,7 @@ func CloudSQL(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			psqlCommand(flags),
 			revokeCommand(flags),
 		},
-		ValidateFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
+		ValidateArgsFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
 			warnIfLegacyAlias(os.Args[1:], os.Stderr)
 			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)
 			return err

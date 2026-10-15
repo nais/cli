@@ -8,7 +8,6 @@ import (
 	"github.com/nais/cli/internal/member"
 	"github.com/nais/cli/internal/member/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )
 
@@ -44,9 +43,6 @@ func setRole(parentFlags *flag.Member) *naistrix.Command {
 					return fmt.Sprintf("Member of %q to assign the %q role to", flags.Team, args.Get("role")), nil
 				},
 				ChoicesFunc: func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
-					if flags.Team == "" {
-						return nil, validation.ErrMissingTeam
-					}
 					members, err := member.GetTeamMembers(ctx, flags.Team)
 					if err != nil {
 						return nil, fmt.Errorf("unable to fetch existing team members: %w", err)

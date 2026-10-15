@@ -37,11 +37,9 @@ func setEnv(parentFlags *flag.App) *naistrix.Command {
 			{Name: "name", Prompt: "Name of the application to update environment variables for"},
 			{Name: "env_vars", Prompt: "Environment variable to set (KEY=VALUE) or remove (KEY-)", Repeatable: true},
 		},
-		Flags: flags,
-		ValidateFunc: func(_ context.Context, args *naistrix.Arguments) error {
-			if flags.Environment == "" {
-				return validation.ErrMissingEnvironment
-			}
+		Flags:             flags,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
+		ValidateArgsFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if len(args.GetRepeatable("env_vars")) == 0 {
 				return fmt.Errorf("at least one environment variable must be specified (KEY=VALUE or KEY-)")
 			}

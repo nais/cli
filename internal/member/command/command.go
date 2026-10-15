@@ -10,12 +10,12 @@ import (
 func Members(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Member{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "members",
-		Aliases:      []string{"member"},
-		Title:        "Interact with Nais team members.",
-		Description:  "Commands for listing, adding, removing, and managing roles of team members.",
-		StickyFlags:  flags,
-		ValidateFunc: validation.RequireTeam(parentFlags),
+		Name:              "members",
+		Aliases:           []string{"member"},
+		Title:             "Interact with Nais team members.",
+		Description:       "Commands for listing, adding, removing, and managing roles of team members.",
+		StickyFlags:       flags,
+		ValidateFlagsFunc: validation.RequireTeamFlag(parentFlags),
 		SubCommands: []*naistrix.Command{
 			list(flags),
 			add(flags),

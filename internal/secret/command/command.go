@@ -16,12 +16,12 @@ import (
 func Secrets(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.Secret{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "secret",
-		Aliases:      []string{"secrets"},
-		Title:        "Manage secrets for a team.",
-		Description:  "Commands for listing, creating, viewing, updating, and deleting secrets for a team across environments.",
-		StickyFlags:  f,
-		ValidateFunc: validation.RequireTeam(f),
+		Name:              "secret",
+		Aliases:           []string{"secrets"},
+		Title:             "Manage secrets for a team.",
+		Description:       "Commands for listing, creating, viewing, updating, and deleting secrets for a team across environments.",
+		StickyFlags:       f,
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		SubCommands: []*naistrix.Command{
 			list(f),
 			activity(f),
@@ -60,10 +60,6 @@ func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
 	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 		if args.Len() > 0 {
 			return nil, ""
-		}
-
-		if flags.Team == "" {
-			return nil, "Please provide team to auto-complete secret names. 'nais defaults set team <team>', or '--team <team>' flag."
 		}
 
 		if flags.Environment == "" {

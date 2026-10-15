@@ -16,21 +16,21 @@ import (
 func updateValkey(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Update{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "update",
-		Title:       "Update a Valkey instance.",
-		Description: "This command updates an existing Valkey instance.",
-		Flags:       flags,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-			func(ctx context.Context, args *naistrix.Arguments) error {
+		Name:             "update",
+		Title:            "Update a Valkey instance.",
+		Description:      "This command updates an existing Valkey instance.",
+		Flags:            flags,
+		Args:             defaultArgs,
+		ValidateArgsFunc: validateArgs,
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(flags),
+			func(context.Context) error {
 				return flags.Validate()
 			},
 		),
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
+				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment))
 			}
 			return nil, ""
 		},

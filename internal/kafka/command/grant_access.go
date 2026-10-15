@@ -25,9 +25,9 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			{Name: "username", Prompt: "Name of the Kafka service user to grant access to"},
 			{Name: "topic", Prompt: "Name of the Kafka topic to grant access to"},
 		},
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireTeamAndEnvironment(grantAccessTopicFlags),
-			func(context.Context, *naistrix.Arguments) error {
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireTeamAndEnvironmentFlags(grantAccessTopicFlags),
+			func(context.Context) error {
 				return grantAccessTopicFlags.Access.Validate()
 			},
 		),

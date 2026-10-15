@@ -15,16 +15,14 @@ import (
 func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 	f := &flag.Delete{Secret: parentFlags}
 	return &naistrix.Command{
-		Name:        "delete",
-		Title:       "Delete a secret.",
-		Description: "This command deletes a secret and all its values.",
-		Flags:       f,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(f),
-			validateArgs,
-		),
-		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
+		Name:              "delete",
+		Title:             "Delete a secret.",
+		Description:       "This command deletes a secret and all its values.",
+		Flags:             f,
+		Args:              defaultArgs,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(f),
+		ValidateArgsFunc:  validateArgs,
+		AutoCompleteFunc:  autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a secret named my-secret in environment dev.",

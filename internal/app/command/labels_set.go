@@ -21,7 +21,7 @@ func labelsSet(parentFlags *flag.Labels) *naistrix.Command {
 			{Name: "name", Prompt: "Name of the application to set labels for"},
 		},
 		Flags: flags,
-		ValidateFunc: func(_ context.Context, _ *naistrix.Arguments) error {
+		ValidateFlagsFunc: func(context.Context) error {
 			if len(flags.LabelSet) == 0 {
 				return fmt.Errorf("at least one --label KEY=VALUE must be specified")
 			}

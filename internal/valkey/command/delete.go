@@ -15,18 +15,16 @@ import (
 func delete(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Delete{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:        "delete",
-		Title:       "Delete a Valkey instance.",
-		Description: "This command deletes an existing Valkey instance.",
-		Flags:       flags,
-		Args:        defaultArgs,
-		ValidateFunc: naistrix.ValidateFuncs(
-			validation.RequireEnvironment(flags),
-			validateArgs,
-		),
+		Name:              "delete",
+		Title:             "Delete a Valkey instance.",
+		Description:       "This command deletes an existing Valkey instance.",
+		Flags:             flags,
+		Args:              defaultArgs,
+		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
+		ValidateArgsFunc:  validateArgs,
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 			if args.Len() == 0 {
-				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment), true)
+				return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment))
 			}
 			return nil, ""
 		},

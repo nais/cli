@@ -52,12 +52,12 @@ func optionalStringValue(value *string) string {
 func OpenSearch(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	f := &flag.OpenSearch{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:         "opensearch",
-		Aliases:      []string{"opensearches", "os"},
-		Title:        "Manage OpenSearch instances.",
-		Description:  "Commands for creating, updating, deleting, and inspecting OpenSearch instances and their credentials.",
-		StickyFlags:  f,
-		ValidateFunc: validation.RequireTeam(f),
+		Name:              "opensearch",
+		Aliases:           []string{"opensearches", "os"},
+		Title:             "Manage OpenSearch instances.",
+		Description:       "Commands for creating, updating, deleting, and inspecting OpenSearch instances and their credentials.",
+		StickyFlags:       f,
+		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		SubCommands: []*naistrix.Command{
 			create(f),
 			credentials(f),
@@ -88,15 +88,7 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteOpenSearchNames(ctx context.Context, team, environment string, requireEnvironment bool) ([]string, string) {
-	if team == "" {
-		return nil, "Please provide team to auto-complete OpenSearch instance names. 'nais defaults set team <team>', or '--team <team>' flag."
-	}
-
-	if requireEnvironment && environment == "" {
-		return nil, "Please provide environment to auto-complete OpenSearch instance names. '-e, --environment <environment>' flag."
-	}
-
+func autoCompleteOpenSearchNames(ctx context.Context, team, environment string) ([]string, string) {
 	filter := gql.OpenSearchFilter{}
 	if environment != "" {
 		filter.Environments = []string{environment}
