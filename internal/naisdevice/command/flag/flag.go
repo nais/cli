@@ -25,6 +25,11 @@ type Status struct {
 	Output Output `name:"output" short:"o" usage:"Format output (yaml or json)."`
 }
 
+type Connect struct {
+	*Device
+	NoWait bool `name:"no-wait" usage:"Do not wait for non-privileged (non-JITA) gateways to become healthy."`
+}
+
 type Gateway struct {
 	*Device
 }
