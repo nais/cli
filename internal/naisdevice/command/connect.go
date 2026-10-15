@@ -13,7 +13,7 @@ func connectcmd(parentFlags *flag.Device) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "connect",
 		Title:       "Connect your naisdevice.",
-		Description: "Connect to the naisdevice VPN. This establishes a connection to all non-privileged gateways automatically. By default, waits until all non-privileged (non-JITA) gateways are healthy; use --no-wait to return as soon as the connection is established.",
+		Description: "Connect to the naisdevice VPN. Your device registers with the API server, which shares it with all gateways, and the command waits until every non-privileged (non-JITA) gateway responds as healthy.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			return naisdevice.Connect(ctx, !flags.NoWait, out)
