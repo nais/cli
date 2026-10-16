@@ -21,16 +21,10 @@ func get(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command describes an OpenSearch instance, listing its current configuration and access list.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the OpenSearch instance to inspect"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to inspect", ChoicesFunc: openSearchNameChoices(parentFlags)},
 		},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		ValidateArgsFunc:  validateArgs,
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
-			}
-			return nil, ""
-		},
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Describe an existing OpenSearch instance named some-opensearch in environment dev.",

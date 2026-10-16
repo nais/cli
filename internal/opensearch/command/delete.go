@@ -20,16 +20,10 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command deletes an existing OpenSearch instance.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the OpenSearch instance to delete"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to delete", ChoicesFunc: openSearchNameChoices(parentFlags)},
 		},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		ValidateArgsFunc:  validateArgs,
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
-			}
-			return nil, ""
-		},
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete an existing OpenSearch instance named some-opensearch.",

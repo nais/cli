@@ -23,7 +23,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 		Description: "This command updates an existing Opensearch instance.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the OpenSearch instance to update"},
+			{Name: "name", Prompt: "Name of the OpenSearch instance to update", ChoicesFunc: openSearchNameChoices(parentFlags)},
 		},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
@@ -35,12 +35,6 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() == 0 {
-				return autoCompleteOpenSearchNames(ctx, flags.Team, string(flags.Environment))
-			}
-			return nil, ""
-		},
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set the |MEMORY| for an Opensearch instance named some-opensearch.",

@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 
 	"github.com/nais/cli/internal/flags"
@@ -88,36 +88,22 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteOpenSearchNames(ctx context.Context, team, environment string) ([]string, string) {
-	filter := gql.OpenSearchFilter{}
-	if environment != "" {
-		filter.Environments = []string{environment}
-	}
-
-	instances, err := opensearch.GetAll(ctx, team, filter)
-	if err != nil {
-		return nil, "Unable to fetch OpenSearch instances."
-	}
-
-	seen := make(map[string]struct{})
-	var names []string
-	for _, instance := range instances {
-		if environment != "" && instance.TeamEnvironment.Environment.Name != environment {
-			continue
+func openSearchNameChoices(flags *flag.OpenSearch) naistrix.ArgumentChoicesFunc {
+	return func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
+		instances, err := opensearch.GetAll(ctx, flags.Team, gql.OpenSearchFilter{
+			Environments: []string{string(flags.Environment)},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("unable to fetch OpenSearch instances: %w", err)
 		}
-		if _, ok := seen[instance.Name]; ok {
-			continue
+
+		names := make([]string, len(instances))
+		for i, instance := range instances {
+			names[i] = instance.Name
 		}
-		seen[instance.Name] = struct{}{}
-		names = append(names, instance.Name)
+		slices.Sort(names)
+		return names, nil
 	}
-
-	sort.Strings(names)
-	if len(names) == 0 && environment != "" {
-		return nil, fmt.Sprintf("No OpenSearch instances found in environment %q.", environment)
-	}
-
-	return names, "Select an OpenSearch instance."
 }
 
 func normalizeStorage(tier gql.OpenSearchTier, memory gql.OpenSearchMemory, storage int) (int, error) {

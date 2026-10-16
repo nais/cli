@@ -19,10 +19,9 @@ func listRuns(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "List runs for a job.",
 		Description: "This command lists all runs for a specific job in a given environment.",
 		Args: []naistrix.Argument{
-			{Name: "job-name", Prompt: "Name of the job to list runs for"},
+			{Name: "job-name", Prompt: "Name of the job to list runs for", ChoicesFunc: jobNameChoices(parentFlags)},
 		},
 		Flags:             flags,
-		AutoCompleteFunc:  autoCompleteJobNames(parentFlags),
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		ValidateArgsFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			if args.Get("job-name") == "" {
