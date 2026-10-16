@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 	"k8s.io/utils/ptr"
@@ -38,18 +39,20 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 		Title:            "Get details about a config.",
 		Description:      "This command shows details about a config, including its key-value pairs, workloads using it, and last modification info.",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the config", ChoicesFunc: configNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
-		ValidateFlagsFunc: func(context.Context) error {
-			if f.ToFile != "" && f.Key == "" {
-				return fmt.Errorf("--to-file requires --key to specify which key to extract")
-			}
-			if f.Key != "" && f.ToFile == "" {
-				return fmt.Errorf("--key is only used with --to-file")
-			}
-			return nil
-		},
-		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(f),
+			func(context.Context) error {
+				if f.ToFile != "" && f.Key == "" {
+					return fmt.Errorf("--to-file requires --key to specify which key to extract")
+				}
+				if f.Key != "" && f.ToFile == "" {
+					return fmt.Errorf("--key is only used with --to-file")
+				}
+				return nil
+			},
+		),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Get details for a config named my-config in environment dev.",
@@ -63,22 +66,12 @@ func get(parentFlags *flag.Config) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			opts := getOptions{
 				team:         f.Team,
+				environment:  string(f.Environment),
 				outputFormat: f.Output,
 				toFile:       f.ToFile,
 				key:          f.Key,
 			}
 
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				opts.environment = providedEnvironment
-				return runGetCommand(ctx, args, out, opts)
-			}
-
-			environment, err := resolveConfigEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
-			if err != nil {
-				return err
-			}
-
-			opts.environment = environment
 			return runGetCommand(ctx, args, out, opts)
 		},
 	}

@@ -18,7 +18,7 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 		Title:            "Unset a key from a secret.",
 		Description:      "This command removes a key-value pair from a secret.",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the secret", ChoicesFunc: secretNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(f),
@@ -29,7 +29,6 @@ func unset(parentFlags *flag.Secret) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Unset a key from a secret.",

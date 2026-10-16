@@ -16,7 +16,7 @@ func labelsList(parentFlags *flag.Labels) *naistrix.Command {
 		Title:       "List labels for an application.",
 		Description: "Lists labels configured on an application in a specific environment.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to list labels for"},
+			{Name: "name", Prompt: "Name of the application to list labels for", ChoicesFunc: appNameChoices(parentFlags.App)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -40,6 +40,5 @@ func labelsList(parentFlags *flag.Labels) *naistrix.Command {
 			}
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags.App),
 	}
 }

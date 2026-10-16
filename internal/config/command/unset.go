@@ -18,7 +18,7 @@ func unset(parentFlags *flag.Config) *naistrix.Command {
 		Title:            "Unset a key from a config.",
 		Description:      "This command removes a key-value pair from a config.",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the config", ChoicesFunc: configNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(f),
@@ -29,7 +29,6 @@ func unset(parentFlags *flag.Config) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Unset a key from a config.",

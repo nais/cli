@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -65,6 +66,13 @@ func TestPersonalAccessReason(t *testing.T) {
 							t.Errorf("decoding request: %v", err)
 						}
 						operations = append(operations, request.OperationName)
+						w.Header().Set("Content-Type", "application/json")
+						if request.OperationName == "GetTeamPostgreses" {
+							if _, err := w.Write([]byte(`{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"activeBranch":null}],"pageInfo":{"hasNextPage":false}}}}}`)); err != nil {
+								t.Errorf("writing response: %v", err)
+							}
+							return
+						}
 						if request.OperationName != "CreatePostgresAccess" || !tt.wantMutation {
 							t.Errorf("unexpected API operation: %s", request.OperationName)
 						}
@@ -72,7 +80,6 @@ func TestPersonalAccessReason(t *testing.T) {
 						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.Branch != "main" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != gql.PostgresAccessLevelRead || input.Ttl == nil || *input.Ttl != "30m0s" {
 							t.Errorf("incorrect audited access request: %+v", input)
 						}
-						w.Header().Set("Content-Type", "application/json")
 						if _, err := w.Write([]byte(`{"errors":[{"message":"test stops after audited request"}]}`)); err != nil {
 							t.Errorf("writing response: %v", err)
 						}
@@ -108,12 +115,15 @@ func TestPersonalAccessReason(t *testing.T) {
 					if got := strings.Contains(output.String(), "logged for auditing purposes"); got != tt.wantAudit {
 						t.Errorf("audit prompt warning = %v, want %v: %s", got, tt.wantAudit, output.String())
 					}
+					var wantOperations []string
+					if !tt.omitTeam {
+						wantOperations = append(wantOperations, "GetTeamPostgreses")
+					}
 					if tt.wantMutation {
-						if len(operations) != 1 || operations[0] != "CreatePostgresAccess" {
-							t.Errorf("API operations = %v; want only the access request", operations)
-						}
-					} else if len(operations) != 0 {
-						t.Errorf("API calls occurred before reason/flag validation: %v", operations)
+						wantOperations = append(wantOperations, "CreatePostgresAccess")
+					}
+					if !slices.Equal(operations, wantOperations) {
+						t.Errorf("API operations = %v; want %v", operations, wantOperations)
 					}
 				})
 			}

@@ -22,7 +22,7 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show activity for an application.",
 		Description: "Displays recent events for a specific application, such as deployments and configuration changes. Results can be filtered by activity type.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show activity for"},
+			{Name: "name", Prompt: "Name of the application to show activity for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -50,6 +50,5 @@ func activity(parentFlags *flag.App) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

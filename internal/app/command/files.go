@@ -19,7 +19,7 @@ func files(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show mounted files for an application.",
 		Description: "Lists all files mounted into the application from Secrets and Configs, with their paths and sources. Use 'nais secret get <name> --with-values' to inspect secret contents.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show mounted files for"},
+			{Name: "name", Prompt: "Name of the application to show mounted files for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -50,6 +50,5 @@ func files(parentFlags *flag.App) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

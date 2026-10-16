@@ -2,6 +2,7 @@ package command
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,6 +16,104 @@ import (
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
 )
+
+func TestMigratedJobCommandsUseNameChoices(t *testing.T) {
+	for _, action := range []string{"activity", "issues", "log"} {
+		t.Run(action, func(t *testing.T) {
+			for _, tt := range []struct {
+				name, value, wantError string
+				completion, omitEnv    bool
+			}{
+				{name: "explicit valid name", value: "batch"},
+				{name: "explicit invalid name", value: "unknown", wantError: "invalid value"},
+				{name: "completion", value: "ba", completion: true},
+				{name: "without environment", value: "batch", omitEnv: true},
+			} {
+				t.Run(tt.name, func(t *testing.T) {
+					var output bytes.Buffer
+					app, global, err := naistrix.NewApplication("test", "Test job choices", "test", naistrix.ApplicationWithWriter(&output))
+					if err != nil {
+						t.Fatal(err)
+					}
+					global.Config = filepath.Join(t.TempDir(), "config.yaml")
+					additional := &flags.AdditionalFlags{}
+					if err := app.AddGlobalFlags(additional); err != nil {
+						t.Fatal(err)
+					}
+					root := Job(&flags.GlobalFlags{GlobalFlags: global, AdditionalFlags: additional})
+					i := slices.IndexFunc(root.SubCommands, func(c *naistrix.Command) bool { return c.Name == action })
+					if i == -1 {
+						t.Fatalf("subcommand %q not found", action)
+					}
+					command := root.SubCommands[i]
+					if command.AutoCompleteFunc != nil || command.Args[0].ChoicesFunc == nil {
+						t.Fatal("command must use automatic job-name choices")
+					}
+					// Test argument resolution without starting log streaming or
+					// querying activity or issues. The shared lookup has separate coverage.
+					lookups, runs := 0, 0
+					command.Args[0].ChoicesFunc = func(_ context.Context, args *naistrix.Arguments) ([]string, error) {
+						lookups++
+						wantEnv := "dev"
+						if tt.omitEnv {
+							wantEnv = ""
+						}
+						if args.Len() != 0 || additional.Team != "my-team" || string(additional.Environment) != wantEnv {
+							t.Fatalf("unexpected lookup prerequisites: args=%v, flags=%+v", args.All(), additional)
+						}
+						return []string{"batch", "other"}, nil
+					}
+					command.RunFunc = func(_ context.Context, args *naistrix.Arguments, _ *naistrix.OutputWriter) error {
+						runs++
+						if args.Get("name") != "batch" {
+							t.Errorf("job = %q, want batch", args.Get("name"))
+						}
+						return nil
+					}
+					if err := app.AddCommand(root); err != nil {
+						t.Fatal(err)
+					}
+					args := []string{"job", action, "-t", "my-team"}
+					if !tt.omitEnv {
+						args = append(args, "-e", "dev")
+					}
+					if tt.completion {
+						args = append([]string{"__complete"}, args...)
+					}
+					args = append(args, tt.value)
+					wantError := tt.wantError
+					if tt.omitEnv && action == "log" {
+						wantError = "missing required environment"
+					}
+					err = app.Run(naistrix.RunWithArgs(args))
+					if wantError != "" {
+						if err == nil || !strings.Contains(err.Error(), wantError) {
+							t.Fatalf("error = %v, want %q", err, wantError)
+						}
+					} else if err != nil {
+						t.Fatal(err)
+					}
+					wantLookups, wantRuns := 1, 0
+					if tt.omitEnv && action == "log" {
+						wantLookups = 0
+					}
+					if !tt.completion && wantError == "" {
+						wantRuns = 1
+					}
+					if lookups != wantLookups || runs != wantRuns {
+						t.Errorf("lookups/runs = %d/%d, want %d/%d", lookups, runs, wantLookups, wantRuns)
+					}
+					if tt.completion {
+						want := "batch\n_activeHelp_ " + command.Args[0].Prompt + "\n:4\n"
+						if output.String() != want {
+							t.Errorf("completion = %q, want %q", output.String(), want)
+						}
+					}
+				})
+			}
+		})
+	}
+}
 
 func TestJobNameChoices(t *testing.T) {
 	for _, action := range []struct {

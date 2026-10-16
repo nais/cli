@@ -69,7 +69,7 @@ func TestPositionalCompletionValidatesFlagsBeforeAPI(t *testing.T) {
 	}
 }
 
-func TestPositionalCompletionRequiresEnvironment(t *testing.T) {
+func TestPositionalCompletionEnvironmentFiltering(t *testing.T) {
 	for _, tt := range []struct {
 		name, operation, field string
 		args                   []string
@@ -106,7 +106,12 @@ func TestPositionalCompletionRequiresEnvironment(t *testing.T) {
 						}
 					}
 					w.Header().Set("Content-Type", "application/json")
-					_, err := fmt.Fprintf(w, `{"data":{"team":{%q:{"nodes":[{"name":"shared","teamEnvironment":{"environment":{"name":"dev"}}},{"name":"shared","teamEnvironment":{"environment":{"name":"prod"}}},{"name":"prod-only","teamEnvironment":{"environment":{"name":"prod"}}}]}}}}`, tt.field)
+					nodes := `[{"name":"shared","teamEnvironment":{"environment":{"name":"dev"}}},{"name":"shared","teamEnvironment":{"environment":{"name":"prod"}}},{"name":"prod-only","teamEnvironment":{"environment":{"name":"prod"}}}]`
+					if tt.name != "job" {
+						// Config and secret environment filtering is performed by the API.
+						nodes = `[{"name":"shared","teamEnvironment":{"environment":{"name":"dev"}}}]`
+					}
+					_, err := fmt.Fprintf(w, `{"data":{"team":{%q:{"nodes":%s}}}}`, tt.field, nodes)
 					if err != nil {
 						t.Errorf("writing response: %v", err)
 					}
@@ -130,8 +135,8 @@ func TestPositionalCompletionRequiresEnvironment(t *testing.T) {
 					t.Fatal(err)
 				}
 				got := output.String()
-				if environment == "" {
-					if !strings.HasPrefix(got, "_activeHelp_ Please provide environment") || !strings.HasSuffix(got, "\n:4\n") || strings.Count(got, "\n") != 2 {
+				if environment == "" && tt.name != "job" {
+					if !strings.HasPrefix(got, "_activeHelp_ Completion failed:") || !strings.Contains(got, "missing required environment") || !strings.HasSuffix(got, "\n:4\n") || strings.Count(got, "\n") != 2 {
 						t.Errorf("completion = %q, want only environment guidance and NoFileComp", got)
 					}
 					if len(operations) != 0 {
@@ -142,7 +147,12 @@ func TestPositionalCompletionRequiresEnvironment(t *testing.T) {
 				if strings.Count(got, "shared\n") != 1 {
 					t.Errorf("completion = %q, want one shared-name suggestion", got)
 				}
-				if strings.Contains(got, "prod-only\n") {
+				if environment == "" {
+					want := "prod-only\nshared\n_activeHelp_ Name of the job to show activity for\n:4\n"
+					if got != want {
+						t.Errorf("completion = %q, want %q", got, want)
+					}
+				} else if strings.Contains(got, "prod-only\n") {
 					t.Errorf("completion = %q, unexpected environment filtering", got)
 				}
 				if !slices.Equal(operations, []string{tt.operation}) {

@@ -23,7 +23,7 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 		Title:            "Set a key-value pair in a secret.",
 		Description:      "Set a key-value pair in a secret. If the key already exists, its value is updated. If the key does not exist, it is added. Updating a value will cause a restart of workloads referencing the secret.",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the secret", ChoicesFunc: secretNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(f),
@@ -52,7 +52,6 @@ func set(parentFlags *flag.Secret) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set a key-value pair in a secret.",

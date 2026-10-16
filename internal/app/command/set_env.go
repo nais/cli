@@ -34,7 +34,7 @@ func setEnv(parentFlags *flag.App) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to update environment variables for"},
+			{Name: "name", Prompt: "Name of the application to update environment variables for", ChoicesFunc: appNameChoices(parentFlags)},
 			{Name: "env_vars", Prompt: "Environment variable to set (KEY=VALUE) or remove (KEY-)", Repeatable: true},
 		},
 		Flags:             flags,
@@ -63,6 +63,5 @@ func setEnv(parentFlags *flag.App) *naistrix.Command {
 			out.Warnf("Changes are temporary and will be overwritten on next deploy.\n")
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

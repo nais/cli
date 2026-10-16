@@ -23,7 +23,7 @@ func set(parentFlags *flag.Config) *naistrix.Command {
 		Title:            "Set a key-value pair in a config.",
 		Description:      "Set a key-value pair in a config. If the key already exists, its value is updated. If the key does not exist, it is added. Updating a value will cause a restart of workloads referencing the config.",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the config", ChoicesFunc: configNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(f),
@@ -52,7 +52,6 @@ func set(parentFlags *flag.Config) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Set a key-value pair in a config.",

@@ -30,7 +30,7 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Show logs for a job.",
 		Description: "Fetch and stream logs from a job.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the job to show logs for"},
+			{Name: "name", Prompt: "Name of the job to show logs for", ChoicesFunc: jobNameChoices(parentFlags)},
 		},
 		Flags:             flags,
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
@@ -97,6 +97,5 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }

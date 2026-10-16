@@ -31,7 +31,7 @@ func TestInstanceCommands(t *testing.T) {
 		if len(found.Args) != 1 || found.Args[0].Name != "postgres" {
 			t.Errorf("%s args = %v, want one postgres argument", name, found.Args)
 		}
-		if (found.AutoCompleteFunc != nil) != (name != "create") {
+		if found.AutoCompleteFunc != nil || (found.Args[0].ChoicesFunc != nil) != (name != "create") {
 			t.Errorf("%s completion registration does not match name contract", name)
 		}
 	}

@@ -21,7 +21,7 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 		Name:              "activity",
 		Title:             "Show activity for a config.",
 		Description:       "Show the activity log for a specific configuration, including creation, updates, and deletions. Optionally filter by activity type.",
-		Args:              defaultArgs,
+		Args:              []naistrix.Argument{{Name: "name", Prompt: "Name of the config", ChoicesFunc: configNameChoices(parentFlags)}},
 		Flags:             f,
 		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(f),
 		ValidateArgsFunc:  validateArgs,
@@ -52,6 +52,5 @@ func activity(parentFlags *flag.Config) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteConfigNames(parentFlags),
 	}
 }

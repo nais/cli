@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
 
 	"github.com/nais/cli/internal/config"
 	"github.com/nais/cli/internal/config/command/flag"
@@ -55,42 +55,20 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteConfigNames(flags *flag.Config) naistrix.AutoCompleteFunc {
-	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-		if args.Len() != 0 {
-			return nil, ""
-		}
-
-		if flags.Environment == "" {
-			return nil, "Please provide environment to auto-complete config names. 'nais defaults set environment <env>', or '--environment <env>' flag."
-		}
-
+func configNameChoices(flags *flag.Config) naistrix.ArgumentChoicesFunc {
+	return func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
 		configs, err := config.GetAll(ctx, flags.Team, gql.ConfigFilter{
 			Environments: []string{string(flags.Environment)},
 		})
 		if err != nil {
-			return nil, fmt.Sprintf("Unable to fetch config for auto-completion: %v", err)
+			return nil, err
 		}
 
-		seen := make(map[string]struct{})
-		var names []string
-		for _, c := range configs {
-			if string(flags.Environment) != c.TeamEnvironment.Environment.Name {
-				continue
-			}
-
-			if _, ok := seen[c.Name]; ok {
-				continue
-			}
-			seen[c.Name] = struct{}{}
-			names = append(names, c.Name)
+		names := make([]string, len(configs))
+		for i, c := range configs {
+			names[i] = c.Name
 		}
-		sort.Strings(names)
-
-		if len(names) == 0 {
-			return nil, "No config found."
-		}
-
-		return names, "Select a config."
+		slices.Sort(names)
+		return names, nil
 	}
 }

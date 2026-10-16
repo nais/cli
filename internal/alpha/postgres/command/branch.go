@@ -32,8 +32,7 @@ func branchListCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name: "list", Title: "List branches of a Postgres.",
 		Description: "List the branches of a Postgres with their status and whether each one is active.",
-		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to list branches for"}}, Flags: f,
-		AutoCompleteFunc:  autoCompletePostgresNames(parent),
+		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to list branches for", ChoicesFunc: postgresNameChoices(parent)}}, Flags: f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))

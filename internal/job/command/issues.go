@@ -17,7 +17,7 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Show issues for a job.",
 		Description: "Lists all active issues detected for a specific job, such as failed runs, configuration errors, or runtime problems.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the job to show issues for"},
+			{Name: "name", Prompt: "Name of the job to show issues for", ChoicesFunc: jobNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -36,6 +36,5 @@ func issues(parentFlags *flag.Job) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }

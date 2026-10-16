@@ -22,7 +22,7 @@ func stop(parentFlags *flag.App) *naistrix.Command {
 		Description: "Stops an application by setting replicas to 0. Changes are temporary and will be overwritten on next deploy.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to stop"},
+			{Name: "name", Prompt: "Name of the application to stop", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -43,6 +43,5 @@ func stop(parentFlags *flag.App) *naistrix.Command {
 			out.Warnf("Changes are temporary and will be overwritten on next deploy.\n")
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }
