@@ -19,7 +19,7 @@ func env(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show environment variables for an application.",
 		Description: "Lists all environment variables configured for the application with their values and sources. Secret values are hidden — use 'nais secret get <name> --with-values' to reveal them.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show environment variables for"},
+			{Name: "name", Prompt: "Name of the application to show environment variables for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -50,6 +50,5 @@ func env(parentFlags *flag.App) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

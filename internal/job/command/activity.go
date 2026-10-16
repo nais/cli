@@ -21,7 +21,7 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Show activity for a job.",
 		Description: "Displays recent events for a specific job, such as triggers, completions, and failures.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the job to show activity for"},
+			{Name: "name", Prompt: "Name of the job to show activity for", ChoicesFunc: jobNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -40,6 +40,5 @@ func activity(parentFlags *flag.Job) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }

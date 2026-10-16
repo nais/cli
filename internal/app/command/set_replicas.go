@@ -27,7 +27,7 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to scale"},
+			{Name: "name", Prompt: "Name of the application to scale", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
@@ -65,6 +65,5 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			out.Warnf("Changes are temporary and will be overwritten on next deploy.\n")
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

@@ -57,21 +57,6 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", v.Format(time.RFC3339)), nil
 }
 
-// SecretEnvironments returns the environments where a secret with the given name exists.
-func SecretEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug, gql.SecretFilter{Name: new(name)})
-	if err != nil {
-		return nil, err
-	}
-	var envs []string
-	for _, s := range all {
-		if s.Name == name {
-			envs = append(envs, s.TeamEnvironment.Environment.Name)
-		}
-	}
-	return envs, nil
-}
-
 // GetAll retrieves all secrets for a team.
 func GetAll(ctx context.Context, teamSlug string, filter gql.SecretFilter) ([]gql.GetAllSecretsTeamSecretsSecretConnectionNodesSecret, error) {
 	_ = `# @genqlient

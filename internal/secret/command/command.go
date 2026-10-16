@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -56,41 +56,20 @@ func metadataFromArgs(args *naistrix.Arguments, team string, environment string)
 	}
 }
 
-func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
-	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-		if args.Len() > 0 {
-			return nil, ""
-		}
-
-		if flags.Environment == "" {
-			return nil, "Please provide environment to auto-complete secret names. '-e, --environment <environment>' flag."
-		}
-
+func secretNameChoices(flags *flag.Secret) naistrix.ArgumentChoicesFunc {
+	return func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
 		secrets, err := secret.GetAll(ctx, flags.Team, gql.SecretFilter{
 			Environments: []string{string(flags.Environment)},
 		})
 		if err != nil {
-			return nil, fmt.Sprintf("Unable to fetch secrets for auto-completion: %v", err)
+			return nil, err
 		}
 
-		seen := make(map[string]struct{})
-		var names []string
-		for _, s := range secrets {
-			if string(flags.Environment) != s.TeamEnvironment.Environment.Name {
-				continue
-			}
-			if _, ok := seen[s.Name]; ok {
-				continue
-			}
-			seen[s.Name] = struct{}{}
-			names = append(names, s.Name)
+		names := make([]string, len(secrets))
+		for i, s := range secrets {
+			names[i] = s.Name
 		}
-		sort.Strings(names)
-
-		if len(names) == 0 {
-			return nil, "No secrets found."
-		}
-
-		return names, "Select a secret."
+		slices.Sort(names)
+		return names, nil
 	}
 }

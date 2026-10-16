@@ -24,7 +24,7 @@ func log(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show logs for an application.",
 		Description: "Fetch and stream logs from an application.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show logs for"},
+			{Name: "name", Prompt: "Name of the application to show logs for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -60,6 +60,5 @@ func log(parentFlags *flag.App) *naistrix.Command {
 
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

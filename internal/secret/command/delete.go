@@ -19,10 +19,9 @@ func deleteSecret(parentFlags *flag.Secret) *naistrix.Command {
 		Title:             "Delete a secret.",
 		Description:       "This command deletes a secret and all its values.",
 		Flags:             f,
-		Args:              defaultArgs,
+		Args:              []naistrix.Argument{{Name: "name", Prompt: "Name of the secret", ChoicesFunc: secretNameChoices(parentFlags)}},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(f),
 		ValidateArgsFunc:  validateArgs,
-		AutoCompleteFunc:  autoCompleteSecretNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a secret named my-secret in environment dev.",

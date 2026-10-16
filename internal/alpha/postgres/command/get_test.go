@@ -54,7 +54,7 @@ func TestPostgresGetCommand(t *testing.T) {
 		{name: "explicit environment overrides default", environment: "dev-gcp", config: "environment: prod-gcp\n", format: "json", metadata: configured, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
 		{name: "environment resolved from existing Postgres", lookupEnvironments: []string{"dev-gcp"}, format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetTeamPostgreses", "GetPostgres"}},
 		{name: "ambiguous environment requires choice", lookupEnvironments: []string{"dev-gcp", "prod-gcp"}, wantError: "specify environment with -e, --environment", wantOperations: []string{"GetTeamPostgreses"}},
-		{name: "missing Postgres", wantError: `Postgres "orders" not found`, wantOperations: []string{"GetTeamPostgreses"}},
+		{name: "missing Postgres", wantError: "no choices available", wantOperations: []string{"GetTeamPostgreses"}},
 		{name: "discovery error", lookupError: "access denied", wantError: "access denied", wantOperations: []string{"GetTeamPostgreses"}},
 		{name: "get error", environment: "dev-gcp", getError: "Resource not found", wantError: "Resource not found", wantOperations: []string{"GetPostgres"}},
 		{name: "team is required", omitTeam: true, wantError: "missing required team"},
@@ -91,8 +91,12 @@ func TestPostgresGetCommand(t *testing.T) {
 					if request.Variables.Team != "my-team" {
 						t.Errorf("incorrect discovery team: %+v", request.Variables)
 					}
-					nodes := make([]string, 0, len(tt.lookupEnvironments))
-					for _, env := range tt.lookupEnvironments {
+					environments := tt.lookupEnvironments
+					if len(environments) == 0 && (tt.environment != "" || tt.config != "") {
+						environments = []string{"dev-gcp"}
+					}
+					nodes := make([]string, 0, len(environments))
+					for _, env := range environments {
 						nodes = append(nodes, fmt.Sprintf(`{"name":"orders","teamEnvironment":{"environment":{"name":%q}},"activeBranch":null}`, env))
 					}
 					response = `{"data":{"team":{"postgreses":{"nodes":[` + strings.Join(nodes, ",") + `],"pageInfo":{"hasNextPage":false}}}}}`
@@ -280,8 +284,13 @@ func TestPostgresGetCommand(t *testing.T) {
 			if strings.Contains(output.String(), "\x1b[") {
 				t.Errorf("--no-colors emitted ANSI escapes: %q", output.String())
 			}
-			if !slices.Equal(operations, tt.wantOperations) {
-				t.Errorf("API operations = %v; want %v", operations, tt.wantOperations)
+			wantOperations := tt.wantOperations
+			if !tt.complete && !tt.omitTeam && !tt.omitName && tt.lookupError == "" && (len(tt.lookupEnvironments) > 0 || tt.environment != "" || tt.config != "") {
+				// Name validation precedes the existing environment and metadata lookups.
+				wantOperations = append([]string{"GetTeamPostgreses"}, wantOperations...)
+			}
+			if !slices.Equal(operations, wantOperations) {
+				t.Errorf("API operations = %v; want %v", operations, wantOperations)
 			}
 		})
 	}

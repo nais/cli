@@ -21,7 +21,7 @@ func del(parentFlags *flag.App) *naistrix.Command {
 		Description: "Permanently deletes an application.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to delete"},
+			{Name: "name", Prompt: "Name of the application to delete", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
@@ -51,6 +51,5 @@ func del(parentFlags *flag.App) *naistrix.Command {
 			out.Printf("Deletion of %s in %s has been started.\n", name, environment)
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

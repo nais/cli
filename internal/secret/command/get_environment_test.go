@@ -3,7 +3,6 @@ package command
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -30,28 +29,25 @@ func TestSecretGetEnvironment(t *testing.T) {
 		}
 	})
 	for _, tt := range []struct {
-		name, config, discoveryError, wantError string
-		environments                            []string
-		args                                    []string
-		omitName, omitTeam, managed             bool
-		wantOperations                          []string
+		name, config, wantError     string
+		args                        []string
+		omitName, omitTeam, managed bool
+		wantOperations              []string
 	}{
-		{name: "omitted environment resolves unique secret", environments: []string{"dev-gcp"}, wantOperations: []string{"GetAllSecrets", "GetSecret"}},
-		{name: "explicit environment bypasses discovery", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetSecret"}},
-		{name: "default environment bypasses discovery", config: "environment: dev-gcp\n", wantOperations: []string{"GetSecret"}},
-		{name: "explicit environment overrides default", config: "environment: prod-gcp\n", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetSecret"}},
-		{name: "missing secret", wantError: `secret "settings" not found`, wantOperations: []string{"GetAllSecrets"}},
-		{name: "ambiguous secret requires environment", environments: []string{"prod-gcp", "dev-gcp"}, wantError: "exists in multiple environments (dev-gcp, prod-gcp); specify -e, --environment", wantOperations: []string{"GetAllSecrets"}},
-		{name: "discovery failure", discoveryError: "access denied", wantError: "access denied", wantOperations: []string{"GetAllSecrets"}},
-		{name: "metadata does not expose values", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetSecret"}},
-		{name: "platform managed secret uses explicit environment", args: []string{"-e", "dev-gcp", "--with-values", "--reason", "Investigating issue"}, managed: true, wantOperations: []string{"ViewSecretValues", "GetSecret"}},
+		{name: "environment is required before API calls", wantError: "missing required environment"},
+		{name: "explicit environment", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetAllSecrets", "GetSecret"}},
+		{name: "default environment", config: "environment: dev-gcp\n", wantOperations: []string{"GetAllSecrets", "GetSecret"}},
+		{name: "explicit environment overrides default", config: "environment: prod-gcp\n", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetAllSecrets", "GetSecret"}},
+		{name: "metadata does not expose values", args: []string{"-e", "dev-gcp"}, wantOperations: []string{"GetAllSecrets", "GetSecret"}},
+		{name: "platform managed secret uses explicit environment", args: []string{"-e", "dev-gcp", "--with-values", "--reason", "Investigating issue"}, managed: true, wantOperations: []string{"GetAllSecrets", "ViewSecretValues", "GetSecret"}},
 		{name: "team remains required", omitTeam: true, wantError: "missing required team"},
-		{name: "name remains required", omitName: true, wantError: "Expected exactly 1 argument"},
-		{name: "key requires file", args: []string{"--key", "key"}, wantError: "--key is only used with --to-file"},
-		{name: "file requires key", args: []string{"--to-file", "unused"}, wantError: "--to-file requires --key"},
-		{name: "reason requires values", args: []string{"--reason", "Investigating issue"}, wantError: "--reason can only be used"},
-		{name: "short reason rejected", args: []string{"--with-values", "--reason", "short"}, wantError: "reason must be at least 10 characters"},
-		{name: "values still require reason", environments: []string{"dev-gcp"}, args: []string{"--with-values"}, wantError: "prompting for reason", wantOperations: []string{"GetAllSecrets"}},
+		{name: "name remains required", args: []string{"-e", "dev-gcp"}, omitName: true, wantError: "Expected exactly 1 argument"},
+		{name: "key requires file", args: []string{"-e", "dev-gcp", "--key", "key"}, wantError: "--key is only used with --to-file"},
+		{name: "file requires key", args: []string{"-e", "dev-gcp", "--to-file", "unused"}, wantError: "--to-file requires --key"},
+		{name: "reason requires values", args: []string{"-e", "dev-gcp", "--reason", "Investigating issue"}, wantError: "--reason can only be used"},
+		{name: "short reason rejected", args: []string{"-e", "dev-gcp", "--with-values", "--reason", "short"}, wantError: "reason must be at least 10 characters"},
+		{name: "values still require reason", args: []string{"-e", "dev-gcp", "--with-values"}, wantError: "prompting for reason", wantOperations: []string{"GetAllSecrets"}},
+		{name: "environment required before auditing prompt", args: []string{"--with-values"}, wantError: "missing required environment"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var operations []string
@@ -60,7 +56,7 @@ func TestSecretGetEnvironment(t *testing.T) {
 					OperationName string `json:"operationName"`
 					Variables     struct {
 						Name, EnvironmentName, TeamSlug string
-						Filter                          struct{ Name string }
+						Filter                          struct{ Environments []string }
 						Input                           struct{ Name, Environment, Team, Reason string }
 					} `json:"variables"`
 				}
@@ -71,17 +67,10 @@ func TestSecretGetEnvironment(t *testing.T) {
 				var response string
 				switch request.OperationName {
 				case "GetAllSecrets":
-					if request.Variables.TeamSlug != "my-team" || request.Variables.Filter.Name != "settings" {
-						t.Errorf("incorrect discovery target: %+v", request.Variables)
+					if request.Variables.TeamSlug != "my-team" || !slices.Equal(request.Variables.Filter.Environments, []string{"dev-gcp"}) {
+						t.Errorf("incorrect name lookup target: %+v", request.Variables)
 					}
-					nodes := make([]string, 0, len(tt.environments))
-					for _, env := range tt.environments {
-						nodes = append(nodes, fmt.Sprintf(`{"name":"settings","teamEnvironment":{"environment":{"name":%q}}}`, env))
-					}
-					response = `{"data":{"team":{"secrets":{"nodes":[` + strings.Join(nodes, ",") + `]}}}}`
-					if tt.discoveryError != "" {
-						response = fmt.Sprintf(`{"errors":[{"message":%q}]}`, tt.discoveryError)
-					}
+					response = `{"data":{"team":{"secrets":{"nodes":[{"name":"settings"}]}}}}`
 				case "GetSecret":
 					if request.Variables.Name != "settings" || request.Variables.TeamSlug != "my-team" || request.Variables.EnvironmentName != "dev-gcp" {
 						t.Errorf("incorrect get target: %+v", request.Variables)
@@ -106,6 +95,8 @@ func TestSecretGetEnvironment(t *testing.T) {
 			defer server.Close()
 			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
 			t.Setenv("HOME", t.TempDir())
+			t.Setenv("NAIS_TEAM", "")
+			t.Setenv("NAIS_ENVIRONMENT", "")
 			config := filepath.Join(t.TempDir(), "config.yaml")
 			contents := tt.config
 			if contents == "" {

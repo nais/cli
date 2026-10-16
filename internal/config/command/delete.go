@@ -18,10 +18,9 @@ func deleteConfig(parentFlags *flag.Config) *naistrix.Command {
 		Title:             "Delete a config.",
 		Description:       "This command deletes a config and all its values.",
 		Flags:             f,
-		Args:              defaultArgs,
+		Args:              []naistrix.Argument{{Name: "name", Prompt: "Name of the config", ChoicesFunc: configNameChoices(parentFlags)}},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(f),
 		ValidateArgsFunc:  validateArgs,
-		AutoCompleteFunc:  autoCompleteConfigNames(parentFlags),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Delete a config named my-config in environment dev.",

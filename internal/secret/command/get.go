@@ -11,6 +11,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/secret"
 	"github.com/nais/cli/internal/secret/command/flag"
+	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
 	"github.com/nais/naistrix/output"
@@ -40,24 +41,26 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		Title:            "Get details about a secret.",
 		Description:      "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
 		Flags:            f,
-		Args:             defaultArgs,
+		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the secret", ChoicesFunc: secretNameChoices(parentFlags)}},
 		ValidateArgsFunc: validateArgs,
-		ValidateFlagsFunc: func(context.Context) error {
-			if f.ToFile != "" && f.Key == "" {
-				return fmt.Errorf("--to-file requires --key to specify which key to extract")
-			}
-			if f.Key != "" && f.ToFile == "" {
-				return fmt.Errorf("--key is only used with --to-file")
-			}
-			if f.Reason != "" && !f.WithValues && f.ToFile == "" {
-				return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
-			}
-			if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
-				return fmt.Errorf("reason must be at least 10 characters")
-			}
-			return nil
-		},
-		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireEnvironmentFlag(f),
+			func(context.Context) error {
+				if f.ToFile != "" && f.Key == "" {
+					return fmt.Errorf("--to-file requires --key to specify which key to extract")
+				}
+				if f.Key != "" && f.ToFile == "" {
+					return fmt.Errorf("--key is only used with --to-file")
+				}
+				if f.Reason != "" && !f.WithValues && f.ToFile == "" {
+					return fmt.Errorf("--reason can only be used together with --with-values or --to-file")
+				}
+				if (f.WithValues || f.ToFile != "") && f.Reason != "" && len(f.Reason) < 10 {
+					return fmt.Errorf("reason must be at least 10 characters")
+				}
+				return nil
+			},
+		),
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Get details for a secret named my-secret in environment dev.",
@@ -79,6 +82,7 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			opts := getOptions{
 				team:         f.Team,
+				environment:  string(f.Environment),
 				outputFormat: f.Output,
 				withValues:   f.WithValues || f.ToFile != "",
 				reason:       f.Reason,
@@ -86,17 +90,6 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 				key:          f.Key,
 			}
 
-			if providedEnvironment := string(f.Environment); providedEnvironment != "" {
-				opts.environment = providedEnvironment
-				return runGetCommand(ctx, args, out, opts)
-			}
-
-			environment, err := resolveSecretEnvironment(ctx, f.Team, args.Get("name"), string(f.Environment))
-			if err != nil {
-				return err
-			}
-
-			opts.environment = environment
 			return runGetCommand(ctx, args, out, opts)
 		},
 	}

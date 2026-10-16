@@ -46,6 +46,16 @@ func postgresEnvironments(instances []postgres.PostgresInstance, name string) []
 	return envs
 }
 
+func postgresNameChoices(f *flag.Postgres) naistrix.ArgumentChoicesFunc {
+	return func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
+		instances, err := postgres.GetTeamPostgreses(ctx, f.Team, nil, nil)
+		if err != nil {
+			return nil, fmt.Errorf("unable to fetch Postgres names: %w", err)
+		}
+		return postgresNames(instances, string(f.Environment)), nil
+	}
+}
+
 func autoCompletePostgresNames(f *flag.Postgres) naistrix.AutoCompleteFunc {
 	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
 		if args.Len() != 0 {

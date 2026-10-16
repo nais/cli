@@ -47,10 +47,9 @@ func setImage(parentFlags *flag.App) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to change the image for"},
+			{Name: "name", Prompt: "Name of the application to change the image for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
-		Flags:            flags,
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
+		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
 

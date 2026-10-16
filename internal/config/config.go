@@ -57,21 +57,6 @@ func (t LastModified) MarshalJSON() ([]byte, error) {
 	return fmt.Appendf(nil, "%q", v.Format(time.RFC3339)), nil
 }
 
-// ConfigEnvironments returns the environments where a config with the given name exists.
-func ConfigEnvironments(ctx context.Context, teamSlug, name string) ([]string, error) {
-	all, err := GetAll(ctx, teamSlug, gql.ConfigFilter{Name: new(name)})
-	if err != nil {
-		return nil, err
-	}
-	var envs []string
-	for _, c := range all {
-		if c.Name == name {
-			envs = append(envs, c.TeamEnvironment.Environment.Name)
-		}
-	}
-	return envs, nil
-}
-
 // GetAll retrieves all configs for a team.
 func GetAll(ctx context.Context, teamSlug string, filter gql.ConfigFilter) ([]gql.GetAllConfigsTeamConfigsConfigConnectionNodesConfig, error) {
 	_ = `# @genqlient

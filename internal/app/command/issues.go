@@ -19,7 +19,7 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show issues for an application.",
 		Description: "Lists all active issues detected for a specific application, such as missing resources, configuration errors, or runtime problems.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show issues for"},
+			{Name: "name", Prompt: "Name of the application to show issues for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -38,6 +38,5 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 
 			return out.Table().Render(ret)
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

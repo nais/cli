@@ -83,8 +83,8 @@ func TestPostgresUpdateComparison(t *testing.T) {
 		},
 		{name: "team required before API calls", omitTeam: true, args: []string{"--cpu", "200m"}, wantError: "missing required team"},
 		{name: "name required before API calls", omitName: true, args: []string{"--cpu", "200m"}, wantError: "Expected exactly 1 argument"},
-		{name: "at least one field required before discovery", resolveEnvironment: true, wantError: "specify at least one of"},
-		{name: "invalid HA rejected before discovery", resolveEnvironment: true, args: []string{"--high-availability", "yes"}, wantError: "--high-availability must be true or false"},
+		{name: "at least one field required before environment resolution", resolveEnvironment: true, wantError: "specify at least one of"},
+		{name: "invalid HA rejected before environment resolution", resolveEnvironment: true, args: []string{"--high-availability", "yes"}, wantError: "--high-availability must be true or false"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			stdin, err := os.Open(os.DevNull)
@@ -243,8 +243,13 @@ func TestPostgresUpdateComparison(t *testing.T) {
 			} else if strings.Contains(output.String(), "Setting") || strings.Contains(output.String(), "subsequent nais apply") {
 				t.Errorf("summary appeared before successful metadata lookup: %s", output.String())
 			}
-			if !slices.Equal(operations, tt.wantOperations) {
-				t.Errorf("API operations = %v; want %v", operations, tt.wantOperations)
+			wantOperations := tt.wantOperations
+			if !tt.omitTeam && !tt.omitName && tt.discoveryError == "" {
+				// Name validation precedes the existing update validation and lookups.
+				wantOperations = append([]string{"GetTeamPostgreses"}, wantOperations...)
+			}
+			if !slices.Equal(operations, wantOperations) {
+				t.Errorf("API operations = %v; want %v", operations, wantOperations)
 			}
 		})
 	}
