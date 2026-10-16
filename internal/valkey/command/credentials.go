@@ -16,11 +16,13 @@ import (
 func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 	flags := &flag.Credentials{Valkey: parentFlags}
 	return &naistrix.Command{
-		Name:             "credentials",
-		Title:            "Create temporary credentials for a Valkey instance.",
-		Description:      "Creates temporary credentials for accessing a Valkey instance. The credentials are printed to stdout as environment variables.",
-		Flags:            flags,
-		Args:             defaultArgs,
+		Name:        "credentials",
+		Title:       "Create temporary credentials for a Valkey instance.",
+		Description: "Creates temporary credentials for accessing a Valkey instance. The credentials are printed to stdout as environment variables.",
+		Flags:       flags,
+		Args: []naistrix.Argument{
+			{Name: "name", Prompt: "Name of the Valkey instance", ChoicesFunc: valkeyNameChoices(parentFlags)},
+		},
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(flags),
@@ -37,12 +39,6 @@ func credentials(parentFlags *flag.Valkey) *naistrix.Command {
 				return nil
 			},
 		),
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-			if args.Len() != 0 {
-				return nil, ""
-			}
-			return autoCompleteValkeyNames(ctx, flags.Team, string(flags.Environment))
-		},
 		Examples: []naistrix.CommandExample{
 			{
 				Description: "Create read credentials for a Valkey instance named my-valkey in environment dev, valid for 1 day.",

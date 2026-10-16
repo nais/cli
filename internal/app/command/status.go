@@ -21,7 +21,7 @@ func status(parentFlags *flag.App) *naistrix.Command {
 		Title:       "Show instance status for an application.",
 		Description: "Shows instance groups and their instances with current status, image, and restart counts. During rolling updates, both current and incoming groups are shown.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to show instance status for"},
+			{Name: "name", Prompt: "Name of the application to show instance status for", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -43,7 +43,6 @@ func status(parentFlags *flag.App) *naistrix.Command {
 
 			return renderStatus(out, ret)
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }
 

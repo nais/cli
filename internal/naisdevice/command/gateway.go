@@ -93,20 +93,22 @@ func describeCommand(parentFlags *flag.Gateway) *naistrix.Command {
 		Description: "Show detailed information about a specific gateway, including its endpoint, IP addresses, routes, and access group IDs.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "gateway", Prompt: "Name of the gateway to inspect"},
-		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) (completions []string, activeHelp string) {
-			gateways, err := naisdevice.GetGateways(ctx)
-			if err != nil {
-				return []string{}, "Unable to list gateways, are you connected to naisdevice?"
-			}
+			{
+				Name:   "gateway",
+				Prompt: "Name of the gateway to inspect",
+				ChoicesFunc: func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
+					gateways, err := naisdevice.GetGateways(ctx)
+					if err != nil {
+						return nil, fmt.Errorf("unable to list naisdevice gateways: %w", err)
+					}
 
-			gws := make([]string, len(gateways))
-			for i, g := range gateways {
-				gws[i] = g.Name
-			}
-
-			return gws, "Select a gateway to describe."
+					names := make([]string, len(gateways))
+					for i, gateway := range gateways {
+						names[i] = gateway.Name
+					}
+					return names, nil
+				},
+			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			gateway, err := naisdevice.GetGateway(ctx, args.Get("gateway"))

@@ -17,7 +17,7 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Trigger a job manually.",
 		Description: "Creates a new run of the specified job outside of its normal schedule. Requires exactly one environment to be specified.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the job to trigger"},
+			{Name: "name", Prompt: "Name of the job to trigger", ChoicesFunc: jobNameChoices(parentFlags)},
 		},
 		Flags:             flags,
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
@@ -30,6 +30,5 @@ func trigger(parentFlags *flag.Job) *naistrix.Command {
 			out.Println(ret)
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteJobNames(parentFlags),
 	}
 }

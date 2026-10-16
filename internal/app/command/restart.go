@@ -19,7 +19,7 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 		Description: "Triggers a rolling restart of the application.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the application to restart"},
+			{Name: "name", Prompt: "Name of the application to restart", ChoicesFunc: appNameChoices(parentFlags)},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			name := args.Get("name")
@@ -37,6 +37,5 @@ func restart(parentFlags *flag.App) *naistrix.Command {
 			out.Println(ret)
 			return nil
 		},
-		AutoCompleteFunc: autoCompleteAppNames(parentFlags),
 	}
 }

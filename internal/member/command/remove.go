@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nais/cli/internal/member"
 	"github.com/nais/cli/internal/member/command/flag"
@@ -24,7 +25,22 @@ func remove(parentFlags *flag.Member) *naistrix.Command {
 			},
 		},
 		Args: []naistrix.Argument{
-			{Name: "member", Prompt: "Email address of the user to remove from the team"},
+			{
+				Name:   "member",
+				Prompt: "Email address of the user to remove from the team",
+				ChoicesFunc: func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
+					members, err := member.GetTeamMembers(ctx, flags.Team)
+					if err != nil {
+						return nil, fmt.Errorf("unable to fetch existing team members: %w", err)
+					}
+
+					emails := make([]string, len(members))
+					for i, m := range members {
+						emails[i] = m.User.Email
+					}
+					return emails, nil
+				},
+			},
 		},
 		Flags: flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
@@ -34,19 +50,6 @@ func remove(parentFlags *flag.Member) *naistrix.Command {
 
 			out.Printf("%q has been removed from the %q team.\n", args.Get("member"), flags.Team)
 			return nil
-		},
-		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
-			members, err := member.GetTeamMembers(ctx, flags.Team)
-			if err != nil {
-				return nil, "Unable to fetch existing team members."
-			}
-
-			emails := make([]string, len(members))
-			for i, m := range members {
-				emails[i] = m.User.Email
-			}
-
-			return emails, "Choose the email address of the user to remove from the team."
 		},
 	}
 }

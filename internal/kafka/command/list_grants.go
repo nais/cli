@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/nais/cli/internal/kafka"
@@ -20,10 +21,25 @@ func listGrants(parentFlags *flag.Kafka) *naistrix.Command {
 		Description: "Shows the workloads that have been granted access to a Kafka topic.",
 		Flags:       flags,
 		Args: []naistrix.Argument{
-			{Name: "topic", Prompt: "Name of the Kafka topic to list grants for"},
+			{
+				Name:   "topic",
+				Prompt: "Name of the Kafka topic to list grants for",
+				ChoicesFunc: func(ctx context.Context, _ *naistrix.Arguments) ([]string, error) {
+					topics, err := kafka.GetTeamTopics(ctx, flags.Team, string(flags.Environment), nil)
+					if err != nil {
+						return nil, fmt.Errorf("unable to fetch Kafka topics: %w", err)
+					}
+
+					names := make([]string, len(topics))
+					for i, topic := range topics {
+						names[i] = topic.Name
+					}
+					sort.Strings(names)
+					return names, nil
+				},
+			},
 		},
 		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
-		AutoCompleteFunc:  autoCompleteKafkaTopicName(flags.Kafka, 0),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			grants, err := kafka.GetKafkaTopicGrants(ctx, args.Get("topic"), flags.Team, flags.Environment)
 			if err != nil {
@@ -41,29 +57,5 @@ func listGrants(parentFlags *flag.Kafka) *naistrix.Command {
 
 			return out.Table().Render(grants)
 		},
-	}
-}
-
-func autoCompleteKafkaTopicName(flags *flag.Kafka, topicArgumentIndex int) naistrix.AutoCompleteFunc {
-	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
-		if args.Len() != topicArgumentIndex {
-			return nil, ""
-		}
-		topics, err := kafka.GetTeamTopics(ctx, flags.Team, string(flags.Environment), nil)
-		if err != nil {
-			return nil, "Unable to fetch Kafka topics."
-		}
-
-		names := make([]string, 0, len(topics))
-		for _, topic := range topics {
-			names = append(names, topic.Name)
-		}
-		sort.Strings(names)
-
-		if len(names) == 0 {
-			return nil, "No Kafka topics found in the selected environment."
-		}
-
-		return names, "Select a Kafka topic."
 	}
 }
