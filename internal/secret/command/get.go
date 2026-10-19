@@ -41,7 +41,8 @@ func get(parentFlags *flag.Secret) *naistrix.Command {
 		Title:            "Get details about a secret.",
 		Description:      "This command shows details about a secret, including its keys, workloads using it, and last modification info. Use --with-values to also fetch and display the actual secret values (access is logged for auditing).",
 		Flags:            f,
-		Args:             []naistrix.Argument{{Name: "name", Prompt: "Name of the secret", ChoicesFunc: secretNameChoices(parentFlags)}},
+		Args:             defaultArgs,
+		AutoCompleteFunc: autoCompleteSecretNames(parentFlags),
 		ValidateArgsFunc: validateArgs,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(f),
