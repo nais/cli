@@ -28,6 +28,10 @@ func TestConfigAndSecretNameChoices(t *testing.T) {
 		{name: "secret", operation: "GetAllSecrets", field: "secrets", command: secretcommand.Secrets},
 	} {
 		for _, action := range []string{"activity", "delete", "set", "unset", "get"} {
+			// Secret get also accepts platform-managed secrets absent from the list API.
+			if resource.name == "secret" && action == "get" {
+				continue
+			}
 			t.Run(resource.name+"/"+action, func(t *testing.T) {
 				for _, tt := range []struct {
 					name, value, environment, config, wantError      string

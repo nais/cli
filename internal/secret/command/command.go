@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"sort"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -71,5 +72,44 @@ func secretNameChoices(flags *flag.Secret) naistrix.ArgumentChoicesFunc {
 		}
 		slices.Sort(names)
 		return names, nil
+	}
+}
+
+func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
+	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+		if args.Len() > 0 {
+			return nil, ""
+		}
+
+		if flags.Environment == "" {
+			return nil, "Please provide environment to auto-complete secret names. '-e, --environment <environment>' flag."
+		}
+
+		secrets, err := secret.GetAll(ctx, flags.Team, gql.SecretFilter{
+			Environments: []string{string(flags.Environment)},
+		})
+		if err != nil {
+			return nil, fmt.Sprintf("Unable to fetch secrets for auto-completion: %v", err)
+		}
+
+		seen := make(map[string]struct{})
+		var names []string
+		for _, s := range secrets {
+			if string(flags.Environment) != s.TeamEnvironment.Environment.Name {
+				continue
+			}
+			if _, ok := seen[s.Name]; ok {
+				continue
+			}
+			seen[s.Name] = struct{}{}
+			names = append(names, s.Name)
+		}
+		sort.Strings(names)
+
+		if len(names) == 0 {
+			return nil, "No secrets found."
+		}
+
+		return names, "Select a secret."
 	}
 }
