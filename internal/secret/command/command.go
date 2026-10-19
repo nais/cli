@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -76,7 +77,7 @@ func secretNameChoices(flags *flag.Secret) naistrix.ArgumentChoicesFunc {
 }
 
 func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
-	return func(ctx context.Context, args *naistrix.Arguments, _ string) ([]string, string) {
+	return func(ctx context.Context, args *naistrix.Arguments, toComplete string) ([]string, string) {
 		if args.Len() > 0 {
 			return nil, ""
 		}
@@ -96,6 +97,9 @@ func autoCompleteSecretNames(flags *flag.Secret) naistrix.AutoCompleteFunc {
 		var names []string
 		for _, s := range secrets {
 			if string(flags.Environment) != s.TeamEnvironment.Environment.Name {
+				continue
+			}
+			if !strings.HasPrefix(s.Name, toComplete) {
 				continue
 			}
 			if _, ok := seen[s.Name]; ok {

@@ -167,7 +167,17 @@ func TestSecretGetCompletion(t *testing.T) {
 		{
 			name:     "prefix",
 			response: `{"data":{"team":{"secrets":{"nodes":[{"name":"zeta","teamEnvironment":{"environment":{"name":"dev-gcp"}}},{"name":"settings","teamEnvironment":{"environment":{"name":"dev-gcp"}}}]}}}}`,
-			args:     []string{"set"}, want: "settings\nzeta\n_activeHelp_ Select a secret.\n:4\n", wantLookups: 1,
+			args:     []string{"set"}, want: "settings\n_activeHelp_ Select a secret.\n:4\n", wantLookups: 1,
+		},
+		{
+			name:     "no matching prefix",
+			response: `{"data":{"team":{"secrets":{"nodes":[{"name":"settings","teamEnvironment":{"environment":{"name":"dev-gcp"}}}]}}}}`,
+			args:     []string{"missing"}, want: "_activeHelp_ No secrets found.\n:4\n", wantLookups: 1,
+		},
+		{
+			name:     "substring is not a prefix",
+			response: `{"data":{"team":{"secrets":{"nodes":[{"name":"my-settings","teamEnvironment":{"environment":{"name":"dev-gcp"}}},{"name":"settings","teamEnvironment":{"environment":{"name":"dev-gcp"}}}]}}}}`,
+			args:     []string{"set"}, want: "settings\n_activeHelp_ Select a secret.\n:4\n", wantLookups: 1,
 		},
 		{
 			name:     "deduplicated and environment filtered",
