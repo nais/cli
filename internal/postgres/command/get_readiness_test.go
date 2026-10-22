@@ -3,8 +3,8 @@ package command
 import (
 	"testing"
 
-	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/postgres"
 )
 
 func TestPostgresReadiness(t *testing.T) {

@@ -52,6 +52,16 @@ Then explore available commands:
 nais --help
 ```
 
+## Postgres command migration (breaking change)
+
+`nais postgres` now manages Nais Postgres. The commands previously available under
+`nais alpha postgres` have moved directly to `nais postgres`, without an alias at
+the old location.
+
+For Google Cloud SQL, use `nais cloudsql` instead of `nais postgres` or `nais pg`.
+The old Cloud SQL aliases have been removed. Update scripts and shell aliases
+before upgrading to this major release.
+
 ## Shell completion
 
 Enable shell completion for faster navigation:

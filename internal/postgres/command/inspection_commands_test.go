@@ -17,9 +17,9 @@ func TestPostgresInspectionHelpAndCompletion(t *testing.T) {
 		args     []string
 		rejected bool
 	}{
-		{name: "help lists get instead of top-level status", args: []string{"alpha", "postgres", "--help"}},
-		{name: "completion lists get instead of top-level status", args: []string{"__complete", "alpha", "postgres", ""}},
-		{name: "removed command is not aliased", args: []string{"alpha", "postgres", "status", "orders"}, rejected: true},
+		{name: "help lists get instead of top-level status", args: []string{"postgres", "--help"}},
+		{name: "completion lists get instead of top-level status", args: []string{"__complete", "postgres", ""}},
+		{name: "removed command is not aliased", args: []string{"postgres", "status", "orders"}, rejected: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("HOME", t.TempDir())

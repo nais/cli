@@ -1,8 +1,8 @@
 package command
 
 import (
-	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/postgres"
 )
 
 func postgresReadiness(status postgres.BranchStatus) string {

@@ -14,11 +14,11 @@ func quoteShellArgument(value string) string {
 }
 
 func postgresGetCommandLine(name, team, environment, configFile string) string {
-	return postgresCommandLine("nais alpha postgres get "+quoteShellArgument(name), team, environment, configFile)
+	return postgresCommandLine("nais postgres get "+quoteShellArgument(name), team, environment, configFile)
 }
 
 func branchListCommandLine(name, team, environment, configFile string) string {
-	return postgresCommandLine("nais alpha postgres branch list "+quoteShellArgument(name), team, environment, configFile)
+	return postgresCommandLine("nais postgres branch list "+quoteShellArgument(name), team, environment, configFile)
 }
 
 func postgresCommandLine(command, team, environment, configFile string) string {

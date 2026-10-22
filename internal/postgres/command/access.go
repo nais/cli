@@ -12,10 +12,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/nais/cli/internal/alpha/postgres"
-	"github.com/nais/cli/internal/alpha/postgres/command/flag"
-	"github.com/nais/cli/internal/alpha/postgres/relay"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
+	"github.com/nais/cli/internal/postgres/relay"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
@@ -29,7 +29,7 @@ func accessFlags(parent *flag.Postgres) *flag.Access {
 func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 	f := accessFlags(parent)
 	return &naistrix.Command{
-		Name: "psql", Title: "Connect to Nais Postgres via psql (experimental).",
+		Name: "psql", Title: "Connect to Nais Postgres via psql.",
 		Description: "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification. If --reason is omitted, prompt for an audit reason interactively.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to connect to", ChoicesFunc: postgresNameChoices(parent)}}, Flags: f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
@@ -97,7 +97,7 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.Proxy{Postgres: parent, AccessLevel: "read", TTL: 30 * time.Minute, Host: "127.0.0.1"}
 	return &naistrix.Command{
-		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally (experimental).",
+		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally.",
 		Description: "Request personal access and listen on loopback. If --reason is omitted, prompt for an audit reason interactively. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Credentials are not printed unless --print-password is set.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy", ChoicesFunc: postgresNameChoices(parent)}}, Flags: f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
@@ -140,7 +140,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 				return err
 			}
 			out.Printf("Postgres relay listening at %s; user: %s; TLS server name: %s; CA: %s\n", listener.Addr(), connection.Username, connection.ServerName, ca.Name())
-			out.Println("Use host=<server name> hostaddr=<loopback IP> sslmode=verify-full sslrootcert=<CA path>. For automatic setup use 'nais alpha postgres psql'.")
+			out.Println("Use host=<server name> hostaddr=<loopback IP> sslmode=verify-full sslrootcert=<CA path>. For automatic setup use 'nais postgres psql'.")
 			out.Println("Database password is only available here with --print-password (sensitive output).")
 			if f.PrintPassword {
 				out.Errorf("Warning: printing a database password; avoid terminal capture and shell history.\n")
