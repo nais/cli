@@ -6,9 +6,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/nais/cli/internal/alpha/postgres"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )

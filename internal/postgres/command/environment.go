@@ -7,9 +7,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/nais/cli/internal/alpha/postgres"
-	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"

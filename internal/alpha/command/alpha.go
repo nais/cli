@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/nais/cli/internal/alpha/command/flag"
-	postgrescmd "github.com/nais/cli/internal/alpha/postgres/command"
 	"github.com/nais/cli/internal/flags"
 	krakend "github.com/nais/cli/internal/krakend/command"
 	mcpcmd "github.com/nais/cli/internal/mcp/command"
@@ -19,7 +18,6 @@ func Alpha(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			krakend.Krakend(flags),
 			mcpcmd.MCP(flags),
-			postgrescmd.Postgres(parentFlags),
 		},
 	}
 }

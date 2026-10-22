@@ -43,7 +43,7 @@ func TestBranchCreateNameAndProgress(t *testing.T) {
 		},
 		{
 			name: "missing branch requires positional argument noninteractively", positionals: []string{"orders"}, resolveEnvironment: true,
-			wantError: "specify the new branch name as the second positional argument, e.g. nais alpha postgres branch create mypg 5m-restore --ago 5m",
+			wantError: "specify the new branch name as the second positional argument, e.g. nais postgres branch create mypg 5m-restore --ago 5m",
 		},
 		{name: "no Postgres", wantError: "Expected at least 1 argument"},
 		{name: "empty Postgres", positionals: []string{"", "5m-restore"}, wantError: "Postgres name must not be empty"},

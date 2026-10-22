@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 )

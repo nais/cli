@@ -3,10 +3,10 @@ package command
 import (
 	"context"
 
-	"github.com/nais/cli/internal/alpha/postgres"
-	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/labels"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/output"
 )
@@ -14,8 +14,8 @@ import (
 func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Postgres{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name: "postgres", Title: "Manage Nais Postgres instances (experimental).",
-		Description: "Experimental commands for Nais Postgres branches and brokered personal access.", StickyFlags: flags,
+		Name: "postgres", Title: "Manage Nais Postgres instances.",
+		Description: "Manage Nais Postgres instances, branches, and brokered personal access.", StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			listCommand(flags),
 			instanceGetCommand(flags),

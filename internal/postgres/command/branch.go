@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nais/cli/internal/alpha/postgres"
-	"github.com/nais/cli/internal/alpha/postgres/command/flag"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/postgres"
+	"github.com/nais/cli/internal/postgres/command/flag"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
@@ -18,7 +18,7 @@ import (
 
 func branchCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
-		Name: "branch", Title: "Manage branches of a Nais Postgres (experimental).",
+		Name: "branch", Title: "Manage branches of a Nais Postgres.",
 		Description: "Create, list, inspect, activate and delete branches of a Postgres. A branch is a copy of the database restored from a point in time. Only one branch is active at a time; workloads can also select a branch explicitly with uses.postgres[].branch.",
 		SubCommands: []*naistrix.Command{
 			branchListCommand(parent), branchCreateCommand(parent),
@@ -115,7 +115,7 @@ func branchCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			} else {
 				entered, err := input.Input("Name of the new branch")
 				if errors.Is(err, input.ErrNotInteractive) {
-					return fmt.Errorf("specify the new branch name as the second positional argument, e.g. nais alpha postgres branch create mypg 5m-restore --ago 5m")
+					return fmt.Errorf("specify the new branch name as the second positional argument, e.g. nais postgres branch create mypg 5m-restore --ago 5m")
 				}
 				if err != nil {
 					return fmt.Errorf("prompting for new branch name: %w", err)

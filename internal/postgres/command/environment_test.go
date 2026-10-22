@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/nais/cli/internal/alpha/postgres"
+	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/naistrix/output"
 )
 
