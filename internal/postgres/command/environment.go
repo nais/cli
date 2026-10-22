@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
+	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
@@ -128,11 +130,25 @@ func autoCompletePostgresBranches(f *flag.Postgres) naistrix.AutoCompleteFunc {
 	}
 }
 
+func postgresCreateEnvironments(ctx context.Context) ([]string, error) {
+	envs, err := naisapi.GetAllEnvironments(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// NAV's on-premises environments do not support Nais Postgres.
+	return slices.DeleteFunc(envs, func(env string) bool {
+		return flags.Environment(env).IsOnPrem()
+	}), nil
+}
+
 func resolvePostgresCreateEnvironment(ctx context.Context, provided string) (string, error) {
 	if provided != "" {
+		if flags.Environment(provided).IsOnPrem() {
+			return "", fmt.Errorf("Postgres is not supported in environment %q; choose an environment without the -fss suffix", provided)
+		}
 		return provided, nil
 	}
-	envs, err := naisapi.GetAllEnvironments(ctx)
+	envs, err := postgresCreateEnvironments(ctx)
 	if err != nil {
 		return "", fmt.Errorf("fetching environments: %w", err)
 	}
