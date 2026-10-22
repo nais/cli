@@ -47,7 +47,7 @@ func log(parentFlags *flag.Job) *naistrix.Command {
 			}
 
 			queryEnvironment := flags.Environment
-			if user.Domain() == "nav.no" {
+			if user.ConsoleHost() == "console.nav.cloud.nais.io" {
 				queryEnvironment = globalFlags.Environment(strings.TrimSuffix(string(queryEnvironment), "-gcp"))
 			}
 

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -48,6 +47,10 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	if !ok {
 		return nil, fmt.Errorf("%w: missing email claim", ErrNeedsOIDCLogin)
 	}
+	consoleHost, err := resolveConsoleHost(ctx, domain, user.ConsoleHost)
+	if err != nil {
+		return nil, err
+	}
 
 	ts := tokenSourceFunc(func() (*oauth2.Token, error) {
 		user, err := getOIDCUser(ctx)
@@ -59,7 +62,7 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	})
 
 	return &AuthenticatedUser{
-		consoleHost: user.ConsoleHost,
+		consoleHost: consoleHost,
 		domain:      domain,
 		email:       email,
 		ts:          oauth2.ReuseTokenSourceWithExpiry(&user.Token, ts, 30*time.Second),
@@ -78,10 +81,11 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	state := uuid.New().String()
 	verifier := oauth2.GenerateVerifier()
 
-	ctx, cancel := context.WithCancel(ctx)
-	srv := client.CallbackServer(ctx, cancel, verifier, state)
+	loginCtx, cancel := context.WithCancelCause(ctx)
+	defer cancel(nil)
+	srv := client.CallbackServer(loginCtx, cancel, verifier, state)
 
-	wg, ctx := errgroup.WithContext(ctx)
+	wg, ctx := errgroup.WithContext(loginCtx)
 	wg.Go(func() error {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			return fmt.Errorf("error starting login callback server: %w", err)
@@ -101,7 +105,13 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	// context is canceled when the login callback handler completes once or when errgroup returns a non-nil error
 	<-ctx.Done()
 	_ = srv.Shutdown(context.Background())
-	return wg.Wait()
+	if err := wg.Wait(); err != nil {
+		return err
+	}
+	if cause := context.Cause(loginCtx); cause != nil && !errors.Is(cause, context.Canceled) {
+		return cause
+	}
+	return nil
 }
 
 // OIDCLogout deletes the user's secret from the system keyring and triggers logout at the identity provider.
@@ -164,13 +174,15 @@ func newOidcClient(ctx context.Context) (*oidcClient, error) {
 	return &oidcClient{oauth2Cfg, oidcCfg}, nil
 }
 
-func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFunc, verifier, state string) *http.Server {
+func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCauseFunc, verifier, state string) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
-		defer cancel()
+		var callbackErr error
+		defer func() { cancel(callbackErr) }()
 
 		if r.URL.Query().Get("state") != state {
-			http.Error(w, "State did not match", http.StatusBadRequest)
+			callbackErr = errors.New("state did not match")
+			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -178,64 +190,42 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelFu
 
 		tok, err := c.oauth2.Exchange(ctx, code, oauth2.VerifierOption(verifier))
 		if err != nil {
-			http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to exchange token: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		raw, ok := tok.Extra("id_token").(string)
 		if !ok {
-			http.Error(w, "Missing id_token in token response", http.StatusInternalServerError)
+			callbackErr = errors.New("missing id_token in token response")
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		idToken, err := c.ParseIDToken(ctx, raw)
 		if err != nil {
-			http.Error(w, "Failed to parse ID token: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to parse ID token: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		domain, ok := idToken.Domain()
 		if !ok {
-			http.Error(w, "Missing primary_domain claim in ID token", http.StatusUnauthorized)
+			callbackErr = errors.New("missing primary_domain claim in ID token")
+			http.Error(w, callbackErr.Error(), http.StatusUnauthorized)
 			return
 		}
-		if domain == "nais.io" {
-			// TODO: we should probably support this at some point
-			http.Error(w, "Cannot login with `@nais.io` user; please use a tenant-specific account", http.StatusBadRequest)
+		consoleHost, err := resolveConsoleHost(ctx, domain, "")
+		if err != nil {
+			callbackErr = err
+			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
 			return
 		}
 
-		type tenantData struct {
-			ConsoleURL string `json:"consoleUrl"`
-		}
-		u := fmt.Sprintf("https://storage.googleapis.com/nais-tenant-data/%s.json", domain)
-		res, err := http.Get(u) // #nosec G704 -- URL is constructed from a domain-only segment appended to a fixed GCS base URL; SSRF risk is acceptable
+		_, err = storeOIDCUser(tok, consoleHost)
 		if err != nil {
-			http.Error(w, "Failed to get tenant data: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer func() {
-			_ = res.Body.Close()
-		}()
-		if res.StatusCode == http.StatusNotFound {
-			http.Error(w, fmt.Sprintf("No tenant data found for domain %q", domain), http.StatusBadRequest)
-			return
-		}
-		if res.StatusCode != http.StatusOK {
-			http.Error(w, "Failed to get tenant data: unexpected status code "+res.Status, http.StatusInternalServerError)
-			return
-		}
-
-		var tenant tenantData
-		err = json.NewDecoder(res.Body).Decode(&tenant)
-		if err != nil {
-			http.Error(w, "Failed to decode tenant data: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		_, err = storeOIDCUser(tok, tenant.ConsoleURL)
-		if err != nil {
-			http.Error(w, "Failed to store user data: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to store user data: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
