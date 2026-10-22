@@ -179,13 +179,10 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCa
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		var callbackErr error
 		defer func() { cancel(callbackErr) }()
-		fail := func(message string, status int) {
-			callbackErr = errors.New(message)
-			http.Error(w, message, status)
-		}
 
 		if r.URL.Query().Get("state") != state {
-			fail("state did not match", http.StatusBadRequest)
+			callbackErr = errors.New("state did not match")
+			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -193,36 +190,42 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCa
 
 		tok, err := c.oauth2.Exchange(ctx, code, oauth2.VerifierOption(verifier))
 		if err != nil {
-			fail("failed to exchange token: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to exchange token: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		raw, ok := tok.Extra("id_token").(string)
 		if !ok {
-			fail("missing id_token in token response", http.StatusInternalServerError)
+			callbackErr = errors.New("missing id_token in token response")
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		idToken, err := c.ParseIDToken(ctx, raw)
 		if err != nil {
-			fail("failed to parse ID token: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to parse ID token: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		domain, ok := idToken.Domain()
 		if !ok {
-			fail("missing primary_domain claim in ID token", http.StatusUnauthorized)
+			callbackErr = errors.New("missing primary_domain claim in ID token")
+			http.Error(w, callbackErr.Error(), http.StatusUnauthorized)
 			return
 		}
 		consoleHost, err := resolveConsoleHost(ctx, domain, "")
 		if err != nil {
-			fail(err.Error(), http.StatusBadRequest)
+			callbackErr = err
+			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
 			return
 		}
 
 		_, err = storeOIDCUser(tok, consoleHost)
 		if err != nil {
-			fail("failed to store user data: "+err.Error(), http.StatusInternalServerError)
+			callbackErr = fmt.Errorf("failed to store user data: %w", err)
+			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
 			return
 		}
 
