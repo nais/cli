@@ -3,12 +3,18 @@ package flags
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 )
 
 type Environment string
+
+// IsOnPrem reports whether the environment uses NAV's on-premises naming convention.
+func (e Environment) IsOnPrem() bool {
+	return strings.HasSuffix(string(e), "-fss")
+}
 
 var _ naistrix.FlagAutoCompleter = (*Environment)(nil)
 

@@ -18,6 +18,23 @@ import (
 	"github.com/nais/naistrix"
 )
 
+func TestPostgresCreateEnvironmentsExcludesFSS(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":{"environments":{"nodes":[{"name":"dev-fss"},{"name":"prod-gcp"},{"name":"prod-fss"},{"name":"dev-gcp"},{"name":"staging"},{"name":"fss-test"}]}}}`))
+	}))
+	defer server.Close()
+	t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
+	got, err := postgresCreateEnvironments(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"prod-gcp", "dev-gcp", "staging", "fss-test"}
+	if !slices.Equal(got, want) {
+		t.Errorf("Postgres create environment choices = %v, want %v", got, want)
+	}
+}
+
 func TestPostgresCreateEnvironment(t *testing.T) {
 	stdin, err := os.Open(os.DevNull)
 	if err != nil {
@@ -39,13 +56,18 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 		wantOperations                                 []string
 	}{
 		{name: "explicit environment bypasses discovery", args: []string{"-t", "my-team", "-e", "dev-gcp", "--yes"}, wantOperations: []string{"CreatePostgres"}},
+		{name: "explicit dev-fss is rejected before API", args: []string{"-t", "my-team", "-e", "dev-fss", "--yes"}, wantError: `Postgres is not supported in environment "dev-fss"`},
+		{name: "explicit prod-fss is rejected before API", args: []string{"-t", "my-team", "-e", "prod-fss", "--yes"}, wantError: `Postgres is not supported in environment "prod-fss"`},
+		{name: "default FSS environment is rejected before API", config: "environment: dev-fss\n", args: []string{"-t", "my-team", "--yes"}, wantError: `Postgres is not supported in environment "dev-fss"`},
 		{name: "default environment bypasses discovery", config: "environment: dev-gcp\n", args: []string{"-t", "my-team", "--yes"}, wantOperations: []string{"CreatePostgres"}},
 		{name: "explicit environment overrides default", config: "environment: prod-gcp\n", args: []string{"-t", "my-team", "-e", "dev-gcp", "--yes"}, wantOperations: []string{"CreatePostgres"}},
+		{name: "explicit supported environment overrides FSS default", config: "environment: dev-fss\n", args: []string{"-t", "my-team", "-e", "dev-gcp", "--yes"}, wantOperations: []string{"CreatePostgres"}},
 		{name: "multiple environments require a choice", args: []string{"-t", "my-team"}, response: `{"data":{"environments":{"nodes":[{"name":"prod-gcp"},{"name":"dev-gcp"}]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
 		{name: "yes does not choose from multiple environments", args: []string{"-t", "my-team", "--yes"}, response: `{"data":{"environments":{"nodes":[{"name":"prod-gcp"},{"name":"dev-gcp"}]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
 		{name: "one environment still requires a choice", args: []string{"-t", "my-team"}, response: `{"data":{"environments":{"nodes":[{"name":"dev-gcp"}]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
 		{name: "yes does not choose the sole environment", args: []string{"-t", "my-team", "--yes"}, response: `{"data":{"environments":{"nodes":[{"name":"dev-gcp"}]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
 		{name: "no environments", args: []string{"-t", "my-team", "--yes"}, response: `{"data":{"environments":{"nodes":[]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
+		{name: "only unsupported environments", args: []string{"-t", "my-team", "--yes"}, response: `{"data":{"environments":{"nodes":[{"name":"dev-fss"},{"name":"prod-fss"}]}}}`, wantError: hint, wantOperations: []string{"Environments"}},
 		{name: "discovery failure is propagated", args: []string{"-t", "my-team", "--yes"}, response: `{"errors":[{"message":"access denied"}]}`, wantError: "fetching environments:", wantOperations: []string{"Environments"}},
 		{name: "team is required before discovery", args: []string{"--yes"}, wantError: "missing required team"},
 		{name: "invalid version fails before discovery", args: []string{"-t", "my-team", "--version", "17", "--yes"}, wantError: "--version must be 18"},

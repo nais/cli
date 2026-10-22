@@ -29,6 +29,9 @@ type Create struct {
 }
 
 func (c *Create) Validate() error {
+	if c.Environment.IsOnPrem() {
+		return fmt.Errorf("OpenSearch is not supported in environment %q; choose an environment without the -fss suffix", c.Environment)
+	}
 	if c.Memory != "" && !c.Memory.IsValid() {
 		return fmt.Errorf("invalid memory %q, must be one of: %v", c.Memory, gql.AllOpenSearchMemory)
 	}
