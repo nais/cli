@@ -9,8 +9,6 @@ import (
 	"github.com/nais/naistrix/output"
 )
 
-const consoleBaseURL = "https://console.nav.cloud.nais.io"
-
 type PostgresInstance struct {
 	Name             output.Link `json:"name"`
 	Environment      string      `json:"environment"`
@@ -48,6 +46,10 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 	if err != nil {
 		return nil, err
 	}
+	user, err := naisapi.GetAuthenticatedUser(ctx)
+	if err != nil {
+		return nil, err
+	}
 	filter := &gql.TeamPostgresFilter{Environments: environments, Labels: labelFilters}
 	var ret []PostgresInstance
 	var after *string
@@ -56,7 +58,7 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 		if err != nil {
 			return nil, err
 		}
-		ret = append(ret, postgresesFromTeam(resp.Team, team)...)
+		ret = append(ret, postgresesFromTeam(resp.Team, team, user.ConsoleHost())...)
 		if !resp.Team.Postgreses.PageInfo.HasNextPage {
 			break
 		}
@@ -69,12 +71,12 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 	return ret, nil
 }
 
-func postgresesFromTeam(data gql.GetTeamPostgresesTeam, team string) []PostgresInstance {
+func postgresesFromTeam(data gql.GetTeamPostgresesTeam, team, consoleHost string) []PostgresInstance {
 	ret := make([]PostgresInstance, 0, len(data.Postgreses.Nodes))
 	for _, pg := range data.Postgreses.Nodes {
 		env := pg.TeamEnvironment.Environment.Name
 		instance := PostgresInstance{
-			Name:        output.Link{Name: pg.Name, URL: fmt.Sprintf("%s/team/%s/%s/postgres/%s", consoleBaseURL, team, env, pg.Name)},
+			Name:        output.Link{Name: pg.Name, URL: fmt.Sprintf("https://%s/team/%s/%s/postgres/%s", consoleHost, team, env, pg.Name)},
 			Environment: env, Version: pg.MajorVersion,
 			HighAvailability: pg.HighAvailability,
 		}
