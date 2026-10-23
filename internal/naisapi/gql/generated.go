@@ -33441,16 +33441,10 @@ func (v *GetTeamVulnerabilitySummaryTeam) GetVulnerabilitySummary() GetTeamVulne
 type GetTeamVulnerabilitySummaryTeamVulnerabilitySummary struct {
 	// Risk score of the team.
 	RiskScore int `json:"riskScore"`
-	// Number of vulnerabilities with severity CRITICAL.
-	Critical int `json:"critical"`
-	// Number of vulnerabilities with severity HIGH.
-	High int `json:"high"`
-	// Number of vulnerabilities with severity MEDIUM.
-	Medium int `json:"medium"`
-	// Number of vulnerabilities with severity LOW.
-	Low int `json:"low"`
-	// Number of vulnerabilities with severity UNASSIGNED.
-	Unassigned int `json:"unassigned"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
 	// Number of workloads with a software bill of materials (SBOM) attached.
 	SbomCount int `json:"sbomCount"`
 	// Coverage of the team.
@@ -33459,26 +33453,40 @@ type GetTeamVulnerabilitySummaryTeamVulnerabilitySummary struct {
 	RiskScoreTrend TeamVulnerabilityRiskScoreTrend `json:"riskScoreTrend"`
 	// Timestamp of the last update of the vulnerability summary.
 	LastUpdated *time.Time `json:"lastUpdated"`
+	// Number of workloads whose highest vulnerability priority is HIGH.
+	//
+	// Counts workloads, not findings. Use countsByPriority.highRisk for the number
+	// of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	HighWorkloadCount int `json:"highWorkloadCount"`
+	// Number of workloads whose highest vulnerability priority is ELEVATED.
+	//
+	// Counts workloads, not findings. Use countsByPriority.elevatedRisk for the
+	// number of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	ElevatedWorkloadCount int `json:"elevatedWorkloadCount"`
+	// Number of workloads whose highest vulnerability priority is MONITOR.
+	//
+	// Counts workloads, not findings. Use countsByPriority.monitor for the number
+	// of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	MonitorWorkloadCount int `json:"monitorWorkloadCount"`
 }
 
 // GetRiskScore returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
 func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetRiskScore() int { return v.RiskScore }
 
-// GetCritical returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Critical, and is useful for accessing the field via an interface.
-func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetCritical() int { return v.Critical }
+// GetCountsBySeverity returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetCountsBySeverity() GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
 
-// GetHigh returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.High, and is useful for accessing the field via an interface.
-func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetHigh() int { return v.High }
-
-// GetMedium returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Medium, and is useful for accessing the field via an interface.
-func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetMedium() int { return v.Medium }
-
-// GetLow returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Low, and is useful for accessing the field via an interface.
-func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetLow() int { return v.Low }
-
-// GetUnassigned returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.Unassigned, and is useful for accessing the field via an interface.
-func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetUnassigned() int {
-	return v.Unassigned
+// GetCountsByPriority returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetCountsByPriority() GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
 }
 
 // GetSbomCount returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.SbomCount, and is useful for accessing the field via an interface.
@@ -33497,6 +33505,232 @@ func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetRiskScoreTrend(
 // GetLastUpdated returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.LastUpdated, and is useful for accessing the field via an interface.
 func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetLastUpdated() *time.Time {
 	return v.LastUpdated
+}
+
+// GetHighWorkloadCount returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.HighWorkloadCount, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetHighWorkloadCount() int {
+	return v.HighWorkloadCount
+}
+
+// GetElevatedWorkloadCount returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.ElevatedWorkloadCount, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetElevatedWorkloadCount() int {
+	return v.ElevatedWorkloadCount
+}
+
+// GetMonitorWorkloadCount returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.MonitorWorkloadCount, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetMonitorWorkloadCount() int {
+	return v.MonitorWorkloadCount
+}
+
+// GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetTenantVulnerabilitySummaryResponse is returned by GetTenantVulnerabilitySummary on success.
+type GetTenantVulnerabilitySummaryResponse struct {
+	// Get the vulnerability summary for the tenant.
+	VulnerabilitySummary GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+// GetVulnerabilitySummary returns GetTenantVulnerabilitySummaryResponse.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryResponse) GetVulnerabilitySummary() GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary includes the requested fields of the GraphQL type TenantVulnerabilitySummary.
+type GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary struct {
+	// Risk score of the tenant.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
+	// Number of workloads with a software bill of materials (SBOM) attached.
+	SbomCount int `json:"sbomCount"`
+	// SBOM Coverage of the tenant.
+	Coverage float64 `json:"coverage"`
+	// Timestamp of the last update of the vulnerability summary.
+	LastUpdated *time.Time `json:"lastUpdated"`
+}
+
+// GetRiskScore returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetCountsBySeverity() GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetCountsByPriority returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetCountsByPriority() GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
+}
+
+// GetSbomCount returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.SbomCount, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetSbomCount() int {
+	return v.SbomCount
+}
+
+// GetCoverage returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.Coverage, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetCoverage() float64 {
+	return v.Coverage
+}
+
+// GetLastUpdated returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary.LastUpdated, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummary) GetLastUpdated() *time.Time {
+	return v.LastUpdated
+}
+
+// GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilitySummaryVulnerabilitySummaryTenantVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
 }
 
 // GetValkeyResponse is returned by GetValkey on success.
@@ -34729,6 +34963,248 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvi
 	return v.Name
 }
 
+// ListTeamVulnerabilityPostureResponse is returned by ListTeamVulnerabilityPosture on success.
+type ListTeamVulnerabilityPostureResponse struct {
+	// Get a list of teams.
+	Teams ListTeamVulnerabilityPostureTeamsTeamConnection `json:"teams"`
+}
+
+// GetTeams returns ListTeamVulnerabilityPostureResponse.Teams, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureResponse) GetTeams() ListTeamVulnerabilityPostureTeamsTeamConnection {
+	return v.Teams
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnection includes the requested fields of the GraphQL type TeamConnection.
+type ListTeamVulnerabilityPostureTeamsTeamConnection struct {
+	// Pagination information.
+	PageInfo ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo `json:"pageInfo"`
+	// List of nodes.
+	Nodes []ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam `json:"nodes"`
+}
+
+// GetPageInfo returns ListTeamVulnerabilityPostureTeamsTeamConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnection) GetPageInfo() ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetNodes returns ListTeamVulnerabilityPostureTeamsTeamConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnection) GetNodes() []ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam {
+	return v.Nodes
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+	// Nais workloads owned by the team.
+	Workloads            ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection `json:"workloads"`
+	VulnerabilitySummary ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary        `json:"vulnerabilitySummary"`
+}
+
+// GetSlug returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam.Slug, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
+
+// GetWorkloads returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam.Workloads, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam) GetWorkloads() ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection {
+	return v.Workloads
+}
+
+// GetVulnerabilitySummary returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeam) GetVulnerabilitySummary() ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary includes the requested fields of the GraphQL type TeamVulnerabilitySummary.
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary struct {
+	// Risk score of the team.
+	RiskScore int `json:"riskScore"`
+	// Trend of vulnerability status for the team.
+	RiskScoreTrend TeamVulnerabilityRiskScoreTrend `json:"riskScoreTrend"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
+	// Number of workloads with a software bill of materials (SBOM) attached.
+	SbomCount int `json:"sbomCount"`
+	// Coverage of the team.
+	Coverage float64 `json:"coverage"`
+	// Number of workloads whose highest vulnerability priority is HIGH.
+	//
+	// Counts workloads, not findings. Use countsByPriority.highRisk for the number
+	// of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	HighWorkloadCount int `json:"highWorkloadCount"`
+	// Number of workloads whose highest vulnerability priority is ELEVATED.
+	//
+	// Counts workloads, not findings. Use countsByPriority.elevatedRisk for the
+	// number of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	ElevatedWorkloadCount int `json:"elevatedWorkloadCount"`
+	// Number of workloads whose highest vulnerability priority is MONITOR.
+	//
+	// Counts workloads, not findings. Use countsByPriority.monitor for the number
+	// of findings. Each workload is counted under exactly one priority, and
+	// workloads without unsuppressed findings are not counted at all, so these
+	// counts do not necessarily sum to the total number of workloads.
+	MonitorWorkloadCount int `json:"monitorWorkloadCount"`
+}
+
+// GetRiskScore returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetRiskScoreTrend returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.RiskScoreTrend, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetRiskScoreTrend() TeamVulnerabilityRiskScoreTrend {
+	return v.RiskScoreTrend
+}
+
+// GetCountsBySeverity returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetCountsBySeverity() ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetCountsByPriority returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetCountsByPriority() ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
+}
+
+// GetSbomCount returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.SbomCount, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetSbomCount() int {
+	return v.SbomCount
+}
+
+// GetCoverage returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.Coverage, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetCoverage() float64 {
+	return v.Coverage
+}
+
+// GetHighWorkloadCount returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.HighWorkloadCount, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetHighWorkloadCount() int {
+	return v.HighWorkloadCount
+}
+
+// GetElevatedWorkloadCount returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.ElevatedWorkloadCount, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetElevatedWorkloadCount() int {
+	return v.ElevatedWorkloadCount
+}
+
+// GetMonitorWorkloadCount returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary.MonitorWorkloadCount, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummary) GetMonitorWorkloadCount() int {
+	return v.MonitorWorkloadCount
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsByPriorityImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+}
+
+// GetCritical returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamVulnerabilitySummaryCountsBySeverityImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
+// The GraphQL type's documentation follows.
+//
+// Workload connection.
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection struct {
+	// Pagination information.
+	PageInfo ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetPageInfo returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnection) GetPageInfo() ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo {
+	return v.PageInfo
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo struct {
+	// The total amount of items in the connection.
+	TotalCount int `json:"totalCount"`
+}
+
+// GetTotalCount returns ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo.TotalCount, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionNodesTeamWorkloadsWorkloadConnectionPageInfo) GetTotalCount() int {
+	return v.TotalCount
+}
+
+// ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListTeamVulnerabilityPostureTeamsTeamConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // ListWorkloadVulnerabilitySummariesResponse is returned by ListWorkloadVulnerabilitySummaries on success.
 type ListWorkloadVulnerabilitySummariesResponse struct {
 	// Get a team by its slug.
@@ -35893,6 +36369,22 @@ func (v *TeamApplicationsFilter) GetStates() []ApplicationState { return v.State
 // GetLabels returns TeamApplicationsFilter.Labels, and is useful for accessing the field via an interface.
 func (v *TeamApplicationsFilter) GetLabels() []LabelFilter { return v.Labels }
 
+// Input for filtering teams.
+type TeamFilter struct {
+	// Input for filtering teams.
+	HasWorkloads *bool `json:"hasWorkloads"`
+	// Input for filtering teams.
+	VulnerabilityPriorityGroup *TeamVulnerabilityPriorityGroup `json:"vulnerabilityPriorityGroup"`
+}
+
+// GetHasWorkloads returns TeamFilter.HasWorkloads, and is useful for accessing the field via an interface.
+func (v *TeamFilter) GetHasWorkloads() *bool { return v.HasWorkloads }
+
+// GetVulnerabilityPriorityGroup returns TeamFilter.VulnerabilityPriorityGroup, and is useful for accessing the field via an interface.
+func (v *TeamFilter) GetVulnerabilityPriorityGroup() *TeamVulnerabilityPriorityGroup {
+	return v.VulnerabilityPriorityGroup
+}
+
 type TeamJobsFilter struct {
 	Name         string        `json:"name"`
 	Environments []string      `json:"environments"`
@@ -36000,6 +36492,59 @@ func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetName(
 // GetEmail returns TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser.Email, and is useful for accessing the field via an interface.
 func (v *TeamMembersTeamMembersTeamMemberConnectionNodesTeamMemberUser) GetEmail() string {
 	return v.Email
+}
+
+// Ordering options when fetching teams.
+type TeamOrder struct {
+	// Ordering options when fetching teams.
+	Field TeamOrderField `json:"field"`
+	// Ordering options when fetching teams.
+	Direction OrderDirection `json:"direction"`
+}
+
+// GetField returns TeamOrder.Field, and is useful for accessing the field via an interface.
+func (v *TeamOrder) GetField() TeamOrderField { return v.Field }
+
+// GetDirection returns TeamOrder.Direction, and is useful for accessing the field via an interface.
+func (v *TeamOrder) GetDirection() OrderDirection { return v.Direction }
+
+// Possible fields to order teams by.
+type TeamOrderField string
+
+const (
+	// The unique slug of the team.
+	TeamOrderFieldSlug TeamOrderField = "SLUG"
+	// The team's accumulated cost over the last 12 months
+	TeamOrderFieldAccumulatedCost TeamOrderField = "ACCUMULATED_COST"
+	// The accumulated risk score of the teams workloads.
+	TeamOrderFieldRiskScore TeamOrderField = "RISK_SCORE"
+	// The accumulated number of critical vulnerabilities of the teams workloads.
+	TeamOrderFieldCriticalVulnerabilities TeamOrderField = "CRITICAL_VULNERABILITIES"
+	// The accumulated number of high vulnerabilities of the teams workloads.
+	TeamOrderFieldHighVulnerabilities TeamOrderField = "HIGH_VULNERABILITIES"
+	// The accumulated number of medium vulnerabilities of the teams workloads.
+	TeamOrderFieldMediumVulnerabilities TeamOrderField = "MEDIUM_VULNERABILITIES"
+	// The accumulated number of low vulnerabilities of the teams workloads.
+	TeamOrderFieldLowVulnerabilities TeamOrderField = "LOW_VULNERABILITIES"
+	// The accumulated number of unassigned vulnerabilities of the teams workloads.
+	TeamOrderFieldUnassignedVulnerabilities TeamOrderField = "UNASSIGNED_VULNERABILITIES"
+	// The team's software bill of materials (SBOM) coverage.
+	TeamOrderFieldSbomCoverage TeamOrderField = "SBOM_COVERAGE"
+	// The accumulated number of known exploited vulnerabilities (KEV) of the teams workloads.
+	TeamOrderFieldKnownExploitedVulnerabilities TeamOrderField = "KNOWN_EXPLOITED_VULNERABILITIES"
+)
+
+var AllTeamOrderField = []TeamOrderField{
+	TeamOrderFieldSlug,
+	TeamOrderFieldAccumulatedCost,
+	TeamOrderFieldRiskScore,
+	TeamOrderFieldCriticalVulnerabilities,
+	TeamOrderFieldHighVulnerabilities,
+	TeamOrderFieldMediumVulnerabilities,
+	TeamOrderFieldLowVulnerabilities,
+	TeamOrderFieldUnassignedVulnerabilities,
+	TeamOrderFieldSbomCoverage,
+	TeamOrderFieldKnownExploitedVulnerabilities,
 }
 
 // Filter a team's Postgres databases by environment and user-defined labels.
@@ -36268,6 +36813,27 @@ func (v *TeamStatusResponse) __premarshalJSON() (*__premarshalTeamStatusResponse
 		}
 	}
 	return &retval, nil
+}
+
+// Mutually exclusive groups based on the highest operational vulnerability priority.
+type TeamVulnerabilityPriorityGroup string
+
+const (
+	// At least one high-risk finding.
+	TeamVulnerabilityPriorityGroupHigh TeamVulnerabilityPriorityGroup = "HIGH"
+	// No high-risk findings and at least one elevated-risk finding.
+	TeamVulnerabilityPriorityGroupElevated TeamVulnerabilityPriorityGroup = "ELEVATED"
+	// No high-risk or elevated-risk findings and at least one monitor finding.
+	TeamVulnerabilityPriorityGroupMonitor TeamVulnerabilityPriorityGroup = "MONITOR"
+	// A valid summary confirms no high-risk, elevated-risk or monitor findings.
+	TeamVulnerabilityPriorityGroupNone TeamVulnerabilityPriorityGroup = "NONE"
+)
+
+var AllTeamVulnerabilityPriorityGroup = []TeamVulnerabilityPriorityGroup{
+	TeamVulnerabilityPriorityGroupHigh,
+	TeamVulnerabilityPriorityGroupElevated,
+	TeamVulnerabilityPriorityGroupMonitor,
+	TeamVulnerabilityPriorityGroupNone,
 }
 
 type TeamVulnerabilityRiskScoreTrend string
@@ -38307,6 +38873,22 @@ func (v *__ListCVEsInput) GetTeam() string { return v.Team }
 
 // GetFilter returns __ListCVEsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ListCVEsInput) GetFilter() *TeamWorkloadsFilter { return v.Filter }
+
+// __ListTeamVulnerabilityPostureInput is used internally by genqlient
+type __ListTeamVulnerabilityPostureInput struct {
+	After  *string     `json:"after"`
+	Filter *TeamFilter `json:"filter"`
+	Order  *TeamOrder  `json:"order"`
+}
+
+// GetAfter returns __ListTeamVulnerabilityPostureInput.After, and is useful for accessing the field via an interface.
+func (v *__ListTeamVulnerabilityPostureInput) GetAfter() *string { return v.After }
+
+// GetFilter returns __ListTeamVulnerabilityPostureInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListTeamVulnerabilityPostureInput) GetFilter() *TeamFilter { return v.Filter }
+
+// GetOrder returns __ListTeamVulnerabilityPostureInput.Order, and is useful for accessing the field via an interface.
+func (v *__ListTeamVulnerabilityPostureInput) GetOrder() *TeamOrder { return v.Order }
 
 // __ListWorkloadVulnerabilitySummariesInput is used internally by genqlient
 type __ListWorkloadVulnerabilitySummariesInput struct {
@@ -41950,15 +42532,26 @@ query GetTeamVulnerabilitySummary ($team: Slug!, $filter: TeamVulnerabilitySumma
 	team(slug: $team) {
 		vulnerabilitySummary(filter: $filter) {
 			riskScore
-			critical
-			high
-			medium
-			low
-			unassigned
+			countsBySeverity {
+				critical
+				high
+				medium
+				low
+				unassigned
+			}
+			countsByPriority {
+				knownExploited
+				highRisk
+				elevatedRisk
+				monitor
+			}
 			sbomCount
 			coverage
 			riskScoreTrend
 			lastUpdated
+			highWorkloadCount
+			elevatedWorkloadCount
+			monitorWorkloadCount
 		}
 	}
 }
@@ -41980,6 +42573,52 @@ func GetTeamVulnerabilitySummary(
 	}
 
 	data_ = &GetTeamVulnerabilitySummaryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTenantVulnerabilitySummary.
+const GetTenantVulnerabilitySummary_Operation = `
+query GetTenantVulnerabilitySummary {
+	vulnerabilitySummary {
+		riskScore
+		countsBySeverity {
+			critical
+			high
+			medium
+			low
+			unassigned
+		}
+		countsByPriority {
+			knownExploited
+			highRisk
+			elevatedRisk
+			monitor
+		}
+		sbomCount
+		coverage
+		lastUpdated
+	}
+}
+`
+
+func GetTenantVulnerabilitySummary(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *GetTenantVulnerabilitySummaryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTenantVulnerabilitySummary",
+		Query:  GetTenantVulnerabilitySummary_Operation,
+	}
+
+	data_ = &GetTenantVulnerabilitySummaryResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -42177,6 +42816,73 @@ func ListCVEs(
 	}
 
 	data_ = &ListCVEsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListTeamVulnerabilityPosture.
+const ListTeamVulnerabilityPosture_Operation = `
+query ListTeamVulnerabilityPosture ($after: Cursor, $filter: TeamFilter, $order: TeamOrder) {
+	teams(first: 100, after: $after, filter: $filter, orderBy: $order) {
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		nodes {
+			slug
+			workloads(first: 1) {
+				pageInfo {
+					totalCount
+				}
+			}
+			vulnerabilitySummary {
+				riskScore
+				riskScoreTrend
+				countsBySeverity {
+					critical
+				}
+				countsByPriority {
+					knownExploited
+					highRisk
+					elevatedRisk
+					monitor
+				}
+				sbomCount
+				coverage
+				highWorkloadCount
+				elevatedWorkloadCount
+				monitorWorkloadCount
+			}
+		}
+	}
+}
+`
+
+func ListTeamVulnerabilityPosture(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	after *string,
+	filter *TeamFilter,
+	order *TeamOrder,
+) (data_ *ListTeamVulnerabilityPostureResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListTeamVulnerabilityPosture",
+		Query:  ListTeamVulnerabilityPosture_Operation,
+		Variables: &__ListTeamVulnerabilityPostureInput{
+			After:  after,
+			Filter: filter,
+			Order:  order,
+		},
+	}
+
+	data_ = &ListTeamVulnerabilityPostureResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
