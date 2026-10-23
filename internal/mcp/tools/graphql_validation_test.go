@@ -61,6 +61,12 @@ func TestValidateQueryDocument(t *testing.T) {
 			wantErr: "field 'secrets' returns type 'SecretConnection'",
 		},
 		{
+			// https://github.com/nais/cli/issues/803
+			name:    "deployment key accessed through named fragment is refused",
+			query:   `query { team(slug: "a") { ...TeamFields } } fragment TeamFields on Team { deploymentKey { key } }`,
+			wantErr: "field 'deploymentKey' returns type 'DeploymentKey'",
+		},
+		{
 			name:    "fragment on forbidden type is refused",
 			query:   `query { team(slug: "a") { secrets(first: 1) { nodes { ...S } } } } fragment S on Secret { name }`,
 			wantErr: "MCP security policy",
