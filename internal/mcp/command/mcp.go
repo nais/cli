@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"net"
 	"os"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
@@ -29,7 +30,7 @@ func serveCommand(parentFlags *flag.MCP) *naistrix.Command {
 	flags := &flag.Serve{
 		MCP:        parentFlags,
 		Transport:  "stdio",
-		ListenAddr: ":8080",
+		ListenAddr: "127.0.0.1:8080",
 		RateLimit:  25,
 	}
 
@@ -43,10 +44,10 @@ Examples:
   nais alpha mcp serve
 
   # Start with HTTP transport on a specific port
-  nais alpha mcp serve --transport http --listen :8080
+  nais alpha mcp serve --transport http --listen 127.0.0.1:8080
 
   # Start with SSE transport
-  nais alpha mcp serve --transport sse --listen :8080
+  nais alpha mcp serve --transport sse --listen 127.0.0.1:8080
 
   # Restrict to specific teams
   nais alpha mcp serve --team my-team --team other-team
@@ -106,8 +107,24 @@ func runServe(ctx context.Context, flags *flag.Serve, out *naistrix.OutputWriter
 		out.Println("Starting MCP server with transport:", string(flags.Transport))
 		if flags.Transport == "http" || flags.Transport == "sse" {
 			out.Println("Listening on:", flags.ListenAddr)
+			if !isLoopbackAddr(flags.ListenAddr) {
+				out.Println("WARNING: the MCP server has no authentication and uses your Nais credentials. Anyone who can reach this address can query the Nais API as you.")
+			}
 		}
 	}
 
 	return server.Serve(ctx)
+}
+
+// isLoopbackAddr reports whether addr (host:port) only binds to a loopback interface.
+func isLoopbackAddr(addr string) bool {
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		return false
+	}
+	if host == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
