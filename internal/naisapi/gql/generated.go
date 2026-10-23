@@ -33729,6 +33729,30 @@ func (v *GrantAccessToKafkaTopicUpdateKafkaTopicUpdateKafkaTopicPayloadKafkaTopi
 	return v.Id
 }
 
+// Input for filtering image vulnerabilities.
+type ImageVulnerabilityFilter struct {
+	// Input for filtering image vulnerabilities.
+	Severity *ImageVulnerabilitySeverity `json:"severity"`
+	// Input for filtering image vulnerabilities.
+	SeveritySince *time.Time `json:"severitySince"`
+	// Input for filtering image vulnerabilities.
+	Priorities []CVEPriority `json:"priorities"`
+	// Input for filtering image vulnerabilities.
+	HasKevEntry *bool `json:"hasKevEntry"`
+}
+
+// GetSeverity returns ImageVulnerabilityFilter.Severity, and is useful for accessing the field via an interface.
+func (v *ImageVulnerabilityFilter) GetSeverity() *ImageVulnerabilitySeverity { return v.Severity }
+
+// GetSeveritySince returns ImageVulnerabilityFilter.SeveritySince, and is useful for accessing the field via an interface.
+func (v *ImageVulnerabilityFilter) GetSeveritySince() *time.Time { return v.SeveritySince }
+
+// GetPriorities returns ImageVulnerabilityFilter.Priorities, and is useful for accessing the field via an interface.
+func (v *ImageVulnerabilityFilter) GetPriorities() []CVEPriority { return v.Priorities }
+
+// GetHasKevEntry returns ImageVulnerabilityFilter.HasKevEntry, and is useful for accessing the field via an interface.
+func (v *ImageVulnerabilityFilter) GetHasKevEntry() *bool { return v.HasKevEntry }
+
 type ImageVulnerabilitySeverity string
 
 const (
@@ -34224,8 +34248,15 @@ func (v *ListCVEsTeam) GetWorkloads() ListCVEsTeamWorkloadsWorkloadConnection { 
 //
 // Workload connection.
 type ListCVEsTeamWorkloadsWorkloadConnection struct {
+	// Pagination information.
+	PageInfo ListCVEsTeamWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
 	// List of nodes.
 	Nodes []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
+}
+
+// GetPageInfo returns ListCVEsTeamWorkloadsWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnection) GetPageInfo() ListCVEsTeamWorkloadsWorkloadConnectionPageInfo {
+	return v.PageInfo
 }
 
 // GetNodes returns ListCVEsTeamWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
@@ -34273,6 +34304,8 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error 
 }
 
 type __premarshalListCVEsTeamWorkloadsWorkloadConnection struct {
+	PageInfo ListCVEsTeamWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
+
 	Nodes []json.RawMessage `json:"nodes"`
 }
 
@@ -34287,6 +34320,7 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) 
 func (v *ListCVEsTeamWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalListCVEsTeamWorkloadsWorkloadConnection, error) {
 	var retval __premarshalListCVEsTeamWorkloadsWorkloadConnection
 
+	retval.PageInfo = v.PageInfo
 	{
 
 		dst := &retval.Nodes
@@ -34465,87 +34499,13 @@ func __marshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(v *ListCVEsTe
 //
 // Container image.
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage struct {
-	// Get the vulnerabilities of the image.
-	Vulnerabilities ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+	// The globally unique ID of the container image node.
+	Id string `json:"id"`
 }
 
-// GetVulnerabilities returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetVulnerabilities() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection {
-	return v.Vulnerabilities
-}
-
-// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
-type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
-	// List of nodes.
-	Nodes []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability `json:"nodes"`
-}
-
-// GetNodes returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability {
-	return v.Nodes
-}
-
-// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
-type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
-	// The unique identifier of the vulnerability. E.g. CVE-****-****.
-	Identifier string `json:"identifier"`
-	// Severity of the vulnerability.
-	Severity ImageVulnerabilitySeverity `json:"severity"`
-	// CVSS score of the vulnerability.
-	CvssScore *float64 `json:"cvssScore"`
-	// Package name of the vulnerability.
-	Package     string                                                                                                                                                `json:"package"`
-	Suppression *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
-	// Timestamp of when the vulnerability got its current severity.
-	SeveritySince *time.Time `json:"severitySince"`
-	// Link to the vulnerability details.
-	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
-}
-
-// GetIdentifier returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetIdentifier() string {
-	return v.Identifier
-}
-
-// GetSeverity returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
-	return v.Severity
-}
-
-// GetCvssScore returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.CvssScore, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetCvssScore() *float64 {
-	return v.CvssScore
-}
-
-// GetPackage returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetPackage() string {
-	return v.Package
-}
-
-// GetSuppression returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
-	return v.Suppression
-}
-
-// GetSeveritySince returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeveritySince() *time.Time {
-	return v.SeveritySince
-}
-
-// GetVulnerabilityDetailsLink returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
-	return v.VulnerabilityDetailsLink
-}
-
-// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
-type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression struct {
-	// Suppression state of the vulnerability.
-	State ImageVulnerabilitySuppressionState `json:"state"`
-}
-
-// GetState returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
-func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
-	return v.State
+// GetId returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.Id, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetId() string {
+	return v.Id
 }
 
 // ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -34573,6 +34533,4240 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironm
 // GetName returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListCVEsTeamWorkloadsWorkloadConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListCVEsTeamWorkloadsWorkloadConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns ListCVEsTeamWorkloadsWorkloadConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// ListImageCVEsNode includes the requested fields of the GraphQL interface Node.
+//
+// ListImageCVEsNode is implemented by the following types:
+// ListImageCVEsNodeApplication
+// ListImageCVEsNodeApplicationCreatedActivityLogEntry
+// ListImageCVEsNodeApplicationDeletedActivityLogEntry
+// ListImageCVEsNodeApplicationInstance
+// ListImageCVEsNodeApplicationRestartLoopIssue
+// ListImageCVEsNodeApplicationRestartedActivityLogEntry
+// ListImageCVEsNodeApplicationScaledActivityLogEntry
+// ListImageCVEsNodeApplicationUpdatedActivityLogEntry
+// ListImageCVEsNodeBigQueryDataset
+// ListImageCVEsNodeBucket
+// ListImageCVEsNodeCVE
+// ListImageCVEsNodeClusterAuditActivityLogEntry
+// ListImageCVEsNodeConfig
+// ListImageCVEsNodeConfigCreatedActivityLogEntry
+// ListImageCVEsNodeConfigDeletedActivityLogEntry
+// ListImageCVEsNodeConfigUpdatedActivityLogEntry
+// ListImageCVEsNodeContainerImage
+// ListImageCVEsNodeContainerImageSBOM
+// ListImageCVEsNodeDeployment
+// ListImageCVEsNodeDeploymentActivityLogEntry
+// ListImageCVEsNodeDeploymentKey
+// ListImageCVEsNodeDeploymentResource
+// ListImageCVEsNodeDeploymentStatus
+// ListImageCVEsNodeDeprecatedIngressIssue
+// ListImageCVEsNodeDeprecatedRegistryIssue
+// ListImageCVEsNodeEnvironment
+// ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue
+// ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue
+// ListImageCVEsNodeFailedSynchronizationIssue
+// ListImageCVEsNodeFeatureKafka
+// ListImageCVEsNodeFeatureOpenSearch
+// ListImageCVEsNodeFeatureUnleash
+// ListImageCVEsNodeFeatureValkey
+// ListImageCVEsNodeFeatures
+// ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry
+// ListImageCVEsNodeImageVulnerability
+// ListImageCVEsNodeInstanceGroup
+// ListImageCVEsNodeInstanceGroupEnvironmentVariable
+// ListImageCVEsNodeInvalidSpecIssue
+// ListImageCVEsNodeJob
+// ListImageCVEsNodeJobCreatedActivityLogEntry
+// ListImageCVEsNodeJobDeletedActivityLogEntry
+// ListImageCVEsNodeJobRun
+// ListImageCVEsNodeJobRunDeletedActivityLogEntry
+// ListImageCVEsNodeJobRunInstance
+// ListImageCVEsNodeJobTriggeredActivityLogEntry
+// ListImageCVEsNodeJobUpdatedActivityLogEntry
+// ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry
+// ListImageCVEsNodeKafkaTopic
+// ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry
+// ListImageCVEsNodeLastRunFailedIssue
+// ListImageCVEsNodeLogDestinationGeneric
+// ListImageCVEsNodeLogDestinationLoki
+// ListImageCVEsNodeLogDestinationSecureLogs
+// ListImageCVEsNodeMissingSbomIssue
+// ListImageCVEsNodeNoRunningInstancesIssue
+// ListImageCVEsNodeOpenSearch
+// ListImageCVEsNodeOpenSearchCreatedActivityLogEntry
+// ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry
+// ListImageCVEsNodeOpenSearchDeletedActivityLogEntry
+// ListImageCVEsNodeOpenSearchIssue
+// ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry
+// ListImageCVEsNodePostgres
+// ListImageCVEsNodePostgresAccess
+// ListImageCVEsNodePostgresBranch
+// ListImageCVEsNodePostgresBranchActivatedActivityLogEntry
+// ListImageCVEsNodePostgresBranchCreatedActivityLogEntry
+// ListImageCVEsNodePostgresBranchDeletedActivityLogEntry
+// ListImageCVEsNodePostgresCreatedActivityLogEntry
+// ListImageCVEsNodePostgresDeletedActivityLogEntry
+// ListImageCVEsNodePostgresGrantAccessActivityLogEntry
+// ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry
+// ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry
+// ListImageCVEsNodePostgresUpdatedActivityLogEntry
+// ListImageCVEsNodePrometheusAlert
+// ListImageCVEsNodeReconciler
+// ListImageCVEsNodeReconcilerConfiguredActivityLogEntry
+// ListImageCVEsNodeReconcilerDisabledActivityLogEntry
+// ListImageCVEsNodeReconcilerEnabledActivityLogEntry
+// ListImageCVEsNodeReconcilerError
+// ListImageCVEsNodeRepository
+// ListImageCVEsNodeRepositoryAddedActivityLogEntry
+// ListImageCVEsNodeRepositoryRemovedActivityLogEntry
+// ListImageCVEsNodeRole
+// ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry
+// ListImageCVEsNodeRoleAssignedUserSyncLogEntry
+// ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry
+// ListImageCVEsNodeRoleRevokedUserSyncLogEntry
+// ListImageCVEsNodeSecret
+// ListImageCVEsNodeSecretCreatedActivityLogEntry
+// ListImageCVEsNodeSecretDeletedActivityLogEntry
+// ListImageCVEsNodeSecretUpdatedActivityLogEntry
+// ListImageCVEsNodeSecretValueAddedActivityLogEntry
+// ListImageCVEsNodeSecretValueRemovedActivityLogEntry
+// ListImageCVEsNodeSecretValueUpdatedActivityLogEntry
+// ListImageCVEsNodeSecretValuesViewedActivityLogEntry
+// ListImageCVEsNodeServiceAccount
+// ListImageCVEsNodeServiceAccountCreatedActivityLogEntry
+// ListImageCVEsNodeServiceAccountDeletedActivityLogEntry
+// ListImageCVEsNodeServiceAccountToken
+// ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry
+// ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry
+// ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry
+// ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry
+// ListImageCVEsNodeServiceAccountWorkloadBinding
+// ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry
+// ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry
+// ListImageCVEsNodeServiceMaintenanceActivityLogEntry
+// ListImageCVEsNodeSqlDatabase
+// ListImageCVEsNodeSqlInstance
+// ListImageCVEsNodeSqlInstanceStateIssue
+// ListImageCVEsNodeSqlInstanceVersionIssue
+// ListImageCVEsNodeTeam
+// ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry
+// ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry
+// ListImageCVEsNodeTeamCreatedActivityLogEntry
+// ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry
+// ListImageCVEsNodeTeamEnvironment
+// ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry
+// ListImageCVEsNodeTeamMemberAddedActivityLogEntry
+// ListImageCVEsNodeTeamMemberRemovedActivityLogEntry
+// ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry
+// ListImageCVEsNodeTeamUpdatedActivityLogEntry
+// ListImageCVEsNodeTunnel
+// ListImageCVEsNodeTunnelCreatedActivityLogEntry
+// ListImageCVEsNodeTunnelDeletedActivityLogEntry
+// ListImageCVEsNodeUnleashInstance
+// ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry
+// ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry
+// ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry
+// ListImageCVEsNodeUnleashReleaseChannelIssue
+// ListImageCVEsNodeUser
+// ListImageCVEsNodeUserCreatedUserSyncLogEntry
+// ListImageCVEsNodeUserDeletedUserSyncLogEntry
+// ListImageCVEsNodeUserUpdatedUserSyncLogEntry
+// ListImageCVEsNodeValkey
+// ListImageCVEsNodeValkeyCreatedActivityLogEntry
+// ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry
+// ListImageCVEsNodeValkeyDeletedActivityLogEntry
+// ListImageCVEsNodeValkeyIssue
+// ListImageCVEsNodeValkeyUpdatedActivityLogEntry
+// ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry
+// ListImageCVEsNodeVulnerableImageIssue
+// ListImageCVEsNodeWorkloadProblemIssue
+// ListImageCVEsNodeWorkloadVulnerabilitySummary
+// ListImageCVEsNodeWorkloadWithVulnerability
+// The GraphQL type's documentation follows.
+//
+// This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/).
+type ListImageCVEsNode interface {
+	implementsGraphQLInterfaceListImageCVEsNode()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *ListImageCVEsNodeApplication) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeApplicationCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeApplicationDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeApplicationInstance) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeApplicationRestartLoopIssue) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeApplicationRestartedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeApplicationScaledActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeApplicationUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeBigQueryDataset) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeBucket) implementsGraphQLInterfaceListImageCVEsNode()          {}
+func (v *ListImageCVEsNodeCVE) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeClusterAuditActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeConfig) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeConfigCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeConfigDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeContainerImage) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeContainerImageSBOM) implementsGraphQLInterfaceListImageCVEsNode()         {}
+func (v *ListImageCVEsNodeDeployment) implementsGraphQLInterfaceListImageCVEsNode()                 {}
+func (v *ListImageCVEsNodeDeploymentActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeDeploymentKey) implementsGraphQLInterfaceListImageCVEsNode()              {}
+func (v *ListImageCVEsNodeDeploymentResource) implementsGraphQLInterfaceListImageCVEsNode()         {}
+func (v *ListImageCVEsNodeDeploymentStatus) implementsGraphQLInterfaceListImageCVEsNode()           {}
+func (v *ListImageCVEsNodeDeprecatedIngressIssue) implementsGraphQLInterfaceListImageCVEsNode()     {}
+func (v *ListImageCVEsNodeDeprecatedRegistryIssue) implementsGraphQLInterfaceListImageCVEsNode()    {}
+func (v *ListImageCVEsNodeEnvironment) implementsGraphQLInterfaceListImageCVEsNode()                {}
+func (v *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeFailedSynchronizationIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeFeatureKafka) implementsGraphQLInterfaceListImageCVEsNode()               {}
+func (v *ListImageCVEsNodeFeatureOpenSearch) implementsGraphQLInterfaceListImageCVEsNode()          {}
+func (v *ListImageCVEsNodeFeatureUnleash) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeFeatureValkey) implementsGraphQLInterfaceListImageCVEsNode()              {}
+func (v *ListImageCVEsNodeFeatures) implementsGraphQLInterfaceListImageCVEsNode()                   {}
+func (v *ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeImageVulnerability) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeInstanceGroup) implementsGraphQLInterfaceListImageCVEsNode()      {}
+func (v *ListImageCVEsNodeInstanceGroupEnvironmentVariable) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeInvalidSpecIssue) implementsGraphQLInterfaceListImageCVEsNode()           {}
+func (v *ListImageCVEsNodeJob) implementsGraphQLInterfaceListImageCVEsNode()                        {}
+func (v *ListImageCVEsNodeJobCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeJobDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeJobRun) implementsGraphQLInterfaceListImageCVEsNode()                     {}
+func (v *ListImageCVEsNodeJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeJobRunInstance) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeJobTriggeredActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeJobUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeKafkaTopic) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeLastRunFailedIssue) implementsGraphQLInterfaceListImageCVEsNode()       {}
+func (v *ListImageCVEsNodeLogDestinationGeneric) implementsGraphQLInterfaceListImageCVEsNode()    {}
+func (v *ListImageCVEsNodeLogDestinationLoki) implementsGraphQLInterfaceListImageCVEsNode()       {}
+func (v *ListImageCVEsNodeLogDestinationSecureLogs) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeMissingSbomIssue) implementsGraphQLInterfaceListImageCVEsNode()         {}
+func (v *ListImageCVEsNodeNoRunningInstancesIssue) implementsGraphQLInterfaceListImageCVEsNode()  {}
+func (v *ListImageCVEsNodeOpenSearch) implementsGraphQLInterfaceListImageCVEsNode()               {}
+func (v *ListImageCVEsNodeOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeOpenSearchDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeOpenSearchIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgres) implementsGraphQLInterfaceListImageCVEsNode()       {}
+func (v *ListImageCVEsNodePostgresAccess) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodePostgresBranch) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodePostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodePrometheusAlert) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeReconciler) implementsGraphQLInterfaceListImageCVEsNode()      {}
+func (v *ListImageCVEsNodeReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeReconcilerDisabledActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeReconcilerEnabledActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeReconcilerError) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeRepository) implementsGraphQLInterfaceListImageCVEsNode()      {}
+func (v *ListImageCVEsNodeRepositoryAddedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeRepositoryRemovedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeRole) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeRoleAssignedUserSyncLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeRoleRevokedUserSyncLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecret) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeSecretCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretValueAddedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretValueRemovedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretValueUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSecretValuesViewedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccount) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeServiceAccountCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountToken) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountWorkloadBinding) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeSqlDatabase) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeSqlInstance) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeSqlInstanceStateIssue) implementsGraphQLInterfaceListImageCVEsNode()   {}
+func (v *ListImageCVEsNodeSqlInstanceVersionIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeTeam) implementsGraphQLInterfaceListImageCVEsNode()                    {}
+func (v *ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamEnvironment) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamMemberAddedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamMemberRemovedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTeamUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTunnel) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeTunnelCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeTunnelDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUnleashInstance) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUnleashReleaseChannelIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeUser) implementsGraphQLInterfaceListImageCVEsNode()                       {}
+func (v *ListImageCVEsNodeUserCreatedUserSyncLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUserDeletedUserSyncLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeUserUpdatedUserSyncLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeValkey) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeValkeyCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeValkeyIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeVulnerableImageIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeWorkloadProblemIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeWorkloadVulnerabilitySummary) implementsGraphQLInterfaceListImageCVEsNode() {
+}
+func (v *ListImageCVEsNodeWorkloadWithVulnerability) implementsGraphQLInterfaceListImageCVEsNode() {}
+
+func __unmarshalListImageCVEsNode(b []byte, v *ListImageCVEsNode) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(ListImageCVEsNodeApplication)
+		return json.Unmarshal(b, *v)
+	case "ApplicationCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeApplicationCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeApplicationDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationInstance":
+		*v = new(ListImageCVEsNodeApplicationInstance)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRestartLoopIssue":
+		*v = new(ListImageCVEsNodeApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRestartedActivityLogEntry":
+		*v = new(ListImageCVEsNodeApplicationRestartedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationScaledActivityLogEntry":
+		*v = new(ListImageCVEsNodeApplicationScaledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeApplicationUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "BigQueryDataset":
+		*v = new(ListImageCVEsNodeBigQueryDataset)
+		return json.Unmarshal(b, *v)
+	case "Bucket":
+		*v = new(ListImageCVEsNodeBucket)
+		return json.Unmarshal(b, *v)
+	case "CVE":
+		*v = new(ListImageCVEsNodeCVE)
+		return json.Unmarshal(b, *v)
+	case "ClusterAuditActivityLogEntry":
+		*v = new(ListImageCVEsNodeClusterAuditActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Config":
+		*v = new(ListImageCVEsNodeConfig)
+		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ContainerImage":
+		*v = new(ListImageCVEsNodeContainerImage)
+		return json.Unmarshal(b, *v)
+	case "ContainerImageSBOM":
+		*v = new(ListImageCVEsNodeContainerImageSBOM)
+		return json.Unmarshal(b, *v)
+	case "Deployment":
+		*v = new(ListImageCVEsNodeDeployment)
+		return json.Unmarshal(b, *v)
+	case "DeploymentActivityLogEntry":
+		*v = new(ListImageCVEsNodeDeploymentActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "DeploymentKey":
+		*v = new(ListImageCVEsNodeDeploymentKey)
+		return json.Unmarshal(b, *v)
+	case "DeploymentResource":
+		*v = new(ListImageCVEsNodeDeploymentResource)
+		return json.Unmarshal(b, *v)
+	case "DeploymentStatus":
+		*v = new(ListImageCVEsNodeDeploymentStatus)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedIngressIssue":
+		*v = new(ListImageCVEsNodeDeprecatedIngressIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedRegistryIssue":
+		*v = new(ListImageCVEsNodeDeprecatedRegistryIssue)
+		return json.Unmarshal(b, *v)
+	case "Environment":
+		*v = new(ListImageCVEsNodeEnvironment)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressCriticalVulnerabilityIssue":
+		*v = new(ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedSynchronizationIssue":
+		*v = new(ListImageCVEsNodeFailedSynchronizationIssue)
+		return json.Unmarshal(b, *v)
+	case "FeatureKafka":
+		*v = new(ListImageCVEsNodeFeatureKafka)
+		return json.Unmarshal(b, *v)
+	case "FeatureOpenSearch":
+		*v = new(ListImageCVEsNodeFeatureOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "FeatureUnleash":
+		*v = new(ListImageCVEsNodeFeatureUnleash)
+		return json.Unmarshal(b, *v)
+	case "FeatureValkey":
+		*v = new(ListImageCVEsNodeFeatureValkey)
+		return json.Unmarshal(b, *v)
+	case "Features":
+		*v = new(ListImageCVEsNodeFeatures)
+		return json.Unmarshal(b, *v)
+	case "GenericKubernetesResourceActivityLogEntry":
+		*v = new(ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ImageVulnerability":
+		*v = new(ListImageCVEsNodeImageVulnerability)
+		return json.Unmarshal(b, *v)
+	case "InstanceGroup":
+		*v = new(ListImageCVEsNodeInstanceGroup)
+		return json.Unmarshal(b, *v)
+	case "InstanceGroupEnvironmentVariable":
+		*v = new(ListImageCVEsNodeInstanceGroupEnvironmentVariable)
+		return json.Unmarshal(b, *v)
+	case "InvalidSpecIssue":
+		*v = new(ListImageCVEsNodeInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(ListImageCVEsNodeJob)
+		return json.Unmarshal(b, *v)
+	case "JobCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeJobCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRun":
+		*v = new(ListImageCVEsNodeJobRun)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeJobRunDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunInstance":
+		*v = new(ListImageCVEsNodeJobRunInstance)
+		return json.Unmarshal(b, *v)
+	case "JobTriggeredActivityLogEntry":
+		*v = new(ListImageCVEsNodeJobTriggeredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeJobUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaCredentialsCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopic":
+		*v = new(ListImageCVEsNodeKafkaTopic)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(ListImageCVEsNodeLastRunFailedIssue)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationGeneric":
+		*v = new(ListImageCVEsNodeLogDestinationGeneric)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationLoki":
+		*v = new(ListImageCVEsNodeLogDestinationLoki)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationSecureLogs":
+		*v = new(ListImageCVEsNodeLogDestinationSecureLogs)
+		return json.Unmarshal(b, *v)
+	case "MissingSbomIssue":
+		*v = new(ListImageCVEsNodeMissingSbomIssue)
+		return json.Unmarshal(b, *v)
+	case "NoRunningInstancesIssue":
+		*v = new(ListImageCVEsNodeNoRunningInstancesIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearch":
+		*v = new(ListImageCVEsNodeOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeOpenSearchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchCredentialsCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeOpenSearchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchIssue":
+		*v = new(ListImageCVEsNodeOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Postgres":
+		*v = new(ListImageCVEsNodePostgres)
+		return json.Unmarshal(b, *v)
+	case "PostgresAccess":
+		*v = new(ListImageCVEsNodePostgresAccess)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranch":
+		*v = new(ListImageCVEsNodePostgresBranch)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresGrantAccessActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresGrantAccessActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresPersonalAccessConnectionActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresPersonalAccessCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodePostgresUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PrometheusAlert":
+		*v = new(ListImageCVEsNodePrometheusAlert)
+		return json.Unmarshal(b, *v)
+	case "Reconciler":
+		*v = new(ListImageCVEsNodeReconciler)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerConfiguredActivityLogEntry":
+		*v = new(ListImageCVEsNodeReconcilerConfiguredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerDisabledActivityLogEntry":
+		*v = new(ListImageCVEsNodeReconcilerDisabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerEnabledActivityLogEntry":
+		*v = new(ListImageCVEsNodeReconcilerEnabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerError":
+		*v = new(ListImageCVEsNodeReconcilerError)
+		return json.Unmarshal(b, *v)
+	case "Repository":
+		*v = new(ListImageCVEsNodeRepository)
+		return json.Unmarshal(b, *v)
+	case "RepositoryAddedActivityLogEntry":
+		*v = new(ListImageCVEsNodeRepositoryAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RepositoryRemovedActivityLogEntry":
+		*v = new(ListImageCVEsNodeRepositoryRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Role":
+		*v = new(ListImageCVEsNodeRole)
+		return json.Unmarshal(b, *v)
+	case "RoleAssignedToServiceAccountActivityLogEntry":
+		*v = new(ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleAssignedUserSyncLogEntry":
+		*v = new(ListImageCVEsNodeRoleAssignedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleRevokedFromServiceAccountActivityLogEntry":
+		*v = new(ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleRevokedUserSyncLogEntry":
+		*v = new(ListImageCVEsNodeRoleRevokedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Secret":
+		*v = new(ListImageCVEsNodeSecret)
+		return json.Unmarshal(b, *v)
+	case "SecretCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueAddedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretValueAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueRemovedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretValueRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretValueUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValuesViewedActivityLogEntry":
+		*v = new(ListImageCVEsNodeSecretValuesViewedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccount":
+		*v = new(ListImageCVEsNodeServiceAccount)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountToken":
+		*v = new(ListImageCVEsNodeServiceAccountToken)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBinding":
+		*v = new(ListImageCVEsNodeServiceAccountWorkloadBinding)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceMaintenanceActivityLogEntry":
+		*v = new(ListImageCVEsNodeServiceMaintenanceActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SqlDatabase":
+		*v = new(ListImageCVEsNodeSqlDatabase)
+		return json.Unmarshal(b, *v)
+	case "SqlInstance":
+		*v = new(ListImageCVEsNodeSqlInstance)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceStateIssue":
+		*v = new(ListImageCVEsNodeSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(ListImageCVEsNodeSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "Team":
+		*v = new(ListImageCVEsNodeTeam)
+		return json.Unmarshal(b, *v)
+	case "TeamConfirmDeleteKeyActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreateDeleteKeyActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamDeployKeyUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamEnvironment":
+		*v = new(ListImageCVEsNodeTeamEnvironment)
+		return json.Unmarshal(b, *v)
+	case "TeamEnvironmentUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberAddedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamMemberAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberRemovedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamMemberRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberSetRoleActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTeamUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Tunnel":
+		*v = new(ListImageCVEsNodeTunnel)
+		return json.Unmarshal(b, *v)
+	case "TunnelCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTunnelCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TunnelDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeTunnelDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstance":
+		*v = new(ListImageCVEsNodeUnleashInstance)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(ListImageCVEsNodeUnleashReleaseChannelIssue)
+		return json.Unmarshal(b, *v)
+	case "User":
+		*v = new(ListImageCVEsNodeUser)
+		return json.Unmarshal(b, *v)
+	case "UserCreatedUserSyncLogEntry":
+		*v = new(ListImageCVEsNodeUserCreatedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UserDeletedUserSyncLogEntry":
+		*v = new(ListImageCVEsNodeUserDeletedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UserUpdatedUserSyncLogEntry":
+		*v = new(ListImageCVEsNodeUserUpdatedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Valkey":
+		*v = new(ListImageCVEsNodeValkey)
+		return json.Unmarshal(b, *v)
+	case "ValkeyCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeValkeyCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyCredentialsCreatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyDeletedActivityLogEntry":
+		*v = new(ListImageCVEsNodeValkeyDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(ListImageCVEsNodeValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilityUpdatedActivityLogEntry":
+		*v = new(ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(ListImageCVEsNodeVulnerableImageIssue)
+		return json.Unmarshal(b, *v)
+	case "WorkloadProblemIssue":
+		*v = new(ListImageCVEsNodeWorkloadProblemIssue)
+		return json.Unmarshal(b, *v)
+	case "WorkloadVulnerabilitySummary":
+		*v = new(ListImageCVEsNodeWorkloadVulnerabilitySummary)
+		return json.Unmarshal(b, *v)
+	case "WorkloadWithVulnerability":
+		*v = new(ListImageCVEsNodeWorkloadWithVulnerability)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Node.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListImageCVEsNode: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListImageCVEsNode(v *ListImageCVEsNode) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListImageCVEsNodeApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationCreatedActivityLogEntry:
+		typename = "ApplicationCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationDeletedActivityLogEntry:
+		typename = "ApplicationDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationInstance:
+		typename = "ApplicationInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationRestartLoopIssue:
+		typename = "ApplicationRestartLoopIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationRestartedActivityLogEntry:
+		typename = "ApplicationRestartedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationRestartedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationScaledActivityLogEntry:
+		typename = "ApplicationScaledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationScaledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeApplicationUpdatedActivityLogEntry:
+		typename = "ApplicationUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeApplicationUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeBigQueryDataset:
+		typename = "BigQueryDataset"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeBigQueryDataset
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeBucket:
+		typename = "Bucket"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeBucket
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeCVE:
+		typename = "CVE"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeCVE
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeClusterAuditActivityLogEntry:
+		typename = "ClusterAuditActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeClusterAuditActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeConfig:
+		typename = "Config"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeConfig
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeContainerImage:
+		typename = "ContainerImage"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeContainerImage
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeContainerImageSBOM:
+		typename = "ContainerImageSBOM"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeContainerImageSBOM
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeployment:
+		typename = "Deployment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeployment
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeploymentActivityLogEntry:
+		typename = "DeploymentActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeploymentActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeploymentKey:
+		typename = "DeploymentKey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeploymentKey
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeploymentResource:
+		typename = "DeploymentResource"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeploymentResource
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeploymentStatus:
+		typename = "DeploymentStatus"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeploymentStatus
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeprecatedIngressIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeEnvironment:
+		typename = "Environment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeEnvironment
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue:
+		typename = "ExternalIngressCriticalVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFailedSynchronizationIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFeatureKafka:
+		typename = "FeatureKafka"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFeatureKafka
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFeatureOpenSearch:
+		typename = "FeatureOpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFeatureOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFeatureUnleash:
+		typename = "FeatureUnleash"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFeatureUnleash
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFeatureValkey:
+		typename = "FeatureValkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFeatureValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeFeatures:
+		typename = "Features"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeFeatures
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry:
+		typename = "GenericKubernetesResourceActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeImageVulnerability:
+		typename = "ImageVulnerability"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeImageVulnerability
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeInstanceGroup:
+		typename = "InstanceGroup"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeInstanceGroup
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeInstanceGroupEnvironmentVariable:
+		typename = "InstanceGroupEnvironmentVariable"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeInstanceGroupEnvironmentVariable
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJob
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobCreatedActivityLogEntry:
+		typename = "JobCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobDeletedActivityLogEntry:
+		typename = "JobDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobRun:
+		typename = "JobRun"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobRun
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobRunDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobRunInstance:
+		typename = "JobRunInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobRunInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobTriggeredActivityLogEntry:
+		typename = "JobTriggeredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobTriggeredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeJobUpdatedActivityLogEntry:
+		typename = "JobUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeJobUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry:
+		typename = "KafkaCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeKafkaTopic:
+		typename = "KafkaTopic"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeKafkaTopic
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeLastRunFailedIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeLogDestinationGeneric:
+		typename = "LogDestinationGeneric"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeLogDestinationGeneric
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeLogDestinationLoki:
+		typename = "LogDestinationLoki"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeLogDestinationLoki
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeLogDestinationSecureLogs:
+		typename = "LogDestinationSecureLogs"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeLogDestinationSecureLogs
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeMissingSbomIssue:
+		typename = "MissingSbomIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeMissingSbomIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeNoRunningInstancesIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearch:
+		typename = "OpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearchCreatedActivityLogEntry:
+		typename = "OpenSearchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry:
+		typename = "OpenSearchCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearchDeletedActivityLogEntry:
+		typename = "OpenSearchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearchIssue:
+		typename = "OpenSearchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry:
+		typename = "OpenSearchUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgres:
+		typename = "Postgres"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgres
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresAccess:
+		typename = "PostgresAccess"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresAccess
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresBranch:
+		typename = "PostgresBranch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresBranch
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresDeletedActivityLogEntry:
+		typename = "PostgresDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresGrantAccessActivityLogEntry:
+		typename = "PostgresGrantAccessActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresGrantAccessActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry:
+		typename = "PostgresPersonalAccessConnectionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry:
+		typename = "PostgresPersonalAccessCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePostgresUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodePrometheusAlert:
+		typename = "PrometheusAlert"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodePrometheusAlert
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeReconciler:
+		typename = "Reconciler"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeReconciler
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeReconcilerConfiguredActivityLogEntry:
+		typename = "ReconcilerConfiguredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeReconcilerConfiguredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeReconcilerDisabledActivityLogEntry:
+		typename = "ReconcilerDisabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeReconcilerDisabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeReconcilerEnabledActivityLogEntry:
+		typename = "ReconcilerEnabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeReconcilerEnabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeReconcilerError:
+		typename = "ReconcilerError"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeReconcilerError
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRepository:
+		typename = "Repository"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRepository
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRepositoryAddedActivityLogEntry:
+		typename = "RepositoryAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRepositoryAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRepositoryRemovedActivityLogEntry:
+		typename = "RepositoryRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRepositoryRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRole:
+		typename = "Role"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRole
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry:
+		typename = "RoleAssignedToServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRoleAssignedUserSyncLogEntry:
+		typename = "RoleAssignedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRoleAssignedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry:
+		typename = "RoleRevokedFromServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeRoleRevokedUserSyncLogEntry:
+		typename = "RoleRevokedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeRoleRevokedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecret:
+		typename = "Secret"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecret
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretCreatedActivityLogEntry:
+		typename = "SecretCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretDeletedActivityLogEntry:
+		typename = "SecretDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretUpdatedActivityLogEntry:
+		typename = "SecretUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretValueAddedActivityLogEntry:
+		typename = "SecretValueAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretValueAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretValueRemovedActivityLogEntry:
+		typename = "SecretValueRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretValueRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretValueUpdatedActivityLogEntry:
+		typename = "SecretValueUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretValueUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSecretValuesViewedActivityLogEntry:
+		typename = "SecretValuesViewedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSecretValuesViewedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccount:
+		typename = "ServiceAccount"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccount
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountCreatedActivityLogEntry:
+		typename = "ServiceAccountCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountDeletedActivityLogEntry:
+		typename = "ServiceAccountDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountToken:
+		typename = "ServiceAccountToken"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountToken
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry:
+		typename = "ServiceAccountTokenCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry:
+		typename = "ServiceAccountTokenDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry:
+		typename = "ServiceAccountTokenUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry:
+		typename = "ServiceAccountUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountWorkloadBinding:
+		typename = "ServiceAccountWorkloadBinding"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountWorkloadBinding
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeServiceMaintenanceActivityLogEntry:
+		typename = "ServiceMaintenanceActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeServiceMaintenanceActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSqlDatabase:
+		typename = "SqlDatabase"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSqlDatabase
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSqlInstance:
+		typename = "SqlInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSqlInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeam:
+		typename = "Team"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeam
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry:
+		typename = "TeamConfirmDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry:
+		typename = "TeamCreateDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamCreatedActivityLogEntry:
+		typename = "TeamCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry:
+		typename = "TeamDeployKeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamEnvironment:
+		typename = "TeamEnvironment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamEnvironment
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry:
+		typename = "TeamEnvironmentUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamMemberAddedActivityLogEntry:
+		typename = "TeamMemberAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamMemberAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamMemberRemovedActivityLogEntry:
+		typename = "TeamMemberRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamMemberRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry:
+		typename = "TeamMemberSetRoleActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTeamUpdatedActivityLogEntry:
+		typename = "TeamUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTeamUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTunnel:
+		typename = "Tunnel"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTunnel
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTunnelCreatedActivityLogEntry:
+		typename = "TunnelCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTunnelCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeTunnelDeletedActivityLogEntry:
+		typename = "TunnelDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeTunnelDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUnleashInstance:
+		typename = "UnleashInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUnleashInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry:
+		typename = "UnleashInstanceCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry:
+		typename = "UnleashInstanceDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry:
+		typename = "UnleashInstanceUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUnleashReleaseChannelIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUser:
+		typename = "User"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUser
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUserCreatedUserSyncLogEntry:
+		typename = "UserCreatedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUserCreatedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUserDeletedUserSyncLogEntry:
+		typename = "UserDeletedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUserDeletedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeUserUpdatedUserSyncLogEntry:
+		typename = "UserUpdatedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeUserUpdatedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkey:
+		typename = "Valkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkeyCreatedActivityLogEntry:
+		typename = "ValkeyCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkeyCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry:
+		typename = "ValkeyCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkeyDeletedActivityLogEntry:
+		typename = "ValkeyDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkeyDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeValkeyUpdatedActivityLogEntry:
+		typename = "ValkeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry:
+		typename = "VulnerabilityUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeVulnerableImageIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeWorkloadProblemIssue:
+		typename = "WorkloadProblemIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeWorkloadProblemIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeWorkloadVulnerabilitySummary:
+		typename = "WorkloadVulnerabilitySummary"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeWorkloadVulnerabilitySummary
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeWorkloadWithVulnerability:
+		typename = "WorkloadWithVulnerability"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeWorkloadWithVulnerability
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListImageCVEsNode: "%T"`, v)
+	}
+}
+
+// ListImageCVEsNodeApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type ListImageCVEsNodeApplication struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplication.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplication) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeApplicationCreatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationCreatedActivityLogEntry.
+type ListImageCVEsNodeApplicationCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
+type ListImageCVEsNodeApplicationDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type ListImageCVEsNodeApplicationInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationInstance.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationInstance) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeApplicationRestartLoopIssue includes the requested fields of the GraphQL type ApplicationRestartLoopIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when an application keeps restarting repeatedly.
+type ListImageCVEsNodeApplicationRestartLoopIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationRestartLoopIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationRestartLoopIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
+type ListImageCVEsNodeApplicationRestartedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationRestartedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationRestartedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
+type ListImageCVEsNodeApplicationScaledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationScaledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationScaledActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
+type ListImageCVEsNodeApplicationUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeApplicationUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeApplicationUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeBigQueryDataset includes the requested fields of the GraphQL type BigQueryDataset.
+type ListImageCVEsNodeBigQueryDataset struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeBigQueryDataset.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeBigQueryDataset) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeBucket includes the requested fields of the GraphQL type Bucket.
+type ListImageCVEsNodeBucket struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeBucket.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeBucket) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeCVE includes the requested fields of the GraphQL type CVE.
+type ListImageCVEsNodeCVE struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeCVE.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeCVE) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
+type ListImageCVEsNodeClusterAuditActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeClusterAuditActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeClusterAuditActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type ListImageCVEsNodeConfig struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeConfig.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeConfig) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type ListImageCVEsNodeConfigCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeConfigCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type ListImageCVEsNodeConfigDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeConfigDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type ListImageCVEsNodeConfigUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeConfigUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type ListImageCVEsNodeContainerImage struct {
+	Typename *string `json:"__typename"`
+	// Get the vulnerabilities of the image.
+	Vulnerabilities ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+}
+
+// GetTypename returns ListImageCVEsNodeContainerImage.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImage) GetTypename() *string { return v.Typename }
+
+// GetVulnerabilities returns ListImageCVEsNodeContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImage) GetVulnerabilities() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection {
+	return v.Vulnerabilities
+}
+
+// ListImageCVEsNodeContainerImageSBOM includes the requested fields of the GraphQL type ContainerImageSBOM.
+// The GraphQL type's documentation follows.
+//
+// SBOM metadata for a container image, including pipeline status and processing
+// information. This type is accessed through ContainerImage.sbom.
+type ListImageCVEsNodeContainerImageSBOM struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeContainerImageSBOM.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageSBOM) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
+	// Information to aid in pagination.
+	PageInfo ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo `json:"pageInfo"`
+	// List of nodes.
+	Nodes []ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability `json:"nodes"`
+}
+
+// GetPageInfo returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetPageInfo() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetNodes returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability {
+	return v.Nodes
+}
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
+	// The globally unique ID of the image vulnerability node.
+	Id string `json:"id"`
+	// The unique identifier of the vulnerability. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Severity of the vulnerability.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Risk and threat intelligence signals used to prioritize the image vulnerability.
+	RiskAssessment ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment `json:"riskAssessment"`
+	// Package version information used to remediate the image vulnerability.
+	Remediation ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation `json:"remediation"`
+	// Package name of the vulnerability.
+	Package     string                                                                                                        `json:"package"`
+	Suppression *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
+	// Timestamp of when the vulnerability got its current severity.
+	SeveritySince *time.Time `json:"severitySince"`
+	// Link to the vulnerability details.
+	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+}
+
+// GetId returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetId() string {
+	return v.Id
+}
+
+// GetIdentifier returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetSeverity returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetRiskAssessment returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.RiskAssessment, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRiskAssessment() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment {
+	return v.RiskAssessment
+}
+
+// GetRemediation returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Remediation, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRemediation() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation {
+	return v.Remediation
+}
+
+// GetPackage returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetPackage() string {
+	return v.Package
+}
+
+// GetSuppression returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// GetSeveritySince returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeveritySince() *time.Time {
+	return v.SeveritySince
+}
+
+// GetVulnerabilityDetailsLink returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
+	return v.VulnerabilityDetailsLink
+}
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation includes the requested fields of the GraphQL type VulnerabilityRemediation.
+// The GraphQL type's documentation follows.
+//
+// Package version information that helps remediate an image vulnerability.
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation struct {
+	// First known package version that contains a fix.
+	FixVersion *string `json:"fixVersion"`
+	// Latest available version of the package, which may include changes beyond the fix.
+	LatestVersion *string `json:"latestVersion"`
+}
+
+// GetFixVersion returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation.FixVersion, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation) GetFixVersion() *string {
+	return v.FixVersion
+}
+
+// GetLatestVersion returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation.LatestVersion, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation) GetLatestVersion() *string {
+	return v.LatestVersion
+}
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment includes the requested fields of the GraphQL type VulnerabilityRiskAssessment.
+// The GraphQL type's documentation follows.
+//
+// Threat intelligence and scoring signals used to prioritize a vulnerability.
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment struct {
+	// Operational priority derived from the available risk signals.
+	Priority CVEPriority `json:"priority"`
+	// CVSS score of the vulnerability.
+	CvssScore *float64 `json:"cvssScore"`
+	// EPSS score, representing the estimated probability of exploitation.
+	EpssScore *float64 `json:"epssScore"`
+	// EPSS percentile of the vulnerability as a percentage (0-100).
+	EpssPercentile *float64 `json:"epssPercentile"`
+	// Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
+	HasKevEntry bool `json:"hasKevEntry"`
+	// Whether the vulnerability is known to be used in ransomware attacks.
+	KnownRansomwareUse bool `json:"knownRansomwareUse"`
+}
+
+// GetPriority returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetPriority() CVEPriority {
+	return v.Priority
+}
+
+// GetCvssScore returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetCvssScore() *float64 {
+	return v.CvssScore
+}
+
+// GetEpssScore returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.EpssScore, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetEpssScore() *float64 {
+	return v.EpssScore
+}
+
+// GetEpssPercentile returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.EpssPercentile, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetEpssPercentile() *float64 {
+	return v.EpssPercentile
+}
+
+// GetHasKevEntry returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.HasKevEntry, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetHasKevEntry() bool {
+	return v.HasKevEntry
+}
+
+// GetKnownRansomwareUse returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.KnownRansomwareUse, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetKnownRansomwareUse() bool {
+	return v.KnownRansomwareUse
+}
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State *ImageVulnerabilitySuppressionState `json:"state"`
+	// The reason for the suppression of the vulnerability.
+	Reason *string `json:"reason"`
+}
+
+// GetState returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetState() *ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// GetReason returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetReason() *string {
+	return v.Reason
+}
+
+// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// ListImageCVEsNodeDeployment includes the requested fields of the GraphQL type Deployment.
+// The GraphQL type's documentation follows.
+//
+// Description of a deployment.
+type ListImageCVEsNodeDeployment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeployment.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeployment) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
+type ListImageCVEsNodeDeploymentActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeploymentActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeploymentActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeploymentKey includes the requested fields of the GraphQL type DeploymentKey.
+// The GraphQL type's documentation follows.
+//
+// Deployment key type.
+type ListImageCVEsNodeDeploymentKey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeploymentKey.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeploymentKey) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeploymentResource includes the requested fields of the GraphQL type DeploymentResource.
+// The GraphQL type's documentation follows.
+//
+// Resource connected to a deployment.
+type ListImageCVEsNodeDeploymentResource struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeploymentResource.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeploymentResource) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeploymentStatus includes the requested fields of the GraphQL type DeploymentStatus.
+// The GraphQL type's documentation follows.
+//
+// Resource connected to a deployment.
+type ListImageCVEsNodeDeploymentStatus struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeploymentStatus.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeploymentStatus) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type ListImageCVEsNodeDeprecatedIngressIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeprecatedIngressIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type ListImageCVEsNodeDeprecatedRegistryIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeDeprecatedRegistryIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type ListImageCVEsNodeEnvironment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeEnvironment.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeEnvironment) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
+type ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type ListImageCVEsNodeFailedSynchronizationIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFailedSynchronizationIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeFeatureKafka includes the requested fields of the GraphQL type FeatureKafka.
+type ListImageCVEsNodeFeatureKafka struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFeatureKafka.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFeatureKafka) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeFeatureOpenSearch includes the requested fields of the GraphQL type FeatureOpenSearch.
+type ListImageCVEsNodeFeatureOpenSearch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFeatureOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFeatureOpenSearch) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeFeatureUnleash includes the requested fields of the GraphQL type FeatureUnleash.
+type ListImageCVEsNodeFeatureUnleash struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFeatureUnleash.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFeatureUnleash) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeFeatureValkey includes the requested fields of the GraphQL type FeatureValkey.
+type ListImageCVEsNodeFeatureValkey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFeatureValkey.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFeatureValkey) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeFeatures includes the requested fields of the GraphQL type Features.
+type ListImageCVEsNodeFeatures struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeFeatures.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeFeatures) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry includes the requested fields of the GraphQL type GenericKubernetesResourceActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a resource kind that is not modelled in the GraphQL API.
+// The resource type will be the uppercase Kubernetes kind, e.g. 'NAISJOB'.
+type ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeGenericKubernetesResourceActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type ListImageCVEsNodeImageVulnerability struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeImageVulnerability.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeImageVulnerability) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances.
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type ListImageCVEsNodeInstanceGroup struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeInstanceGroup.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeInstanceGroup) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeInstanceGroupEnvironmentVariable includes the requested fields of the GraphQL type InstanceGroupEnvironmentVariable.
+// The GraphQL type's documentation follows.
+//
+// An environment variable configured for an instance group.
+type ListImageCVEsNodeInstanceGroupEnvironmentVariable struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeInstanceGroupEnvironmentVariable.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeInstanceGroupEnvironmentVariable) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type ListImageCVEsNodeInvalidSpecIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeInvalidSpecIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJob includes the requested fields of the GraphQL type Job.
+type ListImageCVEsNodeJob struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJob.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJob) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobCreatedActivityLogEntry includes the requested fields of the GraphQL type JobCreatedActivityLogEntry.
+type ListImageCVEsNodeJobCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
+type ListImageCVEsNodeJobDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobRun includes the requested fields of the GraphQL type JobRun.
+type ListImageCVEsNodeJobRun struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobRun.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobRun) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type ListImageCVEsNodeJobRunDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobRunDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobRunInstance includes the requested fields of the GraphQL type JobRunInstance.
+type ListImageCVEsNodeJobRunInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobRunInstance.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobRunInstance) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
+type ListImageCVEsNodeJobTriggeredActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobTriggeredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobTriggeredActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
+type ListImageCVEsNodeJobUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeJobUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeJobUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type KafkaCredentialsCreatedActivityLogEntry.
+type ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeKafkaCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type ListImageCVEsNodeKafkaTopic struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeKafkaTopic.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeKafkaTopic) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeKafkaTopicUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type ListImageCVEsNodeLastRunFailedIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeLastRunFailedIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeLogDestinationGeneric includes the requested fields of the GraphQL type LogDestinationGeneric.
+type ListImageCVEsNodeLogDestinationGeneric struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeLogDestinationGeneric.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeLogDestinationGeneric) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeLogDestinationLoki includes the requested fields of the GraphQL type LogDestinationLoki.
+type ListImageCVEsNodeLogDestinationLoki struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeLogDestinationLoki.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeLogDestinationLoki) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeLogDestinationSecureLogs includes the requested fields of the GraphQL type LogDestinationSecureLogs.
+type ListImageCVEsNodeLogDestinationSecureLogs struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeLogDestinationSecureLogs.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeLogDestinationSecureLogs) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type ListImageCVEsNodeMissingSbomIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeMissingSbomIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type ListImageCVEsNodeNoRunningInstancesIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeNoRunningInstancesIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type ListImageCVEsNodeOpenSearch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearch) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
+type ListImageCVEsNodeOpenSearchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearchCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCredentialsCreatedActivityLogEntry.
+type ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearchCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
+type ListImageCVEsNodeOpenSearchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearchDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type ListImageCVEsNodeOpenSearchIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearchIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
+type ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeOpenSearchUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A Postgres whose active branch can change.
+type ListImageCVEsNodePostgres struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgres.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgres) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// The GraphQL type's documentation follows.
+//
+// A time-limited personal access request for a Postgres branch.
+type ListImageCVEsNodePostgresAccess struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresAccess.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresAccess) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
+// The GraphQL type's documentation follows.
+//
+// A named PostgresBranch belonging to a Postgres.
+type ListImageCVEsNodePostgresBranch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresBranch.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresBranch) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type ListImageCVEsNodePostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type ListImageCVEsNodePostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type ListImageCVEsNodePostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was created.
+type ListImageCVEsNodePostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
+type ListImageCVEsNodePostgresDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
+type ListImageCVEsNodePostgresGrantAccessActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresGrantAccessActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresGrantAccessActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessConnectionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An audit-log entry for retrieval of personal Postgres connection materials.
+type ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An audit-log entry for personal Postgres access created through the API broker.
+type ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodePostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type ListImageCVEsNodePostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePostgresUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodePrometheusAlert includes the requested fields of the GraphQL type PrometheusAlert.
+// The GraphQL type's documentation follows.
+//
+// PrometheusAlert type
+type ListImageCVEsNodePrometheusAlert struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodePrometheusAlert.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodePrometheusAlert) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeReconciler includes the requested fields of the GraphQL type Reconciler.
+// The GraphQL type's documentation follows.
+//
+// Reconciler type.
+type ListImageCVEsNodeReconciler struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeReconciler.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeReconciler) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
+type ListImageCVEsNodeReconcilerConfiguredActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeReconcilerConfiguredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeReconcilerConfiguredActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
+type ListImageCVEsNodeReconcilerDisabledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeReconcilerDisabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeReconcilerDisabledActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
+type ListImageCVEsNodeReconcilerEnabledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeReconcilerEnabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeReconcilerEnabledActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeReconcilerError includes the requested fields of the GraphQL type ReconcilerError.
+type ListImageCVEsNodeReconcilerError struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeReconcilerError.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeReconcilerError) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRepository includes the requested fields of the GraphQL type Repository.
+type ListImageCVEsNodeRepository struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRepository.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRepository) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
+type ListImageCVEsNodeRepositoryAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRepositoryAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRepositoryAddedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
+type ListImageCVEsNodeRepositoryRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRepositoryRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRepositoryRemovedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRole includes the requested fields of the GraphQL type Role.
+type ListImageCVEsNodeRole struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRole.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRole) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
+type ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRoleAssignedToServiceAccountActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeRoleAssignedUserSyncLogEntry includes the requested fields of the GraphQL type RoleAssignedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Assigned role to user log entry.
+type ListImageCVEsNodeRoleAssignedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRoleAssignedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRoleAssignedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
+type ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRoleRevokedFromServiceAccountActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeRoleRevokedUserSyncLogEntry includes the requested fields of the GraphQL type RoleRevokedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Revoked role from user log entry.
+type ListImageCVEsNodeRoleRevokedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeRoleRevokedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeRoleRevokedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type ListImageCVEsNodeSecret struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecret.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecret) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
+type ListImageCVEsNodeSecretCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
+type ListImageCVEsNodeSecretDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecretUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretUpdatedActivityLogEntry.
+type ListImageCVEsNodeSecretUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
+type ListImageCVEsNodeSecretValueAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretValueAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretValueAddedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
+type ListImageCVEsNodeSecretValueRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretValueRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretValueRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
+type ListImageCVEsNodeSecretValueUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretValueUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretValueUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeSecretValuesViewedActivityLogEntry includes the requested fields of the GraphQL type SecretValuesViewedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for viewing secret values.
+type ListImageCVEsNodeSecretValuesViewedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSecretValuesViewedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSecretValuesViewedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccount includes the requested fields of the GraphQL type ServiceAccount.
+// The GraphQL type's documentation follows.
+//
+// The service account type represents machine-users of the Nais API.
+//
+// These types of users can be used to automate certain parts of the API, for instance team creation and managing team members.
+//
+// Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation.
+type ListImageCVEsNodeServiceAccount struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccount.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccount) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountToken includes the requested fields of the GraphQL type ServiceAccountToken.
+type ListImageCVEsNodeServiceAccountToken struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountToken.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountToken) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountTokenCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountTokenDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountTokenUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountWorkloadBinding includes the requested fields of the GraphQL type ServiceAccountWorkloadBinding.
+// The GraphQL type's documentation follows.
+//
+// A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
+// Workload Token to the API, the API will authenticate the request as the bound service account.
+type ListImageCVEsNodeServiceAccountWorkloadBinding struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountWorkloadBinding.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountWorkloadBinding) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
+type ListImageCVEsNodeServiceMaintenanceActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeServiceMaintenanceActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeServiceMaintenanceActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeSqlDatabase includes the requested fields of the GraphQL type SqlDatabase.
+type ListImageCVEsNodeSqlDatabase struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSqlDatabase.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSqlDatabase) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSqlInstance includes the requested fields of the GraphQL type SqlInstance.
+type ListImageCVEsNodeSqlInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSqlInstance.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSqlInstance) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type ListImageCVEsNodeSqlInstanceStateIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSqlInstanceStateIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type ListImageCVEsNodeSqlInstanceVersionIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeSqlInstanceVersionIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListImageCVEsNodeTeam struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeam.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeam) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
+type ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamConfirmDeleteKeyActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
+type ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamCreateDeleteKeyActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
+type ListImageCVEsNodeTeamCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
+type ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamDeployKeyUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type ListImageCVEsNodeTeamEnvironment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamEnvironment.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamEnvironment) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
+type ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamEnvironmentUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
+type ListImageCVEsNodeTeamMemberAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamMemberAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamMemberAddedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
+type ListImageCVEsNodeTeamMemberRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamMemberRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamMemberRemovedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
+type ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamMemberSetRoleActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
+type ListImageCVEsNodeTeamUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTeamUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTeamUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTunnel includes the requested fields of the GraphQL type Tunnel.
+// The GraphQL type's documentation follows.
+//
+// A WireGuard tunnel between the CLI and an in-cluster gateway.
+type ListImageCVEsNodeTunnel struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTunnel.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTunnel) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTunnelCreatedActivityLogEntry includes the requested fields of the GraphQL type TunnelCreatedActivityLogEntry.
+type ListImageCVEsNodeTunnelCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTunnelCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTunnelCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeTunnelDeletedActivityLogEntry includes the requested fields of the GraphQL type TunnelDeletedActivityLogEntry.
+type ListImageCVEsNodeTunnelDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeTunnelDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeTunnelDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUnleashInstance includes the requested fields of the GraphQL type UnleashInstance.
+type ListImageCVEsNodeUnleashInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUnleashInstance.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUnleashInstance) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
+type ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUnleashInstanceCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
+type ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUnleashInstanceDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
+type ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUnleashInstanceUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type ListImageCVEsNodeUnleashReleaseChannelIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUnleashReleaseChannelIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type ListImageCVEsNodeUser struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUser.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUser) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUserCreatedUserSyncLogEntry includes the requested fields of the GraphQL type UserCreatedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User created log entry.
+type ListImageCVEsNodeUserCreatedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUserCreatedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUserCreatedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUserDeletedUserSyncLogEntry includes the requested fields of the GraphQL type UserDeletedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User deleted log entry.
+type ListImageCVEsNodeUserDeletedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUserDeletedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUserDeletedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeUserUpdatedUserSyncLogEntry includes the requested fields of the GraphQL type UserUpdatedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User updated log entry.
+type ListImageCVEsNodeUserUpdatedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeUserUpdatedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeUserUpdatedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeValkey includes the requested fields of the GraphQL type Valkey.
+type ListImageCVEsNodeValkey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkey.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkey) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
+type ListImageCVEsNodeValkeyCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkeyCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkeyCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCredentialsCreatedActivityLogEntry.
+type ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkeyCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
+type ListImageCVEsNodeValkeyDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkeyDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkeyDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type ListImageCVEsNodeValkeyIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkeyIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
+type ListImageCVEsNodeValkeyUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeValkeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeValkeyUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
+type ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// ListImageCVEsNodeVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type ListImageCVEsNodeVulnerableImageIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeVulnerableImageIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeWorkloadProblemIssue includes the requested fields of the GraphQL type WorkloadProblemIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue surfacing a problem reported by the platform in a workload's status.
+type ListImageCVEsNodeWorkloadProblemIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeWorkloadProblemIssue.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeWorkloadProblemIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
+type ListImageCVEsNodeWorkloadVulnerabilitySummary struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeWorkloadVulnerabilitySummary.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeWorkloadVulnerabilitySummary) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeWorkloadWithVulnerability includes the requested fields of the GraphQL type WorkloadWithVulnerability.
+// The GraphQL type's documentation follows.
+//
+// A workload affected by a specific vulnerability.
+type ListImageCVEsNodeWorkloadWithVulnerability struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeWorkloadWithVulnerability.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeWorkloadWithVulnerability) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsResponse is returned by ListImageCVEs on success.
+type ListImageCVEsResponse struct {
+	// Fetch an object using its globally unique ID.
+	Node *ListImageCVEsNode `json:"-"`
+}
+
+// GetNode returns ListImageCVEsResponse.Node, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsResponse) GetNode() *ListImageCVEsNode { return v.Node }
+
+func (v *ListImageCVEsResponse) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListImageCVEsResponse
+		Node json.RawMessage `json:"node"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListImageCVEsResponse = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Node
+		src := firstPass.Node
+		if len(src) != 0 && string(src) != "null" {
+			*dst = new(ListImageCVEsNode)
+			err = __unmarshalListImageCVEsNode(
+				src, *dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal ListImageCVEsResponse.Node: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListImageCVEsResponse struct {
+	Node json.RawMessage `json:"node"`
+}
+
+func (v *ListImageCVEsResponse) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListImageCVEsResponse) __premarshalJSON() (*__premarshalListImageCVEsResponse, error) {
+	var retval __premarshalListImageCVEsResponse
+
+	{
+
+		dst := &retval.Node
+		src := v.Node
+		if src != nil {
+			var err error
+			*dst, err = __marshalListImageCVEsNode(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal ListImageCVEsResponse.Node: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// ListTenantWorkloadVulnerabilitySummariesResponse is returned by ListTenantWorkloadVulnerabilitySummaries on success.
+type ListTenantWorkloadVulnerabilitySummariesResponse struct {
+	// List per-workload vulnerability summaries across all teams.
+	VulnerabilitySummaries ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection `json:"vulnerabilitySummaries"`
+}
+
+// GetVulnerabilitySummaries returns ListTenantWorkloadVulnerabilitySummariesResponse.VulnerabilitySummaries, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesResponse) GetVulnerabilitySummaries() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection {
+	return v.VulnerabilitySummaries
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection includes the requested fields of the GraphQL type WorkloadVulnerabilitySummaryConnection.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection struct {
+	// Information to aid in pagination.
+	PageInfo ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo `json:"pageInfo"`
+	// List of nodes.
+	Nodes []ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary `json:"nodes"`
+}
+
+// GetPageInfo returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection) GetPageInfo() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetNodes returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection) GetNodes() []ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary {
+	return v.Nodes
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
+	// The vulnerability summary for the workload.
+	Summary ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
+	// The workload
+	Workload ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload `json:"-"`
+}
+
+// GetSummary returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Summary, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetSummary() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetWorkload returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetWorkload() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload {
+	return v.Workload
+}
+
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
+	Summary ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) __premarshalJSON() (*__premarshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary, error) {
+	var retval __premarshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary
+
+	retval.Summary = v.Summary
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary struct {
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// When set, the vulnerability counts are sourced from this older image tag because
+	// no summary exists yet for the requested tag (e.g. a newly deployed image that is
+	// still being scanned). The value is the tag the stale data originates from.
+	StaleImageTag *string `json:"staleImageTag"`
+}
+
+// GetRiskScore returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsBySeverity() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetCountsByPriority returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsByPriority() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
+}
+
+// GetTotal returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetStaleImageTag returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
+	return v.StaleImageTag
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload is implemented by the following types:
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload interface {
+	implementsGraphQLInterfaceListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam
+	// GetImage returns the interface-field "image" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetImage() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment
+}
+
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) implementsGraphQLInterfaceListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload() {
+}
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) implementsGraphQLInterfaceListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload() {
+}
+
+func __unmarshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(b []byte, v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload(v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload: "%T"`, v)
+	}
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication struct {
+	Typename *string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	Team ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	Image ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	TeamEnvironment ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTeam() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam {
+	return v.Team
+}
+
+// GetImage returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Image, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetImage() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetTeamEnvironment returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTeamEnvironment() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage struct {
+	// SBOM pipeline status and processing information for this image.
+	Sbom ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM `json:"sbom"`
+}
+
+// GetSbom returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage.Sbom, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage) GetSbom() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM {
+	return v.Sbom
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM includes the requested fields of the GraphQL type ContainerImageSBOM.
+// The GraphQL type's documentation follows.
+//
+// SBOM metadata for a container image, including pipeline status and processing
+// information. This type is accessed through ContainerImage.sbom.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM struct {
+	// The SBOM pipeline status.
+	Status SBOMStatus `json:"status"`
+	// The timestamp when SBOM processing started for this image.
+	// Useful as a progress indicator when status is PROCESSING.
+	ProcessingStartedAt *time.Time `json:"processingStartedAt"`
+}
+
+// GetStatus returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM.Status, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM) GetStatus() SBOMStatus {
+	return v.Status
+}
+
+// GetProcessingStartedAt returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM.ProcessingStartedAt, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM) GetProcessingStartedAt() *time.Time {
+	return v.ProcessingStartedAt
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob includes the requested fields of the GraphQL type Job.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob struct {
+	Typename *string `json:"__typename"`
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	Team ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	Image ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	TeamEnvironment ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTeam returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTeam() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam {
+	return v.Team
+}
+
+// GetImage returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Image, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetImage() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetTeamEnvironment returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTeamEnvironment() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam) GetSlug() string {
+	return v.Slug
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment) GetEnvironment() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
 }
 
 // ListWorkloadVulnerabilitySummariesResponse is returned by ListWorkloadVulnerabilitySummaries on success.
@@ -34606,8 +38800,15 @@ func (v *ListWorkloadVulnerabilitySummariesTeam) GetVulnerabilitySummaries() Lis
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection includes the requested fields of the GraphQL type WorkloadVulnerabilitySummaryConnection.
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection struct {
+	// Information to aid in pagination.
+	PageInfo ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo `json:"pageInfo"`
 	// List of nodes.
 	Nodes []ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary `json:"nodes"`
+}
+
+// GetPageInfo returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection) GetPageInfo() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo {
+	return v.PageInfo
 }
 
 // GetNodes returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection.Nodes, and is useful for accessing the field via an interface.
@@ -34617,17 +38818,10 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
-	// True if the workload has a software bill of materials (SBOM) attached.
-	HasSBOM bool `json:"hasSBOM"`
 	// The vulnerability summary for the workload.
 	Summary ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
 	// The workload
 	Workload ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload `json:"-"`
-}
-
-// GetHasSBOM returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.HasSBOM, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) GetHasSBOM() bool {
-	return v.HasSBOM
 }
 
 // GetSummary returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary.Summary, and is useful for accessing the field via an interface.
@@ -34674,8 +38868,6 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 }
 
 type __premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary struct {
-	HasSBOM bool `json:"hasSBOM"`
-
 	Summary ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary `json:"summary"`
 
 	Workload json.RawMessage `json:"workload"`
@@ -34692,7 +38884,6 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary) __premarshalJSON() (*__premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary, error) {
 	var retval __premarshalListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummary
 
-	retval.HasSBOM = v.HasSBOM
 	retval.Summary = v.Summary
 	{
 
@@ -34713,6 +38904,83 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary struct {
 	// Risk score of the image.
 	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// When set, the vulnerability counts are sourced from this older image tag because
+	// no summary exists yet for the requested tag (e.g. a newly deployed image that is
+	// still being scanned). The value is the tag the stale data originates from.
+	StaleImageTag *string `json:"staleImageTag"`
+}
+
+// GetRiskScore returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsBySeverity() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetCountsByPriority returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsByPriority() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
+}
+
+// GetTotal returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetStaleImageTag returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
+	return v.StaleImageTag
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity struct {
 	// Number of vulnerabilities with severity CRITICAL.
 	Critical int `json:"critical"`
 	// Number of vulnerabilities with severity HIGH.
@@ -34723,43 +38991,31 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	Low int `json:"low"`
 	// Number of vulnerabilities with severity UNASSIGNED.
 	Unassigned int `json:"unassigned"`
-	// Total number of vulnerabilities.
-	Total int `json:"total"`
 }
 
-// GetRiskScore returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetRiskScore() int {
-	return v.RiskScore
-}
-
-// GetCritical returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Critical, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCritical() int {
+// GetCritical returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
 	return v.Critical
 }
 
-// GetHigh returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.High, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetHigh() int {
+// GetHigh returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
 	return v.High
 }
 
-// GetMedium returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Medium, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetMedium() int {
+// GetMedium returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
 	return v.Medium
 }
 
-// GetLow returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Low, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetLow() int {
+// GetLow returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
 	return v.Low
 }
 
-// GetUnassigned returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Unassigned, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetUnassigned() int {
+// GetUnassigned returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
 	return v.Unassigned
-}
-
-// GetTotal returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
-	return v.Total
 }
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkload includes the requested fields of the GraphQL interface Workload.
@@ -34779,6 +39035,16 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	//
 	// Interface for workloads.
 	GetName() string
+	// GetTeam returns the interface-field "team" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeam() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam
+	// GetImage returns the interface-field "image" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetImage() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage
 	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
@@ -34859,6 +39125,10 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	// Interface for workloads.
 	Name string `json:"name"`
 	// Interface for workloads.
+	Team ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	Image ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
 
@@ -34872,9 +39142,56 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.Name
 }
 
+// GetTeam returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Team, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTeam() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam {
+	return v.Team
+}
+
+// GetImage returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.Image, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetImage() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage {
+	return v.Image
+}
+
 // GetTeamEnvironment returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadApplication) GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
 	return v.TeamEnvironment
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage struct {
+	// SBOM pipeline status and processing information for this image.
+	Sbom ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM `json:"sbom"`
+}
+
+// GetSbom returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage.Sbom, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage) GetSbom() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM {
+	return v.Sbom
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM includes the requested fields of the GraphQL type ContainerImageSBOM.
+// The GraphQL type's documentation follows.
+//
+// SBOM metadata for a container image, including pipeline status and processing
+// information. This type is accessed through ContainerImage.sbom.
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM struct {
+	// The SBOM pipeline status.
+	Status SBOMStatus `json:"status"`
+	// The timestamp when SBOM processing started for this image.
+	// Useful as a progress indicator when status is PROCESSING.
+	ProcessingStartedAt *time.Time `json:"processingStartedAt"`
+}
+
+// GetStatus returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM.Status, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM) GetStatus() SBOMStatus {
+	return v.Status
+}
+
+// GetProcessingStartedAt returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM.ProcessingStartedAt, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImageSbomContainerImageSBOM) GetProcessingStartedAt() *time.Time {
+	return v.ProcessingStartedAt
 }
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob includes the requested fields of the GraphQL type Job.
@@ -34882,6 +39199,10 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	Typename *string `json:"__typename"`
 	// Interface for workloads.
 	Name string `json:"name"`
+	// Interface for workloads.
+	Team ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam `json:"team"`
+	// Interface for workloads.
+	Image ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage `json:"image"`
 	// Interface for workloads.
 	TeamEnvironment ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment `json:"teamEnvironment"`
 }
@@ -34896,9 +39217,37 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.Name
 }
 
+// GetTeam returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Team, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTeam() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam {
+	return v.Team
+}
+
+// GetImage returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.Image, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetImage() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadImageContainerImage {
+	return v.Image
+}
+
 // GetTeamEnvironment returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadJob) GetTeamEnvironment() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment {
 	return v.TeamEnvironment
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam struct {
+	// Unique slug of the team.
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam.Slug, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam) GetSlug() string {
+	return v.Slug
 }
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -34926,6 +39275,29 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 // GetName returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
 }
 
 // Input for filtering OpenSearch instances.
@@ -36220,6 +40592,20 @@ func (v *TeamsTeamsTeamConnectionNodesTeam) GetSlug() string { return v.Slug }
 
 // GetPurpose returns TeamsTeamsTeamConnectionNodesTeam.Purpose, and is useful for accessing the field via an interface.
 func (v *TeamsTeamsTeamConnectionNodesTeam) GetPurpose() string { return v.Purpose }
+
+// Input for filtering vulnerability summaries across all teams.
+type TenantVulnerabilitySummaryFilter struct {
+	// Input for filtering vulnerability summaries across all teams.
+	Priorities []CVEPriority `json:"priorities"`
+	// Input for filtering vulnerability summaries across all teams.
+	HasKevEntry *bool `json:"hasKevEntry"`
+}
+
+// GetPriorities returns TenantVulnerabilitySummaryFilter.Priorities, and is useful for accessing the field via an interface.
+func (v *TenantVulnerabilitySummaryFilter) GetPriorities() []CVEPriority { return v.Priorities }
+
+// GetHasKevEntry returns TenantVulnerabilitySummaryFilter.HasKevEntry, and is useful for accessing the field via an interface.
+func (v *TenantVulnerabilitySummaryFilter) GetHasKevEntry() *bool { return v.HasKevEntry }
 
 // TriggerJobResponse is returned by TriggerJob on success.
 type TriggerJobResponse struct {
@@ -38162,6 +42548,7 @@ func (v *__GrantAccessToKafkaTopicInput) GetGrant() KafkaTopicGrantInput { retur
 type __ListCVEsInput struct {
 	Team   string               `json:"team"`
 	Filter *TeamWorkloadsFilter `json:"filter"`
+	After  *string              `json:"after"`
 }
 
 // GetTeam returns __ListCVEsInput.Team, and is useful for accessing the field via an interface.
@@ -38170,10 +42557,44 @@ func (v *__ListCVEsInput) GetTeam() string { return v.Team }
 // GetFilter returns __ListCVEsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ListCVEsInput) GetFilter() *TeamWorkloadsFilter { return v.Filter }
 
+// GetAfter returns __ListCVEsInput.After, and is useful for accessing the field via an interface.
+func (v *__ListCVEsInput) GetAfter() *string { return v.After }
+
+// __ListImageCVEsInput is used internally by genqlient
+type __ListImageCVEsInput struct {
+	Id     string                    `json:"id"`
+	Filter *ImageVulnerabilityFilter `json:"filter"`
+	After  *string                   `json:"after"`
+}
+
+// GetId returns __ListImageCVEsInput.Id, and is useful for accessing the field via an interface.
+func (v *__ListImageCVEsInput) GetId() string { return v.Id }
+
+// GetFilter returns __ListImageCVEsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListImageCVEsInput) GetFilter() *ImageVulnerabilityFilter { return v.Filter }
+
+// GetAfter returns __ListImageCVEsInput.After, and is useful for accessing the field via an interface.
+func (v *__ListImageCVEsInput) GetAfter() *string { return v.After }
+
+// __ListTenantWorkloadVulnerabilitySummariesInput is used internally by genqlient
+type __ListTenantWorkloadVulnerabilitySummariesInput struct {
+	Filter *TenantVulnerabilitySummaryFilter `json:"filter"`
+	After  *string                           `json:"after"`
+}
+
+// GetFilter returns __ListTenantWorkloadVulnerabilitySummariesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListTenantWorkloadVulnerabilitySummariesInput) GetFilter() *TenantVulnerabilitySummaryFilter {
+	return v.Filter
+}
+
+// GetAfter returns __ListTenantWorkloadVulnerabilitySummariesInput.After, and is useful for accessing the field via an interface.
+func (v *__ListTenantWorkloadVulnerabilitySummariesInput) GetAfter() *string { return v.After }
+
 // __ListWorkloadVulnerabilitySummariesInput is used internally by genqlient
 type __ListWorkloadVulnerabilitySummariesInput struct {
 	Team   string                          `json:"team"`
 	Filter *TeamVulnerabilitySummaryFilter `json:"filter"`
+	After  *string                         `json:"after"`
 }
 
 // GetTeam returns __ListWorkloadVulnerabilitySummariesInput.Team, and is useful for accessing the field via an interface.
@@ -38183,6 +42604,9 @@ func (v *__ListWorkloadVulnerabilitySummariesInput) GetTeam() string { return v.
 func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
+
+// GetAfter returns __ListWorkloadVulnerabilitySummariesInput.After, and is useful for accessing the field via an interface.
+func (v *__ListWorkloadVulnerabilitySummariesInput) GetAfter() *string { return v.After }
 
 // __RemoveConfigValueInput is used internally by genqlient
 type __RemoveConfigValueInput struct {
@@ -41991,9 +46415,13 @@ func IsAdmin(
 
 // The query executed by ListCVEs.
 const ListCVEs_Operation = `
-query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter) {
+query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter, $after: Cursor) {
 	team(slug: $team) {
-		workloads(first: 1000, filter: $filter) {
+		workloads(first: 100, after: $after, filter: $filter) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
 			nodes {
 				__typename
 				name
@@ -42003,19 +46431,7 @@ query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter) {
 					}
 				}
 				image {
-					vulnerabilities(first: 1000, orderBy: {field:SEVERITY,direction:DESC}) {
-						nodes {
-							identifier
-							severity
-							cvssScore
-							package
-							suppression {
-								state
-							}
-							severitySince
-							vulnerabilityDetailsLink
-						}
-					}
+					id
 				}
 			}
 		}
@@ -42028,6 +46444,7 @@ func ListCVEs(
 	client_ graphql.Client,
 	team string,
 	filter *TeamWorkloadsFilter,
+	after *string,
 ) (data_ *ListCVEsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ListCVEs",
@@ -42035,6 +46452,7 @@ func ListCVEs(
 		Variables: &__ListCVEsInput{
 			Team:   team,
 			Filter: filter,
+			After:  after,
 		},
 	}
 
@@ -42050,25 +46468,193 @@ func ListCVEs(
 	return data_, err_
 }
 
-// The query executed by ListWorkloadVulnerabilitySummaries.
-const ListWorkloadVulnerabilitySummaries_Operation = `
-query ListWorkloadVulnerabilitySummaries ($team: Slug!, $filter: TeamVulnerabilitySummaryFilter) {
-	team(slug: $team) {
-		vulnerabilitySummaries(filter: $filter, first: 1000, orderBy: {field:VULNERABILITY_RISK_SCORE,direction:DESC}) {
-			nodes {
-				hasSBOM
-				summary {
-					riskScore
+// The query executed by ListImageCVEs.
+const ListImageCVEs_Operation = `
+query ListImageCVEs ($id: ID!, $filter: ImageVulnerabilityFilter, $after: Cursor) {
+	node(id: $id) {
+		__typename
+		... on ContainerImage {
+			vulnerabilities(first: 100, after: $after, filter: $filter, orderBy: {field:SEVERITY,direction:DESC}) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				nodes {
+					id
+					identifier
+					severity
+					riskAssessment {
+						priority
+						cvssScore
+						epssScore
+						epssPercentile
+						hasKevEntry
+						knownRansomwareUse
+					}
+					remediation {
+						fixVersion
+						latestVersion
+					}
+					package
+					suppression {
+						state
+						reason
+					}
+					severitySince
+					vulnerabilityDetailsLink
+				}
+			}
+		}
+	}
+}
+`
+
+func ListImageCVEs(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	filter *ImageVulnerabilityFilter,
+	after *string,
+) (data_ *ListImageCVEsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListImageCVEs",
+		Query:  ListImageCVEs_Operation,
+		Variables: &__ListImageCVEsInput{
+			Id:     id,
+			Filter: filter,
+			After:  after,
+		},
+	}
+
+	data_ = &ListImageCVEsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListTenantWorkloadVulnerabilitySummaries.
+const ListTenantWorkloadVulnerabilitySummaries_Operation = `
+query ListTenantWorkloadVulnerabilitySummaries ($filter: TenantVulnerabilitySummaryFilter, $after: Cursor) {
+	vulnerabilitySummaries(filter: $filter, first: 100, after: $after, orderBy: {field:VULNERABILITY_RISK_SCORE,direction:DESC}) {
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+		nodes {
+			summary {
+				riskScore
+				countsBySeverity {
 					critical
 					high
 					medium
 					low
 					unassigned
+				}
+				countsByPriority {
+					knownExploited
+					highRisk
+					elevatedRisk
+					monitor
+				}
+				total
+				staleImageTag
+			}
+			workload {
+				__typename
+				name
+				team {
+					slug
+				}
+				image {
+					sbom {
+						status
+						processingStartedAt
+					}
+				}
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func ListTenantWorkloadVulnerabilitySummaries(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	filter *TenantVulnerabilitySummaryFilter,
+	after *string,
+) (data_ *ListTenantWorkloadVulnerabilitySummariesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListTenantWorkloadVulnerabilitySummaries",
+		Query:  ListTenantWorkloadVulnerabilitySummaries_Operation,
+		Variables: &__ListTenantWorkloadVulnerabilitySummariesInput{
+			Filter: filter,
+			After:  after,
+		},
+	}
+
+	data_ = &ListTenantWorkloadVulnerabilitySummariesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListWorkloadVulnerabilitySummaries.
+const ListWorkloadVulnerabilitySummaries_Operation = `
+query ListWorkloadVulnerabilitySummaries ($team: Slug!, $filter: TeamVulnerabilitySummaryFilter, $after: Cursor) {
+	team(slug: $team) {
+		vulnerabilitySummaries(filter: $filter, first: 100, after: $after, orderBy: {field:VULNERABILITY_RISK_SCORE,direction:DESC}) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			nodes {
+				summary {
+					riskScore
+					countsBySeverity {
+						critical
+						high
+						medium
+						low
+						unassigned
+					}
+					countsByPriority {
+						knownExploited
+						highRisk
+						elevatedRisk
+						monitor
+					}
 					total
+					staleImageTag
 				}
 				workload {
 					__typename
 					name
+					team {
+						slug
+					}
+					image {
+						sbom {
+							status
+							processingStartedAt
+						}
+					}
 					teamEnvironment {
 						environment {
 							name
@@ -42086,6 +46672,7 @@ func ListWorkloadVulnerabilitySummaries(
 	client_ graphql.Client,
 	team string,
 	filter *TeamVulnerabilitySummaryFilter,
+	after *string,
 ) (data_ *ListWorkloadVulnerabilitySummariesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ListWorkloadVulnerabilitySummaries",
@@ -42093,6 +46680,7 @@ func ListWorkloadVulnerabilitySummaries(
 		Variables: &__ListWorkloadVulnerabilitySummariesInput{
 			Team:   team,
 			Filter: filter,
+			After:  after,
 		},
 	}
 
