@@ -200,7 +200,7 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 
 IMPORTANT: Before using this tool, use the schema exploration tools (schema_list_queries, schema_get_type, schema_get_field) to understand the available types and fields.
 
-This tool only supports queries (read operations). Mutations are not allowed.
+This tool only supports a single query (read operation) per request. Mutations, subscriptions and documents with multiple operations are not allowed.
 
 `+naisAPIGuidance),
 		mcp.WithInputSchema[ExecuteGraphQLInput](),
@@ -417,8 +417,12 @@ var forbiddenTypes = map[string]bool{
 }
 
 // checkForSecrets recursively checks if a selection set accesses any forbidden secret-related types.
-// It validates against the GraphQL schema to ensure queries don't access Secret or SecretValue types.
+// Named fragment spreads are resolved and traversed, so fragments cannot be used to bypass the check.
 func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, string) {
+	return checkSelectionsForSecrets(selectionSet, map[string]bool{})
+}
+
+func checkSelectionsForSecrets(selectionSet ast.SelectionSet, visited map[string]bool) (bool, string) {
 	for _, selection := range selectionSet {
 		switch sel := selection.(type) {
 		case *ast.Field:
@@ -433,7 +437,7 @@ func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, s
 
 			// Recursively check nested selections
 			if len(sel.SelectionSet) > 0 {
-				if found, reason := checkForSecrets(sel.SelectionSet, schema); found {
+				if found, reason := checkSelectionsForSecrets(sel.SelectionSet, visited); found {
 					return true, reason
 				}
 			}
@@ -443,14 +447,23 @@ func checkForSecrets(selectionSet ast.SelectionSet, schema *ast.Schema) (bool, s
 				return true, fmt.Sprintf("MCP security policy: inline fragment on type '%s' which contains sensitive data that cannot be accessed via this interface", sel.TypeCondition)
 			}
 			// Check inline fragments recursively
-			if found, reason := checkForSecrets(sel.SelectionSet, schema); found {
+			if found, reason := checkSelectionsForSecrets(sel.SelectionSet, visited); found {
 				return true, reason
 			}
 		case *ast.FragmentSpread:
-			// Fragment spreads would need fragment definitions to be fully validated
-			// For now, we flag any fragment that has "secret" in its name as a heuristic
-			if strings.Contains(strings.ToLower(sel.Name), "secret") {
-				return true, fmt.Sprintf("MCP security policy: fragment '%s' may access sensitive data that cannot be accessed via this interface", sel.Name)
+			// Unresolved spreads are rejected by schema validation; refuse them here as well to fail closed.
+			if sel.Definition == nil {
+				return true, fmt.Sprintf("MCP security policy: fragment '%s' could not be resolved", sel.Name)
+			}
+			if visited[sel.Name] {
+				continue
+			}
+			visited[sel.Name] = true
+			if forbiddenTypes[sel.Definition.TypeCondition] {
+				return true, fmt.Sprintf("MCP security policy: fragment '%s' on type '%s' which contains sensitive data that cannot be accessed via this interface", sel.Name, sel.Definition.TypeCondition)
+			}
+			if found, reason := checkSelectionsForSecrets(sel.Definition.SelectionSet, visited); found {
+				return true, reason
 			}
 		}
 	}
@@ -479,48 +492,57 @@ func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string)
 		return nil, fmt.Errorf("failed to parse schema: %v", gqlErr)
 	}
 
-	// Parse the query
+	return validateQueryDocument(schema, query), nil
+}
+
+// validateQueryDocument validates a query string against a parsed schema and the MCP security policy:
+// exactly one operation, which must be a query, within the depth limit and without access to secrets.
+// Named fragments are resolved for both the depth and the secrets checks.
+func validateQueryDocument(schema *ast.Schema, query string) *queryValidationResult {
 	doc, errList := gqlparser.LoadQueryWithRules(schema, query, nil)
 	if len(errList) > 0 {
 		return &queryValidationResult{
 			valid: false,
 			error: errList.Error(),
-		}, nil
+		}
 	}
 
-	// Check that we have at least one operation
 	if len(doc.Operations) == 0 {
 		return &queryValidationResult{
 			valid: false,
 			error: "no operations found in query",
-		}, nil
+		}
 	}
 
-	// Check operation type - only allow queries
-	// We only validate the first operation
+	// Refuse documents with multiple operations, so the operation checked is always the one executed.
+	if len(doc.Operations) > 1 {
+		return &queryValidationResult{
+			valid: false,
+			error: fmt.Sprintf("only a single operation is allowed per request, got %d", len(doc.Operations)),
+		}
+	}
+
 	op := doc.Operations[0]
 	if op.Operation != ast.Query {
 		return &queryValidationResult{
 			valid: false,
 			error: fmt.Sprintf("only query operations are allowed, got: %s", op.Operation),
-		}, nil
+		}
 	}
 
-	// Check query depth
 	depth := calculateQueryDepth(op.SelectionSet, 0)
 	if depth > maxQueryDepth {
 		return &queryValidationResult{
 			valid: false,
 			error: fmt.Sprintf("query depth %d exceeds maximum allowed depth of %d", depth, maxQueryDepth),
-		}, nil
+		}
 	}
 
-	// Check for forbidden secret-related types and fields
 	if found, reason := checkForSecrets(op.SelectionSet, schema); found {
 		return &queryValidationResult{
 			valid: false,
 			error: reason,
-		}, nil
+		}
 	}
 
 	return &queryValidationResult{
@@ -528,26 +550,32 @@ func (t *toolContext) validateGraphQLQuery(reqCtx context.Context, query string)
 		operationType: string(op.Operation),
 		operationName: op.Name,
 		depth:         depth,
-	}, nil
+	}
 }
 
+// calculateQueryDepth returns the maximum field nesting depth of a selection set.
+// Named fragment spreads are resolved and counted as if their selections were inlined.
 func calculateQueryDepth(selectionSet ast.SelectionSet, currentDepth int) int {
-	if len(selectionSet) == 0 {
-		return currentDepth
-	}
+	return selectionDepth(selectionSet, currentDepth, map[string]bool{})
+}
 
+func selectionDepth(selectionSet ast.SelectionSet, currentDepth int, inProgress map[string]bool) int {
 	maxDepth := currentDepth
 	for _, selection := range selectionSet {
 		var childDepth int
 		switch sel := selection.(type) {
 		case *ast.Field:
-			childDepth = calculateQueryDepth(sel.SelectionSet, currentDepth+1)
+			childDepth = selectionDepth(sel.SelectionSet, currentDepth+1, inProgress)
 		case *ast.InlineFragment:
-			childDepth = calculateQueryDepth(sel.SelectionSet, currentDepth)
+			childDepth = selectionDepth(sel.SelectionSet, currentDepth, inProgress)
 		case *ast.FragmentSpread:
-			// Fragment spreads would need to be resolved against fragment definitions
-			// For simplicity, we count them as +1 depth
-			childDepth = currentDepth + 1
+			// Cycles are rejected by schema validation; guard anyway to avoid infinite recursion.
+			if sel.Definition == nil || inProgress[sel.Name] {
+				continue
+			}
+			inProgress[sel.Name] = true
+			childDepth = selectionDepth(sel.Definition.SelectionSet, currentDepth, inProgress)
+			delete(inProgress, sel.Name)
 		}
 		if childDepth > maxDepth {
 			maxDepth = childDepth
