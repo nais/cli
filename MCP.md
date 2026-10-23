@@ -121,7 +121,7 @@ nais alpha mcp serve [flags]
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--transport`, `-t` | `stdio` | Transport: `stdio`, `http`, or `sse` |
-| `--listen`, `-l` | `:8080` | Listen address (for http/sse) |
+| `--listen`, `-l` | `127.0.0.1:8080` | Listen address (for http/sse) |
 | `--rate-limit`, `-r` | `10` | Max requests per minute (0 = unlimited) |
 | `--log-file` | - | Write logs to file instead of stderr |
 

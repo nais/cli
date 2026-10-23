@@ -48,7 +48,7 @@ type Option func(*Options)
 func DefaultOptions() *Options {
 	return &Options{
 		Transport:  TransportStdio,
-		ListenAddr: ":8080",
+		ListenAddr: "127.0.0.1:8080",
 		RateLimit:  10,
 		Logger:     slog.Default(),
 	}
