@@ -43,8 +43,14 @@ func TestGatewayDescribeChoices(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("the fake agent uses a Unix socket")
 	}
-	// Keep the socket path short enough for Unix socket limits, regardless of subtest names.
-	configDir := t.TempDir()
+	// Keep the socket path short enough for Unix socket limits (104 bytes on macOS). t.TempDir() lives
+	// under a long per-test directory on macOS and, combined with "Library/Application Support",
+	// overflows that limit, so use a short directory under /tmp instead.
+	configDir, err := os.MkdirTemp("/tmp", "nd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(configDir) })
 	t.Setenv("HOME", configDir)
 	t.Setenv("XDG_CONFIG_HOME", configDir)
 	agentDir, err := config.UserConfigDir()
