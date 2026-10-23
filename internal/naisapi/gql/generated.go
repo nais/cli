@@ -11402,6 +11402,221 @@ func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicati
 	return v.Name
 }
 
+// GetApplicationVulnerabilityHistoryResponse is returned by GetApplicationVulnerabilityHistory on success.
+type GetApplicationVulnerabilityHistoryResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationVulnerabilityHistoryTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationVulnerabilityHistoryResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryResponse) GetTeam() GetApplicationVulnerabilityHistoryTeam {
+	return v.Team
+}
+
+// GetApplicationVulnerabilityHistoryTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetApplicationVulnerabilityHistoryTeam struct {
+	// Get a specific environment for the team.
+	Environment GetApplicationVulnerabilityHistoryTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetApplicationVulnerabilityHistoryTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeam) GetEnvironment() GetApplicationVulnerabilityHistoryTeamEnvironment {
+	return v.Environment
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationVulnerabilityHistoryTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application GetApplicationVulnerabilityHistoryTeamEnvironmentApplication `json:"application"`
+}
+
+// GetApplication returns GetApplicationVulnerabilityHistoryTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironment) GetApplication() GetApplicationVulnerabilityHistoryTeamEnvironmentApplication {
+	return v.Application
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplication struct {
+	// Get the vulnerability summary history for application.
+	ImageVulnerabilityHistory GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory `json:"imageVulnerabilityHistory"`
+	// Get the mean time to fix history for an application.
+	VulnerabilityFixHistory GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory `json:"vulnerabilityFixHistory"`
+}
+
+// GetImageVulnerabilityHistory returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplication.ImageVulnerabilityHistory, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplication) GetImageVulnerabilityHistory() GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory {
+	return v.ImageVulnerabilityHistory
+}
+
+// GetVulnerabilityFixHistory returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplication.VulnerabilityFixHistory, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplication) GetVulnerabilityFixHistory() GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory {
+	return v.VulnerabilityFixHistory
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory includes the requested fields of the GraphQL type ImageVulnerabilityHistory.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory struct {
+	// Vulnerability summary samples.
+	Samples []GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample `json:"samples"`
+}
+
+// GetSamples returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistory) GetSamples() []GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample {
+	return v.Samples
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample includes the requested fields of the GraphQL type ImageVulnerabilitySample.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample struct {
+	// Timestamp of the vulnerability summary.
+	Date time.Time `json:"date"`
+	// The historic image vulnerability summary
+	Summary GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary `json:"summary"`
+}
+
+// GetDate returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample.Date, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSummary returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample.Summary, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetSummary() GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+}
+
+// GetTotal returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetRiskScore returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetCountsBySeverity() GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory includes the requested fields of the GraphQL type VulnerabilityFixHistory.
+// The GraphQL type's documentation follows.
+//
+// Trend of mean time to fix vulnerabilities grouped by severity.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory struct {
+	// Mean time to fix samples.
+	Samples []GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample `json:"samples"`
+}
+
+// GetSamples returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistory) GetSamples() []GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample {
+	return v.Samples
+}
+
+// GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample includes the requested fields of the GraphQL type VulnerabilityFixSample.
+// The GraphQL type's documentation follows.
+//
+// One MTTR sample for a severity at a point in time.
+type GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample struct {
+	// Snapshot date of the sample.
+	Date time.Time `json:"date"`
+	// Severity of vulnerabilities in this sample.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Mean time to fix in days.
+	Days int `json:"days"`
+	// Number of vulnerabilities fixed in this sample.
+	FixedCount int `json:"fixedCount"`
+	// Total number of workloads with this severity of vulnerabilities.
+	TotalWorkloads int `json:"totalWorkloads"`
+}
+
+// GetDate returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample.Date, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSeverity returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetDays returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample.Days, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDays() int {
+	return v.Days
+}
+
+// GetFixedCount returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample.FixedCount, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetFixedCount() int {
+	return v.FixedCount
+}
+
+// GetTotalWorkloads returns GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample.TotalWorkloads, and is useful for accessing the field via an interface.
+func (v *GetApplicationVulnerabilityHistoryTeamEnvironmentApplicationVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetTotalWorkloads() int {
+	return v.TotalWorkloads
+}
+
 // GetConfigActivityResponse is returned by GetConfigActivity on success.
 type GetConfigActivityResponse struct {
 	// Get a team by its slug.
@@ -21188,6 +21403,214 @@ func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunT
 // GetActor returns GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger.Actor, and is useful for accessing the field via an interface.
 func (v *GetJobRunsTeamJobsJobConnectionNodesJobRunsJobRunConnectionNodesJobRunTrigger) GetActor() *string {
 	return v.Actor
+}
+
+// GetJobVulnerabilityHistoryResponse is returned by GetJobVulnerabilityHistory on success.
+type GetJobVulnerabilityHistoryResponse struct {
+	// Get a team by its slug.
+	Team GetJobVulnerabilityHistoryTeam `json:"team"`
+}
+
+// GetTeam returns GetJobVulnerabilityHistoryResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryResponse) GetTeam() GetJobVulnerabilityHistoryTeam { return v.Team }
+
+// GetJobVulnerabilityHistoryTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetJobVulnerabilityHistoryTeam struct {
+	// Get a specific environment for the team.
+	Environment GetJobVulnerabilityHistoryTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetJobVulnerabilityHistoryTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeam) GetEnvironment() GetJobVulnerabilityHistoryTeamEnvironment {
+	return v.Environment
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobVulnerabilityHistoryTeamEnvironment struct {
+	// Nais job in the team environment.
+	Job GetJobVulnerabilityHistoryTeamEnvironmentJob `json:"job"`
+}
+
+// GetJob returns GetJobVulnerabilityHistoryTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironment) GetJob() GetJobVulnerabilityHistoryTeamEnvironmentJob {
+	return v.Job
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type GetJobVulnerabilityHistoryTeamEnvironmentJob struct {
+	// Get the vulnerability summary history for job.
+	ImageVulnerabilityHistory GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory `json:"imageVulnerabilityHistory"`
+	// Get the mean time to fix history for a job.
+	VulnerabilityFixHistory GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory `json:"vulnerabilityFixHistory"`
+}
+
+// GetImageVulnerabilityHistory returns GetJobVulnerabilityHistoryTeamEnvironmentJob.ImageVulnerabilityHistory, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJob) GetImageVulnerabilityHistory() GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory {
+	return v.ImageVulnerabilityHistory
+}
+
+// GetVulnerabilityFixHistory returns GetJobVulnerabilityHistoryTeamEnvironmentJob.VulnerabilityFixHistory, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJob) GetVulnerabilityFixHistory() GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory {
+	return v.VulnerabilityFixHistory
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory includes the requested fields of the GraphQL type ImageVulnerabilityHistory.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory struct {
+	// Vulnerability summary samples.
+	Samples []GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample `json:"samples"`
+}
+
+// GetSamples returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistory) GetSamples() []GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample {
+	return v.Samples
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample includes the requested fields of the GraphQL type ImageVulnerabilitySample.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample struct {
+	// Timestamp of the vulnerability summary.
+	Date time.Time `json:"date"`
+	// The historic image vulnerability summary
+	Summary GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary `json:"summary"`
+}
+
+// GetDate returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample.Date, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSummary returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample.Summary, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetSummary() GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+}
+
+// GetTotal returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetRiskScore returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetCountsBySeverity() GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory includes the requested fields of the GraphQL type VulnerabilityFixHistory.
+// The GraphQL type's documentation follows.
+//
+// Trend of mean time to fix vulnerabilities grouped by severity.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory struct {
+	// Mean time to fix samples.
+	Samples []GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample `json:"samples"`
+}
+
+// GetSamples returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistory) GetSamples() []GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample {
+	return v.Samples
+}
+
+// GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample includes the requested fields of the GraphQL type VulnerabilityFixSample.
+// The GraphQL type's documentation follows.
+//
+// One MTTR sample for a severity at a point in time.
+type GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample struct {
+	// Snapshot date of the sample.
+	Date time.Time `json:"date"`
+	// Severity of vulnerabilities in this sample.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Mean time to fix in days.
+	Days int `json:"days"`
+	// Number of vulnerabilities fixed in this sample.
+	FixedCount int `json:"fixedCount"`
+	// Total number of workloads with this severity of vulnerabilities.
+	TotalWorkloads int `json:"totalWorkloads"`
+}
+
+// GetDate returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample.Date, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSeverity returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetDays returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample.Days, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDays() int {
+	return v.Days
+}
+
+// GetFixedCount returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample.FixedCount, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetFixedCount() int {
+	return v.FixedCount
+}
+
+// GetTotalWorkloads returns GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample.TotalWorkloads, and is useful for accessing the field via an interface.
+func (v *GetJobVulnerabilityHistoryTeamEnvironmentJobVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetTotalWorkloads() int {
+	return v.TotalWorkloads
 }
 
 // GetKafkaTopicGrantsResponse is returned by GetKafkaTopicGrants on success.
@@ -33409,6 +33832,194 @@ func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionPageInfo) GetEndCursor
 	return v.EndCursor
 }
 
+// GetTeamVulnerabilityHistoryResponse is returned by GetTeamVulnerabilityHistory on success.
+type GetTeamVulnerabilityHistoryResponse struct {
+	// Get a team by its slug.
+	Team GetTeamVulnerabilityHistoryTeam `json:"team"`
+}
+
+// GetTeam returns GetTeamVulnerabilityHistoryResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryResponse) GetTeam() GetTeamVulnerabilityHistoryTeam {
+	return v.Team
+}
+
+// GetTeamVulnerabilityHistoryTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+type GetTeamVulnerabilityHistoryTeam struct {
+	// Get the vulnerability summary history for team.
+	ImageVulnerabilityHistory GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory `json:"imageVulnerabilityHistory"`
+	// Get the mean time to fix history for a team.
+	VulnerabilityFixHistory GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory `json:"vulnerabilityFixHistory"`
+}
+
+// GetImageVulnerabilityHistory returns GetTeamVulnerabilityHistoryTeam.ImageVulnerabilityHistory, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeam) GetImageVulnerabilityHistory() GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory {
+	return v.ImageVulnerabilityHistory
+}
+
+// GetVulnerabilityFixHistory returns GetTeamVulnerabilityHistoryTeam.VulnerabilityFixHistory, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeam) GetVulnerabilityFixHistory() GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory {
+	return v.VulnerabilityFixHistory
+}
+
+// GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory includes the requested fields of the GraphQL type ImageVulnerabilityHistory.
+type GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory struct {
+	// Vulnerability summary samples.
+	Samples []GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample `json:"samples"`
+}
+
+// GetSamples returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistory) GetSamples() []GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample {
+	return v.Samples
+}
+
+// GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample includes the requested fields of the GraphQL type ImageVulnerabilitySample.
+type GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample struct {
+	// Timestamp of the vulnerability summary.
+	Date time.Time `json:"date"`
+	// The historic image vulnerability summary
+	Summary GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary `json:"summary"`
+}
+
+// GetDate returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample.Date, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSummary returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample.Summary, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetSummary() GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+}
+
+// GetTotal returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetRiskScore returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetCountsBySeverity() GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory includes the requested fields of the GraphQL type VulnerabilityFixHistory.
+// The GraphQL type's documentation follows.
+//
+// Trend of mean time to fix vulnerabilities grouped by severity.
+type GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory struct {
+	// Mean time to fix samples.
+	Samples []GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample `json:"samples"`
+}
+
+// GetSamples returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistory) GetSamples() []GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample {
+	return v.Samples
+}
+
+// GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample includes the requested fields of the GraphQL type VulnerabilityFixSample.
+// The GraphQL type's documentation follows.
+//
+// One MTTR sample for a severity at a point in time.
+type GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample struct {
+	// Snapshot date of the sample.
+	Date time.Time `json:"date"`
+	// Severity of vulnerabilities in this sample.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Mean time to fix in days.
+	Days int `json:"days"`
+	// Number of vulnerabilities fixed in this sample.
+	FixedCount int `json:"fixedCount"`
+	// Total number of workloads with this severity of vulnerabilities.
+	TotalWorkloads int `json:"totalWorkloads"`
+}
+
+// GetDate returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample.Date, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSeverity returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetDays returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample.Days, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDays() int {
+	return v.Days
+}
+
+// GetFixedCount returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample.FixedCount, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetFixedCount() int {
+	return v.FixedCount
+}
+
+// GetTotalWorkloads returns GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample.TotalWorkloads, and is useful for accessing the field via an interface.
+func (v *GetTeamVulnerabilityHistoryTeamVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetTotalWorkloads() int {
+	return v.TotalWorkloads
+}
+
 // GetTeamVulnerabilitySummaryResponse is returned by GetTeamVulnerabilitySummary on success.
 type GetTeamVulnerabilitySummaryResponse struct {
 	// Get a team by its slug.
@@ -33497,6 +34108,176 @@ func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetRiskScoreTrend(
 // GetLastUpdated returns GetTeamVulnerabilitySummaryTeamVulnerabilitySummary.LastUpdated, and is useful for accessing the field via an interface.
 func (v *GetTeamVulnerabilitySummaryTeamVulnerabilitySummary) GetLastUpdated() *time.Time {
 	return v.LastUpdated
+}
+
+// GetTenantVulnerabilityHistoryImageVulnerabilityHistory includes the requested fields of the GraphQL type ImageVulnerabilityHistory.
+type GetTenantVulnerabilityHistoryImageVulnerabilityHistory struct {
+	// Vulnerability summary samples.
+	Samples []GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample `json:"samples"`
+}
+
+// GetSamples returns GetTenantVulnerabilityHistoryImageVulnerabilityHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistory) GetSamples() []GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample {
+	return v.Samples
+}
+
+// GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample includes the requested fields of the GraphQL type ImageVulnerabilitySample.
+type GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample struct {
+	// Timestamp of the vulnerability summary.
+	Date time.Time `json:"date"`
+	// The historic image vulnerability summary
+	Summary GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary `json:"summary"`
+}
+
+// GetDate returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample.Date, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSummary returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample.Summary, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySample) GetSummary() GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary {
+	return v.Summary
+}
+
+// GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+}
+
+// GetTotal returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetTotal() int {
+	return v.Total
+}
+
+// GetRiskScore returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetRiskScore() int {
+	return v.RiskScore
+}
+
+// GetCountsBySeverity returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummary) GetCountsBySeverity() GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetHigh() int {
+	return v.High
+}
+
+// GetMedium returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetMedium() int {
+	return v.Medium
+}
+
+// GetLow returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetLow() int {
+	return v.Low
+}
+
+// GetUnassigned returns GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryImageVulnerabilityHistorySamplesImageVulnerabilitySampleSummaryImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// GetTenantVulnerabilityHistoryResponse is returned by GetTenantVulnerabilityHistory on success.
+type GetTenantVulnerabilityHistoryResponse struct {
+	// Get the vulnerability summary history for all teams.
+	ImageVulnerabilityHistory GetTenantVulnerabilityHistoryImageVulnerabilityHistory `json:"imageVulnerabilityHistory"`
+	// Get the mean time to fix history for all teams.
+	VulnerabilityFixHistory GetTenantVulnerabilityHistoryVulnerabilityFixHistory `json:"vulnerabilityFixHistory"`
+}
+
+// GetImageVulnerabilityHistory returns GetTenantVulnerabilityHistoryResponse.ImageVulnerabilityHistory, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryResponse) GetImageVulnerabilityHistory() GetTenantVulnerabilityHistoryImageVulnerabilityHistory {
+	return v.ImageVulnerabilityHistory
+}
+
+// GetVulnerabilityFixHistory returns GetTenantVulnerabilityHistoryResponse.VulnerabilityFixHistory, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryResponse) GetVulnerabilityFixHistory() GetTenantVulnerabilityHistoryVulnerabilityFixHistory {
+	return v.VulnerabilityFixHistory
+}
+
+// GetTenantVulnerabilityHistoryVulnerabilityFixHistory includes the requested fields of the GraphQL type VulnerabilityFixHistory.
+// The GraphQL type's documentation follows.
+//
+// Trend of mean time to fix vulnerabilities grouped by severity.
+type GetTenantVulnerabilityHistoryVulnerabilityFixHistory struct {
+	// Mean time to fix samples.
+	Samples []GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample `json:"samples"`
+}
+
+// GetSamples returns GetTenantVulnerabilityHistoryVulnerabilityFixHistory.Samples, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistory) GetSamples() []GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample {
+	return v.Samples
+}
+
+// GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample includes the requested fields of the GraphQL type VulnerabilityFixSample.
+// The GraphQL type's documentation follows.
+//
+// One MTTR sample for a severity at a point in time.
+type GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample struct {
+	// Snapshot date of the sample.
+	Date time.Time `json:"date"`
+	// Severity of vulnerabilities in this sample.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Mean time to fix in days.
+	Days int `json:"days"`
+	// Number of vulnerabilities fixed in this sample.
+	FixedCount int `json:"fixedCount"`
+	// Total number of workloads with this severity of vulnerabilities.
+	TotalWorkloads int `json:"totalWorkloads"`
+}
+
+// GetDate returns GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample.Date, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDate() time.Time {
+	return v.Date
+}
+
+// GetSeverity returns GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample.Severity, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetDays returns GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample.Days, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetDays() int {
+	return v.Days
+}
+
+// GetFixedCount returns GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample.FixedCount, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetFixedCount() int {
+	return v.FixedCount
+}
+
+// GetTotalWorkloads returns GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample.TotalWorkloads, and is useful for accessing the field via an interface.
+func (v *GetTenantVulnerabilityHistoryVulnerabilityFixHistorySamplesVulnerabilityFixSample) GetTotalWorkloads() int {
+	return v.TotalWorkloads
 }
 
 // GetValkeyResponse is returned by GetValkey on success.
@@ -37834,6 +38615,26 @@ func (v *__GetApplicationStatusInput) GetName() string { return v.Name }
 // GetEnv returns __GetApplicationStatusInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetApplicationStatusInput) GetEnv() []string { return v.Env }
 
+// __GetApplicationVulnerabilityHistoryInput is used internally by genqlient
+type __GetApplicationVulnerabilityHistoryInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+	From        string `json:"from"`
+}
+
+// GetTeam returns __GetApplicationVulnerabilityHistoryInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetApplicationVulnerabilityHistoryInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetApplicationVulnerabilityHistoryInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetApplicationVulnerabilityHistoryInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __GetApplicationVulnerabilityHistoryInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetApplicationVulnerabilityHistoryInput) GetName() string { return v.Name }
+
+// GetFrom returns __GetApplicationVulnerabilityHistoryInput.From, and is useful for accessing the field via an interface.
+func (v *__GetApplicationVulnerabilityHistoryInput) GetFrom() string { return v.From }
+
 // __GetConfigActivityInput is used internally by genqlient
 type __GetConfigActivityInput struct {
 	Team          string                    `json:"team"`
@@ -37971,6 +38772,26 @@ func (v *__GetJobRunsInput) GetName() string { return v.Name }
 
 // GetEnv returns __GetJobRunsInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetJobRunsInput) GetEnv() []string { return v.Env }
+
+// __GetJobVulnerabilityHistoryInput is used internally by genqlient
+type __GetJobVulnerabilityHistoryInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Name        string `json:"name"`
+	From        string `json:"from"`
+}
+
+// GetTeam returns __GetJobVulnerabilityHistoryInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobVulnerabilityHistoryInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetJobVulnerabilityHistoryInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetJobVulnerabilityHistoryInput) GetEnvironment() string { return v.Environment }
+
+// GetName returns __GetJobVulnerabilityHistoryInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetJobVulnerabilityHistoryInput) GetName() string { return v.Name }
+
+// GetFrom returns __GetJobVulnerabilityHistoryInput.From, and is useful for accessing the field via an interface.
+func (v *__GetJobVulnerabilityHistoryInput) GetFrom() string { return v.From }
 
 // __GetKafkaTopicGrantsInput is used internally by genqlient
 type __GetKafkaTopicGrantsInput struct {
@@ -38246,6 +39067,18 @@ func (v *__GetTeamPostgresesInput) GetAfter() *string { return v.After }
 // GetFilter returns __GetTeamPostgresesInput.Filter, and is useful for accessing the field via an interface.
 func (v *__GetTeamPostgresesInput) GetFilter() *TeamPostgresFilter { return v.Filter }
 
+// __GetTeamVulnerabilityHistoryInput is used internally by genqlient
+type __GetTeamVulnerabilityHistoryInput struct {
+	Team string `json:"team"`
+	From string `json:"from"`
+}
+
+// GetTeam returns __GetTeamVulnerabilityHistoryInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetTeamVulnerabilityHistoryInput) GetTeam() string { return v.Team }
+
+// GetFrom returns __GetTeamVulnerabilityHistoryInput.From, and is useful for accessing the field via an interface.
+func (v *__GetTeamVulnerabilityHistoryInput) GetFrom() string { return v.From }
+
 // __GetTeamVulnerabilitySummaryInput is used internally by genqlient
 type __GetTeamVulnerabilitySummaryInput struct {
 	Team   string                          `json:"team"`
@@ -38259,6 +39092,14 @@ func (v *__GetTeamVulnerabilitySummaryInput) GetTeam() string { return v.Team }
 func (v *__GetTeamVulnerabilitySummaryInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
+
+// __GetTenantVulnerabilityHistoryInput is used internally by genqlient
+type __GetTenantVulnerabilityHistoryInput struct {
+	From string `json:"from"`
+}
+
+// GetFrom returns __GetTenantVulnerabilityHistoryInput.From, and is useful for accessing the field via an interface.
+func (v *__GetTenantVulnerabilityHistoryInput) GetFrom() string { return v.From }
 
 // __GetValkeyInput is used internally by genqlient
 type __GetValkeyInput struct {
@@ -40558,6 +41399,74 @@ func GetApplicationStatus(
 	return data_, err_
 }
 
+// The query executed by GetApplicationVulnerabilityHistory.
+const GetApplicationVulnerabilityHistory_Operation = `
+query GetApplicationVulnerabilityHistory ($team: Slug!, $environment: String!, $name: String!, $from: Date!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			application(name: $name) {
+				imageVulnerabilityHistory(from: $from) {
+					samples {
+						date
+						summary {
+							total
+							riskScore
+							countsBySeverity {
+								critical
+								high
+								medium
+								low
+								unassigned
+							}
+						}
+					}
+				}
+				vulnerabilityFixHistory(from: $from) {
+					samples {
+						date
+						severity
+						days
+						fixedCount
+						totalWorkloads
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetApplicationVulnerabilityHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+	from string,
+) (data_ *GetApplicationVulnerabilityHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationVulnerabilityHistory",
+		Query:  GetApplicationVulnerabilityHistory_Operation,
+		Variables: &__GetApplicationVulnerabilityHistoryInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+			From:        from,
+		},
+	}
+
+	data_ = &GetApplicationVulnerabilityHistoryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetConfig.
 const GetConfig_Operation = `
 query GetConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
@@ -41012,6 +41921,74 @@ func GetJobRuns(
 	}
 
 	data_ = &GetJobRunsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobVulnerabilityHistory.
+const GetJobVulnerabilityHistory_Operation = `
+query GetJobVulnerabilityHistory ($team: Slug!, $environment: String!, $name: String!, $from: Date!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			job(name: $name) {
+				imageVulnerabilityHistory(from: $from) {
+					samples {
+						date
+						summary {
+							total
+							riskScore
+							countsBySeverity {
+								critical
+								high
+								medium
+								low
+								unassigned
+							}
+						}
+					}
+				}
+				vulnerabilityFixHistory(from: $from) {
+					samples {
+						date
+						severity
+						days
+						fixedCount
+						totalWorkloads
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func GetJobVulnerabilityHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	name string,
+	from string,
+) (data_ *GetJobVulnerabilityHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobVulnerabilityHistory",
+		Query:  GetJobVulnerabilityHistory_Operation,
+		Variables: &__GetJobVulnerabilityHistoryInput{
+			Team:        team,
+			Environment: environment,
+			Name:        name,
+			From:        from,
+		},
+	}
+
+	data_ = &GetJobVulnerabilityHistoryResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -41944,6 +42921,66 @@ func GetTeamPostgreses(
 	return data_, err_
 }
 
+// The query executed by GetTeamVulnerabilityHistory.
+const GetTeamVulnerabilityHistory_Operation = `
+query GetTeamVulnerabilityHistory ($team: Slug!, $from: Date!) {
+	team(slug: $team) {
+		imageVulnerabilityHistory(from: $from) {
+			samples {
+				date
+				summary {
+					total
+					riskScore
+					countsBySeverity {
+						critical
+						high
+						medium
+						low
+						unassigned
+					}
+				}
+			}
+		}
+		vulnerabilityFixHistory(from: $from) {
+			samples {
+				date
+				severity
+				days
+				fixedCount
+				totalWorkloads
+			}
+		}
+	}
+}
+`
+
+func GetTeamVulnerabilityHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	from string,
+) (data_ *GetTeamVulnerabilityHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTeamVulnerabilityHistory",
+		Query:  GetTeamVulnerabilityHistory_Operation,
+		Variables: &__GetTeamVulnerabilityHistoryInput{
+			Team: team,
+			From: from,
+		},
+	}
+
+	data_ = &GetTeamVulnerabilityHistoryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetTeamVulnerabilitySummary.
 const GetTeamVulnerabilitySummary_Operation = `
 query GetTeamVulnerabilitySummary ($team: Slug!, $filter: TeamVulnerabilitySummaryFilter) {
@@ -41980,6 +43017,62 @@ func GetTeamVulnerabilitySummary(
 	}
 
 	data_ = &GetTeamVulnerabilitySummaryResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetTenantVulnerabilityHistory.
+const GetTenantVulnerabilityHistory_Operation = `
+query GetTenantVulnerabilityHistory ($from: Date!) {
+	imageVulnerabilityHistory(from: $from) {
+		samples {
+			date
+			summary {
+				total
+				riskScore
+				countsBySeverity {
+					critical
+					high
+					medium
+					low
+					unassigned
+				}
+			}
+		}
+	}
+	vulnerabilityFixHistory(from: $from) {
+		samples {
+			date
+			severity
+			days
+			fixedCount
+			totalWorkloads
+		}
+	}
+}
+`
+
+func GetTenantVulnerabilityHistory(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	from string,
+) (data_ *GetTenantVulnerabilityHistoryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetTenantVulnerabilityHistory",
+		Query:  GetTenantVulnerabilityHistory_Operation,
+		Variables: &__GetTenantVulnerabilityHistoryInput{
+			From: from,
+		},
+	}
+
+	data_ = &GetTenantVulnerabilityHistoryResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
