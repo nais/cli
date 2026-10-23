@@ -36459,6 +36459,27 @@ func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetNa
 	return v.Name
 }
 
+type UpdateImageVulnerabilityInput struct {
+	VulnerabilityID string                              `json:"vulnerabilityID"`
+	Reason          string                              `json:"reason"`
+	Suppress        bool                                `json:"suppress"`
+	State           *ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetVulnerabilityID returns UpdateImageVulnerabilityInput.VulnerabilityID, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetVulnerabilityID() string { return v.VulnerabilityID }
+
+// GetReason returns UpdateImageVulnerabilityInput.Reason, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetReason() string { return v.Reason }
+
+// GetSuppress returns UpdateImageVulnerabilityInput.Suppress, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetSuppress() bool { return v.Suppress }
+
+// GetState returns UpdateImageVulnerabilityInput.State, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetState() *ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
 type UpdateOpenSearchInput struct {
 	Name                           string                 `json:"name"`
 	EnvironmentName                string                 `json:"environmentName"`
@@ -36753,6 +36774,78 @@ func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetId() string { ret
 
 // GetName returns UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey.Name, and is useful for accessing the field via an interface.
 func (v *UpdateValkeyUpdateValkeyUpdateValkeyPayloadValkey) GetName() string { return v.Name }
+
+// UpdateVulnerabilitySuppressionResponse is returned by UpdateVulnerabilitySuppression on success.
+type UpdateVulnerabilitySuppressionResponse struct {
+	// Updates a vulnerability
+	// This mutation is currently unstable and may change in the future.
+	UpdateImageVulnerability UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload `json:"updateImageVulnerability"`
+}
+
+// GetUpdateImageVulnerability returns UpdateVulnerabilitySuppressionResponse.UpdateImageVulnerability, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionResponse) GetUpdateImageVulnerability() UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload {
+	return v.UpdateImageVulnerability
+}
+
+// UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload includes the requested fields of the GraphQL type UpdateImageVulnerabilityPayload.
+type UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload struct {
+	// The vulnerability updated.
+	Vulnerability *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability `json:"vulnerability"`
+}
+
+// GetVulnerability returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload.Vulnerability, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload) GetVulnerability() *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability {
+	return v.Vulnerability
+}
+
+// UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability struct {
+	// The globally unique ID of the image vulnerability node.
+	Id string `json:"id"`
+	// The unique identifier of the vulnerability. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Package name of the vulnerability.
+	Package     string                                                                                                                           `json:"package"`
+	Suppression *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
+}
+
+// GetId returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetId() string {
+	return v.Id
+}
+
+// GetIdentifier returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Identifier, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetIdentifier() string {
+	return v.Identifier
+}
+
+// GetPackage returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetPackage() string {
+	return v.Package
+}
+
+// GetSuppression returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetSuppression() *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+	// The reason for the suppression of the vulnerability.
+	Reason string `json:"reason"`
+}
+
+// GetState returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// GetReason returns UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *UpdateVulnerabilitySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetReason() string {
+	return v.Reason
+}
 
 // Input for setting an environment variable on a workload. To remove a variable, set value to null.
 type UpdateWorkloadEnvironmentVariableInput struct {
@@ -38625,6 +38718,16 @@ type __UpdateValkeyInput struct {
 
 // GetInput returns __UpdateValkeyInput.Input, and is useful for accessing the field via an interface.
 func (v *__UpdateValkeyInput) GetInput() UpdateValkeyInput { return v.Input }
+
+// __UpdateVulnerabilitySuppressionInput is used internally by genqlient
+type __UpdateVulnerabilitySuppressionInput struct {
+	Input UpdateImageVulnerabilityInput `json:"input"`
+}
+
+// GetInput returns __UpdateVulnerabilitySuppressionInput.Input, and is useful for accessing the field via an interface.
+func (v *__UpdateVulnerabilitySuppressionInput) GetInput() UpdateImageVulnerabilityInput {
+	return v.Input
+}
 
 // __ViewSecretValuesInput is used internally by genqlient
 type __ViewSecretValuesInput struct {
@@ -43079,6 +43182,48 @@ func UpdateValkey(
 	}
 
 	data_ = &UpdateValkeyResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by UpdateVulnerabilitySuppression.
+const UpdateVulnerabilitySuppression_Operation = `
+mutation UpdateVulnerabilitySuppression ($input: UpdateImageVulnerabilityInput!) {
+	updateImageVulnerability(input: $input) {
+		vulnerability {
+			id
+			identifier
+			package
+			suppression {
+				state
+				reason
+			}
+		}
+	}
+}
+`
+
+func UpdateVulnerabilitySuppression(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input UpdateImageVulnerabilityInput,
+) (data_ *UpdateVulnerabilitySuppressionResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateVulnerabilitySuppression",
+		Query:  UpdateVulnerabilitySuppression_Operation,
+		Variables: &__UpdateVulnerabilitySuppressionInput{
+			Input: input,
+		},
+	}
+
+	data_ = &UpdateVulnerabilitySuppressionResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
