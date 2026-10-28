@@ -182,6 +182,137 @@ type TeamCostMonthlySummary {
   sum: Float!
   series: [TeamCostMonthlySample!]!
 }
+
+# Stubs for types the mock references but does not model.
+scalar Time
+
+type ApplicationAuthIntegrations {
+  id: ID
+}
+
+type ApplicationConnection {
+  id: ID
+}
+
+type ApplicationInstanceConnection {
+  id: ID
+}
+
+type ApplicationResources {
+  id: ID
+}
+
+type ContainerImage {
+  id: ID
+}
+
+type DeploymentConnection {
+  id: ID
+}
+
+type DeploymentResourceConnection {
+  id: ID
+}
+
+type DeploymentStatusConnection {
+  id: ID
+}
+
+type EnvironmentConnection {
+  id: ID
+}
+
+type Ingress {
+  id: ID
+}
+
+type IssueConnection {
+  id: ID
+}
+
+input IssueFilter {
+  name: String
+}
+
+type JobConnection {
+  id: ID
+}
+
+type JobRunConnection {
+  id: ID
+}
+
+type JobSchedule {
+  id: ID
+}
+
+type NetworkPolicy {
+  id: ID
+}
+
+type RepositoryConnection {
+  id: ID
+}
+
+input SearchFilter {
+  name: String
+}
+
+type SearchNodeConnection {
+  id: ID
+}
+
+type SecretConnection {
+  id: ID
+}
+
+input SecretFilter {
+  name: String
+}
+
+input TeamApplicationsFilter {
+  name: String
+}
+
+type TeamConnection {
+  id: ID
+}
+
+type TeamCostMonthlySample {
+  id: ID
+}
+
+type TeamEnvironment {
+  id: ID
+}
+
+input TeamFilter {
+  name: String
+}
+
+type TeamInventoryCounts {
+  id: ID
+}
+
+input TeamJobsFilter {
+  name: String
+}
+
+type TeamMemberConnection {
+  id: ID
+}
+
+input TeamVulnerabilitySummaryFilter {
+  name: String
+}
+
+input TeamWorkloadsFilter {
+  name: String
+}
+
+type WorkloadConnection {
+  id: ID
+}
 `, nil
 }
 
