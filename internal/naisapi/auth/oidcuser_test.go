@@ -1,24 +1,41 @@
 package auth
 
 import (
-	"path/filepath"
+	"fmt"
+	"sync"
 	"testing"
-
-	gokeyring "github.com/zalando/go-keyring"
+	"time"
 )
 
-func setTestConfigPath(t *testing.T, dir string) {
-	t.Helper()
-	path := filepath.Join(dir, "config.yaml")
-	oldPath := ConfigFilePath
-	ConfigFilePath = &path
-	t.Cleanup(func() { ConfigFilePath = oldPath })
-}
+func TestConcurrentCallersRefreshOnce(t *testing.T) {
+	setupCredentialStore(t)
+	tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
+	tok.Expiry = time.Now().Add(-time.Hour)
+	if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
+		t.Fatal(err)
+	}
+	requests := countTokenRequests(t)
 
-// setupCredentialStore gives the test an empty mock keyring and its own config directory.
-func setupCredentialStore(t *testing.T) {
-	t.Helper()
-	gokeyring.MockInit()
-	t.Cleanup(gokeyring.MockInit)
-	setTestConfigPath(t, t.TempDir())
+	var wg sync.WaitGroup
+	errs := make(chan error, 8)
+	for range cap(errs) {
+		wg.Go(func() {
+			user, err := getOIDCUser(t.Context())
+			if err == nil && user.AccessToken != "new-access-token" {
+				err = fmt.Errorf("access token = %q, want refreshed token", user.AccessToken)
+			}
+			errs <- err
+		})
+	}
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := requests.Load(); got != 1 {
+		t.Fatalf("token endpoint requests = %d, want 1", got)
+	}
 }

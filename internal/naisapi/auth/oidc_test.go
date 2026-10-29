@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -112,6 +113,29 @@ func (p *testOIDCProvider) signIDToken(lifetime time.Duration) (string, error) {
 	return string(signed), err
 }
 
+// interceptTokenEndpoint replaces http.DefaultClient, so callers can't use t.Parallel.
+func interceptTokenEndpoint(t *testing.T, tokenFn func(*http.Request) (*http.Response, error)) {
+	t.Helper()
+	oldClient := http.DefaultClient
+	t.Cleanup(func() { http.DefaultClient = oldClient })
+	http.DefaultClient = &http.Client{Transport: roundTripperFunc(func(r *http.Request) (*http.Response, error) {
+		if r.URL.Path == "/token" {
+			return tokenFn(r)
+		}
+		return http.DefaultTransport.RoundTrip(r)
+	})}
+}
+
+func countTokenRequests(t *testing.T) *atomic.Int64 {
+	t.Helper()
+	var count atomic.Int64
+	interceptTokenEndpoint(t, func(r *http.Request) (*http.Response, error) {
+		count.Add(1)
+		return http.DefaultTransport.RoundTrip(r)
+	})
+	return &count
+}
+
 func TestOIDCTenantSelection(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
@@ -135,7 +159,7 @@ func TestOIDCTenantSelection(t *testing.T) {
 			if tc.refresh {
 				tok.Expiry = time.Now().Add(-time.Hour)
 			}
-			if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
+			if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
 				t.Fatal(err)
 			}
 			user, err := OIDC(t.Context())
@@ -163,7 +187,7 @@ func TestOIDCTenantSelection(t *testing.T) {
 func TestOIDCSwitchTenantWithoutLogin(t *testing.T) {
 	setupCredentialStore(t)
 	tok := startTestOIDCProvider(t, "nais.io").token(t, time.Hour)
-	if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
+	if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
 		t.Fatal(err)
 	}
 	for _, tenant := range []string{"nav", "dev-nais", "nav"} {
@@ -190,7 +214,7 @@ func TestOIDCCachesAccessTokenNearExpiry(t *testing.T) {
 			setupCredentialStore(t)
 			tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
 			tok.Expiry = time.Now().Add(tc.lifetime)
-			if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
+			if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
 				t.Fatal(err)
 			}
 

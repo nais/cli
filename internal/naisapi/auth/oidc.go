@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
-	"github.com/nais/cli/internal/keyring"
 	"github.com/nais/cli/internal/urlopen"
 	"github.com/nais/naistrix"
 	oidcclient "github.com/zitadel/oidc/v3/pkg/client"
@@ -70,7 +69,7 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 }
 
 // OIDCLogin initiates the OpenID Connect authorization code flow to authenticate the user.
-// The user's secret is saved in the system keyring.
+// Credentials are encrypted on disk with a key stored in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	client, err := newOidcClient(ctx)
@@ -114,11 +113,10 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	return nil
 }
 
-// OIDCLogout deletes the user's secret from the system keyring and triggers logout at the identity provider.
+// OIDCLogout logs out of every config directory and ends the identity provider session.
 func OIDCLogout(ctx context.Context, out *naistrix.OutputWriter) error {
-	err := keyring.Delete()
-	if err != nil && !errors.Is(err, keyring.ErrSecretNotFound) {
-		return fmt.Errorf("delete user secret: %w", err)
+	if err := deleteOIDCUser(ctx); err != nil {
+		return err
 	}
 
 	client, err := newOidcClient(ctx)
@@ -222,7 +220,7 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCa
 			return
 		}
 
-		_, err = storeOIDCUser(tok, consoleHost)
+		_, err = storeOIDCUser(ctx, tok, consoleHost)
 		if err != nil {
 			callbackErr = fmt.Errorf("failed to store user data: %w", err)
 			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
