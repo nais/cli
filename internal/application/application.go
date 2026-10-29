@@ -154,8 +154,7 @@ func Run(ctx context.Context, w io.Writer) error {
 				}
 			}
 
-			out.Errorln("Please run `nais login --nais` to (re-)authenticate.")
-			return nil
+			return err
 		}
 
 		return err

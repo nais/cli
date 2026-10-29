@@ -169,7 +169,6 @@ func TestOIDCCachesAccessTokenNearExpiry(t *testing.T) {
 			if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
 				t.Fatal(err)
 			}
-
 			user, err := OIDC(t.Context())
 			if err != nil {
 				t.Fatal(err)
