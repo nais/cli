@@ -169,6 +169,81 @@ func TestCredentialsFileIsOwnerOnly(t *testing.T) {
 	}
 }
 
+func TestReadOIDCUserClassifiesErrors(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		corrupt   func(t *testing.T, credentialsPath string)
+		wantLogin bool
+	}{
+		{
+			name:      "missing encryption key",
+			corrupt:   func(*testing.T, string) { gokeyring.MockInit() },
+			wantLogin: true,
+		},
+		{
+			name: "malformed encryption key",
+			corrupt: func(t *testing.T, _ string) {
+				if err := keyring.Set("%%%not-base64"); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantLogin: true,
+		},
+		{
+			name: "corrupt ciphertext",
+			corrupt: func(t *testing.T, path string) {
+				if err := os.WriteFile(path, []byte("not ciphertext"), 0o600); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantLogin: true,
+		},
+		{
+			name: "missing credentials file",
+			corrupt: func(t *testing.T, path string) {
+				if err := os.Remove(path); err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantLogin: true,
+		},
+		{
+			name: "unreadable credentials file",
+			corrupt: func(t *testing.T, path string) {
+				skipWithoutUnixPermissions(t)
+				if err := os.Chmod(path, 0o000); err != nil {
+					t.Fatal(err)
+				}
+			},
+		},
+		{
+			name: "keyring unavailable",
+			corrupt: func(*testing.T, string) {
+				gokeyring.MockInitWithError(errors.New("keyring unavailable"))
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			setupCredentialStore(t)
+			storeTestUser(t)
+			path, err := getCredentialsFilePath()
+			if err != nil {
+				t.Fatal(err)
+			}
+			tc.corrupt(t, path)
+
+			_, err = getOIDCUser(t.Context())
+
+			if err == nil {
+				t.Fatal("getOIDCUser() succeeded, want error")
+			}
+			if got := errors.Is(err, ErrNeedsOIDCLogin); got != tc.wantLogin {
+				t.Fatalf("errors.Is(ErrNeedsOIDCLogin) = %v, want %v: %v", got, tc.wantLogin, err)
+			}
+		})
+	}
+}
+
 func TestStoreOIDCUserReplacesMalformedKey(t *testing.T) {
 	for _, malformed := range []string{"%%%not-base64", base64.StdEncoding.EncodeToString([]byte("too-short"))} {
 		t.Run(malformed, func(t *testing.T) {

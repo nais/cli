@@ -21,6 +21,20 @@ import (
 
 var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais login -n`")
 
+// NeedsLoginError is ErrNeedsOIDCLogin with the reason login is needed. Its message omits the reason,
+// since the user logs in regardless; Cause holds it for verbose output.
+type NeedsLoginError struct {
+	Cause error
+}
+
+func (e *NeedsLoginError) Error() string { return ErrNeedsOIDCLogin.Error() }
+
+func (e *NeedsLoginError) Unwrap() []error { return []error{ErrNeedsOIDCLogin, e.Cause} }
+
+func needsLogin(format string, a ...any) error {
+	return &NeedsLoginError{Cause: fmt.Errorf(format, a...)}
+}
+
 func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	user, err := getOIDCUser(ctx)
 	if err != nil {
@@ -34,17 +48,17 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 
 	idToken, err := client.ParseIDToken(ctx, user.IDToken)
 	if err != nil {
-		return nil, ErrNeedsOIDCLogin
+		return nil, err
 	}
 
 	domain, ok := idToken.Domain()
 	if !ok {
-		return nil, fmt.Errorf("%w: missing primary_domain claim", ErrNeedsOIDCLogin)
+		return nil, needsLogin("missing primary_domain claim")
 	}
 
 	email, ok := idToken.Email()
 	if !ok {
-		return nil, fmt.Errorf("%w: missing email claim", ErrNeedsOIDCLogin)
+		return nil, needsLogin("missing email claim")
 	}
 	consoleHost, err := resolveConsoleHost(ctx, domain, user.ConsoleHost)
 	if err != nil {
@@ -252,7 +266,7 @@ func (c *oidcClient) ParseIDToken(ctx context.Context, token string) (*IDToken, 
 		jwt.WithValidate(true),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("parse jwt: %w", err)
+		return nil, needsLogin("parse jwt: %w", err)
 	}
 
 	return &IDToken{j}, nil

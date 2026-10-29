@@ -136,6 +136,15 @@ func countTokenRequests(t *testing.T) *atomic.Int64 {
 	return &count
 }
 
+func jsonResponse(r *http.Request, status int, body string) *http.Response {
+	return &http.Response{
+		StatusCode: status,
+		Header:     http.Header{"Content-Type": []string{"application/json"}},
+		Body:       io.NopCloser(strings.NewReader(body)),
+		Request:    r,
+	}
+}
+
 func TestOIDCTenantSelection(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
@@ -303,5 +312,28 @@ func TestOIDCCallbackTenantSelection(t *testing.T) {
 				t.Fatalf("unexpected stored tenant: %v, %v", stored, err)
 			}
 		})
+	}
+}
+
+func TestOIDCJWKSOutageIsNotNeedsLogin(t *testing.T) {
+	setupCredentialStore(t)
+	tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
+	if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
+		t.Fatal(err)
+	}
+
+	// jwx fetches JWKS through its package-level client; restore the default on cleanup.
+	t.Cleanup(func() { jwk.Configure(jwk.WithHTTPClient(jwk.DefaultHTTPClient())) })
+	jwk.Configure(jwk.WithHTTPClient(&http.Client{Transport: roundTripperFunc(func(r *http.Request) (*http.Response, error) {
+		if r.URL.Path == "/keys" {
+			return nil, errors.New("simulated JWKS outage")
+		}
+		return http.DefaultTransport.RoundTrip(r)
+	})}))
+
+	_, err := OIDC(t.Context())
+
+	if err == nil || errors.Is(err, ErrNeedsOIDCLogin) {
+		t.Fatalf("OIDC() error = %v, want an error that does not require login", err)
 	}
 }

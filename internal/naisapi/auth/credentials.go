@@ -67,16 +67,15 @@ func (c *lockedCredentials) unlock() {
 	_ = c.lock.Unlock()
 }
 
-// read loads the stored session. Missing or unreadable credentials return ErrNeedsOIDCLogin;
-// keyring failures are returned as is.
+// read loads the stored session. Missing or corrupt credentials return ErrNeedsOIDCLogin.
 func (c *lockedCredentials) read() (*oidcUser, error) {
 	encryptionKey, err := keyring.GetBytes()
 	if err != nil {
 		if errors.Is(err, keyring.ErrSecretNotFound) {
-			return nil, fmt.Errorf("%w: encryption key not found", ErrNeedsOIDCLogin)
+			return nil, needsLogin("encryption key not found")
 		}
 		if errors.Is(err, keyring.ErrInvalidData) {
-			return nil, fmt.Errorf("%w: %w", ErrNeedsOIDCLogin, err)
+			return nil, needsLogin("%w", err)
 		}
 		return nil, fmt.Errorf("get encryption key: %w", err)
 	}
@@ -87,18 +86,21 @@ func (c *lockedCredentials) read() (*oidcUser, error) {
 	}
 
 	ciphertext, err := os.ReadFile(credentialsPath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, needsLogin("credentials file not found")
+	}
 	if err != nil {
-		return nil, fmt.Errorf("%w: read credentials file: %w", ErrNeedsOIDCLogin, err)
+		return nil, fmt.Errorf("read credentials file: %w", err)
 	}
 
 	plaintext, err := decryptCredentials(ciphertext, encryptionKey)
 	if err != nil {
-		return nil, fmt.Errorf("%w: decrypt credentials: %w", ErrNeedsOIDCLogin, err)
+		return nil, needsLogin("decrypt credentials: %w", err)
 	}
 
 	var user oidcUser
 	if err := json.Unmarshal(plaintext, &user); err != nil {
-		return nil, fmt.Errorf("unmarshal oidc user: %w", err)
+		return nil, needsLogin("unmarshal oidc user: %w", err)
 	}
 
 	return &user, nil
@@ -106,6 +108,10 @@ func (c *lockedCredentials) read() (*oidcUser, error) {
 
 // refresh exchanges the refresh token for new tokens and stores them.
 func (c *lockedCredentials) refresh(ctx context.Context, user *oidcUser) (*oidcUser, error) {
+	if user.RefreshToken == "" {
+		return nil, needsLogin("no refresh token stored")
+	}
+
 	ctx, cancel := context.WithTimeout(ctx, oidcRefreshTimeout)
 	defer cancel()
 
@@ -116,15 +122,17 @@ func (c *lockedCredentials) refresh(ctx context.Context, user *oidcUser) (*oidcU
 
 	tok, err := client.oauth2.TokenSource(ctx, &user.Token).Token()
 	if err != nil {
-		return nil, fmt.Errorf("%w: refresh oidc token: %w", ErrNeedsOIDCLogin, err)
+		// Any client error means the provider rejected the refresh token. Zitadel reports an invalid
+		// refresh token as invalid_request rather than the invalid_grant that RFC 6749 specifies.
+		var retrieveErr *oauth2.RetrieveError
+		if errors.As(err, &retrieveErr) && retrieveErr.Response != nil &&
+			retrieveErr.Response.StatusCode >= 400 && retrieveErr.Response.StatusCode < 500 {
+			return nil, needsLogin("refresh token rejected: %w", err)
+		}
+		return nil, fmt.Errorf("refresh oidc token: %w", err)
 	}
 
-	refreshed, err := c.store(tok, user.ConsoleHost)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrNeedsOIDCLogin, err)
-	}
-
-	return refreshed, nil
+	return c.store(tok, user.ConsoleHost)
 }
 
 func (c *lockedCredentials) store(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
