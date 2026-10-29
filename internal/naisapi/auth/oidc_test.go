@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -19,18 +18,18 @@ import (
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jws"
 	"github.com/lestrrat-go/jwx/v3/jwt"
-	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
 )
 
-func newOIDCTestToken(t *testing.T, domain string) *oauth2.Token {
-	t.Helper()
-	keyring.MockInit()
-	oldPath := ConfigFilePath
-	path := filepath.Join(t.TempDir(), "config.yaml")
-	ConfigFilePath = &path
-	t.Cleanup(func() { ConfigFilePath = oldPath })
+type testOIDCProvider struct {
+	issuer string
+	domain string
+	key    *rsa.PrivateKey
+}
 
+// startTestOIDCProvider's token endpoint issues the access token "new-access-token" with a fresh ID token.
+func startTestOIDCProvider(t *testing.T, domain string) *testOIDCProvider {
+	t.Helper()
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		t.Fatal(err)
@@ -39,26 +38,36 @@ func newOIDCTestToken(t *testing.T, domain string) *oauth2.Token {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_ = publicKey.Set(jwk.KeyIDKey, "test")
-	_ = publicKey.Set(jwk.AlgorithmKey, jwa.RS256())
 	keys := jwk.NewSet()
-	_ = keys.AddKey(publicKey)
-	var issuer string
-	var signed []byte
+	if err := errors.Join(
+		publicKey.Set(jwk.KeyIDKey, "test"),
+		publicKey.Set(jwk.AlgorithmKey, jwa.RS256()),
+		keys.AddKey(publicKey),
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	provider := &testOIDCProvider{domain: domain, key: key}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/.well-known/openid-configuration":
 			_ = json.NewEncoder(w).Encode(map[string]string{
-				"issuer": issuer, "jwks_uri": issuer + "/keys",
-				"authorization_endpoint": issuer + "/authorize", "token_endpoint": issuer + "/token",
+				"issuer": provider.issuer, "jwks_uri": provider.issuer + "/keys",
+				"authorization_endpoint": provider.issuer + "/authorize", "token_endpoint": provider.issuer + "/token",
 			})
 		case "/keys":
 			_ = json.NewEncoder(w).Encode(keys)
 		case "/token":
+			idToken, err := provider.signIDToken(time.Hour)
+			if err != nil {
+				t.Errorf("sign ID token: %v", err)
+				http.Error(w, "sign ID token", http.StatusInternalServerError)
+				return
+			}
 			_ = json.NewEncoder(w).Encode(map[string]any{
 				"access_token": "new-access-token", "token_type": "Bearer", "expires_in": 3600,
-				"refresh_token": "refresh-token", "id_token": string(signed),
+				"refresh_token": "refresh-token", "id_token": idToken,
 			})
 		default:
 			t.Errorf("unexpected OIDC request: %s", r.URL)
@@ -66,29 +75,41 @@ func newOIDCTestToken(t *testing.T, domain string) *oauth2.Token {
 		}
 	}))
 	t.Cleanup(server.Close)
-	issuer = server.URL
-	t.Setenv("NAIS_ZITADEL_DOMAIN", issuer)
+	provider.issuer = server.URL
+	t.Setenv("NAIS_ZITADEL_DOMAIN", provider.issuer)
 	t.Setenv("NAIS_ZITADEL_CLIENT_ID", "test-client")
+	return provider
+}
 
-	idToken := jwt.New()
-	for name, value := range map[string]any{
-		"iss": issuer, "aud": "test-client", "exp": time.Now().Add(time.Hour), "sub": "user-subject",
-		"email": "user@" + domain, "email_verified": true,
-		"urn:zitadel:iam:user:resourceowner:primary_domain": domain,
-	} {
-		if err := idToken.Set(name, value); err != nil {
-			t.Fatal(err)
-		}
-	}
-	headers := jws.NewHeaders()
-	_ = headers.Set(jws.KeyIDKey, "test")
-	signed, err = jwt.Sign(idToken, jwt.WithKey(jwa.RS256(), key, jws.WithProtectedHeaders(headers)))
+// token returns the access token "access-token", valid for an hour, and an ID token valid for idTokenLifetime.
+func (p *testOIDCProvider) token(t *testing.T, idTokenLifetime time.Duration) *oauth2.Token {
+	t.Helper()
+	idToken, err := p.signIDToken(idTokenLifetime)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return (&oauth2.Token{
 		AccessToken: "access-token", RefreshToken: "refresh-token", Expiry: time.Now().Add(time.Hour),
-	}).WithExtra(map[string]any{"id_token": string(signed)})
+	}).WithExtra(map[string]any{"id_token": idToken})
+}
+
+func (p *testOIDCProvider) signIDToken(lifetime time.Duration) (string, error) {
+	idToken := jwt.New()
+	for name, value := range map[string]any{
+		"iss": p.issuer, "aud": "test-client", "exp": time.Now().Add(lifetime), "sub": "user-subject",
+		"email": "user@" + p.domain, "email_verified": true,
+		"urn:zitadel:iam:user:resourceowner:primary_domain": p.domain,
+	} {
+		if err := idToken.Set(name, value); err != nil {
+			return "", err
+		}
+	}
+	headers := jws.NewHeaders()
+	if err := headers.Set(jws.KeyIDKey, "test"); err != nil {
+		return "", err
+	}
+	signed, err := jwt.Sign(idToken, jwt.WithKey(jwa.RS256(), p.key, jws.WithProtectedHeaders(headers)))
+	return string(signed), err
 }
 
 func TestOIDCTenantSelection(t *testing.T) {
@@ -109,7 +130,8 @@ func TestOIDCTenantSelection(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("NAIS_API_TENANT", tc.tenant)
-			tok := newOIDCTestToken(t, tc.domain)
+			setupCredentialStore(t)
+			tok := startTestOIDCProvider(t, tc.domain).token(t, time.Hour)
 			if tc.refresh {
 				tok.Expiry = time.Now().Add(-time.Hour)
 			}
@@ -139,7 +161,8 @@ func TestOIDCTenantSelection(t *testing.T) {
 }
 
 func TestOIDCSwitchTenantWithoutLogin(t *testing.T) {
-	tok := newOIDCTestToken(t, "nais.io")
+	setupCredentialStore(t)
+	tok := startTestOIDCProvider(t, "nais.io").token(t, time.Hour)
 	if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
 		t.Fatal(err)
 	}
@@ -164,11 +187,13 @@ func TestOIDCCachesAccessTokenNearExpiry(t *testing.T) {
 		{name: "token well before expiry", lifetime: 2 * time.Minute},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			tok := newOIDCTestToken(t, "nav.no")
+			setupCredentialStore(t)
+			tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
 			tok.Expiry = time.Now().Add(tc.lifetime)
 			if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
 				t.Fatal(err)
 			}
+
 			user, err := OIDC(t.Context())
 			if err != nil {
 				t.Fatal(err)
@@ -208,7 +233,8 @@ func TestOIDCCallbackTenantSelection(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Setenv("NAIS_API_TENANT", tc.tenant)
-			_ = newOIDCTestToken(t, tc.domain)
+			setupCredentialStore(t)
+			startTestOIDCProvider(t, tc.domain)
 			oldClient := http.DefaultClient
 			t.Cleanup(func() { http.DefaultClient = oldClient })
 			http.DefaultClient = &http.Client{Transport: roundTripperFunc(func(r *http.Request) (*http.Response, error) {
