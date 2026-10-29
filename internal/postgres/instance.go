@@ -56,6 +56,8 @@ func UpdateInstance(ctx context.Context, input gql.UpdatePostgresInput) (string,
 		# @genqlient(for: "UpdatePostgresInput.cpu", omitempty: true)
 		# @genqlient(for: "UpdatePostgresInput.memory", omitempty: true)
 		# @genqlient(for: "UpdatePostgresInput.diskSize", omitempty: true)
+		# @genqlient(for: "UpdatePostgresInput.extensions", omitempty: true)
+		# @genqlient(for: "UpdatePostgresInput.labels", omitempty: true)
 		mutation UpdatePostgres(
 			$input: UpdatePostgresInput!
 		) {

@@ -15,7 +15,7 @@ import (
 // ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload includes the requested fields of the GraphQL type ActivatePostgresBranchPayload.
 // The GraphQL type's documentation follows.
 //
-// Result of requesting activation; compare desiredActiveBranch to activeBranch while reconciling.
+// Result of requesting activation; compare desiredActiveBranch to activeBranch while activation is in progress.
 type ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload struct {
 	// Postgres with desired and observed branch selection.
 	Postgres ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres `json:"postgres"`
@@ -31,7 +31,7 @@ func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPaylo
 //
 // A Postgres whose active branch can change.
 type ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres struct {
-	// Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+	// Branch requested for activation; may differ from the active branch while activation is in progress.
 	DesiredActiveBranch *string `json:"desiredActiveBranch"`
 	// Currently observed active branch, if selected.
 	ActiveBranch *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch `json:"activeBranch"`
@@ -61,15 +61,15 @@ func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPaylo
 	return v.Name
 }
 
-// Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+// Request a branch for normal workloads. It becomes active once its database is ready.
 type ActivatePostgresBranchInput struct {
-	// Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+	// Request a branch for normal workloads. It becomes active once its database is ready.
 	Postgres string `json:"postgres"`
-	// Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+	// Request a branch for normal workloads. It becomes active once its database is ready.
 	Branch string `json:"branch"`
-	// Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+	// Request a branch for normal workloads. It becomes active once its database is ready.
 	EnvironmentName string `json:"environmentName"`
-	// Request a branch for normal workloads; pgrator activates it once its cluster is ready.
+	// Request a branch for normal workloads. It becomes active once its database is ready.
 	TeamSlug string `json:"teamSlug"`
 }
 
@@ -149,7 +149,7 @@ const (
 	ActivityLogActivityTypePostgresUpdated ActivityLogActivityType = "POSTGRES_UPDATED"
 	// A user was granted access to a Postgres cluster
 	ActivityLogActivityTypePostgresGrantAccess ActivityLogActivityType = "POSTGRES_GRANT_ACCESS"
-	// A personal Postgres access was created through the API broker
+	// A personal Postgres access was created
 	ActivityLogActivityTypePostgresPersonalAccessCreated ActivityLogActivityType = "POSTGRES_PERSONAL_ACCESS_CREATED"
 	// Personal Postgres connection materials were retrieved
 	ActivityLogActivityTypePostgresPersonalAccessConnection ActivityLogActivityType = "POSTGRES_PERSONAL_ACCESS_CONNECTION"
@@ -514,7 +514,7 @@ func (v *ApplicationEnvironmentsResponse) GetTeam() ApplicationEnvironmentsTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ApplicationEnvironmentsTeam struct {
 	// Nais applications owned by the team.
 	Applications ApplicationEnvironmentsTeamApplicationsApplicationConnection `json:"applications"`
@@ -678,7 +678,7 @@ func (v *ApplicationStatusResponse) GetTeam() ApplicationStatusTeam { return v.T
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ApplicationStatusTeam struct {
 	// Get a specific environment for the team.
 	Environment ApplicationStatusTeamEnvironment `json:"environment"`
@@ -1202,7 +1202,7 @@ func (v *CreatePostgresAccessInput) GetTtl() *string { return v.Ttl }
 // CreatePostgresAccessResponse is returned by CreatePostgresAccess on success.
 type CreatePostgresAccessResponse struct {
 	// EXPERIMENTAL: DO NOT USE
-	// Create time-limited personal access to a NAIS Postgres branch through the brokered PostgresAccess and relay flow.
+	// Create time-limited personal access to a Postgres branch.
 	// When the access is ready, retrieve its connection materials through PostgresAccess.connection.
 	CreatePostgresAccess CreatePostgresAccessCreatePostgresAccessCreatePostgresAccessPayload `json:"createPostgresAccess"`
 }
@@ -1329,6 +1329,8 @@ type CreatePostgresInput struct {
 	// Input for creating a Postgres.
 	MajorVersion string `json:"majorVersion"`
 	// Input for creating a Postgres.
+	Extensions []string `json:"extensions"`
+	// Input for creating a Postgres.
 	HighAvailability *bool `json:"highAvailability,omitempty"`
 	// Input for creating a Postgres.
 	Cpu *string `json:"cpu,omitempty"`
@@ -1336,6 +1338,8 @@ type CreatePostgresInput struct {
 	Memory *string `json:"memory,omitempty"`
 	// Input for creating a Postgres.
 	DiskSize *string `json:"diskSize,omitempty"`
+	// Input for creating a Postgres.
+	Labels []ResourceLabelInput `json:"labels"`
 }
 
 // GetName returns CreatePostgresInput.Name, and is useful for accessing the field via an interface.
@@ -1350,6 +1354,9 @@ func (v *CreatePostgresInput) GetTeamSlug() string { return v.TeamSlug }
 // GetMajorVersion returns CreatePostgresInput.MajorVersion, and is useful for accessing the field via an interface.
 func (v *CreatePostgresInput) GetMajorVersion() string { return v.MajorVersion }
 
+// GetExtensions returns CreatePostgresInput.Extensions, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetExtensions() []string { return v.Extensions }
+
 // GetHighAvailability returns CreatePostgresInput.HighAvailability, and is useful for accessing the field via an interface.
 func (v *CreatePostgresInput) GetHighAvailability() *bool { return v.HighAvailability }
 
@@ -1361,6 +1368,9 @@ func (v *CreatePostgresInput) GetMemory() *string { return v.Memory }
 
 // GetDiskSize returns CreatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
 func (v *CreatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// GetLabels returns CreatePostgresInput.Labels, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetLabels() []ResourceLabelInput { return v.Labels }
 
 // CreatePostgresResponse is returned by CreatePostgres on success.
 type CreatePostgresResponse struct {
@@ -2166,7 +2176,7 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -2229,7 +2239,7 @@ func (v *GetActivePostgresBranchResponse) GetTeam() GetActivePostgresBranchTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetActivePostgresBranchTeam struct {
 	// Get a specific environment for the team.
 	Environment GetActivePostgresBranchTeamEnvironment `json:"environment"`
@@ -2295,7 +2305,7 @@ func (v *GetAllConfigsResponse) GetTeam() GetAllConfigsTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetAllConfigsTeam struct {
 	// Configs owned by the team.
 	Configs GetAllConfigsTeamConfigsConfigConnection `json:"configs"`
@@ -2653,7 +2663,7 @@ func (v *GetAllIssuesResponse) GetTeam() GetAllIssuesTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetAllIssuesTeam struct {
 	// Issues that affects the team.
 	Issues GetAllIssuesTeamIssuesIssueConnection `json:"issues"`
@@ -3085,43 +3095,6 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssueWorklo
 	return v.Typename
 }
 
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
-// The GraphQL type's documentation follows.
-//
-// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
-type GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
-	Typename        *string                                                        `json:"__typename"`
-	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
-	Id              string                                                         `json:"id"`
-	Severity        Severity                                                       `json:"severity"`
-	Message         string                                                         `json:"message"`
-}
-
-// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
-	return v.Typename
-}
-
-// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
-	return v.TeamEnvironment
-}
-
-// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Id, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetId() string {
-	return v.Id
-}
-
-// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
-	return v.Severity
-}
-
-// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
-	return v.Message
-}
-
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
 // The GraphQL type's documentation follows.
 //
@@ -3442,7 +3415,6 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage(
 // GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue
@@ -3475,8 +3447,6 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue) 
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
-}
-func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -3527,9 +3497,6 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 		return json.Unmarshal(b, *v)
 	case "DeprecatedRegistryIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue)
-		return json.Unmarshal(b, *v)
-	case "ExternalIngressCriticalVulnerabilityIssue":
-		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressUrgentVulnerabilityIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
@@ -3610,14 +3577,6 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 			TypeName string `json:"__typename"`
 			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
 		}{typename, premarshaled}
-		return json.Marshal(result)
-	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
-		typename = "ExternalIngressCriticalVulnerabilityIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
-		}{typename, v}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
 		typename = "ExternalIngressUrgentVulnerabilityIssue"
@@ -5068,7 +5027,7 @@ func (v *GetAllOpenSearchesResponse) GetTeam() GetAllOpenSearchesTeam { return v
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetAllOpenSearchesTeam struct {
 	// OpenSearch instances owned by the team.
 	OpenSearches GetAllOpenSearchesTeamOpenSearchesOpenSearchConnection `json:"openSearches"`
@@ -5257,7 +5216,7 @@ func (v *GetAllSecretsResponse) GetTeam() GetAllSecretsTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetAllSecretsTeam struct {
 	// Secrets owned by the team.
 	Secrets GetAllSecretsTeamSecretsSecretConnection `json:"secrets"`
@@ -5567,7 +5526,7 @@ func (v *GetAllValkeysResponse) GetTeam() GetAllValkeysTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetAllValkeysTeam struct {
 	// Valkey instances owned by the team.
 	Valkeys GetAllValkeysTeamValkeysValkeyConnection `json:"valkeys"`
@@ -5702,7 +5661,7 @@ func (v *GetApplicationActivityResponse) GetTeam() GetApplicationActivityTeam { 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationActivityTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationActivityTeamApplicationsApplicationConnection `json:"applications"`
@@ -8066,7 +8025,7 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 	// Interface for activity log entries.
@@ -9787,7 +9746,7 @@ func (v *GetApplicationEnvVarsResponse) GetTeam() GetApplicationEnvVarsTeam { re
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationEnvVarsTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationEnvVarsTeamApplicationsApplicationConnection `json:"applications"`
@@ -9917,7 +9876,7 @@ func (v *GetApplicationFilesResponse) GetTeam() GetApplicationFilesTeam { return
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationFilesTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationFilesTeamApplicationsApplicationConnection `json:"applications"`
@@ -10047,7 +10006,7 @@ func (v *GetApplicationImagesResponse) GetTeam() GetApplicationImagesTeam { retu
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationImagesTeam struct {
 	// Get a specific environment for the team.
 	Environment GetApplicationImagesTeamEnvironment `json:"environment"`
@@ -10154,7 +10113,7 @@ func (v *GetApplicationInstancesResponse) GetTeam() GetApplicationInstancesTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationInstancesTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationInstancesTeamApplicationsApplicationConnection `json:"applications"`
@@ -10232,7 +10191,7 @@ func (v *GetApplicationIssuesResponse) GetTeam() GetApplicationIssuesTeam { retu
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationIssuesTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationIssuesTeamApplicationsApplicationConnection `json:"applications"`
@@ -10435,31 +10394,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 	return v.Message
 }
 
-// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
-// The GraphQL type's documentation follows.
-//
-// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
-type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
-	Typename *string  `json:"__typename"`
-	Severity Severity `json:"severity"`
-	Message  string   `json:"message"`
-}
-
-// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
-	return v.Typename
-}
-
-// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
-	return v.Severity
-}
-
-// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
-	return v.Message
-}
-
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
 // The GraphQL type's documentation follows.
 //
@@ -10541,7 +10475,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
@@ -10570,8 +10503,6 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
-}
-func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -10622,9 +10553,6 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 		return json.Unmarshal(b, *v)
 	case "DeprecatedRegistryIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue)
-		return json.Unmarshal(b, *v)
-	case "ExternalIngressCriticalVulnerabilityIssue":
-		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressUrgentVulnerabilityIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
@@ -10700,14 +10628,6 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
-		typename = "ExternalIngressCriticalVulnerabilityIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
@@ -11088,7 +11008,7 @@ func (v *GetApplicationNamesResponse) GetTeam() GetApplicationNamesTeam { return
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationNamesTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationNamesTeamApplicationsApplicationConnection `json:"applications"`
@@ -11179,7 +11099,7 @@ func (v *GetApplicationStatusResponse) GetTeam() GetApplicationStatusTeam { retu
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationStatusTeam struct {
 	// Nais applications owned by the team.
 	Applications GetApplicationStatusTeamApplicationsApplicationConnection `json:"applications"`
@@ -11418,7 +11338,7 @@ func (v *GetConfigActivityResponse) GetTeam() GetConfigActivityTeam { return v.T
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetConfigActivityTeam struct {
 	// Configs owned by the team.
 	Configs GetConfigActivityTeamConfigsConfigConnection `json:"configs"`
@@ -13775,7 +13695,7 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 	// Interface for activity log entries.
@@ -15496,7 +15416,7 @@ func (v *GetConfigResponse) GetTeam() GetConfigTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetConfigTeam struct {
 	// Get a specific environment for the team.
 	Environment GetConfigTeamEnvironment `json:"environment"`
@@ -15842,7 +15762,7 @@ func (v *GetCurrentApplicationImageResponse) GetTeam() GetCurrentApplicationImag
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetCurrentApplicationImageTeam struct {
 	// Get a specific environment for the team.
 	Environment GetCurrentApplicationImageTeamEnvironment `json:"environment"`
@@ -15918,7 +15838,7 @@ func (v *GetCurrentJobImageResponse) GetTeam() GetCurrentJobImageTeam { return v
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetCurrentJobImageTeam struct {
 	// Get a specific environment for the team.
 	Environment GetCurrentJobImageTeamEnvironment `json:"environment"`
@@ -15985,7 +15905,7 @@ func (v *GetJobActivityResponse) GetTeam() GetJobActivityTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetJobActivityTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetJobActivityTeamJobsJobConnection `json:"jobs"`
@@ -18332,7 +18252,7 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 	// Interface for activity log entries.
@@ -20053,7 +19973,7 @@ func (v *GetJobIssuesResponse) GetTeam() GetJobIssuesTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetJobIssuesTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetJobIssuesTeamJobsJobConnection `json:"jobs"`
@@ -20246,31 +20166,6 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDepr
 	return v.Message
 }
 
-// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
-// The GraphQL type's documentation follows.
-//
-// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
-type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
-	Typename *string  `json:"__typename"`
-	Severity Severity `json:"severity"`
-	Message  string   `json:"message"`
-}
-
-// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
-func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
-	return v.Typename
-}
-
-// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
-func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
-	return v.Severity
-}
-
-// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Message, and is useful for accessing the field via an interface.
-func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetMessage() string {
-	return v.Message
-}
-
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
 // The GraphQL type's documentation follows.
 //
@@ -20352,7 +20247,6 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInva
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRestartLoopIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInvalidSpecIssue
@@ -20381,8 +20275,6 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesAppl
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
-}
-func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
@@ -20433,9 +20325,6 @@ func __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNo
 		return json.Unmarshal(b, *v)
 	case "DeprecatedRegistryIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue)
-		return json.Unmarshal(b, *v)
-	case "ExternalIngressCriticalVulnerabilityIssue":
-		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressUrgentVulnerabilityIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
@@ -20511,14 +20400,6 @@ func __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNode
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
-		typename = "ExternalIngressCriticalVulnerabilityIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
@@ -20899,7 +20780,7 @@ func (v *GetJobNamesResponse) GetTeam() GetJobNamesTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetJobNamesTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetJobNamesTeamJobsJobConnection `json:"jobs"`
@@ -20978,7 +20859,7 @@ func (v *GetJobRunNamesResponse) GetTeam() GetJobRunNamesTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetJobRunNamesTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetJobRunNamesTeamJobsJobConnection `json:"jobs"`
@@ -21081,7 +20962,7 @@ func (v *GetJobRunsResponse) GetTeam() GetJobRunsTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetJobRunsTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetJobRunsTeamJobsJobConnection `json:"jobs"`
@@ -21206,7 +21087,7 @@ func (v *GetKafkaTopicGrantsResponse) GetTeam() GetKafkaTopicGrantsTeam { return
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetKafkaTopicGrantsTeam struct {
 	// Kafka topics owned by the team.
 	KafkaTopics GetKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
@@ -21285,7 +21166,7 @@ func (v *GetLatestJobRunStateResponse) GetTeam() GetLatestJobRunStateTeam { retu
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetLatestJobRunStateTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetLatestJobRunStateTeamJobsJobConnection `json:"jobs"`
@@ -21365,7 +21246,7 @@ func (v *GetOpenSearchResponse) GetTeam() GetOpenSearchTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetOpenSearchTeam struct {
 	// Get a specific environment for the team.
 	Environment GetOpenSearchTeamEnvironment `json:"environment"`
@@ -21720,7 +21601,7 @@ func (v *GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionE
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetOpenSearchTeamEnvironmentOpenSearchAccessOpenSearchAccessConnectionEdgesOpenSearchAccessEdgeNodeOpenSearchAccessWorkloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -21765,7 +21646,7 @@ func (v *GetPostgresAccessConnectionResponse) GetTeam() GetPostgresAccessConnect
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetPostgresAccessConnectionTeam struct {
 	// Get a specific environment for the team.
 	Environment GetPostgresAccessConnectionTeamEnvironment `json:"environment"`
@@ -21875,7 +21756,7 @@ func (v *GetPostgresAccessStatusResponse) GetTeam() GetPostgresAccessStatusTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetPostgresAccessStatusTeam struct {
 	// Get a specific environment for the team.
 	Environment GetPostgresAccessStatusTeamEnvironment `json:"environment"`
@@ -21933,7 +21814,7 @@ func (v *GetPostgresBranchStatusResponse) GetTeam() GetPostgresBranchStatusTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetPostgresBranchStatusTeam struct {
 	// Get a specific environment for the team.
 	Environment GetPostgresBranchStatusTeamEnvironment `json:"environment"`
@@ -21960,7 +21841,7 @@ func (v *GetPostgresBranchStatusTeamEnvironment) GetPostgres() GetPostgresBranch
 //
 // A Postgres whose active branch can change.
 type GetPostgresBranchStatusTeamEnvironmentPostgres struct {
-	// Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+	// Branch requested for activation; may differ from the active branch while activation is in progress.
 	DesiredActiveBranch *string `json:"desiredActiveBranch"`
 	// Currently observed active branch, if selected.
 	ActiveBranch *GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
@@ -22044,7 +21925,7 @@ func (v *GetPostgresBranchWorkloadsResponse) GetTeam() GetPostgresBranchWorkload
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetPostgresBranchWorkloadsTeam struct {
 	// Get a specific environment for the team.
 	Environment GetPostgresBranchWorkloadsTeamEnvironment `json:"environment"`
@@ -22352,7 +22233,7 @@ func (v *GetPostgresResponse) GetTeam() GetPostgresTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetPostgresTeam struct {
 	// Get a specific environment for the team.
 	Environment GetPostgresTeamEnvironment `json:"environment"`
@@ -22387,7 +22268,7 @@ type GetPostgresTeamEnvironmentPostgres struct {
 	Resources GetPostgresTeamEnvironmentPostgresResources `json:"resources"`
 	// User-defined labels on this Postgres.
 	Labels []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel `json:"labels"`
-	// Branch requested for activation; may differ from the observed active branch while reconciliation runs.
+	// Branch requested for activation; may differ from the active branch while activation is in progress.
 	DesiredActiveBranch *string `json:"desiredActiveBranch"`
 	// Currently observed active branch, if selected.
 	ActiveBranch *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
@@ -22533,7 +22414,7 @@ func (v *GetSecretActivityResponse) GetTeam() GetSecretActivityTeam { return v.T
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetSecretActivityTeam struct {
 	// Secrets owned by the team.
 	Secrets GetSecretActivityTeamSecretsSecretConnection `json:"secrets"`
@@ -24890,7 +24771,7 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 	// Interface for activity log entries.
@@ -26611,7 +26492,7 @@ func (v *GetSecretResponse) GetTeam() GetSecretTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetSecretTeam struct {
 	// Get a specific environment for the team.
 	Environment GetSecretTeamEnvironment `json:"environment"`
@@ -26934,7 +26815,7 @@ func (v *GetTeamActivityResponse) GetTeam() GetTeamActivityTeam { return v.Team 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamActivityTeam struct {
 	// Activity log associated with the team.
 	ActivityLog GetTeamActivityTeamActivityLogActivityLogEntryConnection `json:"activityLog"`
@@ -29670,7 +29551,7 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPe
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesPostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 	// Interface for activity log entries.
@@ -31980,7 +31861,7 @@ func (v *GetTeamApplicationsResponse) GetTeam() GetTeamApplicationsTeam { return
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamApplicationsTeam struct {
 	// Nais applications owned by the team.
 	Applications GetTeamApplicationsTeamApplicationsApplicationConnection `json:"applications"`
@@ -32249,25 +32130,6 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Severity
 }
 
-// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
-// The GraphQL type's documentation follows.
-//
-// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
-type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue struct {
-	Typename *string  `json:"__typename"`
-	Severity Severity `json:"severity"`
-}
-
-// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
-func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
-	return v.Typename
-}
-
-// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue.Severity, and is useful for accessing the field via an interface.
-func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) GetSeverity() Severity {
-	return v.Severity
-}
-
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
 // The GraphQL type's documentation follows.
 //
@@ -32331,7 +32193,6 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
-// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesInvalidSpecIssue
@@ -32358,8 +32219,6 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
-}
-func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -32410,9 +32269,6 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 		return json.Unmarshal(b, *v)
 	case "DeprecatedRegistryIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue)
-		return json.Unmarshal(b, *v)
-	case "ExternalIngressCriticalVulnerabilityIssue":
-		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressUrgentVulnerabilityIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
@@ -32488,14 +32344,6 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue:
-		typename = "ExternalIngressCriticalVulnerabilityIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
@@ -32816,7 +32664,7 @@ func (v *GetTeamCloudSQLInstancesResponse) GetTeam() GetTeamCloudSQLInstancesTea
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamCloudSQLInstancesTeam struct {
 	// SQL instances owned by the team.
 	SqlInstances GetTeamCloudSQLInstancesTeamSqlInstancesSqlInstanceConnection `json:"sqlInstances"`
@@ -32932,7 +32780,7 @@ func (v *GetTeamJobsResponse) GetTeam() GetTeamJobsTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamJobsTeam struct {
 	// Nais jobs owned by the team.
 	Jobs GetTeamJobsTeamJobsJobConnection `json:"jobs"`
@@ -33108,7 +32956,7 @@ func (v *GetTeamKafkaTopicGrantsResponse) GetTeam() GetTeamKafkaTopicGrantsTeam 
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamKafkaTopicGrantsTeam struct {
 	// Kafka topics owned by the team.
 	KafkaTopics GetTeamKafkaTopicGrantsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
@@ -33193,7 +33041,7 @@ func (v *GetTeamKafkaTopicsResponse) GetTeam() GetTeamKafkaTopicsTeam { return v
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamKafkaTopicsTeam struct {
 	// Kafka topics owned by the team.
 	KafkaTopics GetTeamKafkaTopicsTeamKafkaTopicsKafkaTopicConnection `json:"kafkaTopics"`
@@ -33273,7 +33121,7 @@ func (v *GetTeamPostgresesResponse) GetTeam() GetTeamPostgresesTeam { return v.T
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamPostgresesTeam struct {
 	// Postgres databases owned by the team, including those without branches.
 	Postgreses GetTeamPostgresesTeamPostgresesPostgresConnection `json:"postgreses"`
@@ -33427,7 +33275,7 @@ func (v *GetTeamVulnerabilitySummaryResponse) GetTeam() GetTeamVulnerabilitySumm
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetTeamVulnerabilitySummaryTeam struct {
 	VulnerabilitySummary GetTeamVulnerabilitySummaryTeamVulnerabilitySummary `json:"vulnerabilitySummary"`
 }
@@ -33515,7 +33363,7 @@ func (v *GetValkeyResponse) GetTeam() GetValkeyTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetValkeyTeam struct {
 	// Get a specific environment for the team.
 	Environment GetValkeyTeamEnvironment `json:"environment"`
@@ -33835,7 +33683,7 @@ func (v *GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAc
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetValkeyTeamEnvironmentValkeyAccessValkeyAccessConnectionEdgesValkeyAccessEdgeNodeValkeyAccessWorkloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -33929,7 +33777,7 @@ const (
 	InstanceGroupValueSourceKindConfig InstanceGroupValueSourceKind = "CONFIG"
 	// The value is defined inline in the workload's application manifest (user-defined).
 	InstanceGroupValueSourceKindSpec InstanceGroupValueSourceKind = "SPEC"
-	// The value was injected by the Nais platform (naiserator), not defined by the user.
+	// The value was injected by the Nais platform, not defined by the user.
 	InstanceGroupValueSourceKindNais InstanceGroupValueSourceKind = "NAIS"
 )
 
@@ -34152,12 +34000,11 @@ const (
 	IssueTypeNoRunningInstances IssueType = "NO_RUNNING_INSTANCES"
 	IssueTypeLastRunFailed      IssueType = "LAST_RUN_FAILED"
 	// Raised when the platform reports a problem in a workload, such as an invalid spec, a failed synchronization or a deprecation.
-	IssueTypeWorkloadProblem                      IssueType = "WORKLOAD_PROBLEM"
-	IssueTypeFailedSynchronization                IssueType = "FAILED_SYNCHRONIZATION"
-	IssueTypeInvalidSpec                          IssueType = "INVALID_SPEC"
-	IssueTypeMissingSbom                          IssueType = "MISSING_SBOM"
-	IssueTypeVulnerableImage                      IssueType = "VULNERABLE_IMAGE"
-	IssueTypeExternalIngressCriticalVulnerability IssueType = "EXTERNAL_INGRESS_CRITICAL_VULNERABILITY"
+	IssueTypeWorkloadProblem       IssueType = "WORKLOAD_PROBLEM"
+	IssueTypeFailedSynchronization IssueType = "FAILED_SYNCHRONIZATION"
+	IssueTypeInvalidSpec           IssueType = "INVALID_SPEC"
+	IssueTypeMissingSbom           IssueType = "MISSING_SBOM"
+	IssueTypeVulnerableImage       IssueType = "VULNERABLE_IMAGE"
 	// Raised when a workload has external ingress exposure and urgent vulnerabilities.
 	IssueTypeExternalIngressUrgentVulnerability IssueType = "EXTERNAL_INGRESS_URGENT_VULNERABILITY"
 	IssueTypeUnleashReleaseChannel              IssueType = "UNLEASH_RELEASE_CHANNEL"
@@ -34179,7 +34026,6 @@ var AllIssueType = []IssueType{
 	IssueTypeInvalidSpec,
 	IssueTypeMissingSbom,
 	IssueTypeVulnerableImage,
-	IssueTypeExternalIngressCriticalVulnerability,
 	IssueTypeExternalIngressUrgentVulnerability,
 	IssueTypeUnleashReleaseChannel,
 	IssueTypeApplicationRestartLoop,
@@ -34364,7 +34210,7 @@ func (v *ListCVEsResponse) GetTeam() ListCVEsTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ListCVEsTeam struct {
 	// Nais workloads owned by the team.
 	Workloads ListCVEsTeamWorkloadsWorkloadConnection `json:"workloads"`
@@ -34747,7 +34593,7 @@ func (v *ListWorkloadVulnerabilitySummariesResponse) GetTeam() ListWorkloadVulne
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ListWorkloadVulnerabilitySummariesTeam struct {
 	// Fetch vulnerability summaries for workloads in the team.
 	VulnerabilitySummaries ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnection `json:"vulnerabilitySummaries"`
@@ -35225,23 +35071,26 @@ const (
 	PostgresAccessLevelReadwrite PostgresAccessLevel = "READWRITE"
 	// Read, modify, and create database objects where supported.
 	PostgresAccessLevelReadwritecreate PostgresAccessLevel = "READWRITECREATE"
+	// Monitor and maintain the PostgreSQL instance through pg_monitor and pg_maintain, without granting application data access or database ownership.
+	PostgresAccessLevelMaintain PostgresAccessLevel = "MAINTAIN"
 )
 
 var AllPostgresAccessLevel = []PostgresAccessLevel{
 	PostgresAccessLevelRead,
 	PostgresAccessLevelReadwrite,
 	PostgresAccessLevelReadwritecreate,
+	PostgresAccessLevelMaintain,
 }
 
-// High-level reconciliation state of a personal Postgres access.
+// Current state of a personal Postgres access.
 type PostgresAccessState string
 
 const (
-	// The controller has not finished provisioning the access.
+	// The access is being prepared.
 	PostgresAccessStatePending PostgresAccessState = "PENDING"
 	// The access and its connection materials are ready.
 	PostgresAccessStateReady PostgresAccessState = "READY"
-	// The controller cannot provision the requested access.
+	// The requested access could not be prepared.
 	PostgresAccessStateFailed PostgresAccessState = "FAILED"
 	// The server-controlled expiry time has passed.
 	PostgresAccessStateExpired PostgresAccessState = "EXPIRED"
@@ -35254,7 +35103,7 @@ var AllPostgresAccessState = []PostgresAccessState{
 	PostgresAccessStateExpired,
 }
 
-// Reconciliation and observed health of a PostgresBranch.
+// Provisioning state and observed health of a PostgresBranch.
 type PostgresBranchState string
 
 const (
@@ -35376,7 +35225,7 @@ func (v *RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayload) GetTeam() *Rem
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type RemoveTeamMemberRemoveTeamMemberRemoveTeamMemberPayloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -35943,7 +35792,7 @@ func (v *TeamMembersResponse) GetTeam() TeamMembersTeam { return v.Team }
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type TeamMembersTeam struct {
 	// Team members.
 	Members TeamMembersTeamMembersTeamMemberConnection `json:"members"`
@@ -36150,7 +35999,7 @@ func (v *TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMember) GetTeam() Tea
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type TeamStatusMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -36355,7 +36204,7 @@ func (v *TeamsTeamsTeamConnection) GetNodes() []TeamsTeamsTeamConnectionNodesTea
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type TeamsTeamsTeamConnectionNodesTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -36570,6 +36419,10 @@ type UpdatePostgresInput struct {
 	Memory *string `json:"memory,omitempty"`
 	// Input for updating a Postgres. Omitted fields are left unchanged.
 	DiskSize *string `json:"diskSize,omitempty"`
+	// Input for updating a Postgres. Omitted fields are left unchanged.
+	Extensions []string `json:"extensions,omitempty"`
+	// Input for updating a Postgres. Omitted fields are left unchanged.
+	Labels []ResourceLabelInput `json:"labels,omitempty"`
 }
 
 // GetName returns UpdatePostgresInput.Name, and is useful for accessing the field via an interface.
@@ -36592,6 +36445,12 @@ func (v *UpdatePostgresInput) GetMemory() *string { return v.Memory }
 
 // GetDiskSize returns UpdatePostgresInput.DiskSize, and is useful for accessing the field via an interface.
 func (v *UpdatePostgresInput) GetDiskSize() *string { return v.DiskSize }
+
+// GetExtensions returns UpdatePostgresInput.Extensions, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetExtensions() []string { return v.Extensions }
+
+// GetLabels returns UpdatePostgresInput.Labels, and is useful for accessing the field via an interface.
+func (v *UpdatePostgresInput) GetLabels() []ResourceLabelInput { return v.Labels }
 
 // UpdatePostgresResponse is returned by UpdatePostgres on success.
 type UpdatePostgresResponse struct {
@@ -36909,7 +36768,7 @@ func (v *UserTeamsMeUserTeamsTeamMemberConnectionNodesTeamMember) GetTeam() User
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type UserTeamsMeUserTeamsTeamMemberConnectionNodesTeamMemberTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
