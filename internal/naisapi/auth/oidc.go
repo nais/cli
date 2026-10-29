@@ -65,7 +65,7 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 		consoleHost: consoleHost,
 		domain:      domain,
 		email:       email,
-		ts:          oauth2.ReuseTokenSourceWithExpiry(&user.Token, ts, 30*time.Second),
+		ts:          oauth2.ReuseTokenSource(&user.Token, ts),
 	}, nil
 }
 

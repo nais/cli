@@ -155,6 +155,45 @@ func TestOIDCSwitchTenantWithoutLogin(t *testing.T) {
 	}
 }
 
+func TestOIDCCachesAccessTokenNearExpiry(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		lifetime time.Duration
+	}{
+		{name: "token between default and former expiry buffers", lifetime: 20 * time.Second},
+		{name: "token well before expiry", lifetime: 2 * time.Minute},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tok := newOIDCTestToken(t, "nav.no")
+			tok.Expiry = time.Now().Add(tc.lifetime)
+			if _, err := storeOIDCUser(tok, "console.nav.cloud.nais.io"); err != nil {
+				t.Fatal(err)
+			}
+
+			user, err := OIDC(t.Context())
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Any reload from disk now fails, so the token must come from the cache.
+			path, err := getCredentialsFilePath()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Remove(path); err != nil {
+				t.Fatal(err)
+			}
+
+			for i := range 2 {
+				accessToken, err := user.AccessToken()
+				if err != nil || accessToken != "access-token" {
+					t.Fatalf("AccessToken() call %d = %q, %v; want cached %q", i+1, accessToken, err, "access-token")
+				}
+			}
+		})
+	}
+}
+
 func TestOIDCCallbackTenantSelection(t *testing.T) {
 	for _, tc := range []struct {
 		name   string
