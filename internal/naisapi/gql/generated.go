@@ -709,8 +709,6 @@ func (v *ApplicationStatusTeamEnvironment) GetApplication() ApplicationStatusTea
 type ApplicationStatusTeamEnvironmentApplication struct {
 	// The application state.
 	State ApplicationState `json:"state"`
-	// Resources for the application.
-	Resources ApplicationStatusTeamEnvironmentApplicationResources `json:"resources"`
 	// Instance groups for the application. An instance group represents a set of identical instances.
 	// All instances in a group share the same configuration.
 	InstanceGroups []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
@@ -718,11 +716,6 @@ type ApplicationStatusTeamEnvironmentApplication struct {
 
 // GetState returns ApplicationStatusTeamEnvironmentApplication.State, and is useful for accessing the field via an interface.
 func (v *ApplicationStatusTeamEnvironmentApplication) GetState() ApplicationState { return v.State }
-
-// GetResources returns ApplicationStatusTeamEnvironmentApplication.Resources, and is useful for accessing the field via an interface.
-func (v *ApplicationStatusTeamEnvironmentApplication) GetResources() ApplicationStatusTeamEnvironmentApplicationResources {
-	return v.Resources
-}
 
 // GetInstanceGroups returns ApplicationStatusTeamEnvironmentApplication.InstanceGroups, and is useful for accessing the field via an interface.
 func (v *ApplicationStatusTeamEnvironmentApplication) GetInstanceGroups() []ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup {
@@ -832,31 +825,6 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 // GetLastExitCode returns ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
 func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitCode() *int {
 	return v.LastExitCode
-}
-
-// ApplicationStatusTeamEnvironmentApplicationResources includes the requested fields of the GraphQL type ApplicationResources.
-type ApplicationStatusTeamEnvironmentApplicationResources struct {
-	// Scaling strategies for the application.
-	Scaling ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling `json:"scaling"`
-}
-
-// GetScaling returns ApplicationStatusTeamEnvironmentApplicationResources.Scaling, and is useful for accessing the field via an interface.
-func (v *ApplicationStatusTeamEnvironmentApplicationResources) GetScaling() ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling {
-	return v.Scaling
-}
-
-// ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling includes the requested fields of the GraphQL type ApplicationScaling.
-// The GraphQL type's documentation follows.
-//
-// The scaling configuration of an application.
-type ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling struct {
-	// The minimum number of application instances.
-	MinInstances int `json:"minInstances"`
-}
-
-// GetMinInstances returns ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling.MinInstances, and is useful for accessing the field via an interface.
-func (v *ApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling) GetMinInstances() int {
-	return v.MinInstances
 }
 
 // Operational priority levels for vulnerabilities and CVEs.
@@ -38883,11 +38851,6 @@ query ApplicationStatus ($team: Slug!, $environment: String!, $name: String!) {
 		environment(name: $environment) {
 			application(name: $name) {
 				state
-				resources {
-					scaling {
-						minInstances
-					}
-				}
 				instanceGroups {
 					name
 					created
