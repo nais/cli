@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -18,6 +19,8 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/sync/errgroup"
 )
+
+const oidcLoginTimeout = 5 * time.Minute
 
 var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais login -n`")
 
@@ -93,6 +96,9 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 // Credentials are encrypted on disk with a key stored in the system keyring.
 // See [AuthenticatedUser] for primitives that allows interacting with the Nais API on behalf of the authenticated user.
 func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
+	ctx, timeoutCancel := context.WithTimeout(ctx, oidcLoginTimeout)
+	defer timeoutCancel()
+
 	client, err := newOidcClient(ctx)
 	if err != nil {
 		return err
@@ -105,10 +111,16 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 	defer cancel(nil)
 	srv := client.CallbackServer(loginCtx, cancel, verifier, state)
 
+	// Listen before opening the browser, so the callback can't arrive first.
+	listener, err := net.Listen("tcp", srv.Addr)
+	if err != nil {
+		return fmt.Errorf("login failed: port 8865 is in use, possibly by another `nais login`: %w", err)
+	}
+
 	wg, ctx := errgroup.WithContext(loginCtx)
 	wg.Go(func() error {
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			return fmt.Errorf("error starting login callback server: %w", err)
+		if err := srv.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return fmt.Errorf("login failed: callback server: %w", err)
 		}
 		return nil
 	})
@@ -124,11 +136,21 @@ func OIDCLogin(ctx context.Context, out *naistrix.OutputWriter) error {
 
 	// context is canceled when the login callback handler completes once or when errgroup returns a non-nil error
 	<-ctx.Done()
-	_ = srv.Shutdown(context.Background())
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		_ = srv.Close()
+	}
+
 	if err := wg.Wait(); err != nil {
 		return err
 	}
-	if cause := context.Cause(loginCtx); cause != nil && !errors.Is(cause, context.Canceled) {
+	cause := context.Cause(loginCtx)
+	if errors.Is(cause, context.DeadlineExceeded) {
+		return fmt.Errorf("login timed out after %d minutes; run `nais login -n` to try again", int(oidcLoginTimeout.Minutes()))
+	}
+	if cause != nil && !errors.Is(cause, context.Canceled) {
 		return cause
 	}
 	return nil
@@ -196,55 +218,53 @@ func newOidcClient(ctx context.Context) (*oidcClient, error) {
 func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCauseFunc, verifier, state string) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("state") != state {
+			http.Error(w, "This login link is no longer valid. Return to your terminal and finish logging in, or run `nais login -n` again.", http.StatusBadRequest)
+			return
+		}
+
 		var callbackErr error
 		defer func() { cancel(callbackErr) }()
 
-		if r.URL.Query().Get("state") != state {
-			callbackErr = errors.New("state did not match")
-			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
-			return
+		fail := func(status int, err error) {
+			callbackErr = fmt.Errorf("login failed: %w", err)
+			http.Error(w, "Login failed. See your terminal for details.", status)
 		}
 
 		code := r.URL.Query().Get("code")
 
 		tok, err := c.oauth2.Exchange(ctx, code, oauth2.VerifierOption(verifier))
 		if err != nil {
-			callbackErr = fmt.Errorf("failed to exchange token: %w", err)
-			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
+			fail(http.StatusInternalServerError, fmt.Errorf("exchange authorization code: %w", err))
 			return
 		}
 
 		raw, ok := tok.Extra("id_token").(string)
 		if !ok {
-			callbackErr = errors.New("missing id_token in token response")
-			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
+			fail(http.StatusInternalServerError, errors.New("invalid ID token: missing from token response"))
 			return
 		}
 
 		idToken, err := c.ParseIDToken(ctx, raw)
 		if err != nil {
-			callbackErr = fmt.Errorf("failed to parse ID token: %w", err)
-			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
+			fail(http.StatusInternalServerError, fmt.Errorf("invalid ID token: %w", err))
 			return
 		}
 
 		domain, ok := idToken.Domain()
 		if !ok {
-			callbackErr = errors.New("missing primary_domain claim in ID token")
-			http.Error(w, callbackErr.Error(), http.StatusUnauthorized)
+			fail(http.StatusUnauthorized, errors.New("invalid ID token: missing primary_domain claim"))
 			return
 		}
 		consoleHost, err := resolveConsoleHost(ctx, domain, "")
 		if err != nil {
-			callbackErr = err
-			http.Error(w, callbackErr.Error(), http.StatusBadRequest)
+			fail(http.StatusBadRequest, err)
 			return
 		}
 
 		_, err = storeOIDCUser(ctx, tok, consoleHost)
 		if err != nil {
-			callbackErr = fmt.Errorf("failed to store user data: %w", err)
-			http.Error(w, callbackErr.Error(), http.StatusInternalServerError)
+			fail(http.StatusInternalServerError, fmt.Errorf("store credentials: %w", err))
 			return
 		}
 
@@ -252,8 +272,9 @@ func (c *oidcClient) CallbackServer(ctx context.Context, cancel context.CancelCa
 	})
 
 	return &http.Server{
-		Addr:    ":8865",
-		Handler: mux,
+		Addr:              "127.0.0.1:8865",
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 }
 

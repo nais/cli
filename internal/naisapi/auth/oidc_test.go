@@ -298,9 +298,6 @@ func TestOIDCCallbackTenantSelection(t *testing.T) {
 				if cause := context.Cause(ctx); cause == nil || !strings.Contains(cause.Error(), "NAIS_API_TENANT") {
 					t.Fatalf("callback error was not propagated to CLI login: %v", cause)
 				}
-				if !strings.Contains(response.Body.String(), "NAIS_API_TENANT") {
-					t.Fatalf("missing tenant configuration guidance: %s", response.Body.String())
-				}
 				path, _ := getCredentialsFilePath()
 				if _, err := os.Stat(path); !os.IsNotExist(err) {
 					t.Fatalf("failed login unexpectedly stored credentials: %v", err)
@@ -312,6 +309,22 @@ func TestOIDCCallbackTenantSelection(t *testing.T) {
 				t.Fatalf("unexpected stored tenant: %v, %v", stored, err)
 			}
 		})
+	}
+}
+
+func TestOIDCCallbackRejectsWrongStateWithoutAbortingLogin(t *testing.T) {
+	ctx, cancel := context.WithCancelCause(t.Context())
+	defer cancel(nil)
+	server := (&oidcClient{}).CallbackServer(ctx, cancel, "verifier", "expected")
+
+	response := httptest.NewRecorder()
+	server.Handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/callback?state=wrong&code=code", nil))
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("callback status = %d, want %d", response.Code, http.StatusBadRequest)
+	}
+	if cause := context.Cause(ctx); cause != nil {
+		t.Fatalf("unrelated request aborted login: %v", cause)
 	}
 }
 
