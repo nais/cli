@@ -59,9 +59,14 @@ func (a applicationResource) Wait(ctx context.Context, team, environment, name s
 	var lastGroups []instanceGroup
 
 	for {
-		state, groups, err := a.getApplicationStatus(ctx, team, environment, name)
+		state, groups, expectedMinReplicas, err := a.getApplicationStatus(ctx, team, environment, name)
 		switch {
 		case err == nil:
+			if expectedMinReplicas == 0 {
+				out.Successf("Application/%s: no instances expected (spec.replicas.min=0)\n", name)
+				return nil
+			}
+
 			lastGroups = groups
 			converged := a.isConverged(state, groups)
 
@@ -218,34 +223,37 @@ func (a applicationResource) waitError(name string, groups []instanceGroup, caus
 	return fmt.Errorf("%s Application/%s to become ready (%w)%s", prefix, name, cause, details.String())
 }
 
-func (a applicationResource) getApplicationStatus(ctx context.Context, team, environment, name string) (gql.ApplicationState, []instanceGroup, error) {
+func (a applicationResource) getApplicationStatus(ctx context.Context, team, environment, name string) (gql.ApplicationState, []instanceGroup, int, error) {
 	_ = `# @genqlient
 		query ApplicationStatus($team: Slug!, $environment: String!, $name: String!) {
 		  team(slug: $team) {
-			environment(name: $environment) {
-			  application(name: $name) {
-				state
-				instanceGroups {
-				  name
-				  created
-				  readyInstances
-				  desiredInstances
-				  instances {
-					name
-					restarts
-					status {
-					  state
-					  ready
-					  message
-					  # @genqlient(pointer: true)
-					  lastExitReason
-					  # @genqlient(pointer: true)
-					  lastExitCode
-					}
-				  }
-				}
-			  }
-			}
+		    environment(name: $environment) {
+		      application(name: $name) {
+		        state
+		        resources {
+		          scaling {
+		            minInstances
+		          }
+		        }
+		        instanceGroups {
+		          name
+		          created
+		          readyInstances
+		          desiredInstances
+		          instances {
+		            name
+		            restarts
+		            status {
+		              state
+		              ready
+		              message
+		              lastExitReason
+		              lastExitCode
+		            }
+		          }
+		        }
+		      }
+		    }
 		  }
 		}
 	`
@@ -282,7 +290,7 @@ func (a applicationResource) getApplicationStatus(ctx context.Context, team, env
 			instances: instances,
 		})
 	}
-	return app.State, groups, nil
+	return app.State, groups, app.Resources.Scaling.MinInstances, nil
 }
 
 func derefString(s *string) string {
