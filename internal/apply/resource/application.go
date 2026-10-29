@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -47,7 +48,22 @@ type instance struct {
 // handle, correlation is best-effort: we wait for a new instance group (created
 // at/after the apply) to converge, but treat an already-healthy app as a no-op
 // once graceWindow passes without a new rollout appearing.
-func (a applicationResource) Wait(ctx context.Context, team, environment, name string, since time.Time, out *naistrix.OutputWriter) error {
+func (a applicationResource) Wait(ctx context.Context, team, environment, name string, manifest *yaml.Node, since time.Time, out *naistrix.OutputWriter) error {
+	var applied struct {
+		Spec struct {
+			Replicas struct {
+				Min *int `yaml:"min"`
+			} `yaml:"replicas"`
+		} `yaml:"spec"`
+	}
+	if err := manifest.Decode(&applied); err != nil {
+		return fmt.Errorf("failed to read applied manifest for Application/%s: %w", name, err)
+	}
+	if applied.Spec.Replicas.Min != nil && *applied.Spec.Replicas.Min == 0 {
+		out.Successf("Application/%s: no instances expected (spec.replicas.min=0)\n", name)
+		return nil
+	}
+
 	out.Printf("Application/%s: waiting to become ready...\n", name)
 
 	ticker := time.NewTicker(pollInterval)
@@ -59,14 +75,9 @@ func (a applicationResource) Wait(ctx context.Context, team, environment, name s
 	var lastGroups []instanceGroup
 
 	for {
-		state, groups, expectedMinReplicas, err := a.getApplicationStatus(ctx, team, environment, name)
+		state, groups, err := a.getApplicationStatus(ctx, team, environment, name)
 		switch {
 		case err == nil:
-			if expectedMinReplicas == 0 {
-				out.Successf("Application/%s: no instances expected (spec.replicas.min=0)\n", name)
-				return nil
-			}
-
 			lastGroups = groups
 			converged := a.isConverged(state, groups)
 
@@ -223,18 +234,13 @@ func (a applicationResource) waitError(name string, groups []instanceGroup, caus
 	return fmt.Errorf("%s Application/%s to become ready (%w)%s", prefix, name, cause, details.String())
 }
 
-func (a applicationResource) getApplicationStatus(ctx context.Context, team, environment, name string) (gql.ApplicationState, []instanceGroup, int, error) {
+func (a applicationResource) getApplicationStatus(ctx context.Context, team, environment, name string) (gql.ApplicationState, []instanceGroup, error) {
 	_ = `# @genqlient
 		query ApplicationStatus($team: Slug!, $environment: String!, $name: String!) {
 		  team(slug: $team) {
 		    environment(name: $environment) {
 		      application(name: $name) {
 		        state
-		        resources {
-		          scaling {
-		            minInstances
-		          }
-		        }
 		        instanceGroups {
 		          name
 		          created
@@ -290,7 +296,7 @@ func (a applicationResource) getApplicationStatus(ctx context.Context, team, env
 			instances: instances,
 		})
 	}
-	return app.State, groups, app.Resources.Scaling.MinInstances, nil
+	return app.State, groups, nil
 }
 
 func derefString(s *string) string {

@@ -18,8 +18,9 @@ import (
 
 // waitTarget is a resource to poll for readiness after a successful apply.
 type waitTarget struct {
-	waiter resource.Waiter
-	name   string
+	waiter   resource.Waiter
+	name     string
+	manifest *yaml.Node
 }
 
 // crdGroup is the fallback API group for stripped manifests of unknown kinds.
@@ -116,7 +117,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 
 			crds = append(crds, crd)
 			r, _ := resource.ForCRD(crd.GetAPIVersion(), crd.GetKind())
-			waitTargets = appendWaitTarget(waitTargets, r, crd.GetName())
+			waitTargets = appendWaitTarget(waitTargets, r, crd.GetName(), doc)
 			continue
 		}
 
@@ -155,7 +156,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 				errs = append(errs, fmt.Sprintf("%s/%s: %v", m.Type, m.Name, err))
 				continue
 			}
-			waitTargets = appendWaitTarget(waitTargets, r, m.Name)
+			waitTargets = appendWaitTarget(waitTargets, r, m.Name, doc)
 			out.Successf("%s/%s: %s\n", m.Type, m.Name, action)
 			continue
 		}
@@ -173,7 +174,7 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 		}
 
 		crds = append(crds, crd)
-		waitTargets = appendWaitTarget(waitTargets, r, m.Name)
+		waitTargets = appendWaitTarget(waitTargets, r, m.Name, doc)
 	}
 
 	if len(crds) > 0 {
@@ -200,12 +201,12 @@ func Run(ctx context.Context, filePath string, flags *flag.Apply, out *naistrix.
 
 // appendWaitTarget records a resource to wait on, skipping a nil resource (e.g.
 // an unexpected apiVersion) or one without a Waiter (e.g. Valkey, OpenSearch).
-func appendWaitTarget(targets []waitTarget, r resource.Resource, name string) []waitTarget {
+func appendWaitTarget(targets []waitTarget, r resource.Resource, name string, manifest *yaml.Node) []waitTarget {
 	waiter, ok := r.(resource.Waiter)
 	if !ok {
 		return targets
 	}
-	return append(targets, waitTarget{waiter: waiter, name: name})
+	return append(targets, waitTarget{waiter: waiter, name: name, manifest: manifest})
 }
 
 // waitForReady polls every wait target until it is ready, sharing one timeout.
@@ -219,7 +220,7 @@ func waitForReady(ctx context.Context, team, environment string, targets []waitT
 
 	var errs []string
 	for _, t := range targets {
-		if err := t.waiter.Wait(ctx, team, environment, t.name, since, out); err != nil {
+		if err := t.waiter.Wait(ctx, team, environment, t.name, t.manifest, since, out); err != nil {
 			errs = append(errs, err.Error())
 		}
 	}
