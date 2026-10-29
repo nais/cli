@@ -42,6 +42,51 @@ func TestConcurrentCallersRefreshOnce(t *testing.T) {
 	}
 }
 
+func TestRefreshOIDCUser(t *testing.T) {
+	t.Run("refreshes a valid access token", func(t *testing.T) {
+		setupCredentialStore(t)
+		tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
+		previous, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io")
+		if err != nil {
+			t.Fatal(err)
+		}
+		requests := countTokenRequests(t)
+
+		user, err := refreshOIDCUser(t.Context(), previous)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if user.AccessToken != "new-access-token" || requests.Load() != 1 {
+			t.Fatalf("access token = %q after %d requests, want refreshed token after 1", user.AccessToken, requests.Load())
+		}
+	})
+
+	t.Run("reuses a session stored by another process", func(t *testing.T) {
+		setupCredentialStore(t)
+		tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
+		stale, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io")
+		if err != nil {
+			t.Fatal(err)
+		}
+		fresh := *tok
+		fresh.AccessToken = "fresh-access-token"
+		if _, err := storeOIDCUser(t.Context(), &fresh, "console.nav.cloud.nais.io"); err != nil {
+			t.Fatal(err)
+		}
+		requests := countTokenRequests(t)
+
+		user, err := refreshOIDCUser(t.Context(), stale)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if user.AccessToken != "fresh-access-token" || requests.Load() != 0 {
+			t.Fatalf("access token = %q after %d requests, want stored token without refresh", user.AccessToken, requests.Load())
+		}
+	})
+}
+
 func TestOIDCRefreshFailureClassification(t *testing.T) {
 	for _, tc := range []struct {
 		name      string

@@ -315,6 +315,49 @@ func TestOIDCCallbackTenantSelection(t *testing.T) {
 	}
 }
 
+func TestOIDCRefreshesExpiredIDTokenWithValidAccessToken(t *testing.T) {
+	setupCredentialStore(t)
+	tok := startTestOIDCProvider(t, "nav.no").token(t, -time.Minute)
+	if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
+		t.Fatal(err)
+	}
+	requests := countTokenRequests(t)
+
+	user, err := OIDC(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if accessToken, err := user.AccessToken(); err != nil || accessToken != "new-access-token" {
+		t.Fatalf("AccessToken() = %q, %v; want refreshed token", accessToken, err)
+	}
+	if got := requests.Load(); got != 1 {
+		t.Fatalf("token endpoint requests = %d, want 1", got)
+	}
+}
+
+func TestOIDCRejectsExpiredIDTokenWhenRefreshOmitsReplacement(t *testing.T) {
+	setupCredentialStore(t)
+	tok := startTestOIDCProvider(t, "nav.no").token(t, -time.Minute)
+	if _, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io"); err != nil {
+		t.Fatal(err)
+	}
+	requests := 0
+	interceptTokenEndpoint(t, func(r *http.Request) (*http.Response, error) {
+		requests++
+		return jsonResponse(r, http.StatusOK, `{"access_token":"new-access-token","token_type":"Bearer","expires_in":3600}`), nil
+	})
+
+	_, err := OIDC(t.Context())
+
+	if !errors.Is(err, ErrNeedsOIDCLogin) {
+		t.Fatalf("OIDC() error = %v, want ErrNeedsOIDCLogin", err)
+	}
+	if requests != 1 {
+		t.Fatalf("token endpoint requests = %d, want exactly one refresh attempt", requests)
+	}
+}
+
 func TestOIDCJWKSOutageIsNotNeedsLogin(t *testing.T) {
 	setupCredentialStore(t)
 	tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
@@ -335,5 +378,40 @@ func TestOIDCJWKSOutageIsNotNeedsLogin(t *testing.T) {
 
 	if err == nil || errors.Is(err, ErrNeedsOIDCLogin) {
 		t.Fatalf("OIDC() error = %v, want an error that does not require login", err)
+	}
+}
+
+func TestOIDCRefreshWithoutIDTokenKeepsSession(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		idTokenField string
+	}{
+		{name: "omitted"},
+		{name: "empty", idTokenField: `,"id_token":""`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			setupCredentialStore(t)
+			tok := startTestOIDCProvider(t, "nav.no").token(t, time.Hour)
+			tok.Expiry = time.Now().Add(-time.Hour)
+			stored, err := storeOIDCUser(t.Context(), tok, "console.nav.cloud.nais.io")
+			if err != nil {
+				t.Fatal(err)
+			}
+			interceptTokenEndpoint(t, func(r *http.Request) (*http.Response, error) {
+				return jsonResponse(r, http.StatusOK, `{"access_token":"new-access-token","token_type":"Bearer","expires_in":3600`+tc.idTokenField+`}`), nil
+			})
+
+			if _, err := OIDC(t.Context()); err != nil {
+				t.Fatalf("OIDC() error = %v, want success", err)
+			}
+
+			refreshed, err := getOIDCUser(t.Context())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if refreshed.AccessToken != "new-access-token" || refreshed.IDToken != stored.IDToken {
+				t.Fatal("refresh did not keep the stored ID token")
+			}
+		})
 	}
 }

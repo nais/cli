@@ -47,6 +47,13 @@ func OIDC(ctx context.Context) (*AuthenticatedUser, error) {
 	}
 
 	idToken, err := client.ParseIDToken(ctx, user.IDToken)
+	if errors.Is(err, jwt.TokenExpiredError()) {
+		user, err = refreshOIDCUser(ctx, user)
+		if err != nil {
+			return nil, err
+		}
+		idToken, err = client.ParseIDToken(ctx, user.IDToken)
+	}
 	if err != nil {
 		return nil, err
 	}

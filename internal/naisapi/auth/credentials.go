@@ -106,7 +106,6 @@ func (c *lockedCredentials) read() (*oidcUser, error) {
 	return &user, nil
 }
 
-// refresh exchanges the refresh token for new tokens and stores them.
 func (c *lockedCredentials) refresh(ctx context.Context, user *oidcUser) (*oidcUser, error) {
 	if user.RefreshToken == "" {
 		return nil, needsLogin("no refresh token stored")
@@ -120,7 +119,8 @@ func (c *lockedCredentials) refresh(ctx context.Context, user *oidcUser) (*oidcU
 		return nil, fmt.Errorf("get oauth config: %w", err)
 	}
 
-	tok, err := client.oauth2.TokenSource(ctx, &user.Token).Token()
+	// Without an access token, the token source always refreshes.
+	tok, err := client.oauth2.TokenSource(ctx, &oauth2.Token{RefreshToken: user.RefreshToken}).Token()
 	if err != nil {
 		// Any client error means the provider rejected the refresh token. Zitadel reports an invalid
 		// refresh token as invalid_request rather than the invalid_grant that RFC 6749 specifies.
@@ -132,12 +132,17 @@ func (c *lockedCredentials) refresh(ctx context.Context, user *oidcUser) (*oidcU
 		return nil, fmt.Errorf("refresh oidc token: %w", err)
 	}
 
+	// OpenID Connect allows refresh responses without an ID token.
+	if idToken, _ := tok.Extra("id_token").(string); idToken == "" {
+		tok = tok.WithExtra(map[string]any{"id_token": user.IDToken})
+	}
+
 	return c.store(tok, user.ConsoleHost)
 }
 
 func (c *lockedCredentials) store(tok *oauth2.Token, consoleURL string) (*oidcUser, error) {
 	idToken, ok := tok.Extra("id_token").(string)
-	if !ok {
+	if !ok || idToken == "" {
 		return nil, fmt.Errorf("missing id_token")
 	}
 
