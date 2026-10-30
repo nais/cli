@@ -53,7 +53,7 @@ func TestPersonalAccessReason(t *testing.T) {
 				{name: "maintain still requires a reason", args: []string{"--access-level", "maintain"}, wantError: "specify --reason", wantAudit: true},
 				{name: "explicit reason bypasses prompt and is sent trimmed", args: []string{"--reason", "  Investigating issue  "}, wantError: "test stops after audited request", wantMutation: true},
 				{name: "write retains readwrite access", args: []string{"--access-level", "write", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwrite},
-				{name: "admin retains readwritecreate access", args: []string{"--access-level", "admin", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwritecreate},
+				{name: "admin requests database owner privileges", args: []string{"--access-level", "admin", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelAdmin},
 				{name: "maintain requests instance maintenance access", args: []string{"--access-level", "maintain", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelMaintain},
 			} {
 				if tt.proxyOnly && command != "proxy" {
