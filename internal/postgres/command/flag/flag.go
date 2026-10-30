@@ -18,7 +18,7 @@ type (
 	Access   struct {
 		*Postgres
 		Branch      string        `name:"branch" usage:"Branch to access (defaults to the active branch)."`
-		AccessLevel AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (read/write/create), or maintain (instance monitoring and maintenance)."`
+		AccessLevel AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (application database owner privileges), or maintain (instance monitoring and maintenance)."`
 		Reason      string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL         time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
 		Database    string        `name:"database" usage:"Database name for psql (default app)."`
@@ -26,7 +26,7 @@ type (
 	Proxy struct {
 		*Postgres
 		Branch        string        `name:"branch" usage:"Branch to access (defaults to the active branch)."`
-		AccessLevel   AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (read/write/create), or maintain (instance monitoring and maintenance)."`
+		AccessLevel   AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (application database owner privileges), or maintain (instance monitoring and maintenance)."`
 		Reason        string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL           time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
 		Host          string        `name:"host" usage:"Local loopback address (default 127.0.0.1)."`
@@ -133,7 +133,7 @@ type AccessLevel string
 var _ naistrix.FlagAutoCompleter = (*AccessLevel)(nil)
 
 func (*AccessLevel) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
-	return []string{"read", "write", "admin", "maintain"}, "Personal access levels; maintain grants instance monitoring and maintenance."
+	return []string{"read", "write", "admin", "maintain"}, "Personal access levels; admin grants application database owner privileges, maintain grants instance monitoring and maintenance."
 }
 
 // PostgresVersion completes supported major versions for creation.

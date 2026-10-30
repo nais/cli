@@ -188,7 +188,7 @@ func prepareAccessRequest(name string, f *flag.Access, out *naistrix.OutputWrite
 	levels := map[flag.AccessLevel]gql.PostgresAccessLevel{
 		"read":     gql.PostgresAccessLevelRead,
 		"write":    gql.PostgresAccessLevelReadwrite,
-		"admin":    gql.PostgresAccessLevelReadwritecreate,
+		"admin":    gql.PostgresAccessLevelAdmin,
 		"maintain": gql.PostgresAccessLevelMaintain,
 	}
 	level, ok := levels[f.AccessLevel]

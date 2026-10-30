@@ -35069,8 +35069,10 @@ const (
 	PostgresAccessLevelRead PostgresAccessLevel = "READ"
 	// Read and modify existing data.
 	PostgresAccessLevelReadwrite PostgresAccessLevel = "READWRITE"
-	// Read, modify, and create database objects where supported.
+	// Read and modify data and create objects in public, without database ownership.
 	PostgresAccessLevelReadwritecreate PostgresAccessLevel = "READWRITECREATE"
+	// Administer the application database through membership in its owner role, with the same database privileges as workload admin but without PostgreSQL superuser privileges.
+	PostgresAccessLevelAdmin PostgresAccessLevel = "ADMIN"
 	// Monitor and maintain the PostgreSQL instance through pg_monitor and pg_maintain, without granting application data access or database ownership.
 	PostgresAccessLevelMaintain PostgresAccessLevel = "MAINTAIN"
 )
@@ -35079,6 +35081,7 @@ var AllPostgresAccessLevel = []PostgresAccessLevel{
 	PostgresAccessLevelRead,
 	PostgresAccessLevelReadwrite,
 	PostgresAccessLevelReadwritecreate,
+	PostgresAccessLevelAdmin,
 	PostgresAccessLevelMaintain,
 }
 
