@@ -10,6 +10,7 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
+	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -47,7 +48,22 @@ type instance struct {
 // handle, correlation is best-effort: we wait for a new instance group (created
 // at/after the apply) to converge, but treat an already-healthy app as a no-op
 // once graceWindow passes without a new rollout appearing.
-func (a applicationResource) Wait(ctx context.Context, team, environment, name string, since time.Time, out *naistrix.OutputWriter) error {
+func (a applicationResource) Wait(ctx context.Context, team, environment, name string, manifest *yaml.Node, since time.Time, out *naistrix.OutputWriter) error {
+	var applied struct {
+		Spec struct {
+			Replicas struct {
+				Min *int `yaml:"min"`
+			} `yaml:"replicas"`
+		} `yaml:"spec"`
+	}
+	if err := manifest.Decode(&applied); err != nil {
+		return fmt.Errorf("failed to read applied manifest for Application/%s: %w", name, err)
+	}
+	if applied.Spec.Replicas.Min != nil && *applied.Spec.Replicas.Min == 0 {
+		out.Successf("Application/%s: no instances expected (spec.replicas.min=0)\n", name)
+		return nil
+	}
+
 	out.Printf("Application/%s: waiting to become ready...\n", name)
 
 	ticker := time.NewTicker(pollInterval)
@@ -222,30 +238,28 @@ func (a applicationResource) getApplicationStatus(ctx context.Context, team, env
 	_ = `# @genqlient
 		query ApplicationStatus($team: Slug!, $environment: String!, $name: String!) {
 		  team(slug: $team) {
-			environment(name: $environment) {
-			  application(name: $name) {
-				state
-				instanceGroups {
-				  name
-				  created
-				  readyInstances
-				  desiredInstances
-				  instances {
-					name
-					restarts
-					status {
-					  state
-					  ready
-					  message
-					  # @genqlient(pointer: true)
-					  lastExitReason
-					  # @genqlient(pointer: true)
-					  lastExitCode
-					}
-				  }
-				}
-			  }
-			}
+		    environment(name: $environment) {
+		      application(name: $name) {
+		        state
+		        instanceGroups {
+		          name
+		          created
+		          readyInstances
+		          desiredInstances
+		          instances {
+		            name
+		            restarts
+		            status {
+		              state
+		              ready
+		              message
+		              lastExitReason
+		              lastExitCode
+		            }
+		          }
+		        }
+		      }
+		    }
 		  }
 		}
 	`
