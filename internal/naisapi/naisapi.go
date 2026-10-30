@@ -51,24 +51,32 @@ func StartProxy(ctx context.Context, out *naistrix.OutputWriter, listenAddr stri
 		Scheme: "https",
 		Host:   user.ConsoleHost(),
 	}
+	handler := newProxyHandler(target, user.RoundTripper(&http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+	}))
+
+	out.Println("Forwarding requests from", "http://"+listenAddr, "to", target.String())
+	if err := http.ListenAndServe(listenAddr, handler); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
+}
+
+func newProxyHandler(target *url.URL, transport http.RoundTripper) http.Handler {
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(req *httputil.ProxyRequest) {
 			req.SetURL(target)
 			req.Out.Header.Set("user-agent", req.In.Header.Get("user-agent")+" (nais-cli)")
 		},
-		Transport: user.RoundTripper(&http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-		}),
+		Transport: transport,
 	}
 
-	out.Println("Forwarding requests from", "http://"+listenAddr, "to", target.String())
-	// Start the server
-	http.Handle("/graphql", proxy)
-	http.Handle("/", playground.Handler("Nais API playground", "/graphql"))
-	if err := http.ListenAndServe(listenAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return err
-	}
-	return nil
+	mux := http.NewServeMux()
+	mux.Handle("/graphql", proxy)
+	mux.Handle("/api/loki", proxy)
+	mux.Handle("/api/loki/", proxy)
+	mux.Handle("/", playground.Handler("Nais API playground", "/graphql"))
+	return mux
 }
 
 func GetUserTeams(ctx context.Context) ([]gql.UserTeamsMeUserTeamsTeamMemberConnectionNodesTeamMember, error) {
