@@ -36,6 +36,7 @@ func TestPersonalAccessReason(t *testing.T) {
 				args            []string
 				wantAudit       bool
 				wantMutation    bool
+				wantAccessLevel gql.PostgresAccessLevel
 				proxyOnly       bool
 				omitTeam        bool
 			}{
@@ -47,8 +48,13 @@ func TestPersonalAccessReason(t *testing.T) {
 				{name: "invalid proxy host fails before prompting", proxyOnly: true, args: []string{"--host", "0.0.0.0"}, wantError: "--host must be a loopback IP address"},
 				{name: "invalid proxy port fails before prompting", proxyOnly: true, args: []string{"--port", "65536"}, wantError: "--port must be between 0 and 65535"},
 				{name: "invalid lifetime fails before prompting", args: []string{"--ttl", "2h"}, wantError: "--ttl must be between 1s and 1h"},
-				{name: "invalid access level fails before prompting", args: []string{"--access-level", "invalid"}, wantError: "--access-level must be read, write, or admin"},
+				{name: "invalid access level fails before prompting", args: []string{"--access-level", "invalid"}, wantError: "--access-level must be read, write, admin, or maintain"},
+				{name: "old dba name is rejected before prompting", args: []string{"--access-level", "dba"}, wantError: "--access-level must be read, write, admin, or maintain"},
+				{name: "maintain still requires a reason", args: []string{"--access-level", "maintain"}, wantError: "specify --reason", wantAudit: true},
 				{name: "explicit reason bypasses prompt and is sent trimmed", args: []string{"--reason", "  Investigating issue  "}, wantError: "test stops after audited request", wantMutation: true},
+				{name: "write retains readwrite access", args: []string{"--access-level", "write", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwrite},
+				{name: "admin retains readwritecreate access", args: []string{"--access-level", "admin", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwritecreate},
+				{name: "maintain requests instance maintenance access", args: []string{"--access-level", "maintain", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelMaintain},
 			} {
 				if tt.proxyOnly && command != "proxy" {
 					continue
@@ -77,7 +83,11 @@ func TestPersonalAccessReason(t *testing.T) {
 							t.Errorf("unexpected API operation: %s", request.OperationName)
 						}
 						input := request.Variables.Input
-						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.Branch != "main" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != gql.PostgresAccessLevelRead || input.Ttl == nil || *input.Ttl != "30m0s" {
+						wantLevel := tt.wantAccessLevel
+						if wantLevel == "" {
+							wantLevel = gql.PostgresAccessLevelRead
+						}
+						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.Branch != "main" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != wantLevel || input.Ttl == nil || *input.Ttl != "30m0s" {
 							t.Errorf("incorrect audited access request: %+v", input)
 						}
 						if _, err := w.Write([]byte(`{"errors":[{"message":"test stops after audited request"}]}`)); err != nil {
