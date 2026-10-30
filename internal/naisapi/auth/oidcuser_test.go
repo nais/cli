@@ -134,12 +134,12 @@ func TestOIDCRefreshFailureClassification(t *testing.T) {
 			if err == nil {
 				t.Fatal("getOIDCUser() succeeded, want error")
 			}
-			if got := errors.Is(err, ErrNeedsOIDCLogin); got != tc.wantLogin {
-				t.Fatalf("errors.Is(ErrNeedsOIDCLogin) = %v, want %v: %v", got, tc.wantLogin, err)
+			if got := errors.Is(err, ErrNeedsLogin); got != tc.wantLogin {
+				t.Fatalf("errors.Is(ErrNeedsLogin) = %v, want %v: %v", got, tc.wantLogin, err)
 			}
 			if tc.wantLogin {
 				rejected, ok := errors.AsType[*NeedsLoginError](err)
-				if !ok || rejected.Cause == nil || err.Error() != ErrNeedsOIDCLogin.Error() {
+				if !ok || rejected.Cause == nil || err.Error() != ErrNeedsLogin.Error() {
 					t.Fatalf("error = %q, want only the login instruction, with the provider's error as its cause", err)
 				}
 			}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/auth/command/flag"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
@@ -15,6 +16,7 @@ import (
 func login(parentFlags *flag.Auth) *naistrix.Command {
 	flags := &flag.Login{Auth: parentFlags}
 	return &naistrix.Command{
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
 		Name:            "login",
 		Title:           "Log in to the Nais platform.",
 		TopLevelAliases: []string{"login"},

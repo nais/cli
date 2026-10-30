@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/debug"
 	"github.com/nais/cli/internal/debug/command/flag"
 	"github.com/nais/cli/internal/flags"
@@ -14,8 +15,9 @@ import (
 func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	debugFlags := &flag.Debug{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:  "debug",
-		Title: "Create and attach to a debug container.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "debug",
+		Title:           "Create and attach to a debug container.",
 		Description: heredoc.Doc(`
 			When flag "--copy" is set, the command can be used to debug a copy of the original pod, allowing you to troubleshoot without affecting the live pod.
 

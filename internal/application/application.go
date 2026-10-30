@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"errors"
 	"io"
 	"os"
 	"slices"
@@ -11,6 +10,7 @@ import (
 	alphaCommand "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
 	applyCommand "github.com/nais/cli/internal/apply/command"
+	"github.com/nais/cli/internal/auth"
 	authCommand "github.com/nais/cli/internal/auth/command"
 	cloudsqlCommand "github.com/nais/cli/internal/cloudsql/command"
 	configCommand "github.com/nais/cli/internal/config/command"
@@ -23,7 +23,6 @@ import (
 	logCommand "github.com/nais/cli/internal/log/command"
 	memberCommand "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
-	"github.com/nais/cli/internal/naisapi"
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisapiCommand "github.com/nais/cli/internal/naisapi/command"
 	naisdeviceCommand "github.com/nais/cli/internal/naisdevice/command"
@@ -36,8 +35,6 @@ import (
 	"github.com/nais/cli/internal/version"
 	vulnerabilityCommand "github.com/nais/cli/internal/vulnerability/command"
 	"github.com/nais/naistrix"
-	"github.com/nais/naistrix/input"
-	"golang.org/x/term"
 )
 
 type Application struct {
@@ -46,26 +43,32 @@ type Application struct {
 }
 
 func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
+	return newApplication(w, auth.NaisLoginHook)
+}
+
+func newApplication(w io.Writer, hookFactories ...func(*flags.GlobalFlags) naistrix.PreRunHook) (*Application, *flags.GlobalFlags, error) {
+	globalFlags := &flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{}}
+	var hooks []naistrix.PreRunHook
+	for _, factory := range hookFactories {
+		hooks = append(hooks, factory(globalFlags))
+	}
 	app, f, err := naistrix.NewApplication(
 		"nais",
 		"Nais CLI",
 		version.Version,
 		naistrix.ApplicationWithWriter(w),
+		naistrix.ApplicationWithPreRunHooks(hooks...),
+		naistrix.ApplicationWithDefaultsCommandSkipPreRunHooks(auth.NaisLoginHookName),
 	)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	additional := &flags.AdditionalFlags{}
-
-	if err := app.AddGlobalFlags(additional); err != nil {
+	if err := app.AddGlobalFlags(globalFlags.AdditionalFlags); err != nil {
 		return nil, nil, err
 	}
 
-	globalFlags := &flags.GlobalFlags{
-		GlobalFlags:     f,
-		AdditionalFlags: additional,
-	}
+	globalFlags.GlobalFlags = f
 
 	naisapiauth.ConfigFilePath = &f.Config
 
@@ -126,44 +129,5 @@ func Run(ctx context.Context, w io.Writer) error {
 		collectCommandHistogram(ctx, executedCommand, err)
 	}
 
-	if err != nil {
-		if errors.Is(err, naisapi.ErrNeedsLogin) {
-			warning := "You must (re-)authenticate to run this command."
-			if needsLogin, ok := errors.AsType[*naisapiauth.NeedsLoginError](err); ok && f.IsVerbose() {
-				warning = "You must (re-)authenticate to run this command: " + needsLogin.Cause.Error()
-			}
-
-			out := app.Output()
-			out.
-				Println().
-				Warnln(warning).
-				Println()
-
-			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
-				result, err := input.Confirm("Would you like to log in and re-run the command?", input.ConfirmWithDefaultTrue())
-				if err != nil {
-					return err
-				}
-
-				if result {
-					out.Println()
-					if err := naisapi.Login(ctx, naistrix.NewOutputWriter(w, &f.VerboseLevel)); err != nil {
-						return err
-					}
-
-					out.
-						Println().
-						Infof("Re-running command %s\n", executedCommand).
-						Println()
-					return app.Run(naistrix.RunWithContext(ctx))
-				}
-			}
-
-			return err
-		}
-
-		return err
-	}
-
-	return nil
+	return err
 }

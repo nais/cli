@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/kubeconfig"
@@ -17,21 +18,16 @@ func Kubeconfig(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Overwrite:   true,
 	}
 	return &naistrix.Command{
-		Name:  "kubeconfig",
-		Title: "Create a kubeconfig file for connecting to available clusters.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		PreRunHooks:     []naistrix.PreRunHook{auth.GcloudLoginHook(parentFlags)},
+		Name:            "kubeconfig",
+		Title:           "Create a kubeconfig file for connecting to available clusters.",
 		Description: heredoc.Doc(`
 			This requires that you have the gcloud command line tool installed, configured and logged in using:
 
 			"nais login"
 		`),
 		Flags: flags,
-		ValidateArgsFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
-			if _, err := gcloud.ValidateAndGetUserLogin(ctx, false); err != nil {
-				return err
-			}
-
-			return nil
-		},
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			email, err := gcloud.GetActiveUserEmail(ctx)
 			if err != nil {

@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/validate"
 	"github.com/nais/cli/internal/validate/command/flag"
@@ -12,9 +13,10 @@ import (
 func Validate(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Validate{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "validate",
-		Title:       "Validate one or more Nais manifest files.",
-		Description: "Validate Nais manifest files (YAML/JSON) against the Nais JSON schema. Accepts one or more file paths.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "validate",
+		Title:           "Validate one or more Nais manifest files.",
+		Description:     "Validate Nais manifest files (YAML/JSON) against the Nais JSON schema. Accepts one or more file paths.",
 		Args: []naistrix.Argument{
 			{
 				Name:                   "file",

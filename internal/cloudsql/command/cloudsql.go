@@ -1,11 +1,9 @@
 package command
 
 import (
-	"context"
-
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/cloudsql/command/flag"
 	"github.com/nais/cli/internal/flags"
-	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/naistrix"
 )
 
@@ -15,6 +13,7 @@ func CloudSQL(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	}
 
 	return &naistrix.Command{
+		PreRunHooks: []naistrix.PreRunHook{auth.GcloudLoginHook(parentFlags)},
 		Name:        "cloudsql",
 		Title:       "Manage Google Cloud SQL instances.",
 		Description: "Manage Google Cloud SQL instances, including listing, user management, password rotation, and direct database access.",
@@ -30,10 +29,6 @@ func CloudSQL(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			proxyCommand(flags),
 			psqlCommand(flags),
 			revokeCommand(flags),
-		},
-		ValidateArgsFunc: func(ctx context.Context, _ *naistrix.Arguments) error {
-			_, err := gcloud.ValidateAndGetUserLogin(ctx, false)
-			return err
 		},
 	}
 }

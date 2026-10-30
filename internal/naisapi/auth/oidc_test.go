@@ -173,7 +173,7 @@ func TestOIDCTenantSelection(t *testing.T) {
 			}
 			user, err := OIDC(t.Context())
 			if tc.wantError {
-				if err == nil || !strings.Contains(err.Error(), "NAIS_API_TENANT") || errors.Is(err, ErrNeedsOIDCLogin) {
+				if err == nil || !strings.Contains(err.Error(), "NAIS_API_TENANT") || errors.Is(err, ErrNeedsLogin) {
 					t.Fatalf("expected tenant configuration error, got %v", err)
 				}
 				return
@@ -363,8 +363,8 @@ func TestOIDCRejectsExpiredIDTokenWhenRefreshOmitsReplacement(t *testing.T) {
 
 	_, err := OIDC(t.Context())
 
-	if !errors.Is(err, ErrNeedsOIDCLogin) {
-		t.Fatalf("OIDC() error = %v, want ErrNeedsOIDCLogin", err)
+	if !errors.Is(err, ErrNeedsLogin) {
+		t.Fatalf("OIDC() error = %v, want ErrNeedsLogin", err)
 	}
 	if requests != 1 {
 		t.Fatalf("token endpoint requests = %d, want exactly one refresh attempt", requests)
@@ -389,7 +389,7 @@ func TestOIDCJWKSOutageIsNotNeedsLogin(t *testing.T) {
 
 	_, err := OIDC(t.Context())
 
-	if err == nil || errors.Is(err, ErrNeedsOIDCLogin) {
+	if err == nil || errors.Is(err, ErrNeedsLogin) {
 		t.Fatalf("OIDC() error = %v, want an error that does not require login", err)
 	}
 }

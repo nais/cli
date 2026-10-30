@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/cloudsql"
 	"github.com/nais/cli/internal/cloudsql/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -13,8 +14,9 @@ import (
 func grantCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 	flags := &flag.Grant{CloudSQL: parentFlags}
 	return &naistrix.Command{
-		Name:  "grant",
-		Title: "Grant yourself access to a SQL instance database.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "grant",
+		Title:           "Grant yourself access to a SQL instance database.",
 		Description: heredoc.Doc(`
 			This is done by temporarily adding your user to the list of users that can administrate Cloud SQL instances and creating a user with your email.
 

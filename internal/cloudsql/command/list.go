@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/cloudsql"
 	"github.com/nais/cli/internal/cloudsql/command/flag"
 	"github.com/nais/cli/internal/labels"
@@ -14,10 +15,11 @@ func listCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 	flags := &flag.List{CloudSQL: parentFlags}
 
 	return &naistrix.Command{
-		Name:        "list",
-		Title:       "List Cloud SQL instances for a team.",
-		Description: "List Google Cloud SQL instances owned by a team.",
-		Flags:       flags,
+		SkipPreRunHooks: []string{auth.GcloudLoginHookName},
+		Name:            "list",
+		Title:           "List Cloud SQL instances for a team.",
+		Description:     "List Google Cloud SQL instances owned by a team.",
+		Flags:           flags,
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			labelFilters, err := labels.ParseFilters(flags.Labels)
 			if err != nil {
