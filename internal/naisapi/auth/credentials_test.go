@@ -109,8 +109,8 @@ func TestConfigDirectoriesShareEncryptionKey(t *testing.T) {
 	}
 	for _, dir := range []string{dirA, dirB} {
 		setTestConfigPath(t, dir)
-		if _, err := getOIDCUser(t.Context()); !errors.Is(err, ErrNeedsOIDCLogin) {
-			t.Fatalf("getOIDCUser() after logout = %v, want ErrNeedsOIDCLogin", err)
+		if _, err := getOIDCUser(t.Context()); !errors.Is(err, ErrNeedsLogin) {
+			t.Fatalf("getOIDCUser() after logout = %v, want ErrNeedsLogin", err)
 		}
 	}
 
@@ -120,8 +120,8 @@ func TestConfigDirectoriesShareEncryptionKey(t *testing.T) {
 		t.Fatalf("getOIDCUser() after logging in again: %v", err)
 	}
 	setTestConfigPath(t, dirA)
-	if _, err := getOIDCUser(t.Context()); !errors.Is(err, ErrNeedsOIDCLogin) {
-		t.Fatalf("getOIDCUser() in logged-out directory = %v, want ErrNeedsOIDCLogin", err)
+	if _, err := getOIDCUser(t.Context()); !errors.Is(err, ErrNeedsLogin) {
+		t.Fatalf("getOIDCUser() in logged-out directory = %v, want ErrNeedsLogin", err)
 	}
 }
 
@@ -237,8 +237,8 @@ func TestReadOIDCUserClassifiesErrors(t *testing.T) {
 			if err == nil {
 				t.Fatal("getOIDCUser() succeeded, want error")
 			}
-			if got := errors.Is(err, ErrNeedsOIDCLogin); got != tc.wantLogin {
-				t.Fatalf("errors.Is(ErrNeedsOIDCLogin) = %v, want %v: %v", got, tc.wantLogin, err)
+			if got := errors.Is(err, ErrNeedsLogin); got != tc.wantLogin {
+				t.Fatalf("errors.Is(ErrNeedsLogin) = %v, want %v: %v", got, tc.wantLogin, err)
 			}
 		})
 	}

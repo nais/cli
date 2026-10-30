@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var ErrNeedsLogin = errors.New("unauthenticated: please log in with `nais login`")
+
 func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, error) {
 	args := []string{
 		"config",
@@ -31,7 +33,7 @@ func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, err
 
 	user := strings.TrimSpace(buf.String())
 	if user == "" {
-		return "", fmt.Errorf("missing active user, have you logged in with 'gcloud auth login --update-adc'")
+		return "", fmt.Errorf("missing active user: %w", ErrNeedsLogin)
 	}
 
 	if enforceNais && !strings.HasSuffix(user, "@nais.io") {
@@ -56,7 +58,7 @@ func ValidateAndGetUserLogin(ctx context.Context, enforceNais bool) (string, err
 	_, err = os.Stat(filepath.Clean(homedir + "/gcloud/application_default_credentials.json"))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return "", fmt.Errorf("you are missing Application Default Credentials, run `gcloud auth login --update-adc` first")
+			return "", fmt.Errorf("missing Application Default Credentials: %w", ErrNeedsLogin)
 		}
 		return "", err
 	}

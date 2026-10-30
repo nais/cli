@@ -22,17 +22,17 @@ import (
 
 const oidcLoginTimeout = 5 * time.Minute
 
-var ErrNeedsOIDCLogin = errors.New("unauthenticated: please log in with `nais login -n`")
+var ErrNeedsLogin = errors.New("unauthenticated: please log in with `nais login -n`")
 
-// NeedsLoginError is ErrNeedsOIDCLogin with the reason login is needed. Its message omits the reason,
+// NeedsLoginError is ErrNeedsLogin with the reason login is needed. Its message omits the reason,
 // since the user logs in regardless; Cause holds it for verbose output.
 type NeedsLoginError struct {
 	Cause error
 }
 
-func (e *NeedsLoginError) Error() string { return ErrNeedsOIDCLogin.Error() }
+func (e *NeedsLoginError) Error() string { return ErrNeedsLogin.Error() }
 
-func (e *NeedsLoginError) Unwrap() []error { return []error{ErrNeedsOIDCLogin, e.Cause} }
+func (e *NeedsLoginError) Unwrap() []error { return []error{ErrNeedsLogin, e.Cause} }
 
 func needsLogin(format string, a ...any) error {
 	return &NeedsLoginError{Cause: fmt.Errorf(format, a...)}

@@ -8,6 +8,7 @@ import (
 	"os"
 
 	alpha "github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/mcp"
 	"github.com/nais/cli/internal/mcp/command/flag"
 	"github.com/nais/naistrix"
@@ -16,10 +17,12 @@ import (
 func MCP(parentFlags *alpha.Alpha) *naistrix.Command {
 	flags := &flag.MCP{Alpha: parentFlags}
 	return &naistrix.Command{
-		Name:        "mcp",
-		Title:       "Model Context Protocol server for LLM-assisted workflows.",
-		Description: "Start an MCP server that exposes Nais API operations as tools for LLMs. Supports multiple transports (stdio, http, sse).",
-		StickyFlags: flags,
+		// The server handles authentication itself.
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "mcp",
+		Title:           "Model Context Protocol server for LLM-assisted workflows.",
+		Description:     "Start an MCP server that exposes Nais API operations as tools for LLMs. Supports multiple transports (stdio, http, sse).",
+		StickyFlags:     flags,
 		SubCommands: []*naistrix.Command{
 			serveCommand(flags),
 		},

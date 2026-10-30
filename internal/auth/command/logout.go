@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/auth/command/flag"
 	"github.com/nais/cli/internal/gcloud"
 	"github.com/nais/cli/internal/naisapi"
@@ -15,6 +16,7 @@ import (
 func logout(parentFlags *flag.Auth) *naistrix.Command {
 	flags := &flag.Logout{Auth: parentFlags}
 	return &naistrix.Command{
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
 		Name:            "logout",
 		TopLevelAliases: []string{"logout"},
 		Title:           "Log out and remove credentials.",

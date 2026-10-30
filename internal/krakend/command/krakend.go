@@ -4,15 +4,17 @@ import (
 	"context"
 
 	"github.com/nais/cli/internal/alpha/command/flag"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/krakend/pkg/migration"
 	"github.com/nais/naistrix"
 )
 
 func Krakend(parentFlags *flag.Alpha) *naistrix.Command {
 	return &naistrix.Command{
-		Name:        "krakend",
-		Title:       "Krakend related functionality.",
-		Description: "Commands for working with Krakend API gateway resources, including migration utilities.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "krakend",
+		Title:           "Krakend related functionality.",
+		Description:     "Commands for working with Krakend API gateway resources, including migration utilities.",
 		SubCommands: []*naistrix.Command{
 			{
 				Name:        "convert",

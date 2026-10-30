@@ -36,7 +36,7 @@ func TestCloudResourceCreateEnvironment(t *testing.T) {
 				if err := os.WriteFile(config, []byte(contents), 0o600); err != nil {
 					t.Fatal(err)
 				}
-				app, _, err := New(io.Discard)
+				app, _, err := newApplication(io.Discard)
 				if err != nil {
 					t.Fatal(err)
 				}

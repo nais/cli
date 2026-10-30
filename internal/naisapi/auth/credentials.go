@@ -67,7 +67,7 @@ func (c *lockedCredentials) unlock() {
 	_ = c.lock.Unlock()
 }
 
-// read loads the stored session. Missing or corrupt credentials return ErrNeedsOIDCLogin.
+// read loads the stored session. Missing or corrupt credentials return ErrNeedsLogin.
 func (c *lockedCredentials) read() (*oidcUser, error) {
 	encryptionKey, err := keyring.GetBytes()
 	if err != nil {

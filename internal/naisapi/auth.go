@@ -9,7 +9,7 @@ import (
 	"github.com/nais/naistrix"
 )
 
-var ErrNeedsLogin = auth.ErrNeedsOIDCLogin
+var ErrNeedsLogin = auth.ErrNeedsLogin
 
 // AuthenticatedUser represents the authenticated user.
 // It provides primitives for interacting with the Nais API on behalf of the user.

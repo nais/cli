@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisdevice/command/flag"
 	"github.com/nais/naistrix"
@@ -9,9 +10,10 @@ import (
 func Naisdevice(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Device{GlobalFlags: parentFlags}
 	return &naistrix.Command{
-		Name:        "device",
-		Title:       "Interact with naisdevice",
-		Description: "Commands for managing your naisdevice connection, gateways, and configuration.",
+		SkipPreRunHooks: []string{auth.NaisLoginHookName},
+		Name:            "device",
+		Title:           "Interact with naisdevice",
+		Description:     "Commands for managing your naisdevice connection, gateways, and configuration.",
 		SubCommands: []*naistrix.Command{
 			statuscmd(flags),
 			gatewaycmd(flags),
