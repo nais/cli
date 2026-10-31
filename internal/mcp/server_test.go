@@ -165,7 +165,7 @@ func (c *TestClient) CallTool(t *testing.T, name string, args map[string]any) ma
 	}
 
 	text := first["text"].(string)
-	if isError, ok := first["isError"].(bool); ok && isError {
+	if isError, _ := result["isError"].(bool); isError {
 		t.Fatalf("tool returned error: %s", text)
 	}
 
@@ -206,7 +206,7 @@ func (c *TestClient) CallToolRaw(t *testing.T, name string, args map[string]any)
 	}
 
 	text := first["text"].(string)
-	if isError, ok := first["isError"].(bool); ok && isError {
+	if isError, _ := result["isError"].(bool); isError {
 		t.Fatalf("tool returned error: %s", text)
 	}
 
@@ -417,7 +417,7 @@ func TestMCPServer_Integration(t *testing.T) {
 			t.Error("expected non-empty result")
 		}
 
-		if !strings.Contains(raw, "me") {
+		if !strings.Contains(raw, `"name":"me"`) {
 			t.Error("expected 'me' query")
 		}
 	})
