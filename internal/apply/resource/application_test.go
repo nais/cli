@@ -1,14 +1,140 @@
 package resource
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/naistrix"
+	"golang.org/x/oauth2"
 )
+
+type applicationStatusTransport func(*http.Request) (*http.Response, error)
+
+func (f applicationStatusTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
+}
+
+func TestWait_AppliedMinimum(t *testing.T) {
+	for name, tc := range map[string]struct {
+		spec       string
+		ready      bool
+		fresh      bool
+		wantWait   bool
+		wantOutput string
+	}{
+		"explicit zero skips waiting even when API still has instances": {
+			spec:       "replicas: {min: 0}",
+			ready:      true,
+			wantOutput: "no instances expected",
+		},
+		"increased minimum does not trust stale zero minimum": {
+			spec:     "replicas: {min: 1}",
+			wantWait: true,
+		},
+		"omitted minimum does not default to zero": {
+			spec:     "replicas: {max: 2}",
+			wantWait: true,
+		},
+		"omitted replicas does not default to zero": {
+			spec:     "image: example:latest",
+			wantWait: true,
+		},
+		"stale zero minimum does not bypass grace window": {
+			spec:     "replicas: {min: 1}",
+			ready:    true,
+			wantWait: true,
+		},
+		"increased minimum succeeds after rollout becomes ready": {
+			spec:       "replicas: {min: 1}",
+			ready:      true,
+			fresh:      true,
+			wantOutput: "Application/testapp: ready",
+		},
+	} {
+		t.Run(name, func(t *testing.T) {
+			docs, err := Documents([]byte("spec:\n  " + tc.spec + "\n"))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			since := time.Now()
+			requests := 0
+			client := &http.Client{Transport: applicationStatusTransport(func(_ *http.Request) (*http.Response, error) {
+				requests++
+				state := "NOT_RUNNING"
+				groups := []map[string]any{}
+				if tc.ready {
+					state = "RUNNING"
+					created := since.Add(-time.Hour)
+					if tc.fresh {
+						created = since.Add(time.Second)
+					}
+					groups = append(groups, map[string]any{
+						"created":          created.Format(time.RFC3339Nano),
+						"readyInstances":   1,
+						"desiredInstances": 1,
+					})
+				}
+				body, err := json.Marshal(map[string]any{
+					"data": map[string]any{
+						"team": map[string]any{
+							"environment": map[string]any{
+								"application": map[string]any{
+									"state":          state,
+									"resources":      map[string]any{"scaling": map[string]any{"minInstances": 0}},
+									"instanceGroups": groups,
+								},
+							},
+						},
+					},
+				})
+				if err != nil {
+					return nil, err
+				}
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Header:     http.Header{"Content-Type": {"application/json"}},
+					Body:       io.NopCloser(bytes.NewReader(body)),
+				}, nil
+			})}
+			t.Setenv("NAIS_API_LOCAL_HOST", "api.test")
+			t.Setenv("NAIS_API_LOCAL_EMAIL", "")
+
+			ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+			defer cancel()
+			ctx = context.WithValue(ctx, oauth2.HTTPClient, client)
+			var output bytes.Buffer
+			err = (applicationResource{}).Wait(ctx, "team", "dev", "testapp", docs[0], since, naistrix.NewOutputWriter(&output, new(naistrix.Count)))
+
+			if tc.wantWait {
+				if !errors.Is(err, context.DeadlineExceeded) {
+					t.Fatalf("expected to keep waiting, got %v", err)
+				}
+				if requests == 0 {
+					t.Fatal("expected to poll application status")
+				}
+			} else {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !tc.fresh && requests != 0 {
+					t.Errorf("expected no status requests for explicit min=0, got %d", requests)
+				}
+				if !strings.Contains(output.String(), tc.wantOutput) {
+					t.Errorf("output %q does not contain %q", output.String(), tc.wantOutput)
+				}
+			}
+		})
+	}
+}
 
 func TestIsConverged(t *testing.T) {
 	now := time.Now()

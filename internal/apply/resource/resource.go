@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/nais/naistrix"
+	"gopkg.in/yaml.v3"
 )
 
 // Resource is a kind that `nais apply` knows about, scoped to the manifest
@@ -40,8 +41,9 @@ type Applier interface {
 
 // Waiter is implemented by resources that support --wait. since is the apply
 // time, used to tell a fresh rollout from the resource's previous state.
+// manifest is the rendered document that was applied.
 type Waiter interface {
-	Wait(ctx context.Context, team, environment, name string, since time.Time, out *naistrix.OutputWriter) error
+	Wait(ctx context.Context, team, environment, name string, manifest *yaml.Node, since time.Time, out *naistrix.OutputWriter) error
 }
 
 // kindSupport implements the Kind, APIVersion and Supports methods of Resource.
