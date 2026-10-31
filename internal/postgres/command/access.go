@@ -185,10 +185,15 @@ func prepareAccessRequest(name string, f *flag.Access, out *naistrix.OutputWrite
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")
 	}
-	levels := map[string]gql.PostgresAccessLevel{"read": gql.PostgresAccessLevelRead, "write": gql.PostgresAccessLevelReadwrite, "admin": gql.PostgresAccessLevelReadwritecreate}
+	levels := map[flag.AccessLevel]gql.PostgresAccessLevel{
+		"read":     gql.PostgresAccessLevelRead,
+		"write":    gql.PostgresAccessLevelReadwrite,
+		"admin":    gql.PostgresAccessLevelAdmin,
+		"maintain": gql.PostgresAccessLevelMaintain,
+	}
 	level, ok := levels[f.AccessLevel]
 	if !ok {
-		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--access-level must be read, write, or admin")
+		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--access-level must be read, write, admin, or maintain")
 	}
 	reason, err := resolveAccessReason(f.Reason, out)
 	if err != nil {

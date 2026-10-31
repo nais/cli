@@ -128,10 +128,15 @@ func Run(ctx context.Context, w io.Writer) error {
 
 	if err != nil {
 		if errors.Is(err, naisapi.ErrNeedsLogin) {
+			warning := "You must (re-)authenticate to run this command."
+			if needsLogin, ok := errors.AsType[*naisapiauth.NeedsLoginError](err); ok && f.IsVerbose() {
+				warning = "You must (re-)authenticate to run this command: " + needsLogin.Cause.Error()
+			}
+
 			out := app.Output()
 			out.
 				Println().
-				Warnln("You must (re-)authenticate to run this command.").
+				Warnln(warning).
 				Println()
 
 			if !autoComplete && term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
@@ -154,8 +159,7 @@ func Run(ctx context.Context, w io.Writer) error {
 				}
 			}
 
-			out.Errorln("Please run `nais login --nais` to (re-)authenticate.")
-			return nil
+			return err
 		}
 
 		return err

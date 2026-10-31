@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	applyflag "github.com/nais/cli/internal/apply/command/flag"
@@ -16,6 +17,34 @@ import (
 	"github.com/nais/naistrix"
 	"gopkg.in/yaml.v3"
 )
+
+func TestWaitForReady_UsesAppliedManifest(t *testing.T) {
+	docs, err := resource.Documents([]byte(`
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: testapp
+spec:
+  replicas:
+    min: 0
+`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	r, ok := resource.ForCRD("nais.io/v1alpha1", "Application")
+	if !ok {
+		t.Fatal("expected Application resource")
+	}
+	targets := appendWaitTarget(nil, r, "testapp", docs[0])
+	var output bytes.Buffer
+	err = waitForReady(context.Background(), "team", "dev", targets, time.Now(), time.Second, naistrix.NewOutputWriter(&output, new(naistrix.Count)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(output.String(), "no instances expected") {
+		t.Errorf("expected zero-minimum exemption, got %q", output.String())
+	}
+}
 
 func TestToUnstructured(t *testing.T) {
 	docs, err := resource.Documents([]byte(`
