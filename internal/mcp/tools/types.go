@@ -59,10 +59,18 @@ type SchemaOperationInfo struct {
 	ArgCount    int    `json:"argCount" jsonschema_description:"Number of arguments"`
 }
 
+type SchemaListQueriesOutput struct {
+	Queries []SchemaOperationInfo `json:"queries" jsonschema_description:"Query operations, sorted by name"`
+}
+
 // --- schema_list_mutations ---
 
 type SchemaListMutationsInput struct {
 	Search string `json:"search,omitempty" jsonschema_description:"Filter mutation names or descriptions containing this string (case-insensitive)"`
+}
+
+type SchemaListMutationsOutput struct {
+	Mutations []SchemaOperationInfo `json:"mutations" jsonschema_description:"Mutation operations, sorted by name"`
 }
 
 // --- schema_get_field ---

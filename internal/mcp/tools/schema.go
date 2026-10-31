@@ -158,7 +158,7 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 		"schema_list_queries",
 		mcp.WithDescription("List all available GraphQL query operations with their return types and number of arguments. These are the entry points for reading data from the Nais API."),
 		mcp.WithInputSchema[SchemaListQueriesInput](),
-		mcp.WithOutputSchema[[]SchemaOperationInfo](),
+		mcp.WithOutputSchema[SchemaListQueriesOutput](),
 	)
 	s.AddTool(listQueriesTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListQueries))
 
@@ -167,7 +167,7 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 		"schema_list_mutations",
 		mcp.WithDescription("List all available GraphQL mutation operations with their return types and number of arguments. Mutations are used to modify data (note: the MCP server currently only exposes read operations)."),
 		mcp.WithInputSchema[SchemaListMutationsInput](),
-		mcp.WithOutputSchema[[]SchemaOperationInfo](),
+		mcp.WithOutputSchema[SchemaListMutationsOutput](),
 	)
 	s.AddTool(listMutationsTool, mcp.NewStructuredToolHandler(ctx.handleSchemaListMutations))
 
@@ -387,29 +387,29 @@ func (t *toolContext) handleSchemaListQueries(
 	reqCtx context.Context,
 	req mcp.CallToolRequest,
 	args SchemaListQueriesInput,
-) ([]SchemaOperationInfo, error) {
+) (SchemaListQueriesOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return nil, fmt.Errorf("rate limit exceeded, please try again later")
+		return SchemaListQueriesOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get schema: %w", err)
+		return SchemaListQueriesOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse schema: %w", err)
+		return SchemaListQueriesOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
 	search := strings.ToLower(args.Search)
 
 	queryType := explorer.schema.Query
 	if queryType == nil {
-		return nil, fmt.Errorf("query type not found in schema")
+		return SchemaListQueriesOutput{}, fmt.Errorf("query type not found in schema")
 	}
 
-	var queries []SchemaOperationInfo
+	queries := []SchemaOperationInfo{}
 	for _, field := range queryType.Fields {
 		if search == "" || strings.Contains(strings.ToLower(field.Name), search) || strings.Contains(strings.ToLower(field.Description), search) {
 			queries = append(queries, SchemaOperationInfo{
@@ -426,7 +426,7 @@ func (t *toolContext) handleSchemaListQueries(
 		return queries[i].Name < queries[j].Name
 	})
 
-	return queries, nil
+	return SchemaListQueriesOutput{Queries: queries}, nil
 }
 
 // handleSchemaListMutations handles the schema_list_mutations tool.
@@ -434,29 +434,29 @@ func (t *toolContext) handleSchemaListMutations(
 	reqCtx context.Context,
 	req mcp.CallToolRequest,
 	args SchemaListMutationsInput,
-) ([]SchemaOperationInfo, error) {
+) (SchemaListMutationsOutput, error) {
 	if !t.rateLimiter.Allow() {
-		return nil, fmt.Errorf("rate limit exceeded, please try again later")
+		return SchemaListMutationsOutput{}, fmt.Errorf("rate limit exceeded, please try again later")
 	}
 
 	schemaText, err := t.getSchema(reqCtx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get schema: %w", err)
+		return SchemaListMutationsOutput{}, fmt.Errorf("failed to get schema: %w", err)
 	}
 
 	explorer, err := NewSchemaExplorer(schemaText)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse schema: %w", err)
+		return SchemaListMutationsOutput{}, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
 	search := strings.ToLower(args.Search)
 
 	mutationType := explorer.schema.Mutation
 	if mutationType == nil {
-		return []SchemaOperationInfo{}, nil
+		return SchemaListMutationsOutput{Mutations: []SchemaOperationInfo{}}, nil
 	}
 
-	var mutations []SchemaOperationInfo
+	mutations := []SchemaOperationInfo{}
 	for _, field := range mutationType.Fields {
 		if search == "" || strings.Contains(strings.ToLower(field.Name), search) || strings.Contains(strings.ToLower(field.Description), search) {
 			mutations = append(mutations, SchemaOperationInfo{
@@ -473,7 +473,7 @@ func (t *toolContext) handleSchemaListMutations(
 		return mutations[i].Name < mutations[j].Name
 	})
 
-	return mutations, nil
+	return SchemaListMutationsOutput{Mutations: mutations}, nil
 }
 
 // handleSchemaGetField handles the schema_get_field tool.
