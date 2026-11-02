@@ -39,6 +39,7 @@ func TestPersonalAccessReason(t *testing.T) {
 				wantAccessLevel gql.PostgresAccessLevel
 				proxyOnly       bool
 				omitTeam        bool
+				wantEmptyOutput bool
 			}{
 				{name: "missing reason requires flag noninteractively", wantError: "specify --reason", wantAudit: true},
 				{name: "whitespace reason prompts rather than being accepted", args: []string{"--reason", " \t "}, wantError: "specify --reason", wantAudit: true},
@@ -47,6 +48,9 @@ func TestPersonalAccessReason(t *testing.T) {
 				{name: "team is required before prompting", omitTeam: true, wantError: "missing required team"},
 				{name: "invalid proxy host fails before prompting", proxyOnly: true, args: []string{"--host", "0.0.0.0"}, wantError: "--host must be a loopback IP address"},
 				{name: "invalid proxy port fails before prompting", proxyOnly: true, args: []string{"--port", "65536"}, wantError: "--port must be between 0 and 65535"},
+				{name: "invalid proxy output fails before prompting", proxyOnly: true, args: []string{"--output", "invalid"}, wantError: "expected human or env"},
+				{name: "env missing reason keeps stdout empty", proxyOnly: true, args: []string{"--output", "env"}, wantError: "specify --reason", wantEmptyOutput: true},
+				{name: "env API failure keeps stdout empty", proxyOnly: true, args: []string{"--output", "env", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantEmptyOutput: true},
 				{name: "invalid lifetime fails before prompting", args: []string{"--ttl", "2h"}, wantError: "--ttl must be between 1s and 1h"},
 				{name: "invalid access level fails before prompting", args: []string{"--access-level", "invalid"}, wantError: "--access-level must be read, write, admin, or maintain"},
 				{name: "old dba name is rejected before prompting", args: []string{"--access-level", "dba"}, wantError: "--access-level must be read, write, admin, or maintain"},
@@ -124,6 +128,9 @@ func TestPersonalAccessReason(t *testing.T) {
 					}
 					if got := strings.Contains(output.String(), "logged for auditing purposes"); got != tt.wantAudit {
 						t.Errorf("audit prompt warning = %v, want %v: %s", got, tt.wantAudit, output.String())
+					}
+					if tt.wantEmptyOutput && output.Len() != 0 {
+						t.Errorf("expected empty stdout on setup failure: %s", output.String())
 					}
 					var wantOperations []string
 					if !tt.omitTeam {

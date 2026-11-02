@@ -40,3 +40,30 @@ func TestPersonalAccessLevelCompletion(t *testing.T) {
 		})
 	}
 }
+
+func TestProxyOutputCompletion(t *testing.T) {
+	var output bytes.Buffer
+	app, global, err := naistrix.NewApplication("postgres-proxy-test", "Test proxy output", "test", naistrix.ApplicationWithWriter(&output))
+	if err != nil {
+		t.Fatal(err)
+	}
+	additional := &flags.AdditionalFlags{}
+	if err := app.AddGlobalFlags(additional); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.AddCommand(Postgres(&flags.GlobalFlags{GlobalFlags: global, AdditionalFlags: additional})); err != nil {
+		t.Fatal(err)
+	}
+	if err := app.Run(naistrix.RunWithArgs([]string{"__complete", "postgres", "proxy", "--output", ""})); err != nil {
+		t.Fatal(err)
+	}
+	lines := strings.Split(output.String(), "\n")
+	for _, format := range []string{"human", "env"} {
+		if !slices.Contains(lines, format) {
+			t.Errorf("completion missing %q: %s", format, output.String())
+		}
+	}
+	if slices.Contains(lines, "table") || slices.Contains(lines, "json") {
+		t.Errorf("completion suggests unsupported output formats: %s", output.String())
+	}
+}

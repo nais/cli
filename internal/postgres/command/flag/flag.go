@@ -31,6 +31,7 @@ type (
 		TTL           time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
 		Host          string        `name:"host" usage:"Local loopback address (default 127.0.0.1)."`
 		Port          int           `name:"port" short:"p" usage:"Local port (default random)."`
+		Output        ProxyOutput   `name:"output" short:"o" usage:"Format output (human or env)."`
 		PrintPassword bool          `name:"print-password" usage:"Print the database password to stdout (sensitive)."`
 	}
 	InstanceCreate struct {
@@ -155,6 +156,15 @@ func (*HighAvailability) AutoComplete(context.Context, *naistrix.Arguments, stri
 }
 
 type Output string
+
+// ProxyOutput completes output formats for the long-running proxy command.
+type ProxyOutput string
+
+var _ naistrix.FlagAutoCompleter = (*ProxyOutput)(nil)
+
+func (*ProxyOutput) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"human", "env"}, "Available proxy output formats."
+}
 
 var _ naistrix.FlagAutoCompleter = (*Output)(nil)
 
