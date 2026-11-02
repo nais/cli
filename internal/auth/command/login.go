@@ -46,7 +46,7 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 			}
 
 			if term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
-				return offerNaisLogin(ctx, out, flags.Yes, naisapi.GetAuthenticatedUser, naisapi.Login, input.Confirm)
+				return offerNaisLogin(ctx, out, flags.Yes, flags.ConfirmLogin, naisapi.GetAuthenticatedUser, naisapi.Login, input.Confirm)
 			}
 
 			return nil
@@ -54,14 +54,14 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 	}
 }
 
-func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept bool, getUser func(context.Context) (naisapi.AuthenticatedUser, error), login naistrix.PreRunHookFunc, confirm func(string, ...input.ConfirmOptionFunc) (bool, error)) error {
+func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept, confirmLogin bool, getUser func(context.Context) (naisapi.AuthenticatedUser, error), login naistrix.PreRunHookFunc, confirm func(string, ...input.ConfirmOptionFunc) (bool, error)) error {
 	if _, err := getUser(ctx); !errors.Is(err, naisapi.ErrNeedsLogin) {
 		return err
 	}
 
 	out.Println()
 	out.Println("Many Nais commands require you to be logged in to both Google and Nais.")
-	if autoAccept {
+	if autoAccept || !confirmLogin {
 		return login(ctx, out)
 	}
 

@@ -20,17 +20,22 @@ func TestOfferNaisLogin(t *testing.T) {
 		name                                      string
 		checkErr, promptErr, loginErr             error
 		autoAccept, accept, wantPrompt, wantLogin bool
+		skipConfirmation                          bool
 		wantError                                 error
 	}{
 		{name: "already authenticated"},
 		{name: "already authenticated with auto-accept", autoAccept: true},
+		{name: "already authenticated with confirmation disabled", skipConfirmation: true},
 		{name: "login required and accepted", checkErr: fmt.Errorf("expired: %w", naisapi.ErrNeedsLogin), accept: true, wantPrompt: true, wantLogin: true},
 		{name: "login required and declined", checkErr: naisapi.ErrNeedsLogin, wantPrompt: true},
 		{name: "auto-accept skips prompt when login required", checkErr: naisapi.ErrNeedsLogin, autoAccept: true, wantLogin: true},
+		{name: "confirmation disabled skips prompt when login required", checkErr: naisapi.ErrNeedsLogin, skipConfirmation: true, wantLogin: true},
 		{name: "unrelated check failure", checkErr: checkError, wantError: checkError},
 		{name: "unrelated check failure with auto-accept", checkErr: checkError, autoAccept: true, wantError: checkError},
+		{name: "unrelated check failure with confirmation disabled", checkErr: checkError, skipConfirmation: true, wantError: checkError},
 		{name: "prompt failure", checkErr: naisapi.ErrNeedsLogin, promptErr: promptError, wantPrompt: true, wantError: promptError},
 		{name: "login failure", checkErr: naisapi.ErrNeedsLogin, accept: true, loginErr: loginError, wantPrompt: true, wantLogin: true, wantError: loginError},
+		{name: "login failure with confirmation disabled", checkErr: naisapi.ErrNeedsLogin, skipConfirmation: true, loginErr: loginError, wantLogin: true, wantError: loginError},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var output bytes.Buffer
@@ -38,7 +43,7 @@ func TestOfferNaisLogin(t *testing.T) {
 			out := naistrix.NewOutputWriter(&output, &level)
 			ctx := t.Context()
 			checks, prompts, logins := 0, 0, 0
-			err := offerNaisLogin(ctx, out, tt.autoAccept, func(got context.Context) (naisapi.AuthenticatedUser, error) {
+			err := offerNaisLogin(ctx, out, tt.autoAccept, !tt.skipConfirmation, func(got context.Context) (naisapi.AuthenticatedUser, error) {
 				checks++
 				if got != ctx {
 					t.Error("authentication check received the wrong context")
@@ -49,7 +54,7 @@ func TestOfferNaisLogin(t *testing.T) {
 				if checks != 1 || got != ctx || gotOut != out {
 					t.Error("login ran before the session check or received incorrect arguments")
 				}
-				if !tt.autoAccept && prompts != 1 {
+				if !tt.autoAccept && !tt.skipConfirmation && prompts != 1 {
 					t.Error("login ran before confirmation")
 				}
 				return tt.loginErr
