@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/apply"
 	"github.com/nais/cli/internal/apply/command/flag"
+	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/naistrix"
@@ -39,7 +40,13 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 				AutoCompleteExtensions: []string{"yaml", "yml"},
 			},
 		},
-		Flags:             flags,
+		Flags: flags,
+		SkipPreRunHooksFunc: func() []string {
+			if flags.DryRun {
+				return []string{auth.NaisLoginHookName}
+			}
+			return nil
+		},
 		ValidateFlagsFunc: validation.RequireTeamFlag(flags),
 		ValidateArgsFunc: func(ctx context.Context, args *naistrix.Arguments) error {
 			if args.Get("path") == "" {
