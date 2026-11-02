@@ -25,7 +25,7 @@ func NaisLoginHook(f *flags.GlobalFlags) naistrix.PreRunHook {
 	return loginHook(NaisLoginHookName, "Nais", naisapi.ErrNeedsLogin, func(ctx context.Context) error {
 		_, err := naisapi.GetAuthenticatedUser(ctx)
 		return err
-	}, naisapi.Login, func() bool { return f.IsVerbose() }, stdinIsTerminal, func() bool { return f.AutoLogin }, confirmLogin)
+	}, naisapi.Login, func() bool { return f.IsVerbose() }, stdinIsTerminal, func() bool { return f.ConfirmLogin }, confirmLogin)
 }
 
 // GcloudLoginHook checks the active gcloud account and Application Default Credentials.
@@ -35,7 +35,7 @@ func GcloudLoginHook(f *flags.GlobalFlags) naistrix.PreRunHook {
 		return err
 	}, func(ctx context.Context, out *naistrix.OutputWriter) error {
 		return gcloud.Login(ctx, out, f.IsVerbose())
-	}, f.IsVerbose, stdinIsTerminal, func() bool { return f.AutoLogin }, confirmLogin)
+	}, f.IsVerbose, stdinIsTerminal, func() bool { return f.ConfirmLogin }, confirmLogin)
 }
 
 func confirmLogin(prompt string) (bool, error) {
@@ -46,7 +46,7 @@ func stdinIsTerminal() bool {
 	return term.IsTerminal(int(os.Stdin.Fd())) // #nosec G115
 }
 
-func loginHook(name, provider string, needsLogin error, check func(context.Context) error, login naistrix.PreRunHookFunc, verbose, interactive, autoLogin func() bool, confirm func(string) (bool, error)) naistrix.PreRunHook {
+func loginHook(name, provider string, needsLogin error, check func(context.Context) error, login naistrix.PreRunHookFunc, verbose, interactive, shouldConfirm func() bool, confirm func(string) (bool, error)) naistrix.PreRunHook {
 	return naistrix.PreRunHook{
 		Name: name,
 		RunFunc: func(ctx context.Context, out *naistrix.OutputWriter) error {
@@ -58,8 +58,8 @@ func loginHook(name, provider string, needsLogin error, check func(context.Conte
 			if rejected, ok := errors.AsType[*naisapiauth.NeedsLoginError](err); ok && verbose() {
 				out.Printf("%s authentication required: %s\n", provider, rejected.Cause)
 			}
-			if !autoLogin() {
-				out.Println("Skip prompts: `nais defaults set autologin true`.")
+			if shouldConfirm() {
+				out.Println("Skip prompts: `nais defaults set confirm-login false`.")
 				accepted, promptErr := confirm(fmt.Sprintf("Log in to %s to continue?", provider))
 				if promptErr != nil {
 					return promptErr

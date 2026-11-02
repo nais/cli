@@ -1,7 +1,10 @@
 package flag
 
 import (
+	"context"
+
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/naistrix"
 )
 
 type Auth struct {
@@ -27,4 +30,17 @@ type PrintAccessToken struct {
 
 type WorkloadIdentityMetadata struct {
 	*Auth
+}
+
+type Status struct {
+	*Auth
+	Output StatusOutput `name:"output" short:"o" usage:"Format output (table or json)."`
+}
+
+type StatusOutput string
+
+var _ naistrix.FlagAutoCompleter = (*StatusOutput)(nil)
+
+func (*StatusOutput) AutoComplete(context.Context, *naistrix.Arguments, string, any) ([]string, string) {
+	return []string{"table", "json"}, "Available output formats."
 }

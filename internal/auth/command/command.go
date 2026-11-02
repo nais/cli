@@ -16,6 +16,7 @@ func Auth(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		SubCommands: []*naistrix.Command{
 			login(f),
 			logout(f),
+			status(f),
 			printAccessToken(f),
 			workloadIdentityMetadata(f),
 		},

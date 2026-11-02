@@ -13,23 +13,27 @@ import (
 	"github.com/nais/naistrix"
 )
 
-func TestAutoLoginDefaults(t *testing.T) {
+func TestConfirmLoginDefaults(t *testing.T) {
 	for _, tt := range []struct {
-		name     string
-		defaults [][]string
-		args     []string
-		want     bool
+		name        string
+		defaults    [][]string
+		args        []string
+		environment string
+		want        bool
 	}{
-		{name: "defaults to false"},
-		{name: "persisted true", defaults: [][]string{{"set", "autologin", "true"}}, want: true},
-		{name: "persisted false", defaults: [][]string{{"set", "autologin", "false"}}},
-		{name: "disable after enabling", defaults: [][]string{{"set", "autologin", "true"}, {"set", "autologin", "false"}}},
-		{name: "unset restores false", defaults: [][]string{{"set", "autologin", "true"}, {"unset", "autologin"}}},
-		{name: "flag overrides true", defaults: [][]string{{"set", "autologin", "true"}}, args: []string{"--autologin=false"}},
-		{name: "flag overrides false", defaults: [][]string{{"set", "autologin", "false"}}, args: []string{"--autologin"}, want: true},
+		{name: "defaults to true", want: true},
+		{name: "persisted true", defaults: [][]string{{"set", "confirm-login", "true"}}, want: true},
+		{name: "persisted false", defaults: [][]string{{"set", "confirm-login", "false"}}},
+		{name: "disable after enabling", defaults: [][]string{{"set", "confirm-login", "true"}, {"set", "confirm-login", "false"}}},
+		{name: "unset restores true", defaults: [][]string{{"set", "confirm-login", "false"}, {"unset", "confirm-login"}}, want: true},
+		{name: "flag overrides true", defaults: [][]string{{"set", "confirm-login", "true"}}, args: []string{"--confirm-login=false"}},
+		{name: "flag overrides false", defaults: [][]string{{"set", "confirm-login", "false"}}, args: []string{"--confirm-login"}, want: true},
+		{name: "environment disables confirmation", environment: "false"},
+		{name: "environment enables confirmation", defaults: [][]string{{"set", "confirm-login", "false"}}, environment: "true", want: true},
+		{name: "flag overrides environment", environment: "false", args: []string{"--confirm-login"}, want: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv("NAIS_AUTOLOGIN", "")
+			t.Setenv("NAIS_CONFIRM_LOGIN", tt.environment)
 			config := filepath.Join(t.TempDir(), "config.yaml")
 			for _, command := range tt.defaults {
 				app, _, err := New(io.Discard)
@@ -50,8 +54,8 @@ func TestAutoLoginDefaults(t *testing.T) {
 					Name: auth.NaisLoginHookName,
 					RunFunc: func(context.Context, *naistrix.OutputWriter) error {
 						called = true
-						if global.AutoLogin != tt.want {
-							t.Errorf("autologin = %v, want %v", global.AutoLogin, tt.want)
+						if global.ConfirmLogin != tt.want {
+							t.Errorf("confirm-login = %v, want %v", global.ConfirmLogin, tt.want)
 						}
 						return stop
 					},
@@ -90,6 +94,10 @@ func TestCommandLoginHooks(t *testing.T) {
 		{name: "nested login", args: []string{"auth", "login"}},
 		{name: "logout alias", args: []string{"logout"}},
 		{name: "token", args: []string{"auth", "token"}},
+		{name: "auth status", args: []string{"auth", "status"}},
+		{name: "auth status without login confirmation", args: []string{"auth", "status", "--confirm-login=false"}},
+		{name: "auth status JSON", args: []string{"auth", "status", "--output", "json"}},
+		{name: "auth status output completion", args: []string{"__complete", "auth", "status", "--output", ""}},
 		{name: "validate", args: []string{"validate"}},
 		{name: "device", args: []string{"device", "status"}},
 		{name: "debug", args: []string{"debug"}},

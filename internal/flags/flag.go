@@ -10,9 +10,9 @@ type GlobalFlags struct {
 }
 
 type AdditionalFlags struct {
-	AutoLogin   bool        `name:"autologin" usage:"Log in without confirmation when authentication is required."`
-	Team        string      `name:"team" short:"t" usage:"Specify the |team| to use for this command. Overrides the default team from configuration."`
-	Environment Environment `name:"environment" short:"e" usage:"Specify the |environment| to use for this command. Overrides the default environment from configuration."`
+	ConfirmLogin bool        `name:"confirm-login" usage:"Ask for confirmation before starting required login flows. Interactive terminals only."`
+	Team         string      `name:"team" short:"t" usage:"Specify the |team| to use for this command. Overrides the default team from configuration."`
+	Environment  Environment `name:"environment" short:"e" usage:"Specify the |environment| to use for this command. Overrides the default environment from configuration."`
 }
 
 // HasTeam returns true if the value is not nil and that the [AdditionalFlags.Team] field is not empty.
