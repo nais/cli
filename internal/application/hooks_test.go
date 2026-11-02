@@ -82,6 +82,9 @@ func TestCommandLoginHooks(t *testing.T) {
 		want []string
 	}{
 		{name: "Nais API", args: []string{"status"}, want: []string{auth.NaisLoginHookName}},
+		{name: "apply", args: []string{"apply"}, want: []string{auth.NaisLoginHookName}},
+		{name: "apply dry run", args: []string{"apply", "--dry-run"}},
+		{name: "apply dry run explicitly disabled", args: []string{"apply", "--dry-run=false"}, want: []string{auth.NaisLoginHookName}},
 		{name: "Nais Postgres", args: []string{"postgres", "list"}, want: []string{auth.NaisLoginHookName}},
 		{name: "application alias", args: []string{"apps", "list"}, want: []string{auth.NaisLoginHookName}},
 		{name: "workload metadata", args: []string{"auth", "workload-identity-metadata"}, want: []string{auth.NaisLoginHookName}},
