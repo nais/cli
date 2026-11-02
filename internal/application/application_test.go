@@ -18,7 +18,7 @@ func TestHelpForAllCommands(t *testing.T) {
 
 	for _, cmd := range app.Commands {
 		t.Run("Generate help "+cmd.Name, func(t *testing.T) {
-			runCommand(t, ctx, app.Application, cmd, []string{})
+			runCommand(t, ctx, cmd, []string{})
 		})
 	}
 }
@@ -44,8 +44,13 @@ func TestAllArgumentsHavePrompts(t *testing.T) {
 	checkCommands(app.Commands, "nais")
 }
 
-func runCommand(t *testing.T, ctx context.Context, app *naistrix.Application, cmd *naistrix.Command, parentCommands []string) {
+func runCommand(t *testing.T, ctx context.Context, cmd *naistrix.Command, parentCommands []string) {
 	t.Helper()
+
+	app, _, err := New(io.Discard)
+	if err != nil {
+		t.Fatalf("unable to create application: %v", err)
+	}
 
 	args := append(parentCommands, cmd.Name)
 	helpCmd := append(args, "--help")
@@ -55,7 +60,7 @@ func runCommand(t *testing.T, ctx context.Context, app *naistrix.Application, cm
 			t.Fatalf("failed to run command %q: %v", strings.Join(helpCmd, " "), err)
 		}
 	}()
-	err := app.Run(
+	err = app.Run(
 		naistrix.RunWithContext(ctx),
 		naistrix.RunWithArgs(helpCmd),
 	)
@@ -65,7 +70,7 @@ func runCommand(t *testing.T, ctx context.Context, app *naistrix.Application, cm
 
 	for _, subCmd := range cmd.SubCommands {
 		t.Run(subCmd.Name, func(t *testing.T) {
-			runCommand(t, ctx, app, subCmd, args)
+			runCommand(t, ctx, subCmd, args)
 		})
 	}
 }
