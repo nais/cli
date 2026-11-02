@@ -19,28 +19,28 @@ func TestLoginHook(t *testing.T) {
 	loginError := errors.New("login cancelled")
 	promptError := errors.New("prompt cancelled")
 	for _, tt := range []struct {
-		name        string
-		checkError  error
-		loginError  error
-		promptError error
-		decline     bool
-		interactive bool
-		autoLogin   bool
-		wantLogin   bool
-		wantError   error
+		name         string
+		checkError   error
+		loginError   error
+		promptError  error
+		decline      bool
+		interactive  bool
+		confirmLogin bool
+		wantLogin    bool
+		wantError    error
 	}{
-		{name: "already authenticated", interactive: true},
-		{name: "login before execution", checkError: fmt.Errorf("expired: %w", naisapi.ErrNeedsLogin), interactive: true, wantLogin: true},
-		{name: "noninteractive", checkError: naisapi.ErrNeedsLogin, wantError: naisapi.ErrNeedsLogin},
-		{name: "unrelated error", checkError: otherError, interactive: true, wantError: otherError},
-		{name: "failed login", checkError: naisapi.ErrNeedsLogin, interactive: true, loginError: loginError, wantLogin: true, wantError: loginError},
-		{name: "declined login", checkError: naisapi.ErrNeedsLogin, interactive: true, decline: true, wantError: naisapi.ErrNeedsLogin},
-		{name: "failed prompt", checkError: naisapi.ErrNeedsLogin, interactive: true, promptError: promptError, wantError: promptError},
-		{name: "autologin skips confirmation", checkError: naisapi.ErrNeedsLogin, interactive: true, autoLogin: true, wantLogin: true},
-		{name: "autologin stays noninteractive", checkError: naisapi.ErrNeedsLogin, autoLogin: true, wantError: naisapi.ErrNeedsLogin},
-		{name: "autologin already authenticated", interactive: true, autoLogin: true},
-		{name: "autologin unrelated error", checkError: otherError, interactive: true, autoLogin: true, wantError: otherError},
-		{name: "autologin failed login", checkError: naisapi.ErrNeedsLogin, interactive: true, autoLogin: true, loginError: loginError, wantLogin: true, wantError: loginError},
+		{name: "already authenticated", interactive: true, confirmLogin: true},
+		{name: "login before execution", checkError: fmt.Errorf("expired: %w", naisapi.ErrNeedsLogin), interactive: true, confirmLogin: true, wantLogin: true},
+		{name: "noninteractive", checkError: naisapi.ErrNeedsLogin, confirmLogin: true, wantError: naisapi.ErrNeedsLogin},
+		{name: "unrelated error", checkError: otherError, interactive: true, confirmLogin: true, wantError: otherError},
+		{name: "failed login", checkError: naisapi.ErrNeedsLogin, interactive: true, confirmLogin: true, loginError: loginError, wantLogin: true, wantError: loginError},
+		{name: "declined login", checkError: naisapi.ErrNeedsLogin, interactive: true, confirmLogin: true, decline: true, wantError: naisapi.ErrNeedsLogin},
+		{name: "failed prompt", checkError: naisapi.ErrNeedsLogin, interactive: true, confirmLogin: true, promptError: promptError, wantError: promptError},
+		{name: "confirmation disabled", checkError: naisapi.ErrNeedsLogin, interactive: true, wantLogin: true},
+		{name: "confirmation disabled stays noninteractive", checkError: naisapi.ErrNeedsLogin, wantError: naisapi.ErrNeedsLogin},
+		{name: "confirmation disabled already authenticated", interactive: true},
+		{name: "confirmation disabled unrelated error", checkError: otherError, interactive: true, wantError: otherError},
+		{name: "confirmation disabled failed login", checkError: naisapi.ErrNeedsLogin, interactive: true, loginError: loginError, wantLogin: true, wantError: loginError},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var output bytes.Buffer
@@ -54,7 +54,7 @@ func TestLoginHook(t *testing.T) {
 				}
 				return tt.checkError
 			}, func(got context.Context, _ *naistrix.OutputWriter) error {
-				if !tt.autoLogin && prompts != 1 {
+				if tt.confirmLogin && prompts != 1 {
 					t.Error("login started before confirmation")
 				}
 				logins++
@@ -62,7 +62,7 @@ func TestLoginHook(t *testing.T) {
 					t.Error("login did not receive execution context")
 				}
 				return tt.loginError
-			}, func() bool { return false }, func() bool { return tt.interactive }, func() bool { return tt.autoLogin }, func(prompt string) (bool, error) {
+			}, func() bool { return false }, func() bool { return tt.interactive }, func() bool { return tt.confirmLogin }, func(prompt string) (bool, error) {
 				if prompt != "Log in to Nais to continue?" {
 					t.Errorf("unexpected prompt: %q", prompt)
 				}
@@ -95,14 +95,14 @@ func TestLoginHook(t *testing.T) {
 			}
 			wantLogins := 0
 			wantPrompts := 0
-			if !tt.autoLogin && tt.interactive && errors.Is(tt.checkError, naisapi.ErrNeedsLogin) {
+			if tt.confirmLogin && tt.interactive && errors.Is(tt.checkError, naisapi.ErrNeedsLogin) {
 				wantPrompts = 1
 			}
 			if prompts != wantPrompts {
 				t.Errorf("prompts = %d, want %d", prompts, wantPrompts)
 			}
-			if hint := strings.Contains(output.String(), "nais defaults set autologin true"); hint != (wantPrompts == 1) {
-				t.Errorf("autologin hint visible = %v, want %v", hint, wantPrompts == 1)
+			if hint := strings.Contains(output.String(), "nais defaults set confirm-login false"); hint != (wantPrompts == 1) {
+				t.Errorf("confirmation hint visible = %v, want %v", hint, wantPrompts == 1)
 			}
 			if tt.wantLogin {
 				wantLogins = 1
@@ -117,8 +117,8 @@ func TestLoginHook(t *testing.T) {
 			if wantPrompts == 0 && strings.Contains(output.String(), "authentication required") {
 				t.Errorf("unexpected authentication announcement: %s", output.String())
 			}
-			if tt.autoLogin && output.Len() != 0 && tt.wantError == nil {
-				t.Errorf("unexpected autologin output: %s", output.String())
+			if !tt.confirmLogin && output.Len() != 0 && tt.wantError == nil {
+				t.Errorf("unexpected output with confirmation disabled: %s", output.String())
 			}
 		})
 	}
@@ -131,7 +131,7 @@ func TestLoginHookVerboseReason(t *testing.T) {
 			level := naistrix.OutputVerbosityLevelNormal
 			hook := loginHook("auth", "Nais", naisapi.ErrNeedsLogin, func(context.Context) error {
 				return &naisapiauth.NeedsLoginError{Cause: errors.New("refresh token rejected")}
-			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return verbose }, func() bool { return true }, func() bool { return false }, func(string) (bool, error) { return true, nil })
+			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return verbose }, func() bool { return true }, func() bool { return true }, func(string) (bool, error) { return true, nil })
 			if err := hook.RunFunc(t.Context(), naistrix.NewOutputWriter(&output, &level)); err != nil {
 				t.Fatal(err)
 			}
@@ -162,7 +162,7 @@ func TestLoginHookProviderMessages(t *testing.T) {
 			var prompt string
 			hook := loginHook(tt.name, tt.provider, tt.needsLogin, func(context.Context) error {
 				return tt.needsLogin
-			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return false }, func() bool { return true }, func() bool { return false }, func(text string) (bool, error) {
+			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return false }, func() bool { return true }, func() bool { return true }, func(text string) (bool, error) {
 				prompt = text
 				return true, nil
 			})
@@ -172,8 +172,8 @@ func TestLoginHookProviderMessages(t *testing.T) {
 			if prompt != tt.prompt {
 				t.Errorf("prompt = %q, want %q", prompt, tt.prompt)
 			}
-			if output.String() != "Skip prompts: `nais defaults set autologin true`.\n" {
-				t.Errorf("output = %q, want only the autologin hint", output.String())
+			if output.String() != "Skip prompts: `nais defaults set confirm-login false`.\n" {
+				t.Errorf("output = %q, want only the confirmation hint", output.String())
 			}
 		})
 	}

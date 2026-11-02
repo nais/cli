@@ -47,7 +47,7 @@ func New(w io.Writer) (*Application, *flags.GlobalFlags, error) {
 }
 
 func newApplication(w io.Writer, hookFactories ...func(*flags.GlobalFlags) naistrix.PreRunHook) (*Application, *flags.GlobalFlags, error) {
-	globalFlags := &flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{}}
+	globalFlags := &flags.GlobalFlags{AdditionalFlags: &flags.AdditionalFlags{ConfirmLogin: true}}
 	var hooks []naistrix.PreRunHook
 	for _, factory := range hookFactories {
 		hooks = append(hooks, factory(globalFlags))

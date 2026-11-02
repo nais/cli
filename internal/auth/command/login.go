@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"github.com/nais/cli/internal/auth"
@@ -45,20 +46,31 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 			}
 
 			if term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
-				out.Println()
-				out.Println("Many Nais commands require you to be logged in to both Google and Nais.")
-				if flags.Yes {
-					return naisapi.Login(ctx, out)
-				}
-
-				if result, err := input.Confirm("Would you like to also log in to Nais?", input.ConfirmWithDefaultTrue()); err != nil {
-					return err
-				} else if result {
-					return naisapi.Login(ctx, out)
-				}
+				return offerNaisLogin(ctx, out, flags.Yes, naisapi.GetAuthenticatedUser, naisapi.Login, input.Confirm)
 			}
 
 			return nil
 		},
 	}
+}
+
+func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept bool, getUser func(context.Context) (naisapi.AuthenticatedUser, error), login naistrix.PreRunHookFunc, confirm func(string, ...input.ConfirmOptionFunc) (bool, error)) error {
+	if _, err := getUser(ctx); !errors.Is(err, naisapi.ErrNeedsLogin) {
+		return err
+	}
+
+	out.Println()
+	out.Println("Many Nais commands require you to be logged in to both Google and Nais.")
+	if autoAccept {
+		return login(ctx, out)
+	}
+
+	result, err := confirm("Would you like to also log in to Nais?", input.ConfirmWithDefaultTrue())
+	if err != nil {
+		return err
+	}
+	if result {
+		return login(ctx, out)
+	}
+	return nil
 }
