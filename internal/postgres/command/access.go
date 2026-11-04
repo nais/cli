@@ -111,26 +111,31 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 
 			PostgreSQL clients must verify the server certificate. Use <info>nais postgres psql</info> for automatic TLS setup.
 
-			Use <info>--output env</info> for POSIX shell-quoted PostgreSQL environment variable assignments on stdout, with progress and warnings on stderr.
+			Use <info>--output env</info> for POSIX shell-quoted PostgreSQL environment variable assignments on stdout.
+			Use <info>--output json</info> for a JSON object with the same variable names as keys and string values, without shell quoting. Both formats send progress and warnings to stderr.
 			<info>PGHOST</info> is the TLS server name; <info>PGHOSTADDR</info> and <info>PGPORT</info> point to the local relay.
 			<info>PGDATABASE</info> is always <info>app</info>, the application database. <info>PGPASSWORD</info> is omitted unless <info>--print-password</info> is set.
 
 			Keep the proxy running while using these settings. The temporary <info>PGSSLROOTCERT</info> file is removed when it stops.
 
-			Source the output with auto-export enabled (<info>set -a</info>) to pass the variables to child processes.
+			Source the <info>env</info> output with auto-export enabled (<info>set -a</info>) to pass the variables to child processes.
+			Programs consuming <info>json</info> output should decode the object as soon as it is available, rather than waiting for EOF; the proxy keeps running until stopped.
 			Inherited PostgreSQL settings such as <info>PGSERVICE</info> may need to be unset.
 		`),
-		Examples:          []naistrix.CommandExample{{Description: "Write connection settings to a file while the proxy runs. In another terminal, use 'set -a; . ./postgres.env; set +a' to export them. Use a private file (umask 077) when adding --print-password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output env > postgres.env"}},
+		Examples: []naistrix.CommandExample{
+			{Description: "Write connection settings to a file while the proxy runs. In another terminal, use 'set -a; . ./postgres.env; set +a' to export them. Use a private file (umask 077) when adding --print-password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output env > postgres.env"},
+			{Description: "Emit connection settings as JSON for a program to consume. Add --print-password only when the program needs the password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output json"},
+		},
 		Args:              []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy", ChoicesFunc: postgresNameChoices(parent)}},
 		Flags:             f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if f.Output != "human" && f.Output != "env" {
-				return fmt.Errorf("unsupported output format %q: expected human or env", f.Output)
+			if f.Output != "human" && f.Output != "env" && f.Output != "json" {
+				return fmt.Errorf("unsupported output format %q: expected human, env, or json", f.Output)
 			}
 			report := func(message string) { out.Println(message) }
 			warn := func(message string) { out.Warnln(message) }
-			if f.Output == "env" {
+			if f.Output != "human" {
 				report = func(message string) { _, _ = fmt.Fprintln(os.Stderr, message) }
 				warn = report
 			}
@@ -169,13 +174,24 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 			if err := ca.Close(); err != nil {
 				return err
 			}
-			if f.Output == "env" {
+			if f.Output != "human" {
 				if f.PrintPassword {
 					report("Warning: printing a database password; protect the output and avoid terminal capture and shell history.")
 				}
 				env := postgresConnectionEnv(connection, listener.Addr().(*net.TCPAddr), ca.Name(), f.PrintPassword)
 				env = append(env, "PGDATABASE=app")
-				out.Printf("%s", postgresEnvOutput(env))
+				if f.Output == "json" {
+					values := make(map[string]string, len(env))
+					for _, entry := range env {
+						key, value, _ := strings.Cut(entry, "=")
+						values[key] = value
+					}
+					if err := out.JSON().Render(values); err != nil {
+						return err
+					}
+				} else {
+					out.Printf("%s", postgresEnvOutput(env))
+				}
 			} else {
 				out.Printf("Postgres relay listening at %s; user: %s; TLS server name: %s; CA: %s\n", listener.Addr(), connection.Username, connection.ServerName, ca.Name())
 				out.Println("Use host=<server name> hostaddr=<loopback IP> sslmode=verify-full sslrootcert=<CA path>. For automatic setup use 'nais postgres psql'.")
