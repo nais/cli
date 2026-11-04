@@ -38,6 +38,7 @@ nais.crt
 result
 /cli
 completions
-/docs/nais_*.md
+/docs/_commands/
+/docs/configuration.md
 /docs/_site
 /docs/Gemfile.lock

@@ -6,6 +6,7 @@ import (
 	"os"
 	"slices"
 
+	"github.com/MakeNowJust/heredoc/v2"
 	activityCommand "github.com/nais/cli/internal/activity/command"
 	alphaCommand "github.com/nais/cli/internal/alpha/command"
 	appCommand "github.com/nais/cli/internal/app/command"
@@ -59,6 +60,49 @@ func newApplication(w io.Writer, hookFactories ...func(*flags.GlobalFlags) naist
 		naistrix.ApplicationWithWriter(w),
 		naistrix.ApplicationWithPreRunHooks(hooks...),
 		naistrix.ApplicationWithDefaultsCommandSkipPreRunHooks(auth.NaisLoginHookName),
+		naistrix.ApplicationWithDefaultsDocumentation(
+			naistrix.DefaultDefinition{
+				Key:   "confirm-login",
+				Title: "Ask before starting required Nais or Google Cloud login flows.",
+				Description: heredoc.Doc(`
+					Defaults to <info>true</info>. When a command requires a Nais or Google Cloud login and you are using an interactive terminal, the CLI asks for confirmation before starting the required login flow. If you are already logged in, no confirmation is needed.
+
+					Set <info>nais defaults set confirm-login false</info> to start required login flows without this confirmation. This does not skip authentication or any browser interaction required by the login provider, and it does not disable other command confirmations.
+
+					Override it for one command with <info>--confirm-login=false</info> to skip the confirmation, or <info>--confirm-login=true</info> to ask.
+
+					Restore confirmations with <info>nais defaults set confirm-login true</info>, or remove the configured value with <info>nais defaults unset confirm-login</info> to use the built-in default.
+				`),
+			},
+			naistrix.DefaultDefinition{
+				Key:   "team",
+				Title: "Default Nais team for team-owned resources.",
+				Description: heredoc.Doc(`
+					The Nais team whose applications, jobs, and other team-owned resources you want to work with. Use the team's name as shown in Nais Console.
+
+					Set it with <info>nais defaults set team <team></info> to avoid repeating <info>--team</info> on commands that use a team.
+
+					Override it for one command with <info>--team <team></info> (or <info>-t <team></info>), for example <info>nais app list --team <team></info>.
+
+					Selecting a team does not grant access to its resources. Remove the default with <info>nais defaults unset team</info>.
+				`),
+			},
+			naistrix.DefaultDefinition{
+				Key:   "environment",
+				Title: "Default Nais environment for resource selection and filtering.",
+				Description: heredoc.Doc(`
+					The Nais environment in which to select or filter resources.
+
+					Set it with <info>nais defaults set environment <env></info> to avoid repeating <info>--environment</info> on commands that use an environment.
+
+					Override it for one command with <info>--environment <env></info> (or <info>-e <env></info>), for example <info>nais app list --environment <env></info>.
+
+					A stored environment also filters listings that would otherwise span environments, so check this default when resources seem to be missing.
+
+					Remove it with <info>nais defaults unset environment</info>; behavior without an environment depends on the command.
+				`),
+			},
+		),
 	)
 	if err != nil {
 		return nil, nil, err

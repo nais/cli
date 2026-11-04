@@ -8,6 +8,8 @@ The manual is generated from Markdown files in this directory and is available i
 mise run generate:docs
 ```
 
+Command pages are generated into `_commands/`, a Jekyll collection displayed under the **Commands** heading in the sidebar. Configuration remains a regular page above the collection. Collection permalinks preserve the existing command URLs.
+
 You can view the generated HTML documentation locally by using [Jekyll](https://jekyllrb.com/). When installed, run the following commands in this directory:
 
 ```bash
