@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"os/exec"
@@ -117,6 +118,9 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 			<info>PGDATABASE</info> is always <info>app</info>, the application database. <info>PGPASSWORD</info> is omitted unless <info>--print-password</info> is set.
 
 			Keep the proxy running while using these settings. The temporary <info>PGSSLROOTCERT</info> file is removed when it stops.
+			Use <info>--exit-on-stdin-eof</info> to stop the proxy gracefully when stdin reaches EOF after setup.
+			A program managing the proxy can keep its stdin pipe open while using the connection, then close it to stop the proxy and clean up.
+			Without this flag, stdin EOF does not stop the proxy. With it, stdin connected to <info>/dev/null</info> causes the proxy to stop immediately after setup.
 
 			Source the <info>env</info> output with auto-export enabled (<info>set -a</info>) to pass the variables to child processes.
 			Programs consuming <info>json</info> output should decode the object as soon as it is available, rather than waiting for EOF; the proxy keeps running until stopped.
@@ -125,6 +129,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 		Examples: []naistrix.CommandExample{
 			{Description: "Write connection settings to a file while the proxy runs. In another terminal, use 'set -a; . ./postgres.env; set +a' to export them. Use a private file (umask 077) when adding --print-password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output env > postgres.env"},
 			{Description: "Emit connection settings as JSON for a program to consume. Add --print-password only when the program needs the password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output json"},
+			{Description: "Let a supervising program stop the proxy by closing its stdin pipe after consuming the JSON connection settings.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output json --exit-on-stdin-eof"},
 		},
 		Args:              []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy", ChoicesFunc: postgresNameChoices(parent)}},
 		Flags:             f,
@@ -200,6 +205,20 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 					out.Errorf("Warning: printing a database password; avoid terminal capture and shell history.\n")
 					out.Printf("Database password (sensitive): %s\n", connection.Password)
 				}
+			}
+			if f.ExitOnStdinEOF {
+				stdinCtx, cancel := context.WithCancel(ctx)
+				defer cancel()
+				// Start after prompts and connection output so stdin is not consumed by
+				// competing readers during setup. Do not close the process's stdin:
+				// on other shutdown paths this read ends when the process exits.
+				stdin := os.Stdin
+				go func() {
+					if _, err := io.Copy(io.Discard, stdin); err == nil {
+						cancel()
+					}
+				}()
+				ctx = stdinCtx
 			}
 			return relay.Serve(ctx, listener, relay.Tunnel{Endpoint: connection.RelayEndpoint, Access: connection.RelayAccess, Token: connection.RelayToken})
 		},
