@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
@@ -105,7 +106,20 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 	}
 	return &naistrix.Command{
 		Name: "proxy", Title: "Expose a Nais Postgres relay tunnel locally.",
-		Description:       "Request personal access and listen on loopback. If --reason is omitted, prompt for an audit reason interactively. PostgreSQL clients must verify the server certificate; use psql for automatic TLS setup. Use --output env for POSIX shell-quoted PostgreSQL environment variable assignments on stdout, with progress and warnings on stderr. PGHOST is the TLS server name; PGHOSTADDR and PGPORT point to the local relay. PGPASSWORD is omitted unless --print-password is set. Keep the proxy running while using these settings; the temporary PGSSLROOTCERT file is removed when it stops. Source the output with auto-export enabled (set -a) to pass the variables to child processes. Inherited PostgreSQL settings such as PGSERVICE may need to be unset.",
+		Description: heredoc.Doc(`
+			Request personal access and listen on loopback. If <info>--reason</info> is omitted, prompt for an audit reason interactively.
+
+			PostgreSQL clients must verify the server certificate. Use <info>nais postgres psql</info> for automatic TLS setup.
+
+			Use <info>--output env</info> for POSIX shell-quoted PostgreSQL environment variable assignments on stdout, with progress and warnings on stderr.
+			<info>PGHOST</info> is the TLS server name; <info>PGHOSTADDR</info> and <info>PGPORT</info> point to the local relay.
+			<info>PGDATABASE</info> is always <info>app</info>, the application database. <info>PGPASSWORD</info> is omitted unless <info>--print-password</info> is set.
+
+			Keep the proxy running while using these settings. The temporary <info>PGSSLROOTCERT</info> file is removed when it stops.
+
+			Source the output with auto-export enabled (<info>set -a</info>) to pass the variables to child processes.
+			Inherited PostgreSQL settings such as <info>PGSERVICE</info> may need to be unset.
+		`),
 		Examples:          []naistrix.CommandExample{{Description: "Write connection settings to a file while the proxy runs. In another terminal, use 'set -a; . ./postgres.env; set +a' to export them. Use a private file (umask 077) when adding --print-password.", Command: "my-postgres -t my-team --reason 'Investigating issue' --output env > postgres.env"}},
 		Args:              []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to proxy", ChoicesFunc: postgresNameChoices(parent)}},
 		Flags:             f,
@@ -159,7 +173,9 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 				if f.PrintPassword {
 					report("Warning: printing a database password; protect the output and avoid terminal capture and shell history.")
 				}
-				out.Printf("%s", postgresEnvOutput(postgresConnectionEnv(connection, listener.Addr().(*net.TCPAddr), ca.Name(), f.PrintPassword)))
+				env := postgresConnectionEnv(connection, listener.Addr().(*net.TCPAddr), ca.Name(), f.PrintPassword)
+				env = append(env, "PGDATABASE=app")
+				out.Printf("%s", postgresEnvOutput(env))
 			} else {
 				out.Printf("Postgres relay listening at %s; user: %s; TLS server name: %s; CA: %s\n", listener.Addr(), connection.Username, connection.ServerName, ca.Name())
 				out.Println("Use host=<server name> hostaddr=<loopback IP> sslmode=verify-full sslrootcert=<CA path>. For automatic setup use 'nais postgres psql'.")

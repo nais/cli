@@ -140,10 +140,7 @@ func TestProxyOutput(t *testing.T) {
 						t.Errorf("non-assignment on stdout: %q", line)
 					}
 				}
-				if strings.Contains(got, "PGDATABASE=") {
-					t.Errorf("proxy output must leave database selection to the client: %s", got)
-				}
-				for _, want := range []string{"PGHOST='postgres.internal'", "PGHOSTADDR='127.0.0.1'", "PGUSER='user@example.com'", "PGSSLMODE='verify-full'"} {
+				for _, want := range []string{"PGHOST='postgres.internal'", "PGHOSTADDR='127.0.0.1'", "PGUSER='user@example.com'", "PGSSLMODE='verify-full'", "PGDATABASE='app'"} {
 					if !strings.Contains(got, want) {
 						t.Errorf("stdout missing %q: %s", want, got)
 					}
