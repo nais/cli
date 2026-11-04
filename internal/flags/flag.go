@@ -11,8 +11,8 @@ type GlobalFlags struct {
 
 type AdditionalFlags struct {
 	ConfirmLogin bool        `name:"confirm-login" usage:"Ask for confirmation before starting required login flows. Interactive terminals only."`
-	Team         string      `name:"team" short:"t" usage:"Specify the |team| to use for this command. Overrides the default team from configuration."`
-	Environment  Environment `name:"environment" short:"e" usage:"Specify the |environment| to use for this command. Overrides the default environment from configuration."`
+	Team         string      `name:"team" short:"t" usage:"Select the Nais |team| that owns the resources. Overrides the team configured with nais defaults set team."`
+	Environment  Environment `name:"environment" short:"e" usage:"Select or filter by Nais |environment|, for example dev-gcp or prod-gcp. Overrides the environment configured with nais defaults set environment."`
 }
 
 // HasTeam returns true if the value is not nil and that the [AdditionalFlags.Team] field is not empty.
