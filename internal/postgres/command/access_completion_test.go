@@ -58,12 +58,12 @@ func TestProxyOutputCompletion(t *testing.T) {
 		t.Fatal(err)
 	}
 	lines := strings.Split(output.String(), "\n")
-	for _, format := range []string{"human", "env"} {
+	for _, format := range []string{"human", "env", "json"} {
 		if !slices.Contains(lines, format) {
 			t.Errorf("completion missing %q: %s", format, output.String())
 		}
 	}
-	if slices.Contains(lines, "table") || slices.Contains(lines, "json") {
+	if slices.Contains(lines, "table") {
 		t.Errorf("completion suggests unsupported output formats: %s", output.String())
 	}
 }
