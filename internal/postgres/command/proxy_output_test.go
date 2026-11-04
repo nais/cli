@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -34,16 +35,41 @@ func (w *proxyOutputWriter) Write(p []byte) (int, error) {
 func TestProxyOutput(t *testing.T) {
 	const password = "secret-password'\"$()\\= with spaces"
 	for _, tt := range []struct {
-		name, format string
-		password     bool
+		name, format        string
+		password            bool
+		exitOnEOF           bool
+		closedStdin         bool
+		cancelWithOpenStdin bool
 	}{
 		{name: "default human output"},
 		{name: "env without password", format: "env"},
 		{name: "env with password", format: "env", password: true},
 		{name: "json without password", format: "json"},
 		{name: "json with password", format: "json", password: true},
+		{name: "env stops on stdin EOF", format: "env", exitOnEOF: true},
+		{name: "json stops on stdin EOF", format: "json", exitOnEOF: true, password: true},
+		{name: "human stops on stdin EOF", exitOnEOF: true},
+		{name: "already closed stdin stops with flag", format: "json", exitOnEOF: true, closedStdin: true},
+		{name: "closed stdin is ignored by default", format: "json", closedStdin: true},
+		{name: "context cancellation still stops with open stdin", format: "json", exitOnEOF: true, cancelWithOpenStdin: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
+			stdin, input, err := os.Pipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			previousStdin := os.Stdin
+			os.Stdin = stdin
+			t.Cleanup(func() {
+				os.Stdin = previousStdin
+				_ = input.Close()
+				_ = stdin.Close()
+			})
+			if tt.closedStdin {
+				if err := input.Close(); err != nil {
+					t.Fatal(err)
+				}
+			}
 			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
 			if err != nil {
 				t.Fatal(err)
@@ -85,6 +111,31 @@ func TestProxyOutput(t *testing.T) {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
+			var stopTimer *time.Timer
+			defer func() {
+				if stopTimer != nil {
+					stopTimer.Stop()
+				}
+			}()
+			stopProxy := sync.OnceFunc(func() {
+				if tt.exitOnEOF && !tt.cancelWithOpenStdin {
+					if !tt.closedStdin {
+						// Input data must be ignored, not mistaken for EOF.
+						if _, err := input.WriteString("ignored input\n"); err != nil {
+							t.Error(err)
+						}
+						if err := input.Close(); err != nil {
+							t.Error(err)
+						}
+					}
+				} else if tt.closedStdin {
+					// With the flag disabled, EOF must not stop the proxy before
+					// this explicit cancellation occurs.
+					stopTimer = time.AfterFunc(100*time.Millisecond, cancel)
+				} else {
+					cancel()
+				}
+			})
 			var output proxyOutputWriter
 			var caPath, address string
 			output.onWrite = func(text string) {
@@ -113,9 +164,9 @@ func TestProxyOutput(t *testing.T) {
 					if err != nil || info.Mode().Perm() != 0o600 {
 						t.Errorf("CA file must be owner-only: %v", err)
 					}
-					cancel()
+					stopProxy()
 				} else if strings.Contains(text, "Database password is only available") {
-					cancel()
+					stopProxy()
 				}
 			}
 			app, global, err := naistrix.NewApplication("proxy-test", "Test proxy", "test", naistrix.ApplicationWithWriter(&output))
@@ -136,11 +187,20 @@ func TestProxyOutput(t *testing.T) {
 			if tt.password {
 				args = append(args, "--print-password")
 			}
+			if tt.exitOnEOF {
+				args = append(args, "--exit-on-stdin-eof")
+			}
 			if err := app.Run(naistrix.RunWithArgs(args), naistrix.RunWithContext(ctx)); err != nil {
 				t.Fatal(err)
 			}
 			if ctx.Err() == context.DeadlineExceeded {
 				t.Fatal("proxy did not print connection settings")
+			}
+			if tt.exitOnEOF && !tt.cancelWithOpenStdin && ctx.Err() != nil {
+				t.Fatalf("expected stdin EOF to stop the proxy without canceling the parent context: %v", ctx.Err())
+			}
+			if !tt.exitOnEOF && tt.closedStdin && ctx.Err() == nil {
+				t.Fatal("stdin EOF stopped the proxy without --exit-on-stdin-eof")
 			}
 			got := output.String()
 			if tt.format != "" {
