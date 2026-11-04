@@ -114,6 +114,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 
 			Use <info>--output env</info> for POSIX shell-quoted PostgreSQL environment variable assignments on stdout.
 			Use <info>--output json</info> for a JSON object with the same variable names as keys and string values, without shell quoting. Both formats send progress and warnings to stderr.
+			After writing the settings, stdout is closed so consumers can read to EOF without waiting for the proxy to stop. EOF alone does not indicate success; consumers must validate the settings and handle setup failures.
 			<info>PGHOST</info> is the TLS server name; <info>PGHOSTADDR</info> and <info>PGPORT</info> point to the local relay.
 			<info>PGDATABASE</info> is always <info>app</info>, the application database. <info>PGPASSWORD</info> is omitted unless <info>--print-password</info> is set.
 
@@ -123,7 +124,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 			Without this flag, stdin EOF does not stop the proxy. With it, stdin connected to <info>/dev/null</info> causes the proxy to stop immediately after setup.
 
 			Source the <info>env</info> output with auto-export enabled (<info>set -a</info>) to pass the variables to child processes.
-			Programs consuming <info>json</info> output should decode the object as soon as it is available, rather than waiting for EOF; the proxy keeps running until stopped.
+			Programs consuming <info>json</info> output can read to EOF and decode the object while keeping the proxy's stdin pipe open until they are finished using the connection.
 			Inherited PostgreSQL settings such as <info>PGSERVICE</info> may need to be unset.
 		`),
 		Examples: []naistrix.CommandExample{
@@ -196,6 +197,11 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 					}
 				} else {
 					out.Printf("%s", postgresEnvOutput(env))
+				}
+				// EOF marks the end of connection settings, not the end of the
+				// tunnel's lifetime. All subsequent diagnostics go to stderr.
+				if err := os.Stdout.Close(); err != nil {
+					return fmt.Errorf("closing proxy stdout: %w", err)
 				}
 			} else {
 				out.Printf("Postgres relay listening at %s; user: %s; TLS server name: %s; CA: %s\n", listener.Addr(), connection.Username, connection.ServerName, ca.Name())
