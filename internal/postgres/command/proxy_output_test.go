@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -54,6 +56,13 @@ func TestProxyOutput(t *testing.T) {
 		{name: "context cancellation still stops with open stdin", format: "json", exitOnEOF: true, cancelWithOpenStdin: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
+			stdout, err := os.CreateTemp(t.TempDir(), "stdout")
+			if err != nil {
+				t.Fatal(err)
+			}
+			previousStdout := os.Stdout
+			os.Stdout = stdout
+			t.Cleanup(func() { os.Stdout = previousStdout; _ = stdout.Close() })
 			stdin, input, err := os.Pipe()
 			if err != nil {
 				t.Fatal(err)
@@ -77,38 +86,7 @@ func TestProxyOutput(t *testing.T) {
 			previous := os.Stderr
 			os.Stderr = stderr
 			t.Cleanup(func() { os.Stderr = previous; _ = stderr.Close() })
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var request struct{ OperationName string }
-				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-					t.Error(err)
-				}
-				w.Header().Set("Content-Type", "application/json")
-				var response string
-				switch request.OperationName {
-				case "GetTeamPostgreses":
-					response = `{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"activeBranch":null}],"pageInfo":{"hasNextPage":false}}}}}`
-				case "CreatePostgresAccess":
-					response = `{"data":{"createPostgresAccess":{"name":"access"}}}`
-				case "GetPostgresAccessStatus":
-					response = `{"data":{"team":{"environment":{"postgresAccess":{"state":"READY"}}}}}`
-				case "GetPostgresAccessConnection":
-					encodedPassword, err := json.Marshal(password)
-					if err != nil {
-						t.Error(err)
-					}
-					response = fmt.Sprintf(`{"data":{"team":{"environment":{"postgresAccess":{"connection":{"username":"user@example.com","password":%s,"caCertificate":"test-ca","serverName":"postgres.internal","relayEndpoint":"https://relay.example.com","relayAccess":"team/access","relayToken":"secret-relay-token"}}}}}}`, encodedPassword)
-				default:
-					t.Errorf("unexpected operation: %s", request.OperationName)
-				}
-				_, _ = fmt.Fprint(w, response)
-			}))
-			defer server.Close()
-			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
-			t.Setenv("HOME", t.TempDir())
-			config := filepath.Join(t.TempDir(), "config.yaml")
-			if err := os.WriteFile(config, []byte("{}\n"), 0o600); err != nil {
-				t.Fatal(err)
-			}
+			config := setupProxyOutputAPI(t, password)
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
 			var stopTimer *time.Timer
@@ -202,6 +180,12 @@ func TestProxyOutput(t *testing.T) {
 			if !tt.exitOnEOF && tt.closedStdin && ctx.Err() == nil {
 				t.Fatal("stdin EOF stopped the proxy without --exit-on-stdin-eof")
 			}
+			_, stdoutErr := stdout.Stat()
+			if tt.format != "" && !errors.Is(stdoutErr, os.ErrClosed) {
+				t.Errorf("machine-readable output must close stdout: %v", stdoutErr)
+			} else if tt.format == "" && stdoutErr != nil {
+				t.Errorf("human output must leave stdout open: %v", stdoutErr)
+			}
 			got := output.String()
 			if tt.format != "" {
 				if tt.format == "json" {
@@ -265,6 +249,163 @@ func TestProxyOutput(t *testing.T) {
 				if strings.Contains(got+string(diagnostics), secret) {
 					t.Errorf("output contains relay connection material %q", secret)
 				}
+			}
+		})
+	}
+}
+
+func setupProxyOutputAPI(t *testing.T, password string) string {
+	t.Helper()
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var request struct{ OperationName string }
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Error(err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		var response string
+		switch request.OperationName {
+		case "GetTeamPostgreses":
+			response = `{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"activeBranch":null}],"pageInfo":{"hasNextPage":false}}}}}`
+		case "CreatePostgresAccess":
+			response = `{"data":{"createPostgresAccess":{"name":"access"}}}`
+		case "GetPostgresAccessStatus":
+			response = `{"data":{"team":{"environment":{"postgresAccess":{"state":"READY"}}}}}`
+		case "GetPostgresAccessConnection":
+			encodedPassword, err := json.Marshal(password)
+			if err != nil {
+				t.Error(err)
+			}
+			response = fmt.Sprintf(`{"data":{"team":{"environment":{"postgresAccess":{"connection":{"username":"user@example.com","password":%s,"caCertificate":"test-ca","serverName":"postgres.internal","relayEndpoint":"https://relay.example.com","relayAccess":"team/access","relayToken":"secret-relay-token"}}}}}}`, encodedPassword)
+		default:
+			t.Errorf("unexpected operation: %s", request.OperationName)
+		}
+		_, _ = fmt.Fprint(w, response)
+	}))
+	t.Cleanup(server.Close)
+	t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
+	t.Setenv("HOME", t.TempDir())
+	config := filepath.Join(t.TempDir(), "config.yaml")
+	if err := os.WriteFile(config, []byte("{}\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return config
+}
+
+func TestProxyStdoutEOFBeforeShutdown(t *testing.T) {
+	for _, format := range []string{"env", "json"} {
+		t.Run(format, func(t *testing.T) {
+			config := setupProxyOutputAPI(t, "secret-password")
+			stdout, output, err := os.Pipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer func() { _ = stdout.Close(); _ = output.Close() }()
+			stdin, input, err := os.Pipe()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer func() { _ = stdin.Close(); _ = input.Close() }()
+			previousStdout, previousStdin := os.Stdout, os.Stdin
+			os.Stdout, os.Stdin = output, stdin
+			defer func() { os.Stdout, os.Stdin = previousStdout, previousStdin }()
+			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+			if err != nil {
+				t.Fatal(err)
+			}
+			previousStderr := os.Stderr
+			os.Stderr = stderr
+			defer func() { os.Stderr = previousStderr; _ = stderr.Close() }()
+
+			app, global, err := naistrix.NewApplication("proxy-test", "Test proxy", "test", naistrix.ApplicationWithWriter(output))
+			if err != nil {
+				t.Fatal(err)
+			}
+			additional := &flags.AdditionalFlags{}
+			if err := app.AddGlobalFlags(additional); err != nil {
+				t.Fatal(err)
+			}
+			if err := app.AddCommand(Postgres(&flags.GlobalFlags{GlobalFlags: global, AdditionalFlags: additional})); err != nil {
+				t.Fatal(err)
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			args := []string{"--config", config, "postgres", "proxy", "orders", "-t", "my-team", "-e", "dev-gcp", "--branch", "main", "--reason", "Investigating issue", "--output", format, "--print-password", "--exit-on-stdin-eof"}
+			var runErr error
+			done := make(chan struct{})
+			go func() {
+				runErr = app.Run(naistrix.RunWithArgs(args), naistrix.RunWithContext(ctx))
+				close(done)
+			}()
+			// Always join the command before restoring process-wide streams, including
+			// when an assertion fails. Cancellation handles a missing stdout close.
+			defer func() {
+				cancel()
+				_ = input.Close()
+				<-done
+				if runErr != nil {
+					t.Errorf("proxy failed: %v", runErr)
+				}
+			}()
+			if err := stdout.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			data, err := io.ReadAll(stdout)
+			if err != nil {
+				t.Fatalf("reading settings must reach EOF while proxy is running: %v", err)
+			}
+			values := make(map[string]string)
+			if format == "json" {
+				if err := json.Unmarshal(data, &values); err != nil {
+					t.Fatalf("invalid JSON settings: %v: %s", err, data)
+				}
+			} else {
+				for line := range strings.SplitSeq(strings.TrimSpace(string(data)), "\n") {
+					key, value, ok := strings.Cut(line, "=")
+					if !ok || !strings.HasPrefix(value, "'") || !strings.HasSuffix(value, "'") {
+						t.Fatalf("invalid env assignment: %q", line)
+					}
+					values[key] = strings.Trim(value, "'")
+				}
+			}
+			if values["PGDATABASE"] != "app" || values["PGPASSWORD"] != "secret-password" || values["PGSSLMODE"] != "verify-full" {
+				t.Fatalf("incomplete settings at EOF: %v", values)
+			}
+			if ctx.Err() != nil {
+				t.Fatalf("proxy did not remain running: %v", ctx.Err())
+			}
+			select {
+			case <-done:
+				t.Fatalf("proxy exited before stdin was closed: %v", runErr)
+			default:
+			}
+			caPath := values["PGSSLROOTCERT"]
+			if content, err := os.ReadFile(caPath); err != nil || string(content) != "test-ca" {
+				t.Fatalf("CA must remain available after stdout EOF: %q, %v", content, err)
+			}
+			address := net.JoinHostPort(values["PGHOSTADDR"], values["PGPORT"])
+			if listener, err := net.Listen("tcp", address); err == nil {
+				_ = listener.Close()
+				t.Fatal("proxy listener was closed along with stdout")
+			}
+			if err := input.Close(); err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case <-done:
+				if runErr != nil {
+					t.Fatal(runErr)
+				}
+			case <-ctx.Done():
+				t.Fatal("proxy did not stop after stdin EOF")
+			}
+			if _, err := os.Stat(caPath); !os.IsNotExist(err) {
+				t.Errorf("CA was not removed on shutdown: %v", err)
+			}
+			listener, err := net.Listen("tcp", address)
+			if err != nil {
+				t.Errorf("listener was not closed on shutdown: %v", err)
+			} else {
+				_ = listener.Close()
 			}
 		})
 	}
