@@ -10,7 +10,7 @@ See the [CLI documentation](https://cli.nais.io) for usage instructions.
 
 Follow the [shared relay integration requirements](https://github.com/nais/relay/blob/main/SERVICE-INTEGRATION.md) and fill in the [integration template](https://github.com/nais/relay/blob/main/SERVICE-INTEGRATION-TEMPLATE.md) in the product's design or rollout documentation. A new command needs a product-specific authenticated NAIS API mutation and an approved target policy; the CLI does not create `RelayAccess` resources.
 
-### Install the required go version:
+### Install development tools
 
 ```bash
 mise install
@@ -34,22 +34,26 @@ mise run test
 ./bin/nais --version
 ```
 
-### Setup shell completion for local builds
+### Set up shell completion for local builds
 
+For example, enable Zsh completion in the current session:
+
+```zsh
+source <(./bin/nais completion zsh)
 ```
-source <(./bin/nais completion zsh|bash|fish|powershell)
-```
+
+Supported shells: Zsh, Bash, Fish, and PowerShell. Run `./bin/nais completion <shell> --help` for shell-specific setup instructions.
 
 ## Instrumentation
 
 We use [otel](https://opentelemetry.io) for instrumentation and record the user interaction with the CLI to see if we can
 optimize the user experience.
 
-We respect your privacy and do not collect any data if you set the environment variable `DO_NOT_TRACK`
-according to the [Do Not Track](https://consoledonottrack.com).
+We respect your privacy and do not collect telemetry if you set the environment variable `DO_NOT_TRACK=1`,
+following the [Do Not Track](https://consoledonottrack.com) convention.
 
 There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-cli?orgId=1&from=now-24h&to=now).
 
 ## Contributing
 
-This repo uses [Conventional Commits](https://www.conventionalcommits.org/). Please read up on how to format your commit messages. Please see the [pre-commit hook](script/semantic-commit-hook.sh) to see which types we allow.
+This repo uses [Conventional Commits](https://www.conventionalcommits.org/). Please read up on how to format your commit messages. Please see the [commit-msg hook](script/semantic-commit-hook.sh) to see which types we allow.
