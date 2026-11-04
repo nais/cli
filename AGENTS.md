@@ -1,58 +1,70 @@
 # AGENTS.md - Nais CLI
 
-Kjøreregler for AI-agenter som jobber med dette prosjektet.
+Guidelines for AI agents working on this project.
 
 ## Nais MCP Server
 
-Se `MCP.md` for dokumentasjon om Nais MCP server som lar AI-agenter interagere med Nais-plattformen via GraphQL.
+See `MCP.md` for documentation on the Nais MCP server, which lets AI agents interact with the Nais platform through GraphQL.
 
-## Prosjektstruktur
+## Project Structure
 
-- **Go-prosjekt** med Cobra for CLI-kommandoer
-- Kommandoer i `internal/` organisert etter domene
-- GraphQL-klient generert med genqlient
-- Schema i `schema.graphql`
+- **Go project** using naistrix (which wraps Cobra) for CLI commands
+- Commands in `internal/`, organized by domain
+- GraphQL client generated with genqlient
+- Schema in `schema.graphql`
 
-## Vanlige kommandoer
+## Common Commands
 
-| Oppgave | Kommando |
+| Task | Command |
 |---------|----------|
-| Bygg | `mise run build` |
-| Kjør tester | `mise run test` |
-| Formater kode | `mise run fmt` |
-| Alle sjekker | `mise run check` |
-| Statisk analyse | `mise run check:staticcheck` |
-| Generer GraphQL | `mise run generate:graphql` |
-| Oppdater schema (lokal API) | `mise run update:graphql-schema:local` |
-| Oppdater schema (live API) | `mise run update:graphql-schema:live` |
-| Kjør lokalt mot lokal API | `mise run local` |
+| Build | `mise run build` |
+| Run tests | `mise run test` |
+| Format code | `mise run fmt` |
+| Run all checks | `mise run check` |
+| Static analysis | `mise run check:staticcheck` |
+| Generate GraphQL | `mise run generate:graphql` |
+| Generate documentation | `mise run generate:docs` |
+| Serve documentation locally | `mise run docs` |
+| Update schema (local API) | `mise run update:graphql-schema:local` |
+| Update schema (live API) | `mise run update:graphql-schema:live` |
+| Run locally against the local API | `mise run local` |
 
-## Kjøre CLI lokalt
+## Running the CLI Locally
 
 ```bash
 mise run build
 ./bin/nais --version
-./bin/nais <kommando>
+./bin/nais <command>
 ```
 
-## Arbeidsflyt
+## Workflow
 
-1. **Før du endrer kode**: Les relevante filer for å forstå eksisterende mønstre
-2. **Etter endringer i GraphQL queries**: Kjør `mise run generate:graphql`
-3. **Ved schema-endringer i API**: Kjør `mise run update:graphql-schema:local`
-4. **Etter alle endringer**: Kjør `mise run test` og `mise run fmt`
+- **Branches**: Make changes and commits on a descriptive feature, fix, or docs branch, not directly on `main` or other default/protected branches. Check the current branch before editing code or committing, and create an appropriate branch if needed. Reuse an existing task branch when appropriate. Commit directly to a default/protected branch only when the user explicitly requests it.
+
+1. **Before changing code**: Read the relevant files to understand existing patterns
+2. **After changing GraphQL queries**: Run `mise run generate:graphql`
+3. **When the API schema changes**: Run `mise run update:graphql-schema:local`
+4. **After all changes**: Run `mise run test` and `mise run fmt`
 
 ## GraphQL
 
-- Schema ligger i `schema.graphql` (hentes fra nais-api)
-- Klient genereres med genqlient (konfig i `genqlient.yaml`)
-- Queries defineres i Go-filer med `# @genqlient` kommentarer
+- The schema is in `schema.graphql` (fetched from nais-api)
+- The client is generated with genqlient (configured in `genqlient.yaml`)
+- Queries are defined in Go files using `# @genqlient` comments
 
-## Viktige konvensjoner
+## Key Conventions
 
-- **Kommandostruktur**: Hver kommando i egen pakke under `internal/`
-- **Formattering**: `gofumpt`
-- **Commit-meldinger**: Conventional Commits (se `script/semantic-commit-hook.sh`)
+- **Command structure**: Commands are generally grouped by domain under `internal/<domain>/command/`, with individual commands in separate files
+- **Formatting**: `gofumpt`
+- **Commit messages**: Conventional Commits (see `script/semantic-commit-hook.sh`)
+
+## Documentation
+
+- The CLI manual is generated with naistrix and built with Jekyll using the Just the Docs theme. See `docs/README.md` for local setup.
+- Edit command titles, descriptions, flag help, and examples in the Go source, not in generated Markdown.
+- Register defaults key documentation with `naistrix.ApplicationWithDefaultsDocumentation` in `internal/application/application.go`. Keep `Title` short (aim for 80 visible characters or fewer) and use `Description` for detailed guidance and examples, using `heredoc.Doc` for multiline prose.
+- Run `mise run generate:docs` after changing documentation in Go. Command pages are moved into the generated `docs/_commands/` collection, while `docs/configuration.md` remains a regular page. Both are ignored by Git.
+- `mise run docs` generates the documentation once and starts Jekyll with browser live reload. Go source changes require rerunning `mise run generate:docs`; there is no Go source watcher.
 
 ## Postgres CLI completion contract
 
@@ -61,7 +73,7 @@ mise run build
 - Top-level `postgres create <postgres>` must not suggest existing names; update/delete may. `--version` suggests 18; update `--high-availability` suggests true/false.
 - Global `--environment` completion lists all environments; do not shadow it or add command-specific global flag completion. Deploy the API schema/mutations before the CLI; completion and listing require the API's `Team.postgreses` contract.
 
-## Lokal utvikling
+## Local Development
 
 ```bash
 mise install
