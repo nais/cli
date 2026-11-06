@@ -38,19 +38,4 @@ func TestPostgresChoices(t *testing.T) {
 	if got, want := postgresEnvironments(postgreses, "branchless"), []string{"dev-gcp"}; !slices.Equal(got, want) {
 		t.Errorf("branchless environments = %v, want %v", got, want)
 	}
-	if env, help := branchCompletionEnvironment(postgreses, "relay-test", ""); env != "" || help == "" {
-		t.Errorf("ambiguous Postgres environment: %q, %q", env, help)
-	}
-	if env, help := branchCompletionEnvironment(postgreses, "other", ""); env != "prod-gcp" || help != "" {
-		t.Errorf("single Postgres environment: %q, %q", env, help)
-	}
-	if env, help := branchCompletionEnvironment(postgreses, "relay-test", "dev-gcp"); env != "dev-gcp" || help != "" {
-		t.Errorf("explicit Postgres environment: %q, %q", env, help)
-	}
-	if got, help := branchSuggestions([]postgres.Branch{{Name: "restore"}, {Name: "main"}}); !slices.Equal(got, []string{"main", "restore"}) || help == "" {
-		t.Errorf("branch suggestions = %v, %q", got, help)
-	}
-	if got, help := branchSuggestions([]postgres.Branch{{Name: "main"}}); !slices.Equal(got, []string{"main"}) || help != "" {
-		t.Errorf("single branch suggestion = %v, %q", got, help)
-	}
 }

@@ -16,7 +16,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "postgres",
 		Title:       "Manage Nais Postgres instances.",
-		Description: "Manage Nais Postgres instances, branches, and brokered personal access.",
+		Description: "Manage Nais Postgres databases and brokered personal access.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			listCommand(flags),
@@ -36,7 +36,7 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "list",
 		Title:       "List Nais Postgres databases for a team.",
-		Description: "List Nais Postgres databases owned by a team. Use 'postgres branch list <postgres>' to list branches.",
+		Description: "List Nais Postgres databases owned by a team and their platform-reported status.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			labelFilters, err := labels.ParseFilters(flags.Labels)
@@ -62,7 +62,18 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 				}
 				return nil
 			}
-			return out.Table().Render(ret)
+			type row struct {
+				Name             output.Link
+				Environment      string
+				Version          string
+				HighAvailability bool `heading:"HA"`
+				Status           postgres.State
+			}
+			rows := make([]row, 0, len(ret))
+			for _, pg := range ret {
+				rows = append(rows, row{pg.Name, pg.Environment, pg.Version, pg.HighAvailability, pg.State})
+			}
+			return out.Table().Render(rows)
 		},
 	}
 }

@@ -12,90 +12,6 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
-// ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload includes the requested fields of the GraphQL type ActivatePostgresBranchPayload.
-// The GraphQL type's documentation follows.
-//
-// Result of requesting activation; compare desiredActiveBranch to activeBranch while activation is in progress.
-type ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload struct {
-	// Postgres with desired and observed branch selection.
-	Postgres ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres `json:"postgres"`
-}
-
-// GetPostgres returns ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload.Postgres, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload) GetPostgres() ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres {
-	return v.Postgres
-}
-
-// ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres includes the requested fields of the GraphQL type Postgres.
-// The GraphQL type's documentation follows.
-//
-// A Postgres whose active branch can change.
-type ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres struct {
-	// Branch requested for activation; may differ from the active branch while activation is in progress.
-	DesiredActiveBranch *string `json:"desiredActiveBranch"`
-	// Currently observed active branch, if selected.
-	ActiveBranch *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch `json:"activeBranch"`
-}
-
-// GetDesiredActiveBranch returns ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres.DesiredActiveBranch, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres) GetDesiredActiveBranch() *string {
-	return v.DesiredActiveBranch
-}
-
-// GetActiveBranch returns ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgres) GetActiveBranch() *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayloadPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// Request a branch for normal workloads. It becomes active once its database is ready.
-type ActivatePostgresBranchInput struct {
-	// Request a branch for normal workloads. It becomes active once its database is ready.
-	Postgres string `json:"postgres"`
-	// Request a branch for normal workloads. It becomes active once its database is ready.
-	Branch string `json:"branch"`
-	// Request a branch for normal workloads. It becomes active once its database is ready.
-	EnvironmentName string `json:"environmentName"`
-	// Request a branch for normal workloads. It becomes active once its database is ready.
-	TeamSlug string `json:"teamSlug"`
-}
-
-// GetPostgres returns ActivatePostgresBranchInput.Postgres, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchInput) GetPostgres() string { return v.Postgres }
-
-// GetBranch returns ActivatePostgresBranchInput.Branch, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchInput) GetBranch() string { return v.Branch }
-
-// GetEnvironmentName returns ActivatePostgresBranchInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns ActivatePostgresBranchInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchInput) GetTeamSlug() string { return v.TeamSlug }
-
-// ActivatePostgresBranchResponse is returned by ActivatePostgresBranch on success.
-type ActivatePostgresBranchResponse struct {
-	// Request activation of an available PostgresBranch. The observed active branch may lag behind the request.
-	ActivatePostgresBranch ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload `json:"activatePostgresBranch"`
-}
-
-// GetActivatePostgresBranch returns ActivatePostgresBranchResponse.ActivatePostgresBranch, and is useful for accessing the field via an interface.
-func (v *ActivatePostgresBranchResponse) GetActivatePostgresBranch() ActivatePostgresBranchActivatePostgresBranchActivatePostgresBranchPayload {
-	return v.ActivatePostgresBranch
-}
-
 type ActivityLogActivityType string
 
 const (
@@ -1165,7 +1081,7 @@ type CreatePostgresAccessInput struct {
 	// Input for creating a time-limited personal Postgres access.
 	Postgres string `json:"postgres"`
 	// Input for creating a time-limited personal Postgres access.
-	Branch string `json:"branch"`
+	Branch string `json:"branch,omitempty"`
 	// Input for creating a time-limited personal Postgres access.
 	TeamSlug string `json:"teamSlug"`
 	// Input for creating a time-limited personal Postgres access.
@@ -1212,86 +1128,6 @@ func (v *CreatePostgresAccessResponse) GetCreatePostgresAccess() CreatePostgresA
 	return v.CreatePostgresAccess
 }
 
-// CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload includes the requested fields of the GraphQL type CreatePostgresBranchPayload.
-// The GraphQL type's documentation follows.
-//
-// Result of creating a branch; provisioning continues asynchronously.
-type CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload struct {
-	// The new branch.
-	PostgresBranch CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch `json:"postgresBranch"`
-}
-
-// GetPostgresBranch returns CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload.PostgresBranch, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload) GetPostgresBranch() CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch {
-	return v.PostgresBranch
-}
-
-// CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-	// Current observed state of the branch.
-	State PostgresBranchState `json:"state"`
-}
-
-// GetName returns CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetState returns CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayloadPostgresBranch) GetState() PostgresBranchState {
-	return v.State
-}
-
-// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-type CreatePostgresBranchInput struct {
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	Postgres string `json:"postgres"`
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	Branch string `json:"branch"`
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	SourceBranch string `json:"sourceBranch"`
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	TargetTime time.Time `json:"targetTime"`
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	EnvironmentName string `json:"environmentName"`
-	// Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-	TeamSlug string `json:"teamSlug"`
-}
-
-// GetPostgres returns CreatePostgresBranchInput.Postgres, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetPostgres() string { return v.Postgres }
-
-// GetBranch returns CreatePostgresBranchInput.Branch, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetBranch() string { return v.Branch }
-
-// GetSourceBranch returns CreatePostgresBranchInput.SourceBranch, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetSourceBranch() string { return v.SourceBranch }
-
-// GetTargetTime returns CreatePostgresBranchInput.TargetTime, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetTargetTime() time.Time { return v.TargetTime }
-
-// GetEnvironmentName returns CreatePostgresBranchInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns CreatePostgresBranchInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchInput) GetTeamSlug() string { return v.TeamSlug }
-
-// CreatePostgresBranchResponse is returned by CreatePostgresBranch on success.
-type CreatePostgresBranchResponse struct {
-	// Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time.
-	CreatePostgresBranch CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload `json:"createPostgresBranch"`
-}
-
-// GetCreatePostgresBranch returns CreatePostgresBranchResponse.CreatePostgresBranch, and is useful for accessing the field via an interface.
-func (v *CreatePostgresBranchResponse) GetCreatePostgresBranch() CreatePostgresBranchCreatePostgresBranchCreatePostgresBranchPayload {
-	return v.CreatePostgresBranch
-}
-
 // CreatePostgresCreatePostgresCreatePostgresPayload includes the requested fields of the GraphQL type CreatePostgresPayload.
 // The GraphQL type's documentation follows.
 //
@@ -1309,7 +1145,7 @@ func (v *CreatePostgresCreatePostgresCreatePostgresPayload) GetPostgres() Create
 // CreatePostgresCreatePostgresCreatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
-// A Postgres whose active branch can change.
+// A managed Postgres database.
 type CreatePostgresCreatePostgresCreatePostgresPayloadPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
@@ -1644,47 +1480,6 @@ func (v *DeleteOpenSearchResponse) GetDeleteOpenSearch() DeleteOpenSearchDeleteO
 	return v.DeleteOpenSearch
 }
 
-// DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload includes the requested fields of the GraphQL type DeletePostgresBranchPayload.
-type DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload struct {
-	// Whether the PostgresBranch was deleted.
-	PostgresBranchDeleted *bool `json:"postgresBranchDeleted"`
-}
-
-// GetPostgresBranchDeleted returns DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload.PostgresBranchDeleted, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload) GetPostgresBranchDeleted() *bool {
-	return v.PostgresBranchDeleted
-}
-
-type DeletePostgresBranchInput struct {
-	Postgres        string `json:"postgres"`
-	Branch          string `json:"branch"`
-	EnvironmentName string `json:"environmentName"`
-	TeamSlug        string `json:"teamSlug"`
-}
-
-// GetPostgres returns DeletePostgresBranchInput.Postgres, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchInput) GetPostgres() string { return v.Postgres }
-
-// GetBranch returns DeletePostgresBranchInput.Branch, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchInput) GetBranch() string { return v.Branch }
-
-// GetEnvironmentName returns DeletePostgresBranchInput.EnvironmentName, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchInput) GetEnvironmentName() string { return v.EnvironmentName }
-
-// GetTeamSlug returns DeletePostgresBranchInput.TeamSlug, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchInput) GetTeamSlug() string { return v.TeamSlug }
-
-// DeletePostgresBranchResponse is returned by DeletePostgresBranch on success.
-type DeletePostgresBranchResponse struct {
-	// Delete a PostgresBranch that is not active on its Postgres.
-	DeletePostgresBranch DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload `json:"deletePostgresBranch"`
-}
-
-// GetDeletePostgresBranch returns DeletePostgresBranchResponse.DeletePostgresBranch, and is useful for accessing the field via an interface.
-func (v *DeletePostgresBranchResponse) GetDeletePostgresBranch() DeletePostgresBranchDeletePostgresBranchDeletePostgresBranchPayload {
-	return v.DeletePostgresBranch
-}
-
 // DeletePostgresDeletePostgresDeletePostgresPayload includes the requested fields of the GraphQL type DeletePostgresPayload.
 // The GraphQL type's documentation follows.
 //
@@ -1855,7 +1650,7 @@ type FindWorkloadsForCveCveCVE struct {
 	DetailsLink string `json:"detailsLink"`
 	// CVSS score of the CVE.
 	CvssScore *float64 `json:"cvssScore"`
-	// Affected workloads
+	// Affected workloads within the team selection of the CVE list, when applicable.
 	Workloads FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection `json:"workloads"`
 }
 
@@ -2222,72 +2017,6 @@ type FindWorkloadsForCveResponse struct {
 
 // GetCve returns FindWorkloadsForCveResponse.Cve, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveResponse) GetCve() FindWorkloadsForCveCveCVE { return v.Cve }
-
-// GetActivePostgresBranchResponse is returned by GetActivePostgresBranch on success.
-type GetActivePostgresBranchResponse struct {
-	// Get a team by its slug.
-	Team GetActivePostgresBranchTeam `json:"team"`
-}
-
-// GetTeam returns GetActivePostgresBranchResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchResponse) GetTeam() GetActivePostgresBranchTeam { return v.Team }
-
-// GetActivePostgresBranchTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
-type GetActivePostgresBranchTeam struct {
-	// Get a specific environment for the team.
-	Environment GetActivePostgresBranchTeamEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns GetActivePostgresBranchTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchTeam) GetEnvironment() GetActivePostgresBranchTeamEnvironment {
-	return v.Environment
-}
-
-// GetActivePostgresBranchTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetActivePostgresBranchTeamEnvironment struct {
-	// Postgres in the team environment.
-	Postgres GetActivePostgresBranchTeamEnvironmentPostgres `json:"postgres"`
-}
-
-// GetPostgres returns GetActivePostgresBranchTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchTeamEnvironment) GetPostgres() GetActivePostgresBranchTeamEnvironmentPostgres {
-	return v.Postgres
-}
-
-// GetActivePostgresBranchTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
-// The GraphQL type's documentation follows.
-//
-// A Postgres whose active branch can change.
-type GetActivePostgresBranchTeamEnvironmentPostgres struct {
-	// Currently observed active branch, if selected.
-	ActiveBranch *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
-}
-
-// GetActiveBranch returns GetActivePostgresBranchTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchTeamEnvironmentPostgres) GetActiveBranch() *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetActivePostgresBranchTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
-}
 
 // GetAllConfigsResponse is returned by GetAllConfigs on success.
 type GetAllConfigsResponse struct {
@@ -3422,6 +3151,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage(
 // GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceVersionIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesUnleashReleaseChannelIssue
@@ -3461,6 +3191,8 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesMissingSbomIssue) implementsG
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -3518,6 +3250,9 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 		return json.Unmarshal(b, *v)
 	case "OpenSearchIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue)
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceStateIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue)
@@ -3644,6 +3379,14 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue:
+		typename = "PostgresBranchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue:
@@ -4318,6 +4061,41 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssueOpenSearch) Ge
 // GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssueOpenSearch.Typename, and is useful for accessing the field via an interface.
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssueOpenSearch) GetTypename() *string {
 	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue includes the requested fields of the GraphQL type PostgresBranchIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres branch, including inactive branches.
+type GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue struct {
+	Typename        *string                                                        `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue.Id, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) GetId() string { return v.Id }
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesPostgresBranchIssue) GetMessage() string {
+	return v.Message
 }
 
 // GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
@@ -10482,6 +10260,7 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesMissingSbomIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
@@ -10517,6 +10296,8 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -10574,6 +10355,9 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 		return json.Unmarshal(b, *v)
 	case "OpenSearchIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchIssue":
+		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue)
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceStateIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue)
@@ -10684,6 +10468,14 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue:
+		typename = "PostgresBranchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue:
@@ -10827,6 +10619,31 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue includes the requested fields of the GraphQL type PostgresBranchIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres branch, including inactive branches.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -20254,6 +20071,7 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInva
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMissingSbomIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceVersionIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesUnleashReleaseChannelIssue
@@ -20289,6 +20107,8 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesMiss
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
@@ -20346,6 +20166,9 @@ func __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNo
 		return json.Unmarshal(b, *v)
 	case "OpenSearchIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue)
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceStateIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue)
@@ -20456,6 +20279,14 @@ func __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNode
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue:
+		typename = "PostgresBranchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesSqlInstanceStateIssue:
@@ -20599,6 +20430,31 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpen
 
 // GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesOpenSearchIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue includes the requested fields of the GraphQL type PostgresBranchIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres branch, including inactive branches.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesPostgresBranchIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -21672,7 +21528,7 @@ func (v *GetPostgresAccessConnectionTeamEnvironment) GetPostgresAccess() GetPost
 // GetPostgresAccessConnectionTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
 // The GraphQL type's documentation follows.
 //
-// A time-limited personal access request for a Postgres branch.
+// A time-limited personal access request for a Postgres database.
 type GetPostgresAccessConnectionTeamEnvironmentPostgresAccess struct {
 	// EXPERIMENTAL: DO NOT USE
 	// Get connection materials for this ready access. Only its owner can read them.
@@ -21782,7 +21638,7 @@ func (v *GetPostgresAccessStatusTeamEnvironment) GetPostgresAccess() GetPostgres
 // GetPostgresAccessStatusTeamEnvironmentPostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
 // The GraphQL type's documentation follows.
 //
-// A time-limited personal access request for a Postgres branch.
+// A time-limited personal access request for a Postgres database.
 type GetPostgresAccessStatusTeamEnvironmentPostgresAccess struct {
 	// High-level state of the access.
 	State PostgresAccessState `json:"state"`
@@ -21797,425 +21653,6 @@ func (v *GetPostgresAccessStatusTeamEnvironmentPostgresAccess) GetState() Postgr
 
 // GetMessage returns GetPostgresAccessStatusTeamEnvironmentPostgresAccess.Message, and is useful for accessing the field via an interface.
 func (v *GetPostgresAccessStatusTeamEnvironmentPostgresAccess) GetMessage() *string { return v.Message }
-
-// GetPostgresBranchStatusResponse is returned by GetPostgresBranchStatus on success.
-type GetPostgresBranchStatusResponse struct {
-	// Get a team by its slug.
-	Team GetPostgresBranchStatusTeam `json:"team"`
-}
-
-// GetTeam returns GetPostgresBranchStatusResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusResponse) GetTeam() GetPostgresBranchStatusTeam { return v.Team }
-
-// GetPostgresBranchStatusTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
-type GetPostgresBranchStatusTeam struct {
-	// Get a specific environment for the team.
-	Environment GetPostgresBranchStatusTeamEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns GetPostgresBranchStatusTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeam) GetEnvironment() GetPostgresBranchStatusTeamEnvironment {
-	return v.Environment
-}
-
-// GetPostgresBranchStatusTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetPostgresBranchStatusTeamEnvironment struct {
-	// Postgres in the team environment.
-	Postgres GetPostgresBranchStatusTeamEnvironmentPostgres `json:"postgres"`
-}
-
-// GetPostgres returns GetPostgresBranchStatusTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironment) GetPostgres() GetPostgresBranchStatusTeamEnvironmentPostgres {
-	return v.Postgres
-}
-
-// GetPostgresBranchStatusTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
-// The GraphQL type's documentation follows.
-//
-// A Postgres whose active branch can change.
-type GetPostgresBranchStatusTeamEnvironmentPostgres struct {
-	// Branch requested for activation; may differ from the active branch while activation is in progress.
-	DesiredActiveBranch *string `json:"desiredActiveBranch"`
-	// Currently observed active branch, if selected.
-	ActiveBranch *GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
-	// Branches belonging to this Postgres.
-	Branches GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection `json:"branches"`
-}
-
-// GetDesiredActiveBranch returns GetPostgresBranchStatusTeamEnvironmentPostgres.DesiredActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgres) GetDesiredActiveBranch() *string {
-	return v.DesiredActiveBranch
-}
-
-// GetActiveBranch returns GetPostgresBranchStatusTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgres) GetActiveBranch() *GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// GetBranches returns GetPostgresBranchStatusTeamEnvironmentPostgres.Branches, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgres) GetBranches() GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection {
-	return v.Branches
-}
-
-// GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
-type GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection struct {
-	Nodes []GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
-}
-
-// GetNodes returns GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnection) GetNodes() []GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
-	return v.Nodes
-}
-
-// GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-	// Current observed state of the branch.
-	State PostgresBranchState `json:"state"`
-}
-
-// GetName returns GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetState returns GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchStatusTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
-	return v.State
-}
-
-// GetPostgresBranchWorkloadsResponse is returned by GetPostgresBranchWorkloads on success.
-type GetPostgresBranchWorkloadsResponse struct {
-	// Get a team by its slug.
-	Team GetPostgresBranchWorkloadsTeam `json:"team"`
-}
-
-// GetTeam returns GetPostgresBranchWorkloadsResponse.Team, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsResponse) GetTeam() GetPostgresBranchWorkloadsTeam { return v.Team }
-
-// GetPostgresBranchWorkloadsTeam includes the requested fields of the GraphQL type Team.
-// The GraphQL type's documentation follows.
-//
-// The team type represents a team on the [Nais platform](https://nais.io/).
-//
-// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
-//
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
-type GetPostgresBranchWorkloadsTeam struct {
-	// Get a specific environment for the team.
-	Environment GetPostgresBranchWorkloadsTeamEnvironment `json:"environment"`
-}
-
-// GetEnvironment returns GetPostgresBranchWorkloadsTeam.Environment, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeam) GetEnvironment() GetPostgresBranchWorkloadsTeamEnvironment {
-	return v.Environment
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetPostgresBranchWorkloadsTeamEnvironment struct {
-	// Postgres in the team environment.
-	Postgres GetPostgresBranchWorkloadsTeamEnvironmentPostgres `json:"postgres"`
-}
-
-// GetPostgres returns GetPostgresBranchWorkloadsTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironment) GetPostgres() GetPostgresBranchWorkloadsTeamEnvironmentPostgres {
-	return v.Postgres
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
-// The GraphQL type's documentation follows.
-//
-// A Postgres whose active branch can change.
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgres struct {
-	// Branch with this local name in this Postgres.
-	Branch GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch `json:"branch"`
-}
-
-// GetBranch returns GetPostgresBranchWorkloadsTeamEnvironmentPostgres.Branch, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgres) GetBranch() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch {
-	return v.Branch
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch struct {
-	// Workloads explicitly using this branch, or following it while it is active.
-	Workloads GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection `json:"workloads"`
-}
-
-// GetWorkloads returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch.Workloads, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranch) GetWorkloads() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection {
-	return v.Workloads
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection includes the requested fields of the GraphQL type WorkloadConnection.
-// The GraphQL type's documentation follows.
-//
-// Workload connection.
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection struct {
-	// List of nodes.
-	Nodes []GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload `json:"-"`
-	// Pagination information.
-	PageInfo GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
-}
-
-// GetNodes returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) GetNodes() []GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload {
-	return v.Nodes
-}
-
-// GetPageInfo returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) GetPageInfo() GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo {
-	return v.PageInfo
-}
-
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection
-		Nodes []json.RawMessage `json:"nodes"`
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	{
-		dst := &v.Nodes
-		src := firstPass.Nodes
-		*dst = make(
-			[]GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload,
-			len(src))
-		for i, src := range src {
-			dst := &(*dst)[i]
-			if len(src) != 0 && string(src) != "null" {
-				err = __unmarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(
-					src, dst)
-				if err != nil {
-					return fmt.Errorf(
-						"unable to unmarshal GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes: %w", err)
-				}
-			}
-		}
-	}
-	return nil
-}
-
-type __premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection struct {
-	Nodes []json.RawMessage `json:"nodes"`
-
-	PageInfo GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo `json:"pageInfo"`
-}
-
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection) __premarshalJSON() (*__premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection, error) {
-	var retval __premarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection
-
-	{
-
-		dst := &retval.Nodes
-		src := v.Nodes
-		*dst = make(
-			[]json.RawMessage,
-			len(src))
-		for i, src := range src {
-			dst := &(*dst)[i]
-			var err error
-			*dst, err = __marshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(
-				&src)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"unable to marshal GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnection.Nodes: %w", err)
-			}
-		}
-	}
-	retval.PageInfo = v.PageInfo
-	return &retval, nil
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication includes the requested fields of the GraphQL type Application.
-// The GraphQL type's documentation follows.
-//
-// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
-//
-// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication struct {
-	Typename *string `json:"__typename"`
-	// Interface for workloads.
-	Name string `json:"name"`
-}
-
-// GetTypename returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) GetTypename() *string {
-	return v.Typename
-}
-
-// GetName returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) GetName() string {
-	return v.Name
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob includes the requested fields of the GraphQL type Job.
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob struct {
-	Typename *string `json:"__typename"`
-	// Interface for workloads.
-	Name string `json:"name"`
-}
-
-// GetTypename returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) GetTypename() *string {
-	return v.Typename
-}
-
-// GetName returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) GetName() string {
-	return v.Name
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload includes the requested fields of the GraphQL interface Workload.
-//
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload is implemented by the following types:
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob
-// The GraphQL type's documentation follows.
-//
-// Interface for workloads.
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload interface {
-	implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload()
-	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() *string
-	// GetName returns the interface-field "name" from its implementation.
-	// The GraphQL interface field's documentation follows.
-	//
-	// Interface for workloads.
-	GetName() string
-}
-
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication) implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload() {
-}
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob) implementsGraphQLInterfaceGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload() {
-}
-
-func __unmarshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(b []byte, v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload) error {
-	if string(b) == "null" {
-		return nil
-	}
-
-	var tn struct {
-		TypeName string `json:"__typename"`
-	}
-	err := json.Unmarshal(b, &tn)
-	if err != nil {
-		return err
-	}
-
-	switch tn.TypeName {
-	case "Application":
-		*v = new(GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication)
-		return json.Unmarshal(b, *v)
-	case "Job":
-		*v = new(GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob)
-		return json.Unmarshal(b, *v)
-	case "":
-		return fmt.Errorf(
-			"response was missing Workload.__typename")
-	default:
-		return fmt.Errorf(
-			`unexpected concrete type for GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload: "%v"`, tn.TypeName)
-	}
-}
-
-func __marshalGetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload(v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload) ([]byte, error) {
-
-	var typename string
-	switch v := (*v).(type) {
-	case *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication:
-		typename = "Application"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesApplication
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob:
-		typename = "Job"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesJob
-		}{typename, v}
-		return json.Marshal(result)
-	case nil:
-		return []byte("null"), nil
-	default:
-		return nil, fmt.Errorf(
-			`unexpected concrete type for GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionNodesWorkload: "%T"`, v)
-	}
-}
-
-// GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-// The GraphQL type's documentation follows.
-//
-// # This type is used for paginating the connection
-//
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo struct {
-	// Whether or not there exists a next page in the connection.
-	HasNextPage bool `json:"hasNextPage"`
-	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo) GetHasNextPage() bool {
-	return v.HasNextPage
-}
-
-// GetEndCursor returns GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *GetPostgresBranchWorkloadsTeamEnvironmentPostgresBranchWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string {
-	return v.EndCursor
-}
 
 // GetPostgresResponse is returned by GetPostgres on success.
 type GetPostgresResponse struct {
@@ -22256,7 +21693,7 @@ func (v *GetPostgresTeamEnvironment) GetPostgres() GetPostgresTeamEnvironmentPos
 // GetPostgresTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
-// A Postgres whose active branch can change.
+// A managed Postgres database.
 type GetPostgresTeamEnvironmentPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
@@ -22264,16 +21701,12 @@ type GetPostgresTeamEnvironmentPostgres struct {
 	MajorVersion string `json:"majorVersion"`
 	// Whether high availability is configured.
 	HighAvailability bool `json:"highAvailability"`
+	// Observed database state; availability does not guarantee successful client connections.
+	State PostgresState `json:"state"`
 	// Requested CPU, memory and disk size, when present on this Postgres.
 	Resources GetPostgresTeamEnvironmentPostgresResources `json:"resources"`
 	// User-defined labels on this Postgres.
 	Labels []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel `json:"labels"`
-	// Branch requested for activation; may differ from the active branch while activation is in progress.
-	DesiredActiveBranch *string `json:"desiredActiveBranch"`
-	// Currently observed active branch, if selected.
-	ActiveBranch *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch `json:"activeBranch"`
-	// Branches belonging to this Postgres.
-	Branches GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection `json:"branches"`
 }
 
 // GetName returns GetPostgresTeamEnvironmentPostgres.Name, and is useful for accessing the field via an interface.
@@ -22285,6 +21718,9 @@ func (v *GetPostgresTeamEnvironmentPostgres) GetMajorVersion() string { return v
 // GetHighAvailability returns GetPostgresTeamEnvironmentPostgres.HighAvailability, and is useful for accessing the field via an interface.
 func (v *GetPostgresTeamEnvironmentPostgres) GetHighAvailability() bool { return v.HighAvailability }
 
+// GetState returns GetPostgresTeamEnvironmentPostgres.State, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetState() PostgresState { return v.State }
+
 // GetResources returns GetPostgresTeamEnvironmentPostgres.Resources, and is useful for accessing the field via an interface.
 func (v *GetPostgresTeamEnvironmentPostgres) GetResources() GetPostgresTeamEnvironmentPostgresResources {
 	return v.Resources
@@ -22293,66 +21729,6 @@ func (v *GetPostgresTeamEnvironmentPostgres) GetResources() GetPostgresTeamEnvir
 // GetLabels returns GetPostgresTeamEnvironmentPostgres.Labels, and is useful for accessing the field via an interface.
 func (v *GetPostgresTeamEnvironmentPostgres) GetLabels() []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel {
 	return v.Labels
-}
-
-// GetDesiredActiveBranch returns GetPostgresTeamEnvironmentPostgres.DesiredActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgres) GetDesiredActiveBranch() *string {
-	return v.DesiredActiveBranch
-}
-
-// GetActiveBranch returns GetPostgresTeamEnvironmentPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgres) GetActiveBranch() *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// GetBranches returns GetPostgresTeamEnvironmentPostgres.Branches, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgres) GetBranches() GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection {
-	return v.Branches
-}
-
-// GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection includes the requested fields of the GraphQL type PostgresBranchConnection.
-type GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection struct {
-	Nodes []GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch `json:"nodes"`
-}
-
-// GetNodes returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnection) GetNodes() []GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch {
-	return v.Nodes
-}
-
-// GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-	// Current observed state of the branch.
-	State PostgresBranchState `json:"state"`
-}
-
-// GetName returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetName() string {
-	return v.Name
-}
-
-// GetState returns GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch.State, and is useful for accessing the field via an interface.
-func (v *GetPostgresTeamEnvironmentPostgresBranchesPostgresBranchConnectionNodesPostgresBranch) GetState() PostgresBranchState {
-	return v.State
 }
 
 // GetPostgresTeamEnvironmentPostgresLabelsResourceLabel includes the requested fields of the GraphQL type ResourceLabel.
@@ -32200,6 +31576,7 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesMissingSbomIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
@@ -32233,6 +31610,8 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -32290,6 +31669,9 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 		return json.Unmarshal(b, *v)
 	case "OpenSearchIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchIssue":
+		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue)
 		return json.Unmarshal(b, *v)
 	case "SqlInstanceStateIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue)
@@ -32400,6 +31782,14 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue:
+		typename = "PostgresBranchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue:
@@ -32519,6 +31909,25 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 
 // GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue.Severity, and is useful for accessing the field via an interface.
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesOpenSearchIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue includes the requested fields of the GraphQL type PostgresBranchIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres branch, including inactive branches.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+}
+
+// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesPostgresBranchIssue) GetSeverity() Severity {
 	return v.Severity
 }
 
@@ -33154,7 +32563,7 @@ func (v *GetTeamPostgresesTeamPostgresesPostgresConnection) GetPageInfo() GetTea
 // GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
-// A Postgres whose active branch can change.
+// A managed Postgres database.
 type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
@@ -33164,8 +32573,8 @@ type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres struct {
 	MajorVersion string `json:"majorVersion"`
 	// Whether high availability is configured.
 	HighAvailability bool `json:"highAvailability"`
-	// Currently observed active branch, if selected.
-	ActiveBranch *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch `json:"activeBranch"`
+	// Observed database state; availability does not guarantee successful client connections.
+	State PostgresState `json:"state"`
 }
 
 // GetName returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.Name, and is useful for accessing the field via an interface.
@@ -33188,23 +32597,9 @@ func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetHigh
 	return v.HighAvailability
 }
 
-// GetActiveBranch returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.ActiveBranch, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetActiveBranch() *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch {
-	return v.ActiveBranch
-}
-
-// GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch includes the requested fields of the GraphQL type PostgresBranch.
-// The GraphQL type's documentation follows.
-//
-// A named PostgresBranch belonging to a Postgres.
-type GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch struct {
-	// Local name of this branch within its Postgres.
-	Name string `json:"name"`
-}
-
-// GetName returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch.Name, and is useful for accessing the field via an interface.
-func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresActiveBranchPostgresBranch) GetName() string {
-	return v.Name
+// GetState returns GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres.State, and is useful for accessing the field via an interface.
+func (v *GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgres) GetState() PostgresState {
+	return v.State
 }
 
 // GetTeamPostgresesTeamPostgresesPostgresConnectionNodesPostgresTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -33303,7 +32698,7 @@ type GetTeamVulnerabilitySummaryTeamVulnerabilitySummary struct {
 	SbomCount int `json:"sbomCount"`
 	// Coverage of the team.
 	Coverage float64 `json:"coverage"`
-	// Trend of vulnerability status for the team.
+	// Trend of vulnerability status for the whole team. Not affected by the vulnerabilitySummary filter.
 	RiskScoreTrend TeamVulnerabilityRiskScoreTrend `json:"riskScoreTrend"`
 	// Timestamp of the last update of the vulnerability summary.
 	LastUpdated *time.Time `json:"lastUpdated"`
@@ -33965,12 +33360,18 @@ func (v *IsAdminResponse) __premarshalJSON() (*__premarshalIsAdminResponse, erro
 	return &retval, nil
 }
 
+// Filtering options for issues.
 type IssueFilter struct {
-	ResourceName *string       `json:"resourceName,omitempty"`
+	// Filtering options for issues.
+	ResourceName *string `json:"resourceName,omitempty"`
+	// Filtering options for issues.
 	ResourceType *ResourceType `json:"resourceType,omitempty"`
-	Environments []string      `json:"environments,omitempty"`
-	Severity     *Severity     `json:"severity,omitempty"`
-	IssueType    *IssueType    `json:"issueType,omitempty"`
+	// Filtering options for issues.
+	Environments []string `json:"environments,omitempty"`
+	// Filtering options for issues.
+	Severity *Severity `json:"severity,omitempty"`
+	// Filtering options for issues.
+	IssueType *IssueType `json:"issueType,omitempty"`
 }
 
 // GetResourceName returns IssueFilter.ResourceName, and is useful for accessing the field via an interface.
@@ -33991,6 +33392,8 @@ func (v *IssueFilter) GetIssueType() *IssueType { return v.IssueType }
 type IssueType string
 
 const (
+	// Raised when a Postgres branch has reported a failure.
+	IssueTypePostgresBranch     IssueType = "POSTGRES_BRANCH"
 	IssueTypeOpensearch         IssueType = "OPENSEARCH"
 	IssueTypeValkey             IssueType = "VALKEY"
 	IssueTypeSqlinstanceState   IssueType = "SQLINSTANCE_STATE"
@@ -34013,6 +33416,7 @@ const (
 )
 
 var AllIssueType = []IssueType{
+	IssueTypePostgresBranch,
 	IssueTypeOpensearch,
 	IssueTypeValkey,
 	IssueTypeSqlinstanceState,
@@ -35106,22 +34510,22 @@ var AllPostgresAccessState = []PostgresAccessState{
 	PostgresAccessStateExpired,
 }
 
-// Provisioning state and observed health of a PostgresBranch.
-type PostgresBranchState string
+// Observed state of a Postgres database.
+type PostgresState string
 
 const (
-	// The branch is healthy and ready.
-	PostgresBranchStateAvailable PostgresBranchState = "AVAILABLE"
-	// The branch is provisioning or its state has not been observed yet.
-	PostgresBranchStateProgressing PostgresBranchState = "PROGRESSING"
-	// The branch has reported a failure.
-	PostgresBranchStateDegraded PostgresBranchState = "DEGRADED"
+	// The database reports that it is available.
+	PostgresStateAvailable PostgresState = "AVAILABLE"
+	// The database is being provisioned or reconciled.
+	PostgresStateProgressing PostgresState = "PROGRESSING"
+	// The database reports an error requiring intervention.
+	PostgresStateDegraded PostgresState = "DEGRADED"
 )
 
-var AllPostgresBranchState = []PostgresBranchState{
-	PostgresBranchStateAvailable,
-	PostgresBranchStateProgressing,
-	PostgresBranchStateDegraded,
+var AllPostgresState = []PostgresState{
+	PostgresStateAvailable,
+	PostgresStateProgressing,
+	PostgresStateDegraded,
 }
 
 // RemoveConfigValueRemoveConfigValueRemoveConfigValuePayload includes the requested fields of the GraphQL type RemoveConfigValuePayload.
@@ -35267,15 +34671,18 @@ func (v *ResourceLabelInput) GetValue() string { return v.Value }
 type ResourceType string
 
 const (
-	ResourceTypeOpensearch  ResourceType = "OPENSEARCH"
-	ResourceTypeValkey      ResourceType = "VALKEY"
-	ResourceTypeSqlinstance ResourceType = "SQLINSTANCE"
-	ResourceTypeApplication ResourceType = "APPLICATION"
-	ResourceTypeJob         ResourceType = "JOB"
-	ResourceTypeUnleash     ResourceType = "UNLEASH"
+	// A branch of a Postgres database.
+	ResourceTypePostgresBranch ResourceType = "POSTGRES_BRANCH"
+	ResourceTypeOpensearch     ResourceType = "OPENSEARCH"
+	ResourceTypeValkey         ResourceType = "VALKEY"
+	ResourceTypeSqlinstance    ResourceType = "SQLINSTANCE"
+	ResourceTypeApplication    ResourceType = "APPLICATION"
+	ResourceTypeJob            ResourceType = "JOB"
+	ResourceTypeUnleash        ResourceType = "UNLEASH"
 )
 
 var AllResourceType = []ResourceType{
+	ResourceTypePostgresBranch,
 	ResourceTypeOpensearch,
 	ResourceTypeValkey,
 	ResourceTypeSqlinstance,
@@ -36142,6 +35549,8 @@ var AllTeamVulnerabilityRiskScoreTrend = []TeamVulnerabilityRiskScoreTrend{
 // Input for filtering team vulnerability summaries.
 type TeamVulnerabilitySummaryFilter struct {
 	// Input for filtering team vulnerability summaries.
+	Labels []LabelFilter `json:"labels"`
+	// Input for filtering team vulnerability summaries.
 	EnvironmentName *string `json:"environmentName"`
 	// Input for filtering team vulnerability summaries.
 	Priorities []CVEPriority `json:"priorities"`
@@ -36150,6 +35559,9 @@ type TeamVulnerabilitySummaryFilter struct {
 	// Input for filtering team vulnerability summaries.
 	HasKevEntry *bool `json:"hasKevEntry"`
 }
+
+// GetLabels returns TeamVulnerabilitySummaryFilter.Labels, and is useful for accessing the field via an interface.
+func (v *TeamVulnerabilitySummaryFilter) GetLabels() []LabelFilter { return v.Labels }
 
 // GetEnvironmentName returns TeamVulnerabilitySummaryFilter.EnvironmentName, and is useful for accessing the field via an interface.
 func (v *TeamVulnerabilitySummaryFilter) GetEnvironmentName() *string { return v.EnvironmentName }
@@ -36483,7 +35895,7 @@ func (v *UpdatePostgresUpdatePostgresUpdatePostgresPayload) GetPostgres() Update
 // UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres includes the requested fields of the GraphQL type Postgres.
 // The GraphQL type's documentation follows.
 //
-// A Postgres whose active branch can change.
+// A managed Postgres database.
 type UpdatePostgresUpdatePostgresUpdatePostgresPayloadPostgres struct {
 	// Name of this Postgres.
 	Name string `json:"name"`
@@ -37132,14 +36544,6 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 	return v.Encoding
 }
 
-// __ActivatePostgresBranchInput is used internally by genqlient
-type __ActivatePostgresBranchInput struct {
-	Input ActivatePostgresBranchInput `json:"input"`
-}
-
-// GetInput returns __ActivatePostgresBranchInput.Input, and is useful for accessing the field via an interface.
-func (v *__ActivatePostgresBranchInput) GetInput() ActivatePostgresBranchInput { return v.Input }
-
 // __AddConfigValueInput is used internally by genqlient
 type __AddConfigValueInput struct {
 	Name            string           `json:"name"`
@@ -37298,14 +36702,6 @@ type __CreatePostgresAccessInput struct {
 // GetInput returns __CreatePostgresAccessInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreatePostgresAccessInput) GetInput() CreatePostgresAccessInput { return v.Input }
 
-// __CreatePostgresBranchInput is used internally by genqlient
-type __CreatePostgresBranchInput struct {
-	Input CreatePostgresBranchInput `json:"input"`
-}
-
-// GetInput returns __CreatePostgresBranchInput.Input, and is useful for accessing the field via an interface.
-func (v *__CreatePostgresBranchInput) GetInput() CreatePostgresBranchInput { return v.Input }
-
 // __CreatePostgresInput is used internally by genqlient
 type __CreatePostgresInput struct {
 	Input CreatePostgresInput `json:"input"`
@@ -37426,14 +36822,6 @@ func (v *__DeleteOpenSearchInput) GetEnvironmentName() string { return v.Environ
 // GetTeamSlug returns __DeleteOpenSearchInput.TeamSlug, and is useful for accessing the field via an interface.
 func (v *__DeleteOpenSearchInput) GetTeamSlug() string { return v.TeamSlug }
 
-// __DeletePostgresBranchInput is used internally by genqlient
-type __DeletePostgresBranchInput struct {
-	Input DeletePostgresBranchInput `json:"input"`
-}
-
-// GetInput returns __DeletePostgresBranchInput.Input, and is useful for accessing the field via an interface.
-func (v *__DeletePostgresBranchInput) GetInput() DeletePostgresBranchInput { return v.Input }
-
 // __DeletePostgresInput is used internally by genqlient
 type __DeletePostgresInput struct {
 	Input DeletePostgresInput `json:"input"`
@@ -37489,22 +36877,6 @@ type __FindWorkloadsForCveInput struct {
 
 // GetIdentifier returns __FindWorkloadsForCveInput.Identifier, and is useful for accessing the field via an interface.
 func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifier }
-
-// __GetActivePostgresBranchInput is used internally by genqlient
-type __GetActivePostgresBranchInput struct {
-	Team        string `json:"team"`
-	Environment string `json:"environment"`
-	Postgres    string `json:"postgres"`
-}
-
-// GetTeam returns __GetActivePostgresBranchInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchInput) GetTeam() string { return v.Team }
-
-// GetEnvironment returns __GetActivePostgresBranchInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchInput) GetEnvironment() string { return v.Environment }
-
-// GetPostgres returns __GetActivePostgresBranchInput.Postgres, and is useful for accessing the field via an interface.
-func (v *__GetActivePostgresBranchInput) GetPostgres() string { return v.Postgres }
 
 // __GetAllConfigsInput is used internally by genqlient
 type __GetAllConfigsInput struct {
@@ -37913,46 +37285,6 @@ func (v *__GetPostgresAccessStatusInput) GetEnvironment() string { return v.Envi
 
 // GetName returns __GetPostgresAccessStatusInput.Name, and is useful for accessing the field via an interface.
 func (v *__GetPostgresAccessStatusInput) GetName() string { return v.Name }
-
-// __GetPostgresBranchStatusInput is used internally by genqlient
-type __GetPostgresBranchStatusInput struct {
-	Team        string `json:"team"`
-	Environment string `json:"environment"`
-	Postgres    string `json:"postgres"`
-}
-
-// GetTeam returns __GetPostgresBranchStatusInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchStatusInput) GetTeam() string { return v.Team }
-
-// GetEnvironment returns __GetPostgresBranchStatusInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchStatusInput) GetEnvironment() string { return v.Environment }
-
-// GetPostgres returns __GetPostgresBranchStatusInput.Postgres, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchStatusInput) GetPostgres() string { return v.Postgres }
-
-// __GetPostgresBranchWorkloadsInput is used internally by genqlient
-type __GetPostgresBranchWorkloadsInput struct {
-	Team        string  `json:"team"`
-	Environment string  `json:"environment"`
-	Postgres    string  `json:"postgres"`
-	Branch      string  `json:"branch"`
-	After       *string `json:"after"`
-}
-
-// GetTeam returns __GetPostgresBranchWorkloadsInput.Team, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchWorkloadsInput) GetTeam() string { return v.Team }
-
-// GetEnvironment returns __GetPostgresBranchWorkloadsInput.Environment, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchWorkloadsInput) GetEnvironment() string { return v.Environment }
-
-// GetPostgres returns __GetPostgresBranchWorkloadsInput.Postgres, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchWorkloadsInput) GetPostgres() string { return v.Postgres }
-
-// GetBranch returns __GetPostgresBranchWorkloadsInput.Branch, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchWorkloadsInput) GetBranch() string { return v.Branch }
-
-// GetAfter returns __GetPostgresBranchWorkloadsInput.After, and is useful for accessing the field via an interface.
-func (v *__GetPostgresBranchWorkloadsInput) GetAfter() *string { return v.After }
 
 // __GetPostgresInput is used internally by genqlient
 type __GetPostgresInput struct {
@@ -38496,45 +37828,6 @@ type __ViewSecretValuesInput struct {
 // GetInput returns __ViewSecretValuesInput.Input, and is useful for accessing the field via an interface.
 func (v *__ViewSecretValuesInput) GetInput() ViewSecretValuesInput { return v.Input }
 
-// The mutation executed by ActivatePostgresBranch.
-const ActivatePostgresBranch_Operation = `
-mutation ActivatePostgresBranch ($input: ActivatePostgresBranchInput!) {
-	activatePostgresBranch(input: $input) {
-		postgres {
-			desiredActiveBranch
-			activeBranch {
-				name
-			}
-		}
-	}
-}
-`
-
-func ActivatePostgresBranch(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	input ActivatePostgresBranchInput,
-) (data_ *ActivatePostgresBranchResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "ActivatePostgresBranch",
-		Query:  ActivatePostgresBranch_Operation,
-		Variables: &__ActivatePostgresBranchInput{
-			Input: input,
-		},
-	}
-
-	data_ = &ActivatePostgresBranchResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by AddConfigValue.
 const AddConfigValue_Operation = `
 mutation AddConfigValue ($name: String!, $environmentName: String!, $teamSlug: Slug!, $value: ConfigValueInput!) {
@@ -39006,43 +38299,6 @@ func CreatePostgresAccess(
 	return data_, err_
 }
 
-// The mutation executed by CreatePostgresBranch.
-const CreatePostgresBranch_Operation = `
-mutation CreatePostgresBranch ($input: CreatePostgresBranchInput!) {
-	createPostgresBranch(input: $input) {
-		postgresBranch {
-			name
-			state
-		}
-	}
-}
-`
-
-func CreatePostgresBranch(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	input CreatePostgresBranchInput,
-) (data_ *CreatePostgresBranchResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "CreatePostgresBranch",
-		Query:  CreatePostgresBranch_Operation,
-		Variables: &__CreatePostgresBranchInput{
-			Input: input,
-		},
-	}
-
-	data_ = &CreatePostgresBranchResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by CreateSecret.
 const CreateSecret_Operation = `
 mutation CreateSecret ($name: String!, $environment: String!, $team: Slug!) {
@@ -39355,40 +38611,6 @@ func DeletePostgres(
 	return data_, err_
 }
 
-// The mutation executed by DeletePostgresBranch.
-const DeletePostgresBranch_Operation = `
-mutation DeletePostgresBranch ($input: DeletePostgresBranchInput!) {
-	deletePostgresBranch(input: $input) {
-		postgresBranchDeleted
-	}
-}
-`
-
-func DeletePostgresBranch(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	input DeletePostgresBranchInput,
-) (data_ *DeletePostgresBranchResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "DeletePostgresBranch",
-		Query:  DeletePostgresBranch_Operation,
-		Variables: &__DeletePostgresBranchInput{
-			Input: input,
-		},
-	}
-
-	data_ = &DeletePostgresBranchResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by DeleteSecret.
 const DeleteSecret_Operation = `
 mutation DeleteSecret ($name: String!, $environment: String!, $team: Slug!) {
@@ -39582,50 +38804,6 @@ func FindWorkloadsForCve(
 	}
 
 	data_ = &FindWorkloadsForCveResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetActivePostgresBranch.
-const GetActivePostgresBranch_Operation = `
-query GetActivePostgresBranch ($team: Slug!, $environment: String!, $postgres: String!) {
-	team(slug: $team) {
-		environment(name: $environment) {
-			postgres(name: $postgres) {
-				activeBranch {
-					name
-				}
-			}
-		}
-	}
-}
-`
-
-func GetActivePostgresBranch(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-	environment string,
-	postgres string,
-) (data_ *GetActivePostgresBranchResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetActivePostgresBranch",
-		Query:  GetActivePostgresBranch_Operation,
-		Variables: &__GetActivePostgresBranchInput{
-			Team:        team,
-			Environment: environment,
-			Postgres:    postgres,
-		},
-	}
-
-	data_ = &GetActivePostgresBranchResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -41059,6 +40237,7 @@ query GetPostgres ($team: Slug!, $environment: String!, $postgres: String!) {
 				name
 				majorVersion
 				highAvailability
+				state
 				resources {
 					cpu
 					memory
@@ -41067,16 +40246,6 @@ query GetPostgres ($team: Slug!, $environment: String!, $postgres: String!) {
 				labels {
 					key
 					value
-				}
-				desiredActiveBranch
-				activeBranch {
-					name
-				}
-				branches(first: 1000) {
-					nodes {
-						name
-						state
-					}
 				}
 			}
 		}
@@ -41195,114 +40364,6 @@ func GetPostgresAccessStatus(
 	}
 
 	data_ = &GetPostgresAccessStatusResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetPostgresBranchStatus.
-const GetPostgresBranchStatus_Operation = `
-query GetPostgresBranchStatus ($team: Slug!, $environment: String!, $postgres: String!) {
-	team(slug: $team) {
-		environment(name: $environment) {
-			postgres(name: $postgres) {
-				desiredActiveBranch
-				activeBranch {
-					name
-				}
-				branches(first: 1000) {
-					nodes {
-						name
-						state
-					}
-				}
-			}
-		}
-	}
-}
-`
-
-func GetPostgresBranchStatus(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-	environment string,
-	postgres string,
-) (data_ *GetPostgresBranchStatusResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetPostgresBranchStatus",
-		Query:  GetPostgresBranchStatus_Operation,
-		Variables: &__GetPostgresBranchStatusInput{
-			Team:        team,
-			Environment: environment,
-			Postgres:    postgres,
-		},
-	}
-
-	data_ = &GetPostgresBranchStatusResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The query executed by GetPostgresBranchWorkloads.
-const GetPostgresBranchWorkloads_Operation = `
-query GetPostgresBranchWorkloads ($team: Slug!, $environment: String!, $postgres: String!, $branch: String!, $after: Cursor) {
-	team(slug: $team) {
-		environment(name: $environment) {
-			postgres(name: $postgres) {
-				branch(name: $branch) {
-					workloads(first: 100, after: $after) {
-						nodes {
-							__typename
-							name
-						}
-						pageInfo {
-							hasNextPage
-							endCursor
-						}
-					}
-				}
-			}
-		}
-	}
-}
-`
-
-func GetPostgresBranchWorkloads(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	team string,
-	environment string,
-	postgres string,
-	branch string,
-	after *string,
-) (data_ *GetPostgresBranchWorkloadsResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetPostgresBranchWorkloads",
-		Query:  GetPostgresBranchWorkloads_Operation,
-		Variables: &__GetPostgresBranchWorkloadsInput{
-			Team:        team,
-			Environment: environment,
-			Postgres:    postgres,
-			Branch:      branch,
-			After:       after,
-		},
-	}
-
-	data_ = &GetPostgresBranchWorkloadsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
@@ -41764,9 +40825,7 @@ query GetTeamPostgreses ($team: Slug!, $after: Cursor, $filter: TeamPostgresFilt
 				}
 				majorVersion
 				highAvailability
-				activeBranch {
-					name
-				}
+				state
 			}
 			pageInfo {
 				hasNextPage

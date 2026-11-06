@@ -51,7 +51,7 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.BranchList{Postgres: parent}
 	return &naistrix.Command{
 		Name: "get", Title: "Get Postgres details and readiness.",
-		Description: "Show configured settings and a coarse platform-reported status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. Detailed provisioning stages are unavailable. Use branch commands to inspect branches.",
+		Description: "Show configured settings and a coarse platform-reported database status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. JSON retains deprecated main-branch compatibility fields; these do not represent a separately managed branch.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to inspect", ChoicesFunc: postgresNameChoices(parent)}}, Flags: f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		Examples: []naistrix.CommandExample{
@@ -69,33 +69,15 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 			}
 			detail := postgresDetails{
 				Name: p.Name, Team: parent.Team, Environment: env, Version: p.MajorVersion, HighAvailability: p.HighAvailability,
-				Resources: postgresResourceRequests{CPU: p.Resources.Cpu, Memory: p.Resources.Memory, DiskSize: p.Resources.DiskSize},
-				Labels:    make([]postgresLabel, 0, len(p.Labels)),
-				Branches:  make([]postgresDetailsBranch, 0, len(p.Branches.Nodes)),
-			}
-			status := postgres.BranchStatus{Branches: make([]postgres.Branch, 0, len(p.Branches.Nodes))}
-			if p.ActiveBranch != nil {
-				status.Active = p.ActiveBranch.Name
-			}
-			if p.DesiredActiveBranch != nil {
-				status.DesiredActive = *p.DesiredActiveBranch
-			}
-			detail.ActiveBranch = status.Active
-			if status.DesiredActive != "" && status.DesiredActive != status.Active {
-				detail.RequestedBranch = status.DesiredActive
+				Resources:    postgresResourceRequests{CPU: p.Resources.Cpu, Memory: p.Resources.Memory, DiskSize: p.Resources.DiskSize},
+				Labels:       make([]postgresLabel, 0, len(p.Labels)),
+				Status:       postgres.State(p.State).String(),
+				ActiveBranch: "main",
+				Branches:     []postgresDetailsBranch{{Branch: postgres.Branch{Name: "main", State: p.State}, Active: true}},
 			}
 			for _, label := range p.Labels {
 				detail.Labels = append(detail.Labels, postgresLabel{Key: label.Key, Value: label.Value})
 			}
-			for _, branch := range p.Branches.Nodes {
-				b := postgres.Branch{Name: branch.Name, State: branch.State}
-				status.Branches = append(status.Branches, b)
-				detail.Branches = append(detail.Branches, postgresDetailsBranch{
-					Branch: b, Active: b.Name == status.Active,
-					Requested: b.Name == detail.RequestedBranch,
-				})
-			}
-			detail.Status = postgresReadiness(status)
 			if f.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 			}

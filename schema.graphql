@@ -570,11 +570,29 @@ Distribution of entries by environment.
 	environments: [StringFacetItem!]!
 }
 
+"""
+Filtering options for activity log entries.
+"""
 input ActivityLogFilter {
+"""
+Filtering options for activity log entries.
+"""
 	activityTypes: [ActivityLogActivityType!]
+"""
+Filtering options for activity log entries.
+"""
 	resourceTypes: [ActivityLogEntryResourceType!]
+"""
+Filtering options for activity log entries.
+"""
 	environments: [String!]
+"""
+Filtering options for activity log entries.
+"""
 	from: Time
+"""
+Filtering options for activity log entries.
+"""
 	to: Time
 }
 
@@ -2044,7 +2062,7 @@ Risk and threat intelligence signals used to prioritize the CVE.
 """
 	riskAssessment: VulnerabilityRiskAssessment!
 """
-Affected workloads
+Affected workloads within the team selection of the CVE list, when applicable.
 """
 	workloads(
 """
@@ -2064,7 +2082,7 @@ Get items before this cursor.
 """
 		before: Cursor
 """
-Filter workloads. When teamSlugs is set only workloads belonging to those teams are returned.
+Further filter affected workloads.
 """
 		filter: CVEWorkloadsFilter
 """
@@ -2101,11 +2119,15 @@ The CVE.
 }
 
 """
-Filter active CVEs by their calculated risk assessment.
+Filter active CVEs.
 """
 input CVEFilter {
 """
-Filter active CVEs by their calculated risk assessment.
+Filter active CVEs.
+"""
+	teamScope: TeamScopeInput
+"""
+Filter active CVEs.
 """
 	priority: CVEPriority
 }
@@ -2232,11 +2254,19 @@ Whether the finding is suppressed.
 }
 
 """
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+Filter workloads affected by a CVE.
 """
 input CVEWorkloadsFilter {
 """
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+Filter workloads affected by a CVE.
+"""
+	teamScope: TeamScopeInput
+"""
+Filter workloads affected by a CVE.
+"""
+	environmentName: String
+"""
+Filter workloads affected by a CVE.
 """
 	teamSlugs: [Slug!]
 }
@@ -2949,7 +2979,7 @@ Input for creating a time-limited personal Postgres access.
 """
 Input for creating a time-limited personal Postgres access.
 """
-	branch: String!
+	branch: String
 """
 Input for creating a time-limited personal Postgres access.
 """
@@ -4765,6 +4795,10 @@ Facets for issues, providing distribution counts across different dimensions.
 """
 type IssueFacets {
 """
+Up to 25 teams with matching issues, ordered by count descending, then team slug.
+"""
+	teams: [IssueTeamFacetItem!]!
+"""
 Distribution of issues by environment.
 """
 	environments: [StringFacetItem!]!
@@ -4782,11 +4816,29 @@ Distribution of issues by issue type.
 	issueTypes: [IssueTypeFacetItem!]!
 }
 
+"""
+Filtering options for issues.
+"""
 input IssueFilter {
+"""
+Filtering options for issues.
+"""
 	resourceName: String
+"""
+Filtering options for issues.
+"""
 	resourceType: ResourceType
+"""
+Filtering options for issues.
+"""
 	environments: [String!]
+"""
+Filtering options for issues.
+"""
 	severity: Severity
+"""
+Filtering options for issues.
+"""
 	issueType: IssueType
 }
 
@@ -4846,7 +4898,25 @@ Number of matching issues.
 	count: Int!
 }
 
+"""
+A single facet item for teams.
+"""
+type IssueTeamFacetItem {
+"""
+The team.
+"""
+	team: Team!
+"""
+Number of matching issues.
+"""
+	count: Int!
+}
+
 enum IssueType {
+"""
+Raised when a Postgres branch has reported a failure.
+"""
+	POSTGRES_BRANCH
 	OPENSEARCH
 	VALKEY
 	SQLINSTANCE_STATE
@@ -7523,7 +7593,7 @@ interface Persistence {
 }
 
 """
-A Postgres whose active branch can change.
+A managed Postgres database.
 """
 type Postgres implements Node & ActivityLogger{
 """
@@ -7542,6 +7612,55 @@ Team environment containing this Postgres.
 Name of this Postgres.
 """
 	name: String!
+"""
+When this Postgres was created.
+"""
+	createdAt: Time!
+"""
+Observed database state; availability does not guarantee successful client connections.
+"""
+	state: PostgresState!
+"""
+Observed PostgreSQL configuration, when available.
+"""
+	configuration: PostgresConfiguration
+"""
+Physical cluster name, when available.
+"""
+	clusterName: String
+"""
+Earliest point in time covered by available backups, when known.
+"""
+	earliestRestoreTime: Time
+"""
+Issues reported for this database.
+"""
+	issues(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Order issues.
+"""
+		orderBy: IssueOrder
+"""
+Filter issues.
+"""
+		filter: ResourceIssueFilter
+	): IssueConnection!
 """
 Configured PostgreSQL major version.
 """
@@ -7635,7 +7754,7 @@ Filter items.
 }
 
 """
-A time-limited personal access request for a Postgres branch.
+A time-limited personal access request for a Postgres database.
 """
 type PostgresAccess implements Node{
 """
@@ -7655,9 +7774,13 @@ Environment for the access.
 """
 	teamEnvironment: TeamEnvironment!
 """
-PostgresBranch selected by this access.
+Postgres selected by this access.
 """
-	postgresBranch: PostgresBranch!
+	postgres: Postgres!
+"""
+Legacy branch view of the database selected by this access.
+"""
+	postgresBranch: PostgresBranch! @deprecated(reason: "Use postgres instead.")
 """
 Requested access level.
 """
@@ -7734,7 +7857,7 @@ Read and modify existing data.
 """
 Read and modify data and create objects in public, without database ownership.
 """
-	READWRITECREATE @deprecated(reason: "Use ADMIN for database administration. Existing READWRITECREATE access retains its original privileges.")
+	READWRITECREATE @deprecated(reason: "This level will be removed in a future API change. Until then, it remains available with unchanged privileges. ADMIN grants broader database-owner privileges.")
 """
 Administer the application database through membership in its owner role, with the same database privileges as workload admin but without PostgreSQL superuser privileges.
 """
@@ -7819,6 +7942,35 @@ Get items before this cursor.
 Current observed state of the branch.
 """
 	state: PostgresBranchState!
+"""
+Issues affecting this branch.
+"""
+	issues(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for the issues.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for the issues.
+"""
+		filter: ResourceIssueFilter
+	): IssueConnection!
 """
 User-defined labels on this branch.
 """
@@ -7948,6 +8100,32 @@ Input for filtering Postgres branches.
 Input for filtering Postgres branches.
 """
 	labels: [LabelFilter!]
+}
+
+"""
+A failure reported by a Postgres branch, including inactive branches.
+"""
+type PostgresBranchIssue implements Issue & Node{
+"""
+Unique identifier for this issue.
+"""
+	id: ID!
+"""
+Team environment containing the affected branch.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+Severity of the reported failure.
+"""
+	severity: Severity!
+"""
+Description of the reported failure.
+"""
+	message: String!
+"""
+The branch that reported the failure.
+"""
+	branch: PostgresBranch!
 }
 
 input PostgresBranchOrder {
@@ -8302,6 +8480,24 @@ Requested disk size.
 }
 
 """
+Observed state of a Postgres database.
+"""
+enum PostgresState {
+"""
+The database reports that it is available.
+"""
+	AVAILABLE
+"""
+The database is being provisioned or reconciled.
+"""
+	PROGRESSING
+"""
+The database reports an error requiring intervention.
+"""
+	DEGRADED
+}
+
+"""
 Activity log entry for a Postgres that was updated.
 """
 type PostgresUpdatedActivityLogEntry implements ActivityLogEntry & Node{
@@ -8401,6 +8597,10 @@ type PostgresWorkload {
 The application or job referencing this Postgres.
 """
 	workload: Workload!
+"""
+The database referenced by this workload.
+"""
+	postgres: Postgres!
 """
 The explicitly referenced branch, or the observed active branch when no branch is specified. Defaults to main when no active branch has been observed; a requested activation does not change this selection until observed.
 """
@@ -8548,7 +8748,7 @@ Get items before this cursor.
 """
 Filter items.
 """
-		filter: ActivityLogFilter
+		filter: TenantActivityLogFilter
 	): ActivityLogEntryConnection!
 	roles(
 """
@@ -8636,6 +8836,35 @@ The name of the environment to get.
 Feature flags.
 """
 	features: Features!
+"""
+Issues across teams in the tenant, ordered by severity unless otherwise specified.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: TenantIssueFilter
+	): IssueConnection!
 """
 Get current prices for resources.
 """
@@ -8827,7 +9056,12 @@ Get vulnerability summary from given date until today.
 """
 Get the vulnerability summary for the tenant.
 """
-	vulnerabilitySummary: TenantVulnerabilitySummary!
+	vulnerabilitySummary(
+"""
+Filter the aggregate.
+"""
+		filter: TenantVulnerabilitySummaryFilter
+	): TenantVulnerabilitySummary!
 """
 List per-workload vulnerability summaries across all teams.
 """
@@ -9505,6 +9739,10 @@ A user-defined label to set on a resource.
 }
 
 enum ResourceType {
+"""
+A branch of a Postgres database.
+"""
+	POSTGRES_BRANCH
 	OPENSEARCH
 	VALKEY
 	SQLINSTANCE
@@ -9810,6 +10048,10 @@ Search filter for filtering search results.
 Search filter for filtering search results.
 """
 	types: [SearchType!]
+"""
+Search filter for filtering search results.
+"""
+	teamScope: TeamScopeInput
 """
 Search filter for filtering search results.
 """
@@ -12160,6 +12402,9 @@ Get the mean time to fix history for a team.
 		from: Date!
 	): VulnerabilityFixHistory!
 	vulnerabilitySummary(
+"""
+Filter the aggregate by environment, priority, KEV or user labels.
+"""
 		filter: TeamVulnerabilitySummaryFilter
 	): TeamVulnerabilitySummary!
 """
@@ -12167,7 +12412,7 @@ Fetch vulnerability summaries for workloads in the team.
 """
 	vulnerabilitySummaries(
 """
-Filter vulnerability summaries by environment.
+Filter workload vulnerability summaries by environment, priority, KEV or user labels.
 """
 		filter: TeamVulnerabilitySummaryFilter
 """
@@ -12812,6 +13057,10 @@ input TeamFilter {
 """
 Input for filtering teams.
 """
+	teamScope: TeamScopeInput
+"""
+Input for filtering teams.
+"""
 	hasWorkloads: Boolean
 """
 Input for filtering teams.
@@ -13319,6 +13568,20 @@ input TeamRepositoryFilter {
 	name: String
 }
 
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+input TeamScopeInput {
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+	teamSlugs: [Slug!]
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+	memberOfViewer: Boolean
+}
+
 type TeamServiceUtilization {
 	sqlInstances: TeamServiceUtilizationSqlInstances!
 }
@@ -13541,7 +13804,7 @@ Timestamp of the last update of the vulnerability summary.
 """
 	lastUpdated: Time
 """
-Trend of vulnerability status for the team.
+Trend of vulnerability status for the whole team. Not affected by the vulnerabilitySummary filter.
 """
 	riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 }
@@ -13550,6 +13813,10 @@ Trend of vulnerability status for the team.
 Input for filtering team vulnerability summaries.
 """
 input TeamVulnerabilitySummaryFilter {
+"""
+Input for filtering team vulnerability summaries.
+"""
+	labels: [LabelFilter!]
 """
 Input for filtering team vulnerability summaries.
 """
@@ -13584,6 +13851,66 @@ Input for filtering team workloads.
 Input for filtering team workloads.
 """
 	sbomStatus: SBOMStatus
+}
+
+"""
+Filtering options for activity log entries across teams.
+"""
+input TenantActivityLogFilter {
+"""
+Filtering options for activity log entries across teams.
+"""
+	teamScope: TeamScopeInput
+"""
+Filtering options for activity log entries across teams.
+"""
+	activityTypes: [ActivityLogActivityType!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	resourceTypes: [ActivityLogEntryResourceType!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	environments: [String!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	from: Time
+"""
+Filtering options for activity log entries across teams.
+"""
+	to: Time
+}
+
+"""
+Filtering options for issues across teams.
+"""
+input TenantIssueFilter {
+"""
+Filtering options for issues across teams.
+"""
+	teamScope: TeamScopeInput
+"""
+Filtering options for issues across teams.
+"""
+	resourceName: String
+"""
+Filtering options for issues across teams.
+"""
+	resourceType: ResourceType
+"""
+Filtering options for issues across teams.
+"""
+	environments: [String!]
+"""
+Filtering options for issues across teams.
+"""
+	severity: Severity
+"""
+Filtering options for issues across teams.
+"""
+	issueType: IssueType
 }
 
 type TenantVulnerabilitySummary {
@@ -13637,6 +13964,14 @@ Timestamp of the last update of the vulnerability summary.
 Input for filtering vulnerability summaries across all teams.
 """
 input TenantVulnerabilitySummaryFilter {
+"""
+Input for filtering vulnerability summaries across all teams.
+"""
+	teamScope: TeamScopeInput
+"""
+Input for filtering vulnerability summaries across all teams.
+"""
+	environmentName: String
 """
 Input for filtering vulnerability summaries across all teams.
 """

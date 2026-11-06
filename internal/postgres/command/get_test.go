@@ -14,14 +14,15 @@ import (
 	"testing"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/naistrix"
 )
 
 func TestPostgresGetCommand(t *testing.T) {
-	const configured = `{"name":"orders","majorVersion":"18","highAvailability":true,"resources":{"cpu":"200m","memory":"1Gi","diskSize":"20Gi"},"labels":[{"key":"domain","value":"payments"}],"activeBranch":{"name":"main"},"desiredActiveBranch":"restored","branches":{"nodes":[{"name":"main","state":"AVAILABLE"},{"name":"restored","state":"PROGRESSING"}]}}`
-	const unconfigured = `{"name":"orders","majorVersion":"18","highAvailability":false,"resources":{"cpu":null,"memory":null,"diskSize":null},"labels":[],"activeBranch":null,"desiredActiveBranch":null,"branches":{"nodes":[]}}`
-	const activated = `{"name":"orders","majorVersion":"18","highAvailability":false,"resources":{},"labels":[],"activeBranch":{"name":"main"},"desiredActiveBranch":"main","branches":{"nodes":[{"name":"main","state":"AVAILABLE"}]}}`
+	const configured = `{"name":"orders","majorVersion":"18","state":"PROGRESSING","highAvailability":true,"resources":{"cpu":"200m","memory":"1Gi","diskSize":"20Gi"},"labels":[{"key":"domain","value":"payments"}],"activeBranch":{"name":"main"},"desiredActiveBranch":"restored","branches":{"nodes":[{"name":"main","state":"AVAILABLE"},{"name":"restored","state":"PROGRESSING"}]}}`
+	const unconfigured = `{"name":"orders","majorVersion":"18","state":"PROGRESSING","highAvailability":false,"resources":{"cpu":null,"memory":null,"diskSize":null},"labels":[],"activeBranch":null,"desiredActiveBranch":null,"branches":{"nodes":[]}}`
+	const activated = `{"name":"orders","majorVersion":"18","state":"AVAILABLE","highAvailability":false,"resources":{},"labels":[],"activeBranch":{"name":"main"},"desiredActiveBranch":"main","branches":{"nodes":[{"name":"main","state":"AVAILABLE"}]}}`
 	readyWithFailedInactive := strings.Replace(activated, `{"name":"main","state":"AVAILABLE"}`, `{"name":"main","state":"AVAILABLE"},{"name":"failed-restore","state":"DEGRADED"}`, 1)
 	pendingHealthy := strings.Replace(configured, `"state":"PROGRESSING"`, `"state":"AVAILABLE"`, 1)
 	pendingDegraded := strings.Replace(configured, `"state":"PROGRESSING"`, `"state":"DEGRADED"`, 1)
@@ -36,22 +37,22 @@ func TestPostgresGetCommand(t *testing.T) {
 		complete, omitTeam, omitName                                                              bool
 		wantOperations                                                                            []string
 	}{
-		{name: "configured metadata as text", environment: "dev-gcp", metadata: configured, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
-		{name: "configured metadata as JSON", environment: "dev-gcp", format: "json", metadata: configured, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
-		{name: "unset requests are not inferred in text", environment: "dev-gcp", metadata: unconfigured, wantStatus: "Unknown", wantOperations: []string{"GetPostgres"}},
-		{name: "unset requests remain null in JSON", environment: "dev-gcp", format: "json", metadata: unconfigured, wantStatus: "Unknown", wantOperations: []string{"GetPostgres"}},
+		{name: "configured metadata as text", environment: "dev-gcp", metadata: configured, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
+		{name: "configured metadata as JSON", environment: "dev-gcp", format: "json", metadata: configured, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
+		{name: "unset requests are not inferred in text", environment: "dev-gcp", metadata: unconfigured, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
+		{name: "unset requests remain null in JSON", environment: "dev-gcp", format: "json", metadata: unconfigured, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
 		{name: "observed activation omits requested branch", environment: "dev-gcp", format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "observed activation text", environment: "dev-gcp", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "inactive degraded branch does not degrade active summary", environment: "dev-gcp", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
-		{name: "inactive degraded branch remains in JSON", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
-		{name: "healthy requested branch still awaits activation", environment: "dev-gcp", metadata: pendingHealthy, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
+		{name: "JSON has only a main compatibility view", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
+		{name: "direct healthy state overrides stale activation metadata", environment: "dev-gcp", metadata: pendingHealthy, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "pending degraded branch JSON", environment: "dev-gcp", format: "json", metadata: pendingDegraded, wantStatus: "Needs attention", wantOperations: []string{"GetPostgres"}},
-		{name: "active degradation remains visible during pending activation", environment: "dev-gcp", metadata: activeDegraded, wantStatus: "Needs attention", wantOperations: []string{"GetPostgres"}},
+		{name: "stale branch degradation cannot override direct healthy state", environment: "dev-gcp", metadata: activeDegraded, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "initial provisioning is not updating", environment: "dev-gcp", metadata: initial, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
-		{name: "missing active state JSON", environment: "dev-gcp", format: "json", metadata: missingActive, wantStatus: "Unknown", wantOperations: []string{"GetPostgres"}},
+		{name: "no branch is required for direct healthy state", environment: "dev-gcp", format: "json", metadata: missingActive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "future state is unknown in JSON", environment: "dev-gcp", format: "json", metadata: futureState, wantStatus: "Unknown", wantOperations: []string{"GetPostgres"}},
 		{name: "default environment bypasses discovery", config: "environment: dev-gcp\n", format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
-		{name: "explicit environment overrides default", environment: "dev-gcp", config: "environment: prod-gcp\n", format: "json", metadata: configured, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
+		{name: "explicit environment overrides default", environment: "dev-gcp", config: "environment: prod-gcp\n", format: "json", metadata: configured, wantStatus: "Not ready yet", wantOperations: []string{"GetPostgres"}},
 		{name: "environment resolved from existing Postgres", lookupEnvironments: []string{"dev-gcp"}, format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetTeamPostgreses", "GetPostgres"}},
 		{name: "ambiguous environment requires choice", lookupEnvironments: []string{"dev-gcp", "prod-gcp"}, wantError: "specify environment with -e, --environment", wantOperations: []string{"GetTeamPostgreses"}},
 		{name: "missing Postgres", wantError: "no choices available", wantOperations: []string{"GetTeamPostgreses"}},
@@ -104,6 +105,11 @@ func TestPostgresGetCommand(t *testing.T) {
 						response = fmt.Sprintf(`{"errors":[{"message":%q}]}`, tt.lookupError)
 					}
 				case "GetPostgres":
+					for _, legacy := range []string{"activeBranch", "desiredActiveBranch", "branches"} {
+						if strings.Contains(request.Query, legacy) {
+							t.Errorf("metadata query still depends on %s", legacy)
+						}
+					}
 					if request.Variables.Team != "my-team" || request.Variables.Environment != "dev-gcp" || request.Variables.Postgres != "orders" {
 						t.Errorf("incorrect metadata target: %+v", request.Variables)
 					}
@@ -176,6 +182,7 @@ func TestPostgresGetCommand(t *testing.T) {
 				}
 				var expected struct {
 					Name, MajorVersion  string
+					State               gql.PostgresState
 					HighAvailability    bool
 					Resources           postgresResourceRequests
 					Labels              []postgresLabel
@@ -201,20 +208,12 @@ func TestPostgresGetCommand(t *testing.T) {
 					if detail.Name != expected.Name || detail.Team != "my-team" || detail.Environment != "dev-gcp" || detail.Version != expected.MajorVersion || detail.Status != tt.wantStatus || detail.HighAvailability != expected.HighAvailability || !reflect.DeepEqual(detail.Resources, expected.Resources) || !slices.Equal(detail.Labels, expected.Labels) {
 						t.Errorf("incorrect metadata/status: %+v", detail)
 					}
-					active, requested := "", ""
-					if expected.ActiveBranch != nil {
-						active = expected.ActiveBranch.Name
+					requested := ""
+					if detail.ActiveBranch != "main" || detail.RequestedBranch != "" || len(detail.Branches) != 1 {
+						t.Fatalf("incorrect main compatibility view: %+v", detail)
 					}
-					if expected.DesiredActiveBranch != nil && *expected.DesiredActiveBranch != active {
-						requested = *expected.DesiredActiveBranch
-					}
-					if detail.ActiveBranch != active || detail.RequestedBranch != requested || len(detail.Branches) != len(expected.Branches.Nodes) {
-						t.Fatalf("incorrect branch observations: %+v", detail)
-					}
-					for i, branch := range detail.Branches {
-						if branch.Branch != expected.Branches.Nodes[i] || branch.Active != (branch.Name == active) || branch.Requested != (branch.Name == requested) {
-							t.Errorf("incorrect branch or markers: %+v", branch)
-						}
+					if branch := detail.Branches[0]; branch.Name != "main" || branch.State != expected.State || !branch.Active || branch.Requested {
+						t.Errorf("incorrect main compatibility state: %+v", branch)
 					}
 					var fields map[string]json.RawMessage
 					if err := json.Unmarshal(output.Bytes(), &fields); err != nil {

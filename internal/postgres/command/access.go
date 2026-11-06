@@ -262,6 +262,9 @@ func resolveAccessReason(provided string, report func(string)) (string, error) {
 
 // Prepare the audit reason before installing signal handlers: input.Input cannot observe context cancellation.
 func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql.CreatePostgresAccessInput, error) {
+	if f.Branch != "" && f.Branch != "main" {
+		return gql.CreatePostgresAccessInput{}, fmt.Errorf("branch selection has been removed; omit --branch to access the database")
+	}
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")
 	}
@@ -281,7 +284,7 @@ func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql
 	}
 	ttl := f.TTL.String()
 	return gql.CreatePostgresAccessInput{
-		Postgres: name, Branch: f.Branch, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
+		Postgres: name, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
 		AccessLevel: level, Reason: reason, Ttl: &ttl,
 	}, nil
 }
@@ -307,14 +310,6 @@ func requestAccess(ctx context.Context, request gql.CreatePostgresAccessInput, r
 		return postgres.Connection{}, err
 	}
 	request.EnvironmentName = environment
-	if request.Branch == "" {
-		lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
-		defer cancel()
-		request.Branch, err = api.ActiveBranch(lookupCtx, request.TeamSlug, environment, request.Postgres)
-		if err != nil {
-			return postgres.Connection{}, err
-		}
-	}
 	connection, err := postgres.CreateAndWait(ctx, api, request)
 	if err == nil && spinner != nil {
 		spinner.Stop()

@@ -14,6 +14,7 @@ type PostgresInstance struct {
 	Environment      string      `json:"environment"`
 	Version          string      `heading:"Version" json:"version"`
 	HighAvailability bool        `heading:"HA" json:"high_availability"`
+	State            State       `heading:"Status" json:"state"`
 	ActiveBranch     string      `heading:"Active branch" json:"active_branch"`
 }
 
@@ -21,11 +22,11 @@ type State string
 
 func (s State) String() string {
 	switch s {
-	case State(gql.PostgresBranchStateAvailable):
+	case State(gql.PostgresStateAvailable):
 		return "Ready"
-	case State(gql.PostgresBranchStateProgressing):
+	case State(gql.PostgresStateProgressing):
 		return "Not ready yet"
-	case State(gql.PostgresBranchStateDegraded):
+	case State(gql.PostgresStateDegraded):
 		return "Needs attention"
 	}
 	return "Unknown"
@@ -36,7 +37,7 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 		query GetTeamPostgreses($team: Slug!, $after: Cursor, $filter: TeamPostgresFilter) {
 			team(slug: $team) {
 				postgreses(first: 100, after: $after, filter: $filter) {
-					nodes { name teamEnvironment { environment { name } } majorVersion highAvailability activeBranch { name } }
+					nodes { name teamEnvironment { environment { name } } majorVersion highAvailability state }
 					pageInfo { hasNextPage endCursor }
 				}
 			}
@@ -79,9 +80,8 @@ func postgresesFromTeam(data gql.GetTeamPostgresesTeam, team, consoleHost string
 			Name:        output.Link{Name: pg.Name, URL: fmt.Sprintf("https://%s/team/%s/%s/postgres/%s", consoleHost, team, env, pg.Name)},
 			Environment: env, Version: pg.MajorVersion,
 			HighAvailability: pg.HighAvailability,
-		}
-		if pg.ActiveBranch != nil {
-			instance.ActiveBranch = pg.ActiveBranch.Name
+			State:            State(pg.State),
+			ActiveBranch:     "main", // Deprecated JSON compatibility alias, not a physical branch lookup.
 		}
 		ret = append(ret, instance)
 	}
