@@ -848,6 +848,25 @@ var AllCVEPriority = []CVEPriority{
 	CVEPriorityMonitor,
 }
 
+// Filter workloads affected by a CVE.
+type CVEWorkloadsFilter struct {
+	// Filter by team selection. Combined with teamSlugs, only teams matching both are included.
+	TeamScope *TeamScopeInput `json:"teamScope"`
+	// Only include workloads in this environment.
+	EnvironmentName *string `json:"environmentName"`
+	// Only include workloads owned by these teams.
+	TeamSlugs []string `json:"teamSlugs"`
+}
+
+// GetTeamScope returns CVEWorkloadsFilter.TeamScope, and is useful for accessing the field via an interface.
+func (v *CVEWorkloadsFilter) GetTeamScope() *TeamScopeInput { return v.TeamScope }
+
+// GetEnvironmentName returns CVEWorkloadsFilter.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CVEWorkloadsFilter) GetEnvironmentName() *string { return v.EnvironmentName }
+
+// GetTeamSlugs returns CVEWorkloadsFilter.TeamSlugs, and is useful for accessing the field via an interface.
+func (v *CVEWorkloadsFilter) GetTeamSlugs() []string { return v.TeamSlugs }
+
 // Input for filtering the configs of a team.
 type ConfigFilter struct {
 	// Input for filtering the configs of a team.
@@ -1887,8 +1906,15 @@ func (v *FindWorkloadsForCveCveCVE) GetWorkloads() FindWorkloadsForCveCveCVEWork
 
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection includes the requested fields of the GraphQL type WorkloadWithVulnerabilityConnection.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection struct {
+	// Information to aid in pagination.
+	PageInfo FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo `json:"pageInfo"`
 	// List of nodes.
 	Nodes []FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerability `json:"nodes"`
+}
+
+// GetPageInfo returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection) GetPageInfo() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo {
+	return v.PageInfo
 }
 
 // GetNodes returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
@@ -2212,6 +2238,29 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 // GetName returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
 }
 
 // FindWorkloadsForCveResponse is returned by FindWorkloadsForCve on success.
@@ -35868,6 +35917,20 @@ func (v *TeamPostgresFilter) GetEnvironments() []string { return v.Environments 
 // GetLabels returns TeamPostgresFilter.Labels, and is useful for accessing the field via an interface.
 func (v *TeamPostgresFilter) GetLabels() []LabelFilter { return v.Labels }
 
+// Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+type TeamScopeInput struct {
+	// Add these teams to the selection. An empty list adds none.
+	TeamSlugs []string `json:"teamSlugs"`
+	// Add the authenticated user's memberships when true. Identities without memberships add none.
+	MemberOfViewer *bool `json:"memberOfViewer"`
+}
+
+// GetTeamSlugs returns TeamScopeInput.TeamSlugs, and is useful for accessing the field via an interface.
+func (v *TeamScopeInput) GetTeamSlugs() []string { return v.TeamSlugs }
+
+// GetMemberOfViewer returns TeamScopeInput.MemberOfViewer, and is useful for accessing the field via an interface.
+func (v *TeamScopeInput) GetMemberOfViewer() *bool { return v.MemberOfViewer }
+
 // TeamStatusMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // TeamStatusMeAuthenticatedUser is implemented by the following types:
@@ -37484,11 +37547,19 @@ func (v *__EnvironmentOIDCIssuerInput) GetName() string { return v.Name }
 
 // __FindWorkloadsForCveInput is used internally by genqlient
 type __FindWorkloadsForCveInput struct {
-	Identifier string `json:"identifier"`
+	Identifier string              `json:"identifier"`
+	Filter     *CVEWorkloadsFilter `json:"filter"`
+	After      *string             `json:"after"`
 }
 
 // GetIdentifier returns __FindWorkloadsForCveInput.Identifier, and is useful for accessing the field via an interface.
 func (v *__FindWorkloadsForCveInput) GetIdentifier() string { return v.Identifier }
+
+// GetFilter returns __FindWorkloadsForCveInput.Filter, and is useful for accessing the field via an interface.
+func (v *__FindWorkloadsForCveInput) GetFilter() *CVEWorkloadsFilter { return v.Filter }
+
+// GetAfter returns __FindWorkloadsForCveInput.After, and is useful for accessing the field via an interface.
+func (v *__FindWorkloadsForCveInput) GetAfter() *string { return v.After }
 
 // __GetActivePostgresBranchInput is used internally by genqlient
 type __GetActivePostgresBranchInput struct {
@@ -39533,7 +39604,7 @@ func Environments(
 
 // The query executed by FindWorkloadsForCve.
 const FindWorkloadsForCve_Operation = `
-query FindWorkloadsForCve ($identifier: String!) {
+query FindWorkloadsForCve ($identifier: String!, $filter: CVEWorkloadsFilter, $after: Cursor) {
 	cve(identifier: $identifier) {
 		id
 		identifier
@@ -39542,7 +39613,11 @@ query FindWorkloadsForCve ($identifier: String!) {
 		description
 		detailsLink
 		cvssScore
-		workloads(first: 1000) {
+		workloads(first: 100, after: $after, filter: $filter) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
 			nodes {
 				vulnerability {
 					package
@@ -39572,12 +39647,16 @@ func FindWorkloadsForCve(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	identifier string,
+	filter *CVEWorkloadsFilter,
+	after *string,
 ) (data_ *FindWorkloadsForCveResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "FindWorkloadsForCve",
 		Query:  FindWorkloadsForCve_Operation,
 		Variables: &__FindWorkloadsForCveInput{
 			Identifier: identifier,
+			Filter:     filter,
+			After:      after,
 		},
 	}
 

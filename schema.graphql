@@ -2232,13 +2232,21 @@ Whether the finding is suppressed.
 }
 
 """
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+Filter workloads affected by a CVE.
 """
 input CVEWorkloadsFilter {
-"""
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
-"""
-	teamSlugs: [Slug!]
+	"""
+	Filter by team selection. Combined with teamSlugs, only teams matching both are included.
+	"""
+	teamScope: TeamScopeInput
+	"""
+	Only include workloads in this environment.
+	"""
+	environmentName: String
+	"""
+	Only include workloads owned by these teams.
+	"""
+	teamSlugs: [Slug!] @deprecated(reason: "Use teamScope.teamSlugs instead.")
 }
 
 input ChangeDeploymentKeyInput {
@@ -13317,6 +13325,20 @@ Filter a team's Postgres databases by environment and user-defined labels.
 
 input TeamRepositoryFilter {
 	name: String
+}
+
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+input TeamScopeInput {
+	"""
+	Add these teams to the selection. An empty list adds none.
+	"""
+	teamSlugs: [Slug!]
+	"""
+	Add the authenticated user's memberships when true. Identities without memberships add none.
+	"""
+	memberOfViewer: Boolean
 }
 
 type TeamServiceUtilization {
