@@ -827,6 +827,181 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 	return v.LastExitCode
 }
 
+// CVEListPage includes the GraphQL fields of ImageVulnerabilityConnection requested by the fragment CVEListPage.
+type CVEListPage struct {
+	// Information to aid in pagination.
+	PageInfo CVEListPagePageInfo `json:"pageInfo"`
+	// List of nodes.
+	Nodes []CVEListPageNodesImageVulnerability `json:"nodes"`
+}
+
+// GetPageInfo returns CVEListPage.PageInfo, and is useful for accessing the field via an interface.
+func (v *CVEListPage) GetPageInfo() CVEListPagePageInfo { return v.PageInfo }
+
+// GetNodes returns CVEListPage.Nodes, and is useful for accessing the field via an interface.
+func (v *CVEListPage) GetNodes() []CVEListPageNodesImageVulnerability { return v.Nodes }
+
+// CVEListPageNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type CVEListPageNodesImageVulnerability struct {
+	// The globally unique ID of the image vulnerability node.
+	Id string `json:"id"`
+	// The unique identifier of the vulnerability. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Severity of the vulnerability.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Risk and threat intelligence signals used to prioritize the image vulnerability.
+	RiskAssessment CVEListPageNodesImageVulnerabilityRiskAssessment `json:"riskAssessment"`
+	// Package version information used to remediate the image vulnerability.
+	Remediation CVEListPageNodesImageVulnerabilityRemediation `json:"remediation"`
+	// Package name of the vulnerability.
+	Package     string                                         `json:"package"`
+	Suppression *CVEListPageNodesImageVulnerabilitySuppression `json:"suppression"`
+	// Timestamp of when the vulnerability got its current severity.
+	SeveritySince *time.Time `json:"severitySince"`
+	// Link to the vulnerability details.
+	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+}
+
+// GetId returns CVEListPageNodesImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetId() string { return v.Id }
+
+// GetIdentifier returns CVEListPageNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetIdentifier() string { return v.Identifier }
+
+// GetSeverity returns CVEListPageNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
+	return v.Severity
+}
+
+// GetRiskAssessment returns CVEListPageNodesImageVulnerability.RiskAssessment, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetRiskAssessment() CVEListPageNodesImageVulnerabilityRiskAssessment {
+	return v.RiskAssessment
+}
+
+// GetRemediation returns CVEListPageNodesImageVulnerability.Remediation, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetRemediation() CVEListPageNodesImageVulnerabilityRemediation {
+	return v.Remediation
+}
+
+// GetPackage returns CVEListPageNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetPackage() string { return v.Package }
+
+// GetSuppression returns CVEListPageNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetSuppression() *CVEListPageNodesImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// GetSeveritySince returns CVEListPageNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetSeveritySince() *time.Time { return v.SeveritySince }
+
+// GetVulnerabilityDetailsLink returns CVEListPageNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
+	return v.VulnerabilityDetailsLink
+}
+
+// CVEListPageNodesImageVulnerabilityRemediation includes the requested fields of the GraphQL type VulnerabilityRemediation.
+// The GraphQL type's documentation follows.
+//
+// Package version information that helps remediate an image vulnerability.
+type CVEListPageNodesImageVulnerabilityRemediation struct {
+	// First known package version that contains a fix.
+	FixVersion *string `json:"fixVersion"`
+	// Latest available version of the package, which may include changes beyond the fix.
+	LatestVersion *string `json:"latestVersion"`
+}
+
+// GetFixVersion returns CVEListPageNodesImageVulnerabilityRemediation.FixVersion, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRemediation) GetFixVersion() *string { return v.FixVersion }
+
+// GetLatestVersion returns CVEListPageNodesImageVulnerabilityRemediation.LatestVersion, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRemediation) GetLatestVersion() *string {
+	return v.LatestVersion
+}
+
+// CVEListPageNodesImageVulnerabilityRiskAssessment includes the requested fields of the GraphQL type VulnerabilityRiskAssessment.
+// The GraphQL type's documentation follows.
+//
+// Threat intelligence and scoring signals used to prioritize a vulnerability.
+type CVEListPageNodesImageVulnerabilityRiskAssessment struct {
+	// Operational priority derived from the available risk signals.
+	Priority CVEPriority `json:"priority"`
+	// CVSS score of the vulnerability.
+	CvssScore *float64 `json:"cvssScore"`
+	// EPSS score, representing the estimated probability of exploitation.
+	EpssScore *float64 `json:"epssScore"`
+	// EPSS percentile of the vulnerability as a percentage (0-100).
+	EpssPercentile *float64 `json:"epssPercentile"`
+	// Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
+	HasKevEntry bool `json:"hasKevEntry"`
+	// Whether the vulnerability is known to be used in ransomware attacks.
+	KnownRansomwareUse bool `json:"knownRansomwareUse"`
+}
+
+// GetPriority returns CVEListPageNodesImageVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetPriority() CVEPriority {
+	return v.Priority
+}
+
+// GetCvssScore returns CVEListPageNodesImageVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetCvssScore() *float64 {
+	return v.CvssScore
+}
+
+// GetEpssScore returns CVEListPageNodesImageVulnerabilityRiskAssessment.EpssScore, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetEpssScore() *float64 {
+	return v.EpssScore
+}
+
+// GetEpssPercentile returns CVEListPageNodesImageVulnerabilityRiskAssessment.EpssPercentile, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetEpssPercentile() *float64 {
+	return v.EpssPercentile
+}
+
+// GetHasKevEntry returns CVEListPageNodesImageVulnerabilityRiskAssessment.HasKevEntry, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetHasKevEntry() bool {
+	return v.HasKevEntry
+}
+
+// GetKnownRansomwareUse returns CVEListPageNodesImageVulnerabilityRiskAssessment.KnownRansomwareUse, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetKnownRansomwareUse() bool {
+	return v.KnownRansomwareUse
+}
+
+// CVEListPageNodesImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type CVEListPageNodesImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State *ImageVulnerabilitySuppressionState `json:"state"`
+	// The reason for the suppression of the vulnerability.
+	Reason *string `json:"reason"`
+}
+
+// GetState returns CVEListPageNodesImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilitySuppression) GetState() *ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// GetReason returns CVEListPageNodesImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *CVEListPageNodesImageVulnerabilitySuppression) GetReason() *string { return v.Reason }
+
+// CVEListPagePageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type CVEListPagePageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns CVEListPagePageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *CVEListPagePageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns CVEListPagePageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *CVEListPagePageInfo) GetEndCursor() *string { return v.EndCursor }
+
 // Operational priority levels for vulnerabilities and CVEs.
 type CVEPriority string
 
@@ -34501,11 +34676,80 @@ func __marshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkload(v *ListCVEsTe
 type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage struct {
 	// The globally unique ID of the container image node.
 	Id string `json:"id"`
+	// Get the vulnerabilities of the image.
+	Vulnerabilities ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
 }
 
 // GetId returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.Id, and is useful for accessing the field via an interface.
 func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetId() string {
 	return v.Id
+}
+
+// GetVulnerabilities returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImage) GetVulnerabilities() ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection {
+	return v.Vulnerabilities
+}
+
+// ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
+type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
+	CVEListPage `json:"-"`
+}
+
+// GetPageInfo returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) GetPageInfo() CVEListPagePageInfo {
+	return v.CVEListPage.PageInfo
+}
+
+// GetNodes returns ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []CVEListPageNodesImageVulnerability {
+	return v.CVEListPage.Nodes
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CVEListPage)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
+	PageInfo CVEListPagePageInfo `json:"pageInfo"`
+
+	Nodes []CVEListPageNodesImageVulnerability `json:"nodes"`
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection) __premarshalJSON() (*__premarshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection, error) {
+	var retval __premarshalListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnection
+
+	retval.PageInfo = v.CVEListPage.PageInfo
+	retval.Nodes = v.CVEListPage.Nodes
+	return &retval, nil
 }
 
 // ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
@@ -34565,6 +34809,8 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string
 // ListImageCVEsNodeApplicationRestartedActivityLogEntry
 // ListImageCVEsNodeApplicationScaledActivityLogEntry
 // ListImageCVEsNodeApplicationUpdatedActivityLogEntry
+// ListImageCVEsNodeAvailableValueOptions
+// ListImageCVEsNodeAvailableValues
 // ListImageCVEsNodeBigQueryDataset
 // ListImageCVEsNodeBucket
 // ListImageCVEsNodeCVE
@@ -34583,7 +34829,6 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string
 // ListImageCVEsNodeDeprecatedIngressIssue
 // ListImageCVEsNodeDeprecatedRegistryIssue
 // ListImageCVEsNodeEnvironment
-// ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue
 // ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue
 // ListImageCVEsNodeFailedSynchronizationIssue
 // ListImageCVEsNodeFeatureKafka
@@ -34700,7 +34945,9 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionPageInfo) GetEndCursor() *string
 // ListImageCVEsNodeValkeyUpdatedActivityLogEntry
 // ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry
 // ListImageCVEsNodeVulnerableImageIssue
+// ListImageCVEsNodeWorkloadKillingEvent
 // ListImageCVEsNodeWorkloadProblemIssue
+// ListImageCVEsNodeWorkloadSuccessfulRescaleEvent
 // ListImageCVEsNodeWorkloadVulnerabilitySummary
 // ListImageCVEsNodeWorkloadWithVulnerability
 // The GraphQL type's documentation follows.
@@ -34726,9 +34973,11 @@ func (v *ListImageCVEsNodeApplicationScaledActivityLogEntry) implementsGraphQLIn
 }
 func (v *ListImageCVEsNodeApplicationUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
 }
-func (v *ListImageCVEsNodeBigQueryDataset) implementsGraphQLInterfaceListImageCVEsNode() {}
-func (v *ListImageCVEsNodeBucket) implementsGraphQLInterfaceListImageCVEsNode()          {}
-func (v *ListImageCVEsNodeCVE) implementsGraphQLInterfaceListImageCVEsNode()             {}
+func (v *ListImageCVEsNodeAvailableValueOptions) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeAvailableValues) implementsGraphQLInterfaceListImageCVEsNode()       {}
+func (v *ListImageCVEsNodeBigQueryDataset) implementsGraphQLInterfaceListImageCVEsNode()       {}
+func (v *ListImageCVEsNodeBucket) implementsGraphQLInterfaceListImageCVEsNode()                {}
+func (v *ListImageCVEsNodeCVE) implementsGraphQLInterfaceListImageCVEsNode()                   {}
 func (v *ListImageCVEsNodeClusterAuditActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
 }
 func (v *ListImageCVEsNodeConfig) implementsGraphQLInterfaceListImageCVEsNode() {}
@@ -34748,8 +34997,6 @@ func (v *ListImageCVEsNodeDeploymentStatus) implementsGraphQLInterfaceListImageC
 func (v *ListImageCVEsNodeDeprecatedIngressIssue) implementsGraphQLInterfaceListImageCVEsNode()     {}
 func (v *ListImageCVEsNodeDeprecatedRegistryIssue) implementsGraphQLInterfaceListImageCVEsNode()    {}
 func (v *ListImageCVEsNodeEnvironment) implementsGraphQLInterfaceListImageCVEsNode()                {}
-func (v *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue) implementsGraphQLInterfaceListImageCVEsNode() {
-}
 func (v *ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceListImageCVEsNode() {
 }
 func (v *ListImageCVEsNodeFailedSynchronizationIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
@@ -34934,7 +35181,10 @@ func (v *ListImageCVEsNodeValkeyUpdatedActivityLogEntry) implementsGraphQLInterf
 func (v *ListImageCVEsNodeVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceListImageCVEsNode() {
 }
 func (v *ListImageCVEsNodeVulnerableImageIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeWorkloadKillingEvent) implementsGraphQLInterfaceListImageCVEsNode() {}
 func (v *ListImageCVEsNodeWorkloadProblemIssue) implementsGraphQLInterfaceListImageCVEsNode() {}
+func (v *ListImageCVEsNodeWorkloadSuccessfulRescaleEvent) implementsGraphQLInterfaceListImageCVEsNode() {
+}
 func (v *ListImageCVEsNodeWorkloadVulnerabilitySummary) implementsGraphQLInterfaceListImageCVEsNode() {
 }
 func (v *ListImageCVEsNodeWorkloadWithVulnerability) implementsGraphQLInterfaceListImageCVEsNode() {}
@@ -34976,6 +35226,12 @@ func __unmarshalListImageCVEsNode(b []byte, v *ListImageCVEsNode) error {
 		return json.Unmarshal(b, *v)
 	case "ApplicationUpdatedActivityLogEntry":
 		*v = new(ListImageCVEsNodeApplicationUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "AvailableValueOptions":
+		*v = new(ListImageCVEsNodeAvailableValueOptions)
+		return json.Unmarshal(b, *v)
+	case "AvailableValues":
+		*v = new(ListImageCVEsNodeAvailableValues)
 		return json.Unmarshal(b, *v)
 	case "BigQueryDataset":
 		*v = new(ListImageCVEsNodeBigQueryDataset)
@@ -35030,9 +35286,6 @@ func __unmarshalListImageCVEsNode(b []byte, v *ListImageCVEsNode) error {
 		return json.Unmarshal(b, *v)
 	case "Environment":
 		*v = new(ListImageCVEsNodeEnvironment)
-		return json.Unmarshal(b, *v)
-	case "ExternalIngressCriticalVulnerabilityIssue":
-		*v = new(ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue)
 		return json.Unmarshal(b, *v)
 	case "ExternalIngressUrgentVulnerabilityIssue":
 		*v = new(ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue)
@@ -35382,8 +35635,14 @@ func __unmarshalListImageCVEsNode(b []byte, v *ListImageCVEsNode) error {
 	case "VulnerableImageIssue":
 		*v = new(ListImageCVEsNodeVulnerableImageIssue)
 		return json.Unmarshal(b, *v)
+	case "WorkloadKillingEvent":
+		*v = new(ListImageCVEsNodeWorkloadKillingEvent)
+		return json.Unmarshal(b, *v)
 	case "WorkloadProblemIssue":
 		*v = new(ListImageCVEsNodeWorkloadProblemIssue)
+		return json.Unmarshal(b, *v)
+	case "WorkloadSuccessfulRescaleEvent":
+		*v = new(ListImageCVEsNodeWorkloadSuccessfulRescaleEvent)
 		return json.Unmarshal(b, *v)
 	case "WorkloadVulnerabilitySummary":
 		*v = new(ListImageCVEsNodeWorkloadVulnerabilitySummary)
@@ -35466,6 +35725,22 @@ func __marshalListImageCVEsNode(v *ListImageCVEsNode) ([]byte, error) {
 		result := struct {
 			TypeName string `json:"__typename"`
 			*ListImageCVEsNodeApplicationUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeAvailableValueOptions:
+		typename = "AvailableValueOptions"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeAvailableValueOptions
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeAvailableValues:
+		typename = "AvailableValues"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeAvailableValues
 		}{typename, v}
 		return json.Marshal(result)
 	case *ListImageCVEsNodeBigQueryDataset:
@@ -35610,14 +35885,6 @@ func __marshalListImageCVEsNode(v *ListImageCVEsNode) ([]byte, error) {
 		result := struct {
 			TypeName string `json:"__typename"`
 			*ListImageCVEsNodeEnvironment
-		}{typename, v}
-		return json.Marshal(result)
-	case *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue:
-		typename = "ExternalIngressCriticalVulnerabilityIssue"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue:
@@ -36548,12 +36815,28 @@ func __marshalListImageCVEsNode(v *ListImageCVEsNode) ([]byte, error) {
 			*ListImageCVEsNodeVulnerableImageIssue
 		}{typename, v}
 		return json.Marshal(result)
+	case *ListImageCVEsNodeWorkloadKillingEvent:
+		typename = "WorkloadKillingEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeWorkloadKillingEvent
+		}{typename, v}
+		return json.Marshal(result)
 	case *ListImageCVEsNodeWorkloadProblemIssue:
 		typename = "WorkloadProblemIssue"
 
 		result := struct {
 			TypeName string `json:"__typename"`
 			*ListImageCVEsNodeWorkloadProblemIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *ListImageCVEsNodeWorkloadSuccessfulRescaleEvent:
+		typename = "WorkloadSuccessfulRescaleEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*ListImageCVEsNodeWorkloadSuccessfulRescaleEvent
 		}{typename, v}
 		return json.Marshal(result)
 	case *ListImageCVEsNodeWorkloadVulnerabilitySummary:
@@ -36663,6 +36946,28 @@ func (v *ListImageCVEsNodeApplicationUpdatedActivityLogEntry) GetTypename() *str
 	return v.Typename
 }
 
+// ListImageCVEsNodeAvailableValueOptions includes the requested fields of the GraphQL type AvailableValueOptions.
+// The GraphQL type's documentation follows.
+//
+// Allowed string values and the default selection for a setting in an environment.
+type ListImageCVEsNodeAvailableValueOptions struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeAvailableValueOptions.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeAvailableValueOptions) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeAvailableValues includes the requested fields of the GraphQL type AvailableValues.
+// The GraphQL type's documentation follows.
+//
+// Available configuration values for an environment, updated as platform capabilities change.
+type ListImageCVEsNodeAvailableValues struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeAvailableValues.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeAvailableValues) GetTypename() *string { return v.Typename }
+
 // ListImageCVEsNodeBigQueryDataset includes the requested fields of the GraphQL type BigQueryDataset.
 type ListImageCVEsNodeBigQueryDataset struct {
 	Typename *string `json:"__typename"`
@@ -36762,197 +37067,64 @@ func (v *ListImageCVEsNodeContainerImageSBOM) GetTypename() *string { return v.T
 
 // ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
 type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
-	// Information to aid in pagination.
-	PageInfo ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo `json:"pageInfo"`
-	// List of nodes.
-	Nodes []ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability `json:"nodes"`
+	CVEListPage `json:"-"`
 }
 
 // GetPageInfo returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetPageInfo() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo {
-	return v.PageInfo
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetPageInfo() CVEListPagePageInfo {
+	return v.CVEListPage.PageInfo
 }
 
 // GetNodes returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability {
-	return v.Nodes
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []CVEListPageNodesImageVulnerability {
+	return v.CVEListPage.Nodes
 }
 
-// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
-type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
-	// The globally unique ID of the image vulnerability node.
-	Id string `json:"id"`
-	// The unique identifier of the vulnerability. E.g. CVE-****-****.
-	Identifier string `json:"identifier"`
-	// Severity of the vulnerability.
-	Severity ImageVulnerabilitySeverity `json:"severity"`
-	// Risk and threat intelligence signals used to prioritize the image vulnerability.
-	RiskAssessment ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment `json:"riskAssessment"`
-	// Package version information used to remediate the image vulnerability.
-	Remediation ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation `json:"remediation"`
-	// Package name of the vulnerability.
-	Package     string                                                                                                        `json:"package"`
-	Suppression *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
-	// Timestamp of when the vulnerability got its current severity.
-	SeveritySince *time.Time `json:"severitySince"`
-	// Link to the vulnerability details.
-	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.CVEListPage)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// GetId returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Id, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetId() string {
-	return v.Id
+type __premarshalListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection struct {
+	PageInfo CVEListPagePageInfo `json:"pageInfo"`
+
+	Nodes []CVEListPageNodesImageVulnerability `json:"nodes"`
 }
 
-// GetIdentifier returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetIdentifier() string {
-	return v.Identifier
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
 }
 
-// GetSeverity returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
-	return v.Severity
-}
+func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection) __premarshalJSON() (*__premarshalListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection, error) {
+	var retval __premarshalListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnection
 
-// GetRiskAssessment returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.RiskAssessment, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRiskAssessment() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment {
-	return v.RiskAssessment
-}
-
-// GetRemediation returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Remediation, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRemediation() ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation {
-	return v.Remediation
-}
-
-// GetPackage returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetPackage() string {
-	return v.Package
-}
-
-// GetSuppression returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression {
-	return v.Suppression
-}
-
-// GetSeveritySince returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeveritySince() *time.Time {
-	return v.SeveritySince
-}
-
-// GetVulnerabilityDetailsLink returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
-	return v.VulnerabilityDetailsLink
-}
-
-// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation includes the requested fields of the GraphQL type VulnerabilityRemediation.
-// The GraphQL type's documentation follows.
-//
-// Package version information that helps remediate an image vulnerability.
-type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation struct {
-	// First known package version that contains a fix.
-	FixVersion *string `json:"fixVersion"`
-	// Latest available version of the package, which may include changes beyond the fix.
-	LatestVersion *string `json:"latestVersion"`
-}
-
-// GetFixVersion returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation.FixVersion, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation) GetFixVersion() *string {
-	return v.FixVersion
-}
-
-// GetLatestVersion returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation.LatestVersion, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRemediation) GetLatestVersion() *string {
-	return v.LatestVersion
-}
-
-// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment includes the requested fields of the GraphQL type VulnerabilityRiskAssessment.
-// The GraphQL type's documentation follows.
-//
-// Threat intelligence and scoring signals used to prioritize a vulnerability.
-type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment struct {
-	// Operational priority derived from the available risk signals.
-	Priority CVEPriority `json:"priority"`
-	// CVSS score of the vulnerability.
-	CvssScore *float64 `json:"cvssScore"`
-	// EPSS score, representing the estimated probability of exploitation.
-	EpssScore *float64 `json:"epssScore"`
-	// EPSS percentile of the vulnerability as a percentage (0-100).
-	EpssPercentile *float64 `json:"epssPercentile"`
-	// Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
-	HasKevEntry bool `json:"hasKevEntry"`
-	// Whether the vulnerability is known to be used in ransomware attacks.
-	KnownRansomwareUse bool `json:"knownRansomwareUse"`
-}
-
-// GetPriority returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetPriority() CVEPriority {
-	return v.Priority
-}
-
-// GetCvssScore returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetCvssScore() *float64 {
-	return v.CvssScore
-}
-
-// GetEpssScore returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.EpssScore, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetEpssScore() *float64 {
-	return v.EpssScore
-}
-
-// GetEpssPercentile returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.EpssPercentile, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetEpssPercentile() *float64 {
-	return v.EpssPercentile
-}
-
-// GetHasKevEntry returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.HasKevEntry, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetHasKevEntry() bool {
-	return v.HasKevEntry
-}
-
-// GetKnownRansomwareUse returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment.KnownRansomwareUse, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilityRiskAssessment) GetKnownRansomwareUse() bool {
-	return v.KnownRansomwareUse
-}
-
-// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
-type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression struct {
-	// Suppression state of the vulnerability.
-	State *ImageVulnerabilitySuppressionState `json:"state"`
-	// The reason for the suppression of the vulnerability.
-	Reason *string `json:"reason"`
-}
-
-// GetState returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetState() *ImageVulnerabilitySuppressionState {
-	return v.State
-}
-
-// GetReason returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression) GetReason() *string {
-	return v.Reason
-}
-
-// ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-// The GraphQL type's documentation follows.
-//
-// # This type is used for paginating the connection
-//
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo struct {
-	// Whether or not there exists a next page in the connection.
-	HasNextPage bool `json:"hasNextPage"`
-	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
-	EndCursor *string `json:"endCursor"`
-}
-
-// GetHasNextPage returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetHasNextPage() bool {
-	return v.HasNextPage
-}
-
-// GetEndCursor returns ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeContainerImageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetEndCursor() *string {
-	return v.EndCursor
+	retval.PageInfo = v.CVEListPage.PageInfo
+	retval.Nodes = v.CVEListPage.Nodes
+	return &retval, nil
 }
 
 // ListImageCVEsNodeDeployment includes the requested fields of the GraphQL type Deployment.
@@ -37035,19 +37207,6 @@ type ListImageCVEsNodeEnvironment struct {
 
 // GetTypename returns ListImageCVEsNodeEnvironment.Typename, and is useful for accessing the field via an interface.
 func (v *ListImageCVEsNodeEnvironment) GetTypename() *string { return v.Typename }
-
-// ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressCriticalVulnerabilityIssue.
-// The GraphQL type's documentation follows.
-//
-// Deprecated: use ExternalIngressUrgentVulnerabilityIssue.
-type ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue struct {
-	Typename *string `json:"__typename"`
-}
-
-// GetTypename returns ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
-func (v *ListImageCVEsNodeExternalIngressCriticalVulnerabilityIssue) GetTypename() *string {
-	return v.Typename
-}
 
 // ListImageCVEsNodeExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
 // The GraphQL type's documentation follows.
@@ -37477,7 +37636,7 @@ func (v *ListImageCVEsNodePostgresPersonalAccessConnectionActivityLogEntry) GetT
 // ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
 // The GraphQL type's documentation follows.
 //
-// An audit-log entry for personal Postgres access created through the API broker.
+// An audit-log entry for personal Postgres access creation.
 type ListImageCVEsNodePostgresPersonalAccessCreatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
 }
@@ -37870,7 +38029,7 @@ func (v *ListImageCVEsNodeSqlInstanceVersionIssue) GetTypename() *string { retur
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ListImageCVEsNodeTeam struct {
 	Typename *string `json:"__typename"`
 }
@@ -38151,6 +38310,17 @@ type ListImageCVEsNodeVulnerableImageIssue struct {
 // GetTypename returns ListImageCVEsNodeVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
 func (v *ListImageCVEsNodeVulnerableImageIssue) GetTypename() *string { return v.Typename }
 
+// ListImageCVEsNodeWorkloadKillingEvent includes the requested fields of the GraphQL type WorkloadKillingEvent.
+// The GraphQL type's documentation follows.
+//
+// A container restart.
+type ListImageCVEsNodeWorkloadKillingEvent struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeWorkloadKillingEvent.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeWorkloadKillingEvent) GetTypename() *string { return v.Typename }
+
 // ListImageCVEsNodeWorkloadProblemIssue includes the requested fields of the GraphQL type WorkloadProblemIssue.
 // The GraphQL type's documentation follows.
 //
@@ -38161,6 +38331,17 @@ type ListImageCVEsNodeWorkloadProblemIssue struct {
 
 // GetTypename returns ListImageCVEsNodeWorkloadProblemIssue.Typename, and is useful for accessing the field via an interface.
 func (v *ListImageCVEsNodeWorkloadProblemIssue) GetTypename() *string { return v.Typename }
+
+// ListImageCVEsNodeWorkloadSuccessfulRescaleEvent includes the requested fields of the GraphQL type WorkloadSuccessfulRescaleEvent.
+// The GraphQL type's documentation follows.
+//
+// A successful replica count change.
+type ListImageCVEsNodeWorkloadSuccessfulRescaleEvent struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns ListImageCVEsNodeWorkloadSuccessfulRescaleEvent.Typename, and is useful for accessing the field via an interface.
+func (v *ListImageCVEsNodeWorkloadSuccessfulRescaleEvent) GetTypename() *string { return v.Typename }
 
 // ListImageCVEsNodeWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
 type ListImageCVEsNodeWorkloadVulnerabilitySummary struct {
@@ -38708,7 +38889,7 @@ func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadV
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -39239,7 +39420,7 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 //
 // Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
 //
-// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by [Nais API reconcilers](https://github.com/nais/api-reconcilers).
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeam struct {
 	// Unique slug of the team.
 	Slug string `json:"slug"`
@@ -42546,9 +42727,10 @@ func (v *__GrantAccessToKafkaTopicInput) GetGrant() KafkaTopicGrantInput { retur
 
 // __ListCVEsInput is used internally by genqlient
 type __ListCVEsInput struct {
-	Team   string               `json:"team"`
-	Filter *TeamWorkloadsFilter `json:"filter"`
-	After  *string              `json:"after"`
+	Team                string                    `json:"team"`
+	Filter              *TeamWorkloadsFilter      `json:"filter"`
+	After               *string                   `json:"after"`
+	VulnerabilityFilter *ImageVulnerabilityFilter `json:"vulnerabilityFilter"`
 }
 
 // GetTeam returns __ListCVEsInput.Team, and is useful for accessing the field via an interface.
@@ -42559,6 +42741,11 @@ func (v *__ListCVEsInput) GetFilter() *TeamWorkloadsFilter { return v.Filter }
 
 // GetAfter returns __ListCVEsInput.After, and is useful for accessing the field via an interface.
 func (v *__ListCVEsInput) GetAfter() *string { return v.After }
+
+// GetVulnerabilityFilter returns __ListCVEsInput.VulnerabilityFilter, and is useful for accessing the field via an interface.
+func (v *__ListCVEsInput) GetVulnerabilityFilter() *ImageVulnerabilityFilter {
+	return v.VulnerabilityFilter
+}
 
 // __ListImageCVEsInput is used internally by genqlient
 type __ListImageCVEsInput struct {
@@ -46415,7 +46602,7 @@ func IsAdmin(
 
 // The query executed by ListCVEs.
 const ListCVEs_Operation = `
-query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter, $after: Cursor) {
+query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter, $after: Cursor, $vulnerabilityFilter: ImageVulnerabilityFilter) {
 	team(slug: $team) {
 		workloads(first: 100, after: $after, filter: $filter) {
 			pageInfo {
@@ -46432,9 +46619,42 @@ query ListCVEs ($team: Slug!, $filter: TeamWorkloadsFilter, $after: Cursor) {
 				}
 				image {
 					id
+					vulnerabilities(first: 100, filter: $vulnerabilityFilter, orderBy: {field:SEVERITY,direction:DESC}) {
+						... CVEListPage
+					}
 				}
 			}
 		}
+	}
+}
+fragment CVEListPage on ImageVulnerabilityConnection {
+	pageInfo {
+		hasNextPage
+		endCursor
+	}
+	nodes {
+		id
+		identifier
+		severity
+		riskAssessment {
+			priority
+			cvssScore
+			epssScore
+			epssPercentile
+			hasKevEntry
+			knownRansomwareUse
+		}
+		remediation {
+			fixVersion
+			latestVersion
+		}
+		package
+		suppression {
+			state
+			reason
+		}
+		severitySince
+		vulnerabilityDetailsLink
 	}
 }
 `
@@ -46445,14 +46665,16 @@ func ListCVEs(
 	team string,
 	filter *TeamWorkloadsFilter,
 	after *string,
+	vulnerabilityFilter *ImageVulnerabilityFilter,
 ) (data_ *ListCVEsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ListCVEs",
 		Query:  ListCVEs_Operation,
 		Variables: &__ListCVEsInput{
-			Team:   team,
-			Filter: filter,
-			After:  after,
+			Team:                team,
+			Filter:              filter,
+			After:               after,
+			VulnerabilityFilter: vulnerabilityFilter,
 		},
 	}
 
@@ -46475,36 +46697,39 @@ query ListImageCVEs ($id: ID!, $filter: ImageVulnerabilityFilter, $after: Cursor
 		__typename
 		... on ContainerImage {
 			vulnerabilities(first: 100, after: $after, filter: $filter, orderBy: {field:SEVERITY,direction:DESC}) {
-				pageInfo {
-					hasNextPage
-					endCursor
-				}
-				nodes {
-					id
-					identifier
-					severity
-					riskAssessment {
-						priority
-						cvssScore
-						epssScore
-						epssPercentile
-						hasKevEntry
-						knownRansomwareUse
-					}
-					remediation {
-						fixVersion
-						latestVersion
-					}
-					package
-					suppression {
-						state
-						reason
-					}
-					severitySince
-					vulnerabilityDetailsLink
-				}
+				... CVEListPage
 			}
 		}
+	}
+}
+fragment CVEListPage on ImageVulnerabilityConnection {
+	pageInfo {
+		hasNextPage
+		endCursor
+	}
+	nodes {
+		id
+		identifier
+		severity
+		riskAssessment {
+			priority
+			cvssScore
+			epssScore
+			epssPercentile
+			hasKevEntry
+			knownRansomwareUse
+		}
+		remediation {
+			fixVersion
+			latestVersion
+		}
+		package
+		suppression {
+			state
+			reason
+		}
+		severitySince
+		vulnerabilityDetailsLink
 	}
 }
 `
