@@ -827,15 +827,6 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 	return v.LastExitCode
 }
 
-// Filter active CVEs by their calculated risk assessment.
-type CVEFilter struct {
-	// Filter active CVEs by their calculated risk assessment.
-	Priority *CVEPriority `json:"priority"`
-}
-
-// GetPriority returns CVEFilter.Priority, and is useful for accessing the field via an interface.
-func (v *CVEFilter) GetPriority() *CVEPriority { return v.Priority }
-
 // Ordering options when fetching CVEs.
 type CVEOrder struct {
 	// Ordering options when fetching CVEs.
@@ -1947,8 +1938,6 @@ func (v *FindWorkloadsForCveCveCVE) GetWorkloads() FindWorkloadsForCveCveCVEWork
 //
 // Threat intelligence and scoring signals used to prioritize a vulnerability.
 type FindWorkloadsForCveCveCVERiskAssessmentVulnerabilityRiskAssessment struct {
-	// Operational priority derived from the available risk signals.
-	Priority CVEPriority `json:"priority"`
 	// CVSS score of the vulnerability.
 	CvssScore *float64 `json:"cvssScore"`
 	// EPSS score, representing the estimated probability of exploitation.
@@ -1959,11 +1948,6 @@ type FindWorkloadsForCveCveCVERiskAssessmentVulnerabilityRiskAssessment struct {
 	HasKevEntry bool `json:"hasKevEntry"`
 	// Whether the vulnerability is known to be used in ransomware attacks.
 	KnownRansomwareUse bool `json:"knownRansomwareUse"`
-}
-
-// GetPriority returns FindWorkloadsForCveCveCVERiskAssessmentVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
-func (v *FindWorkloadsForCveCveCVERiskAssessmentVulnerabilityRiskAssessment) GetPriority() CVEPriority {
-	return v.Priority
 }
 
 // GetCvssScore returns FindWorkloadsForCveCveCVERiskAssessmentVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
@@ -2102,8 +2086,6 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 	Id string `json:"id"`
 	// Package name of the vulnerability.
 	Package string `json:"package"`
-	// Risk and threat intelligence signals used to prioritize the image vulnerability.
-	RiskAssessment FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment `json:"riskAssessment"`
 	// Package version information used to remediate the image vulnerability.
 	Remediation FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRemediation  `json:"remediation"`
 	Suppression *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
@@ -2117,11 +2099,6 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 // GetPackage returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Package, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetPackage() string {
 	return v.Package
-}
-
-// GetRiskAssessment returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.RiskAssessment, and is useful for accessing the field via an interface.
-func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability) GetRiskAssessment() FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment {
-	return v.RiskAssessment
 }
 
 // GetRemediation returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability.Remediation, and is useful for accessing the field via an interface.
@@ -2146,20 +2123,6 @@ type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesW
 // GetFixVersion returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRemediation.FixVersion, and is useful for accessing the field via an interface.
 func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRemediation) GetFixVersion() *string {
 	return v.FixVersion
-}
-
-// FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment includes the requested fields of the GraphQL type VulnerabilityRiskAssessment.
-// The GraphQL type's documentation follows.
-//
-// Threat intelligence and scoring signals used to prioritize a vulnerability.
-type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment struct {
-	// Operational priority derived from the available risk signals.
-	Priority CVEPriority `json:"priority"`
-}
-
-// GetPriority returns FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
-func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilityRiskAssessment) GetPriority() CVEPriority {
-	return v.Priority
 }
 
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
@@ -34830,8 +34793,6 @@ func (v *ListCatalogCVEsCvesCVEConnectionNodesCVE) GetWorkloads() ListCatalogCVE
 //
 // Threat intelligence and scoring signals used to prioritize a vulnerability.
 type ListCatalogCVEsCvesCVEConnectionNodesCVERiskAssessmentVulnerabilityRiskAssessment struct {
-	// Operational priority derived from the available risk signals.
-	Priority CVEPriority `json:"priority"`
 	// CVSS score of the vulnerability.
 	CvssScore *float64 `json:"cvssScore"`
 	// EPSS score, representing the estimated probability of exploitation.
@@ -34842,11 +34803,6 @@ type ListCatalogCVEsCvesCVEConnectionNodesCVERiskAssessmentVulnerabilityRiskAsse
 	HasKevEntry bool `json:"hasKevEntry"`
 	// Whether the vulnerability is known to be used in ransomware attacks.
 	KnownRansomwareUse bool `json:"knownRansomwareUse"`
-}
-
-// GetPriority returns ListCatalogCVEsCvesCVEConnectionNodesCVERiskAssessmentVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
-func (v *ListCatalogCVEsCvesCVEConnectionNodesCVERiskAssessmentVulnerabilityRiskAssessment) GetPriority() CVEPriority {
-	return v.Priority
 }
 
 // GetCvssScore returns ListCatalogCVEsCvesCVEConnectionNodesCVERiskAssessmentVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
@@ -38534,10 +38490,9 @@ func (v *__ListCVEsInput) GetFilter() *TeamWorkloadsFilter { return v.Filter }
 
 // __ListCatalogCVEsInput is used internally by genqlient
 type __ListCatalogCVEsInput struct {
-	First  int        `json:"first"`
-	After  *string    `json:"after"`
-	Filter *CVEFilter `json:"filter"`
-	Order  *CVEOrder  `json:"order"`
+	First int       `json:"first"`
+	After *string   `json:"after"`
+	Order *CVEOrder `json:"order"`
 }
 
 // GetFirst returns __ListCatalogCVEsInput.First, and is useful for accessing the field via an interface.
@@ -38545,9 +38500,6 @@ func (v *__ListCatalogCVEsInput) GetFirst() int { return v.First }
 
 // GetAfter returns __ListCatalogCVEsInput.After, and is useful for accessing the field via an interface.
 func (v *__ListCatalogCVEsInput) GetAfter() *string { return v.After }
-
-// GetFilter returns __ListCatalogCVEsInput.Filter, and is useful for accessing the field via an interface.
-func (v *__ListCatalogCVEsInput) GetFilter() *CVEFilter { return v.Filter }
 
 // GetOrder returns __ListCatalogCVEsInput.Order, and is useful for accessing the field via an interface.
 func (v *__ListCatalogCVEsInput) GetOrder() *CVEOrder { return v.Order }
@@ -39924,7 +39876,6 @@ query FindWorkloadsForCve ($identifier: String!, $after: Cursor, $filter: CVEWor
 		description
 		detailsLink
 		riskAssessment {
-			priority
 			cvssScore
 			epssScore
 			epssPercentile
@@ -39940,9 +39891,6 @@ query FindWorkloadsForCve ($identifier: String!, $after: Cursor, $filter: CVEWor
 				vulnerability {
 					id
 					package
-					riskAssessment {
-						priority
-					}
 					remediation {
 						fixVersion
 					}
@@ -42457,8 +42405,8 @@ func ListCVEs(
 
 // The query executed by ListCatalogCVEs.
 const ListCatalogCVEs_Operation = `
-query ListCatalogCVEs ($first: Int!, $after: Cursor, $filter: CVEFilter, $order: CVEOrder) {
-	cves(first: $first, after: $after, filter: $filter, orderBy: $order) {
+query ListCatalogCVEs ($first: Int!, $after: Cursor, $order: CVEOrder) {
+	cves(first: $first, after: $after, orderBy: $order) {
 		pageInfo {
 			hasNextPage
 			endCursor
@@ -42469,7 +42417,6 @@ query ListCatalogCVEs ($first: Int!, $after: Cursor, $filter: CVEFilter, $order:
 			severity
 			detailsLink
 			riskAssessment {
-				priority
 				cvssScore
 				epssScore
 				epssPercentile
@@ -42491,17 +42438,15 @@ func ListCatalogCVEs(
 	client_ graphql.Client,
 	first int,
 	after *string,
-	filter *CVEFilter,
 	order *CVEOrder,
 ) (data_ *ListCatalogCVEsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ListCatalogCVEs",
 		Query:  ListCatalogCVEs_Operation,
 		Variables: &__ListCatalogCVEsInput{
-			First:  first,
-			After:  after,
-			Filter: filter,
-			Order:  order,
+			First: first,
+			After: after,
+			Order: order,
 		},
 	}
 
