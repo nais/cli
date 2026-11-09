@@ -337,7 +337,7 @@ func (c *MockClient) GetWorkloadVulnerabilities(ctx context.Context, request Wor
 	page := WorkloadVulnerabilityPage{
 		Workload: WorkloadIdentity{ID: "mock-workload", Team: request.Team, Name: request.Workload, Type: request.Type, Environment: request.Environment},
 		Context:  VulnerabilityContext{Ingresses: []VulnerabilityIngress{}, AuthIntegrations: []string{}, InboundRules: []VulnerabilityInboundRule{}},
-		Snapshot: VulnerabilitySnapshot{ImageID: "mock-image", ImageName: "example/app", ImageTag: "test", SBOMStatus: "READY", Total: &total, ScanUpdatedAt: &updated},
+		Snapshot: VulnerabilitySnapshot{ImageID: "mock-image", ImageName: "example/app", ImageTag: "test", SBOMStatus: "READY", Total: &total, SummaryUpdatedAt: &updated},
 		Findings: []WorkloadVulnerability{},
 	}
 	if request.Type == "application" {

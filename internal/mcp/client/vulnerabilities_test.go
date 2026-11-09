@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 )
@@ -138,6 +139,9 @@ func TestFetchWorkloadVulnerabilities(t *testing.T) {
 			if page.Findings[0].SuppressionState == nil || *page.Findings[0].SuppressionState != "IN_TRIAGE" || page.Snapshot.ImageTag != "" || page.Snapshot.ImageDigest == nil {
 				t.Fatal("suppression or digest-only image was lost")
 			}
+			if page.Snapshot.SummaryUpdatedAt == nil || page.Snapshot.SummaryUpdatedAt.Format(time.RFC3339) != "2026-01-01T00:00:00Z" {
+				t.Fatal("summary update timestamp was lost")
+			}
 			if len(page.Context.InboundRules) != 1 || page.Context.InboundRules[0].Team != "other-team" || len(page.Context.AuthIntegrations) != 1 {
 				t.Fatalf("context lost: %+v", page.Context)
 			}
@@ -147,6 +151,9 @@ func TestFetchWorkloadVulnerabilities(t *testing.T) {
 			raw, err := json.Marshal(page)
 			if err != nil || strings.Contains(string(raw), "must not be returned") {
 				t.Fatal("suppression free text escaped DTO")
+			}
+			if strings.Contains(string(raw), `"scan_updated_at"`) {
+				t.Fatal("summary update exposed as a scan timestamp")
 			}
 		})
 	}
@@ -190,7 +197,7 @@ func TestFetchWorkloadVulnerabilitiesWithoutSummary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if page.Snapshot.Total != nil || page.Snapshot.ScanUpdatedAt != nil || len(page.Findings) != 1 {
+	if page.Snapshot.Total != nil || page.Snapshot.SummaryUpdatedAt != nil || len(page.Findings) != 1 {
 		t.Fatalf("missing summary interpreted as clean: %+v", page)
 	}
 }

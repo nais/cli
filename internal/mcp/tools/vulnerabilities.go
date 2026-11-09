@@ -36,7 +36,7 @@ type GetWorkloadVulnerabilitiesOutput struct {
 func registerVulnerabilityTools(s *server.MCPServer, ctx *toolContext) {
 	s.AddTool(mcp.NewTool(
 		"get_workload_vulnerabilities",
-		mcp.WithDescription("Get one bounded page of vulnerabilities and exposure context for an exact Nais application or job. Includes suppressed findings, reported risk and remediation, image/SBOM/scan metadata. Follow page_info until complete, passing snapshot_identity as expected_snapshot with after. Never mix snapshots; snapshot_changed requires a new collection. No code analysis, fixes, secrets or atomic-snapshot guarantee. EPSS score is 0-1; percentile is 0-100. Descriptions may be truncated previews; consult details_link for the full advisory."),
+		mcp.WithDescription("Get one bounded page of vulnerabilities and exposure context for an exact Nais application or job. Includes suppressed findings, reported risk and remediation, image/SBOM/summary metadata. Summary update time is not scan time; scan time remains unknown. Follow page_info until complete, passing snapshot_identity as expected_snapshot with after. Never mix snapshots; snapshot_changed requires a new collection. No code analysis, fixes, secrets or atomic-snapshot guarantee. EPSS score is 0-1; percentile is 0-100. Descriptions may be truncated previews; consult details_link for the full advisory."),
 		mcp.WithInputSchema[GetWorkloadVulnerabilitiesInput](),
 		mcp.WithOutputSchema[GetWorkloadVulnerabilitiesOutput](),
 	), mcp.NewStructuredToolHandler(ctx.handleGetWorkloadVulnerabilities))
@@ -123,9 +123,7 @@ func (t *toolContext) handleGetWorkloadVulnerabilities(ctx context.Context, _ mc
 	} else if *page.Snapshot.Total < 0 {
 		return output, fmt.Errorf("invalid_response: summary total cannot be negative")
 	}
-	if page.Snapshot.ScanUpdatedAt == nil {
-		issues = append(issues, "scan_time_unknown")
-	}
+	issues = append(issues, "scan_time_unknown")
 	return GetWorkloadVulnerabilitiesOutput{
 		WorkloadVulnerabilityPage: page, FetchedAt: time.Now().UTC(), SnapshotIdentity: identity,
 		ReturnedCount: len(page.Findings), CoverageIssues: issues,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 
@@ -47,7 +48,7 @@ func TestWorkloadVulnerabilitiesPages(t *testing.T) {
 				}
 				identity = result.SnapshotIdentity
 				findings = append(findings, result.Findings...)
-				if result.ReturnedCount != 1 || len(result.CoverageIssues) != 0 {
+				if result.ReturnedCount != 1 || !slices.Equal(result.CoverageIssues, []string{"scan_time_unknown"}) || result.Snapshot.SummaryUpdatedAt == nil {
 					t.Fatalf("unexpected page coverage: %+v", result)
 				}
 				if !result.PageInfo.HasNextPage {
@@ -115,9 +116,9 @@ func TestWorkloadVulnerabilitiesResponseGates(t *testing.T) {
 		{"wrong workload", func(p *client.WorkloadVulnerabilityPage) { p.Workload.Name = "other" }, "scope_mismatch"},
 		{"wrong environment", func(p *client.WorkloadVulnerabilityPage) { p.Workload.Environment = "dev" }, "scope_mismatch"},
 		{"new image", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.ImageID = "new-image" }, "snapshot_changed"},
-		{"new scan", func(p *client.WorkloadVulnerabilityPage) {
-			updated := p.Snapshot.ScanUpdatedAt.AddDate(0, 0, 1)
-			p.Snapshot.ScanUpdatedAt = &updated
+		{"new summary update", func(p *client.WorkloadVulnerabilityPage) {
+			updated := p.Snapshot.SummaryUpdatedAt.AddDate(0, 0, 1)
+			p.Snapshot.SummaryUpdatedAt = &updated
 		}, "snapshot_changed"},
 		{"missing cursor", func(p *client.WorkloadVulnerabilityPage) { p.PageInfo.HasNextPage = true; p.PageInfo.EndCursor = nil }, "invalid_cursor"},
 		{"repeated cursor", func(p *client.WorkloadVulnerabilityPage) { p.PageInfo.EndCursor = args.After }, "invalid_cursor"},
@@ -145,11 +146,11 @@ func TestWorkloadVulnerabilitiesCoverageAndPreview(t *testing.T) {
 	for _, test := range []struct {
 		name string
 		edit func(*client.WorkloadVulnerabilityPage)
-		want string
+		want []string
 	}{
-		{"SBOM", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.SBOMStatus = "PROCESSING" }, "sbom_not_ready"},
-		{"summary", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.Total = nil }, "summary_unavailable"},
-		{"scan time", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.ScanUpdatedAt = nil }, "scan_time_unknown"},
+		{"SBOM", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.SBOMStatus = "PROCESSING" }, []string{"sbom_not_ready", "scan_time_unknown"}},
+		{"summary", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.Total = nil }, []string{"summary_unavailable", "scan_time_unknown"}},
+		{"summary update time", func(p *client.WorkloadVulnerabilityPage) { p.Snapshot.SummaryUpdatedAt = nil }, []string{"scan_time_unknown"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			handler := &toolContext{rateLimiter: allowAll{}, client: &vulnerabilityTestClient{fetch: func(ctx context.Context, r client.WorkloadVulnerabilityRequest) (client.WorkloadVulnerabilityPage, error) {
@@ -162,14 +163,14 @@ func TestWorkloadVulnerabilitiesCoverageAndPreview(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(output.CoverageIssues) != 1 || output.CoverageIssues[0] != test.want || !output.Findings[0].DescriptionTruncated || len([]rune(output.Findings[0].Description)) != 1000 {
+			if !slices.Equal(output.CoverageIssues, test.want) || !output.Findings[0].DescriptionTruncated || len([]rune(output.Findings[0].Description)) != 1000 {
 				t.Fatalf("unexpected output: %+v", output)
 			}
 			raw, err := json.Marshal(output)
 			if err != nil {
 				t.Fatal(err)
 			}
-			for _, forbidden := range []string{`"priority"`, `"reason"`, `"manifest"`, `"email"`, `"token"`} {
+			for _, forbidden := range []string{`"priority"`, `"reason"`, `"manifest"`, `"email"`, `"token"`, `"scan_updated_at"`} {
 				if strings.Contains(string(raw), forbidden) {
 					t.Fatalf("output contains %s", forbidden)
 				}
@@ -207,7 +208,7 @@ func TestWorkloadVulnerabilitiesSummaryExcludesSuppressed(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(output.Findings) != 7 || *output.Snapshot.Total != open || len(output.CoverageIssues) != 0 {
+			if len(output.Findings) != 7 || *output.Snapshot.Total != open || !slices.Equal(output.CoverageIssues, []string{"scan_time_unknown"}) {
 				t.Fatalf("suppressed findings rejected or summary changed: %+v", output)
 			}
 		})

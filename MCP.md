@@ -107,7 +107,7 @@ The structured result contains:
 |---|---|
 | `workload` | ID, team, name, type and environment |
 | `context` | Ingress URL/type, auth-integration type names, inbound rules (workload, team, mutual) |
-| `snapshot` | Image ID/name/tag/digest, SBOM status, nullable unsuppressed total and scan time |
+| `snapshot` | Image ID/name/tag/digest, SBOM status, nullable unsuppressed total and `summary_updated_at` |
 | `findings` | Node/advisory IDs, purl, severity, description, risk assessment, remediation, suppression state and details link |
 | `page_info` | `has_next_page`, `end_cursor`, `requested_after` |
 | `snapshot_identity` | SHA-256 fingerprint of observed workload/image/summary metadata |
@@ -122,8 +122,14 @@ Identifiers, risk facts and versions are not truncated.
 
 Coverage codes are `sbom_not_ready`, `summary_unavailable` and
 `scan_time_unknown`. Missing data is not a clean scan.
-An empty coverage list covers this page only. Collect every page and check
-advancing cursors and unique finding IDs. Summary `total` counts only
+`summary_updated_at` is the summary's `lastUpdated`, not a scan timestamp;
+recalculating a summary can change it without a new scan. The query exposes no
+actual scan timestamp, so `scan_time_unknown` is always returned.
+Summary counts and update time can originate from another image tag. They do
+not prove current-image coverage or freshness, and the fingerprint cannot
+detect a change in summary source unless selected metadata changes.
+Coverage codes describe observed data gaps, not a complete inventory. Collect
+every page and check advancing cursors and unique finding IDs. Summary `total` counts only
 unsuppressed findings; `findings` and `returned_count` include suppressed rows.
 Never compare all returned rows to this total or stop pagination at that count.
 If checking aggregate coverage, compare only the unsuppressed rows after

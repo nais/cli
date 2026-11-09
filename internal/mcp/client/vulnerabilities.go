@@ -52,13 +52,13 @@ type VulnerabilityInboundRule struct {
 }
 
 type VulnerabilitySnapshot struct {
-	ImageID       string     `json:"image_id"`
-	ImageName     string     `json:"image_name"`
-	ImageTag      string     `json:"image_tag"`
-	ImageDigest   *string    `json:"image_digest"`
-	SBOMStatus    string     `json:"sbom_status"`
-	Total         *int       `json:"total" jsonschema_description:"Unsuppressed finding count; suppressed findings are still included in findings."`
-	ScanUpdatedAt *time.Time `json:"scan_updated_at"`
+	ImageID          string     `json:"image_id"`
+	ImageName        string     `json:"image_name"`
+	ImageTag         string     `json:"image_tag"`
+	ImageDigest      *string    `json:"image_digest"`
+	SBOMStatus       string     `json:"sbom_status"`
+	Total            *int       `json:"total" jsonschema_description:"Backend summary's unsuppressed finding count; not proof of current-image coverage. Suppressed findings remain listed."`
+	SummaryUpdatedAt *time.Time `json:"summary_updated_at" jsonschema_description:"Last summary update, not a scan timestamp or proof of current-image scan freshness."`
 }
 
 type WorkloadVulnerability struct {
@@ -159,7 +159,7 @@ func fetchWorkloadVulnerabilities(ctx context.Context, gqlClient graphql.Client,
 	}
 	if summary := image.VulnerabilitySummary; summary != nil {
 		page.Snapshot.Total = &summary.Total
-		page.Snapshot.ScanUpdatedAt = summary.LastUpdated
+		page.Snapshot.SummaryUpdatedAt = summary.LastUpdated
 	}
 	page.PageInfo = VulnerabilityPageInfo{HasNextPage: image.Vulnerabilities.PageInfo.HasNextPage, EndCursor: image.Vulnerabilities.PageInfo.EndCursor}
 	page.Findings = make([]WorkloadVulnerability, 0, len(image.Vulnerabilities.Nodes))
