@@ -923,8 +923,6 @@ func (v *CVEListPageNodesImageVulnerabilityRemediation) GetLatestVersion() *stri
 //
 // Threat intelligence and scoring signals used to prioritize a vulnerability.
 type CVEListPageNodesImageVulnerabilityRiskAssessment struct {
-	// Operational priority derived from the available risk signals.
-	Priority CVEPriority `json:"priority"`
 	// CVSS score of the vulnerability.
 	CvssScore *float64 `json:"cvssScore"`
 	// EPSS score, representing the estimated probability of exploitation.
@@ -935,11 +933,6 @@ type CVEListPageNodesImageVulnerabilityRiskAssessment struct {
 	HasKevEntry bool `json:"hasKevEntry"`
 	// Whether the vulnerability is known to be used in ransomware attacks.
 	KnownRansomwareUse bool `json:"knownRansomwareUse"`
-}
-
-// GetPriority returns CVEListPageNodesImageVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
-func (v *CVEListPageNodesImageVulnerabilityRiskAssessment) GetPriority() CVEPriority {
-	return v.Priority
 }
 
 // GetCvssScore returns CVEListPageNodesImageVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
@@ -38556,8 +38549,6 @@ type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulne
 	RiskScore int `json:"riskScore"`
 	// Vulnerability counts grouped by severity.
 	CountsBySeverity ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
-	// Vulnerability counts grouped by operational priority.
-	CountsByPriority ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
 	// Total number of vulnerabilities.
 	Total int `json:"total"`
 	// When set, the vulnerability counts are sourced from this older image tag because
@@ -38576,11 +38567,6 @@ func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadV
 	return v.CountsBySeverity
 }
 
-// GetCountsByPriority returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsByPriority() ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority {
-	return v.CountsByPriority
-}
-
 // GetTotal returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
 func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
 	return v.Total
@@ -38589,41 +38575,6 @@ func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadV
 // GetStaleImageTag returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
 func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
 	return v.StaleImageTag
-}
-
-// ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
-// The GraphQL type's documentation follows.
-//
-// Vulnerability counts grouped by operational priority.
-type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority struct {
-	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
-	KnownExploited int `json:"knownExploited"`
-	// Vulnerabilities with strong exploitation indicators.
-	HighRisk int `json:"highRisk"`
-	// Vulnerabilities with elevated exploitation risk.
-	ElevatedRisk int `json:"elevatedRisk"`
-	// Vulnerabilities that should be monitored.
-	Monitor int `json:"monitor"`
-}
-
-// GetKnownExploited returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
-	return v.KnownExploited
-}
-
-// GetHighRisk returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
-	return v.HighRisk
-}
-
-// GetElevatedRisk returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
-	return v.ElevatedRisk
-}
-
-// GetMonitor returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
-	return v.Monitor
 }
 
 // ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
@@ -39087,8 +39038,6 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	RiskScore int `json:"riskScore"`
 	// Vulnerability counts grouped by severity.
 	CountsBySeverity ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
-	// Vulnerability counts grouped by operational priority.
-	CountsByPriority ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
 	// Total number of vulnerabilities.
 	Total int `json:"total"`
 	// When set, the vulnerability counts are sourced from this older image tag because
@@ -39107,11 +39056,6 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.CountsBySeverity
 }
 
-// GetCountsByPriority returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetCountsByPriority() ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority {
-	return v.CountsByPriority
-}
-
 // GetTotal returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
 	return v.Total
@@ -39120,41 +39064,6 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 // GetStaleImageTag returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
 	return v.StaleImageTag
-}
-
-// ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
-// The GraphQL type's documentation follows.
-//
-// Vulnerability counts grouped by operational priority.
-type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority struct {
-	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
-	KnownExploited int `json:"knownExploited"`
-	// Vulnerabilities with strong exploitation indicators.
-	HighRisk int `json:"highRisk"`
-	// Vulnerabilities with elevated exploitation risk.
-	ElevatedRisk int `json:"elevatedRisk"`
-	// Vulnerabilities that should be monitored.
-	Monitor int `json:"monitor"`
-}
-
-// GetKnownExploited returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
-	return v.KnownExploited
-}
-
-// GetHighRisk returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
-	return v.HighRisk
-}
-
-// GetElevatedRisk returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
-	return v.ElevatedRisk
-}
-
-// GetMonitor returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
-	return v.Monitor
 }
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
@@ -46637,7 +46546,6 @@ fragment CVEListPage on ImageVulnerabilityConnection {
 		identifier
 		severity
 		riskAssessment {
-			priority
 			cvssScore
 			epssScore
 			epssPercentile
@@ -46712,7 +46620,6 @@ fragment CVEListPage on ImageVulnerabilityConnection {
 		identifier
 		severity
 		riskAssessment {
-			priority
 			cvssScore
 			epssScore
 			epssPercentile
@@ -46780,12 +46687,6 @@ query ListTenantWorkloadVulnerabilitySummaries ($filter: TenantVulnerabilitySumm
 					medium
 					low
 					unassigned
-				}
-				countsByPriority {
-					knownExploited
-					highRisk
-					elevatedRisk
-					monitor
 				}
 				total
 				staleImageTag
@@ -46858,12 +46759,6 @@ query ListWorkloadVulnerabilitySummaries ($team: Slug!, $filter: TeamVulnerabili
 						medium
 						low
 						unassigned
-					}
-					countsByPriority {
-						knownExploited
-						highRisk
-						elevatedRisk
-						monitor
 					}
 					total
 					staleImageTag
