@@ -38551,10 +38551,6 @@ type ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulne
 	CountsBySeverity ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
 	// Total number of vulnerabilities.
 	Total int `json:"total"`
-	// When set, the vulnerability counts are sourced from this older image tag because
-	// no summary exists yet for the requested tag (e.g. a newly deployed image that is
-	// still being scanned). The value is the tag the stale data originates from.
-	StaleImageTag *string `json:"staleImageTag"`
 }
 
 // GetRiskScore returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
@@ -38570,11 +38566,6 @@ func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadV
 // GetTotal returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
 func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
 	return v.Total
-}
-
-// GetStaleImageTag returns ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
-func (v *ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
-	return v.StaleImageTag
 }
 
 // ListTenantWorkloadVulnerabilitySummariesVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
@@ -39040,10 +39031,6 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 	CountsBySeverity ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
 	// Total number of vulnerabilities.
 	Total int `json:"total"`
-	// When set, the vulnerability counts are sourced from this older image tag because
-	// no summary exists yet for the requested tag (e.g. a newly deployed image that is
-	// still being scanned). The value is the tag the stale data originates from.
-	StaleImageTag *string `json:"staleImageTag"`
 }
 
 // GetRiskScore returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
@@ -39059,11 +39046,6 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 // GetTotal returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetTotal() int {
 	return v.Total
-}
-
-// GetStaleImageTag returns ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
-func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummary) GetStaleImageTag() *string {
-	return v.StaleImageTag
 }
 
 // ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummarySummaryImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
@@ -46689,7 +46671,6 @@ query ListTenantWorkloadVulnerabilitySummaries ($filter: TenantVulnerabilitySumm
 					unassigned
 				}
 				total
-				staleImageTag
 			}
 			workload {
 				__typename
@@ -46761,7 +46742,6 @@ query ListWorkloadVulnerabilitySummaries ($team: Slug!, $filter: TeamVulnerabili
 						unassigned
 					}
 					total
-					staleImageTag
 				}
 				workload {
 					__typename
