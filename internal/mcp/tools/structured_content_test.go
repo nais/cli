@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"os"
+	"slices"
 	"testing"
 
 	"github.com/mark3labs/mcp-go/server"
@@ -37,8 +38,46 @@ type Mutation { createTeam(slug: String!): String }
 		return resp.Result
 	}
 
+	vulnerabilityToolFound := false
 	for _, tool := range call("tools/list", nil)["tools"].([]any) {
 		tool := tool.(map[string]any)
+		if tool["name"] == "get_workload_vulnerabilities" {
+			vulnerabilityToolFound = true
+			schema, ok := tool["inputSchema"].(map[string]any)
+			if !ok {
+				t.Fatalf("vulnerabilities: missing input schema: %v", tool)
+			}
+			properties, ok := schema["properties"].(map[string]any)
+			if !ok || schema["type"] != "object" {
+				t.Fatalf("vulnerabilities: missing input properties: %v", schema)
+			}
+			for name, want := range map[string]string{
+				"team": "string", "workload": "string", "environment": "string",
+				"workload_type": "string", "first": "integer", "after": "string",
+				"expected_snapshot": "string",
+			} {
+				property, ok := properties[name].(map[string]any)
+				types, nullable := property["type"].([]any)
+				if !ok || property["type"] != want && (!nullable || len(types) != 2 ||
+					!slices.Contains(types, any(want)) || !slices.Contains(types, any("null"))) {
+					t.Fatalf("vulnerabilities: input %q = %v, want %s", name, properties[name], want)
+				}
+			}
+			required, ok := schema["required"].([]any)
+			if !ok || len(required) != 4 {
+				t.Fatalf("vulnerabilities: required inputs = %v", schema["required"])
+			}
+			for _, name := range []string{"team", "workload", "environment", "workload_type"} {
+				if !slices.Contains(required, any(name)) {
+					t.Errorf("vulnerabilities: %q is not required", name)
+				}
+			}
+			workloadType := properties["workload_type"].(map[string]any)
+			enum, ok := workloadType["enum"].([]any)
+			if !ok || len(enum) != 2 || !slices.Contains(enum, any("application")) || !slices.Contains(enum, any("job")) {
+				t.Errorf("vulnerabilities: workload_type enum = %v", workloadType["enum"])
+			}
+		}
 		schema, ok := tool["outputSchema"].(map[string]any)
 		if !ok {
 			continue
@@ -49,6 +88,9 @@ type Mutation { createTeam(slug: String!): String }
 		if _, ok := schema["items"]; ok {
 			t.Errorf("%s: outputSchema has items, but describes an object", tool["name"])
 		}
+	}
+	if !vulnerabilityToolFound {
+		t.Fatal("get_workload_vulnerabilities is not registered")
 	}
 
 	for name, want := range map[string]struct {

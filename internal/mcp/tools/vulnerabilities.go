@@ -20,7 +20,7 @@ type GetWorkloadVulnerabilitiesInput struct {
 	Workload         string  `json:"workload" jsonschema:"required"`
 	Environment      string  `json:"environment" jsonschema:"required"`
 	WorkloadType     string  `json:"workload_type" jsonschema:"required,enum=application,enum=job"`
-	First            *int    `json:"first,omitempty" jsonschema:"minimum=1,maximum=50" jsonschema_description:"Findings per page; default 10, maximum 50."`
+	First            *int    `json:"first,omitempty" jsonschema_description:"Findings per page; default 10, maximum 50."`
 	After            *string `json:"after,omitempty"`
 	ExpectedSnapshot string  `json:"expected_snapshot,omitempty" jsonschema_description:"Snapshot identity from the first page; required with after."`
 }
