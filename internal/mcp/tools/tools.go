@@ -33,6 +33,7 @@ func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter
 	logger.Debug("Registering GraphQL tools")
 	registerGraphQLTools(s, ctx)
 	registerVulnerabilityTools(s, ctx)
+	registerSuppressionTools(s, ctx)
 
 	logger.Debug("All tools registered successfully")
 }
