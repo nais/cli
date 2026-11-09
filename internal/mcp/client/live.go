@@ -53,3 +53,11 @@ func (c *LiveClient) GetConsoleURL(ctx context.Context) (string, error) {
 	}
 	return fmt.Sprintf("https://%s", user.ConsoleHost()), nil
 }
+
+func (c *LiveClient) GetWorkloadVulnerabilities(ctx context.Context, request WorkloadVulnerabilityRequest) (WorkloadVulnerabilityPage, error) {
+	gqlClient, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return WorkloadVulnerabilityPage{}, err
+	}
+	return fetchWorkloadVulnerabilities(ctx, gqlClient, request)
+}

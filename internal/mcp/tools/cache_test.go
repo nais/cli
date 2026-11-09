@@ -37,6 +37,10 @@ func (m *mockClientWithCounter) GetConsoleURL(ctx context.Context) (string, erro
 	return "https://console.example.com", nil
 }
 
+func (m *mockClientWithCounter) GetWorkloadVulnerabilities(ctx context.Context, request client.WorkloadVulnerabilityRequest) (client.WorkloadVulnerabilityPage, error) {
+	return client.NewMockClient(client.ScenarioVulnerable).GetWorkloadVulnerabilities(ctx, request)
+}
+
 func (m *mockClientWithCounter) GetCallCount() int {
 	m.mu.Lock()
 	defer m.mu.Unlock()

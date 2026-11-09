@@ -80,14 +80,22 @@ The Nais API is a GraphQL API for managing applications and jobs on the Nais pla
    ` + "```" + `
 
 6. **Get vulnerabilities for a workload**:
+   Prefer get_workload_vulnerabilities for an exact application/job inventory,
+   reported risk/remediation and safe exposure context. Follow all pages with
+   after and expected_snapshot; do not bypass authentication or snapshot errors
+   using a broader query. The generic query below is only a first-page example,
+   not evidence of complete coverage.
    ` + "```graphql" + `
-   query($slug: Slug!, $name: String!, $env: [String!]) {
+   query($slug: Slug!, $name: String!, $env: String!, $after: Cursor) {
      team(slug: $slug) {
-       applications(filter: { name: $name, environments: $env }, first: 1) {
-         nodes {
+       environment(name: $env) {
+         application(name: $name) {
            image {
-             vulnerabilitySummary { critical high medium low }
-             vulnerabilities(first: 20) { nodes { identifier severity package } }
+             vulnerabilitySummary { total lastUpdated }
+             vulnerabilities(first: 20, after: $after) {
+               pageInfo { hasNextPage endCursor }
+               nodes { identifier severity package }
+             }
            }
          }
        }

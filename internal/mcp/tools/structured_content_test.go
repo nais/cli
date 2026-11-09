@@ -69,4 +69,38 @@ type Mutation { createTeam(slug: String!): String }
 			t.Errorf("%s: structuredContent[%q] = %v, want %d items", name, want.key, sc[want.key], want.count)
 		}
 	}
+
+	result := call("tools/call", map[string]any{
+		"name": "get_workload_vulnerabilities",
+		"arguments": map[string]any{
+			"team": "team", "workload": "app", "environment": "prod-gcp",
+			"workload_type": "application", "first": 1,
+		},
+	})
+	sc, ok := result["structuredContent"].(map[string]any)
+	if !ok || result["isError"] == true {
+		t.Fatalf("vulnerabilities: missing structured output: %v", result)
+	}
+	if sc["workload"].(map[string]any)["name"] != "app" || sc["returned_count"] != float64(1) {
+		t.Fatalf("vulnerabilities: wrong scope/count: %v", sc)
+	}
+	info := sc["page_info"].(map[string]any)
+	if info["has_next_page"] != true || info["requested_after"] != nil {
+		t.Fatalf("vulnerabilities: invalid first page: %v", info)
+	}
+	next := call("tools/call", map[string]any{
+		"name": "get_workload_vulnerabilities",
+		"arguments": map[string]any{
+			"team": "team", "workload": "app", "environment": "prod-gcp",
+			"workload_type": "application", "first": 1,
+			"after": info["end_cursor"], "expected_snapshot": sc["snapshot_identity"],
+		},
+	})
+	nextSC, ok := next["structuredContent"].(map[string]any)
+	if !ok || next["isError"] == true || nextSC["snapshot_identity"] != sc["snapshot_identity"] {
+		t.Fatalf("vulnerabilities: invalid continuation: %v", next)
+	}
+	if nextSC["page_info"].(map[string]any)["requested_after"] != info["end_cursor"] {
+		t.Fatalf("vulnerabilities: continuation cursor not retained: %v", nextSC)
+	}
 }

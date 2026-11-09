@@ -79,6 +79,74 @@ Local server configuration:
 - `execute_graphql` - Execute GraphQL queries against the Nais API
 - `validate_graphql` - Validate a GraphQL query without executing it
 
+### Workload Vulnerabilities
+
+`get_workload_vulnerabilities` fetches one page for an exact application or job,
+using the existing authenticated Nais API client. It includes suppressed
+findings without suppression reasons. It does not query neighbouring workloads,
+return manifests or secrets, contact public advisory services or analyse code.
+
+```json
+{
+  "team": "my-team",
+  "workload": "my-app",
+  "environment": "prod-gcp",
+  "workload_type": "application",
+  "first": 10
+}
+```
+
+Use `job` for jobs. Team, workload, environment and type are required;
+`first` defaults to 10 and accepts 1–50. For the next page, pass
+`page_info.end_cursor` as `after` and the first response's
+`snapshot_identity` as `expected_snapshot`. Keep scope unchanged.
+
+The structured result contains:
+
+| Field | Contents |
+|---|---|
+| `workload` | ID, team, name, type and environment |
+| `context` | Ingress URL/type, auth-integration type names, inbound rules (workload, team, mutual) |
+| `snapshot` | Image ID/name/tag/digest, SBOM status, nullable unsuppressed total and scan time |
+| `findings` | Node/advisory IDs, purl, severity, description, risk assessment, remediation, suppression state and details link |
+| `page_info` | `has_next_page`, `end_cursor`, `requested_after` |
+| `snapshot_identity` | SHA-256 fingerprint of observed workload/image/summary metadata |
+| `fetched_at`, `returned_count`, `coverage_issues` | UTC fetch time, page count and data-gap codes |
+
+Risk facts include CVSS, EPSS,
+KEV and known ransomware use. `epss_score` is a probability (0–1);
+`epss_percentile` is a percentage (0–100). Null scores/fix/latest versions
+remain unknown. Descriptions are limited to 1000 Unicode characters with
+`description_truncated: true`; use `details_link` for the full advisory.
+Identifiers, risk facts and versions are not truncated.
+
+Coverage codes are `sbom_not_ready`, `summary_unavailable` and
+`scan_time_unknown`. Missing data is not a clean scan.
+An empty coverage list covers this page only. Collect every page and check
+advancing cursors and unique finding IDs. Summary `total` counts only
+unsuppressed findings; `findings` and `returned_count` include suppressed rows.
+Never compare all returned rows to this total or stop pagination at that count.
+If checking aggregate coverage, compare only the unsuppressed rows after
+collecting every page. A zero total can still have suppressed findings.
+
+These semantics are established by the
+[API's image-list query](https://github.com/nais/api/blob/da0d02c456dd1738d1390db3a2ddbe55a1389d64/internal/vulnerability/queries.go#L276-L335),
+which requests suppressed rows, and
+[v13s's summary query](https://github.com/nais/v13s/blob/0fbbf81c62c259e89423bcda09c0b2958be757e2/internal/database/queries/vulnerabilities.sql#L1-L77),
+which excludes them. Source verification is not validation against a live API.
+
+Errors include `invalid_scope`, `invalid_workload_type`, `invalid_page_size`,
+`invalid_cursor`, `scope_mismatch`, `invalid_response`
+and `snapshot_changed`. Authentication/API errors remain errors, never empty
+findings. A changed snapshot requires a separate fresh collection, not merging
+old and new pages. Do not bypass an error with a broader GraphQL query.
+
+The fingerprint detects observable metadata changes; it is not authorization
+or an atomic backend snapshot. Unreported changes cannot be detected.
+Ingress/auth/network configuration does not prove reachability or running
+replica identity. Explanations, recommendations and local evidence belong in
+the consuming skill.
+
 ### Schema Exploration
 - `schema_list_types` - List all types in the API schema
 - `schema_get_type` - Get details about a specific type
@@ -104,6 +172,8 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 4. Execute queries with `execute_graphql`
 
 **Query Guidelines:**
+- Prefer `get_workload_vulnerabilities` for exact application/job vulnerability
+  inventories. Follow all pages with `after` and `expected_snapshot`.
 - Use pagination with reasonable page sizes (20-50 items, max 100)
 - Filter queries when possible (by team, environment, name)
 - Use `__typename` for union/interface types

@@ -280,6 +280,7 @@ func TestMCPServer_Integration(t *testing.T) {
 			"get_nais_context",
 			"execute_graphql",
 			"validate_graphql",
+			"get_workload_vulnerabilities",
 			"schema_list_types",
 			"schema_get_type",
 			"schema_list_queries",
@@ -321,6 +322,21 @@ func TestMCPServer_Integration(t *testing.T) {
 					t.Errorf("removed tool %q should not be present", removed)
 				}
 			}
+		}
+	})
+
+	t.Run("workload_vulnerabilities", func(t *testing.T) {
+		result := client.CallTool(t, "get_workload_vulnerabilities", map[string]any{
+			"team": "team-alpha", "workload": "app", "environment": "prod-gcp",
+			"workload_type": "application",
+		})
+		workload := result["workload"].(map[string]any)
+		if workload["team"] != "team-alpha" || workload["name"] != "app" || workload["environment"] != "prod-gcp" {
+			t.Fatalf("wrong workload scope: %v", workload)
+		}
+		if result["returned_count"] != float64(0) || len(result["findings"].([]any)) != 0 ||
+			result["page_info"].(map[string]any)["has_next_page"] != false {
+			t.Fatalf("unexpected healthy workload page: %v", result)
 		}
 	})
 

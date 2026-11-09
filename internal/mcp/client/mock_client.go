@@ -3,6 +3,10 @@ package client
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
 	gql "github.com/nais/cli/internal/naisapi/gql"
 )
@@ -319,4 +323,57 @@ type WorkloadConnection {
 // GetConsoleURL returns a mock console URL.
 func (c *MockClient) GetConsoleURL(ctx context.Context) (string, error) {
 	return "https://console.nav.cloud.nais.io", nil
+}
+
+func (c *MockClient) GetWorkloadVulnerabilities(ctx context.Context, request WorkloadVulnerabilityRequest) (WorkloadVulnerabilityPage, error) {
+	if err := ctx.Err(); err != nil {
+		return WorkloadVulnerabilityPage{}, err
+	}
+	if request.Type != "application" && request.Type != "job" || request.First < 1 || request.First > 50 {
+		return WorkloadVulnerabilityPage{}, fmt.Errorf("invalid mock workload request")
+	}
+	updated := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	total := 0
+	page := WorkloadVulnerabilityPage{
+		Workload: WorkloadIdentity{ID: "mock-workload", Team: request.Team, Name: request.Workload, Type: request.Type, Environment: request.Environment},
+		Context:  VulnerabilityContext{Ingresses: []VulnerabilityIngress{}, AuthIntegrations: []string{}, InboundRules: []VulnerabilityInboundRule{}},
+		Snapshot: VulnerabilitySnapshot{ImageID: "mock-image", ImageName: "example/app", ImageTag: "test", SBOMStatus: "READY", Total: &total, ScanUpdatedAt: &updated},
+		Findings: []WorkloadVulnerability{},
+	}
+	if request.Type == "application" {
+		page.Context.Ingresses = []VulnerabilityIngress{{URL: "https://app.example.test", Type: "EXTERNAL"}}
+		page.Context.AuthIntegrations = []string{"EntraIDAuthIntegration"}
+	}
+	page.Context.InboundRules = []VulnerabilityInboundRule{{Workload: "caller", Team: "team-alpha", Mutual: true}}
+	if c.scenario != ScenarioVulnerable {
+		return page, nil
+	}
+	total = 2
+	findingCount := 3
+	start := 0
+	if request.After != nil {
+		var err error
+		start, err = strconv.Atoi(strings.TrimPrefix(*request.After, "mock-"))
+		if err != nil || !strings.HasPrefix(*request.After, "mock-") || start < 0 || start >= findingCount {
+			return WorkloadVulnerabilityPage{}, fmt.Errorf("invalid mock cursor")
+		}
+	}
+	end := min(start+request.First, findingCount)
+	fix, suppression := "1.2.3", "IN_TRIAGE"
+	for i := start; i < end; i++ {
+		finding := WorkloadVulnerability{
+			ID: fmt.Sprintf("mock-finding-%d", i), Identifier: "CVE-2025-0001", Package: fmt.Sprintf("pkg:npm/example-%d@1.0.0", i),
+			Severity: "HIGH", Description: "An attacker-controlled input can crash the affected parser.",
+			RiskAssessment: VulnerabilityRisk{HasKEVEntry: true},
+			Remediation:    VulnerabilityRemediation{FixVersion: &fix}, DetailsLink: "https://example.test/advisory",
+		}
+		if i == 1 {
+			finding.SuppressionState = &suppression
+			finding.Remediation.FixVersion = nil
+		}
+		page.Findings = append(page.Findings, finding)
+	}
+	cursor := fmt.Sprintf("mock-%d", end)
+	page.PageInfo = VulnerabilityPageInfo{HasNextPage: end < findingCount, EndCursor: &cursor}
+	return page, nil
 }

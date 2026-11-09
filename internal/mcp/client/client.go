@@ -19,6 +19,8 @@ type Client interface {
 
 	// Console URL operations
 	GetConsoleURL(ctx context.Context) (string, error)
+
+	GetWorkloadVulnerabilities(ctx context.Context, request WorkloadVulnerabilityRequest) (WorkloadVulnerabilityPage, error)
 }
 
 // User represents the authenticated user.
