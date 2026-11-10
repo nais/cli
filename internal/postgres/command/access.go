@@ -152,7 +152,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("--port must be between 0 and 65535")
 			}
 			request, err := prepareAccessRequest(args.Get("postgres"), &flag.Access{
-				Postgres: f.Postgres, Branch: f.Branch, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
+				Postgres: f.Postgres, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
 			}, warn)
 			if err != nil {
 				return err
@@ -281,7 +281,7 @@ func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql
 	}
 	ttl := f.TTL.String()
 	return gql.CreatePostgresAccessInput{
-		Postgres: name, Branch: f.Branch, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
+		Postgres: name, TeamSlug: f.Team, EnvironmentName: string(f.Environment),
 		AccessLevel: level, Reason: reason, Ttl: &ttl,
 	}, nil
 }
@@ -307,13 +307,11 @@ func requestAccess(ctx context.Context, request gql.CreatePostgresAccessInput, r
 		return postgres.Connection{}, err
 	}
 	request.EnvironmentName = environment
-	if request.Branch == "" {
-		lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
-		defer cancel()
-		request.Branch, err = api.ActiveBranch(lookupCtx, request.TeamSlug, environment, request.Postgres)
-		if err != nil {
-			return postgres.Connection{}, err
-		}
+	lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	request.Branch, err = api.ActiveBranch(lookupCtx, request.TeamSlug, environment, request.Postgres)
+	if err != nil {
+		return postgres.Connection{}, err
 	}
 	connection, err := postgres.CreateAndWait(ctx, api, request)
 	if err == nil && spinner != nil {

@@ -51,7 +51,7 @@ func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, n
 		return "", err
 	}
 	if result.Team.Environment.Postgres.ActiveBranch == nil {
-		return "", fmt.Errorf("postgres %q has no active branch; specify --branch", name)
+		return "", fmt.Errorf("Postgres %q is not ready for personal access; check its status with 'nais postgres get'", name)
 	}
 	return result.Team.Environment.Postgres.ActiveBranch.Name, nil
 }

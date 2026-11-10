@@ -114,7 +114,7 @@ func TestDeleteRequiresConfirmationBeforeRequest(t *testing.T) {
 					if tc.yes {
 						t.Fatal("prompt called with --yes")
 					}
-					for _, detail := range []string{target.Name, target.TeamSlug, target.EnvironmentName, "Irreversibly", "all its branches/data"} {
+					for _, detail := range []string{target.Name, target.TeamSlug, target.EnvironmentName, "Irreversibly", "all its data/backups"} {
 						if !strings.Contains(prompt, detail) {
 							t.Errorf("prompt %q missing %q", prompt, detail)
 						}

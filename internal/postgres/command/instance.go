@@ -150,7 +150,7 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 	f := &flag.InstanceDelete{Postgres: parent}
 	return &naistrix.Command{
 		Name: "delete", Title: "Request deletion of an entire Postgres instance.", Flags: f,
-		Description: "Irreversibly delete a Postgres and all its branches and data. Unlike branch delete, this removes the whole instance. Workloads and bindings must no longer reference it.",
+		Description: "Irreversibly delete a Postgres and all its data and backups. Workloads and bindings must no longer reference it.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to delete", ChoicesFunc: postgresNameChoices(parent)}},
 		Examples: []naistrix.CommandExample{
 			{Description: "Request deletion of an entire Postgres after removing its consumers.", Command: "my-postgres -t my-team -e dev-gcp"},
@@ -162,8 +162,8 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			out.Warnln("IRREVERSIBLE: deletion requests removal of ALL branches, PVCs/data, and archives/backups. The API refuses deletion while workloads or bindings reference this Postgres.")
-			rows := append(instanceTarget(name, parent.Team, env), []string{"Impact", "All branches, data and backups"})
+			out.Warnln("IRREVERSIBLE: deletion requests removal of ALL PVCs/data and archives/backups. The API refuses deletion while workloads or bindings reference this Postgres.")
+			rows := append(instanceTarget(name, parent.Team, env), []string{"Impact", "All data and backups"})
 			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
 				return err
 			}
@@ -188,7 +188,7 @@ func instanceTarget(name, team, env string) [][]string {
 
 func confirmAndDeleteInstance(ctx context.Context, target gql.DeletePostgresInput, yes bool, confirm func(string) (bool, error), remove func(context.Context, gql.DeletePostgresInput) (bool, error)) (bool, error) {
 	if !yes {
-		ok, err := confirm(fmt.Sprintf("Irreversibly delete Postgres %q for %q in %q and all its branches/data?", target.Name, target.TeamSlug, target.EnvironmentName))
+		ok, err := confirm(fmt.Sprintf("Irreversibly delete Postgres %q for %q in %q and all its data/backups?", target.Name, target.TeamSlug, target.EnvironmentName))
 		if err != nil {
 			return false, err
 		}

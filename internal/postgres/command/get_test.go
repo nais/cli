@@ -43,7 +43,7 @@ func TestPostgresGetCommand(t *testing.T) {
 		{name: "observed activation omits requested branch", environment: "dev-gcp", format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "observed activation text", environment: "dev-gcp", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "inactive degraded branch does not degrade active summary", environment: "dev-gcp", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
-		{name: "inactive degraded branch remains in JSON", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
+		{name: "inactive degraded branch is hidden in JSON", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "healthy requested branch still awaits activation", environment: "dev-gcp", metadata: pendingHealthy, wantStatus: "Updating", wantOperations: []string{"GetPostgres"}},
 		{name: "pending degraded branch JSON", environment: "dev-gcp", format: "json", metadata: pendingDegraded, wantStatus: "Needs attention", wantOperations: []string{"GetPostgres"}},
 		{name: "active degradation remains visible during pending activation", environment: "dev-gcp", metadata: activeDegraded, wantStatus: "Needs attention", wantOperations: []string{"GetPostgres"}},
@@ -201,35 +201,22 @@ func TestPostgresGetCommand(t *testing.T) {
 					if detail.Name != expected.Name || detail.Team != "my-team" || detail.Environment != "dev-gcp" || detail.Version != expected.MajorVersion || detail.Status != tt.wantStatus || detail.HighAvailability != expected.HighAvailability || !reflect.DeepEqual(detail.Resources, expected.Resources) || !slices.Equal(detail.Labels, expected.Labels) {
 						t.Errorf("incorrect metadata/status: %+v", detail)
 					}
-					active, requested := "", ""
-					if expected.ActiveBranch != nil {
-						active = expected.ActiveBranch.Name
-					}
-					if expected.DesiredActiveBranch != nil && *expected.DesiredActiveBranch != active {
-						requested = *expected.DesiredActiveBranch
-					}
-					if detail.ActiveBranch != active || detail.RequestedBranch != requested || len(detail.Branches) != len(expected.Branches.Nodes) {
-						t.Fatalf("incorrect branch observations: %+v", detail)
-					}
-					for i, branch := range detail.Branches {
-						if branch.Branch != expected.Branches.Nodes[i] || branch.Active != (branch.Name == active) || branch.Requested != (branch.Name == requested) {
-							t.Errorf("incorrect branch or markers: %+v", branch)
-						}
-					}
 					var fields map[string]json.RawMessage
 					if err := json.Unmarshal(output.Bytes(), &fields); err != nil {
 						t.Fatal(err)
 					}
-					for _, key := range []string{"name", "team", "environment", "version", "status", "highAvailability", "resources", "labels", "activeBranch", "branches"} {
+					for _, key := range []string{"name", "team", "environment", "version", "status", "highAvailability", "resources", "labels"} {
 						if _, ok := fields[key]; !ok {
 							t.Errorf("missing JSON field %q: %s", key, output.String())
 						}
 					}
-					if string(fields["labels"]) == "null" || string(fields["branches"]) == "null" {
+					if string(fields["labels"]) == "null" {
 						t.Errorf("JSON collections must remain arrays: %s", output.String())
 					}
-					if requested == "" && fields["requestedBranch"] != nil {
-						t.Errorf("unexpected requested activation: %s", output.String())
+					for _, key := range []string{"activeBranch", "requestedBranch", "branches"} {
+						if _, ok := fields[key]; ok {
+							t.Errorf("branch field %q is exposed in JSON: %s", key, output.String())
+						}
 					}
 				default:
 					for _, field := range []string{"orders · dev-gcp", "Status:", "Version:", "18", "High availability:", "CPU:", "Memory:", "Disk:"} {

@@ -18,7 +18,7 @@ import (
 )
 
 func TestPostgresNameChoices(t *testing.T) {
-	for _, path := range [][]string{{"get"}, {"update"}, {"delete"}, {"psql"}, {"proxy"}, {"branch", "list"}} {
+	for _, path := range [][]string{{"get"}, {"update"}, {"delete"}, {"psql"}, {"proxy"}} {
 		t.Run(strings.Join(path, " "), func(t *testing.T) {
 			for _, tt := range []struct {
 				name, value, environment, config, wantError      string
