@@ -36,7 +36,7 @@ func TestPositionalCompletionValidatesFlagsBeforeAPI(t *testing.T) {
 		{name: "Valkey team", args: []string{"valkey", "get", "-e", "dev"}, wantError: "missing required team"},
 		{name: "Valkey environment", args: []string{"valkey", "get", "-t", "my-team"}, wantError: "missing required environment"},
 		{name: "Postgres team", args: []string{"postgres", "update"}, wantError: "missing required team"},
-		{name: "Postgres branch team", args: []string{"postgres", "branch", "activate", "orders"}, wantError: "missing required team"},
+		{name: "Postgres access team", args: []string{"postgres", "psql"}, wantError: "missing required team"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var calls atomic.Int32

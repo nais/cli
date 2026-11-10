@@ -19,10 +19,6 @@ func TestPostgresCommandsRequireTeam(t *testing.T) {
 		{name: "create", command: instanceCreateCommand},
 		{name: "update", command: instanceUpdateCommand},
 		{name: "delete", command: instanceDeleteCommand},
-		{name: "branch list", command: branchListCommand},
-		{name: "branch create", command: branchCreateCommand},
-		{name: "branch activate", command: branchActivateCommand},
-		{name: "branch delete", command: branchDeleteCommand},
 		{name: "psql", command: psqlCommand},
 		{name: "proxy", command: proxyCommand},
 	} {

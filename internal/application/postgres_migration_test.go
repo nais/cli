@@ -20,12 +20,12 @@ func TestPostgresCommandMigration(t *testing.T) {
 		{
 			name: "postgres manages Nais Postgres",
 			args: []string{"postgres", "--help"},
-			want: []string{"Manage Nais Postgres instances.", "branch", "create"},
+			want: []string{"Manage Nais Postgres instances.", "get", "create"},
 		},
 		{
 			name: "postgres completes Nais Postgres commands",
 			args: []string{"__complete", "postgres", ""},
-			want: []string{"branch\t", "create\t", "get\t"},
+			want: []string{"psql\t", "create\t", "get\t"},
 		},
 		{
 			name: "Cloud SQL remains available",

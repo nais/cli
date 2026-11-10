@@ -16,7 +16,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "postgres",
 		Title:       "Manage Nais Postgres instances.",
-		Description: "Manage Nais Postgres instances, branches, and brokered personal access.",
+		Description: "Manage Nais Postgres instances and brokered personal access.",
 		StickyFlags: flags,
 		SubCommands: []*naistrix.Command{
 			listCommand(flags),
@@ -24,7 +24,6 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			instanceCreateCommand(flags),
 			instanceUpdateCommand(flags),
 			instanceDeleteCommand(flags),
-			branchCommand(flags),
 			psqlCommand(flags),
 			proxyCommand(flags),
 		},
@@ -36,7 +35,7 @@ func listCommand(parentFlags *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "list",
 		Title:       "List Nais Postgres databases for a team.",
-		Description: "List Nais Postgres databases owned by a team. Use 'postgres branch list <postgres>' to list branches.",
+		Description: "List Nais Postgres databases owned by a team.",
 		Flags:       flags,
 		RunFunc: func(ctx context.Context, _ *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			labelFilters, err := labels.ParseFilters(flags.Labels)
