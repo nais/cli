@@ -1,7 +1,9 @@
 package apply
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,8 +14,134 @@ import (
 	applyflag "github.com/nais/cli/internal/apply/command/flag"
 	cliflags "github.com/nais/cli/internal/flags"
 	"github.com/nais/naistrix"
+	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
+
+func TestRender_MultipleMixinsThroughCLI(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		reverse  bool
+		args     []string
+		wantSpec map[string]any
+	}{
+		{
+			name: "later mixin wins and lists concatenate",
+			wantSpec: map[string]any{
+				"image": "database", "replicas": 1,
+				"resources": map[string]any{"cpu": "100m", "memory": "256Mi"},
+				"env":       []any{"base", "cluster", "database"},
+			},
+		},
+		{
+			name:    "reversing flags reverses precedence",
+			reverse: true,
+			wantSpec: map[string]any{
+				"image": "cluster", "replicas": 1,
+				"resources": map[string]any{"cpu": "100m", "memory": "256Mi"},
+				"env":       []any{"base", "database", "cluster"},
+			},
+		},
+		{
+			name: "field overrides run after all mixins",
+			args: []string{"--append", "spec.env=appended", "--set", "spec.image=override"},
+			wantSpec: map[string]any{
+				"image": "override", "replicas": 1,
+				"resources": map[string]any{"cpu": "100m", "memory": "256Mi"},
+				"env":       []any{"base", "cluster", "database", "appended"},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			base := writeFile(t, dir, "app.yaml", "kind: Application\nspec:\n  image: base\n  replicas: 1\n  env: [base]\n")
+			writeFile(t, dir, "app.dev.yaml", "spec:\n  autoLoaded: true\n")
+			first := writeFile(t, dir, "app.dev-fss.yaml", "spec:\n  image: cluster\n  resources:\n    cpu: 100m\n  env: [cluster]\n")
+			second := writeFile(t, dir, "app.q2.yaml", "spec:\n  image: database\n  resources:\n    memory: 256Mi\n  env: [database]\n")
+			if tc.reverse {
+				first, second = second, first
+			}
+			app, _, err := naistrix.NewApplication("test", "Test application", "v0.0.0")
+			if err != nil {
+				t.Fatal(err)
+			}
+			flags := &applyflag.Apply{GlobalFlags: &cliflags.GlobalFlags{}}
+			var rendered []byte
+			err = app.AddCommand(&naistrix.Command{
+				Name: "apply", Title: "Render manifest", Flags: flags,
+				RunFunc: func(_ context.Context, _ *naistrix.Arguments, _ *naistrix.OutputWriter) error {
+					var err error
+					rendered, err = render(base, flags.Mixin, "dev", flags.Set, flags.Append, discardWriter())
+					return err
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			args := []string{"--config", filepath.Join(dir, "config.yaml"), "apply", "--mixin", first}
+			args = append(args, tc.args...)
+			args = append(args, "--mixin", second)
+			if err := app.Run(naistrix.RunWithArgs(args)); err != nil {
+				t.Fatal(err)
+			}
+			if spec := renderToMap(t, rendered)["spec"]; !reflect.DeepEqual(spec, tc.wantSpec) {
+				t.Errorf("spec = %#v, want %#v", spec, tc.wantSpec)
+			}
+		})
+	}
+}
+
+func TestRender_MultipleMixinsRejectInvalidFiles(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		content string
+		missing bool
+		wantErr string
+	}{
+		{name: "missing", missing: true, wantErr: "failed to read mixin"},
+		{name: "invalid YAML", content: "spec: [", wantErr: "failed to decode YAML"},
+		{name: "multiple documents", content: "spec: {}\n---\nspec: {}\n", wantErr: "multiple YAML documents"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			base := writeFile(t, dir, "app.yaml", "spec: {}\n")
+			valid := writeFile(t, dir, "valid.yaml", "spec:\n  image: valid\n")
+			invalid := filepath.Join(dir, "invalid.yaml")
+			if !tc.missing {
+				writeFile(t, dir, "invalid.yaml", tc.content)
+			}
+			for _, paths := range [][]string{{invalid, valid}, {valid, invalid}} {
+				_, err := render(base, paths, "", nil, nil, discardWriter())
+				if err == nil || !strings.Contains(err.Error(), tc.wantErr) || !strings.Contains(err.Error(), invalid) {
+					t.Errorf("render(%v) = %v, want error containing %q and %q", paths, err, tc.wantErr, invalid)
+				}
+			}
+		})
+	}
+}
+
+func TestMixinFileCompletionAfterPreviousMixin(t *testing.T) {
+	var output bytes.Buffer
+	app, _, err := naistrix.NewApplication("test", "Test application", "v0.0.0", naistrix.ApplicationWithWriter(&output))
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = app.AddCommand(&naistrix.Command{
+		Name: "apply", Title: "Apply manifest",
+		Flags:   &applyflag.Apply{GlobalFlags: &cliflags.GlobalFlags{}},
+		RunFunc: func(context.Context, *naistrix.Arguments, *naistrix.OutputWriter) error { return nil },
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	args := []string{"--config", filepath.Join(t.TempDir(), "config.yaml"), "__complete", "apply", "--mixin", "first.yaml", "--mixin", ""}
+	if err := app.Run(naistrix.RunWithArgs(args)); err != nil {
+		t.Fatal(err)
+	}
+	if got := output.String(); !strings.HasPrefix(got, "yaml\nyml\n") || !strings.HasSuffix(got, fmt.Sprintf(":%d\n", cobra.ShellCompDirectiveFilterFileExt)) {
+		t.Errorf("completion = %q, want YAML file completion", got)
+	}
+}
 
 func TestRender_ListOverridesThroughCLI(t *testing.T) {
 	for _, tc := range []struct {
@@ -96,14 +224,14 @@ func TestRender_ListOverridesThroughCLI(t *testing.T) {
 				Name: "apply", Title: "Render manifest", Flags: flags,
 				RunFunc: func(_ context.Context, _ *naistrix.Arguments, _ *naistrix.OutputWriter) error {
 					var err error
-					rendered, err = render(base, mixin, "", flags.Set, flags.Append, discardWriter())
+					rendered, err = render(base, flags.Mixin, "", flags.Set, flags.Append, discardWriter())
 					return err
 				},
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			args := []string{"--config", filepath.Join(dir, "config.yaml"), "apply"}
+			args := []string{"--config", filepath.Join(dir, "config.yaml"), "apply", "--mixin", mixin}
 			for _, set := range tc.sets {
 				args = append(args, "--set", set)
 			}
@@ -129,7 +257,7 @@ func TestRender_ListOverridesThroughCLI(t *testing.T) {
 func TestRender_AppendOnly(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec: {}\n")
-	got, err := render(base, "", "", nil, []string{"spec.env={name: LOG_LEVEL, value: debug}"}, discardWriter())
+	got, err := render(base, nil, "", nil, []string{"spec.env={name: LOG_LEVEL, value: debug}"}, discardWriter())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +270,7 @@ func TestRender_AppendOnly(t *testing.T) {
 func TestRender_MultiDocWithAppendFails(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "---\nkind: A\n---\nkind: B\n")
-	_, err := render(base, "", "", nil, []string{"spec.env=new"}, discardWriter())
+	_, err := render(base, nil, "", nil, []string{"spec.env=new"}, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "multiple YAML documents") {
 		t.Fatalf("got %v, want multiple-document error", err)
 	}
@@ -174,7 +302,7 @@ func TestRender_NoOverridesReturnsBaseUnchanged(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "---\nkind: A\n---\nkind: B\n")
 
-	got, err := render(base, "", "", nil, nil, discardWriter())
+	got, err := render(base, nil, "", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -188,7 +316,7 @@ func TestRender_ExplicitMixinDeepMerges(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: old\n  replicas: 1\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec:\n  image: new\n")
 
-	got, err := render(base, mixin, "", nil, nil, discardWriter())
+	got, err := render(base, []string{mixin}, "", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -207,7 +335,7 @@ func TestRender_AutoLoadsEnvMixin(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: old\n")
 	writeFile(t, dir, "nais.dev.yaml", "spec:\n  image: dev\n")
 
-	got, err := render(base, "", "dev", nil, nil, discardWriter())
+	got, err := render(base, nil, "dev", nil, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -221,7 +349,7 @@ func TestRender_SetWinsOverMixinAndBase(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec:\n  image: base\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec:\n  image: mixin\n")
 
-	got, err := render(base, mixin, "", []string{"spec.image=set"}, nil, discardWriter())
+	got, err := render(base, []string{mixin}, "", []string{"spec.image=set"}, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -234,7 +362,7 @@ func TestRender_SetParsesYAMLValue(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "kind: Application\nspec: {}\n")
 
-	got, err := render(base, "", "", []string{"spec.replicas=3"}, nil, discardWriter())
+	got, err := render(base, nil, "", []string{"spec.replicas=3"}, nil, discardWriter())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -248,7 +376,7 @@ func TestRender_MultiDocWithMixinFails(t *testing.T) {
 	base := writeFile(t, dir, "nais.yaml", "kind: A\n---\nkind: B\n")
 	mixin := writeFile(t, dir, "dev.yaml", "spec: {}\n")
 
-	_, err := render(base, mixin, "", nil, nil, discardWriter())
+	_, err := render(base, []string{mixin}, "", nil, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "multiple YAML documents") {
 		t.Errorf("got %v, want error containing %q", err, "multiple YAML documents")
 	}
@@ -258,7 +386,7 @@ func TestRender_InvalidSetFails(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.yaml", "kind: A\n")
 
-	_, err := render(base, "", "", []string{"noequals"}, nil, discardWriter())
+	_, err := render(base, nil, "", []string{"noequals"}, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "expected KEY=VALUE") {
 		t.Errorf("got %v, want error containing %q", err, "expected KEY=VALUE")
 	}
@@ -268,7 +396,7 @@ func TestRender_UnsupportedExtensionFails(t *testing.T) {
 	dir := t.TempDir()
 	base := writeFile(t, dir, "nais.json", "{}")
 
-	_, err := render(base, "", "", nil, nil, discardWriter())
+	_, err := render(base, nil, "", nil, nil, discardWriter())
 	if err == nil || !strings.Contains(err.Error(), "unsupported file extension") {
 		t.Errorf("got %v, want error containing %q", err, "unsupported file extension")
 	}
