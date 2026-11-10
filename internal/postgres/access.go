@@ -51,7 +51,7 @@ func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, n
 		return "", err
 	}
 	if result.Team.Environment.Postgres.ActiveBranch == nil {
-		return "", fmt.Errorf("Postgres %q is not ready for personal access; check its status with 'nais postgres get'", name)
+		return "", fmt.Errorf("postgres %q is not ready for personal access; check its status with 'nais postgres get'", name)
 	}
 	return result.Team.Environment.Postgres.ActiveBranch.Name, nil
 }
