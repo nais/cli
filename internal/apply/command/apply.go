@@ -21,6 +21,10 @@ func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Description: "Apply Nais resource manifests (YAML) to a specific team and environment. Accepts a single file or a directory containing multiple manifests. When a directory is given, mixin files (<base>.<env>.yaml) are auto-loaded and --set/--append/--mixin flags are disabled.",
 		Examples: []naistrix.CommandExample{
 			{
+				Description: "Merge multiple mixins in order; later values win and lists are concatenated.",
+				Command:     "app.yaml --environment dev-fss --team nais --mixin app.dev-fss.yaml --mixin app.q2.yaml",
+			},
+			{
 				Description: "Replace the environment variable list.",
 				Command:     "app.yaml --environment dev-gcp --team nais --set 'spec.env=[{name: LOG_LEVEL, value: debug}]'",
 			},
