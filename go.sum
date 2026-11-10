@@ -242,7 +242,6 @@ github.com/go-quicktest/qt v1.102.0 h1:HSQxCeh5YZH3EL3W39ixjtyaEhcWSXQHtHnMBzSs4
 github.com/go-quicktest/qt v1.102.0/go.mod h1:p4lGIVX+8Wa6ZPNDvqcxq36XpUDLh42FLetFU7odllI=
 github.com/go-sql-driver/mysql v1.10.0 h1:Q+1LV8DkHJvSYAdR83XzuhDaTykuDx0l6fkXxoWCWfw=
 github.com/go-sql-driver/mysql v1.10.0/go.mod h1:M+cqaI7+xxXGG9swrdeUIoPG3Y3KCkF0pZej+SK+nWk=
-github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 h1:tfuBGBXKqDEevZMzYi5KSi8KkcZtzBcTgAUUtapy0OI=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=
 github.com/go-task/slim-sprig/v3 v3.0.0/go.mod h1:W848ghGpv3Qj3dhTPRyJypKRiqCdHZiAzKg9hl15HA8=
 github.com/go-viper/mapstructure/v2 v2.5.0 h1:vM5IJoUAy3d7zRSVtIwQgBj7BiWtMPfmPEgAXnvj1Ro=
@@ -441,10 +440,10 @@ github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/nais/device v1.16.1 h1:reo2DgBdUcwX7BJQ/S4YmBvvYj+6l+lSaESmrsyqi9M=
 github.com/nais/device v1.16.1/go.mod h1:bgMgVs5V49NvzzS5NQ2rp1ioCnPGFr/mVb8xAuU9mOI=
-github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9 h1:+FXD+P7Z45/sbzgsPBN7agv5Po429HlPayL6y/GU95s=
-github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9/go.mod h1:GB1VfSnXR1+Ijn38TYNVjdKCe84Fah3WaYQwnFne5DI=
-github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421 h1:nEcKbzDPfWezJsn4BjhVGtyu5mE8Acx+q8VDskkhzPk=
-github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421/go.mod h1:Siwxo1B39dMTFYEwTzPwr1+Rg5r/0OAtHC3BbKh/XPA=
+github.com/nais/krakend v0.0.0-20261110134850-73b06ba3c647 h1:FJl7U9zmHKiHvkMjtTTlg/At9+wuAQhXM/AVB6+3Et0=
+github.com/nais/krakend v0.0.0-20261110134850-73b06ba3c647/go.mod h1:vifEsKRYWN4tStvJ6foDskgCm8L7RF888CL5svgsMUA=
+github.com/nais/krakend/pkg/migration v0.0.0-20261110135021-6f66638a65da h1:WWVxy26bWzOuvGkIG/pt4HeIJnJb2WNO9jKi/8lB8qs=
+github.com/nais/krakend/pkg/migration v0.0.0-20261110135021-6f66638a65da/go.mod h1:34swSaFd6qGVlTFuOkjVmi0sNWkAvNl2azCCZekTiJw=
 github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c h1:IS4qWh2Of5rV7UY4YnQKg7rxP9lx5BzfFv1XNMZbCtI=
 github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c/go.mod h1:MT3N4X8eK6cJ94zoybdIY8JCaPrHCnw4Pde8piMS/v4=
 github.com/nais/naistrix v0.49.0 h1:1bQm0zUr3Oqyc7e/N/EOOCzaS3YUwQY9jNNZp9Pvhv0=
