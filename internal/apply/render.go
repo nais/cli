@@ -14,16 +14,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// render resolves the manifest by applying mixin, --set, and --append overrides.
+// render resolves the manifest by applying mixins, --set, and --append overrides.
 //
 // When no mixin or field overrides are in play, the base file is
 // returned unchanged (preserving multi-document files). Otherwise the base must
-// contain exactly one YAML document, onto which the mixin is deep-merged and the
-// --set and --append overrides applied, in that order (base < mixin < set < append).
+// contain exactly one YAML document, onto which the mixins are deep-merged in order
+// and the --set and --append overrides applied (base < mixins < set < append).
 //
-// If mixinPath is empty, an adjacent "<base>.<env>.yaml" file is auto-loaded when
+// If mixinPaths is empty, an adjacent "<base>.<env>.yaml" file is auto-loaded when
 // it exists.
-func render(basePath, mixinPath, environment string, sets, appends []string, out *naistrix.OutputWriter) ([]byte, error) {
+func render(basePath string, mixinPaths []string, environment string, sets, appends []string, out *naistrix.OutputWriter) ([]byte, error) {
 	if basePath == "" {
 		return nil, fmt.Errorf("file path cannot be empty")
 	}
@@ -36,16 +36,16 @@ func render(basePath, mixinPath, environment string, sets, appends []string, out
 		return nil, fmt.Errorf("failed to read file %s: %w", basePath, err)
 	}
 
-	if mixinPath == "" {
+	if len(mixinPaths) == 0 {
 		if auto := autoMixinPath(basePath, environment); auto != "" {
 			if _, err := os.Stat(auto); err == nil {
-				mixinPath = auto
+				mixinPaths = []string{auto}
 				out.Printf("✓ auto-loaded mixin from %s\n", auto)
 			}
 		}
 	}
 
-	if mixinPath == "" && len(sets) == 0 && len(appends) == 0 {
+	if len(mixinPaths) == 0 && len(sets) == 0 && len(appends) == 0 {
 		return baseData, nil
 	}
 
@@ -55,7 +55,7 @@ func render(basePath, mixinPath, environment string, sets, appends []string, out
 	}
 
 	merged := base
-	if mixinPath != "" {
+	for _, mixinPath := range mixinPaths {
 		mixinData, err := os.ReadFile(mixinPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read mixin %s: %w", mixinPath, err)
@@ -64,7 +64,7 @@ func render(basePath, mixinPath, environment string, sets, appends []string, out
 		if err != nil {
 			return nil, err
 		}
-		m, ok := deepMerge(base, mixin).(map[string]any)
+		m, ok := deepMerge(merged, mixin).(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("merge of %s and %s did not produce a mapping", basePath, mixinPath)
 		}
@@ -200,7 +200,7 @@ func renderDir(dirPath, environment string, knownEnvs []string, out *naistrix.Ou
 	var combined []byte
 	for _, name := range baseFiles {
 		basePath := filepath.Join(dirPath, name)
-		data, err := render(basePath, "", environment, nil, nil, out)
+		data, err := render(basePath, nil, environment, nil, nil, out)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", name, err)
 		}
