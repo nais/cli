@@ -4240,6 +4240,10 @@ The unique identifier of the vulnerability. E.g. CVE-****-****.
 """
 	identifier: String!
 """
+Image name for this finding, without tag or digest. Empty when unavailable.
+"""
+	imageName: String!
+"""
 Severity of the vulnerability.
 """
 	severity: ImageVulnerabilitySeverity!
@@ -4256,7 +4260,7 @@ Description of the vulnerability.
 """
 	description: String!
 """
-Package name of the vulnerability.
+Affected package URL (purl), including its version when reported.
 """
 	package: String!
 """

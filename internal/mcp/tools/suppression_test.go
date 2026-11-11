@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"io"
@@ -54,7 +55,8 @@ func (c *suppressionTestClient) ApplySuppression(_ context.Context, input client
 
 func suppressionHandlerFixture() (*suppressionHandler, *suppressionTestClient, ConfirmSuppressionInput) {
 	c := &suppressionTestClient{finding: client.SuppressionFinding{
-		TypeName: "ImageVulnerability", ID: "VUL_finding", Identifier: "CVE-2026-1234", Package: "example",
+		TypeName: "ImageVulnerability", ID: "VUL_finding", Identifier: "CVE-2026-1234",
+		ImageName: "registry.example/app", Package: "pkg:golang/example@v1.2.3?type=module",
 	}}
 	h := &suppressionHandler{toolContext: &toolContext{client: c, rateLimiter: allowAll{}}}
 	return h, c, ConfirmSuppressionInput{VulnerabilityID: c.finding.ID}
@@ -92,18 +94,28 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 	for _, mode := range []string{
 		"custom reason", "state IN_TRIAGE", "state FALSE_POSITIVE", "state RESOLVED",
 		"declined", "cancelled", "unsupported", "missing consent", "missing reason", "blank reason",
-		"long reason", "invalid state", "malformed", "changed finding", "changed suppression",
+		"long reason", "invalid state", "malformed", "changed finding", "changed image",
+		"changed package version", "changed suppression", "changed reason",
 		"lookup error after confirmation", "write error", "indeterminate",
 	} {
 		t.Run(mode, func(t *testing.T) {
 			h, c, input := suppressionHandlerFixture()
+			if mode == "changed reason" {
+				c.finding.Suppression = &client.SuppressionState{
+					State:             gql.ImageVulnerabilitySuppressionStateInTriage,
+					ReasonFingerprint: sha256.Sum256([]byte("previous private reason")),
+				}
+			}
 			result := acceptedSuppression()
 			content := result.Content.(map[string]any)
 			h.elicit = func(_ context.Context, request mcp.ElicitationRequest) (*mcp.ElicitationResult, error) {
-				for _, expected := range []string{input.VulnerabilityID, c.finding.Identifier, c.finding.Package, "Other teams", "future matches", "authenticated Nais identity", "reason in activity history"} {
+				for _, expected := range []string{input.VulnerabilityID, c.finding.Identifier, c.finding.ImageName, c.finding.Package, "Other teams", "future matches", "authenticated Nais identity", "reason in activity history"} {
 					if !strings.Contains(request.Params.Message, expected) {
 						t.Errorf("human warning omitted %q", expected)
 					}
+				}
+				if strings.Contains(request.Params.Message, "previous private reason") || strings.Contains(request.Params.Message, "ReasonFingerprint") {
+					t.Fatal("previous reason or fingerprint leaked into confirmation")
 				}
 				if after, ok := strings.CutPrefix(mode, "state "); ok {
 					content["state"] = after
@@ -136,8 +148,14 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 					result.Content = "yes"
 				case "changed finding":
 					c.finding.Identifier = "changed"
+				case "changed image":
+					c.finding.ImageName = "registry.example/other"
+				case "changed package version":
+					c.finding.Package = "pkg:golang/example@v2.0.0?type=module"
 				case "changed suppression":
 					c.finding.Suppression = &client.SuppressionState{State: gql.ImageVulnerabilitySuppressionStateInTriage}
+				case "changed reason":
+					c.finding.Suppression.ReasonFingerprint = sha256.Sum256([]byte("edited private reason"))
 				case "lookup error after confirmation":
 					c.lookupError = errors.New("private upstream error")
 				case "write error":
@@ -169,7 +187,8 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 				}
 			}
 			raw, _ := json.Marshal(out)
-			if strings.Contains(string(raw), "Reviewed parser usage") || strings.Contains(string(raw), "review/1") {
+			if strings.Contains(string(raw), "Reviewed parser usage") || strings.Contains(string(raw), "review/1") ||
+				strings.Contains(string(raw), "private reason") || strings.Contains(string(raw), "ReasonFingerprint") {
 				t.Fatal("decision text leaked into tool output")
 			}
 		})
@@ -177,7 +196,7 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 }
 
 func TestSuppressionRejectsInvalidFinding(t *testing.T) {
-	for _, mode := range []string{"wrong id", "missing advisory", "missing package", "api error", "empty id", "rate limit", "cancelled context"} {
+	for _, mode := range []string{"wrong id", "missing advisory", "api error", "empty id", "rate limit", "cancelled context"} {
 		t.Run(mode, func(t *testing.T) {
 			h, c, input := suppressionHandlerFixture()
 			h.elicit = func(context.Context, mcp.ElicitationRequest) (*mcp.ElicitationResult, error) {
@@ -190,8 +209,6 @@ func TestSuppressionRejectsInvalidFinding(t *testing.T) {
 				c.finding.ID = "different"
 			case "missing advisory":
 				c.finding.Identifier = ""
-			case "missing package":
-				c.finding.Package = ""
 			case "api error":
 				c.lookupError = errors.New("private upstream error")
 			case "empty id":
@@ -205,6 +222,37 @@ func TestSuppressionRejectsInvalidFinding(t *testing.T) {
 			}
 			out, err := h.confirm(ctx, input, nil)
 			if c.writes != 0 || out.Status == "persisted" || err == nil {
+				t.Fatalf("out=%+v error=%v writes=%d", out, err, c.writes)
+			}
+		})
+	}
+}
+
+func TestSuppressionRequiresResolvedTarget(t *testing.T) {
+	for _, target := range []struct {
+		name, image, purl string
+	}{
+		{"missing image", "", "pkg:golang/example@v1.2.3"},
+		{"blank image", " ", "pkg:golang/example@v1.2.3"},
+		{"missing package", "registry.example/app", ""},
+		{"package name only", "registry.example/app", "example"},
+		{"unversioned purl", "registry.example/app", "pkg:golang/example"},
+		{"missing package name", "registry.example/app", "pkg:golang/@v1.2.3"},
+		{"missing version", "registry.example/app", "pkg:golang/example@"},
+		{"blank version", "registry.example/app", "pkg:golang/example@%20"},
+		{"invalid encoding", "registry.example/app", "pkg:golang/example@%invalid"},
+		{"wrong scheme", "registry.example/app", "https:golang/example@v1.2.3"},
+	} {
+		t.Run(target.name, func(t *testing.T) {
+			h, c, input := suppressionHandlerFixture()
+			c.finding.ImageName, c.finding.Package = target.image, target.purl
+			h.elicit = func(context.Context, mcp.ElicitationRequest) (*mcp.ElicitationResult, error) {
+				t.Fatal("unresolved target reached confirmation")
+				return nil, nil
+			}
+			out, err := h.confirm(t.Context(), input, nil)
+			if err != nil || c.writes != 0 || out.Status != "proposed" ||
+				!strings.Contains(out.Message, "no write attempted") {
 				t.Fatalf("out=%+v error=%v writes=%d", out, err, c.writes)
 			}
 		})
@@ -287,9 +335,15 @@ func TestSuppressionProtocolConfirmation(t *testing.T) {
 }
 
 func TestSuppressionModernContinuation(t *testing.T) {
-	for _, mode := range []string{"success and replay", "expired", "changed input", "forged token", "missing response", "changed finding", "lost capability", "argument consent", "concurrent"} {
+	for _, mode := range []string{"success and replay", "expired", "changed input", "forged token", "missing response", "changed finding", "changed image", "changed package version", "changed reason", "lost capability", "argument consent", "concurrent"} {
 		t.Run(mode, func(t *testing.T) {
 			h, backend, input := suppressionHandlerFixture()
+			if mode == "changed reason" {
+				backend.finding.Suppression = &client.SuppressionState{
+					State:             gql.ImageVulnerabilitySuppressionStateInTriage,
+					ReasonFingerprint: sha256.Sum256([]byte("previous private reason")),
+				}
+			}
 			ctx := server.WithRequestProtocolInfo(t.Context(), &server.RequestProtocolInfo{
 				Modern: true, ProtocolVersion: mcp.LATEST_PROTOCOL_VERSION,
 				ClientCapabilities: &mcp.ClientCapabilities{Elicitation: &mcp.ElicitationCapability{}},
@@ -298,6 +352,10 @@ func TestSuppressionModernContinuation(t *testing.T) {
 			first, err := h.handleExecuteMutation(ctx, request)
 			if err != nil || !first.NeedsInput() || backend.writes != 0 {
 				t.Fatalf("first=%+v error=%v writes=%d", first, err, backend.writes)
+			}
+			raw, err := json.Marshal(first)
+			if err != nil || strings.Contains(string(raw), "private reason") || strings.Contains(string(raw), "ReasonFingerprint") {
+				t.Fatal("previous reason or fingerprint leaked into continuation")
 			}
 			token := first.RequestState
 			request.Params.MultiRoundTripParams = mcp.MultiRoundTripParams{
@@ -317,6 +375,12 @@ func TestSuppressionModernContinuation(t *testing.T) {
 				request.Params.InputResponses = nil
 			case "changed finding":
 				backend.finding.Identifier = "changed"
+			case "changed image":
+				backend.finding.ImageName = "registry.example/other"
+			case "changed package version":
+				backend.finding.Package = "pkg:golang/example@v2.0.0?type=module"
+			case "changed reason":
+				backend.finding.Suppression.ReasonFingerprint = sha256.Sum256([]byte("edited private reason"))
 			case "lost capability":
 				ctx = server.WithRequestProtocolInfo(t.Context(), &server.RequestProtocolInfo{Modern: true, ProtocolVersion: mcp.LATEST_PROTOCOL_VERSION})
 			case "argument consent":

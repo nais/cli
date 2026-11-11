@@ -1780,7 +1780,7 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability struct {
-	// Package name of the vulnerability.
+	// Affected package URL (purl), including its version when reported.
 	Package     string                                                                                                                                         `json:"package"`
 	Suppression *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
 }
@@ -33848,7 +33848,7 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVuln
 	Severity ImageVulnerabilitySeverity `json:"severity"`
 	// CVSS score of the vulnerability.
 	CvssScore *float64 `json:"cvssScore"`
-	// Package name of the vulnerability.
+	// Affected package URL (purl), including its version when reported.
 	Package     string                                                                                                                                                `json:"package"`
 	Suppression *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
 	// Timestamp of when the vulnerability got its current severity.
@@ -41330,9 +41330,11 @@ query MCPSuppressionFinding ($id: ID!) {
 		... on ImageVulnerability {
 			id
 			identifier
+			imageName
 			package
 			suppression {
 				state
+				reason
 			}
 		}
 	}

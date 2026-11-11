@@ -128,6 +128,9 @@ Suppression applies to the **image name, versioned package purl and CVE,
 including aliases**, across tags, teams, environments and future matches.
 It is not workload-local. The confirmation warns about this shared scope but
 does not enumerate all affected workloads.
+The form displays the API-reported image name and full versioned package purl.
+If either is unavailable, the tool returns an unsaved proposal without asking
+for confirmation.
 
 Read the finding through `execute_graphql`, then pass its exact `id`:
 
@@ -176,9 +179,12 @@ configured Nais authentication and records an activity entry with the actor and
 previous/new suppression, including the reason. Do not enter secrets or personal
 information. The mutation tool does not repeat the reason in its output.
 
-The finding is reread before writing. This is not an atomic scope check:
-workloads or shared scope can change between confirmation and mutation.
+The finding is reread before writing. A private reason fingerprint also detects
+reason-only edits; neither the previous reason nor its fingerprint is displayed.
+This is not an atomic check: the finding or shared scope can change after the
+last read.
 Other tags' summary counts may lag. No new API operations are required.
+Deploy the API's `ImageVulnerability.imageName` field before this CLI version.
 
 ## Command Reference
 

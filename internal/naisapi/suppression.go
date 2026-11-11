@@ -6,8 +6,8 @@ const _ = `# @genqlient
 		node(id: $id) {
 			__typename
 			... on ImageVulnerability {
-				id identifier package
-				suppression { state }
+				id identifier imageName package
+				suppression { state reason }
 			}
 		}
 	}

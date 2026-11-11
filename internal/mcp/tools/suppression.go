@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 	"sync"
@@ -134,10 +135,35 @@ func (h *suppressionHandler) preview(ctx context.Context, id string) (Suppressio
 	if err != nil {
 		return out, fmt.Errorf("finding lookup failed; no write attempted")
 	}
-	if finding.ID != id || finding.Identifier == "" || finding.Package == "" {
+	if finding.ID != id || finding.Identifier == "" {
 		return out, fmt.Errorf("invalid finding response; no write attempted")
 	}
+	if finding.Suppression != nil {
+		suppression := *finding.Suppression
+		finding.Suppression = &suppression
+	}
 	return SuppressionOutput{Status: "proposed", Proposal: finding, Message: "Unsaved proposal. Shared-image suppression can affect other workloads and tags."}, nil
+}
+
+func hasVersionedPackage(purl string) bool {
+	u, err := url.Parse(purl)
+	if err != nil || u.Scheme != "pkg" {
+		return false
+	}
+	kind, path, ok := strings.Cut(u.Opaque, "/")
+	if !ok || strings.TrimSpace(kind) == "" {
+		return false
+	}
+	at := strings.LastIndexByte(path, '@')
+	if at <= 0 {
+		return false
+	}
+	name, err := url.PathUnescape(path[:at])
+	if err != nil || strings.TrimSpace(name) == "" || strings.HasSuffix(name, "/") {
+		return false
+	}
+	version, err := url.PathUnescape(path[at+1:])
+	return err == nil && strings.TrimSpace(version) != ""
 }
 
 type suppressionConsent struct {
@@ -150,6 +176,10 @@ func (h *suppressionHandler) confirm(ctx context.Context, input ConfirmSuppressi
 	out, err := h.preview(ctx, input.VulnerabilityID)
 	if err != nil {
 		return out, err
+	}
+	if strings.TrimSpace(out.Proposal.ImageName) == "" || !hasVersionedPackage(out.Proposal.Package) {
+		out.Message = "Image name or versioned package purl is unavailable. This proposal has not been saved; no write attempted."
+		return out, nil
 	}
 	if reviewed != nil && !reflect.DeepEqual(out.Proposal, *reviewed) {
 		out.Message = "Finding changed. Review this new unsaved proposal before requesting confirmation."

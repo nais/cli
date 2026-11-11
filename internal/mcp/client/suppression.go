@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 
@@ -13,12 +14,29 @@ type SuppressionFinding struct {
 	TypeName    string            `json:"__typename"`
 	ID          string            `json:"id"`
 	Identifier  string            `json:"identifier"`
+	ImageName   string            `json:"imageName"`
 	Package     string            `json:"package"`
 	Suppression *SuppressionState `json:"suppression"`
 }
 
 type SuppressionState struct {
-	State gql.ImageVulnerabilitySuppressionState `json:"state"`
+	State             gql.ImageVulnerabilitySuppressionState `json:"state"`
+	ReasonFingerprint [sha256.Size]byte                      `json:"-"`
+}
+
+func (s *SuppressionState) UnmarshalJSON(data []byte) error {
+	var value struct {
+		State  gql.ImageVulnerabilitySuppressionState `json:"state"`
+		Reason *string                                `json:"reason"`
+	}
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	if value.Reason == nil {
+		return fmt.Errorf("suppression reason is missing")
+	}
+	*s = SuppressionState{State: value.State, ReasonFingerprint: sha256.Sum256([]byte(*value.Reason))}
+	return nil
 }
 
 type (
