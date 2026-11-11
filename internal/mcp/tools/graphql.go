@@ -80,14 +80,19 @@ The Nais API is a GraphQL API for managing applications and jobs on the Nais pla
    ` + "```" + `
 
 6. **Get vulnerabilities for a workload**:
+   Query the exact team, environment and application (or job).
+   Follow pageInfo with after until hasNextPage is false.
    ` + "```graphql" + `
-   query($slug: Slug!, $name: String!, $env: [String!]) {
+   query($slug: Slug!, $name: String!, $env: String!, $after: Cursor) {
      team(slug: $slug) {
-       applications(filter: { name: $name, environments: $env }, first: 1) {
-         nodes {
+       environment(name: $env) {
+         application(name: $name) {
            image {
-             vulnerabilitySummary { critical high medium low }
-             vulnerabilities(first: 20) { nodes { identifier severity package } }
+             vulnerabilitySummary { total lastUpdated }
+             vulnerabilities(first: 20, after: $after) {
+               pageInfo { hasNextPage endCursor }
+               nodes { identifier severity package }
+             }
            }
          }
        }
@@ -201,8 +206,10 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 IMPORTANT: Before using this tool, use the schema exploration tools (schema_list_queries, schema_get_type, schema_get_field) to understand the available types and fields.
 
 This tool only supports a single query (read operation) per request. Mutations, subscriptions and documents with multiple operations are not allowed.
+Use execute_mutation for explicitly allowlisted writes with human confirmation.
 
 `+naisAPIGuidance),
+		mcp.WithReadOnlyHintAnnotation(true),
 		mcp.WithInputSchema[ExecuteGraphQLInput](),
 		// Note: Output is dynamic JSON from the GraphQL API, so we don't use WithOutputSchema here
 	)

@@ -53,3 +53,19 @@ func (c *LiveClient) GetConsoleURL(ctx context.Context) (string, error) {
 	}
 	return fmt.Sprintf("https://%s", user.ConsoleHost()), nil
 }
+
+func (c *LiveClient) PreviewSuppression(ctx context.Context, target SuppressionTarget) (SuppressionPreview, error) {
+	gqlClient, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return SuppressionPreview{}, fmt.Errorf("suppression preview requires Nais authentication; no write attempted")
+	}
+	return fetchSuppressionPreview(ctx, gqlClient, target)
+}
+
+func (c *LiveClient) ApplySuppression(ctx context.Context, input SuppressionInput) (SuppressionResult, error) {
+	gqlClient, err := naisapi.GraphqlClient(ctx)
+	if err != nil {
+		return SuppressionResult{}, fmt.Errorf("suppression client unavailable; no write attempted")
+	}
+	return applySuppression(ctx, gqlClient, input)
+}

@@ -279,6 +279,7 @@ func TestMCPServer_Integration(t *testing.T) {
 		expectedTools := []string{
 			"get_nais_context",
 			"execute_graphql",
+			"execute_mutation",
 			"validate_graphql",
 			"schema_list_types",
 			"schema_get_type",
@@ -291,6 +292,9 @@ func TestMCPServer_Integration(t *testing.T) {
 			"schema_get_union_types",
 		}
 
+		if len(tools) != len(expectedTools) {
+			t.Fatalf("expected %d tools, got %v", len(expectedTools), tools)
+		}
 		for _, expected := range expectedTools {
 			found := slices.Contains(tools, expected)
 			if !found {

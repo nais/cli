@@ -39,6 +39,7 @@ func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter
 	// Register GraphQL execution tools (for dynamic query execution)
 	logger.Debug("Registering GraphQL tools")
 	registerGraphQLTools(s, ctx)
+	registerMutationTool(s, ctx)
 
 	logger.Debug("All tools registered successfully")
 }

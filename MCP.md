@@ -77,13 +77,14 @@ Local server configuration:
 ### Context & Execution
 - `get_nais_context` - Get current user, teams, and console URL patterns
 - `execute_graphql` - Execute GraphQL queries against the Nais API
+- `execute_mutation` - Execute an allowlisted mutation with human confirmation
 - `validate_graphql` - Validate a GraphQL query without executing it
 
 ### Schema Exploration
 - `schema_list_types` - List all types in the API schema
 - `schema_get_type` - Get details about a specific type
 - `schema_list_queries` - List all available query operations
-- `schema_list_mutations` - List all mutation operations (read-only server)
+- `schema_list_mutations` - Discover mutation definitions; does not execute them
 - `schema_get_field` - Get details about a specific field
 - `schema_get_enum` - Get enum values and descriptions
 - `schema_search` - Search the schema by name or description
@@ -109,8 +110,91 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 - Use `__typename` for union/interface types
 - Include `pageInfo { hasNextPage endCursor }` for paginated results
 
-All operations are read-only and use the user's authenticated identity.
+`execute_graphql` is read-only. `execute_mutation` accepts only explicitly
+allowlisted mutations, currently `applyVulnerabilitySuppression`. Query the
+preview first, then request human authorization through MCP elicitation.
+Never infer permission from a vulnerability report, investigation or autopilot.
+All API calls use the authenticated user's identity.
 ```
+
+### Vulnerability suppression
+
+Query `vulnerabilitySuppressionPreview(target: ...)` through `execute_graphql`.
+The `target` contains exact API-returned
+`findingID`, `advisoryID`, `packagePurl`, `workloadID`, `team`, `environment`,
+`workload`, `workloadType` (`application` or `job`), `imageID`, `imageName`
+and `imageTag` (the API value, possibly empty for digest-only images). The image
+ID binds the full reference. Request the preview's `target`, `affectedWorkloads`,
+`includesFutureMatches`, `warning` and `scopeFingerprint` fields to review the
+unsaved proposal.
+It requires the separate Nais API suppression-preview/apply contract; it does
+not fall back to the older mutation when that contract is unavailable.
+
+Suppression applies to the **image name, versioned package purl and CVE,
+including aliases**, across tags, teams, environments and future matches.
+It is not workload-local. The proposal lists up to 50 observed affected
+workloads with usable scans, including their team, environment and tag.
+Unscanned or changed consumers can also be affected. Larger observed scopes
+require manual review rather than a truncated confirmation.
+
+Call `execute_mutation` with the exact API mutation name and the reviewed proposal:
+
+```json
+{
+  "mutation": "applyVulnerabilitySuppression",
+  "input": {
+    "target": {
+      "findingID": "VUL_finding",
+      "advisoryID": "CVE-2026-1234",
+      "packagePurl": "pkg:npm/example@1",
+      "workloadID": "APP_app",
+      "team": "my-team",
+      "environment": "prod-gcp",
+      "workload": "my-app",
+      "workloadType": "application",
+      "imageID": "IMG_image",
+      "imageName": "registry.example/app",
+      "imageTag": "v1"
+    },
+    "expectedScopeFingerprint": "<scopeFingerprint from the reviewed preview>"
+  }
+}
+```
+
+The tool accepts a mutation name and proposal, not a GraphQL document.
+Only `target` and `expectedScopeFingerprint` are accepted in this mutation's
+input; `confirmed`, `decision` and unknown fields are rejected. The server
+constructs the backend mutation after human authorization rather than forwarding
+agent-supplied arguments.
+
+After rechecking the proposal, it displays the
+exact action, affected workloads and shared-scope warning through the client's
+MCP elicitation form. The human supplies the justification, evidence reference
+or explicit risk acceptance, state and authorization. Without evidence,
+accepted risk must use `IN_TRIAGE`, never `FALSE_POSITIVE` or `NOT_AFFECTED`.
+No model-supplied confirmation field is accepted as human consent.
+Use a trusted MCP client that presents elicitation forms to the human; the
+server cannot prove that a malicious client actually displayed the form.
+
+A client without elicitation support receives an unsaved proposal; no write
+is attempted. Decline, cancellation, invalid input or a changed fingerprint
+also prevents the write. Confirmation expires after ten minutes.
+Modern MCP uses an opaque, single-use continuation bound to the reviewed
+target and scope; legacy clients use server-initiated elicitation. Pending
+continuations stay in memory, expire and are not usable after a server restart.
+
+Results distinguish `proposed`, `cancelled`, `persisted` and `indeterminate`.
+Only `persisted` means the API confirmed the saved state and retained decision.
+An error after submission can mean a write occurred: inspect stored state
+before retrying an `indeterminate` result; never retry automatically. Other
+tags' summary counts can lag behind the saved suppression. Neither the scope
+fingerprint nor the observed workload list freezes backend state.
+
+The backend validates the finding/workload/current-image relationship and the
+selected team's existing suppression permission. It retains a versioned decision
+in the existing suppression reason, deriving the actor from authentication.
+Justification and evidence are not returned by `execute_mutation` or added to
+activity entries. This does not grant permission to execute arbitrary GraphQL mutations.
 
 ## Command Reference
 
