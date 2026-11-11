@@ -59,7 +59,7 @@ func NewServer(opts ...Option) (*Server, error) {
 	}
 
 	// Register tools and resources
-	tools.RegisterTools(mcpServer, c, rateLimiter, options.Logger)
+	tools.RegisterTools(mcpServer, c, rateLimiter, options.Logger, options.Transport == TransportStdio)
 	resources.RegisterResources(mcpServer, c, options.Logger)
 
 	return s, nil

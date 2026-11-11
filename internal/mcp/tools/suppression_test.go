@@ -336,7 +336,7 @@ func TestSuppressionModernContinuation(t *testing.T) {
 func TestMutationToolDiscovery(t *testing.T) {
 	s := server.NewMCPServer("test", "1", server.WithToolCapabilities(false))
 	h, _, _ := suppressionHandlerFixture()
-	RegisterTools(s, h.client, allowAll{}, slog.New(slog.NewTextHandler(io.Discard, nil)))
+	RegisterTools(s, h.client, allowAll{}, slog.New(slog.NewTextHandler(io.Discard, nil)), true)
 	request := []byte(`{"jsonrpc":"2.0","id":1,"method":"tools/list"}`)
 	raw, _ := json.Marshal(s.HandleMessage(t.Context(), request))
 	var response struct {

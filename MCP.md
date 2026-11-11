@@ -77,7 +77,7 @@ Local server configuration:
 ### Context & Execution
 - `get_nais_context` - Get current user, teams, and console URL patterns
 - `execute_graphql` - Execute GraphQL queries against the Nais API
-- `execute_mutation` - Execute an allowlisted mutation with human confirmation
+- `execute_mutation` - Execute an allowlisted mutation with human confirmation (stdio only)
 - `validate_graphql` - Validate a GraphQL query without executing it
 
 ### Schema Exploration
@@ -110,14 +110,19 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 - Use `__typename` for union/interface types
 - Include `pageInfo { hasNextPage endCursor }` for paginated results
 
-`execute_graphql` is read-only. `execute_mutation` accepts only explicitly
-allowlisted mutations, currently `applyVulnerabilitySuppression`. Query the
+`execute_graphql` is read-only. `execute_mutation` is available only over stdio
+and accepts only explicitly allowlisted mutations, currently
+`applyVulnerabilitySuppression`. Query the
 preview first, then request human authorization through MCP elicitation.
 Never infer permission from a vulnerability report, investigation or autopilot.
 All API calls use the authenticated user's identity.
 ```
 
 ### Vulnerability suppression
+
+Mutation execution is restricted to stdio. HTTP/SSE transports expose read-only
+tools because they do not authenticate MCP clients. Elicitation confirms an
+action with the connected client; it does not authenticate that client.
 
 Query `vulnerabilitySuppressionPreview(target: ...)` through `execute_graphql`.
 The `target` contains exact API-returned
