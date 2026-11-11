@@ -32,18 +32,16 @@ func suppressionHTTPClient(t *testing.T, response map[string]any, inspect func(*
 }
 
 func TestSuppressionTypedOperations(t *testing.T) {
-	target := SuppressionTarget{
-		FindingID: "finding", AdvisoryID: "CVE-2026-1234", PackagePurl: "pkg:npm/example@1",
-		WorkloadID: "app", Team: "team", Environment: "dev", Workload: "app", WorkloadType: "application",
-		ImageID: "image", ImageName: "registry.example/app", ImageTag: "v1",
-	}
+	id := "VUL_finding"
+	reason := "Custom \"reason\".\nReviewed usage: https://example.test/review/1"
+	state := gql.ImageVulnerabilitySuppressionStateNotAffected
 	for _, write := range []bool{false, true} {
-		t.Run(map[bool]string{false: "preview", true: "write"}[write], func(t *testing.T) {
-			root := "vulnerabilitySuppressionPreview"
-			response := map[string]any{"target": target, "affectedWorkloads": []any{}, "scopeFingerprint": "fingerprint", "includesFutureMatches": true, "warning": "shared scope"}
+		t.Run(map[bool]string{false: "finding", true: "write"}[write], func(t *testing.T) {
+			root := "node"
+			response := map[string]any{"__typename": "ImageVulnerability", "id": id, "identifier": "CVE-2026-1234", "package": "example"}
 			if write {
-				root = "applyVulnerabilitySuppression"
-				response = map[string]any{"persisted": true, "indeterminate": false, "state": "IN_TRIAGE", "scopeFingerprint": "fingerprint"}
+				root = "updateImageVulnerability"
+				response = map[string]any{"vulnerability": map[string]any{"id": id, "suppression": map[string]any{"state": state, "reason": reason}}}
 			}
 			calls := 0
 			c := suppressionHTTPClient(t, map[string]any{"data": map[string]any{root: response}}, func(r *http.Request) {
@@ -55,37 +53,35 @@ func TestSuppressionTypedOperations(t *testing.T) {
 				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 					t.Fatal(err)
 				}
-				if strings.Contains(request.Query, target.PackagePurl) || strings.Contains(request.Query, "updateImageVulnerability") {
-					t.Fatal("untyped or legacy mutation")
+				if strings.Contains(request.Query, id) || strings.Contains(request.Query, reason) ||
+					!strings.Contains(request.Query, root+"(") {
+					t.Fatal("request must use variables and an existing API operation")
 				}
 				if write {
 					var input SuppressionInput
 					if err := json.Unmarshal(request.Variables["input"], &input); err != nil {
 						t.Fatal(err)
 					}
-					if !input.Confirmed || input.Target.FindingID != target.FindingID || input.Decision.EvidenceReference == nil {
-						t.Fatal("decision missing from typed input")
+					if !input.Suppress || input.VulnerabilityID != id || input.Reason != reason || input.State == nil || *input.State != state {
+						t.Fatalf("incorrect suppression input: %+v", input)
 					}
 				} else {
-					var input SuppressionTarget
-					if err := json.Unmarshal(request.Variables["target"], &input); err != nil || input != target {
-						t.Fatalf("incorrect target: %+v error=%v", input, err)
+					var input string
+					if err := json.Unmarshal(request.Variables["id"], &input); err != nil || input != id {
+						t.Fatalf("incorrect finding ID: %q error=%v", input, err)
 					}
 				}
 			})
 			if write {
 				out, err := applySuppression(t.Context(), c, SuppressionInput{
-					Target:    gql.VulnerabilitySuppressionTargetInput(target),
-					Confirmed: true, ExpectedScopeFingerprint: "fingerprint", Decision: gql.VulnerabilitySuppressionDecisionInput{
-						Justification: "Reviewed", EvidenceReference: new("https://example.test/evidence"), State: gql.ImageVulnerabilitySuppressionStateInTriage,
-					},
+					VulnerabilityID: id, Suppress: true, Reason: reason, State: &state,
 				})
-				if err != nil || !out.Persisted {
+				if err != nil || out.Id != id || out.Suppression == nil || out.Suppression.Reason != reason {
 					t.Fatalf("out=%+v error=%v", out, err)
 				}
 			} else {
-				out, err := fetchSuppressionPreview(t.Context(), c, target)
-				if err != nil || SuppressionTarget(out.Target) != target {
+				out, err := fetchSuppressionFinding(t.Context(), c, id)
+				if err != nil || out.ID != id || out.Identifier != "CVE-2026-1234" || out.Package != "example" {
 					t.Fatalf("out=%+v error=%v", out, err)
 				}
 			}
@@ -96,10 +92,23 @@ func TestSuppressionTypedOperations(t *testing.T) {
 	}
 }
 
+func TestSuppressionRejectsMissingOrWrongNode(t *testing.T) {
+	for _, node := range []any{nil, map[string]any{"__typename": "Application", "id": "APP_app"}} {
+		c := suppressionHTTPClient(t, map[string]any{"data": map[string]any{"node": node}}, nil)
+		if _, err := fetchSuppressionFinding(t.Context(), c, "VUL_finding"); err == nil {
+			t.Fatalf("accepted invalid finding: %+v", node)
+		}
+	}
+	c := suppressionHTTPClient(t, map[string]any{"data": map[string]any{"updateImageVulnerability": map[string]any{"vulnerability": nil}}}, nil)
+	if _, err := applySuppression(t.Context(), c, SuppressionInput{}); err == nil {
+		t.Fatal("missing mutation result reported as saved")
+	}
+}
+
 func TestSuppressionErrorsDoNotLeakOrRetry(t *testing.T) {
 	calls := 0
 	c := suppressionHTTPClient(t, map[string]any{"errors": []any{map[string]any{"message": "PRIVATE JUSTIFICATION"}}}, func(*http.Request) { calls++ })
-	if _, err := fetchSuppressionPreview(t.Context(), c, SuppressionTarget{}); err == nil || strings.Contains(err.Error(), "PRIVATE") {
+	if _, err := fetchSuppressionFinding(t.Context(), c, "VUL_finding"); err == nil || strings.Contains(err.Error(), "PRIVATE") {
 		t.Fatalf("unsafe preview error: %v", err)
 	}
 	if _, err := applySuppression(t.Context(), c, SuppressionInput{}); err == nil || strings.Contains(err.Error(), "PRIVATE") {

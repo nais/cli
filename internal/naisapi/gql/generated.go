@@ -743,36 +743,6 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 	return v.LastExitCode
 }
 
-// A concrete reviewed suppression, not blanket permission for future actions.
-type ApplyVulnerabilitySuppressionInput struct {
-	// Exact reviewed finding, workload and image.
-	Target VulnerabilitySuppressionTargetInput `json:"target"`
-	// Justification and evidence or explicitly accepted risk.
-	Decision VulnerabilitySuppressionDecisionInput `json:"decision"`
-	// Fingerprint from the reviewed proposal.
-	ExpectedScopeFingerprint string `json:"expectedScopeFingerprint"`
-	// Explicit confirmation of this action and its shared-image scope.
-	Confirmed bool `json:"confirmed"`
-}
-
-// GetTarget returns ApplyVulnerabilitySuppressionInput.Target, and is useful for accessing the field via an interface.
-func (v *ApplyVulnerabilitySuppressionInput) GetTarget() VulnerabilitySuppressionTargetInput {
-	return v.Target
-}
-
-// GetDecision returns ApplyVulnerabilitySuppressionInput.Decision, and is useful for accessing the field via an interface.
-func (v *ApplyVulnerabilitySuppressionInput) GetDecision() VulnerabilitySuppressionDecisionInput {
-	return v.Decision
-}
-
-// GetExpectedScopeFingerprint returns ApplyVulnerabilitySuppressionInput.ExpectedScopeFingerprint, and is useful for accessing the field via an interface.
-func (v *ApplyVulnerabilitySuppressionInput) GetExpectedScopeFingerprint() string {
-	return v.ExpectedScopeFingerprint
-}
-
-// GetConfirmed returns ApplyVulnerabilitySuppressionInput.Confirmed, and is useful for accessing the field via an interface.
-func (v *ApplyVulnerabilitySuppressionInput) GetConfirmed() bool { return v.Confirmed }
-
 // Operational priority levels for vulnerabilities and CVEs.
 type CVEPriority string
 
@@ -34313,313 +34283,72 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.Name
 }
 
-// MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload includes the requested fields of the GraphQL type ApplyVulnerabilitySuppressionPayload.
-// The GraphQL type's documentation follows.
-//
-// Only persisted=true confirms a successful write. Indeterminate writes must not be automatically retried.
-type MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload struct {
-	// True only after the backend confirms the saved state and retained decision.
-	Persisted bool `json:"persisted"`
-	// A write may have happened; inspect stored state before taking further action.
-	Indeterminate bool `json:"indeterminate"`
-	// Requested suppression state; not proof it was saved.
+// MCPApplySuppressionResponse is returned by MCPApplySuppression on success.
+type MCPApplySuppressionResponse struct {
+	// Updates a vulnerability
+	// This mutation is currently unstable and may change in the future.
+	UpdateImageVulnerability MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload `json:"updateImageVulnerability"`
+}
+
+// GetUpdateImageVulnerability returns MCPApplySuppressionResponse.UpdateImageVulnerability, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionResponse) GetUpdateImageVulnerability() MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload {
+	return v.UpdateImageVulnerability
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload includes the requested fields of the GraphQL type UpdateImageVulnerabilityPayload.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload struct {
+	// The vulnerability updated.
+	Vulnerability *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability `json:"vulnerability"`
+}
+
+// GetVulnerability returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload.Vulnerability, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload) GetVulnerability() *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability {
+	return v.Vulnerability
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability struct {
+	// The globally unique ID of the image vulnerability node.
+	Id          string                                                                                                                `json:"id"`
+	Suppression *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
+}
+
+// GetId returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetId() string {
+	return v.Id
+}
+
+// GetSuppression returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetSuppression() *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
 	State ImageVulnerabilitySuppressionState `json:"state"`
-	// Reviewed scope fingerprint.
-	ScopeFingerprint string `json:"scopeFingerprint"`
+	// The reason for the suppression of the vulnerability.
+	Reason string `json:"reason"`
 }
 
-// GetPersisted returns MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload.Persisted, and is useful for accessing the field via an interface.
-func (v *MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload) GetPersisted() bool {
-	return v.Persisted
-}
-
-// GetIndeterminate returns MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload.Indeterminate, and is useful for accessing the field via an interface.
-func (v *MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload) GetIndeterminate() bool {
-	return v.Indeterminate
-}
-
-// GetState returns MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload.State, and is useful for accessing the field via an interface.
-func (v *MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload) GetState() ImageVulnerabilitySuppressionState {
+// GetState returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
 	return v.State
 }
 
-// GetScopeFingerprint returns MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload.ScopeFingerprint, and is useful for accessing the field via an interface.
-func (v *MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload) GetScopeFingerprint() string {
-	return v.ScopeFingerprint
+// GetReason returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetReason() string {
+	return v.Reason
 }
 
-// MCPApplySuppressionResponse is returned by MCPApplySuppression on success.
-type MCPApplySuppressionResponse struct {
-	// Apply one explicitly confirmed suppression after revalidating its finding, scope and decision.
-	ApplyVulnerabilitySuppression MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload `json:"applyVulnerabilitySuppression"`
+// MCPSuppressionFindingResponse is returned by MCPSuppressionFinding on success.
+type MCPSuppressionFindingResponse struct {
+	// Fetch an object using its globally unique ID.
+	Node json.RawMessage `json:"node"`
 }
 
-// GetApplyVulnerabilitySuppression returns MCPApplySuppressionResponse.ApplyVulnerabilitySuppression, and is useful for accessing the field via an interface.
-func (v *MCPApplySuppressionResponse) GetApplyVulnerabilitySuppression() MCPApplySuppressionApplyVulnerabilitySuppressionApplyVulnerabilitySuppressionPayload {
-	return v.ApplyVulnerabilitySuppression
-}
-
-// MCPSuppressionPreviewFields includes the GraphQL fields of VulnerabilitySuppressionPreview requested by the fragment MCPSuppressionPreviewFields.
-// The GraphQL type's documentation follows.
-//
-// An unsaved proposal. More than 50 affected workloads requires manual review.
-type MCPSuppressionPreviewFields struct {
-	// Validated target for this unsaved proposal.
-	Target MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget `json:"target"`
-	// Observed matching workloads with usable scans, not all image consumers or an atomic snapshot.
-	AffectedWorkloads []MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload `json:"affectedWorkloads"`
-	// Observed scope and existing suppression fingerprint; not an authorization token.
-	ScopeFingerprint string `json:"scopeFingerprint"`
-	// Suppression also applies to future matching tags and workloads.
-	IncludesFutureMatches bool `json:"includesFutureMatches"`
-	// Effective scope warning that must be shown before confirmation.
-	Warning string `json:"warning"`
-}
-
-// GetTarget returns MCPSuppressionPreviewFields.Target, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFields) GetTarget() MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget {
-	return v.Target
-}
-
-// GetAffectedWorkloads returns MCPSuppressionPreviewFields.AffectedWorkloads, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFields) GetAffectedWorkloads() []MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload {
-	return v.AffectedWorkloads
-}
-
-// GetScopeFingerprint returns MCPSuppressionPreviewFields.ScopeFingerprint, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFields) GetScopeFingerprint() string { return v.ScopeFingerprint }
-
-// GetIncludesFutureMatches returns MCPSuppressionPreviewFields.IncludesFutureMatches, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFields) GetIncludesFutureMatches() bool { return v.IncludesFutureMatches }
-
-// GetWarning returns MCPSuppressionPreviewFields.Warning, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFields) GetWarning() string { return v.Warning }
-
-// MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload includes the requested fields of the GraphQL type VulnerabilitySuppressionWorkload.
-// The GraphQL type's documentation follows.
-//
-// A tracked workload with matching findings in the shared suppression scope.
-type MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload struct {
-	// Owning team.
-	Team string `json:"team"`
-	// Workload environment.
-	Environment string `json:"environment"`
-	// Workload name.
-	Workload string `json:"workload"`
-	// application or job.
-	WorkloadType string `json:"workloadType"`
-	// Observed image lookup suffix: tag, digest or tag@digest.
-	ImageTag string `json:"imageTag"`
-}
-
-// GetTeam returns MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload.Team, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload) GetTeam() string {
-	return v.Team
-}
-
-// GetEnvironment returns MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload.Environment, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload) GetEnvironment() string {
-	return v.Environment
-}
-
-// GetWorkload returns MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload.Workload, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload) GetWorkload() string {
-	return v.Workload
-}
-
-// GetWorkloadType returns MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload.WorkloadType, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload) GetWorkloadType() string {
-	return v.WorkloadType
-}
-
-// GetImageTag returns MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload.ImageTag, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload) GetImageTag() string {
-	return v.ImageTag
-}
-
-// MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget includes the requested fields of the GraphQL type VulnerabilitySuppressionTarget.
-// The GraphQL type's documentation follows.
-//
-// The exact finding, workload and observed image that were validated.
-type MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget struct {
-	// Validated finding ID.
-	FindingID string `json:"findingID"`
-	// Validated reported advisory.
-	AdvisoryID string `json:"advisoryID"`
-	// Validated versioned package purl.
-	PackagePurl string `json:"packagePurl"`
-	// Validated application or job ID.
-	WorkloadID string `json:"workloadID"`
-	// Team owning the selected workload.
-	Team string `json:"team"`
-	// Selected workload environment.
-	Environment string `json:"environment"`
-	// Selected workload name.
-	Workload string `json:"workload"`
-	// application or job.
-	WorkloadType string `json:"workloadType"`
-	// Validated current image ID.
-	ImageID string `json:"imageID"`
-	// Image name shared by every matching suppression.
-	ImageName string `json:"imageName"`
-	// API-reported image tag, possibly empty; not a suppression boundary.
-	ImageTag string `json:"imageTag"`
-}
-
-// GetFindingID returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.FindingID, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetFindingID() string {
-	return v.FindingID
-}
-
-// GetAdvisoryID returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.AdvisoryID, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetAdvisoryID() string {
-	return v.AdvisoryID
-}
-
-// GetPackagePurl returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.PackagePurl, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetPackagePurl() string {
-	return v.PackagePurl
-}
-
-// GetWorkloadID returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.WorkloadID, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetWorkloadID() string {
-	return v.WorkloadID
-}
-
-// GetTeam returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.Team, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetTeam() string {
-	return v.Team
-}
-
-// GetEnvironment returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.Environment, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetEnvironment() string {
-	return v.Environment
-}
-
-// GetWorkload returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.Workload, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetWorkload() string {
-	return v.Workload
-}
-
-// GetWorkloadType returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.WorkloadType, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetWorkloadType() string {
-	return v.WorkloadType
-}
-
-// GetImageID returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.ImageID, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetImageID() string {
-	return v.ImageID
-}
-
-// GetImageName returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.ImageName, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetImageName() string {
-	return v.ImageName
-}
-
-// GetImageTag returns MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget.ImageTag, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget) GetImageTag() string {
-	return v.ImageTag
-}
-
-// MCPSuppressionPreviewResponse is returned by MCPSuppressionPreview on success.
-type MCPSuppressionPreviewResponse struct {
-	// Prepare an unsaved shared-image suppression proposal with all observed affected workloads.
-	VulnerabilitySuppressionPreview MCPSuppressionPreviewVulnerabilitySuppressionPreview `json:"vulnerabilitySuppressionPreview"`
-}
-
-// GetVulnerabilitySuppressionPreview returns MCPSuppressionPreviewResponse.VulnerabilitySuppressionPreview, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewResponse) GetVulnerabilitySuppressionPreview() MCPSuppressionPreviewVulnerabilitySuppressionPreview {
-	return v.VulnerabilitySuppressionPreview
-}
-
-// MCPSuppressionPreviewVulnerabilitySuppressionPreview includes the requested fields of the GraphQL type VulnerabilitySuppressionPreview.
-// The GraphQL type's documentation follows.
-//
-// An unsaved proposal. More than 50 affected workloads requires manual review.
-type MCPSuppressionPreviewVulnerabilitySuppressionPreview struct {
-	MCPSuppressionPreviewFields `json:"-"`
-}
-
-// GetTarget returns MCPSuppressionPreviewVulnerabilitySuppressionPreview.Target, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) GetTarget() MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget {
-	return v.MCPSuppressionPreviewFields.Target
-}
-
-// GetAffectedWorkloads returns MCPSuppressionPreviewVulnerabilitySuppressionPreview.AffectedWorkloads, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) GetAffectedWorkloads() []MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload {
-	return v.MCPSuppressionPreviewFields.AffectedWorkloads
-}
-
-// GetScopeFingerprint returns MCPSuppressionPreviewVulnerabilitySuppressionPreview.ScopeFingerprint, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) GetScopeFingerprint() string {
-	return v.MCPSuppressionPreviewFields.ScopeFingerprint
-}
-
-// GetIncludesFutureMatches returns MCPSuppressionPreviewVulnerabilitySuppressionPreview.IncludesFutureMatches, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) GetIncludesFutureMatches() bool {
-	return v.MCPSuppressionPreviewFields.IncludesFutureMatches
-}
-
-// GetWarning returns MCPSuppressionPreviewVulnerabilitySuppressionPreview.Warning, and is useful for accessing the field via an interface.
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) GetWarning() string {
-	return v.MCPSuppressionPreviewFields.Warning
-}
-
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*MCPSuppressionPreviewVulnerabilitySuppressionPreview
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.MCPSuppressionPreviewVulnerabilitySuppressionPreview = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(
-		b, &v.MCPSuppressionPreviewFields)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-type __premarshalMCPSuppressionPreviewVulnerabilitySuppressionPreview struct {
-	Target MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget `json:"target"`
-
-	AffectedWorkloads []MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload `json:"affectedWorkloads"`
-
-	ScopeFingerprint string `json:"scopeFingerprint"`
-
-	IncludesFutureMatches bool `json:"includesFutureMatches"`
-
-	Warning string `json:"warning"`
-}
-
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *MCPSuppressionPreviewVulnerabilitySuppressionPreview) __premarshalJSON() (*__premarshalMCPSuppressionPreviewVulnerabilitySuppressionPreview, error) {
-	var retval __premarshalMCPSuppressionPreviewVulnerabilitySuppressionPreview
-
-	retval.Target = v.MCPSuppressionPreviewFields.Target
-	retval.AffectedWorkloads = v.MCPSuppressionPreviewFields.AffectedWorkloads
-	retval.ScopeFingerprint = v.MCPSuppressionPreviewFields.ScopeFingerprint
-	retval.IncludesFutureMatches = v.MCPSuppressionPreviewFields.IncludesFutureMatches
-	retval.Warning = v.MCPSuppressionPreviewFields.Warning
-	return &retval, nil
-}
+// GetNode returns MCPSuppressionFindingResponse.Node, and is useful for accessing the field via an interface.
+func (v *MCPSuppressionFindingResponse) GetNode() json.RawMessage { return v.Node }
 
 // Input for filtering OpenSearch instances.
 type OpenSearchFilter struct {
@@ -36004,6 +35733,27 @@ func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetNa
 	return v.Name
 }
 
+type UpdateImageVulnerabilityInput struct {
+	VulnerabilityID string                              `json:"vulnerabilityID"`
+	Reason          string                              `json:"reason"`
+	Suppress        bool                                `json:"suppress"`
+	State           *ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetVulnerabilityID returns UpdateImageVulnerabilityInput.VulnerabilityID, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetVulnerabilityID() string { return v.VulnerabilityID }
+
+// GetReason returns UpdateImageVulnerabilityInput.Reason, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetReason() string { return v.Reason }
+
+// GetSuppress returns UpdateImageVulnerabilityInput.Suppress, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetSuppress() bool { return v.Suppress }
+
+// GetState returns UpdateImageVulnerabilityInput.State, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetState() *ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
 type UpdateOpenSearchInput struct {
 	Name                           string                 `json:"name"`
 	EnvironmentName                string                 `json:"environmentName"`
@@ -36824,93 +36574,6 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue) GetEncoding() ValueEncoding {
 	return v.Encoding
 }
-
-// A justified decision retained with the finding. Do not include secrets or personal information.
-type VulnerabilitySuppressionDecisionInput struct {
-	// User-reviewed justification, at most 4096 bytes.
-	Justification string `json:"justification"`
-	// Reference to supporting evidence, at most 2048 bytes.
-	EvidenceReference *string `json:"evidenceReference"`
-	// Explicit acceptance of risk when applicability is not established; requires IN_TRIAGE.
-	RiskAccepted bool `json:"riskAccepted"`
-	// IN_TRIAGE, FALSE_POSITIVE or NOT_AFFECTED. Risk acceptance is not proof of non-applicability.
-	State ImageVulnerabilitySuppressionState `json:"state"`
-}
-
-// GetJustification returns VulnerabilitySuppressionDecisionInput.Justification, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionDecisionInput) GetJustification() string { return v.Justification }
-
-// GetEvidenceReference returns VulnerabilitySuppressionDecisionInput.EvidenceReference, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionDecisionInput) GetEvidenceReference() *string {
-	return v.EvidenceReference
-}
-
-// GetRiskAccepted returns VulnerabilitySuppressionDecisionInput.RiskAccepted, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionDecisionInput) GetRiskAccepted() bool { return v.RiskAccepted }
-
-// GetState returns VulnerabilitySuppressionDecisionInput.State, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionDecisionInput) GetState() ImageVulnerabilitySuppressionState {
-	return v.State
-}
-
-// Exact finding, workload and observed image to review before suppression.
-type VulnerabilitySuppressionTargetInput struct {
-	// Exact finding ID returned by the API.
-	FindingID string `json:"findingID"`
-	// Reported advisory identifier.
-	AdvisoryID string `json:"advisoryID"`
-	// Exact affected package purl, including its version.
-	PackagePurl string `json:"packagePurl"`
-	// Exact application or job ID.
-	WorkloadID string `json:"workloadID"`
-	// Team owning the selected workload.
-	Team string `json:"team"`
-	// Environment of the selected workload.
-	Environment string `json:"environment"`
-	// Name of the selected workload.
-	Workload string `json:"workload"`
-	// application or job.
-	WorkloadType string `json:"workloadType"`
-	// Observed container image ID.
-	ImageID string `json:"imageID"`
-	// Observed image name, without tag or digest.
-	ImageName string `json:"imageName"`
-	// API-reported image tag, empty for digest-only images. The image ID still binds the full reference.
-	ImageTag string `json:"imageTag"`
-}
-
-// GetFindingID returns VulnerabilitySuppressionTargetInput.FindingID, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetFindingID() string { return v.FindingID }
-
-// GetAdvisoryID returns VulnerabilitySuppressionTargetInput.AdvisoryID, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetAdvisoryID() string { return v.AdvisoryID }
-
-// GetPackagePurl returns VulnerabilitySuppressionTargetInput.PackagePurl, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetPackagePurl() string { return v.PackagePurl }
-
-// GetWorkloadID returns VulnerabilitySuppressionTargetInput.WorkloadID, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetWorkloadID() string { return v.WorkloadID }
-
-// GetTeam returns VulnerabilitySuppressionTargetInput.Team, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetTeam() string { return v.Team }
-
-// GetEnvironment returns VulnerabilitySuppressionTargetInput.Environment, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetEnvironment() string { return v.Environment }
-
-// GetWorkload returns VulnerabilitySuppressionTargetInput.Workload, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetWorkload() string { return v.Workload }
-
-// GetWorkloadType returns VulnerabilitySuppressionTargetInput.WorkloadType, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetWorkloadType() string { return v.WorkloadType }
-
-// GetImageID returns VulnerabilitySuppressionTargetInput.ImageID, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetImageID() string { return v.ImageID }
-
-// GetImageName returns VulnerabilitySuppressionTargetInput.ImageName, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetImageName() string { return v.ImageName }
-
-// GetImageTag returns VulnerabilitySuppressionTargetInput.ImageTag, and is useful for accessing the field via an interface.
-func (v *VulnerabilitySuppressionTargetInput) GetImageTag() string { return v.ImageTag }
 
 // __AddConfigValueInput is used internally by genqlient
 type __AddConfigValueInput struct {
@@ -37902,21 +37565,19 @@ func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() *TeamVulnerabili
 
 // __MCPApplySuppressionInput is used internally by genqlient
 type __MCPApplySuppressionInput struct {
-	Input ApplyVulnerabilitySuppressionInput `json:"input"`
+	Input UpdateImageVulnerabilityInput `json:"input"`
 }
 
 // GetInput returns __MCPApplySuppressionInput.Input, and is useful for accessing the field via an interface.
-func (v *__MCPApplySuppressionInput) GetInput() ApplyVulnerabilitySuppressionInput { return v.Input }
+func (v *__MCPApplySuppressionInput) GetInput() UpdateImageVulnerabilityInput { return v.Input }
 
-// __MCPSuppressionPreviewInput is used internally by genqlient
-type __MCPSuppressionPreviewInput struct {
-	Target VulnerabilitySuppressionTargetInput `json:"target"`
+// __MCPSuppressionFindingInput is used internally by genqlient
+type __MCPSuppressionFindingInput struct {
+	Id string `json:"id"`
 }
 
-// GetTarget returns __MCPSuppressionPreviewInput.Target, and is useful for accessing the field via an interface.
-func (v *__MCPSuppressionPreviewInput) GetTarget() VulnerabilitySuppressionTargetInput {
-	return v.Target
-}
+// GetId returns __MCPSuppressionFindingInput.Id, and is useful for accessing the field via an interface.
+func (v *__MCPSuppressionFindingInput) GetId() string { return v.Id }
 
 // __RemoveConfigValueInput is used internally by genqlient
 type __RemoveConfigValueInput struct {
@@ -41623,12 +41284,15 @@ func ListWorkloadVulnerabilitySummaries(
 
 // The mutation executed by MCPApplySuppression.
 const MCPApplySuppression_Operation = `
-mutation MCPApplySuppression ($input: ApplyVulnerabilitySuppressionInput!) {
-	applyVulnerabilitySuppression(input: $input) {
-		persisted
-		indeterminate
-		state
-		scopeFingerprint
+mutation MCPApplySuppression ($input: UpdateImageVulnerabilityInput!) {
+	updateImageVulnerability(input: $input) {
+		vulnerability {
+			id
+			suppression {
+				state
+				reason
+			}
+		}
 	}
 }
 `
@@ -41636,7 +41300,7 @@ mutation MCPApplySuppression ($input: ApplyVulnerabilitySuppressionInput!) {
 func MCPApplySuppression(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	input ApplyVulnerabilitySuppressionInput,
+	input UpdateImageVulnerabilityInput,
 ) (data_ *MCPApplySuppressionResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "MCPApplySuppression",
@@ -41658,54 +41322,37 @@ func MCPApplySuppression(
 	return data_, err_
 }
 
-// The query executed by MCPSuppressionPreview.
-const MCPSuppressionPreview_Operation = `
-query MCPSuppressionPreview ($target: VulnerabilitySuppressionTargetInput!) {
-	vulnerabilitySuppressionPreview(target: $target) {
-		... MCPSuppressionPreviewFields
+// The query executed by MCPSuppressionFinding.
+const MCPSuppressionFinding_Operation = `
+query MCPSuppressionFinding ($id: ID!) {
+	node(id: $id) {
+		__typename
+		... on ImageVulnerability {
+			id
+			identifier
+			package
+			suppression {
+				state
+			}
+		}
 	}
-}
-fragment MCPSuppressionPreviewFields on VulnerabilitySuppressionPreview {
-	target {
-		findingID
-		advisoryID
-		packagePurl
-		workloadID
-		team
-		environment
-		workload
-		workloadType
-		imageID
-		imageName
-		imageTag
-	}
-	affectedWorkloads {
-		team
-		environment
-		workload
-		workloadType
-		imageTag
-	}
-	scopeFingerprint
-	includesFutureMatches
-	warning
 }
 `
 
-func MCPSuppressionPreview(
+func MCPSuppressionFinding(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	target VulnerabilitySuppressionTargetInput,
-) (data_ *MCPSuppressionPreviewResponse, err_ error) {
+	id string,
+) (data_ *MCPSuppressionFindingResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "MCPSuppressionPreview",
-		Query:  MCPSuppressionPreview_Operation,
-		Variables: &__MCPSuppressionPreviewInput{
-			Target: target,
+		OpName: "MCPSuppressionFinding",
+		Query:  MCPSuppressionFinding_Operation,
+		Variables: &__MCPSuppressionFindingInput{
+			Id: id,
 		},
 	}
 
-	data_ = &MCPSuppressionPreviewResponse{}
+	data_ = &MCPSuppressionFindingResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

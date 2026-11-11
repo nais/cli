@@ -1,22 +1,22 @@
 package naisapi
 
 const _ = `# @genqlient
-	query MCPSuppressionPreview($target: VulnerabilitySuppressionTargetInput!) {
-		vulnerabilitySuppressionPreview(target: $target) {
-			...MCPSuppressionPreviewFields
+	query MCPSuppressionFinding($id: ID!) {
+		# @genqlient(bind: "encoding/json.RawMessage")
+		node(id: $id) {
+			__typename
+			... on ImageVulnerability {
+				id identifier package
+				suppression { state }
+			}
 		}
 	}
-	fragment MCPSuppressionPreviewFields on VulnerabilitySuppressionPreview {
-		target {
-			findingID advisoryID packagePurl workloadID team environment workload
-			workloadType imageID imageName imageTag
-		}
-		affectedWorkloads { team environment workload workloadType imageTag }
-		scopeFingerprint includesFutureMatches warning
-	}
-	mutation MCPApplySuppression($input: ApplyVulnerabilitySuppressionInput!) {
-		applyVulnerabilitySuppression(input: $input) {
-			persisted indeterminate state scopeFingerprint
+	mutation MCPApplySuppression($input: UpdateImageVulnerabilityInput!) {
+		updateImageVulnerability(input: $input) {
+			vulnerability {
+				id
+				suppression { state reason }
+			}
 		}
 	}
 `

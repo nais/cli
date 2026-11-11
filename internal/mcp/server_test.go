@@ -296,7 +296,7 @@ func TestMCPServer_NetworkTransportsAreReadOnly(t *testing.T) {
 			response = c.SendRequest(t, "tools/call", map[string]any{
 				"name": "execute_mutation",
 				"arguments": map[string]any{
-					"mutation": "applyVulnerabilitySuppression",
+					"mutation": "updateImageVulnerability",
 					"input":    map[string]any{},
 				},
 			})

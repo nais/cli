@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -18,13 +18,12 @@ import (
 )
 
 type ConfirmSuppressionInput struct {
-	Target                   client.SuppressionTarget `json:"target" jsonschema:"required"`
-	ExpectedScopeFingerprint string                   `json:"expectedScopeFingerprint" jsonschema:"required"`
+	VulnerabilityID string `json:"vulnerabilityID"`
 }
 
 type SuppressionOutput struct {
-	Status   string                    `json:"status" jsonschema:"enum=proposed,enum=cancelled,enum=persisted,enum=indeterminate"`
-	Proposal client.SuppressionPreview `json:"proposal"`
+	Status   string                    `json:"status"`
+	Proposal client.SuppressionFinding `json:"proposal"`
 	Message  string                    `json:"message"`
 }
 
@@ -37,12 +36,13 @@ type suppressionHandler struct {
 
 type suppressionPending struct {
 	Input   ConfirmSuppressionInput
+	Finding client.SuppressionFinding
 	Expires time.Time
 }
 
 func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.CallToolRequest, input ConfirmSuppressionInput) (*mcp.CallToolResult, error) {
 	if !mcp.IsModernProtocol(server.RequestProtocolVersion(ctx)) {
-		out, err := h.confirm(ctx, request, input)
+		out, err := h.confirm(ctx, input, nil)
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
@@ -53,6 +53,7 @@ func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.Call
 	supportsElicitation := info != nil && info.ClientCapabilities != nil && info.ClientCapabilities.Elicitation != nil
 	resuming := request.Params.RequestState != ""
 	var prompt *mcp.ElicitationRequest
+	var reviewed *client.SuppressionFinding
 	if resuming {
 		if !supportsElicitation {
 			return mcp.NewToolResultError("human confirmation capability is missing; no write attempted"), nil
@@ -64,6 +65,7 @@ func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.Call
 		if !ok || pending.Input != input || !time.Now().Before(pending.Expires) {
 			return mcp.NewToolResultError("suppression confirmation expired, changed or already consumed; no write attempted"), nil
 		}
+		reviewed = &pending.Finding
 		response := server.ElicitationResponse(request.Params.InputResponses, "suppression")
 		if response == nil {
 			return mcp.NewToolResultError("human confirmation response is missing; no write attempted"), nil
@@ -77,7 +79,7 @@ func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.Call
 			return nil, nil
 		}
 	}
-	out, err := attempt.confirm(ctx, request, input)
+	out, err := attempt.confirm(ctx, input, reviewed)
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
@@ -99,9 +101,8 @@ func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.Call
 		out.Message = "Too many pending confirmations. No write attempted."
 		return mcp.NewToolResultJSON(out)
 	}
-	// The opaque, single-use continuation binds client input to the displayed action.
 	token := rand.Text()
-	h.pending[token] = suppressionPending{Input: input, Expires: now.Add(10 * time.Minute)}
+	h.pending[token] = suppressionPending{Input: input, Finding: out.Proposal, Expires: now.Add(10 * time.Minute)}
 	h.mu.Unlock()
 	out.Message = "Human confirmation required. This proposal has not been saved."
 	result, err := mcp.NewToolResultJSON(out)
@@ -114,25 +115,7 @@ func (h *suppressionHandler) handleConfirm(ctx context.Context, request mcp.Call
 	return result, nil
 }
 
-func validateSuppressionTarget(target client.SuppressionTarget) error {
-	for _, value := range []string{
-		target.FindingID, target.AdvisoryID, target.PackagePurl, target.WorkloadID,
-		target.Team, target.Environment, target.Workload, target.WorkloadType,
-		target.ImageID, target.ImageName,
-	} {
-		if value == "" || value != strings.TrimSpace(value) || len(value) > 2048 {
-			return fmt.Errorf("suppression target must contain exact, nonempty, bounded identifiers")
-		}
-	}
-	if !strings.HasPrefix(target.PackagePurl, "pkg:") ||
-		(target.WorkloadType != "application" && target.WorkloadType != "job") ||
-		target.ImageTag != strings.TrimSpace(target.ImageTag) || len(target.ImageTag) > 2048 {
-		return fmt.Errorf("suppression requires a package purl and application or job")
-	}
-	return nil
-}
-
-func (h *suppressionHandler) preview(ctx context.Context, target client.SuppressionTarget) (SuppressionOutput, error) {
+func (h *suppressionHandler) preview(ctx context.Context, id string) (SuppressionOutput, error) {
 	var out SuppressionOutput
 	if !h.rateLimiter.Allow() {
 		return out, fmt.Errorf("rate limit exceeded, please try again later")
@@ -140,59 +123,36 @@ func (h *suppressionHandler) preview(ctx context.Context, target client.Suppress
 	if err := ctx.Err(); err != nil {
 		return out, err
 	}
-	if err := validateSuppressionTarget(target); err != nil {
-		return out, err
+	if id == "" || id != strings.TrimSpace(id) || len(id) > 2048 {
+		return out, fmt.Errorf("an exact vulnerabilityID is required; no write attempted")
 	}
 	c, ok := h.client.(client.SuppressionClient)
 	if !ok {
-		return out, fmt.Errorf("suppression preview is unavailable in this client; no write attempted")
+		return out, fmt.Errorf("finding lookup is unavailable in this client; no write attempted")
 	}
-	preview, err := c.PreviewSuppression(ctx, target)
+	finding, err := c.GetSuppressionFinding(ctx, id)
 	if err != nil {
-		return out, fmt.Errorf("suppression preview failed; no write attempted")
+		return out, fmt.Errorf("finding lookup failed; no write attempted")
 	}
-	fingerprint, err := hex.DecodeString(preview.ScopeFingerprint)
-	if err != nil || len(fingerprint) != 32 || client.SuppressionTarget(preview.Target) != target ||
-		!preview.IncludesFutureMatches || preview.Warning == "" ||
-		len(preview.AffectedWorkloads) == 0 || len(preview.AffectedWorkloads) > 50 {
-		return out, fmt.Errorf("invalid suppression preview; no write attempted")
+	if finding.ID != id || finding.Identifier == "" || finding.Package == "" {
+		return out, fmt.Errorf("invalid finding response; no write attempted")
 	}
-	seen := map[string]bool{}
-	selected := false
-	for _, w := range preview.AffectedWorkloads {
-		key := w.Team + "\x00" + w.Environment + "\x00" + w.WorkloadType + "\x00" + w.Workload
-		if w.Team == "" || w.Environment == "" || w.Workload == "" || w.ImageTag == "" ||
-			(w.WorkloadType != "application" && w.WorkloadType != "job") || seen[key] {
-			return out, fmt.Errorf("invalid affected workload list; no write attempted")
-		}
-		seen[key] = true
-		selected = selected || w.Team == target.Team && w.Environment == target.Environment &&
-			w.Workload == target.Workload && w.WorkloadType == target.WorkloadType
-	}
-	if !selected {
-		return out, fmt.Errorf("selected workload is missing from suppression scope; no write attempted")
-	}
-	return SuppressionOutput{Status: "proposed", Proposal: preview, Message: "Unsaved proposal. No suppression has been written."}, nil
+	return SuppressionOutput{Status: "proposed", Proposal: finding, Message: "Unsaved proposal. Shared-image suppression can affect other workloads and tags."}, nil
 }
 
 type suppressionConsent struct {
-	Confirm           bool                                   `json:"confirm"`
-	Justification     string                                 `json:"justification"`
-	EvidenceReference string                                 `json:"evidence_reference"`
-	RiskAccepted      bool                                   `json:"risk_accepted"`
-	State             gql.ImageVulnerabilitySuppressionState `json:"state"`
+	Confirm bool                                   `json:"confirm"`
+	Reason  string                                 `json:"reason"`
+	State   gql.ImageVulnerabilitySuppressionState `json:"state"`
 }
 
-func (h *suppressionHandler) confirm(ctx context.Context, _ mcp.CallToolRequest, input ConfirmSuppressionInput) (SuppressionOutput, error) {
-	if fingerprint, err := hex.DecodeString(input.ExpectedScopeFingerprint); err != nil || len(fingerprint) != 32 {
-		return SuppressionOutput{}, fmt.Errorf("the reviewed proposal's scope fingerprint is required")
-	}
-	out, err := h.preview(ctx, input.Target)
+func (h *suppressionHandler) confirm(ctx context.Context, input ConfirmSuppressionInput, reviewed *client.SuppressionFinding) (SuppressionOutput, error) {
+	out, err := h.preview(ctx, input.VulnerabilityID)
 	if err != nil {
 		return out, err
 	}
-	if input.ExpectedScopeFingerprint != out.Proposal.ScopeFingerprint {
-		out.Message = "Scope changed. Review this new unsaved proposal before requesting confirmation."
+	if reviewed != nil && !reflect.DeepEqual(out.Proposal, *reviewed) {
+		out.Message = "Finding changed. Review this new unsaved proposal before requesting confirmation."
 		return out, nil
 	}
 	preview, err := json.Marshal(out.Proposal)
@@ -203,18 +163,16 @@ func (h *suppressionHandler) confirm(ctx context.Context, _ mcp.CallToolRequest,
 	defer cancel()
 	result, err := h.elicit(confirmationCtx, mcp.ElicitationRequest{Params: mcp.ElicitationParams{
 		Mode: "form",
-		Message: "SUPPRESS THIS FINDING? This changes shared suppression state, not just the selected workload. Review every listed workload and the warning about other teams, tags, environments and future matches.\n" +
-			string(preview) + "\nProvide your justification and evidence reference. Without evidence, explicitly accept the risk and choose IN_TRIAGE; this does not establish a false positive or non-applicability. Do not enter secrets or personal information. Confirm only if you authorize this exact action.",
+		Message: "Suppress this finding?\n" + string(preview) +
+			"\nThis changes shared-image suppression, not just one workload. Other teams, tags, environments and future matches may be affected; the API does not provide the complete scope here. Enter your own reason and choose a state. The API records your authenticated Nais identity and includes the reason in activity history. Do not enter secrets or personal information. Confirm only if you authorize this action.",
 		RequestedSchema: map[string]any{
 			"type": "object",
 			"properties": map[string]any{
-				"confirm":            map[string]any{"type": "boolean", "title": "Authorize this suppression and its shared scope"},
-				"justification":      map[string]any{"type": "string", "title": "Why suppress this finding?", "minLength": 1, "maxLength": 4096},
-				"evidence_reference": map[string]any{"type": "string", "title": "Supporting evidence reference, if available", "maxLength": 2048},
-				"risk_accepted":      map[string]any{"type": "boolean", "title": "I explicitly accept the risk (requires IN_TRIAGE)"},
-				"state":              map[string]any{"type": "string", "title": "Suppression state", "enum": []string{"IN_TRIAGE", "FALSE_POSITIVE", "NOT_AFFECTED"}},
+				"confirm": map[string]any{"type": "boolean", "title": "Authorize this suppression and its shared scope"},
+				"reason":  map[string]any{"type": "string", "title": "Your suppression reason", "minLength": 1, "maxLength": 4096},
+				"state":   map[string]any{"type": "string", "title": "Suppression state", "description": "IN_TRIAGE: still assessing. FALSE_POSITIVE: incorrect finding. NOT_AFFECTED: vulnerability does not apply. RESOLVED: finding resolved.", "enum": []string{"IN_TRIAGE", "FALSE_POSITIVE", "NOT_AFFECTED", "RESOLVED"}},
 			},
-			"required": []string{"confirm", "justification", "risk_accepted", "state"},
+			"required": []string{"confirm", "reason", "state"},
 		},
 	}})
 	if err != nil || result == nil {
@@ -239,36 +197,33 @@ func (h *suppressionHandler) confirm(ctx context.Context, _ mcp.CallToolRequest,
 		out.Status, out.Message = "cancelled", "Suppression was not authorized. No write attempted."
 		return out, nil
 	}
-	if strings.TrimSpace(consent.Justification) == "" || len(consent.Justification) > 4096 ||
-		len(consent.EvidenceReference) > 2048 ||
+	if strings.TrimSpace(consent.Reason) == "" || len(consent.Reason) > 4096 ||
 		consent.State != gql.ImageVulnerabilitySuppressionStateInTriage &&
 			consent.State != gql.ImageVulnerabilitySuppressionStateFalsePositive &&
-			consent.State != gql.ImageVulnerabilitySuppressionStateNotAffected ||
-		consent.RiskAccepted && consent.State != gql.ImageVulnerabilitySuppressionStateInTriage ||
-		!consent.RiskAccepted && strings.TrimSpace(consent.EvidenceReference) == "" {
-		return out, fmt.Errorf("justification and evidence or explicit IN_TRIAGE risk acceptance are required; no write attempted")
+			consent.State != gql.ImageVulnerabilitySuppressionStateNotAffected &&
+			consent.State != gql.ImageVulnerabilitySuppressionStateResolved {
+		return out, fmt.Errorf("a custom reason and valid state are required; no write attempted")
 	}
 	if err := confirmationCtx.Err(); err != nil {
 		return out, fmt.Errorf("confirmation expired or cancelled; no write attempted")
 	}
-	var evidence *string
-	if strings.TrimSpace(consent.EvidenceReference) != "" {
-		evidence = &consent.EvidenceReference
+	current, err := h.preview(confirmationCtx, input.VulnerabilityID)
+	if err != nil {
+		return out, err
 	}
-	// Only the elicitation response can supply consent and decision text.
+	if !reflect.DeepEqual(out.Proposal, current.Proposal) {
+		current.Message = "Finding changed during confirmation. No write attempted; review it again."
+		return current, nil
+	}
 	applied, err := h.client.(client.SuppressionClient).ApplySuppression(confirmationCtx, client.SuppressionInput{
-		Target:                   gql.VulnerabilitySuppressionTargetInput(input.Target),
-		ExpectedScopeFingerprint: out.Proposal.ScopeFingerprint, Confirmed: true,
-		Decision: gql.VulnerabilitySuppressionDecisionInput{
-			Justification: consent.Justification, EvidenceReference: evidence,
-			RiskAccepted: consent.RiskAccepted, State: consent.State,
-		},
+		VulnerabilityID: input.VulnerabilityID,
+		Suppress:        true, Reason: consent.Reason, State: &consent.State,
 	})
-	if err != nil || !applied.Persisted || applied.Indeterminate ||
-		applied.State != consent.State || applied.ScopeFingerprint != out.Proposal.ScopeFingerprint {
+	if err != nil || applied.Id != input.VulnerabilityID || applied.Suppression == nil ||
+		applied.Suppression.State != consent.State || applied.Suppression.Reason != consent.Reason {
 		out.Status, out.Message = "indeterminate", "Suppression is NOT confirmed saved. A write may have happened. Inspect stored state before any retry; do not retry automatically."
 		return out, nil
 	}
-	out.Status, out.Message = "persisted", "The API confirmed the suppression and retained decision. Shared-image scope applies; summary counts on other tags may lag."
+	out.Status, out.Message = "persisted", "The API confirmed the suppression and custom reason. Its activity history records the authenticated actor and reason. Shared-image scope applies; summary counts may lag."
 	return out, nil
 }

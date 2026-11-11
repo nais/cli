@@ -54,12 +54,12 @@ func (c *LiveClient) GetConsoleURL(ctx context.Context) (string, error) {
 	return fmt.Sprintf("https://%s", user.ConsoleHost()), nil
 }
 
-func (c *LiveClient) PreviewSuppression(ctx context.Context, target SuppressionTarget) (SuppressionPreview, error) {
+func (c *LiveClient) GetSuppressionFinding(ctx context.Context, id string) (SuppressionFinding, error) {
 	gqlClient, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
-		return SuppressionPreview{}, fmt.Errorf("suppression preview requires Nais authentication; no write attempted")
+		return SuppressionFinding{}, fmt.Errorf("finding lookup requires Nais authentication; no write attempted")
 	}
-	return fetchSuppressionPreview(ctx, gqlClient, target)
+	return fetchSuppressionFinding(ctx, gqlClient, id)
 }
 
 func (c *LiveClient) ApplySuppression(ctx context.Context, input SuppressionInput) (SuppressionResult, error) {

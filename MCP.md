@@ -112,8 +112,8 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 
 `execute_graphql` is read-only. `execute_mutation` is available only over stdio
 and accepts only explicitly allowlisted mutations, currently
-`applyVulnerabilitySuppression`. Query the
-preview first, then request human authorization through MCP elicitation.
+`updateImageVulnerability`. Read the finding first, then request human
+authorization through MCP elicitation.
 Never infer permission from a vulnerability report, investigation or autopilot.
 All API calls use the authenticated user's identity.
 ```
@@ -124,82 +124,61 @@ Mutation execution is restricted to stdio. HTTP/SSE transports expose read-only
 tools because they do not authenticate MCP clients. Elicitation confirms an
 action with the connected client; it does not authenticate that client.
 
-Query `vulnerabilitySuppressionPreview(target: ...)` through `execute_graphql`.
-The `target` contains exact API-returned
-`findingID`, `advisoryID`, `packagePurl`, `workloadID`, `team`, `environment`,
-`workload`, `workloadType` (`application` or `job`), `imageID`, `imageName`
-and `imageTag` (the API value, possibly empty for digest-only images). The image
-ID binds the full reference. Request the preview's `target`, `affectedWorkloads`,
-`includesFutureMatches`, `warning` and `scopeFingerprint` fields to review the
-unsaved proposal.
-It requires the separate Nais API suppression-preview/apply contract; it does
-not fall back to the older mutation when that contract is unavailable.
-
 Suppression applies to the **image name, versioned package purl and CVE,
 including aliases**, across tags, teams, environments and future matches.
-It is not workload-local. The proposal lists up to 50 observed affected
-workloads with usable scans, including their team, environment and tag.
-Unscanned or changed consumers can also be affected. Larger observed scopes
-require manual review rather than a truncated confirmation.
+It is not workload-local. The confirmation warns about this shared scope but
+does not enumerate all affected workloads.
 
-Call `execute_mutation` with the exact API mutation name and the reviewed proposal:
+Read the finding through `execute_graphql`, then pass its exact `id`:
 
 ```json
 {
-  "mutation": "applyVulnerabilitySuppression",
+  "mutation": "updateImageVulnerability",
   "input": {
-    "target": {
-      "findingID": "VUL_finding",
-      "advisoryID": "CVE-2026-1234",
-      "packagePurl": "pkg:npm/example@1",
-      "workloadID": "APP_app",
-      "team": "my-team",
-      "environment": "prod-gcp",
-      "workload": "my-app",
-      "workloadType": "application",
-      "imageID": "IMG_image",
-      "imageName": "registry.example/app",
-      "imageTag": "v1"
-    },
-    "expectedScopeFingerprint": "<scopeFingerprint from the reviewed preview>"
+    "vulnerabilityID": "<exact finding id returned by the API>"
   }
 }
 ```
 
-The tool accepts a mutation name and proposal, not a GraphQL document.
-Only `target` and `expectedScopeFingerprint` are accepted in this mutation's
-input; `confirmed`, `decision` and unknown fields are rejected. The server
-constructs the backend mutation after human authorization rather than forwarding
-agent-supplied arguments.
+Only `vulnerabilityID` is accepted in `input`. The human supplies a custom,
+nonblank reason (up to 4096 bytes), state and authorization in the elicitation
+form. The reason is saved unchanged; it can include an explanation or evidence
+references. No particular state is forced:
 
-After rechecking the proposal, it displays the
-exact action, affected workloads and shared-scope warning through the client's
-MCP elicitation form. The human supplies the justification, evidence reference
-or explicit risk acceptance, state and authorization. Without evidence,
-accepted risk must use `IN_TRIAGE`, never `FALSE_POSITIVE` or `NOT_AFFECTED`.
-No model-supplied confirmation field is accepted as human consent.
-Use a trusted MCP client that presents elicitation forms to the human; the
-server cannot prove that a malicious client actually displayed the form.
+| State | Meaning |
+|-------|---------|
+| `IN_TRIAGE` | The finding is still being assessed. |
+| `FALSE_POSITIVE` | The finding is incorrect. |
+| `NOT_AFFECTED` | The vulnerability does not apply. |
+| `RESOLVED` | The finding has been resolved. |
 
-A client without elicitation support receives an unsaved proposal; no write
-is attempted. Decline, cancellation, invalid input or a changed fingerprint
-also prevents the write. Confirmation expires after ten minutes.
-Modern MCP uses an opaque, single-use continuation bound to the reviewed
-target and scope; legacy clients use server-initiated elicitation. Pending
-continuations stay in memory, expire and are not usable after a server restart.
+The server constructs `UpdateImageVulnerabilityInput` with `suppress: true`
+only after confirmation. Agent-supplied reason, state, actor, confirmation
+fields and GraphQL documents are rejected.
 
-Results distinguish `proposed`, `cancelled`, `persisted` and `indeterminate`.
-Only `persisted` means the API confirmed the saved state and retained decision.
-An error after submission can mean a write occurred: inspect stored state
-before retrying an `indeterminate` result; never retry automatically. Other
-tags' summary counts can lag behind the saved suppression. Neither the scope
-fingerprint nor the observed workload list freezes backend state.
+Use a trusted client that displays the form; the server cannot prove it did.
+Without elicitation support, the tool returns an unsaved proposal.
+Decline, cancellation, invalid input or changes to the displayed finding prevent
+the write.
+Confirmation expires after ten minutes. Modern MCP uses a single-use,
+in-memory continuation bound to the finding and proposal; restarting the server
+invalidates it. Legacy clients use server-initiated elicitation.
 
-The backend validates the finding/workload/current-image relationship and the
-selected team's existing suppression permission. It retains a versioned decision
-in the existing suppression reason, deriving the actor from authentication.
-Justification and evidence are not returned by `execute_mutation` or added to
-activity entries. This does not grant permission to execute arbitrary GraphQL mutations.
+| Result | Meaning |
+|--------|---------|
+| `proposed` | Not saved. |
+| `cancelled` | Not authorized; no write attempted. |
+| `persisted` | The API returned the requested suppression state and reason. |
+| `indeterminate` | A write may have happened. Inspect stored state before retrying; never retry automatically. |
+
+The existing API enforces suppression permissions, derives the actor from the
+configured Nais authentication and records an activity entry with the actor and
+previous/new suppression, including the reason. Do not enter secrets or personal
+information. The mutation tool does not repeat the reason in its output.
+
+The finding is reread before writing. This is not an atomic scope check:
+workloads or shared scope can change between confirmation and mutation.
+Other tags' summary counts may lag. No new API operations are required.
 
 ## Command Reference
 

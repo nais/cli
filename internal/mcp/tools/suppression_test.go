@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"log/slog"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -20,11 +21,11 @@ import (
 
 type suppressionTestClient struct {
 	client.Client
-	preview       client.SuppressionPreview
+	finding       client.SuppressionFinding
 	writes        int
 	input         client.SuppressionInput
 	writeError    error
-	previewError  error
+	lookupError   error
 	indeterminate bool
 }
 
@@ -32,41 +33,38 @@ type denySuppressionRequests struct{}
 
 func (denySuppressionRequests) Allow() bool { return false }
 
-func (c *suppressionTestClient) PreviewSuppression(context.Context, client.SuppressionTarget) (client.SuppressionPreview, error) {
-	return c.preview, c.previewError
+func (c *suppressionTestClient) GetSuppressionFinding(context.Context, string) (client.SuppressionFinding, error) {
+	return c.finding, c.lookupError
 }
 
 func (c *suppressionTestClient) ApplySuppression(_ context.Context, input client.SuppressionInput) (client.SuppressionResult, error) {
 	c.writes++
 	c.input = input
-	return client.SuppressionResult{Persisted: !c.indeterminate, Indeterminate: c.indeterminate, State: input.Decision.State, ScopeFingerprint: input.ExpectedScopeFingerprint}, c.writeError
+	result := client.SuppressionResult{
+		Id: input.VulnerabilityID,
+		Suppression: &gql.MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression{
+			State: *input.State, Reason: input.Reason,
+		},
+	}
+	if c.indeterminate {
+		result.Suppression.Reason = "different"
+	}
+	return result, c.writeError
 }
 
 func suppressionHandlerFixture() (*suppressionHandler, *suppressionTestClient, ConfirmSuppressionInput) {
-	target := client.SuppressionTarget{
-		FindingID: "VUL_finding", AdvisoryID: "CVE-2026-1234", PackagePurl: "pkg:npm/example@1",
-		WorkloadID: "APP_app", Team: "team", Environment: "dev", Workload: "app", WorkloadType: "application",
-		ImageID: "IMG_image", ImageName: "registry.example/app", ImageTag: "v1",
-	}
-	c := &suppressionTestClient{preview: client.SuppressionPreview{
-		Target: gql.MCPSuppressionPreviewFieldsTargetVulnerabilitySuppressionTarget(target),
-		AffectedWorkloads: []gql.MCPSuppressionPreviewFieldsAffectedWorkloadsVulnerabilitySuppressionWorkload{
-			{Team: "team", Environment: "dev", Workload: "app", WorkloadType: "application", ImageTag: "v1"},
-			{Team: "other", Environment: "prod", Workload: "worker", WorkloadType: "job", ImageTag: "v2"},
-		},
-		ScopeFingerprint: strings.Repeat("a", 64), IncludesFutureMatches: true,
-		Warning: "Shared image scope across other teams, environments, tags and future matches; observed scan-ready workloads only.",
+	c := &suppressionTestClient{finding: client.SuppressionFinding{
+		TypeName: "ImageVulnerability", ID: "VUL_finding", Identifier: "CVE-2026-1234", Package: "example",
 	}}
 	h := &suppressionHandler{toolContext: &toolContext{client: c, rateLimiter: allowAll{}}}
-	return h, c, ConfirmSuppressionInput{Target: target, ExpectedScopeFingerprint: c.preview.ScopeFingerprint}
+	return h, c, ConfirmSuppressionInput{VulnerabilityID: c.finding.ID}
 }
 
 func acceptedSuppression() *mcp.ElicitationResult {
 	return &mcp.ElicitationResult{ElicitationResponse: mcp.ElicitationResponse{
 		Action: mcp.ElicitationResponseActionAccept,
 		Content: map[string]any{
-			"confirm": true, "justification": "Reviewed parser usage",
-			"evidence_reference": "https://example.test/review/1", "risk_accepted": false, "state": "NOT_AFFECTED",
+			"confirm": true, "reason": "  Reviewed parser usage.\nCustom \"reason\": https://example.test/review/1\n\u00c5rsak: package disabled.  ", "state": "NOT_AFFECTED",
 		},
 	}}
 }
@@ -84,28 +82,40 @@ func mutationRequest(t *testing.T, input ConfirmSuppressionInput) mcp.CallToolRe
 	return mcp.CallToolRequest{Params: mcp.CallToolParams{
 		Name: "execute_mutation",
 		Arguments: map[string]any{
-			"mutation": "applyVulnerabilitySuppression",
+			"mutation": "updateImageVulnerability",
 			"input":    proposal,
 		},
 	}}
 }
 
 func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
-	for _, mode := range []string{"evidence", "risk accepted", "declined", "cancelled", "unsupported", "missing consent", "missing evidence", "blank reason", "risk false positive", "malformed", "write error", "indeterminate"} {
+	for _, mode := range []string{
+		"custom reason", "state IN_TRIAGE", "state FALSE_POSITIVE", "state RESOLVED",
+		"declined", "cancelled", "unsupported", "missing consent", "missing reason", "blank reason",
+		"long reason", "invalid state", "malformed", "changed finding", "changed suppression",
+		"lookup error after confirmation", "write error", "indeterminate",
+	} {
 		t.Run(mode, func(t *testing.T) {
 			h, c, input := suppressionHandlerFixture()
+			result := acceptedSuppression()
+			content := result.Content.(map[string]any)
 			h.elicit = func(_ context.Context, request mcp.ElicitationRequest) (*mcp.ElicitationResult, error) {
-				for _, expected := range []string{input.Target.AdvisoryID, input.Target.PackagePurl, input.Target.ImageID, "worker", "other", "prod", "future matches"} {
+				for _, expected := range []string{input.VulnerabilityID, c.finding.Identifier, c.finding.Package, "Other teams", "future matches", "authenticated Nais identity", "reason in activity history"} {
 					if !strings.Contains(request.Params.Message, expected) {
 						t.Errorf("human warning omitted %q", expected)
 					}
 				}
-				result := acceptedSuppression()
-				content := result.Content.(map[string]any)
+				if strings.HasPrefix(mode, "state ") {
+					content["state"] = strings.TrimPrefix(mode, "state ")
+				}
+				schema := request.Params.RequestedSchema.(map[string]any)
+				properties := schema["properties"].(map[string]any)
+				if properties["reason"].(map[string]any)["type"] != "string" ||
+					!slices.Contains(schema["required"].([]string), "reason") ||
+					!slices.Contains(properties["state"].(map[string]any)["enum"].([]string), content["state"].(string)) {
+					t.Fatal("confirmation must offer a custom reason and the selected state")
+				}
 				switch mode {
-				case "risk accepted":
-					delete(content, "evidence_reference")
-					content["risk_accepted"], content["state"] = true, "IN_TRIAGE"
 				case "declined":
 					result.Action = mcp.ElicitationResponseActionDecline
 				case "cancelled":
@@ -114,14 +124,22 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 					return nil, errors.New("client does not support elicitation")
 				case "missing consent":
 					delete(content, "confirm")
-				case "missing evidence":
-					delete(content, "evidence_reference")
+				case "missing reason":
+					delete(content, "reason")
 				case "blank reason":
-					content["justification"] = " "
-				case "risk false positive":
-					content["risk_accepted"], content["state"] = true, "FALSE_POSITIVE"
+					content["reason"] = " "
+				case "long reason":
+					content["reason"] = strings.Repeat("x", 4097)
+				case "invalid state":
+					content["state"] = "INVALID"
 				case "malformed":
 					result.Content = "yes"
+				case "changed finding":
+					c.finding.Identifier = "changed"
+				case "changed suppression":
+					c.finding.Suppression = &client.SuppressionState{State: gql.ImageVulnerabilitySuppressionStateInTriage}
+				case "lookup error after confirmation":
+					c.lookupError = errors.New("private upstream error")
 				case "write error":
 					c.writeError = errors.New("sensitive upstream message")
 				case "indeterminate":
@@ -129,13 +147,17 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 				}
 				return result, nil
 			}
-			out, err := h.confirm(t.Context(), mcp.CallToolRequest{}, input)
-			write := mode == "evidence" || mode == "risk accepted" || mode == "write error" || mode == "indeterminate"
+			out, err := h.confirm(t.Context(), input, nil)
+			persisted := mode == "custom reason" || strings.HasPrefix(mode, "state ")
+			write := persisted || mode == "write error" || mode == "indeterminate"
 			if (c.writes == 1) != write || c.writes > 1 {
 				t.Fatalf("unexpected writes: %d", c.writes)
 			}
-			if mode == "evidence" || mode == "risk accepted" {
-				if err != nil || out.Status != "persisted" || !c.input.Confirmed || c.input.Decision.Justification != "Reviewed parser usage" {
+			if persisted {
+				if err != nil || out.Status != "persisted" || !c.input.Suppress ||
+					c.input.VulnerabilityID != input.VulnerabilityID ||
+					c.input.Reason != content["reason"] ||
+					c.input.State == nil || string(*c.input.State) != content["state"] {
 					t.Fatalf("out=%+v error=%v input=%+v", out, err, c.input)
 				}
 			} else if out.Status == "persisted" {
@@ -154,8 +176,8 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 	}
 }
 
-func TestSuppressionRejectsChangedOrInvalidScope(t *testing.T) {
-	for _, mode := range []string{"fingerprint", "target", "missing workload", "duplicate", "api error", "empty purl", "rate limit", "cancelled context"} {
+func TestSuppressionRejectsInvalidFinding(t *testing.T) {
+	for _, mode := range []string{"wrong id", "missing advisory", "missing package", "api error", "empty id", "rate limit", "cancelled context"} {
 		t.Run(mode, func(t *testing.T) {
 			h, c, input := suppressionHandlerFixture()
 			h.elicit = func(context.Context, mcp.ElicitationRequest) (*mcp.ElicitationResult, error) {
@@ -164,18 +186,16 @@ func TestSuppressionRejectsChangedOrInvalidScope(t *testing.T) {
 			}
 			ctx := t.Context()
 			switch mode {
-			case "fingerprint":
-				input.ExpectedScopeFingerprint = strings.Repeat("b", 64)
-			case "target":
-				c.preview.Target.ImageTag = "different"
-			case "missing workload":
-				c.preview.AffectedWorkloads = c.preview.AffectedWorkloads[1:]
-			case "duplicate":
-				c.preview.AffectedWorkloads = append(c.preview.AffectedWorkloads, c.preview.AffectedWorkloads[0])
+			case "wrong id":
+				c.finding.ID = "different"
+			case "missing advisory":
+				c.finding.Identifier = ""
+			case "missing package":
+				c.finding.Package = ""
 			case "api error":
-				c.previewError = errors.New("private upstream error")
-			case "empty purl":
-				input.Target.PackagePurl = ""
+				c.lookupError = errors.New("private upstream error")
+			case "empty id":
+				input.VulnerabilityID = ""
 			case "rate limit":
 				h.rateLimiter = denySuppressionRequests{}
 			case "cancelled context":
@@ -183,8 +203,8 @@ func TestSuppressionRejectsChangedOrInvalidScope(t *testing.T) {
 				cancel()
 				ctx = cancelled
 			}
-			out, err := h.confirm(ctx, mcp.CallToolRequest{}, input)
-			if c.writes != 0 || out.Status == "persisted" || mode != "fingerprint" && err == nil {
+			out, err := h.confirm(ctx, input, nil)
+			if c.writes != 0 || out.Status == "persisted" || err == nil {
 				t.Fatalf("out=%+v error=%v writes=%d", out, err, c.writes)
 			}
 		})
@@ -267,7 +287,7 @@ func TestSuppressionProtocolConfirmation(t *testing.T) {
 }
 
 func TestSuppressionModernContinuation(t *testing.T) {
-	for _, mode := range []string{"success and replay", "expired", "changed input", "forged token", "missing response", "changed scope", "lost capability", "argument consent", "concurrent"} {
+	for _, mode := range []string{"success and replay", "expired", "changed input", "forged token", "missing response", "changed finding", "lost capability", "argument consent", "concurrent"} {
 		t.Run(mode, func(t *testing.T) {
 			h, backend, input := suppressionHandlerFixture()
 			ctx := server.WithRequestProtocolInfo(t.Context(), &server.RequestProtocolInfo{
@@ -290,13 +310,13 @@ func TestSuppressionModernContinuation(t *testing.T) {
 				h.pending[token] = pending
 			case "changed input":
 				proposal := request.Params.Arguments.(map[string]any)["input"].(map[string]any)
-				proposal["target"].(map[string]any)["findingID"] = "other"
+				proposal["vulnerabilityID"] = "other"
 			case "forged token":
 				request.Params.RequestState = "forged"
 			case "missing response":
 				request.Params.InputResponses = nil
-			case "changed scope":
-				backend.preview.ScopeFingerprint = strings.Repeat("b", 64)
+			case "changed finding":
+				backend.finding.Identifier = "changed"
 			case "lost capability":
 				ctx = server.WithRequestProtocolInfo(t.Context(), &server.RequestProtocolInfo{Modern: true, ProtocolVersion: mcp.LATEST_PROTOCOL_VERSION})
 			case "argument consent":
@@ -376,9 +396,9 @@ func TestMutationToolDiscovery(t *testing.T) {
 
 func TestExecuteMutationRejectsUnsafeInput(t *testing.T) {
 	for _, mode := range []string{
-		"unknown mutation", "legacy mutation", "graphql document", "multiple mutations",
-		"missing mutation", "missing input", "invalid input type", "confirmed", "decision",
-		"unknown field", "unknown target field", "missing fingerprint", "invalid target",
+		"unknown mutation", "nonexistent mutation", "graphql document", "multiple mutations",
+		"missing mutation", "missing input", "invalid input type", "confirmed", "reason", "state",
+		"suppress", "actor", "unknown field", "missing id", "invalid id",
 	} {
 		t.Run(mode, func(t *testing.T) {
 			h, backend, input := suppressionHandlerFixture()
@@ -392,12 +412,12 @@ func TestExecuteMutationRejectsUnsafeInput(t *testing.T) {
 			switch mode {
 			case "unknown mutation":
 				args["mutation"] = "restartApplication"
-			case "legacy mutation":
-				args["mutation"] = "updateImageVulnerability"
+			case "nonexistent mutation":
+				args["mutation"] = "applyVulnerabilitySuppression"
 			case "graphql document":
-				args["mutation"] = "mutation { applyVulnerabilitySuppression { persisted } }"
+				args["mutation"] = "mutation { updateImageVulnerability { vulnerability { id } } }"
 			case "multiple mutations":
-				args["mutation"] = []string{"applyVulnerabilitySuppression", "restartApplication"}
+				args["mutation"] = []string{"updateImageVulnerability", "restartApplication"}
 			case "missing mutation":
 				delete(args, "mutation")
 			case "missing input":
@@ -406,16 +426,20 @@ func TestExecuteMutationRejectsUnsafeInput(t *testing.T) {
 				args["input"] = "confirmed"
 			case "confirmed":
 				proposal["confirmed"] = true
-			case "decision":
-				proposal["decision"] = map[string]any{"state": "NOT_AFFECTED", "justification": "model text"}
+			case "reason":
+				proposal["reason"] = "model text"
+			case "state":
+				proposal["state"] = "NOT_AFFECTED"
+			case "suppress":
+				proposal["suppress"] = true
+			case "actor":
+				proposal["actor"] = "someone else"
 			case "unknown field":
 				proposal["extra"] = true
-			case "unknown target field":
-				proposal["target"].(map[string]any)["extra"] = true
-			case "missing fingerprint":
-				delete(proposal, "expectedScopeFingerprint")
-			case "invalid target":
-				proposal["target"].(map[string]any)["findingID"] = ""
+			case "missing id":
+				delete(proposal, "vulnerabilityID")
+			case "invalid id":
+				proposal["vulnerabilityID"] = ""
 			}
 			result, err := h.handleExecuteMutation(t.Context(), request)
 			if err != nil || result == nil || !result.IsError || backend.writes != 0 {
