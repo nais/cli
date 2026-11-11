@@ -105,8 +105,8 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 						t.Errorf("human warning omitted %q", expected)
 					}
 				}
-				if strings.HasPrefix(mode, "state ") {
-					content["state"] = strings.TrimPrefix(mode, "state ")
+				if after, ok := strings.CutPrefix(mode, "state "); ok {
+					content["state"] = after
 				}
 				schema := request.Params.RequestedSchema.(map[string]any)
 				properties := schema["properties"].(map[string]any)
