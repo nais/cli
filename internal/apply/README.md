@@ -23,6 +23,24 @@ nais alpha apply <config-file> --environment <env> --team <team>
 - `--set` — replace a field with a YAML value using `KEY=VALUE`. Repeat for multiple overrides; commas within an argument are preserved
 - `--append` — append one YAML value to a list using `KEY=VALUE`. Creates missing lists; repeat for multiple elements
 
+## Mixins
+
+For a single manifest, repeat `--mixin` to merge files in the order provided:
+
+```shell
+nais apply app.yaml --environment dev --team myteam \
+  --mixin app.dev.yaml --mixin app.integration-test.yaml
+```
+
+Later values win, but lists are concatenated without deduplication. The same
+environment variable name in two mixins produces two list entries, not an
+overwrite. Use `--set` to replace a list or update an existing entry.
+
+Explicit `--mixin` flags disable automatic loading of `<base>.<env>.yaml`.
+Include the environment mixin explicitly if it should also be applied, as above.
+The processing order is always base, mixins in the order provided, all `--set`
+overrides, then all `--append` operations, regardless of flag positions.
+
 ## Field overrides
 
 For a single manifest, `--set` accepts dotted paths and zero-based list indices:
