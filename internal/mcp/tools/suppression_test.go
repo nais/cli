@@ -92,9 +92,9 @@ func mutationRequest(t *testing.T, input ConfirmSuppressionInput) mcp.CallToolRe
 
 func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 	for _, mode := range []string{
-		"custom reason", "state IN_TRIAGE", "state FALSE_POSITIVE", "state RESOLVED",
+		"custom reason", "escaped reason", "state IN_TRIAGE", "state FALSE_POSITIVE", "state RESOLVED",
 		"declined", "cancelled", "unsupported", "missing consent", "missing reason", "blank reason",
-		"long reason", "invalid state", "malformed", "changed finding", "changed image",
+		"long reason", "escaped long reason", "invalid state", "malformed", "changed finding", "changed image",
 		"changed package version", "changed suppression", "changed reason",
 		"lookup error after confirmation", "write error", "indeterminate",
 	} {
@@ -142,6 +142,10 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 					content["reason"] = " "
 				case "long reason":
 					content["reason"] = strings.Repeat("x", 4097)
+				case "escaped reason":
+					content["reason"] = strings.Repeat("<", 4096)
+				case "escaped long reason":
+					content["reason"] = strings.Repeat("<", 4097)
 				case "invalid state":
 					content["state"] = "INVALID"
 				case "malformed":
@@ -166,7 +170,7 @@ func TestSuppressionRequiresHumanConfirmation(t *testing.T) {
 				return result, nil
 			}
 			out, err := h.confirm(t.Context(), input, nil)
-			persisted := mode == "custom reason" || strings.HasPrefix(mode, "state ")
+			persisted := mode == "custom reason" || mode == "escaped reason" || strings.HasPrefix(mode, "state ")
 			write := persisted || mode == "write error" || mode == "indeterminate"
 			if (c.writes == 1) != write || c.writes > 1 {
 				t.Fatalf("unexpected writes: %d", c.writes)

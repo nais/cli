@@ -214,7 +214,8 @@ func (h *suppressionHandler) confirm(ctx context.Context, input ConfirmSuppressi
 		return out, nil
 	}
 	content, err := json.Marshal(result.Content)
-	if err != nil || len(content) > 16384 {
+	// Allow sixfold JSON escaping of a 4096-byte reason plus form fields.
+	if err != nil || len(content) > 32*1024 {
 		return out, fmt.Errorf("invalid human response; no write attempted")
 	}
 	var consent suppressionConsent
