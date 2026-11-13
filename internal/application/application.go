@@ -3,8 +3,6 @@ package application
 import (
 	"context"
 	"io"
-	"os"
-	"slices"
 
 	"github.com/MakeNowJust/heredoc/v2"
 	activityCommand "github.com/nais/cli/internal/activity/command"
@@ -156,10 +154,10 @@ func Run(ctx context.Context, w io.Writer) error {
 	}
 
 	err = app.Run(naistrix.RunWithContext(ctx))
-	autoComplete := slices.Contains(os.Args[1:], "__complete")
+	autoComplete := isCompletionCommand(app.ExecutedCommand())
 
 	if !autoComplete {
-		flushMetrics := metric.Initialize(f.IsTrace())
+		flushMetrics := metric.Initialize()
 		defer func() {
 			if err := recover(); err != nil {
 				handlePanic(err)
@@ -168,9 +166,8 @@ func Run(ctx context.Context, w io.Writer) error {
 		}()
 	}
 
-	executedCommand := app.ExecutedCommand()
-	if !autoComplete && executedCommand != nil {
-		collectCommandHistogram(ctx, executedCommand, err)
+	if !autoComplete {
+		collectCommandHistogram(ctx, app.ExecutedCommand(), err)
 	}
 
 	return err
