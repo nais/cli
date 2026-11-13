@@ -2914,6 +2914,10 @@ type CreateKafkaCredentialsPayload {
 The generated credentials.
 """
 	credentials: KafkaCredentials!
+"""
+The environment the Kafka credentials were created for.
+"""
+	environmentName: String!
 }
 
 input CreateOpenSearchCredentialsInput {

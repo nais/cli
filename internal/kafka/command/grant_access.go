@@ -30,6 +30,7 @@ func grantAccess(parentFlags *flag.Kafka) *naistrix.Command {
 			func(context.Context) error {
 				return grantAccessTopicFlags.Access.Validate()
 			},
+			validateEnvironment(parentFlags),
 		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			topicName := args.Get("topic")

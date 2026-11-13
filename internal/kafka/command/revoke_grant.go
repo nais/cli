@@ -22,7 +22,10 @@ func revokeGrant(parentFlags *flag.Kafka) *naistrix.Command {
 			{Name: "topic", Prompt: "Name of the Kafka topic to revoke access to"},
 			{Name: "access", Prompt: "Access level to revoke", Choices: flag.KafkaTopicGrantAccessChoices(), ChoicesCaseInsensitive: true},
 		},
-		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(parentFlags),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireTeamAndEnvironmentFlags(parentFlags),
+			validateEnvironment(parentFlags),
+		),
 		ValidateArgsFunc: func(_ context.Context, args *naistrix.Arguments) error {
 			return flag.KafkaTopicGrantAccess(args.Get("access")).Validate()
 		},
