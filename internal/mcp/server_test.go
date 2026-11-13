@@ -44,17 +44,18 @@ type TestClient struct {
 }
 
 // NewTestClient creates a new in-process test client.
-func NewTestClient(t *testing.T) *TestClient {
+func NewTestClient(t *testing.T, opts ...Option) *TestClient {
 	t.Helper()
 
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 	mockClient := client.NewMockClient(client.ScenarioHealthy)
 
-	srv, err := NewServer(
+	opts = append([]Option{
 		WithLogger(logger),
 		WithClient(mockClient),
 		WithRateLimit(0), // Disable rate limiting for tests
-	)
+	}, opts...)
+	srv, err := NewServer(opts...)
 	if err != nil {
 		t.Fatalf("failed to create MCP server: %v", err)
 	}
@@ -269,6 +270,43 @@ func (c *TestClient) ReadResource(t *testing.T, uri string) string {
 	return ""
 }
 
+func TestMCPServer_NetworkTransportsAreReadOnly(t *testing.T) {
+	for _, transport := range []Transport{TransportHTTP, TransportSSE, "", "unknown"} {
+		t.Run(string(transport), func(t *testing.T) {
+			c := NewTestClient(t, WithTransport(transport))
+			response := c.SendRequest(t, "initialize", map[string]any{
+				"protocolVersion": "2025-11-25",
+				"capabilities":    map[string]any{"elicitation": map[string]any{}},
+				"clientInfo":      map[string]string{"name": "untrusted-client", "version": "1"},
+			})
+			if response.Error != nil {
+				t.Fatalf("initialize failed: %+v", response.Error)
+			}
+			c.SendRequest(t, "notifications/initialized", nil)
+			names := c.ListTools(t)
+			if slices.Contains(names, "execute_mutation") {
+				t.Fatal("mutation tool exposed on a non-stdio transport")
+			}
+			if !slices.Contains(names, "execute_graphql") {
+				t.Fatal("read-only GraphQL tool is missing")
+			}
+			if result := c.CallTool(t, "get_nais_context", map[string]any{}); result["user"] == nil {
+				t.Fatal("read-only context tool did not return the user")
+			}
+			response = c.SendRequest(t, "tools/call", map[string]any{
+				"name": "execute_mutation",
+				"arguments": map[string]any{
+					"mutation": "updateImageVulnerability",
+					"input":    map[string]any{},
+				},
+			})
+			if response.Error == nil {
+				t.Fatalf("unregistered mutation call was dispatched: %+v", response.Result)
+			}
+		})
+	}
+}
+
 func TestMCPServer_Integration(t *testing.T) {
 	client := NewTestClient(t)
 	client.Initialize(t)
@@ -279,6 +317,7 @@ func TestMCPServer_Integration(t *testing.T) {
 		expectedTools := []string{
 			"get_nais_context",
 			"execute_graphql",
+			"execute_mutation",
 			"validate_graphql",
 			"schema_list_types",
 			"schema_get_type",
@@ -291,6 +330,9 @@ func TestMCPServer_Integration(t *testing.T) {
 			"schema_get_union_types",
 		}
 
+		if len(tools) != len(expectedTools) {
+			t.Fatalf("expected %d tools, got %v", len(expectedTools), tools)
+		}
 		for _, expected := range expectedTools {
 			found := slices.Contains(tools, expected)
 			if !found {

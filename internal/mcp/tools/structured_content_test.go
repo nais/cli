@@ -22,7 +22,7 @@ func TestStructuredContentIsObject(t *testing.T) {
 	RegisterTools(s, &mockClientWithCounter{schema: `
 type Query { me: String, team(slug: String!): String }
 type Mutation { createTeam(slug: String!): String }
-`}, allowAll{}, logger)
+`}, allowAll{}, logger, true)
 
 	call := func(method string, params any) map[string]any {
 		t.Helper()

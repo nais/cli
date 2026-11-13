@@ -201,8 +201,10 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 IMPORTANT: Before using this tool, use the schema exploration tools (schema_list_queries, schema_get_type, schema_get_field) to understand the available types and fields.
 
 This tool only supports a single query (read operation) per request. Mutations, subscriptions and documents with multiple operations are not allowed.
+Use execute_mutation for explicitly allowlisted writes with human confirmation.
 
 `+naisAPIGuidance),
+		mcp.WithReadOnlyHintAnnotation(true),
 		mcp.WithInputSchema[ExecuteGraphQLInput](),
 		// Note: Output is dynamic JSON from the GraphQL API, so we don't use WithOutputSchema here
 	)

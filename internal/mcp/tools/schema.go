@@ -165,7 +165,7 @@ func registerSchemaTools(s *server.MCPServer, ctx *toolContext) {
 	// List mutations tool
 	listMutationsTool := mcp.NewTool(
 		"schema_list_mutations",
-		mcp.WithDescription("List all available GraphQL mutation operations with their return types and number of arguments. Mutations are used to modify data (note: the MCP server currently only exposes read operations)."),
+		mcp.WithDescription("List all GraphQL mutation definitions with their return types and number of arguments. Discovery does not authorize execution: execute_mutation supports only explicitly allowlisted mutations with human confirmation."),
 		mcp.WithInputSchema[SchemaListMutationsInput](),
 		mcp.WithOutputSchema[SchemaListMutationsOutput](),
 	)

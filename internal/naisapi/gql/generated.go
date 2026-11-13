@@ -1787,7 +1787,7 @@ func (v *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNo
 
 // FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
 type FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerability struct {
-	// Package name of the vulnerability.
+	// Affected package URL (purl), including its version when reported.
 	Package     string                                                                                                                                         `json:"package"`
 	Suppression *FindWorkloadsForCveCveCVEWorkloadsWorkloadWithVulnerabilityConnectionNodesWorkloadWithVulnerabilityVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
 }
@@ -34798,7 +34798,7 @@ type ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVuln
 	Severity ImageVulnerabilitySeverity `json:"severity"`
 	// CVSS score of the vulnerability.
 	CvssScore *float64 `json:"cvssScore"`
-	// Package name of the vulnerability.
+	// Affected package URL (purl), including its version when reported.
 	Package     string                                                                                                                                                `json:"package"`
 	Suppression *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadImageContainerImageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerabilitySuppression `json:"suppression"`
 	// Timestamp of when the vulnerability got its current severity.
@@ -35232,6 +35232,73 @@ type ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnera
 func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVulnerabilitySummaryConnectionNodesWorkloadVulnerabilitySummaryWorkloadTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
+
+// MCPApplySuppressionResponse is returned by MCPApplySuppression on success.
+type MCPApplySuppressionResponse struct {
+	// Updates a vulnerability
+	// This mutation is currently unstable and may change in the future.
+	UpdateImageVulnerability MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload `json:"updateImageVulnerability"`
+}
+
+// GetUpdateImageVulnerability returns MCPApplySuppressionResponse.UpdateImageVulnerability, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionResponse) GetUpdateImageVulnerability() MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload {
+	return v.UpdateImageVulnerability
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload includes the requested fields of the GraphQL type UpdateImageVulnerabilityPayload.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload struct {
+	// The vulnerability updated.
+	Vulnerability *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability `json:"vulnerability"`
+}
+
+// GetVulnerability returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload.Vulnerability, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayload) GetVulnerability() *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability {
+	return v.Vulnerability
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability struct {
+	// The globally unique ID of the image vulnerability node.
+	Id          string                                                                                                                `json:"id"`
+	Suppression *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression `json:"suppression"`
+}
+
+// GetId returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetId() string {
+	return v.Id
+}
+
+// GetSuppression returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerability) GetSuppression() *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+	// The reason for the suppression of the vulnerability.
+	Reason string `json:"reason"`
+}
+
+// GetState returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// GetReason returns MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *MCPApplySuppressionUpdateImageVulnerabilityUpdateImageVulnerabilityPayloadVulnerabilityImageVulnerabilitySuppression) GetReason() string {
+	return v.Reason
+}
+
+// MCPSuppressionFindingResponse is returned by MCPSuppressionFinding on success.
+type MCPSuppressionFindingResponse struct {
+	// Fetch an object using its globally unique ID.
+	Node json.RawMessage `json:"node"`
+}
+
+// GetNode returns MCPSuppressionFindingResponse.Node, and is useful for accessing the field via an interface.
+func (v *MCPSuppressionFindingResponse) GetNode() json.RawMessage { return v.Node }
 
 // Input for filtering OpenSearch instances.
 type OpenSearchFilter struct {
@@ -36622,6 +36689,27 @@ func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetId
 // GetName returns UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig.Name, and is useful for accessing the field via an interface.
 func (v *UpdateConfigValueUpdateConfigValueUpdateConfigValuePayloadConfig) GetName() string {
 	return v.Name
+}
+
+type UpdateImageVulnerabilityInput struct {
+	VulnerabilityID string                              `json:"vulnerabilityID"`
+	Reason          string                              `json:"reason"`
+	Suppress        bool                                `json:"suppress"`
+	State           *ImageVulnerabilitySuppressionState `json:"state"`
+}
+
+// GetVulnerabilityID returns UpdateImageVulnerabilityInput.VulnerabilityID, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetVulnerabilityID() string { return v.VulnerabilityID }
+
+// GetReason returns UpdateImageVulnerabilityInput.Reason, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetReason() string { return v.Reason }
+
+// GetSuppress returns UpdateImageVulnerabilityInput.Suppress, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetSuppress() bool { return v.Suppress }
+
+// GetState returns UpdateImageVulnerabilityInput.State, and is useful for accessing the field via an interface.
+func (v *UpdateImageVulnerabilityInput) GetState() *ImageVulnerabilitySuppressionState {
+	return v.State
 }
 
 type UpdateOpenSearchInput struct {
@@ -38416,6 +38504,22 @@ func (v *__ListWorkloadVulnerabilitySummariesInput) GetTeam() string { return v.
 func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
+
+// __MCPApplySuppressionInput is used internally by genqlient
+type __MCPApplySuppressionInput struct {
+	Input UpdateImageVulnerabilityInput `json:"input"`
+}
+
+// GetInput returns __MCPApplySuppressionInput.Input, and is useful for accessing the field via an interface.
+func (v *__MCPApplySuppressionInput) GetInput() UpdateImageVulnerabilityInput { return v.Input }
+
+// __MCPSuppressionFindingInput is used internally by genqlient
+type __MCPSuppressionFindingInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __MCPSuppressionFindingInput.Id, and is useful for accessing the field via an interface.
+func (v *__MCPSuppressionFindingInput) GetId() string { return v.Id }
 
 // __RemoveConfigValueInput is used internally by genqlient
 type __RemoveConfigValueInput struct {
@@ -42063,6 +42167,90 @@ func ListWorkloadVulnerabilitySummaries(
 	}
 
 	data_ = &ListWorkloadVulnerabilitySummariesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The mutation executed by MCPApplySuppression.
+const MCPApplySuppression_Operation = `
+mutation MCPApplySuppression ($input: UpdateImageVulnerabilityInput!) {
+	updateImageVulnerability(input: $input) {
+		vulnerability {
+			id
+			suppression {
+				state
+				reason
+			}
+		}
+	}
+}
+`
+
+func MCPApplySuppression(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	input UpdateImageVulnerabilityInput,
+) (data_ *MCPApplySuppressionResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "MCPApplySuppression",
+		Query:  MCPApplySuppression_Operation,
+		Variables: &__MCPApplySuppressionInput{
+			Input: input,
+		},
+	}
+
+	data_ = &MCPApplySuppressionResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by MCPSuppressionFinding.
+const MCPSuppressionFinding_Operation = `
+query MCPSuppressionFinding ($id: ID!) {
+	node(id: $id) {
+		__typename
+		... on ImageVulnerability {
+			id
+			identifier
+			imageName
+			package
+			suppression {
+				state
+				reason
+			}
+		}
+	}
+}
+`
+
+func MCPSuppressionFinding(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+) (data_ *MCPSuppressionFindingResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "MCPSuppressionFinding",
+		Query:  MCPSuppressionFinding_Operation,
+		Variables: &__MCPSuppressionFindingInput{
+			Id: id,
+		},
+	}
+
+	data_ = &MCPSuppressionFindingResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

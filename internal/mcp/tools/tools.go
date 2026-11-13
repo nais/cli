@@ -23,7 +23,7 @@ type RateLimiter interface {
 //
 // This approach allows LLMs to dynamically explore the schema and construct
 // queries based on user needs, rather than relying on a fixed set of specialized tools.
-func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter, logger *slog.Logger) {
+func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter, logger *slog.Logger, allowMutations bool) {
 	logger.Debug("Starting tool registration")
 
 	ctx := &toolContext{
@@ -39,6 +39,9 @@ func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter
 	// Register GraphQL execution tools (for dynamic query execution)
 	logger.Debug("Registering GraphQL tools")
 	registerGraphQLTools(s, ctx)
+	if allowMutations {
+		registerMutationTool(s, ctx)
+	}
 
 	logger.Debug("All tools registered successfully")
 }
