@@ -66,6 +66,12 @@ mise run build
 - Run `mise run generate:docs` after changing documentation in Go. Command pages are moved into the generated `docs/_commands/` collection, while `docs/configuration.md` remains a regular page. Both are ignored by Git.
 - `mise run docs` generates the documentation once and starts Jekyll with browser live reload. Go source changes require rerunning `mise run generate:docs`; there is no Go source watcher.
 
+## Telemetry
+
+- Commands never wait for telemetry network I/O. `internal/metric` encodes the metrics, then hands the upload to a detached copy of the CLI (`__upload-metrics`, handled in `main.go` before command setup). Delivery is best effort: one attempt, a two-second timeout, no retries.
+- Trace verbosity (`-vvv`) uploads synchronously and reports failures. `DO_NOT_TRACK=1` disables telemetry entirely, and shell completion is never recorded.
+- Metric attributes contain only known command paths; unknown commands are recorded as `unknown`, never the user's input.
+
 ## Postgres CLI completion contract
 
 - Complete Postgres names from `Team.postgreses` (`GetTeamPostgreses`), including instances without branches. Branches are internal API details: do not expose branch commands, flags, completions or output fields. Personal access always targets the observed active branch.
