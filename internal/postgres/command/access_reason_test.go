@@ -93,7 +93,7 @@ func TestPersonalAccessReason(t *testing.T) {
 						if wantLevel == "" {
 							wantLevel = gql.PostgresAccessLevelRead
 						}
-						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.Branch != "" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != wantLevel || input.Ttl == nil || *input.Ttl != "30m0s" {
+						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != wantLevel || input.Ttl == nil || *input.Ttl != "30m0s" {
 							t.Errorf("incorrect audited access request: %+v", input)
 						}
 						if _, err := w.Write([]byte(`{"errors":[{"message":"test stops after audited request"}]}`)); err != nil {

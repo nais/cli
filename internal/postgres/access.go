@@ -41,7 +41,6 @@ func NewAPI(ctx context.Context) (AccessAPI, error) {
 
 func (a graphqlAccessAPI) Create(ctx context.Context, input gql.CreatePostgresAccessInput) (string, error) {
 	_ = `# @genqlient
- # @genqlient(for: "CreatePostgresAccessInput.branch", omitempty: true, pointer: false)
  mutation CreatePostgresAccess(
   $input: CreatePostgresAccessInput!
  ) {
