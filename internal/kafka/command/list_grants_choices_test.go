@@ -34,7 +34,7 @@ func TestListGrantsDynamicTopicChoices(t *testing.T) {
 		{name: "completion reports API error", completion: true, apiError: true, wantError: "access denied"},
 		{name: "completion validates team before lookup", completion: true, omitTeam: true, wantError: "missing required team"},
 		{name: "completion validates environment before lookup", completion: true, omitEnvironment: true, wantError: "missing required environment"},
-		{name: "no lookup after final argument", completion: true, completeAfterValue: true},
+		{name: "no topic lookup after final argument", completion: true, completeAfterValue: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			var operations []string
@@ -53,6 +53,8 @@ func TestListGrantsDynamicTopicChoices(t *testing.T) {
 				v := request.Variables
 				var response string
 				switch request.OperationName {
+				case "Environments":
+					response = `{"data":{"environments":{"nodes":[{"name":"dev"}]}}}`
 				case "GetTeamKafkaTopics":
 					if v.Team != "my-team" || !slices.Equal(v.Filter.Environments, []string{"dev"}) {
 						t.Errorf("incorrect topic lookup: %+v", v)
@@ -150,10 +152,13 @@ func TestListGrantsDynamicTopicChoices(t *testing.T) {
 				t.Fatal(err)
 			}
 			var wantOperations []string
-			if !tt.omitTeam && !tt.omitEnvironment && !tt.completeAfterValue {
-				wantOperations = append(wantOperations, "GetTeamKafkaTopics")
-				if !tt.completion && tt.wantError == "" {
-					wantOperations = append(wantOperations, "GetKafkaTopicGrants")
+			if !tt.omitTeam && !tt.omitEnvironment {
+				wantOperations = append(wantOperations, "Environments")
+				if !tt.completeAfterValue {
+					wantOperations = append(wantOperations, "GetTeamKafkaTopics")
+					if !tt.completion && tt.wantError == "" {
+						wantOperations = append(wantOperations, "GetKafkaTopicGrants")
+					}
 				}
 			}
 			if !slices.Equal(operations, wantOperations) {

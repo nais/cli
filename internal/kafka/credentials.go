@@ -7,7 +7,7 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
-func CreateCredentials(ctx context.Context, teamSlug, environmentName, ttl string) (*gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials, error) {
+func CreateCredentials(ctx context.Context, teamSlug, environmentName, ttl string) (*gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload, error) {
 	_ = `# @genqlient
 		mutation CreateKafkaCredentials(
 		  $teamSlug: Slug!,
@@ -17,6 +17,7 @@ func CreateCredentials(ctx context.Context, teamSlug, environmentName, ttl strin
 		  createKafkaCredentials(
 		    input: { teamSlug: $teamSlug, environmentName: $environmentName, ttl: $ttl }
 		  ) {
+		    environmentName
 		    credentials {
 		      username
 		      accessCert
@@ -39,5 +40,5 @@ func CreateCredentials(ctx context.Context, teamSlug, environmentName, ttl strin
 		return nil, err
 	}
 
-	return &resp.CreateKafkaCredentials.Credentials, nil
+	return &resp.CreateKafkaCredentials, nil
 }
