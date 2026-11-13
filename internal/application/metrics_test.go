@@ -5,6 +5,7 @@ import (
 	"io"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/nais/naistrix"
 	"go.opentelemetry.io/otel"
@@ -56,23 +57,37 @@ func TestCommandTelemetryCoverage(t *testing.T) {
 				otel.SetMeterProvider(previous)
 				_ = provider.Shutdown(context.Background())
 			})
-			collectCommandHistogram(t.Context(), cmds, runErr)
+			collectCommandMetrics(t.Context(), cmds, runErr, 1500*time.Millisecond)
 			var data metricdata.ResourceMetrics
 			if err := reader.Collect(t.Context(), &data); err != nil {
 				t.Fatal(err)
 			}
-			if len(data.ScopeMetrics) != 1 || len(data.ScopeMetrics[0].Metrics) != 1 {
-				t.Fatalf("expected one usage metric: %+v", data)
+			if len(data.ScopeMetrics) != 1 || len(data.ScopeMetrics[0].Metrics) != 2 {
+				t.Fatalf("expected usage and duration metrics: %+v", data)
 			}
-			histogram := data.ScopeMetrics[0].Metrics[0].Data.(metricdata.Histogram[int64])
-			if len(histogram.DataPoints) != 1 {
-				t.Fatalf("expected one data point, got %d", len(histogram.DataPoints))
+			checkAttributes := func(name string, attrs attribute.Set) {
+				t.Helper()
+				command, _ := attrs.Value(attribute.Key("command"))
+				success, _ := attrs.Value(attribute.Key("success"))
+				if command.AsString() != tc.command || success.AsBool() != tc.success {
+					t.Fatalf("%s: command=%q success=%v; want command=%q success=%v; run error=%v", name, command.AsString(), success.AsBool(), tc.command, tc.success, runErr)
+				}
 			}
-			attrs := histogram.DataPoints[0].Attributes
-			command, _ := attrs.Value(attribute.Key("command"))
-			success, _ := attrs.Value(attribute.Key("success"))
-			if command.AsString() != tc.command || success.AsBool() != tc.success {
-				t.Fatalf("command=%q success=%v; want command=%q success=%v; run error=%v", command.AsString(), success.AsBool(), tc.command, tc.success, runErr)
+			for _, m := range data.ScopeMetrics[0].Metrics {
+				switch h := m.Data.(type) {
+				case metricdata.Histogram[int64]:
+					if m.Name != "nais_cli_command_usage" || len(h.DataPoints) != 1 || h.DataPoints[0].Sum != 1 {
+						t.Fatalf("unexpected usage metric: %+v", m)
+					}
+					checkAttributes(m.Name, h.DataPoints[0].Attributes)
+				case metricdata.Histogram[float64]:
+					if m.Name != "nais_cli_command_duration" || m.Unit != "s" || len(h.DataPoints) != 1 || h.DataPoints[0].Sum != 1.5 {
+						t.Fatalf("unexpected duration metric: %+v", m)
+					}
+					checkAttributes(m.Name, h.DataPoints[0].Attributes)
+				default:
+					t.Fatalf("unexpected metric %s: %T", m.Name, m.Data)
+				}
 			}
 		})
 	}

@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"io"
+	"time"
 
 	"github.com/MakeNowJust/heredoc/v2"
 	activityCommand "github.com/nais/cli/internal/activity/command"
@@ -153,7 +154,10 @@ func Run(ctx context.Context, w io.Writer) error {
 		return err
 	}
 
+	// Includes interactive prompts and login flows, but not telemetry upload.
+	start := time.Now()
 	err = app.Run(naistrix.RunWithContext(ctx))
+	duration := time.Since(start)
 	autoComplete := isCompletionCommand(app.ExecutedCommand())
 
 	if !autoComplete {
@@ -167,7 +171,7 @@ func Run(ctx context.Context, w io.Writer) error {
 	}
 
 	if !autoComplete {
-		collectCommandHistogram(ctx, app.ExecutedCommand(), err)
+		collectCommandMetrics(ctx, app.ExecutedCommand(), err, duration)
 	}
 
 	return err
