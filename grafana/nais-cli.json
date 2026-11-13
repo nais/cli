@@ -1,0 +1,736 @@
+{
+  "apiVersion": "dashboard.grafana.app/v1",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "nais-cli"
+  },
+  "spec": {
+    "title": "Nais CLI",
+    "uid": "nais-cli",
+    "description": "Usage, failures and duration of the Nais CLI, from the CLI's OpenTelemetry metrics in nav-metrics. Each invocation reports once with a value of 1, so queries sum samples instead of using rate/increase. Users with DO_NOT_TRACK=1 and shell completion are not counted. Older CLI versions exported every second, so long-running commands were counted several times.",
+    "tags": [
+      "nais",
+      "cli"
+    ],
+    "editable": false,
+    "graphTooltip": 1,
+    "timezone": "browser",
+    "schemaVersion": 39,
+    "refresh": "5m",
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "command",
+          "label": "Command",
+          "type": "query",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P91A6F0B3584B90E7"
+          },
+          "query": {
+            "query": "label_values(nais_cli_command_usage_count, command)",
+            "refId": "command"
+          },
+          "definition": "label_values(nais_cli_command_usage_count, command)",
+          "includeAll": true,
+          "multi": true,
+          "allValue": ".*",
+          "refresh": 2,
+          "sort": 1,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        },
+        {
+          "name": "version",
+          "label": "Version",
+          "type": "query",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P91A6F0B3584B90E7"
+          },
+          "query": {
+            "query": "label_values(nais_cli_command_usage_count, version)",
+            "refId": "version"
+          },
+          "definition": "label_values(nais_cli_command_usage_count, version)",
+          "includeAll": true,
+          "multi": true,
+          "allValue": ".*",
+          "refresh": 2,
+          "sort": 1,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
+        }
+      ]
+    },
+    "links": [
+      {
+        "title": "Source",
+        "type": "link",
+        "url": "https://github.com/nais/cli/tree/main/grafana",
+        "targetBlank": true,
+        "icon": "doc"
+      }
+    ],
+    "panels": [
+      {
+        "type": "row",
+        "title": "Usage",
+        "id": 1,
+        "collapsed": false,
+        "panels": [],
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 1
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Invocations",
+        "description": "CLI invocations in the selected time range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 2,
+        "gridPos": {
+          "x": 0,
+          "y": 1,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "none",
+          "graphMode": "none"
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Failure rate",
+        "description": "Share of invocations that returned an error, including unknown commands and invalid input.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 3,
+        "gridPos": {
+          "x": 6,
+          "y": 1,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) / sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "decimals": 1
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "none",
+          "graphMode": "none"
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Commands used",
+        "description": "Distinct commands invoked in the selected time range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 4,
+        "gridPos": {
+          "x": 12,
+          "y": 1,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "count(sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "none",
+          "graphMode": "none"
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Versions seen",
+        "description": "Distinct CLI versions reporting in the selected time range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 5,
+        "gridPos": {
+          "x": 18,
+          "y": 1,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "count(sum by (version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "none",
+          "graphMode": "none"
+        }
+      },
+      {
+        "type": "timeseries",
+        "title": "Invocations by outcome",
+        "description": "Invocations per interval, split by success.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 6,
+        "gridPos": {
+          "x": 0,
+          "y": 5,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum by (success) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__interval]))",
+            "refId": "A",
+            "legendFormat": "success={{success}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "stacking": {
+                "mode": "normal"
+              },
+              "fillOpacity": 60,
+              "drawStyle": "bars",
+              "lineWidth": 0
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "calcs": [
+              "sum"
+            ],
+            "sortBy": "Total",
+            "sortDesc": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "interval": "5m"
+      },
+      {
+        "type": "timeseries",
+        "title": "Invocations by version",
+        "description": "Invocations per interval for the ten most used versions in the range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 7,
+        "gridPos": {
+          "x": 12,
+          "y": 5,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum by (version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__interval])) and on (version) topk(10, sum by (version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range] @ end())))",
+            "refId": "A",
+            "legendFormat": "{{version}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "stacking": {
+                "mode": "normal"
+              },
+              "fillOpacity": 60,
+              "drawStyle": "bars",
+              "lineWidth": 0
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "calcs": [
+              "sum"
+            ],
+            "sortBy": "Total",
+            "sortDesc": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "interval": "5m"
+      },
+      {
+        "type": "table",
+        "title": "Commands",
+        "description": "Invocations and failure rate per command in the selected time range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 8,
+        "gridPos": {
+          "x": 0,
+          "y": 13,
+          "w": 24,
+          "h": 10
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false,
+            "format": "table"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) / sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "refId": "B",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false,
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Failure rate"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percentunit"
+                },
+                {
+                  "id": "decimals",
+                  "value": 1
+                },
+                {
+                  "id": "custom.cellOptions",
+                  "value": {
+                    "type": "color-text"
+                  }
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "orange",
+                        "value": 0.1
+                      },
+                      {
+                        "color": "red",
+                        "value": 0.3
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "sortBy": [
+            {
+              "displayName": "Invocations",
+              "desc": true
+            }
+          ],
+          "cellHeight": "sm"
+        },
+        "transformations": [
+          {
+            "id": "merge"
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "command": "Command",
+                "Value #A": "Invocations",
+                "Value #B": "Failure rate"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "row",
+        "title": "Duration",
+        "id": 9,
+        "collapsed": false,
+        "panels": [],
+        "gridPos": {
+          "x": 0,
+          "y": 23,
+          "w": 24,
+          "h": 1
+        }
+      },
+      {
+        "type": "timeseries",
+        "title": "Duration percentiles",
+        "description": "Command duration across all selected commands, including login prompts and interactive input. Reported by CLI versions with the duration metric.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 10,
+        "gridPos": {
+          "x": 0,
+          "y": 24,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "histogram_quantile(0.5, sum by (le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__interval])))",
+            "refId": "A",
+            "legendFormat": "p50"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "histogram_quantile(0.95, sum by (le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__interval])))",
+            "refId": "B",
+            "legendFormat": "p95"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "histogram_quantile(0.99, sum by (le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__interval])))",
+            "refId": "C",
+            "legendFormat": "p99"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          },
+          "overrides": []
+        },
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "interval": "15m"
+      },
+      {
+        "type": "table",
+        "title": "Duration by command",
+        "description": "Median, 95th percentile and mean duration per command in the selected time range.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 11,
+        "gridPos": {
+          "x": 12,
+          "y": 24,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "histogram_quantile(0.5, sum by (command, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "refId": "A",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false,
+            "format": "table"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "histogram_quantile(0.95, sum by (command, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "refId": "B",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false,
+            "format": "table"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "sum by (command) (sum_over_time(nais_cli_command_duration_seconds_sum{command=~\"$command\", version=~\"$version\"}[$__range])) / sum by (command) (sum_over_time(nais_cli_command_duration_seconds_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "refId": "C",
+            "legendFormat": "__auto",
+            "instant": true,
+            "range": false,
+            "format": "table"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          },
+          "overrides": []
+        },
+        "options": {
+          "sortBy": [
+            {
+              "displayName": "p95",
+              "desc": true
+            }
+          ],
+          "cellHeight": "sm"
+        },
+        "transformations": [
+          {
+            "id": "merge"
+          },
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "command": "Command",
+                "Value #A": "p50",
+                "Value #B": "p95",
+                "Value #C": "Mean"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "row",
+        "title": "Errors",
+        "id": 12,
+        "collapsed": false,
+        "panels": [],
+        "gridPos": {
+          "x": 0,
+          "y": 32,
+          "w": 24,
+          "h": 1
+        }
+      },
+      {
+        "type": "timeseries",
+        "title": "Command-specific errors",
+        "description": "Error counters recorded by individual commands, per interval.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "P91A6F0B3584B90E7"
+        },
+        "id": 13,
+        "gridPos": {
+          "x": 0,
+          "y": 33,
+          "w": 24,
+          "h": 7
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "P91A6F0B3584B90E7"
+            },
+            "expr": "label_replace(sum by (__name__) (sum_over_time({__name__=~\"nais_cli_.+_error_total\"}[$__interval])), \"error\", \"$1\", \"__name__\", \"nais_cli_(.+)_error_total\")",
+            "refId": "A",
+            "legendFormat": "{{error}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "stacking": {
+                "mode": "normal"
+              },
+              "fillOpacity": 60,
+              "drawStyle": "bars",
+              "lineWidth": 0
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "calcs": [
+              "sum"
+            ],
+            "sortBy": "Total",
+            "sortDesc": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "desc"
+          }
+        },
+        "interval": "5m"
+      }
+    ]
+  }
+}
