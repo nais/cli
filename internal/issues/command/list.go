@@ -84,7 +84,7 @@ func issueResourceURL(host, team, environment, resourceType, resourceName string
 		return fmt.Sprintf("https://%s/team/%s/%s/job/%s", host, team, environment, resourceName)
 	case "OpenSearch":
 		return fmt.Sprintf("https://%s/team/%s/%s/opensearch/%s", host, team, environment, resourceName)
-	case "SqlInstance":
+	case "SqlInstance", "Postgres":
 		return fmt.Sprintf("https://%s/team/%s/%s/postgres/%s", host, team, environment, resourceName)
 	case "Valkey":
 		return fmt.Sprintf("https://%s/team/%s/%s/valkey/%s", host, team, environment, resourceName)

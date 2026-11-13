@@ -22,7 +22,6 @@ type Connection struct {
 }
 
 type AccessAPI interface {
-	ActiveBranch(context.Context, string, string, string) (string, error)
 	Create(context.Context, gql.CreatePostgresAccessInput) (string, error)
 	// Status never requests credentials, so polling cannot fail on a not-yet-ready access.
 	Status(context.Context, string, string, string) (Access, error)
@@ -40,25 +39,11 @@ func NewAPI(ctx context.Context) (AccessAPI, error) {
 	return graphqlAccessAPI{client}, nil
 }
 
-func (a graphqlAccessAPI) ActiveBranch(ctx context.Context, team, environment, name string) (string, error) {
-	_ = `# @genqlient
- query GetActivePostgresBranch($team: Slug!, $environment: String!, $postgres: String!) {
-  team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) { activeBranch { name } } } }
- }
- `
-	result, err := gql.GetActivePostgresBranch(ctx, a.client, team, environment, name)
-	if err != nil {
-		return "", err
-	}
-	if result.Team.Environment.Postgres.ActiveBranch == nil {
-		return "", fmt.Errorf("postgres %q is not ready for personal access; check its status with 'nais postgres get'", name)
-	}
-	return result.Team.Environment.Postgres.ActiveBranch.Name, nil
-}
-
 func (a graphqlAccessAPI) Create(ctx context.Context, input gql.CreatePostgresAccessInput) (string, error) {
 	_ = `# @genqlient
- mutation CreatePostgresAccess($input: CreatePostgresAccessInput!) {
+ mutation CreatePostgresAccess(
+  $input: CreatePostgresAccessInput!
+ ) {
   createPostgresAccess(input: $input) { name }
  }
  `

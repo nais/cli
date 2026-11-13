@@ -307,12 +307,6 @@ func requestAccess(ctx context.Context, request gql.CreatePostgresAccessInput, r
 		return postgres.Connection{}, err
 	}
 	request.EnvironmentName = environment
-	lookupCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-	request.Branch, err = api.ActiveBranch(lookupCtx, request.TeamSlug, environment, request.Postgres)
-	if err != nil {
-		return postgres.Connection{}, err
-	}
 	connection, err := postgres.CreateAndWait(ctx, api, request)
 	if err == nil && spinner != nil {
 		spinner.Stop()

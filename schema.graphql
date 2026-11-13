@@ -57,38 +57,6 @@ The URL that specifies the behavior of this scalar.
 	url: String!
 ) on SCALAR
 
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-input ActivatePostgresBranchInput {
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-	postgres: String!
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-	branch: String!
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-	environmentName: String!
-"""
-Request a branch for normal workloads. It becomes active once its database is ready.
-"""
-	teamSlug: Slug!
-}
-
-"""
-Result of requesting activation; compare desiredActiveBranch to activeBranch while activation is in progress.
-"""
-type ActivatePostgresBranchPayload {
-"""
-Postgres with desired and observed branch selection.
-"""
-	postgres: Postgres!
-}
-
 enum ActivityLogActivityType {
 """
 An application was deleted.
@@ -382,6 +350,18 @@ Filter for credential creation events.
 Activity log entry for when a vulnerability is updated.
 """
 	VULNERABILITY_UPDATED
+"""
+A webhook subscription was created.
+"""
+	WEBHOOK_CREATED
+"""
+A webhook subscription was updated.
+"""
+	WEBHOOK_UPDATED
+"""
+A webhook subscription was deleted.
+"""
+	WEBHOOK_DELETED
 }
 
 """
@@ -550,6 +530,10 @@ All activity log entries related to Valkeys will use this resource type.
 All activity log entries related to vulnerabilities will use this resource type.
 """
 	VULNERABILITY
+"""
+A webhook subscription.
+"""
+	WEBHOOK
 }
 
 """
@@ -570,11 +554,29 @@ Distribution of entries by environment.
 	environments: [StringFacetItem!]!
 }
 
+"""
+Filtering options for activity log entries.
+"""
 input ActivityLogFilter {
+"""
+Filtering options for activity log entries.
+"""
 	activityTypes: [ActivityLogActivityType!]
+"""
+Filtering options for activity log entries.
+"""
 	resourceTypes: [ActivityLogEntryResourceType!]
+"""
+Filtering options for activity log entries.
+"""
 	environments: [String!]
+"""
+Filtering options for activity log entries.
+"""
 	from: Time
+"""
+Filtering options for activity log entries.
+"""
 	to: Time
 }
 
@@ -1052,7 +1054,7 @@ OpenSearch instance referenced by the workload.
 """
 	openSearch: OpenSearch
 """
-Postgres references configured in uses.postgres, including their resolved branch.
+Postgres references configured in uses.postgres.
 """
 	postgreses(
 """
@@ -2044,7 +2046,7 @@ Risk and threat intelligence signals used to prioritize the CVE.
 """
 	riskAssessment: VulnerabilityRiskAssessment!
 """
-Affected workloads
+Affected workloads within the team selection of the CVE list, when applicable.
 """
 	workloads(
 """
@@ -2064,7 +2066,7 @@ Get items before this cursor.
 """
 		before: Cursor
 """
-Filter workloads. When teamSlugs is set only workloads belonging to those teams are returned.
+Further filter affected workloads.
 """
 		filter: CVEWorkloadsFilter
 """
@@ -2101,11 +2103,15 @@ The CVE.
 }
 
 """
-Filter active CVEs by their calculated risk assessment.
+Filter active CVEs.
 """
 input CVEFilter {
 """
-Filter active CVEs by their calculated risk assessment.
+Filter active CVEs.
+"""
+	teamScope: TeamScopeInput
+"""
+Filter active CVEs.
 """
 	priority: CVEPriority
 }
@@ -2232,11 +2238,19 @@ Whether the finding is suppressed.
 }
 
 """
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+Filter workloads affected by a CVE.
 """
 input CVEWorkloadsFilter {
 """
-Filter for workloads affected by a CVE. When teamSlugs is provided only workloads belonging to those teams are returned.
+Filter workloads affected by a CVE.
+"""
+	teamScope: TeamScopeInput
+"""
+Filter workloads affected by a CVE.
+"""
+	environmentName: String
+"""
+Filter workloads affected by a CVE.
 """
 	teamSlugs: [Slug!]
 }
@@ -2949,10 +2963,6 @@ Input for creating a time-limited personal Postgres access.
 """
 Input for creating a time-limited personal Postgres access.
 """
-	branch: String!
-"""
-Input for creating a time-limited personal Postgres access.
-"""
 	teamSlug: Slug!
 """
 Input for creating a time-limited personal Postgres access.
@@ -2984,46 +2994,6 @@ Name of the newly created PostgresAccess resource.
 Server-controlled expiry for this personal access.
 """
 	expiresAt: Time!
-}
-
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-input CreatePostgresBranchInput {
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	postgres: String!
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	branch: String!
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	sourceBranch: String!
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	targetTime: Time!
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	environmentName: String!
-"""
-Recovery request for a new, inactive branch. A branch cannot be re-created with different recovery settings.
-"""
-	teamSlug: Slug!
-}
-
-"""
-Result of creating a branch; provisioning continues asynchronously.
-"""
-type CreatePostgresBranchPayload {
-"""
-The new branch.
-"""
-	postgresBranch: PostgresBranch!
 }
 
 """
@@ -3211,6 +3181,46 @@ Valkey instance that was created.
 }
 
 """
+Input for creating a new webhook subscription.
+"""
+input CreateWebhookInput {
+"""
+Input for creating a new webhook subscription.
+"""
+	name: String!
+"""
+Input for creating a new webhook subscription.
+"""
+	teamSlug: Slug
+"""
+Input for creating a new webhook subscription.
+"""
+	sourceTeamSlugs: [Slug!]
+"""
+Input for creating a new webhook subscription.
+"""
+	url: String!
+"""
+Input for creating a new webhook subscription.
+"""
+	secret: String!
+"""
+Input for creating a new webhook subscription.
+"""
+	events: WebhookEventSelection!
+}
+
+"""
+Payload returned after creating a webhook.
+"""
+type CreateWebhookPayload {
+"""
+The created webhook subscription.
+"""
+	webhook: WebhookSubscription!
+}
+
+"""
 Get current unit prices.
 """
 type CurrentUnitPrices {
@@ -3313,34 +3323,20 @@ Whether or not the OpenSearch instance was deleted.
 	openSearchDeleted: Boolean
 }
 
-input DeletePostgresBranchInput {
-	postgres: String!
-	branch: String!
-	environmentName: String!
-	teamSlug: Slug!
-}
-
-type DeletePostgresBranchPayload {
 """
-Whether the PostgresBranch was deleted.
-"""
-	postgresBranchDeleted: Boolean
-}
-
-"""
-Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+Select the Postgres to delete. Its resources and stored data are removed asynchronously by the platform.
 """
 input DeletePostgresInput {
 """
-Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+Select the Postgres to delete. Its resources and stored data are removed asynchronously by the platform.
 """
 	name: String!
 """
-Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+Select the Postgres to delete. Its resources and stored data are removed asynchronously by the platform.
 """
 	teamSlug: Slug!
 """
-Select the Postgres to delete. All branches and stored data are removed asynchronously by the platform.
+Select the Postgres to delete. Its resources and stored data are removed asynchronously by the platform.
 """
 	environmentName: String!
 }
@@ -3429,6 +3425,26 @@ type DeleteValkeyPayload {
 Whether or not the job was deleted.
 """
 	valkeyDeleted: Boolean
+}
+
+"""
+Input for deleting a webhook subscription.
+"""
+input DeleteWebhookInput {
+"""
+Input for deleting a webhook subscription.
+"""
+	id: ID!
+}
+
+"""
+Payload returned after deleting a webhook.
+"""
+type DeleteWebhookPayload {
+"""
+The ID of the deleted webhook subscription.
+"""
+	webhookID: ID!
 }
 
 """
@@ -4335,6 +4351,10 @@ input ImageVulnerabilityFilter {
 """
 Input for filtering image vulnerabilities.
 """
+	packageType: String
+"""
+Input for filtering image vulnerabilities.
+"""
 	severity: ImageVulnerabilitySeverity
 """
 Input for filtering image vulnerabilities.
@@ -4765,6 +4785,10 @@ Facets for issues, providing distribution counts across different dimensions.
 """
 type IssueFacets {
 """
+Up to 25 teams with matching issues, ordered by count descending, then team slug.
+"""
+	teams: [IssueTeamFacetItem!]!
+"""
 Distribution of issues by environment.
 """
 	environments: [StringFacetItem!]!
@@ -4782,11 +4806,29 @@ Distribution of issues by issue type.
 	issueTypes: [IssueTypeFacetItem!]!
 }
 
+"""
+Filtering options for issues.
+"""
 input IssueFilter {
+"""
+Filtering options for issues.
+"""
 	resourceName: String
+"""
+Filtering options for issues.
+"""
 	resourceType: ResourceType
+"""
+Filtering options for issues.
+"""
 	environments: [String!]
+"""
+Filtering options for issues.
+"""
 	severity: Severity
+"""
+Filtering options for issues.
+"""
 	issueType: IssueType
 }
 
@@ -4846,7 +4888,25 @@ Number of matching issues.
 	count: Int!
 }
 
+"""
+A single facet item for teams.
+"""
+type IssueTeamFacetItem {
+"""
+The team.
+"""
+	team: Team!
+"""
+Number of matching issues.
+"""
+	count: Int!
+}
+
 enum IssueType {
+"""
+Postgres database failure.
+"""
+	POSTGRES
 	OPENSEARCH
 	VALKEY
 	SQLINSTANCE_STATE
@@ -5098,7 +5158,7 @@ OpenSearch instance referenced by the workload.
 """
 	openSearch: OpenSearch
 """
-Postgres references configured in uses.postgres, including their resolved branch.
+Postgres references configured in uses.postgres.
 """
 	postgreses(
 """
@@ -6462,14 +6522,14 @@ Create temporary credentials for an OpenSearch instance.
 	): CreateOpenSearchCredentialsPayload!
 """
 EXPERIMENTAL: DO NOT USE
-Create time-limited personal access to a Postgres branch.
+Create time-limited personal access to a Postgres database.
 When the access is ready, retrieve its connection materials through PostgresAccess.connection.
 """
 	createPostgresAccess(
 		input: CreatePostgresAccessInput!
 	): CreatePostgresAccessPayload!
 """
-Create a new Postgres. Its first branch, main, is created and activated by the platform.
+Create a new Postgres database.
 """
 	createPostgres(
 		input: CreatePostgresInput!
@@ -6481,25 +6541,7 @@ Update an existing Postgres. The PostgreSQL major version cannot be changed.
 		input: UpdatePostgresInput!
 	): UpdatePostgresPayload!
 """
-Create an inactive PostgresBranch recovered from a source branch archive at a UTC point in time.
-"""
-	createPostgresBranch(
-		input: CreatePostgresBranchInput!
-	): CreatePostgresBranchPayload!
-"""
-Request activation of an available PostgresBranch. The observed active branch may lag behind the request.
-"""
-	activatePostgresBranch(
-		input: ActivatePostgresBranchInput!
-	): ActivatePostgresBranchPayload!
-"""
-Delete a PostgresBranch that is not active on its Postgres.
-"""
-	deletePostgresBranch(
-		input: DeletePostgresBranchInput!
-	): DeletePostgresBranchPayload!
-"""
-Request deletion of an entire Postgres and all its branches/data. Fails while workloads or bindings reference it; cleanup is asynchronous.
+Request deletion of a Postgres database and its data. Fails while workloads or bindings reference it; cleanup is asynchronous.
 """
 	deletePostgres(
 		input: DeletePostgresInput!
@@ -6825,6 +6867,41 @@ This mutation is currently unstable and may change in the future.
 	updateImageVulnerability(
 		input: UpdateImageVulnerabilityInput!
 	): UpdateImageVulnerabilityPayload!
+"""
+Create a new webhook subscription.
+
+The owning team can select source teams without permission from those teams, or subscribe to all teams.
+By default, a team-owned webhook receives only its own team's events.
+If no owner team slug is provided, the webhook is global and receives all events (admin only).
+Creation does not send an HTTP request; use testWebhook to check the endpoint.
+"""
+	createWebhook(
+		input: CreateWebhookInput!
+	): CreateWebhookPayload!
+"""
+Update an existing webhook subscription.
+
+Can be used to change the name, source teams, URL, secret, event types, or enabled status. Ownership and the subscription ID cannot be changed.
+"""
+	updateWebhook(
+		input: UpdateWebhookInput!
+	): UpdateWebhookPayload!
+"""
+Delete a webhook subscription.
+
+All associated delivery records will also be deleted.
+"""
+	deleteWebhook(
+		input: DeleteWebhookInput!
+	): DeleteWebhookPayload!
+"""
+Send a signed synthetic event to an existing webhook and return the recorded result.
+Requires permission to update the webhook. Allowed even when the webhook is disabled.
+Limited to one test per subscription every 30 seconds. Tests are not retried and do not affect automatic disabling.
+"""
+	testWebhook(
+		input: TestWebhookInput!
+	): TestWebhookPayload!
 }
 
 type NetworkPolicy {
@@ -7523,7 +7600,7 @@ interface Persistence {
 }
 
 """
-A Postgres whose active branch can change.
+A managed Postgres database.
 """
 type Postgres implements Node & ActivityLogger{
 """
@@ -7543,6 +7620,51 @@ Name of this Postgres.
 """
 	name: String!
 """
+When this Postgres was created.
+"""
+	createdAt: Time!
+"""
+Observed database state; availability does not guarantee successful client connections.
+"""
+	state: PostgresState!
+"""
+Observed PostgreSQL configuration, when available.
+"""
+	configuration: PostgresConfiguration
+"""
+Earliest point in time covered by available backups, when known.
+"""
+	earliestRestoreTime: Time
+"""
+Issues reported for this database.
+"""
+	issues(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Order issues.
+"""
+		orderBy: IssueOrder
+"""
+Filter issues.
+"""
+		filter: ResourceIssueFilter
+	): IssueConnection!
+"""
 Configured PostgreSQL major version.
 """
 	majorVersion: String!
@@ -7559,15 +7681,7 @@ Requested CPU, memory and disk size, when present on this Postgres.
 """
 	resources: PostgresResources!
 """
-Branch requested for activation; may differ from the active branch while activation is in progress.
-"""
-	desiredActiveBranch: String
-"""
-Currently observed active branch, if selected.
-"""
-	activeBranch: PostgresBranch
-"""
-Workloads referencing this Postgres, including references to inactive branches and workloads following the active branch. Each workload is included once.
+Workloads referencing this Postgres. Each workload is included once.
 """
 	workloads(
 """
@@ -7587,22 +7701,6 @@ Get items before this cursor.
 """
 		before: Cursor
 	): PostgresWorkloadConnection!
-"""
-Branch with this local name in this Postgres.
-"""
-	branch(
-		name: String!
-	): PostgresBranch!
-"""
-Branches belonging to this Postgres.
-"""
-	branches(
-		first: Int
-		after: Cursor
-		last: Int
-		before: Cursor
-		orderBy: PostgresBranchOrder
-	): PostgresBranchConnection!
 """
 User-defined labels on this Postgres.
 """
@@ -7635,7 +7733,7 @@ Filter items.
 }
 
 """
-A time-limited personal access request for a Postgres branch.
+A time-limited personal access request for a Postgres database.
 """
 type PostgresAccess implements Node{
 """
@@ -7655,9 +7753,9 @@ Environment for the access.
 """
 	teamEnvironment: TeamEnvironment!
 """
-PostgresBranch selected by this access.
+Postgres selected by this access.
 """
-	postgresBranch: PostgresBranch!
+	postgres: Postgres!
 """
 Requested access level.
 """
@@ -7734,7 +7832,7 @@ Read and modify existing data.
 """
 Read and modify data and create objects in public, without database ownership.
 """
-	READWRITECREATE @deprecated(reason: "Use ADMIN for database administration. Existing READWRITECREATE access retains its original privileges.")
+	READWRITECREATE @deprecated(reason: "This level will be removed in a future API change. Until then, it remains available with unchanged privileges. ADMIN grants broader database-owner privileges.")
 """
 Administer the application database through membership in its owner role, with the same database privileges as workload admin but without PostgreSQL superuser privileges.
 """
@@ -7768,64 +7866,6 @@ The server-controlled expiry time has passed.
 }
 
 """
-A named PostgresBranch belonging to a Postgres.
-"""
-type PostgresBranch implements Persistence & Node{
-	id: ID!
-"""
-Local name of this branch within its Postgres.
-"""
-	name: String!
-"""
-Time when this branch was created.
-"""
-	createdAt: Time!
-"""
-Earliest time the branch can currently be restored from its archived backups.
-"""
-	earliestRestoreTime: Time
-"""
-Configured PostgreSQL settings for this branch. Null until configuration is available.
-"""
-	configuration: PostgresConfiguration
-	team: Team!
-	teamEnvironment: TeamEnvironment!
-"""
-Postgres owning this PostgresBranch.
-"""
-	postgres: Postgres!
-"""
-Workloads explicitly using this branch, or following it while it is active.
-"""
-	workloads(
-"""
-Get the first n items in the connection. This can be used in combination with the after parameter.
-"""
-		first: Int
-"""
-Get items after this cursor.
-"""
-		after: Cursor
-"""
-Get the last n items in the connection. This can be used in combination with the before parameter.
-"""
-		last: Int
-"""
-Get items before this cursor.
-"""
-		before: Cursor
-	): WorkloadConnection!
-"""
-Current observed state of the branch.
-"""
-	state: PostgresBranchState!
-"""
-User-defined labels on this branch.
-"""
-	labels: [ResourceLabel!]!
-}
-
-"""
 A request to activate a Postgres branch was accepted; the switchover may still be pending.
 """
 type PostgresBranchActivatedActivityLogEntry implements ActivityLogEntry & Node{
@@ -7854,17 +7894,6 @@ Source branch, populated for branch creation.
 Recovery instant, populated for branch creation.
 """
 	targetTime: Time
-}
-
-type PostgresBranchConnection {
-	pageInfo: PageInfo!
-	nodes: [PostgresBranch!]!
-	edges: [PostgresBranchEdge!]!
-"""
-Facets for Postgres branches. Provides distribution counts to help narrow down results.
-Facet counts are computed over the full result set (ignoring pagination) but respect the current filter.
-"""
-	facets: PostgresBranchFacets
 }
 
 """
@@ -7905,95 +7934,8 @@ Name of the Postgres containing the branch.
 	data: PostgresBranchActivityLogEntryData!
 }
 
-type PostgresBranchEdge {
-	cursor: Cursor!
-	node: PostgresBranch!
-}
-
 """
-Facets for Postgres branches, providing distribution counts across different dimensions.
-"""
-type PostgresBranchFacets {
-"""
-Distribution of branches by environment.
-"""
-	environments: [StringFacetItem!]!
-"""
-Distribution of branches by state.
-"""
-	states: [PostgresBranchStateFacetItem!]!
-"""
-Distribution of branches by user-defined labels.
-"""
-	labels: [LabelFacetItem!]!
-}
-
-"""
-Input for filtering Postgres branches.
-"""
-input PostgresBranchFilter {
-"""
-Input for filtering Postgres branches.
-"""
-	name: String
-"""
-Input for filtering Postgres branches.
-"""
-	environments: [String!]
-"""
-Input for filtering Postgres branches.
-"""
-	states: [PostgresBranchState!]
-"""
-Input for filtering Postgres branches.
-"""
-	labels: [LabelFilter!]
-}
-
-input PostgresBranchOrder {
-	field: PostgresBranchOrderField!
-	direction: OrderDirection!
-}
-
-enum PostgresBranchOrderField {
-	NAME
-	ENVIRONMENT
-}
-
-"""
-Provisioning state and observed health of a PostgresBranch.
-"""
-enum PostgresBranchState {
-"""
-The branch is healthy and ready.
-"""
-	AVAILABLE
-"""
-The branch is provisioning or its state has not been observed yet.
-"""
-	PROGRESSING
-"""
-The branch has reported a failure.
-"""
-	DEGRADED
-}
-
-"""
-A single facet item for Postgres branch states.
-"""
-type PostgresBranchStateFacetItem {
-"""
-The Postgres branch state.
-"""
-	state: PostgresBranchState!
-"""
-Number of matching branches.
-"""
-	count: Int!
-}
-
-"""
-Configured PostgreSQL settings for a branch.
+Configured PostgreSQL settings for a database.
 """
 type PostgresConfiguration {
 """
@@ -8160,6 +8102,32 @@ type PostgresGrantAccessActivityLogEntryData {
 }
 
 """
+A failure reported by a Postgres database.
+"""
+type PostgresIssue implements Issue & Node{
+"""
+Unique identifier for this issue.
+"""
+	id: ID!
+"""
+Team environment containing the affected Postgres database.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+Severity of the reported failure.
+"""
+	severity: Severity!
+"""
+Description of the reported failure.
+"""
+	message: String!
+"""
+The Postgres database that reported the failure.
+"""
+	postgres: Postgres!
+}
+
+"""
 An explicitly configured PostgreSQL parameter.
 """
 type PostgresParameter {
@@ -8302,6 +8270,24 @@ Requested disk size.
 }
 
 """
+Observed state of a Postgres database.
+"""
+enum PostgresState {
+"""
+The database reports that it is available.
+"""
+	AVAILABLE
+"""
+The database is being provisioned or reconciled.
+"""
+	PROGRESSING
+"""
+The database reports an error requiring intervention.
+"""
+	DEGRADED
+}
+
+"""
 Activity log entry for a Postgres that was updated.
 """
 type PostgresUpdatedActivityLogEntry implements ActivityLogEntry & Node{
@@ -8394,7 +8380,7 @@ Read and write database access.
 }
 
 """
-A workload referencing a Postgres and the branch it uses.
+A workload referencing a Postgres database.
 """
 type PostgresWorkload {
 """
@@ -8402,13 +8388,13 @@ The application or job referencing this Postgres.
 """
 	workload: Workload!
 """
-The explicitly referenced branch, or the observed active branch when no branch is specified. Defaults to main when no active branch has been observed; a requested activation does not change this selection until observed.
+The database referenced by this workload.
 """
-	branch: PostgresBranch!
+	postgres: Postgres!
 }
 
 """
-A paginated list of workload and branch relationships. Each workload is included once.
+A paginated list of workload and database relationships. Each workload is included once.
 """
 type PostgresWorkloadConnection {
 """
@@ -8416,17 +8402,17 @@ Pagination information, including the total number of workloads before paginatio
 """
 	pageInfo: PageInfo!
 """
-Workload and branch relationships on this page.
+Workload and database relationships on this page.
 """
 	nodes: [PostgresWorkload!]!
 """
-Workload and branch relationships with their pagination cursors.
+Workload and database relationships with their pagination cursors.
 """
 	edges: [PostgresWorkloadEdge!]!
 }
 
 """
-A workload and branch relationship with its pagination cursor.
+A workload and database relationship with its pagination cursor.
 """
 type PostgresWorkloadEdge {
 """
@@ -8434,7 +8420,7 @@ Cursor for this workload in the connection.
 """
 	cursor: Cursor!
 """
-The workload and the branch it uses.
+The workload and the database it uses.
 """
 	node: PostgresWorkload!
 }
@@ -8548,7 +8534,7 @@ Get items before this cursor.
 """
 Filter items.
 """
-		filter: ActivityLogFilter
+		filter: TenantActivityLogFilter
 	): ActivityLogEntryConnection!
 	roles(
 """
@@ -8636,6 +8622,35 @@ The name of the environment to get.
 Feature flags.
 """
 	features: Features!
+"""
+Issues across teams in the tenant, ordered by severity unless otherwise specified.
+"""
+	issues(
+"""
+Get the first n items in the connection. This can be used in combination with the after parameter.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection. This can be used in combination with the before parameter.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Ordering options for items returned from the connection.
+"""
+		orderBy: IssueOrder
+"""
+Filtering options for items returned from the connection.
+"""
+		filter: TenantIssueFilter
+	): IssueConnection!
 """
 Get current prices for resources.
 """
@@ -8827,7 +8842,12 @@ Get vulnerability summary from given date until today.
 """
 Get the vulnerability summary for the tenant.
 """
-	vulnerabilitySummary: TenantVulnerabilitySummary!
+	vulnerabilitySummary(
+"""
+Filter the aggregate.
+"""
+		filter: TenantVulnerabilitySummaryFilter
+	): TenantVulnerabilitySummary!
 """
 List per-workload vulnerability summaries across all teams.
 """
@@ -8898,6 +8918,32 @@ Filter CVEs before pagination. Totals cover the entire filtered selection.
 """
 		filter: CVEFilter
 	): CVEConnection!
+"""
+List all globally registered webhook subscriptions. Only accessible by admins.
+"""
+	globalWebhooks(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WebhookSubscriptionConnection!
+"""
+List all supported webhook event types with human-readable descriptions and grouping.
+Use the 'type' field value when registering event_types on a webhook subscription.
+"""
+	webhookEventTypes: [WebhookEventTypeInfo!]!
 }
 
 """
@@ -9505,6 +9551,10 @@ A user-defined label to set on a resource.
 }
 
 enum ResourceType {
+"""
+Postgres database.
+"""
+	POSTGRES
 	OPENSEARCH
 	VALKEY
 	SQLINSTANCE
@@ -9810,6 +9860,10 @@ Search filter for filtering search results.
 Search filter for filtering search results.
 """
 	types: [SearchType!]
+"""
+Search filter for filtering search results.
+"""
+	teamScope: TeamScopeInput
 """
 Search filter for filtering search results.
 """
@@ -11984,7 +12038,7 @@ Filtering options for items returned from the connection.
 		filter: OpenSearchFilter
 	): OpenSearchConnection!
 """
-Postgres databases owned by the team, including those without branches.
+Postgres databases owned by the team.
 """
 	postgreses(
 """
@@ -12160,6 +12214,9 @@ Get the mean time to fix history for a team.
 		from: Date!
 	): VulnerabilityFixHistory!
 	vulnerabilitySummary(
+"""
+Filter the aggregate by environment, priority, KEV or user labels.
+"""
 		filter: TeamVulnerabilitySummaryFilter
 	): TeamVulnerabilitySummary!
 """
@@ -12167,7 +12224,7 @@ Fetch vulnerability summaries for workloads in the team.
 """
 	vulnerabilitySummaries(
 """
-Filter vulnerability summaries by environment.
+Filter workload vulnerability summaries by environment, priority, KEV or user labels.
 """
 		filter: TeamVulnerabilitySummaryFilter
 """
@@ -12191,6 +12248,27 @@ Ordering options for items returned from the connection.
 """
 		orderBy: VulnerabilitySummaryOrder
 	): WorkloadVulnerabilitySummaryConnection!
+"""
+Webhook subscriptions registered for this team.
+"""
+	webhooks(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WebhookSubscriptionConnection!
 """
 Nais workloads owned by the team.
 """
@@ -12786,11 +12864,11 @@ type TeamExternalResources {
 """
 The Entra ID (f.k.a. Azure AD) group for the team.
 """
-	entraIDGroup: TeamEntraIDGroup
+	entraIDGroup: TeamEntraIDGroup @deprecated(reason: "This field will soon no longer be managed by Nais.")
 """
 The teams GitHub team.
 """
-	gitHubTeam: TeamGitHubTeam
+	gitHubTeam: TeamGitHubTeam @deprecated(reason: "This field will soon no longer be managed by Nais.")
 """
 The Google group for the team.
 """
@@ -12809,6 +12887,10 @@ CDN bucket.
 Input for filtering teams.
 """
 input TeamFilter {
+"""
+Input for filtering teams.
+"""
+	teamScope: TeamScopeInput
 """
 Input for filtering teams.
 """
@@ -12923,13 +13005,6 @@ Total number of OpenSearch instances.
 	total: Int!
 }
 
-type TeamInventoryCountPostgresBranches {
-"""
-Total number of Postgres branches.
-"""
-	total: Int!
-}
-
 """
 Secret inventory count for a team.
 """
@@ -12968,7 +13043,6 @@ Config inventory count for a team.
 	jobs: TeamInventoryCountJobs!
 	kafkaTopics: TeamInventoryCountKafkaTopics!
 	openSearches: TeamInventoryCountOpenSearches!
-	postgresBranches: TeamInventoryCountPostgresBranches!
 """
 Secret inventory count for a team.
 """
@@ -13319,6 +13393,20 @@ input TeamRepositoryFilter {
 	name: String
 }
 
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+input TeamScopeInput {
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+	teamSlugs: [Slug!]
+"""
+Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+"""
+	memberOfViewer: Boolean
+}
+
 type TeamServiceUtilization {
 	sqlInstances: TeamServiceUtilizationSqlInstances!
 }
@@ -13541,7 +13629,7 @@ Timestamp of the last update of the vulnerability summary.
 """
 	lastUpdated: Time
 """
-Trend of vulnerability status for the team.
+Trend of vulnerability status for the whole team. Not affected by the vulnerabilitySummary filter.
 """
 	riskScoreTrend: TeamVulnerabilityRiskScoreTrend!
 }
@@ -13550,6 +13638,10 @@ Trend of vulnerability status for the team.
 Input for filtering team vulnerability summaries.
 """
 input TeamVulnerabilitySummaryFilter {
+"""
+Input for filtering team vulnerability summaries.
+"""
+	labels: [LabelFilter!]
 """
 Input for filtering team vulnerability summaries.
 """
@@ -13584,6 +13676,66 @@ Input for filtering team workloads.
 Input for filtering team workloads.
 """
 	sbomStatus: SBOMStatus
+}
+
+"""
+Filtering options for activity log entries across teams.
+"""
+input TenantActivityLogFilter {
+"""
+Filtering options for activity log entries across teams.
+"""
+	teamScope: TeamScopeInput
+"""
+Filtering options for activity log entries across teams.
+"""
+	activityTypes: [ActivityLogActivityType!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	resourceTypes: [ActivityLogEntryResourceType!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	environments: [String!]
+"""
+Filtering options for activity log entries across teams.
+"""
+	from: Time
+"""
+Filtering options for activity log entries across teams.
+"""
+	to: Time
+}
+
+"""
+Filtering options for issues across teams.
+"""
+input TenantIssueFilter {
+"""
+Filtering options for issues across teams.
+"""
+	teamScope: TeamScopeInput
+"""
+Filtering options for issues across teams.
+"""
+	resourceName: String
+"""
+Filtering options for issues across teams.
+"""
+	resourceType: ResourceType
+"""
+Filtering options for issues across teams.
+"""
+	environments: [String!]
+"""
+Filtering options for issues across teams.
+"""
+	severity: Severity
+"""
+Filtering options for issues across teams.
+"""
+	issueType: IssueType
 }
 
 type TenantVulnerabilitySummary {
@@ -13640,11 +13792,39 @@ input TenantVulnerabilitySummaryFilter {
 """
 Input for filtering vulnerability summaries across all teams.
 """
+	teamScope: TeamScopeInput
+"""
+Input for filtering vulnerability summaries across all teams.
+"""
+	environmentName: String
+"""
+Input for filtering vulnerability summaries across all teams.
+"""
 	priorities: [CVEPriority!]
 """
 Input for filtering vulnerability summaries across all teams.
 """
 	hasKevEntry: Boolean
+}
+
+"""
+Input for sending a webhook test event.
+"""
+input TestWebhookInput {
+"""
+Input for sending a webhook test event.
+"""
+	id: ID!
+}
+
+"""
+The result of a single manual webhook test.
+"""
+type TestWebhookPayload {
+"""
+The recorded attempt, including failures.
+"""
+	delivery: WebhookDelivery!
 }
 
 """
@@ -14416,6 +14596,50 @@ type UpdateValkeyPayload {
 Valkey instance that was updated.
 """
 	valkey: Valkey!
+}
+
+"""
+Input for updating an existing webhook subscription.
+"""
+input UpdateWebhookInput {
+"""
+Input for updating an existing webhook subscription.
+"""
+	id: ID!
+"""
+Input for updating an existing webhook subscription.
+"""
+	name: String
+"""
+Input for updating an existing webhook subscription.
+"""
+	sourceTeamSlugs: [Slug!]
+"""
+Input for updating an existing webhook subscription.
+"""
+	url: String
+"""
+Input for updating an existing webhook subscription.
+"""
+	secret: String
+"""
+Input for updating an existing webhook subscription.
+"""
+	events: WebhookEventSelection
+"""
+Input for updating an existing webhook subscription.
+"""
+	enabled: Boolean
+}
+
+"""
+Payload returned after updating a webhook.
+"""
+type UpdateWebhookPayload {
+"""
+The updated webhook subscription.
+"""
+	webhook: WebhookSubscription!
 }
 
 """
@@ -15660,6 +15884,503 @@ type VulnerableImageIssue implements Issue & Node{
 }
 
 """
+Display information captured at the time of a webhook activity. Later renames or deletion do not change it.
+"""
+type WebhookActivityLogEntryData {
+"""
+The display name of the webhook at the time of the activity.
+"""
+	name: String!
+}
+
+"""
+An activity log entry for creating a webhook subscription.
+"""
+type WebhookCreatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+The ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who created the webhook.
+"""
+	actor: String!
+"""
+GitHub Actions identity claims captured when the action was authenticated by a repository.
+"""
+	gitHubActorClaims: GitHubActorClaims
+"""
+When the entry was created.
+"""
+	createdAt: Time!
+"""
+A summary of the activity.
+"""
+	message: String!
+"""
+The type of resource affected.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+The unique identifier of the webhook subscription.
+"""
+	resourceName: String!
+"""
+The owning team. Null for a global webhook.
+"""
+	teamSlug: Slug
+"""
+The environment associated with the activity, if any.
+"""
+	environmentName: String
+"""
+The webhook name captured when it was created.
+"""
+	data: WebhookActivityLogEntryData!
+}
+
+"""
+An activity log entry for deleting a webhook subscription.
+"""
+type WebhookDeletedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+The ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who deleted the webhook.
+"""
+	actor: String!
+"""
+GitHub Actions identity claims captured when the action was authenticated by a repository.
+"""
+	gitHubActorClaims: GitHubActorClaims
+"""
+When the entry was created.
+"""
+	createdAt: Time!
+"""
+A summary of the activity.
+"""
+	message: String!
+"""
+The type of resource affected.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+The unique identifier of the webhook subscription.
+"""
+	resourceName: String!
+"""
+The owning team. Null for a global webhook.
+"""
+	teamSlug: Slug
+"""
+The environment associated with the activity, if any.
+"""
+	environmentName: String
+"""
+The webhook name captured when it was deleted.
+"""
+	data: WebhookActivityLogEntryData!
+}
+
+"""
+A record of a webhook delivery attempt, including the request sent and the response received.
+"""
+type WebhookDelivery implements Node{
+"""
+Globally unique ID of the delivery.
+"""
+	id: ID!
+"""
+The event type that triggered this delivery.
+"""
+	eventType: String!
+"""
+The CloudEvents JSON payload that was sent.
+"""
+	requestBody: String!
+"""
+Recorded diagnostic request headers. Credentials and unapproved custom headers are omitted.
+"""
+	requestHeaders: [WebhookHeader!]!
+"""
+The HTTP status code returned by the webhook endpoint. Null if the request failed before receiving a response.
+"""
+	responseStatus: Int
+"""
+The response body as UTF-8 text. Null when no response was received or the body is not valid UTF-8.
+"""
+	responseBody: String
+"""
+Recorded response headers. Known authentication and cookie headers are omitted.
+"""
+	responseHeaders: [WebhookHeader!]!
+"""
+Whether the recorded response body was truncated to the 10 KiB limit.
+"""
+	responseBodyTruncated: Boolean!
+"""
+A description of a request or response-read failure, if any.
+"""
+	errorMessage: String
+"""
+Whether this is a user-triggered test event. Tests make one attempt and never change subscription health.
+"""
+	isTest: Boolean!
+"""
+The recorded result and retry information for this attempt, unaffected by later attempts or queue changes.
+"""
+	deliveryState: WebhookDeliveryState!
+"""
+How long the delivery took in milliseconds.
+"""
+	durationMs: Int!
+"""
+Whether the delivery was successful (HTTP 2xx response).
+"""
+	success: Boolean!
+"""
+When the delivery was attempted.
+"""
+	createdAt: Time!
+}
+
+"""
+A paginated list of webhook deliveries.
+"""
+type WebhookDeliveryConnection {
+"""
+Pagination information.
+"""
+	pageInfo: PageInfo!
+"""
+The webhook deliveries in this page.
+"""
+	nodes: [WebhookDelivery!]!
+"""
+The webhook delivery edges in this page.
+"""
+	edges: [WebhookDeliveryEdge!]!
+}
+
+"""
+An edge in a webhook delivery connection.
+"""
+type WebhookDeliveryEdge {
+"""
+The cursor for this edge.
+"""
+	cursor: Cursor!
+"""
+The webhook delivery at this edge.
+"""
+	node: WebhookDelivery!
+}
+
+"""
+The recorded result and retry information for one HTTP delivery attempt.
+"""
+type WebhookDeliveryState {
+"""
+Whether this attempt succeeded or failed, regardless of later retries.
+"""
+	status: WebhookDeliveryStatus!
+"""
+The number of attempts made up to and including this attempt. Manual tests always have one attempt.
+"""
+	attemptCount: Int!
+"""
+The retry time scheduled after this failed attempt, if any. This historical timestamp does not change when the retry runs or the subscription is disabled.
+"""
+	nextRetryAt: Time
+}
+
+"""
+The outcome of an individual HTTP delivery attempt.
+"""
+enum WebhookDeliveryStatus {
+"""
+This attempt succeeded.
+"""
+	COMPLETED
+"""
+This attempt failed, whether or not a retry was scheduled.
+"""
+	FAILED
+}
+
+"""
+Choose exactly one way to select webhook events.
+"""
+input WebhookEventSelection {
+"""
+Choose exactly one way to select webhook events.
+"""
+	allEvents: Boolean
+"""
+Choose exactly one way to select webhook events.
+"""
+	eventTypes: [String!]
+}
+
+"""
+Metadata about a webhook-subscribable event type.
+"""
+type WebhookEventTypeInfo {
+"""
+The identifier to use in webhook subscription eventTypes (e.g. 'TEAM_MEMBER_ADDED').
+"""
+	type: String!
+"""
+The CloudEvents 1.0 type string that will appear in delivered payloads (e.g. 'io.nais.team.member.added').
+"""
+	cloudEventType: String!
+"""
+A human-readable description of the event (e.g. 'Team member added').
+"""
+	description: String!
+"""
+Logical group for UI display (e.g. 'Team', 'Service Account').
+"""
+	group: String!
+"""
+Indicates if this event type is subscribable by team-scoped webhooks.
+"""
+	teamScoped: Boolean!
+}
+
+"""
+A recorded HTTP header and its values.
+"""
+type WebhookHeader {
+"""
+The HTTP header name.
+"""
+	name: String!
+"""
+All recorded values for this header.
+"""
+	values: [String!]!
+}
+
+"""
+A webhook subscription that receives HTTP callbacks when activity log events occur.
+Team-owned webhooks receive events from selected teams or all teams. Global webhooks also receive global events.
+"""
+type WebhookSubscription implements Node & ActivityLogger{
+"""
+Globally unique ID of the webhook subscription.
+"""
+	id: ID!
+"""
+The display name of the webhook subscription. Must be unique within the owning team.
+"""
+	name: String!
+"""
+The team that owns and manages this webhook. Null for admin-only global webhooks.
+"""
+	teamSlug: Slug
+"""
+The teams whose events this webhook receives. Empty means all teams. Team-owned webhooks never receive global events.
+"""
+	sourceTeamSlugs: [Slug!]!
+"""
+The HTTPS URL that will receive webhook HTTP POST requests. Credentials and fragments are not allowed.
+"""
+	url: String!
+"""
+Whether this webhook receives all available event types within its scope.
+"""
+	allEvents: Boolean!
+"""
+The event types this webhook receives. Empty when allEvents is true.
+"""
+	eventTypes: [String!]!
+"""
+Whether the webhook is currently enabled.
+"""
+	enabled: Boolean!
+"""
+Number of consecutive delivery failures. Resets to 0 on a successful delivery.
+"""
+	consecutiveFailures: Int!
+"""
+When the webhook was automatically disabled due to repeated failures. Null if not auto-disabled.
+"""
+	disabledAt: Time
+"""
+When the webhook was created.
+"""
+	createdAt: Time!
+"""
+When the webhook was last updated.
+"""
+	updatedAt: Time!
+"""
+Whether a signing secret is set. The stored secret is never returned.
+"""
+	hasSecret: Boolean!
+"""
+Recent delivery attempts for this webhook.
+"""
+	deliveries(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+	): WebhookDeliveryConnection!
+"""
+Activity log for this webhook subscription, scoped to its unique identifier.
+"""
+	activityLog(
+"""
+Get the first n items in the connection.
+"""
+		first: Int
+"""
+Get items after this cursor.
+"""
+		after: Cursor
+"""
+Get the last n items in the connection.
+"""
+		last: Int
+"""
+Get items before this cursor.
+"""
+		before: Cursor
+"""
+Filter activity log entries for this subscription.
+"""
+		filter: ActivityLogFilter
+	): ActivityLogEntryConnection!
+}
+
+"""
+A paginated list of webhook subscriptions.
+"""
+type WebhookSubscriptionConnection {
+"""
+Pagination information.
+"""
+	pageInfo: PageInfo!
+"""
+The webhook subscriptions in this page.
+"""
+	nodes: [WebhookSubscription!]!
+"""
+The webhook subscription edges in this page.
+"""
+	edges: [WebhookSubscriptionEdge!]!
+}
+
+"""
+An edge in a webhook subscription connection.
+"""
+type WebhookSubscriptionEdge {
+"""
+The cursor for this edge.
+"""
+	cursor: Cursor!
+"""
+The webhook subscription at this edge.
+"""
+	node: WebhookSubscription!
+}
+
+"""
+An activity log entry for updating a webhook subscription.
+"""
+type WebhookUpdatedActivityLogEntry implements ActivityLogEntry & Node{
+"""
+The ID of the entry.
+"""
+	id: ID!
+"""
+The identity of the actor who updated the webhook.
+"""
+	actor: String!
+"""
+GitHub Actions identity claims captured when the action was authenticated by a repository.
+"""
+	gitHubActorClaims: GitHubActorClaims
+"""
+When the entry was created.
+"""
+	createdAt: Time!
+"""
+A summary of the activity.
+"""
+	message: String!
+"""
+The type of resource affected.
+"""
+	resourceType: ActivityLogEntryResourceType!
+"""
+The unique identifier of the webhook subscription.
+"""
+	resourceName: String!
+"""
+The owning team. Null for a global webhook.
+"""
+	teamSlug: Slug
+"""
+The environment associated with the activity, if any.
+"""
+	environmentName: String
+"""
+The fields changed by the update. Signing secrets and endpoint URL values are never included.
+"""
+	data: WebhookUpdatedActivityLogEntryData!
+}
+
+"""
+Details of a webhook subscription update.
+"""
+type WebhookUpdatedActivityLogEntryData {
+"""
+The display name after this update, captured independently of later renames or deletion.
+"""
+	name: String!
+"""
+The fields whose values changed. Empty when the update made no changes.
+"""
+	updatedFields: [WebhookUpdatedActivityLogEntryDataUpdatedField!]!
+}
+
+"""
+A changed webhook subscription field.
+"""
+type WebhookUpdatedActivityLogEntryDataUpdatedField {
+"""
+The name of the field.
+"""
+	field: String!
+"""
+The previous value. Null for signing secrets and endpoint URLs.
+"""
+	oldValue: String
+"""
+The replacement value. Null for signing secrets and endpoint URLs.
+"""
+	newValue: String
+}
+
+"""
 The days of the week.
 """
 enum Weekday {
@@ -16161,10 +16882,6 @@ Database privileges granted to the workload. Defaults to admin.
 """
 	role: PostgresUserRole!
 """
-The branch this workload resolves to: the explicit branch, observed active branch, or main before an active branch is observed.
-"""
-	branch: PostgresBranch!
-"""
 The Postgres resource referenced by this use.
 """
 	postgres: Postgres!
@@ -16197,7 +16914,7 @@ Cursor for this Postgres use in the connection.
 """
 	cursor: Cursor!
 """
-The Postgres use and the branch it resolves to.
+The configured Postgres use.
 """
 	node: WorkloadPostgres!
 }

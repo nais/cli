@@ -266,8 +266,6 @@ func setupProxyOutputAPI(t *testing.T, password string) string {
 		switch request.OperationName {
 		case "GetTeamPostgreses":
 			response = `{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"activeBranch":null}],"pageInfo":{"hasNextPage":false}}}}}`
-		case "GetActivePostgresBranch":
-			response = `{"data":{"team":{"environment":{"postgres":{"activeBranch":{"name":"main"}}}}}}`
 		case "CreatePostgresAccess":
 			response = `{"data":{"createPostgresAccess":{"name":"access"}}}`
 		case "GetPostgresAccessStatus":

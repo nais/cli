@@ -36,7 +36,6 @@ func TestPersonalAccessReason(t *testing.T) {
 				args            []string
 				wantAudit       bool
 				wantMutation    bool
-				noActive        bool
 				wantAccessLevel gql.PostgresAccessLevel
 				proxyOnly       bool
 				omitTeam        bool
@@ -59,7 +58,6 @@ func TestPersonalAccessReason(t *testing.T) {
 				{name: "old dba name is rejected before prompting", args: []string{"--access-level", "dba"}, wantError: "--access-level must be read, write, admin, or maintain"},
 				{name: "maintain still requires a reason", args: []string{"--access-level", "maintain"}, wantError: "specify --reason", wantAudit: true},
 				{name: "explicit reason bypasses prompt and is sent trimmed", args: []string{"--reason", "  Investigating issue  "}, wantError: "test stops after audited request", wantMutation: true},
-				{name: "not ready for access", args: []string{"--reason", "Investigating issue"}, noActive: true, wantError: "not ready for personal access; check its status with 'nais postgres get'"},
 				{name: "write retains readwrite access", args: []string{"--access-level", "write", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwrite},
 				{name: "admin requests database owner privileges", args: []string{"--access-level", "admin", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelAdmin},
 				{name: "maintain requests instance maintenance access", args: []string{"--access-level", "maintain", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelMaintain},
@@ -87,16 +85,6 @@ func TestPersonalAccessReason(t *testing.T) {
 							}
 							return
 						}
-						if request.OperationName == "GetActivePostgresBranch" {
-							response := `{"data":{"team":{"environment":{"postgres":{"activeBranch":{"name":"current"}}}}}}`
-							if tt.noActive {
-								response = `{"data":{"team":{"environment":{"postgres":{"activeBranch":null}}}}}`
-							}
-							if _, err := w.Write([]byte(response)); err != nil {
-								t.Errorf("writing response: %v", err)
-							}
-							return
-						}
 						if request.OperationName != "CreatePostgresAccess" || !tt.wantMutation {
 							t.Errorf("unexpected API operation: %s", request.OperationName)
 						}
@@ -105,7 +93,7 @@ func TestPersonalAccessReason(t *testing.T) {
 						if wantLevel == "" {
 							wantLevel = gql.PostgresAccessLevelRead
 						}
-						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.Branch != "current" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != wantLevel || input.Ttl == nil || *input.Ttl != "30m0s" {
+						if input.Reason != "Investigating issue" || input.Postgres != "orders" || input.TeamSlug != "my-team" || input.EnvironmentName != "dev-gcp" || input.AccessLevel != wantLevel || input.Ttl == nil || *input.Ttl != "30m0s" {
 							t.Errorf("incorrect audited access request: %+v", input)
 						}
 						if _, err := w.Write([]byte(`{"errors":[{"message":"test stops after audited request"}]}`)); err != nil {
@@ -149,9 +137,6 @@ func TestPersonalAccessReason(t *testing.T) {
 					var wantOperations []string
 					if !tt.omitTeam {
 						wantOperations = append(wantOperations, "GetTeamPostgreses")
-					}
-					if tt.wantMutation || tt.noActive {
-						wantOperations = append(wantOperations, "GetActivePostgresBranch")
 					}
 					if tt.wantMutation {
 						wantOperations = append(wantOperations, "CreatePostgresAccess")

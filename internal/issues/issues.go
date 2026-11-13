@@ -89,6 +89,12 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 				__typename
 			  }
 			}
+			... on PostgresIssue {
+			  postgres {
+				name
+				__typename
+			  }
+			}
 			... on SqlInstanceStateIssue {
 			  sqlInstance {
 				name
@@ -177,6 +183,9 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesOpenSearchIssue:
 			i.ResourceName = c.OpenSearch.GetName()
 			i.ResourceType = ptr.Deref(c.OpenSearch.GetTypename(), "")
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesPostgresIssue:
+			i.ResourceName = c.Postgres.GetName()
+			i.ResourceType = ptr.Deref(c.Postgres.GetTypename(), "")
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesSqlInstanceStateIssue:
 			i.ResourceName = c.SqlInstance.GetName()
 			i.ResourceType = ptr.Deref(c.SqlInstance.GetTypename(), "")

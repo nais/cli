@@ -62,22 +62,11 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 				Name: p.Name, Team: parent.Team, Environment: env, Version: p.MajorVersion, HighAvailability: p.HighAvailability,
 				Resources: postgresResourceRequests{CPU: p.Resources.Cpu, Memory: p.Resources.Memory, DiskSize: p.Resources.DiskSize},
 				Labels:    make([]postgresLabel, 0, len(p.Labels)),
-			}
-			status := postgres.BranchStatus{Branches: make([]postgres.Branch, 0, len(p.Branches.Nodes))}
-			if p.ActiveBranch != nil {
-				status.Active = p.ActiveBranch.Name
-			}
-			if p.DesiredActiveBranch != nil {
-				status.DesiredActive = *p.DesiredActiveBranch
+				Status:    postgres.State(p.State).String(),
 			}
 			for _, label := range p.Labels {
 				detail.Labels = append(detail.Labels, postgresLabel{Key: label.Key, Value: label.Value})
 			}
-			for _, branch := range p.Branches.Nodes {
-				b := postgres.Branch{Name: branch.Name, State: branch.State}
-				status.Branches = append(status.Branches, b)
-			}
-			detail.Status = postgresReadiness(status)
 			if f.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 			}

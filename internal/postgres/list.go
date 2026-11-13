@@ -14,6 +14,21 @@ type PostgresInstance struct {
 	Environment      string      `json:"environment"`
 	Version          string      `heading:"Version" json:"version"`
 	HighAvailability bool        `heading:"HA" json:"high_availability"`
+	State            State       `heading:"Status" json:"state"`
+}
+
+type State string
+
+func (s State) String() string {
+	switch s {
+	case State(gql.PostgresStateAvailable):
+		return "Ready"
+	case State(gql.PostgresStateProgressing):
+		return "Not ready yet"
+	case State(gql.PostgresStateDegraded):
+		return "Needs attention"
+	}
+	return "Unknown"
 }
 
 func GetTeamPostgreses(ctx context.Context, team string, environments []string, labelFilters []gql.LabelFilter) ([]PostgresInstance, error) {
@@ -21,7 +36,7 @@ func GetTeamPostgreses(ctx context.Context, team string, environments []string, 
 		query GetTeamPostgreses($team: Slug!, $after: Cursor, $filter: TeamPostgresFilter) {
 			team(slug: $team) {
 				postgreses(first: 100, after: $after, filter: $filter) {
-					nodes { name teamEnvironment { environment { name } } majorVersion highAvailability }
+					nodes { name teamEnvironment { environment { name } } majorVersion highAvailability state }
 					pageInfo { hasNextPage endCursor }
 				}
 			}
@@ -64,6 +79,7 @@ func postgresesFromTeam(data gql.GetTeamPostgresesTeam, team, consoleHost string
 			Name:        output.Link{Name: pg.Name, URL: fmt.Sprintf("https://%s/team/%s/%s/postgres/%s", consoleHost, team, env, pg.Name)},
 			Environment: env, Version: pg.MajorVersion,
 			HighAvailability: pg.HighAvailability,
+			State:            State(pg.State),
 		}
 		ret = append(ret, instance)
 	}

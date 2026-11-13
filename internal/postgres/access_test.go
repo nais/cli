@@ -2,11 +2,15 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/nais/cli/internal/naisapi/gql"
 )
 
@@ -18,12 +22,36 @@ type fakeAccessAPI struct {
 	connectionCalls int
 }
 
-func (f *fakeAccessAPI) ActiveBranch(context.Context, string, string, string) (string, error) {
-	return "main", nil
-}
-
 func (f *fakeAccessAPI) Create(context.Context, gql.CreatePostgresAccessInput) (string, error) {
 	return "access-1", nil
+}
+
+func TestCreateAccessOmitsBranchOnTheWire(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var request struct {
+			OperationName string `json:"operationName"`
+			Variables     struct {
+				Input map[string]json.RawMessage `json:"input"`
+			} `json:"variables"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Error(err)
+		}
+		if request.OperationName != "CreatePostgresAccess" {
+			t.Errorf("unexpected branch lookup: %s", request.OperationName)
+		}
+		if _, present := request.Variables.Input["branch"]; present {
+			t.Error("branchless access still sends the deprecated branch field")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":{"createPostgresAccess":{"name":"access-1"}}}`))
+	}))
+	defer server.Close()
+	api := graphqlAccessAPI{client: graphql.NewClient(server.URL, server.Client())}
+	name, err := api.Create(t.Context(), gql.CreatePostgresAccessInput{Postgres: "orders", TeamSlug: "team", EnvironmentName: "dev", AccessLevel: gql.PostgresAccessLevelRead, Reason: "Investigating issue"})
+	if err != nil || name != "access-1" {
+		t.Fatalf("branchless access = %q, error = %v", name, err)
+	}
 }
 
 func (f *fakeAccessAPI) Status(context.Context, string, string, string) (Access, error) {
