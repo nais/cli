@@ -52,7 +52,7 @@ func upload(ctx context.Context, payload []byte, client *http.Client) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/x-protobuf")
-	resp, err := client.Do(req)
+	resp, err := client.Do(req) // #nosec G704 -- URL is the fixed collectorURL constant; only the body comes from the uploader's environment
 	if err != nil {
 		return err
 	}
