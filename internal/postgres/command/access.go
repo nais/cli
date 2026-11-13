@@ -152,7 +152,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 				return fmt.Errorf("--port must be between 0 and 65535")
 			}
 			request, err := prepareAccessRequest(args.Get("postgres"), &flag.Access{
-				Postgres: f.Postgres, Branch: f.Branch, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
+				Postgres: f.Postgres, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
 			}, warn)
 			if err != nil {
 				return err
@@ -262,9 +262,6 @@ func resolveAccessReason(provided string, report func(string)) (string, error) {
 
 // Prepare the audit reason before installing signal handlers: input.Input cannot observe context cancellation.
 func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql.CreatePostgresAccessInput, error) {
-	if f.Branch != "" && f.Branch != "main" {
-		return gql.CreatePostgresAccessInput{}, fmt.Errorf("branch selection has been removed; omit --branch to access the database")
-	}
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")
 	}

@@ -21,9 +21,6 @@ type postgresDetails struct {
 	HighAvailability bool                     `json:"highAvailability"`
 	Resources        postgresResourceRequests `json:"resources"`
 	Labels           []postgresLabel          `json:"labels"`
-	ActiveBranch     string                   `json:"activeBranch"`
-	RequestedBranch  string                   `json:"requestedBranch,omitempty"`
-	Branches         []postgresDetailsBranch  `json:"branches"`
 }
 
 type postgresResourceRequests struct {
@@ -37,21 +34,15 @@ type postgresLabel struct {
 	Value string `json:"value"`
 }
 
-type postgresDetailsBranch struct {
-	postgres.Branch
-	Active    bool `json:"active"`
-	Requested bool `json:"requested"`
-}
-
 func printPostgresHeading(out *naistrix.OutputWriter, name, environment string) {
 	out.Printf("%s · %s\n", pterm.NewStyle(pterm.Bold).Sprint(name), pterm.FgGray.Sprint(environment))
 }
 
 func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
-	f := &flag.BranchList{Postgres: parent}
+	f := &flag.Get{Postgres: parent}
 	return &naistrix.Command{
 		Name: "get", Title: "Get Postgres details and readiness.",
-		Description: "Show configured settings and a coarse platform-reported database status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. JSON retains deprecated main-branch compatibility fields; these do not represent a separately managed branch.",
+		Description: "Show configured settings and a coarse platform-reported status, not SQL connectivity, workload readiness, or completion of end-to-end resource updates. Omitted resource requests are not configured; defaults are not inferred. Detailed provisioning stages are unavailable.",
 		Args:        []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to inspect", ChoicesFunc: postgresNameChoices(parent)}}, Flags: f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		Examples: []naistrix.CommandExample{
@@ -59,7 +50,7 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Resolve the environment of an existing Postgres and show configuration as JSON.", Command: "my-postgres -t my-team --output json"},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			env, err := branchEnvironment(ctx, parent, args.Get("postgres"))
+			env, err := resolvePostgresEnvironment(ctx, parent.Team, args.Get("postgres"), string(parent.Environment))
 			if err != nil {
 				return err
 			}
@@ -69,11 +60,9 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 			}
 			detail := postgresDetails{
 				Name: p.Name, Team: parent.Team, Environment: env, Version: p.MajorVersion, HighAvailability: p.HighAvailability,
-				Resources:    postgresResourceRequests{CPU: p.Resources.Cpu, Memory: p.Resources.Memory, DiskSize: p.Resources.DiskSize},
-				Labels:       make([]postgresLabel, 0, len(p.Labels)),
-				Status:       postgres.State(p.State).String(),
-				ActiveBranch: "main",
-				Branches:     []postgresDetailsBranch{{Branch: postgres.Branch{Name: "main", State: p.State}, Active: true}},
+				Resources: postgresResourceRequests{CPU: p.Resources.Cpu, Memory: p.Resources.Memory, DiskSize: p.Resources.DiskSize},
+				Labels:    make([]postgresLabel, 0, len(p.Labels)),
+				Status:    postgres.State(p.State).String(),
 			}
 			for _, label := range p.Labels {
 				detail.Labels = append(detail.Labels, postgresLabel{Key: label.Key, Value: label.Value})

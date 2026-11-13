@@ -132,6 +132,27 @@ func TestConnectStreamsAfterHalfClose(t *testing.T) {
 	}
 }
 
+func TestRequestRelayPort(t *testing.T) {
+	for _, endpoint := range []string{
+		"https://relay.example",
+		"https://relay.example:443",
+		"https://relay.example:8443",
+	} {
+		t.Run(endpoint, func(t *testing.T) {
+			req, err := (Tunnel{Endpoint: endpoint, Access: "team/access", Token: proofToken}).request(context.Background(), nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if req.URL.String() != endpoint {
+				t.Errorf("request URL = %q, want %q", req.URL.String(), endpoint)
+			}
+			if want := strings.TrimPrefix(endpoint, "https://"); req.Host != want {
+				t.Errorf("CONNECT authority = %q, want %q", req.Host, want)
+			}
+		})
+	}
+}
+
 func TestRequestRejectsUntrustedEndpoint(t *testing.T) {
 	for _, endpoint := range []string{"http://relay", "https://relay/path", "https://user@relay", "https://relay?target=db"} {
 		if _, err := (Tunnel{Endpoint: endpoint, Access: "team/access", Token: proofToken}).request(context.Background(), nil); err == nil {
@@ -149,7 +170,7 @@ func TestRequestRejectsMalformedTokensWithoutEchoingThem(t *testing.T) {
 		"not-base64url": strings.Repeat("!", 43),
 	} {
 		t.Run(name, func(t *testing.T) {
-			_, err := (Tunnel{Endpoint: "https://relay.example:8443", Access: "team/access", Token: token}).request(context.Background(), nil)
+			_, err := (Tunnel{Endpoint: "https://relay.example", Access: "team/access", Token: token}).request(context.Background(), nil)
 			if err == nil {
 				t.Fatal("expected malformed token to be rejected")
 			}

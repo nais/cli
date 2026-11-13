@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/nais/cli/internal/apply"
 	"github.com/nais/cli/internal/apply/command/flag"
 	"github.com/nais/cli/internal/auth"
@@ -16,10 +17,30 @@ import (
 func Apply(parentFlags *flags.GlobalFlags) *naistrix.Command {
 	flags := &flag.Apply{GlobalFlags: parentFlags, Timeout: 10 * time.Minute}
 	return &naistrix.Command{
-		Name:        "apply",
-		Title:       "Apply resources.",
-		Description: "Apply Nais resource manifests (YAML) to a specific team and environment. Accepts a single file or a directory containing multiple manifests. When a directory is given, mixin files (<base>.<env>.yaml) are auto-loaded and --set/--append/--mixin flags are disabled.",
+		Name:  "apply",
+		Title: "Apply resources.",
+		Description: heredoc.Doc(`
+			Apply Nais resource manifests (YAML) to a specific team and environment.
+			Accepts a single file or a directory containing multiple manifests.
+
+			For a single file, repeat --mixin to merge multiple YAML files in the order
+			provided. Later values win, but lists are concatenated without deduplication:
+			the same environment variable name in two mixins produces two list entries,
+			not an overwrite. Use --set to replace a list or update an existing entry.
+
+			Explicit --mixin flags disable automatic loading of <base>.<env>.yaml.
+			Include the environment mixin explicitly if it should also be applied.
+			The processing order is always base, mixins in the order provided, all --set
+			overrides, then all --append operations, regardless of flag positions.
+
+			When a directory is given, mixin files (<base>.<env>.yaml) are auto-loaded
+			and --set/--append/--mixin flags are disabled.
+		`),
 		Examples: []naistrix.CommandExample{
+			{
+				Description: "Merge multiple mixins in order; later values win and lists are concatenated.",
+				Command:     "app.yaml --environment dev-fss --team nais --mixin app.dev-fss.yaml --mixin app.q2.yaml",
+			},
 			{
 				Description: "Replace the environment variable list.",
 				Command:     "app.yaml --environment dev-gcp --team nais --set 'spec.env=[{name: LOG_LEVEL, value: debug}]'",

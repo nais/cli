@@ -352,7 +352,7 @@ func TestRun_DirectoryWithMixinFlagFails(t *testing.T) {
 				Environment: "dev",
 			},
 		},
-		Mixin: "some-mixin.yaml",
+		Mixin: []string{"some-mixin.yaml"},
 	}
 
 	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))

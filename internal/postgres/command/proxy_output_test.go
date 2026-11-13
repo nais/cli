@@ -158,7 +158,7 @@ func TestProxyOutput(t *testing.T) {
 			if err := app.AddCommand(Postgres(&flags.GlobalFlags{GlobalFlags: global, AdditionalFlags: additional})); err != nil {
 				t.Fatal(err)
 			}
-			args := []string{"--config", config, "postgres", "proxy", "orders", "-t", "my-team", "-e", "dev-gcp", "--branch", "main", "--reason", "Investigating issue"}
+			args := []string{"--config", config, "postgres", "proxy", "orders", "-t", "my-team", "-e", "dev-gcp", "--reason", "Investigating issue"}
 			if tt.format != "" {
 				args = append(args, "--output", tt.format)
 			}
@@ -329,7 +329,7 @@ func TestProxyStdoutEOFBeforeShutdown(t *testing.T) {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
-			args := []string{"--config", config, "postgres", "proxy", "orders", "-t", "my-team", "-e", "dev-gcp", "--branch", "main", "--reason", "Investigating issue", "--output", format, "--print-password", "--exit-on-stdin-eof"}
+			args := []string{"--config", config, "postgres", "proxy", "orders", "-t", "my-team", "-e", "dev-gcp", "--reason", "Investigating issue", "--output", format, "--print-password", "--exit-on-stdin-eof"}
 			var runErr error
 			done := make(chan struct{})
 			go func() {

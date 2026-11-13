@@ -56,7 +56,6 @@ func TestPersonalAccessReason(t *testing.T) {
 				{name: "invalid lifetime fails before prompting", args: []string{"--ttl", "2h"}, wantError: "--ttl must be between 1s and 1h"},
 				{name: "invalid access level fails before prompting", args: []string{"--access-level", "invalid"}, wantError: "--access-level must be read, write, admin, or maintain"},
 				{name: "old dba name is rejected before prompting", args: []string{"--access-level", "dba"}, wantError: "--access-level must be read, write, admin, or maintain"},
-				{name: "non-main branch is rejected before prompting", args: []string{"--branch", "pr-123"}, wantError: "branch selection has been removed"},
 				{name: "maintain still requires a reason", args: []string{"--access-level", "maintain"}, wantError: "specify --reason", wantAudit: true},
 				{name: "explicit reason bypasses prompt and is sent trimmed", args: []string{"--reason", "  Investigating issue  "}, wantError: "test stops after audited request", wantMutation: true},
 				{name: "write retains readwrite access", args: []string{"--access-level", "write", "--reason", "Investigating issue"}, wantError: "test stops after audited request", wantMutation: true, wantAccessLevel: gql.PostgresAccessLevelReadwrite},
@@ -120,7 +119,7 @@ func TestPersonalAccessReason(t *testing.T) {
 					if err := app.AddCommand(Postgres(&flags.GlobalFlags{GlobalFlags: global, AdditionalFlags: additional})); err != nil {
 						t.Fatal(err)
 					}
-					args := []string{"--config", config, "postgres", command, "orders", "-e", "dev-gcp", "--branch", "main"}
+					args := []string{"--config", config, "postgres", command, "orders", "-e", "dev-gcp"}
 					if !tt.omitTeam {
 						args = append(args, "-t", "my-team")
 					}

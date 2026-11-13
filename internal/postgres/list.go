@@ -15,7 +15,6 @@ type PostgresInstance struct {
 	Version          string      `heading:"Version" json:"version"`
 	HighAvailability bool        `heading:"HA" json:"high_availability"`
 	State            State       `heading:"Status" json:"state"`
-	ActiveBranch     string      `heading:"Active branch" json:"active_branch"`
 }
 
 type State string
@@ -81,7 +80,6 @@ func postgresesFromTeam(data gql.GetTeamPostgresesTeam, team, consoleHost string
 			Environment: env, Version: pg.MajorVersion,
 			HighAvailability: pg.HighAvailability,
 			State:            State(pg.State),
-			ActiveBranch:     "main", // Deprecated JSON compatibility alias, not a physical branch lookup.
 		}
 		ret = append(ret, instance)
 	}

@@ -31,11 +31,12 @@ require (
 	github.com/mark3labs/mcp-go v1.3.0
 	github.com/mitchellh/go-ps v1.0.0
 	github.com/nais/device v1.16.1
-	github.com/nais/krakend/pkg/migration v0.0.0-20260828065656-ff6408beb421
+	github.com/nais/krakend/pkg/migration v0.0.0-20261110135021-6f66638a65da
 	github.com/nais/liberator v0.0.0-20260526061822-791cc0e0457c
 	github.com/nais/naistrix v0.49.0
 	github.com/pterm/pterm v0.12.84
 	github.com/quic-go/quic-go v0.59.1
+	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/suessflorian/gqlfetch v0.7.0
 	github.com/vektah/gqlparser/v2 v2.5.33
@@ -178,7 +179,7 @@ require (
 	github.com/muesli/roff v0.1.0 // indirect
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nais/krakend v0.0.0-20251023101753-7caa0215c6b9 // indirect
+	github.com/nais/krakend v0.0.0-20261110134850-73b06ba3c647 // indirect
 	github.com/nais/pgrator v0.0.0-20260113113020-3944d387b42d // indirect
 	github.com/openai/openai-go/v3 v3.82.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -207,7 +208,6 @@ require (
 	github.com/skeema/knownhosts v1.3.2 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
-	github.com/spf13/cobra v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/spf13/viper v1.21.0 // indirect
 	github.com/standard-webhooks/standard-webhooks/libraries v0.0.1 // indirect

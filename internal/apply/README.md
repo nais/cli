@@ -19,8 +19,27 @@ nais alpha apply <config-file> --environment <env> --team <team>
 - `--allow-ignored-fields` — warn instead of failing when a manifest contains fields that `nais apply` ignores (e.g. `metadata.namespace`, `metadata.annotations`)
 - `--wait` — wait for applied resources to become ready before returning. Currently supported for `Application` resources; other kinds (Valkey, OpenSearch) are skipped
 - `--timeout` — maximum time to wait for resources to become ready when `--wait` is set (default `10m`). Examples: `30s`, `5m`, `10m`
+- `--mixin` — deep-merge a YAML file over the base manifest. Repeat for multiple files, applied in order; later values win and lists are concatenated. If omitted, an adjacent `<base>.<env>.yaml` is auto-loaded when present. Not supported when applying a directory
 - `--set` — replace a field with a YAML value using `KEY=VALUE`. Repeat for multiple overrides; commas within an argument are preserved
 - `--append` — append one YAML value to a list using `KEY=VALUE`. Creates missing lists; repeat for multiple elements
+
+## Mixins
+
+For a single manifest, repeat `--mixin` to merge files in the order provided:
+
+```shell
+nais apply app.yaml --environment dev --team myteam \
+  --mixin app.dev.yaml --mixin app.integration-test.yaml
+```
+
+Later values win, but lists are concatenated without deduplication. The same
+environment variable name in two mixins produces two list entries, not an
+overwrite. Use `--set` to replace a list or update an existing entry.
+
+Explicit `--mixin` flags disable automatic loading of `<base>.<env>.yaml`.
+Include the environment mixin explicitly if it should also be applied, as above.
+The processing order is always base, mixins in the order provided, all `--set`
+overrides, then all `--append` operations, regardless of flag positions.
 
 ## Field overrides
 
@@ -58,7 +77,7 @@ existing non-list targets (including `null`) are errors. Indexed paths are also
 supported, e.g. `--append 'spec.groups[0].members=alice'`; indexed elements must
 already exist.
 
-The order is always base, mixin, all `--set` overrides, then all `--append`
+The order is always base, mixins in the order provided, all `--set` overrides, then all `--append`
 operations, regardless of their positions on the command line. Repeated
 `--append` flags are processed in the order provided, without deduplication.
 

@@ -15,7 +15,6 @@ import (
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
-	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/naistrix"
 )
 
@@ -44,7 +43,7 @@ func TestPostgresGetCommand(t *testing.T) {
 		{name: "observed activation omits requested branch", environment: "dev-gcp", format: "json", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "observed activation text", environment: "dev-gcp", metadata: activated, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "inactive degraded branch does not degrade active summary", environment: "dev-gcp", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
-		{name: "JSON has only a main compatibility view", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
+		{name: "inactive degraded branch is hidden in JSON", environment: "dev-gcp", format: "json", metadata: readyWithFailedInactive, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "direct healthy state overrides stale activation metadata", environment: "dev-gcp", metadata: pendingHealthy, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
 		{name: "pending degraded branch JSON", environment: "dev-gcp", format: "json", metadata: pendingDegraded, wantStatus: "Needs attention", wantOperations: []string{"GetPostgres"}},
 		{name: "stale branch degradation cannot override direct healthy state", environment: "dev-gcp", metadata: activeDegraded, wantStatus: "Ready", wantOperations: []string{"GetPostgres"}},
@@ -188,7 +187,7 @@ func TestPostgresGetCommand(t *testing.T) {
 					Labels              []postgresLabel
 					ActiveBranch        *struct{ Name string }
 					DesiredActiveBranch *string
-					Branches            struct{ Nodes []postgres.Branch }
+					Branches            struct{ Nodes []struct{ Name string } }
 				}
 				if !tt.complete {
 					if err := json.Unmarshal([]byte(tt.metadata), &expected); err != nil {
@@ -208,27 +207,22 @@ func TestPostgresGetCommand(t *testing.T) {
 					if detail.Name != expected.Name || detail.Team != "my-team" || detail.Environment != "dev-gcp" || detail.Version != expected.MajorVersion || detail.Status != tt.wantStatus || detail.HighAvailability != expected.HighAvailability || !reflect.DeepEqual(detail.Resources, expected.Resources) || !slices.Equal(detail.Labels, expected.Labels) {
 						t.Errorf("incorrect metadata/status: %+v", detail)
 					}
-					requested := ""
-					if detail.ActiveBranch != "main" || detail.RequestedBranch != "" || len(detail.Branches) != 1 {
-						t.Fatalf("incorrect main compatibility view: %+v", detail)
-					}
-					if branch := detail.Branches[0]; branch.Name != "main" || branch.State != expected.State || !branch.Active || branch.Requested {
-						t.Errorf("incorrect main compatibility state: %+v", branch)
-					}
 					var fields map[string]json.RawMessage
 					if err := json.Unmarshal(output.Bytes(), &fields); err != nil {
 						t.Fatal(err)
 					}
-					for _, key := range []string{"name", "team", "environment", "version", "status", "highAvailability", "resources", "labels", "activeBranch", "branches"} {
+					for _, key := range []string{"name", "team", "environment", "version", "status", "highAvailability", "resources", "labels"} {
 						if _, ok := fields[key]; !ok {
 							t.Errorf("missing JSON field %q: %s", key, output.String())
 						}
 					}
-					if string(fields["labels"]) == "null" || string(fields["branches"]) == "null" {
+					if string(fields["labels"]) == "null" {
 						t.Errorf("JSON collections must remain arrays: %s", output.String())
 					}
-					if requested == "" && fields["requestedBranch"] != nil {
-						t.Errorf("unexpected requested activation: %s", output.String())
+					for _, key := range []string{"activeBranch", "requestedBranch", "branches"} {
+						if _, ok := fields[key]; ok {
+							t.Errorf("branch field %q is exposed in JSON: %s", key, output.String())
+						}
 					}
 				default:
 					for _, field := range []string{"orders · dev-gcp", "Status:", "Version:", "18", "High availability:", "CPU:", "Memory:", "Disk:"} {

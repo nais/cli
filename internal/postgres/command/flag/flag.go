@@ -13,7 +13,6 @@ type (
 	Postgres struct{ *flags.GlobalFlags }
 	Access   struct {
 		*Postgres
-		Branch      string        `name:"branch" usage:"Deprecated: omit this flag. Only the legacy value main is accepted."`
 		AccessLevel AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (application database owner privileges), or maintain (instance monitoring and maintenance)."`
 		Reason      string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL         time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
@@ -21,7 +20,6 @@ type (
 	}
 	Proxy struct {
 		*Postgres
-		Branch         string        `name:"branch" usage:"Deprecated: omit this flag. Only the legacy value main is accepted."`
 		AccessLevel    AccessLevel   `name:"access-level" usage:"Access level: read, write, admin (application database owner privileges), or maintain (instance monitoring and maintenance)."`
 		Reason         string        `name:"reason" usage:"Reason for personal access (at least 10 characters); prompted if omitted interactively."`
 		TTL            time.Duration `name:"ttl" usage:"Requested lifetime (default 30m, maximum 1h)."`
@@ -52,7 +50,7 @@ type (
 		Memory           string           `name:"memory" usage:"Requested memory, e.g. 512Mi."`
 		DiskSize         string           `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
 	}
-	BranchList struct {
+	Get struct {
 		*Postgres
 		Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 	}
