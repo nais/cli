@@ -34,7 +34,7 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 	return &naistrix.Command{
 		Name:              "psql",
 		Title:             "Connect to Nais Postgres via psql.",
-		Description:       "Request personal access, open a local relay tunnel and start psql with end-to-end TLS verification. If --reason is omitted, prompt for an audit reason interactively.",
+		Description:       "Connect to a Nais Postgres database using time-limited personal access and verified TLS through a local relay tunnel. If --reason is omitted, prompt for an audit reason interactively.",
 		Args:              []naistrix.Argument{{Name: "postgres", Prompt: "Name of the Postgres instance to connect to", ChoicesFunc: postgresNameChoices(parent)}},
 		Flags:             f,
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
