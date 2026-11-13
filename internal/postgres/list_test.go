@@ -14,7 +14,7 @@ import (
 
 func TestPostgresesFromTeam(t *testing.T) {
 	const teamData = `{"postgreses":{"nodes":[
-		{"name":"orders","teamEnvironment":{"environment":{"name":"dev"}},"majorVersion":"17","highAvailability":true,"activeBranch":{"name":"main"}},
+		{"name":"orders","teamEnvironment":{"environment":{"name":"dev"}},"majorVersion":"17","highAvailability":true,"state":"AVAILABLE"},
 		{"name":"reports","teamEnvironment":{"environment":{"name":"prod"}},"majorVersion":"16","highAvailability":false}
 	]}}`
 	var data gql.GetTeamPostgresesTeam
@@ -24,13 +24,30 @@ func TestPostgresesFromTeam(t *testing.T) {
 	for _, host := range []string{"console.nav.cloud.nais.io", "console.dev-nais.cloud.nais.io"} {
 		t.Run(host, func(t *testing.T) {
 			want := []PostgresInstance{
-				{Name: output.Link{Name: "orders", URL: "https://" + host + "/team/my-team/dev/postgres/orders"}, Environment: "dev", Version: "17", HighAvailability: true},
+				{Name: output.Link{Name: "orders", URL: "https://" + host + "/team/my-team/dev/postgres/orders"}, Environment: "dev", Version: "17", HighAvailability: true, State: State(gql.PostgresStateAvailable)},
 				{Name: output.Link{Name: "reports", URL: "https://" + host + "/team/my-team/prod/postgres/reports"}, Environment: "prod", Version: "16"},
 			}
 			if got := postgresesFromTeam(data, "my-team", host); !reflect.DeepEqual(got, want) {
 				t.Errorf("postgresesFromTeam() = %#v, want %#v", got, want)
 			}
 		})
+	}
+}
+
+func TestPostgresStateDisplay(t *testing.T) {
+	for _, tc := range []struct {
+		state State
+		want  string
+	}{
+		{State(gql.PostgresStateAvailable), "Ready"},
+		{State(gql.PostgresStateProgressing), "Not ready yet"},
+		{State(gql.PostgresStateDegraded), "Needs attention"},
+		{"", "Unknown"},
+		{"FUTURE_STATE", "Unknown"},
+	} {
+		if got := tc.state.String(); got != tc.want {
+			t.Errorf("state %q = %q, want %q", tc.state, got, tc.want)
+		}
 	}
 }
 

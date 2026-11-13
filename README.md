@@ -52,6 +52,10 @@ optimize the user experience.
 We respect your privacy and do not collect telemetry if you set the environment variable `DO_NOT_TRACK=1`,
 following the [Do Not Track](https://consoledonottrack.com) convention.
 
+Uploads run in a detached process so commands do not wait for the network. Delivery is best effort, with a two-second
+upload timeout and no retries or persistent queue. Trace verbosity (`-vvv`, for example `nais --version -vvv`) waits for
+the upload and reports failures. Shell completion is excluded; unknown command names are recorded as `unknown`, not the supplied text.
+
 There's a [grafana dashboard](https://monitoring.nais.io/d/ce2c9sehbbbwgd/nais-cli?orgId=1&from=now-24h&to=now).
 
 ## Contributing

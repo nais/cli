@@ -11,6 +11,32 @@ import (
 	"time"
 )
 
+func TestMainHandlesUploaderBeforeCLI(t *testing.T) {
+	if os.Getenv("NAIS_TEST_MAIN_UPLOADER") == "1" {
+		os.Args = []string{"nais", "__upload-metrics"}
+		main()
+		return
+	}
+
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, executable, "-test.run=^TestMainHandlesUploaderBeforeCLI$")
+	// Invalid input must exit silently, without entering Cobra or spawning
+	// another uploader. No network request is made.
+	cmd.Env = append(os.Environ(), "NAIS_TEST_MAIN_UPLOADER=1", "DO_NOT_TRACK=0", "_NAIS_METRICS_PAYLOAD=!")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("uploader entry point failed: %v; output: %s", err, out)
+	}
+	if strings.Contains(string(out), "unknown command") {
+		t.Fatalf("uploader entered normal CLI dispatch: %s", out)
+	}
+}
+
 func TestMainWritesErrorsToStderr(t *testing.T) {
 	if os.Getenv("NAIS_TEST_MAIN_ERROR") == "1" {
 		os.Args = []string{"nais", "unknown-command-for-test"}

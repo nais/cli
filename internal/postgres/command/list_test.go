@@ -26,7 +26,7 @@ func TestPostgresListHidesBranches(t *testing.T) {
 					t.Errorf("unexpected list query: %+v", request)
 				}
 				w.Header().Set("Content-Type", "application/json")
-				if _, err := w.Write([]byte(`{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"majorVersion":"18","highAvailability":true,"activeBranch":{"name":"hidden-branch"}}],"pageInfo":{"hasNextPage":false}}}}}`)); err != nil {
+				if _, err := w.Write([]byte(`{"data":{"team":{"postgreses":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev-gcp"}},"majorVersion":"18","highAvailability":true,"state":"AVAILABLE","activeBranch":{"name":"hidden-branch"}}],"pageInfo":{"hasNextPage":false}}}}}`)); err != nil {
 					t.Error(err)
 				}
 			}))
@@ -65,8 +65,11 @@ func TestPostgresListHidesBranches(t *testing.T) {
 				if err := json.Unmarshal(output.Bytes(), &instances); err != nil {
 					t.Fatal(err)
 				}
-				if len(instances) != 1 || len(instances[0]) != 4 {
+				if len(instances) != 1 || len(instances[0]) != 5 {
 					t.Errorf("unexpected instance fields: %s", output.String())
+				}
+				if len(instances) == 1 && string(instances[0]["state"]) != `"AVAILABLE"` {
+					t.Errorf("missing direct database state: %s", output.String())
 				}
 			}
 		})
