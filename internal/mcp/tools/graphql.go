@@ -177,7 +177,7 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 	// get_nais_context tool - provides essential context for working with Nais
 	getNaisContextTool := mcp.NewTool(
 		"get_nais_context",
-		mcp.WithDescription("Get the current Nais context including authenticated user, their teams, and console URL. Call this first to understand what the user has access to and to get the correct console URL for links."),
+		mcp.WithDescription("Get the authenticated user, accessible teams and console URL patterns. Use when discovering teams or generating console links; not required before task-specific tools when the target is already known."),
 		mcp.WithInputSchema[GetNaisContextInput](),
 		mcp.WithOutputSchema[GetNaisContextOutput](),
 	)

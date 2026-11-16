@@ -115,6 +115,11 @@ report means all pages were retrieved, not that scanning is current or the image
 is vulnerability-free. Missing SBOMs, unavailable summaries and stale summaries
 produce explicit warnings.
 
+After source changes, run project tests and relevant security analysis (for Go,
+consider `govulncheck`). Check advisory preconditions and reachable vulnerable
+code before claiming irrelevance. No known fix, MONITOR priority, passing tests
+or no detected call path alone justifies suppression.
+
 For post-deploy verification, call `get_workload_vulnerability_status`:
 
 ```json
@@ -179,13 +184,12 @@ Add this to your `AGENTS.md` or system prompt to help the LLM use the Nais MCP e
 You have access to the Nais MCP server for interacting with the Nais platform.
 
 **Initial Setup:**
-1. Always start with `get_nais_context` to understand the user, their teams, and available console URLs
-2. For vulnerability remediation or triage, call `get_workload_vulnerability_report` with the team/name from the Nais manifest; no schema exploration is needed
+1. Prefer a matching task-specific tool. Infer team/name from the repository's Nais manifests; do not assume the repository name or that an "app" is an Application.
+2. For vulnerability remediation or triage, start with `get_workload_vulnerability_report`; no context or schema lookup is needed when the target is known
    - Start with the compact overview; request `include_details: true` only as needed
    - After deploy, use `get_workload_vulnerability_status` with the intended new digest
-3. Otherwise use schema exploration tools (`schema_list_queries`, `schema_get_type`) to discover available data
-4. Construct GraphQL queries based on the schema
-5. Execute queries with `execute_graphql`
+3. Use `get_nais_context` when discovering accessible teams or generating console links. Ask if the target remains ambiguous.
+4. For tasks without a matching tool, explore the schema (`schema_list_queries`, `schema_get_type`), construct a query and call `execute_graphql`
 
 **Query Guidelines:**
 - Use pagination with reasonable page sizes (20-50 items, max 100)
@@ -195,6 +199,16 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 
 All operations are read-only and use the user's authenticated identity.
 ```
+
+## Adding Task-Specific Tools
+
+- Add a tool for a recurring user task, not for each API field. Keep schema exploration and `execute_graphql` as the fallback.
+- Follow `registerVulnerabilityTools`: explicit registration, typed input/output and a thin handler for validation, rate limiting and client creation.
+- Keep API retrieval and aggregation in ordinary functions accepting `graphql.Client`. Reuse the existing generated client and fragments for shared selections. Do not introduce a registry, workflow engine or generic pagination framework in anticipation of future tools.
+- Keep tool descriptions focused on when to call the tool, its result and safety limits. Put longer examples and workflows here, not in every tool's prompt.
+- Default to compact, actionable results with details on request. Fail incomplete retrieval; distinguish unavailable data from an empty result.
+- Test behavior with small fakes: target selection, pagination, aggregation and failure semantics. Avoid tests that restate schemas or the MCP library's behavior.
+- Keep reads separate from changes. New tools must not silently add deployment, mutation or suppression behavior.
 
 ## Command Reference
 
