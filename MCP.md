@@ -80,7 +80,8 @@ Local server configuration:
 - `validate_graphql` - Validate a GraphQL query without executing it
 
 ### Vulnerability Remediation
-- `get_workload_vulnerability_report` - Start here when asked to fix or investigate vulnerabilities in an application or job. Resolves exact workload names, retrieves every page of Nais findings, and groups shared images across environments.
+- `get_workload_vulnerability_report` - Start here when asked to fix or investigate vulnerabilities. Returns a compact package-grouped overview for an application or job.
+- `get_workload_vulnerability_status` - After deploy, check the intended new digest and scan readiness without fetching individual findings.
 
 ```json
 {
@@ -93,12 +94,19 @@ Optionally set `kind` to `application` or `job`, or filter with
 `"environments": ["prod-gcp"]`. If both workload kinds match, the tool requires
 an explicit `kind` rather than choosing a target.
 
-The structured report contains image digests, SBOM status, summary freshness,
-latest deployment metadata, package PURLs with installed versions, severity,
-operational risk signals, fix/latest versions, advisory links and existing
-suppressions. Shared images are grouped by image name and digest, falling back
-to name and tag with a warning when the digest is unavailable. Finding fetches
-fail if the selected workload changes image during pagination.
+The report retrieves every finding page, but by default returns only an overview
+per installed package PURL: finding counts by severity and operational priority,
+distinct reported fix/latest versions, counts without known fixes and counts with
+suppressions. Finding counts are not unique CVE counts. Reported fix versions may
+span release branches; the tool does not pick an upgrade by string ordering.
+
+Set `"include_details": true` when individual advisories, risk signals or suppression
+reasons are needed. This adds full findings alongside the same package overview.
+
+Image digests, SBOM status, summary freshness and latest deployment metadata are
+included in either mode. Shared images are grouped by image name and digest,
+falling back to name and tag with a warning when the digest is unavailable.
+Finding fetches fail if the selected workload changes image during pagination.
 
 Compare deployed versions with the current source and build configuration before
 upgrading: source may already be fixed and only need a rebuild/deploy. Latest
@@ -107,9 +115,50 @@ report means all pages were retrieved, not that scanning is current or the image
 is vulnerability-free. Missing SBOMs, unavailable summaries and stale summaries
 produce explicit warnings.
 
-This tool only reads data. It does not change source, build, deploy or suppress
-findings. Require evidence and explicit approval for suppression, and do not claim
-deployed remediation until the intended new image has current scan results.
+For post-deploy verification, call `get_workload_vulnerability_status`:
+
+```json
+{
+  "team": "nais",
+  "name": "oracleverk",
+  "environments": ["dev-gcp", "prod-gcp"],
+  "expected_digest": "sha256:<digest-from-the-new-build>"
+}
+```
+
+Use the digest of the intended **new** image from the build/deploy output, not the
+pre-fix report. The tool returns `digest_unavailable`, `not_deployed`, `scan_pending`,
+`scan_unavailable` or `scan_ready` per group. It verifies all explicitly requested
+environments exist, and checks each workload's scan metadata even when images are
+shared. Use separate calls when environments should have different digests.
+
+`verified: true` means every selected workload uses the expected digest, its SBOM
+is READY and its summary has an update timestamp and no older-image fallback.
+It does **not** mean zero vulnerabilities, no suppressions or verified source
+provenance. Inspect the returned summary counts separately. The API's summary
+update timestamp is not an authoritative scan timestamp. This call does not wait
+or poll; repeat it with a reasonable delay if the rollout or scan is pending.
+
+Both tools only read Nais data. They do not change source, build, deploy or suppress
+findings. Require evidence and explicit approval for suppression.
+
+#### Current API gaps
+
+The API does not expose advisory aliases/withdrawal or a verified image-to-source
+build relationship. The MCP does not guess these values or fetch external
+advisories automatically. In particular, an unknown fix version is not evidence
+that a finding is unfixable or should be suppressed. Latest deployment metadata
+remains context, not image build provenance.
+
+#### Fresh-session acceptance check
+
+With the local MCP binary configured and an application repository open, start a
+fresh agent session and ask only: "Fix vulnerabilities in this app."
+Check that it calls the report tool, resolves application vs job and environments,
+compares deployed packages with the checkout before editing, and requests detail
+only as needed. After an approved deploy, it should check the intended new digest
+using the status tool and distinguish missing/stale scan data from zero findings.
+Unit tests and direct tool calls do not establish this agent-routing behavior.
 
 ### Schema Exploration
 - `schema_list_types` - List all types in the API schema
@@ -132,6 +181,8 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 **Initial Setup:**
 1. Always start with `get_nais_context` to understand the user, their teams, and available console URLs
 2. For vulnerability remediation or triage, call `get_workload_vulnerability_report` with the team/name from the Nais manifest; no schema exploration is needed
+   - Start with the compact overview; request `include_details: true` only as needed
+   - After deploy, use `get_workload_vulnerability_status` with the intended new digest
 3. Otherwise use schema exploration tools (`schema_list_queries`, `schema_get_type`) to discover available data
 4. Construct GraphQL queries based on the schema
 5. Execute queries with `execute_graphql`

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"reflect"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
@@ -117,24 +118,35 @@ func TestWorkloadVulnerabilityReport(t *testing.T) {
 				nodes := []any{}
 				for i := start; i < end; i++ {
 					priority, severity, pkg := "MONITOR", "LOW", "pkg:golang/stdlib@v1.26.8"
+					var fixVersion *string
+					var suppression any
 					if i == 0 {
 						severity = "CRITICAL"
+						fixVersion = new("v1.26.9")
+					} else if i == 1 {
+						fixVersion = new("v1.26.11")
 					}
 					if i == 2 {
 						priority, severity, pkg = "HIGH", "HIGH", "pkg:golang/golang.org/x/net@v0.59.0"
+					}
+					if i != 0 {
+						suppression = map[string]any{"state": "NOT_AFFECTED", "reason": "Existing documented assessment"}
 					}
 					nodes = append(nodes, map[string]any{
 						"id": "finding-" + strconv.Itoa(i), "identifier": "CVE-shared", "package": pkg, "severity": severity, "description": "Advisory text",
 						"vulnerabilityDetailsLink": "https://example.com/advisory",
 						"riskAssessment":           map[string]any{"priority": priority, "epssScore": 0.02, "epssPercentile": 75.0},
-						"remediation":              map[string]any{"fixVersion": nil, "latestVersion": nil},
-						"suppression":              map[string]any{"state": "NOT_AFFECTED", "reason": "Existing documented assessment"},
+						"remediation":              map[string]any{"fixVersion": fixVersion, "latestVersion": nil},
+						"suppression":              suppression,
 					})
 				}
 				return reportTestFindingPage(kind, "registry/oracleverk", "dev-tag", &digest, nodes, end < 3, new(strconv.Itoa(end))), nil
 			})
 
-			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{Team: "nais", Name: "oracleverk"})
+			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{
+				VulnerabilityWorkloadTarget: VulnerabilityWorkloadTarget{Team: "nais", Name: "oracleverk"},
+				IncludeDetails:              kind == "job",
+			})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -142,7 +154,7 @@ func TestWorkloadVulnerabilityReport(t *testing.T) {
 				t.Fatalf("incomplete or duplicated report: %+v; requests: discovery=%d findings=%d", report, discoveryPages, findingPages)
 			}
 			image := report.Images[0]
-			if len(image.Workloads) != 2 || len(image.Findings) != 3 || len(image.Warnings) != 0 {
+			if len(image.Workloads) != 2 || len(image.Packages) != 2 || len(image.Warnings) != 0 {
 				t.Fatalf("unexpected shared image report: %+v", image)
 			}
 			for _, workload := range image.Workloads {
@@ -150,15 +162,25 @@ func TestWorkloadVulnerabilityReport(t *testing.T) {
 					t.Errorf("missing workload/deployment context: %+v", workload)
 				}
 			}
-			first := image.Findings[0]
-			if first.Id != "finding-2" || first.Remediation.FixVersion != nil || first.Suppression == nil || first.Suppression.Reason != "Existing documented assessment" || first.RiskAssessment.EpssPercentile == nil || *first.RiskAssessment.EpssPercentile != 75 {
-				t.Errorf("priority, unknown remediation or assessment was not preserved: %+v", first)
+			net, stdlib := image.Packages[0], image.Packages[1]
+			if net.Findings != 1 || net.WithoutKnownFix != 1 || net.Suppressed != 1 || net.ByPriority["HIGH"] != 1 {
+				t.Errorf("missing unknown-fix, risk or suppression context: %+v", net)
 			}
-			if image.Findings[0].Package == image.Findings[1].Package {
-				t.Error("different package findings for the same advisory were collapsed")
+			if stdlib.Findings != 2 || stdlib.BySeverity["CRITICAL"] != 1 || stdlib.BySeverity["LOW"] != 1 || !reflect.DeepEqual(stdlib.FixVersions, []string{"v1.26.11", "v1.26.9"}) {
+				t.Errorf("package findings or reported fix versions were lost: %+v", stdlib)
 			}
-			if image.Findings[1].Id != "finding-0" {
-				t.Error("severity was not used to break equal-priority ties")
+			if kind == "application" {
+				if len(image.Findings) != 0 {
+					t.Error("default report must omit full advisory details")
+				}
+			} else {
+				if len(image.Findings) != 3 {
+					t.Fatalf("requested details missing: %+v", image.Findings)
+				}
+				last := image.Findings[2]
+				if last.Id != "finding-2" || last.Remediation.FixVersion != nil || last.Suppression == nil || last.Suppression.Reason != "Existing documented assessment" || last.RiskAssessment.EpssPercentile == nil || *last.RiskAssessment.EpssPercentile != 75 {
+					t.Errorf("requested advisory details were not preserved: %+v", last)
+				}
 			}
 		})
 	}
@@ -197,7 +219,9 @@ func TestWorkloadVulnerabilityReportImageGrouping(t *testing.T) {
 				return reportTestFindingPage("job", tt.imageName, tt.tag, tt.otherDigest, []any{}, false, nil), nil
 			})
 			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{
-				Team: "nais", Name: "oracleverk", Kind: "job", Environments: []string{"dev-gcp", "prod-gcp"},
+				VulnerabilityWorkloadTarget: VulnerabilityWorkloadTarget{
+					Team: "nais", Name: "oracleverk", Kind: "job", Environments: []string{"dev-gcp", "prod-gcp"},
+				},
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -213,7 +237,14 @@ func TestWorkloadVulnerabilityReportImageGrouping(t *testing.T) {
 }
 
 func TestWorkloadVulnerabilityReportFailures(t *testing.T) {
-	for _, failure := range []string{"no match", "ambiguous", "upstream findings error", "missing findings cursor", "repeated findings cursor", "image changed"} {
+	tests := map[string]string{
+		"no match": "no workload named", "ambiguous": "both application and job",
+		"upstream findings error":  "upstream unavailable",
+		"missing findings cursor":  "missing or repeated pagination cursor",
+		"repeated findings cursor": "missing or repeated pagination cursor",
+		"image changed":            "image changed",
+	}
+	for failure, wantError := range tests {
 		t.Run(failure, func(t *testing.T) {
 			digest := "sha256:original"
 			client := reportTestClient(func(_ context.Context, operation string, vars reportTestVariables) (any, error) {
@@ -243,43 +274,92 @@ func TestWorkloadVulnerabilityReportFailures(t *testing.T) {
 				}
 				return reportTestFindingPage("job", "registry/oracleverk", "tag", &pageDigest, []any{}, next, cursor), nil
 			})
-			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{Team: "nais", Name: "oracleverk"})
-			if err == nil || report.Complete || len(report.Images) != 0 {
+			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{
+				VulnerabilityWorkloadTarget: VulnerabilityWorkloadTarget{Team: "nais", Name: "oracleverk"},
+			})
+			if err == nil || !strings.Contains(err.Error(), wantError) || report.Complete || len(report.Images) != 0 {
 				t.Fatalf("expected failure without a partial success; report=%+v err=%v", report, err)
 			}
 		})
 	}
 }
 
-func TestWorkloadVulnerabilityReportFreshnessWarnings(t *testing.T) {
-	for _, state := range []string{"missing summary", "missing timestamp", "older image", "missing SBOM"} {
+func TestWorkloadVulnerabilityStatus(t *testing.T) {
+	tests := map[string]string{
+		"ready with findings": "scan_ready",
+		"partial rollout":     "not_deployed",
+		"missing digest":      "digest_unavailable",
+		"processing":          "scan_pending",
+		"missing summary":     "scan_unavailable",
+		"missing timestamp":   "scan_unavailable",
+		"older image":         "scan_pending",
+		"failed SBOM":         "scan_unavailable",
+	}
+	for state, wantState := range tests {
 		t.Run(state, func(t *testing.T) {
 			digest := "sha256:image"
 			node := reportTestNode("oracleverk", "dev-gcp", "registry/oracleverk", "tag", &digest)
-			image := node["image"].(map[string]any)
+			prod := reportTestNode("oracleverk", "prod-gcp", "registry/oracleverk", "tag", &digest)
+			image := prod["image"].(map[string]any)
 			switch state {
+			case "partial rollout":
+				prod["image"].(map[string]any)["digest"] = "sha256:old"
+			case "missing digest":
+				image["digest"] = nil
+			case "processing":
+				image["sbom"] = map[string]any{"status": "PROCESSING"}
 			case "missing summary":
 				image["vulnerabilitySummary"] = nil
 			case "missing timestamp":
 				image["vulnerabilitySummary"].(map[string]any)["lastUpdated"] = nil
 			case "older image":
 				image["vulnerabilitySummary"].(map[string]any)["staleImageTag"] = "previous-tag"
-			case "missing SBOM":
-				image["sbom"] = map[string]any{"status": "PENDING"}
+			case "failed SBOM":
+				image["sbom"] = map[string]any{"status": "FAILED"}
 			}
 			client := reportTestClient(func(_ context.Context, operation string, _ reportTestVariables) (any, error) {
-				if operation == "MCPVulnerabilityWorkloads" {
-					return map[string]any{"team": map[string]any{"jobs": reportTestConnection([]any{node}, false, nil)}}, nil
+				if operation != "MCPVulnerabilityWorkloads" {
+					t.Fatal("status checks must not fetch individual findings")
 				}
-				return reportTestFindingPage("job", "registry/oracleverk", "tag", &digest, []any{}, false, nil), nil
+				return map[string]any{"team": map[string]any{"jobs": reportTestConnection([]any{node, prod}, false, nil)}}, nil
 			})
-			report, err := getWorkloadVulnerabilityReport(t.Context(), client, GetWorkloadVulnerabilityReportInput{Team: "nais", Name: "oracleverk", Kind: "job"})
+			report, err := getWorkloadVulnerabilityStatus(t.Context(), client, GetWorkloadVulnerabilityStatusInput{
+				VulnerabilityWorkloadTarget: VulnerabilityWorkloadTarget{
+					Team: "nais", Name: "oracleverk", Kind: "job", Environments: []string{"dev-gcp", "prod-gcp"},
+				},
+				ExpectedDigest: digest,
+			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			if !report.Complete || len(report.Images[0].Warnings) != 1 || report.Images[0].Findings == nil {
-				t.Fatalf("missing data looked like verified zero findings: %+v", report)
+			// Different metadata on the same digest must not hide an unready environment.
+			if report.Verified != (state == "ready with findings") {
+				t.Fatalf("incorrect verification result for %q: %+v", state, report)
+			}
+			wantIndex := 0
+			if state == "partial rollout" || state == "missing digest" {
+				wantIndex = 1
+			}
+			if report.Images[wantIndex].State != wantState {
+				t.Fatalf("got status %q, want %q", report.Images[wantIndex].State, wantState)
 			}
 		})
+	}
+}
+
+func TestVulnerabilityStatusRequiresAllRequestedEnvironments(t *testing.T) {
+	client := reportTestClient(func(_ context.Context, _ string, _ reportTestVariables) (any, error) {
+		return map[string]any{"team": map[string]any{"jobs": reportTestConnection([]any{
+			reportTestNode("oracleverk", "dev-gcp", "registry/oracleverk", "tag", new("sha256:image")),
+		}, false, nil)}}, nil
+	})
+	status, err := getWorkloadVulnerabilityStatus(t.Context(), client, GetWorkloadVulnerabilityStatusInput{
+		VulnerabilityWorkloadTarget: VulnerabilityWorkloadTarget{
+			Team: "nais", Name: "oracleverk", Kind: "job", Environments: []string{"dev-gcp", "prod-gcp"},
+		},
+		ExpectedDigest: "sha256:image",
+	})
+	if err == nil || !strings.Contains(err.Error(), `"prod-gcp"`) || status.Verified {
+		t.Fatalf("missing environment must prevent verification: %+v, %v", status, err)
 	}
 }
