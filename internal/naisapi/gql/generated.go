@@ -35240,6 +35240,1426 @@ func (v *ListWorkloadVulnerabilitySummariesTeamVulnerabilitySummariesWorkloadVul
 	return v.Name
 }
 
+// MCPVulnerabilityDeployment includes the GraphQL fields of Deployment requested by the fragment MCPVulnerabilityDeployment.
+// The GraphQL type's documentation follows.
+//
+// Description of a deployment.
+type MCPVulnerabilityDeployment struct {
+	// The repository that triggered the deployment.
+	Repository *string `json:"repository"`
+	// The git commit SHA that was deployed.
+	CommitSha *string `json:"commitSha"`
+	// Creation timestamp of the deployment.
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// GetRepository returns MCPVulnerabilityDeployment.Repository, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityDeployment) GetRepository() *string { return v.Repository }
+
+// GetCommitSha returns MCPVulnerabilityDeployment.CommitSha, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityDeployment) GetCommitSha() *string { return v.CommitSha }
+
+// GetCreatedAt returns MCPVulnerabilityDeployment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityDeployment) GetCreatedAt() time.Time { return v.CreatedAt }
+
+// MCPVulnerabilityFinding includes the GraphQL fields of ImageVulnerability requested by the fragment MCPVulnerabilityFinding.
+type MCPVulnerabilityFinding struct {
+	// The globally unique ID of the image vulnerability node.
+	Id string `json:"id"`
+	// The unique identifier of the vulnerability. E.g. CVE-****-****.
+	Identifier string `json:"identifier"`
+	// Package name of the vulnerability.
+	Package string `json:"package"`
+	// Severity of the vulnerability.
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+	// Description of the vulnerability.
+	Description string `json:"description"`
+	// Timestamp of when the vulnerability got its current severity.
+	SeveritySince *time.Time `json:"severitySince"`
+	// Link to the vulnerability details.
+	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+	// Risk and threat intelligence signals used to prioritize the image vulnerability.
+	RiskAssessment MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment `json:"riskAssessment"`
+	// Package version information used to remediate the image vulnerability.
+	Remediation MCPVulnerabilityFindingRemediationVulnerabilityRemediation       `json:"remediation"`
+	Suppression *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression `json:"suppression"`
+}
+
+// GetId returns MCPVulnerabilityFinding.Id, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetId() string { return v.Id }
+
+// GetIdentifier returns MCPVulnerabilityFinding.Identifier, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetIdentifier() string { return v.Identifier }
+
+// GetPackage returns MCPVulnerabilityFinding.Package, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetPackage() string { return v.Package }
+
+// GetSeverity returns MCPVulnerabilityFinding.Severity, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetSeverity() ImageVulnerabilitySeverity { return v.Severity }
+
+// GetDescription returns MCPVulnerabilityFinding.Description, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetDescription() string { return v.Description }
+
+// GetSeveritySince returns MCPVulnerabilityFinding.SeveritySince, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetSeveritySince() *time.Time { return v.SeveritySince }
+
+// GetVulnerabilityDetailsLink returns MCPVulnerabilityFinding.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetVulnerabilityDetailsLink() string {
+	return v.VulnerabilityDetailsLink
+}
+
+// GetRiskAssessment returns MCPVulnerabilityFinding.RiskAssessment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetRiskAssessment() MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment {
+	return v.RiskAssessment
+}
+
+// GetRemediation returns MCPVulnerabilityFinding.Remediation, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetRemediation() MCPVulnerabilityFindingRemediationVulnerabilityRemediation {
+	return v.Remediation
+}
+
+// GetSuppression returns MCPVulnerabilityFinding.Suppression, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFinding) GetSuppression() *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression {
+	return v.Suppression
+}
+
+// MCPVulnerabilityFindingPage includes the GraphQL fields of ContainerImage requested by the fragment MCPVulnerabilityFindingPage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type MCPVulnerabilityFindingPage struct {
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image. Empty when the image reference has no explicit tag,
+	// for example when it is referenced by digest only.
+	Tag string `json:"tag"`
+	// Digest of the container image, if present.
+	Digest *string `json:"digest"`
+	// Get the vulnerabilities of the image.
+	Vulnerabilities MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+}
+
+// GetName returns MCPVulnerabilityFindingPage.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPage) GetName() string { return v.Name }
+
+// GetTag returns MCPVulnerabilityFindingPage.Tag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPage) GetTag() string { return v.Tag }
+
+// GetDigest returns MCPVulnerabilityFindingPage.Digest, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPage) GetDigest() *string { return v.Digest }
+
+// GetVulnerabilities returns MCPVulnerabilityFindingPage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPage) GetVulnerabilities() MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection {
+	return v.Vulnerabilities
+}
+
+// MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection includes the requested fields of the GraphQL type ImageVulnerabilityConnection.
+type MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection struct {
+	// List of nodes.
+	Nodes []MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability `json:"nodes"`
+	// Information to aid in pagination.
+	PageInfo MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection) GetNodes() []MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability {
+	return v.Nodes
+}
+
+// GetPageInfo returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection) GetPageInfo() MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo {
+	return v.PageInfo
+}
+
+// MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
+	MCPVulnerabilityFinding `json:"-"`
+}
+
+// GetId returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Id, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetId() string {
+	return v.MCPVulnerabilityFinding.Id
+}
+
+// GetIdentifier returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Identifier, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetIdentifier() string {
+	return v.MCPVulnerabilityFinding.Identifier
+}
+
+// GetPackage returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Package, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetPackage() string {
+	return v.MCPVulnerabilityFinding.Package
+}
+
+// GetSeverity returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Severity, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeverity() ImageVulnerabilitySeverity {
+	return v.MCPVulnerabilityFinding.Severity
+}
+
+// GetDescription returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Description, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetDescription() string {
+	return v.MCPVulnerabilityFinding.Description
+}
+
+// GetSeveritySince returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.SeveritySince, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSeveritySince() *time.Time {
+	return v.MCPVulnerabilityFinding.SeveritySince
+}
+
+// GetVulnerabilityDetailsLink returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.VulnerabilityDetailsLink, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetVulnerabilityDetailsLink() string {
+	return v.MCPVulnerabilityFinding.VulnerabilityDetailsLink
+}
+
+// GetRiskAssessment returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.RiskAssessment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRiskAssessment() MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment {
+	return v.MCPVulnerabilityFinding.RiskAssessment
+}
+
+// GetRemediation returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Remediation, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetRemediation() MCPVulnerabilityFindingRemediationVulnerabilityRemediation {
+	return v.MCPVulnerabilityFinding.Remediation
+}
+
+// GetSuppression returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability.Suppression, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) GetSuppression() *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression {
+	return v.MCPVulnerabilityFinding.Suppression
+}
+
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityFinding)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability struct {
+	Id string `json:"id"`
+
+	Identifier string `json:"identifier"`
+
+	Package string `json:"package"`
+
+	Severity ImageVulnerabilitySeverity `json:"severity"`
+
+	Description string `json:"description"`
+
+	SeveritySince *time.Time `json:"severitySince"`
+
+	VulnerabilityDetailsLink string `json:"vulnerabilityDetailsLink"`
+
+	RiskAssessment MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment `json:"riskAssessment"`
+
+	Remediation MCPVulnerabilityFindingRemediationVulnerabilityRemediation `json:"remediation"`
+
+	Suppression *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression `json:"suppression"`
+}
+
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability) __premarshalJSON() (*__premarshalMCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability, error) {
+	var retval __premarshalMCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionNodesImageVulnerability
+
+	retval.Id = v.MCPVulnerabilityFinding.Id
+	retval.Identifier = v.MCPVulnerabilityFinding.Identifier
+	retval.Package = v.MCPVulnerabilityFinding.Package
+	retval.Severity = v.MCPVulnerabilityFinding.Severity
+	retval.Description = v.MCPVulnerabilityFinding.Description
+	retval.SeveritySince = v.MCPVulnerabilityFinding.SeveritySince
+	retval.VulnerabilityDetailsLink = v.MCPVulnerabilityFinding.VulnerabilityDetailsLink
+	retval.RiskAssessment = v.MCPVulnerabilityFinding.RiskAssessment
+	retval.Remediation = v.MCPVulnerabilityFinding.Remediation
+	retval.Suppression = v.MCPVulnerabilityFinding.Suppression
+	return &retval, nil
+}
+
+// MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// MCPVulnerabilityFindingRemediationVulnerabilityRemediation includes the requested fields of the GraphQL type VulnerabilityRemediation.
+// The GraphQL type's documentation follows.
+//
+// Package version information that helps remediate an image vulnerability.
+type MCPVulnerabilityFindingRemediationVulnerabilityRemediation struct {
+	// First known package version that contains a fix.
+	FixVersion *string `json:"fixVersion"`
+	// Latest available version of the package, which may include changes beyond the fix.
+	LatestVersion *string `json:"latestVersion"`
+}
+
+// GetFixVersion returns MCPVulnerabilityFindingRemediationVulnerabilityRemediation.FixVersion, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRemediationVulnerabilityRemediation) GetFixVersion() *string {
+	return v.FixVersion
+}
+
+// GetLatestVersion returns MCPVulnerabilityFindingRemediationVulnerabilityRemediation.LatestVersion, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRemediationVulnerabilityRemediation) GetLatestVersion() *string {
+	return v.LatestVersion
+}
+
+// MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment includes the requested fields of the GraphQL type VulnerabilityRiskAssessment.
+// The GraphQL type's documentation follows.
+//
+// Threat intelligence and scoring signals used to prioritize a vulnerability.
+type MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment struct {
+	// Operational priority derived from the available risk signals.
+	Priority CVEPriority `json:"priority"`
+	// CVSS score of the vulnerability.
+	CvssScore *float64 `json:"cvssScore"`
+	// EPSS score, representing the estimated probability of exploitation.
+	EpssScore *float64 `json:"epssScore"`
+	// EPSS percentile of the vulnerability as a percentage (0-100).
+	EpssPercentile *float64 `json:"epssPercentile"`
+	// Whether the vulnerability has a CISA Known Exploited Vulnerabilities (KEV) entry.
+	HasKevEntry bool `json:"hasKevEntry"`
+	// Whether the vulnerability is known to be used in ransomware attacks.
+	KnownRansomwareUse bool `json:"knownRansomwareUse"`
+}
+
+// GetPriority returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.Priority, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetPriority() CVEPriority {
+	return v.Priority
+}
+
+// GetCvssScore returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.CvssScore, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetCvssScore() *float64 {
+	return v.CvssScore
+}
+
+// GetEpssScore returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.EpssScore, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetEpssScore() *float64 {
+	return v.EpssScore
+}
+
+// GetEpssPercentile returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.EpssPercentile, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetEpssPercentile() *float64 {
+	return v.EpssPercentile
+}
+
+// GetHasKevEntry returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.HasKevEntry, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetHasKevEntry() bool {
+	return v.HasKevEntry
+}
+
+// GetKnownRansomwareUse returns MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment.KnownRansomwareUse, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingRiskAssessmentVulnerabilityRiskAssessment) GetKnownRansomwareUse() bool {
+	return v.KnownRansomwareUse
+}
+
+// MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression includes the requested fields of the GraphQL type ImageVulnerabilitySuppression.
+type MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression struct {
+	// Suppression state of the vulnerability.
+	State ImageVulnerabilitySuppressionState `json:"state"`
+	// The reason for the suppression of the vulnerability.
+	Reason string `json:"reason"`
+}
+
+// GetState returns MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression.State, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression) GetState() ImageVulnerabilitySuppressionState {
+	return v.State
+}
+
+// GetReason returns MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression.Reason, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingSuppressionImageVulnerabilitySuppression) GetReason() string {
+	return v.Reason
+}
+
+// MCPVulnerabilityFindingsResponse is returned by MCPVulnerabilityFindings on success.
+type MCPVulnerabilityFindingsResponse struct {
+	// Get a team by its slug.
+	Team MCPVulnerabilityFindingsTeam `json:"team"`
+}
+
+// GetTeam returns MCPVulnerabilityFindingsResponse.Team, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsResponse) GetTeam() MCPVulnerabilityFindingsTeam { return v.Team }
+
+// MCPVulnerabilityFindingsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type MCPVulnerabilityFindingsTeam struct {
+	// Get a specific environment for the team.
+	Environment MCPVulnerabilityFindingsTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns MCPVulnerabilityFindingsTeam.Environment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeam) GetEnvironment() MCPVulnerabilityFindingsTeamEnvironment {
+	return v.Environment
+}
+
+// MCPVulnerabilityFindingsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type MCPVulnerabilityFindingsTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application *MCPVulnerabilityFindingsTeamEnvironmentApplication `json:"application"`
+	// Nais job in the team environment.
+	Job *MCPVulnerabilityFindingsTeamEnvironmentJob `json:"job"`
+}
+
+// GetApplication returns MCPVulnerabilityFindingsTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironment) GetApplication() *MCPVulnerabilityFindingsTeamEnvironmentApplication {
+	return v.Application
+}
+
+// GetJob returns MCPVulnerabilityFindingsTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironment) GetJob() *MCPVulnerabilityFindingsTeamEnvironmentJob {
+	return v.Job
+}
+
+// MCPVulnerabilityFindingsTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type MCPVulnerabilityFindingsTeamEnvironmentApplication struct {
+	// The container image of the application.
+	Image MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage `json:"image"`
+}
+
+// GetImage returns MCPVulnerabilityFindingsTeamEnvironmentApplication.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplication) GetImage() MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage {
+	return v.Image
+}
+
+// MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage struct {
+	MCPVulnerabilityFindingPage `json:"-"`
+}
+
+// GetName returns MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) GetName() string {
+	return v.MCPVulnerabilityFindingPage.Name
+}
+
+// GetTag returns MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) GetTag() string {
+	return v.MCPVulnerabilityFindingPage.Tag
+}
+
+// GetDigest returns MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage.Digest, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) GetDigest() *string {
+	return v.MCPVulnerabilityFindingPage.Digest
+}
+
+// GetVulnerabilities returns MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) GetVulnerabilities() MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection {
+	return v.MCPVulnerabilityFindingPage.Vulnerabilities
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityFindingPage)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage struct {
+	Name string `json:"name"`
+
+	Tag string `json:"tag"`
+
+	Digest *string `json:"digest"`
+
+	Vulnerabilities MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage) __premarshalJSON() (*__premarshalMCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage, error) {
+	var retval __premarshalMCPVulnerabilityFindingsTeamEnvironmentApplicationImageContainerImage
+
+	retval.Name = v.MCPVulnerabilityFindingPage.Name
+	retval.Tag = v.MCPVulnerabilityFindingPage.Tag
+	retval.Digest = v.MCPVulnerabilityFindingPage.Digest
+	retval.Vulnerabilities = v.MCPVulnerabilityFindingPage.Vulnerabilities
+	return &retval, nil
+}
+
+// MCPVulnerabilityFindingsTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type MCPVulnerabilityFindingsTeamEnvironmentJob struct {
+	// The container image of the job.
+	Image MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage `json:"image"`
+}
+
+// GetImage returns MCPVulnerabilityFindingsTeamEnvironmentJob.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJob) GetImage() MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage {
+	return v.Image
+}
+
+// MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage struct {
+	MCPVulnerabilityFindingPage `json:"-"`
+}
+
+// GetName returns MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) GetName() string {
+	return v.MCPVulnerabilityFindingPage.Name
+}
+
+// GetTag returns MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) GetTag() string {
+	return v.MCPVulnerabilityFindingPage.Tag
+}
+
+// GetDigest returns MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage.Digest, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) GetDigest() *string {
+	return v.MCPVulnerabilityFindingPage.Digest
+}
+
+// GetVulnerabilities returns MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage.Vulnerabilities, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) GetVulnerabilities() MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection {
+	return v.MCPVulnerabilityFindingPage.Vulnerabilities
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityFindingPage)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage struct {
+	Name string `json:"name"`
+
+	Tag string `json:"tag"`
+
+	Digest *string `json:"digest"`
+
+	Vulnerabilities MCPVulnerabilityFindingPageVulnerabilitiesImageVulnerabilityConnection `json:"vulnerabilities"`
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage) __premarshalJSON() (*__premarshalMCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage, error) {
+	var retval __premarshalMCPVulnerabilityFindingsTeamEnvironmentJobImageContainerImage
+
+	retval.Name = v.MCPVulnerabilityFindingPage.Name
+	retval.Tag = v.MCPVulnerabilityFindingPage.Tag
+	retval.Digest = v.MCPVulnerabilityFindingPage.Digest
+	retval.Vulnerabilities = v.MCPVulnerabilityFindingPage.Vulnerabilities
+	return &retval, nil
+}
+
+// MCPVulnerabilityImage includes the GraphQL fields of ContainerImage requested by the fragment MCPVulnerabilityImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type MCPVulnerabilityImage struct {
+	// The globally unique ID of the container image node.
+	Id string `json:"id"`
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image. Empty when the image reference has no explicit tag,
+	// for example when it is referenced by digest only.
+	Tag string `json:"tag"`
+	// Digest of the container image, if present.
+	Digest *string `json:"digest"`
+	// SBOM pipeline status and processing information for this image.
+	Sbom MCPVulnerabilityImageSbomContainerImageSBOM `json:"sbom"`
+	// Get the summary of the vulnerabilities of the image.
+	VulnerabilitySummary *MCPVulnerabilityImageVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+// GetId returns MCPVulnerabilityImage.Id, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetId() string { return v.Id }
+
+// GetName returns MCPVulnerabilityImage.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetName() string { return v.Name }
+
+// GetTag returns MCPVulnerabilityImage.Tag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetTag() string { return v.Tag }
+
+// GetDigest returns MCPVulnerabilityImage.Digest, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetDigest() *string { return v.Digest }
+
+// GetSbom returns MCPVulnerabilityImage.Sbom, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetSbom() MCPVulnerabilityImageSbomContainerImageSBOM { return v.Sbom }
+
+// GetVulnerabilitySummary returns MCPVulnerabilityImage.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImage) GetVulnerabilitySummary() *MCPVulnerabilityImageVulnerabilitySummary {
+	return v.VulnerabilitySummary
+}
+
+// MCPVulnerabilityImageSbomContainerImageSBOM includes the requested fields of the GraphQL type ContainerImageSBOM.
+// The GraphQL type's documentation follows.
+//
+// SBOM metadata for a container image, including pipeline status and processing
+// information. This type is accessed through ContainerImage.sbom.
+type MCPVulnerabilityImageSbomContainerImageSBOM struct {
+	// The SBOM pipeline status.
+	Status SBOMStatus `json:"status"`
+	// The timestamp when SBOM processing started for this image.
+	// Useful as a progress indicator when status is PROCESSING.
+	ProcessingStartedAt *time.Time `json:"processingStartedAt"`
+}
+
+// GetStatus returns MCPVulnerabilityImageSbomContainerImageSBOM.Status, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageSbomContainerImageSBOM) GetStatus() SBOMStatus { return v.Status }
+
+// GetProcessingStartedAt returns MCPVulnerabilityImageSbomContainerImageSBOM.ProcessingStartedAt, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageSbomContainerImageSBOM) GetProcessingStartedAt() *time.Time {
+	return v.ProcessingStartedAt
+}
+
+// MCPVulnerabilityImageVulnerabilitySummary includes the requested fields of the GraphQL type ImageVulnerabilitySummary.
+type MCPVulnerabilityImageVulnerabilitySummary struct {
+	// Total number of vulnerabilities.
+	Total int `json:"total"`
+	// Risk score of the image.
+	RiskScore int `json:"riskScore"`
+	// Timestamp of the last update of the vulnerability summary.
+	LastUpdated *time.Time `json:"lastUpdated"`
+	// When set, the vulnerability counts are sourced from this older image tag because
+	// no summary exists yet for the requested tag (e.g. a newly deployed image that is
+	// still being scanned). The value is the tag the stale data originates from.
+	StaleImageTag *string `json:"staleImageTag"`
+	// Vulnerability counts grouped by severity.
+	CountsBySeverity MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity `json:"countsBySeverity"`
+	// Vulnerability counts grouped by operational priority.
+	CountsByPriority MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority `json:"countsByPriority"`
+}
+
+// GetTotal returns MCPVulnerabilityImageVulnerabilitySummary.Total, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetTotal() int { return v.Total }
+
+// GetRiskScore returns MCPVulnerabilityImageVulnerabilitySummary.RiskScore, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetRiskScore() int { return v.RiskScore }
+
+// GetLastUpdated returns MCPVulnerabilityImageVulnerabilitySummary.LastUpdated, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetLastUpdated() *time.Time { return v.LastUpdated }
+
+// GetStaleImageTag returns MCPVulnerabilityImageVulnerabilitySummary.StaleImageTag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetStaleImageTag() *string {
+	return v.StaleImageTag
+}
+
+// GetCountsBySeverity returns MCPVulnerabilityImageVulnerabilitySummary.CountsBySeverity, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetCountsBySeverity() MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity {
+	return v.CountsBySeverity
+}
+
+// GetCountsByPriority returns MCPVulnerabilityImageVulnerabilitySummary.CountsByPriority, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummary) GetCountsByPriority() MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority {
+	return v.CountsByPriority
+}
+
+// MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsByPriority.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by operational priority.
+type MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority struct {
+	// Number of vulnerabilities with a CISA Known Exploited Vulnerabilities (KEV) entry.
+	KnownExploited int `json:"knownExploited"`
+	// Vulnerabilities with strong exploitation indicators.
+	HighRisk int `json:"highRisk"`
+	// Vulnerabilities with elevated exploitation risk.
+	ElevatedRisk int `json:"elevatedRisk"`
+	// Vulnerabilities that should be monitored.
+	Monitor int `json:"monitor"`
+}
+
+// GetKnownExploited returns MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority.KnownExploited, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority) GetKnownExploited() int {
+	return v.KnownExploited
+}
+
+// GetHighRisk returns MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority.HighRisk, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority) GetHighRisk() int {
+	return v.HighRisk
+}
+
+// GetElevatedRisk returns MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority.ElevatedRisk, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority) GetElevatedRisk() int {
+	return v.ElevatedRisk
+}
+
+// GetMonitor returns MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority.Monitor, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsByPriority) GetMonitor() int {
+	return v.Monitor
+}
+
+// MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity includes the requested fields of the GraphQL type ImageVulnerabilitySummaryCountsBySeverity.
+// The GraphQL type's documentation follows.
+//
+// Vulnerability counts grouped by severity.
+type MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity struct {
+	// Number of vulnerabilities with severity CRITICAL.
+	Critical int `json:"critical"`
+	// Number of vulnerabilities with severity HIGH.
+	High int `json:"high"`
+	// Number of vulnerabilities with severity MEDIUM.
+	Medium int `json:"medium"`
+	// Number of vulnerabilities with severity LOW.
+	Low int `json:"low"`
+	// Number of vulnerabilities with severity UNASSIGNED.
+	Unassigned int `json:"unassigned"`
+}
+
+// GetCritical returns MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity.Critical, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity) GetCritical() int {
+	return v.Critical
+}
+
+// GetHigh returns MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity.High, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity) GetHigh() int { return v.High }
+
+// GetMedium returns MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity.Medium, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity) GetMedium() int { return v.Medium }
+
+// GetLow returns MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity.Low, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity) GetLow() int { return v.Low }
+
+// GetUnassigned returns MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity.Unassigned, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityImageVulnerabilitySummaryCountsBySeverity) GetUnassigned() int {
+	return v.Unassigned
+}
+
+// MCPVulnerabilityWorkload includes the GraphQL fields of Workload requested by the fragment MCPVulnerabilityWorkload.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+//
+// MCPVulnerabilityWorkload is implemented by the following types:
+// MCPVulnerabilityWorkloadApplication
+// MCPVulnerabilityWorkloadJob
+type MCPVulnerabilityWorkload interface {
+	implementsGraphQLInterfaceMCPVulnerabilityWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTeamEnvironment returns the interface-field "teamEnvironment" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetTeamEnvironment() MCPVulnerabilityWorkloadTeamEnvironment
+	// GetImage returns the interface-field "image" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetImage() MCPVulnerabilityWorkloadImageContainerImage
+	// GetDeployments returns the interface-field "deployments" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetDeployments() MCPVulnerabilityWorkloadDeploymentsDeploymentConnection
+}
+
+func (v *MCPVulnerabilityWorkloadApplication) implementsGraphQLInterfaceMCPVulnerabilityWorkload() {}
+func (v *MCPVulnerabilityWorkloadJob) implementsGraphQLInterfaceMCPVulnerabilityWorkload()         {}
+
+func __unmarshalMCPVulnerabilityWorkload(b []byte, v *MCPVulnerabilityWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(MCPVulnerabilityWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(MCPVulnerabilityWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for MCPVulnerabilityWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalMCPVulnerabilityWorkload(v *MCPVulnerabilityWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *MCPVulnerabilityWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*MCPVulnerabilityWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *MCPVulnerabilityWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*MCPVulnerabilityWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for MCPVulnerabilityWorkload: "%T"`, v)
+	}
+}
+
+// MCPVulnerabilityWorkload includes the GraphQL fields of Application requested by the fragment MCPVulnerabilityWorkload.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type MCPVulnerabilityWorkloadApplication struct {
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment MCPVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
+	// Interface for workloads.
+	Image MCPVulnerabilityWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	Deployments MCPVulnerabilityWorkloadDeploymentsDeploymentConnection `json:"deployments"`
+}
+
+// GetName returns MCPVulnerabilityWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadApplication) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns MCPVulnerabilityWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadApplication) GetTeamEnvironment() MCPVulnerabilityWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetImage returns MCPVulnerabilityWorkloadApplication.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadApplication) GetImage() MCPVulnerabilityWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetDeployments returns MCPVulnerabilityWorkloadApplication.Deployments, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadApplication) GetDeployments() MCPVulnerabilityWorkloadDeploymentsDeploymentConnection {
+	return v.Deployments
+}
+
+// MCPVulnerabilityWorkloadDeploymentsDeploymentConnection includes the requested fields of the GraphQL type DeploymentConnection.
+type MCPVulnerabilityWorkloadDeploymentsDeploymentConnection struct {
+	// List of nodes.
+	Nodes []MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment `json:"nodes"`
+}
+
+// GetNodes returns MCPVulnerabilityWorkloadDeploymentsDeploymentConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnection) GetNodes() []MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment {
+	return v.Nodes
+}
+
+// MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment includes the requested fields of the GraphQL type Deployment.
+// The GraphQL type's documentation follows.
+//
+// Description of a deployment.
+type MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment struct {
+	MCPVulnerabilityDeployment `json:"-"`
+}
+
+// GetRepository returns MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment.Repository, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) GetRepository() *string {
+	return v.MCPVulnerabilityDeployment.Repository
+}
+
+// GetCommitSha returns MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment.CommitSha, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) GetCommitSha() *string {
+	return v.MCPVulnerabilityDeployment.CommitSha
+}
+
+// GetCreatedAt returns MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment.CreatedAt, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) GetCreatedAt() time.Time {
+	return v.MCPVulnerabilityDeployment.CreatedAt
+}
+
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityDeployment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment struct {
+	Repository *string `json:"repository"`
+
+	CommitSha *string `json:"commitSha"`
+
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment) __premarshalJSON() (*__premarshalMCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment, error) {
+	var retval __premarshalMCPVulnerabilityWorkloadDeploymentsDeploymentConnectionNodesDeployment
+
+	retval.Repository = v.MCPVulnerabilityDeployment.Repository
+	retval.CommitSha = v.MCPVulnerabilityDeployment.CommitSha
+	retval.CreatedAt = v.MCPVulnerabilityDeployment.CreatedAt
+	return &retval, nil
+}
+
+// MCPVulnerabilityWorkloadImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type MCPVulnerabilityWorkloadImageContainerImage struct {
+	MCPVulnerabilityImage `json:"-"`
+}
+
+// GetId returns MCPVulnerabilityWorkloadImageContainerImage.Id, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetId() string {
+	return v.MCPVulnerabilityImage.Id
+}
+
+// GetName returns MCPVulnerabilityWorkloadImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetName() string {
+	return v.MCPVulnerabilityImage.Name
+}
+
+// GetTag returns MCPVulnerabilityWorkloadImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetTag() string {
+	return v.MCPVulnerabilityImage.Tag
+}
+
+// GetDigest returns MCPVulnerabilityWorkloadImageContainerImage.Digest, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetDigest() *string {
+	return v.MCPVulnerabilityImage.Digest
+}
+
+// GetSbom returns MCPVulnerabilityWorkloadImageContainerImage.Sbom, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetSbom() MCPVulnerabilityImageSbomContainerImageSBOM {
+	return v.MCPVulnerabilityImage.Sbom
+}
+
+// GetVulnerabilitySummary returns MCPVulnerabilityWorkloadImageContainerImage.VulnerabilitySummary, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadImageContainerImage) GetVulnerabilitySummary() *MCPVulnerabilityImageVulnerabilitySummary {
+	return v.MCPVulnerabilityImage.VulnerabilitySummary
+}
+
+func (v *MCPVulnerabilityWorkloadImageContainerImage) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityWorkloadImageContainerImage
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityWorkloadImageContainerImage = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityImage)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityWorkloadImageContainerImage struct {
+	Id string `json:"id"`
+
+	Name string `json:"name"`
+
+	Tag string `json:"tag"`
+
+	Digest *string `json:"digest"`
+
+	Sbom MCPVulnerabilityImageSbomContainerImageSBOM `json:"sbom"`
+
+	VulnerabilitySummary *MCPVulnerabilityImageVulnerabilitySummary `json:"vulnerabilitySummary"`
+}
+
+func (v *MCPVulnerabilityWorkloadImageContainerImage) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityWorkloadImageContainerImage) __premarshalJSON() (*__premarshalMCPVulnerabilityWorkloadImageContainerImage, error) {
+	var retval __premarshalMCPVulnerabilityWorkloadImageContainerImage
+
+	retval.Id = v.MCPVulnerabilityImage.Id
+	retval.Name = v.MCPVulnerabilityImage.Name
+	retval.Tag = v.MCPVulnerabilityImage.Tag
+	retval.Digest = v.MCPVulnerabilityImage.Digest
+	retval.Sbom = v.MCPVulnerabilityImage.Sbom
+	retval.VulnerabilitySummary = v.MCPVulnerabilityImage.VulnerabilitySummary
+	return &retval, nil
+}
+
+// MCPVulnerabilityWorkload includes the GraphQL fields of Job requested by the fragment MCPVulnerabilityWorkload.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type MCPVulnerabilityWorkloadJob struct {
+	// Interface for workloads.
+	Name string `json:"name"`
+	// Interface for workloads.
+	TeamEnvironment MCPVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
+	// Interface for workloads.
+	Image MCPVulnerabilityWorkloadImageContainerImage `json:"image"`
+	// Interface for workloads.
+	Deployments MCPVulnerabilityWorkloadDeploymentsDeploymentConnection `json:"deployments"`
+}
+
+// GetName returns MCPVulnerabilityWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadJob) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns MCPVulnerabilityWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadJob) GetTeamEnvironment() MCPVulnerabilityWorkloadTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetImage returns MCPVulnerabilityWorkloadJob.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadJob) GetImage() MCPVulnerabilityWorkloadImageContainerImage {
+	return v.Image
+}
+
+// GetDeployments returns MCPVulnerabilityWorkloadJob.Deployments, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadJob) GetDeployments() MCPVulnerabilityWorkloadDeploymentsDeploymentConnection {
+	return v.Deployments
+}
+
+// MCPVulnerabilityWorkloadTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type MCPVulnerabilityWorkloadTeamEnvironment struct {
+	// Get the environment.
+	Environment MCPVulnerabilityWorkloadTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns MCPVulnerabilityWorkloadTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadTeamEnvironment) GetEnvironment() MCPVulnerabilityWorkloadTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// MCPVulnerabilityWorkloadTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type MCPVulnerabilityWorkloadTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns MCPVulnerabilityWorkloadTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadTeamEnvironmentEnvironment) GetName() string { return v.Name }
+
+// MCPVulnerabilityWorkloadsResponse is returned by MCPVulnerabilityWorkloads on success.
+type MCPVulnerabilityWorkloadsResponse struct {
+	// Get a team by its slug.
+	Team MCPVulnerabilityWorkloadsTeam `json:"team"`
+}
+
+// GetTeam returns MCPVulnerabilityWorkloadsResponse.Team, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsResponse) GetTeam() MCPVulnerabilityWorkloadsTeam { return v.Team }
+
+// MCPVulnerabilityWorkloadsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type MCPVulnerabilityWorkloadsTeam struct {
+	// Nais applications owned by the team.
+	Applications *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection `json:"applications"`
+	// Nais jobs owned by the team.
+	Jobs *MCPVulnerabilityWorkloadsTeamJobsJobConnection `json:"jobs"`
+}
+
+// GetApplications returns MCPVulnerabilityWorkloadsTeam.Applications, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeam) GetApplications() *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection {
+	return v.Applications
+}
+
+// GetJobs returns MCPVulnerabilityWorkloadsTeam.Jobs, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeam) GetJobs() *MCPVulnerabilityWorkloadsTeamJobsJobConnection {
+	return v.Jobs
+}
+
+// MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
+// The GraphQL type's documentation follows.
+//
+// Application connection.
+type MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection struct {
+	// List of nodes.
+	Nodes []MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+	// Pagination information.
+	PageInfo MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection) GetNodes() []MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication {
+	return v.Nodes
+}
+
+// GetPageInfo returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnection) GetPageInfo() MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo {
+	return v.PageInfo
+}
+
+// MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication struct {
+	MCPVulnerabilityWorkloadApplication `json:"-"`
+}
+
+// GetName returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.MCPVulnerabilityWorkloadApplication.Name
+}
+
+// GetTeamEnvironment returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() MCPVulnerabilityWorkloadTeamEnvironment {
+	return v.MCPVulnerabilityWorkloadApplication.TeamEnvironment
+}
+
+// GetImage returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) GetImage() MCPVulnerabilityWorkloadImageContainerImage {
+	return v.MCPVulnerabilityWorkloadApplication.Image
+}
+
+// GetDeployments returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication.Deployments, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) GetDeployments() MCPVulnerabilityWorkloadDeploymentsDeploymentConnection {
+	return v.MCPVulnerabilityWorkloadApplication.Deployments
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityWorkloadApplication)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication struct {
+	Name string `json:"name"`
+
+	TeamEnvironment MCPVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
+
+	Image MCPVulnerabilityWorkloadImageContainerImage `json:"image"`
+
+	Deployments MCPVulnerabilityWorkloadDeploymentsDeploymentConnection `json:"deployments"`
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication) __premarshalJSON() (*__premarshalMCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication, error) {
+	var retval __premarshalMCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionNodesApplication
+
+	retval.Name = v.MCPVulnerabilityWorkloadApplication.Name
+	retval.TeamEnvironment = v.MCPVulnerabilityWorkloadApplication.TeamEnvironment
+	retval.Image = v.MCPVulnerabilityWorkloadApplication.Image
+	retval.Deployments = v.MCPVulnerabilityWorkloadApplication.Deployments
+	return &retval, nil
+}
+
+// MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamApplicationsApplicationConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// MCPVulnerabilityWorkloadsTeamJobsJobConnection includes the requested fields of the GraphQL type JobConnection.
+type MCPVulnerabilityWorkloadsTeamJobsJobConnection struct {
+	// List of nodes.
+	Nodes []MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob `json:"nodes"`
+	// Pagination information.
+	PageInfo MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns MCPVulnerabilityWorkloadsTeamJobsJobConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnection) GetNodes() []MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob {
+	return v.Nodes
+}
+
+// GetPageInfo returns MCPVulnerabilityWorkloadsTeamJobsJobConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnection) GetPageInfo() MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo {
+	return v.PageInfo
+}
+
+// MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob struct {
+	MCPVulnerabilityWorkloadJob `json:"-"`
+}
+
+// GetName returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) GetName() string {
+	return v.MCPVulnerabilityWorkloadJob.Name
+}
+
+// GetTeamEnvironment returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) GetTeamEnvironment() MCPVulnerabilityWorkloadTeamEnvironment {
+	return v.MCPVulnerabilityWorkloadJob.TeamEnvironment
+}
+
+// GetImage returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob.Image, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) GetImage() MCPVulnerabilityWorkloadImageContainerImage {
+	return v.MCPVulnerabilityWorkloadJob.Image
+}
+
+// GetDeployments returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob.Deployments, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) GetDeployments() MCPVulnerabilityWorkloadDeploymentsDeploymentConnection {
+	return v.MCPVulnerabilityWorkloadJob.Deployments
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MCPVulnerabilityWorkloadJob)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalMCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob struct {
+	Name string `json:"name"`
+
+	TeamEnvironment MCPVulnerabilityWorkloadTeamEnvironment `json:"teamEnvironment"`
+
+	Image MCPVulnerabilityWorkloadImageContainerImage `json:"image"`
+
+	Deployments MCPVulnerabilityWorkloadDeploymentsDeploymentConnection `json:"deployments"`
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob) __premarshalJSON() (*__premarshalMCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob, error) {
+	var retval __premarshalMCPVulnerabilityWorkloadsTeamJobsJobConnectionNodesJob
+
+	retval.Name = v.MCPVulnerabilityWorkloadJob.Name
+	retval.TeamEnvironment = v.MCPVulnerabilityWorkloadJob.TeamEnvironment
+	retval.Image = v.MCPVulnerabilityWorkloadJob.Image
+	retval.Deployments = v.MCPVulnerabilityWorkloadJob.Deployments
+	return &retval, nil
+}
+
+// MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *MCPVulnerabilityWorkloadsTeamJobsJobConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // Input for filtering OpenSearch instances.
 type OpenSearchFilter struct {
 	// Input for filtering OpenSearch instances.
@@ -38423,6 +39843,62 @@ func (v *__ListWorkloadVulnerabilitySummariesInput) GetTeam() string { return v.
 func (v *__ListWorkloadVulnerabilitySummariesInput) GetFilter() *TeamVulnerabilitySummaryFilter {
 	return v.Filter
 }
+
+// __MCPVulnerabilityFindingsInput is used internally by genqlient
+type __MCPVulnerabilityFindingsInput struct {
+	Team         string  `json:"team"`
+	Name         string  `json:"name"`
+	Environment  string  `json:"environment"`
+	After        *string `json:"after"`
+	Applications bool    `json:"applications"`
+	Jobs         bool    `json:"jobs"`
+}
+
+// GetTeam returns __MCPVulnerabilityFindingsInput.Team, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetTeam() string { return v.Team }
+
+// GetName returns __MCPVulnerabilityFindingsInput.Name, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetName() string { return v.Name }
+
+// GetEnvironment returns __MCPVulnerabilityFindingsInput.Environment, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetEnvironment() string { return v.Environment }
+
+// GetAfter returns __MCPVulnerabilityFindingsInput.After, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetAfter() *string { return v.After }
+
+// GetApplications returns __MCPVulnerabilityFindingsInput.Applications, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetApplications() bool { return v.Applications }
+
+// GetJobs returns __MCPVulnerabilityFindingsInput.Jobs, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityFindingsInput) GetJobs() bool { return v.Jobs }
+
+// __MCPVulnerabilityWorkloadsInput is used internally by genqlient
+type __MCPVulnerabilityWorkloadsInput struct {
+	Team         string   `json:"team"`
+	Name         string   `json:"name"`
+	Environments []string `json:"environments"`
+	After        *string  `json:"after"`
+	Applications bool     `json:"applications"`
+	Jobs         bool     `json:"jobs"`
+}
+
+// GetTeam returns __MCPVulnerabilityWorkloadsInput.Team, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetTeam() string { return v.Team }
+
+// GetName returns __MCPVulnerabilityWorkloadsInput.Name, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetName() string { return v.Name }
+
+// GetEnvironments returns __MCPVulnerabilityWorkloadsInput.Environments, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetEnvironments() []string { return v.Environments }
+
+// GetAfter returns __MCPVulnerabilityWorkloadsInput.After, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetAfter() *string { return v.After }
+
+// GetApplications returns __MCPVulnerabilityWorkloadsInput.Applications, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetApplications() bool { return v.Applications }
+
+// GetJobs returns __MCPVulnerabilityWorkloadsInput.Jobs, and is useful for accessing the field via an interface.
+func (v *__MCPVulnerabilityWorkloadsInput) GetJobs() bool { return v.Jobs }
 
 // __RemoveConfigValueInput is used internally by genqlient
 type __RemoveConfigValueInput struct {
@@ -42071,6 +43547,211 @@ func ListWorkloadVulnerabilitySummaries(
 	}
 
 	data_ = &ListWorkloadVulnerabilitySummariesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by MCPVulnerabilityFindings.
+const MCPVulnerabilityFindings_Operation = `
+query MCPVulnerabilityFindings ($team: Slug!, $name: String!, $environment: String!, $after: Cursor, $applications: Boolean!, $jobs: Boolean!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			application(name: $name) @include(if: $applications) {
+				image {
+					... MCPVulnerabilityFindingPage
+				}
+			}
+			job(name: $name) @include(if: $jobs) {
+				image {
+					... MCPVulnerabilityFindingPage
+				}
+			}
+		}
+	}
+}
+fragment MCPVulnerabilityFindingPage on ContainerImage {
+	name
+	tag
+	digest
+	vulnerabilities(first: 50, after: $after, orderBy: {field:PRIORITY,direction:DESC}) {
+		nodes {
+			... MCPVulnerabilityFinding
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+fragment MCPVulnerabilityFinding on ImageVulnerability {
+	id
+	identifier
+	package
+	severity
+	description
+	severitySince
+	vulnerabilityDetailsLink
+	riskAssessment {
+		priority
+		cvssScore
+		epssScore
+		epssPercentile
+		hasKevEntry
+		knownRansomwareUse
+	}
+	remediation {
+		fixVersion
+		latestVersion
+	}
+	suppression {
+		state
+		reason
+	}
+}
+`
+
+func MCPVulnerabilityFindings(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	environment string,
+	after *string,
+	applications bool,
+	jobs bool,
+) (data_ *MCPVulnerabilityFindingsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "MCPVulnerabilityFindings",
+		Query:  MCPVulnerabilityFindings_Operation,
+		Variables: &__MCPVulnerabilityFindingsInput{
+			Team:         team,
+			Name:         name,
+			Environment:  environment,
+			After:        after,
+			Applications: applications,
+			Jobs:         jobs,
+		},
+	}
+
+	data_ = &MCPVulnerabilityFindingsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by MCPVulnerabilityWorkloads.
+const MCPVulnerabilityWorkloads_Operation = `
+query MCPVulnerabilityWorkloads ($team: Slug!, $name: String!, $environments: [String!], $after: Cursor, $applications: Boolean!, $jobs: Boolean!) {
+	team(slug: $team) {
+		applications(first: 50, after: $after, filter: {name:$name,environments:$environments}) @include(if: $applications) {
+			nodes {
+				... MCPVulnerabilityWorkload
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+		jobs(first: 50, after: $after, filter: {name:$name,environments:$environments}) @include(if: $jobs) {
+			nodes {
+				... MCPVulnerabilityWorkload
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
+}
+fragment MCPVulnerabilityWorkload on Workload {
+	name
+	teamEnvironment {
+		environment {
+			name
+		}
+	}
+	image {
+		... MCPVulnerabilityImage
+	}
+	deployments(first: 1) {
+		nodes {
+			... MCPVulnerabilityDeployment
+		}
+	}
+}
+fragment MCPVulnerabilityImage on ContainerImage {
+	id
+	name
+	tag
+	digest
+	sbom {
+		status
+		processingStartedAt
+	}
+	vulnerabilitySummary {
+		total
+		riskScore
+		lastUpdated
+		staleImageTag
+		countsBySeverity {
+			critical
+			high
+			medium
+			low
+			unassigned
+		}
+		countsByPriority {
+			knownExploited
+			highRisk
+			elevatedRisk
+			monitor
+		}
+	}
+}
+fragment MCPVulnerabilityDeployment on Deployment {
+	repository
+	commitSha
+	createdAt
+}
+`
+
+func MCPVulnerabilityWorkloads(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	name string,
+	environments []string,
+	after *string,
+	applications bool,
+	jobs bool,
+) (data_ *MCPVulnerabilityWorkloadsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "MCPVulnerabilityWorkloads",
+		Query:  MCPVulnerabilityWorkloads_Operation,
+		Variables: &__MCPVulnerabilityWorkloadsInput{
+			Team:         team,
+			Name:         name,
+			Environments: environments,
+			After:        after,
+			Applications: applications,
+			Jobs:         jobs,
+		},
+	}
+
+	data_ = &MCPVulnerabilityWorkloadsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

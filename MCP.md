@@ -79,6 +79,92 @@ Local server configuration:
 - `execute_graphql` - Execute GraphQL queries against the Nais API
 - `validate_graphql` - Validate a GraphQL query without executing it
 
+### Vulnerability Remediation
+- `get_workload_vulnerability_report` - Start here when asked to fix or investigate vulnerabilities. Returns a compact package-grouped overview for an application or job.
+- `get_workload_vulnerability_status` - After deploy, check the intended new digest and scan readiness without fetching individual findings.
+
+```json
+{
+  "team": "nais",
+  "name": "oracleverk"
+}
+```
+
+Optionally set `kind` to `application` or `job`, or filter with
+`"environments": ["prod-gcp"]`. If both workload kinds match, the tool requires
+an explicit `kind` rather than choosing a target.
+
+The report retrieves every finding page, but by default returns only an overview
+per installed package PURL: finding counts by severity and operational priority,
+distinct reported fix/latest versions, counts without known fixes and counts with
+suppressions. Finding counts are not unique CVE counts. Reported fix versions may
+span release branches; the tool does not pick an upgrade by string ordering.
+
+Set `"include_details": true` when individual advisories, risk signals or suppression
+reasons are needed. This adds full findings alongside the same package overview.
+
+Image digests, SBOM status, summary freshness and latest deployment metadata are
+included in either mode. Shared images are grouped by image name and digest,
+falling back to name and tag with a warning when the digest is unavailable.
+Finding fetches fail if the selected workload changes image during pagination.
+
+Compare deployed versions with the current source and build configuration before
+upgrading: source may already be fixed and only need a rebuild/deploy. Latest
+deployment metadata is not proof of the scanned image's source commit. A complete
+report means all pages were retrieved, not that scanning is current or the image
+is vulnerability-free. Missing SBOMs, unavailable summaries and stale summaries
+produce explicit warnings.
+
+After source changes, run project tests and relevant security analysis (for Go,
+consider `govulncheck`). Check advisory preconditions and reachable vulnerable
+code before claiming irrelevance. No known fix, MONITOR priority, passing tests
+or no detected call path alone justifies suppression.
+
+For post-deploy verification, call `get_workload_vulnerability_status`:
+
+```json
+{
+  "team": "nais",
+  "name": "oracleverk",
+  "environments": ["dev-gcp", "prod-gcp"],
+  "expected_digest": "sha256:<digest-from-the-new-build>"
+}
+```
+
+Use the digest of the intended **new** image from the build/deploy output, not the
+pre-fix report. The tool returns `digest_unavailable`, `not_deployed`, `scan_pending`,
+`scan_unavailable` or `scan_ready` per group. It verifies all explicitly requested
+environments exist, and checks each workload's scan metadata even when images are
+shared. Use separate calls when environments should have different digests.
+
+`verified: true` means every selected workload uses the expected digest, its SBOM
+is READY and its summary has an update timestamp and no older-image fallback.
+It does **not** mean zero vulnerabilities, no suppressions or verified source
+provenance. Inspect the returned summary counts separately. The API's summary
+update timestamp is not an authoritative scan timestamp. This call does not wait
+or poll; repeat it with a reasonable delay if the rollout or scan is pending.
+
+Both tools only read Nais data. They do not change source, build, deploy or suppress
+findings. Require evidence and explicit approval for suppression.
+
+#### Current API gaps
+
+The API does not expose advisory aliases/withdrawal or a verified image-to-source
+build relationship. The MCP does not guess these values or fetch external
+advisories automatically. In particular, an unknown fix version is not evidence
+that a finding is unfixable or should be suppressed. Latest deployment metadata
+remains context, not image build provenance.
+
+#### Fresh-session acceptance check
+
+With the local MCP binary configured and an application repository open, start a
+fresh agent session and ask only: "Fix vulnerabilities in this app."
+Check that it calls the report tool, resolves application vs job and environments,
+compares deployed packages with the checkout before editing, and requests detail
+only as needed. After an approved deploy, it should check the intended new digest
+using the status tool and distinguish missing/stale scan data from zero findings.
+Unit tests and direct tool calls do not establish this agent-routing behavior.
+
 ### Schema Exploration
 - `schema_list_types` - List all types in the API schema
 - `schema_get_type` - Get details about a specific type
@@ -98,10 +184,12 @@ Add this to your `AGENTS.md` or system prompt to help the LLM use the Nais MCP e
 You have access to the Nais MCP server for interacting with the Nais platform.
 
 **Initial Setup:**
-1. Always start with `get_nais_context` to understand the user, their teams, and available console URLs
-2. Use schema exploration tools (`schema_list_queries`, `schema_get_type`) to discover available data
-3. Construct GraphQL queries based on the schema
-4. Execute queries with `execute_graphql`
+1. Prefer a matching task-specific tool. Infer team/name from the repository's Nais manifests; do not assume the repository name or that an "app" is an Application.
+2. For vulnerability remediation or triage, start with `get_workload_vulnerability_report`; no context or schema lookup is needed when the target is known
+   - Start with the compact overview; request `include_details: true` only as needed
+   - After deploy, use `get_workload_vulnerability_status` with the intended new digest
+3. Use `get_nais_context` when discovering accessible teams or generating console links. Ask if the target remains ambiguous.
+4. For tasks without a matching tool, explore the schema (`schema_list_queries`, `schema_get_type`), construct a query and call `execute_graphql`
 
 **Query Guidelines:**
 - Use pagination with reasonable page sizes (20-50 items, max 100)
@@ -111,6 +199,16 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 
 All operations are read-only and use the user's authenticated identity.
 ```
+
+## Adding Task-Specific Tools
+
+- Add a tool for a recurring user task, not for each API field. Keep schema exploration and `execute_graphql` as the fallback.
+- Follow `registerVulnerabilityTools`: explicit registration, typed input/output and a thin handler for validation, rate limiting and client creation.
+- Keep API retrieval and aggregation in ordinary functions accepting `graphql.Client`. Reuse the existing generated client and fragments for shared selections. Do not introduce a registry, workflow engine or generic pagination framework in anticipation of future tools.
+- Keep tool descriptions focused on when to call the tool, its result and safety limits. Put longer examples and workflows here, not in every tool's prompt.
+- Default to compact, actionable results with details on request. Fail incomplete retrieval; distinguish unavailable data from an empty result.
+- Test behavior with small fakes: target selection, pagination, aggregation and failure semantics. Avoid tests that restate schemas or the MCP library's behavior.
+- Keep reads separate from changes. New tools must not silently add deployment, mutation or suppression behavior.
 
 ## Command Reference
 

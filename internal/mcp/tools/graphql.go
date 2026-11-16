@@ -80,20 +80,10 @@ The Nais API is a GraphQL API for managing applications and jobs on the Nais pla
    ` + "```" + `
 
 6. **Get vulnerabilities for a workload**:
-   ` + "```graphql" + `
-   query($slug: Slug!, $name: String!, $env: [String!]) {
-     team(slug: $slug) {
-       applications(filter: { name: $name, environments: $env }, first: 1) {
-         nodes {
-           image {
-             vulnerabilitySummary { critical high medium low }
-             vulnerabilities(first: 20) { nodes { identifier severity package } }
-           }
-         }
-       }
-     }
-   }
-   ` + "```" + `
+   Prefer ` + "`get_workload_vulnerability_report`" + ` for vulnerability fixes and triage.
+   It resolves applications and jobs, handles all pages, and returns a compact package overview.
+   Request ` + "`include_details: true`" + ` only when advisory details are needed.
+   After deploy, use ` + "`get_workload_vulnerability_status`" + ` with the intended new image digest.
 
 7. **Get cost information**:
    ` + "```graphql" + `
@@ -187,7 +177,7 @@ func registerGraphQLTools(s *server.MCPServer, ctx *toolContext) {
 	// get_nais_context tool - provides essential context for working with Nais
 	getNaisContextTool := mcp.NewTool(
 		"get_nais_context",
-		mcp.WithDescription("Get the current Nais context including authenticated user, their teams, and console URL. Call this first to understand what the user has access to and to get the correct console URL for links."),
+		mcp.WithDescription("Get the authenticated user, accessible teams and console URL patterns. Use when discovering teams or generating console links; not required before task-specific tools when the target is already known."),
 		mcp.WithInputSchema[GetNaisContextInput](),
 		mcp.WithOutputSchema[GetNaisContextOutput](),
 	)
