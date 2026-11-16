@@ -16,10 +16,11 @@ func list(parentFlags *flag.Kafka) *naistrix.Command {
 	flags := &flag.List{Kafka: parentFlags}
 
 	return &naistrix.Command{
-		Name:        "list",
-		Title:       "List Kafka topics in a team.",
-		Description: "Shows all Kafka topics owned by the team. Use --environment to filter by environment.",
-		Flags:       flags,
+		Name:              "list",
+		Title:             "List Kafka topics in a team.",
+		Description:       "Shows all Kafka topics owned by the team. Use --environment to filter by Nais environment.",
+		Flags:             flags,
+		ValidateFlagsFunc: validateEnvironment(parentFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			labelFilters, err := labels.ParseFilters(flags.Labels)
 			if err != nil {

@@ -856,8 +856,15 @@ func (v *CreateConfigResponse) GetCreateConfig() CreateConfigCreateConfigCreateC
 
 // CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload includes the requested fields of the GraphQL type CreateKafkaCredentialsPayload.
 type CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload struct {
+	// The environment the Kafka credentials were created for.
+	EnvironmentName string `json:"environmentName"`
 	// The generated credentials.
 	Credentials CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials `json:"credentials"`
+}
+
+// GetEnvironmentName returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload) GetEnvironmentName() string {
+	return v.EnvironmentName
 }
 
 // GetCredentials returns CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayload.Credentials, and is useful for accessing the field via an interface.
@@ -39004,6 +39011,7 @@ func CreateConfig(
 const CreateKafkaCredentials_Operation = `
 mutation CreateKafkaCredentials ($teamSlug: Slug!, $environmentName: String!, $ttl: String!) {
 	createKafkaCredentials(input: {teamSlug:$teamSlug,environmentName:$environmentName,ttl:$ttl}) {
+		environmentName
 		credentials {
 			username
 			accessCert

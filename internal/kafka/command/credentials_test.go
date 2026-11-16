@@ -2,6 +2,9 @@ package command
 
 import (
 	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,6 +13,66 @@ import (
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
+
+// TODO: Remove legacy alias coverage on 2027-02-11, after the 90-day transition.
+func TestCredentialsEnvironment(t *testing.T) {
+	for _, tt := range []struct {
+		name, requested, canonical, warning string
+	}{
+		{name: "canonical NAV environment", requested: "dev-gcp", canonical: "dev-gcp"},
+		{name: "canonical dev in another tenant", requested: "dev", canonical: "dev"},
+		{name: "legacy alias", requested: "dev", canonical: "dev-gcp", warning: `Warning: environment "dev" is a legacy alias; use --environment dev-gcp instead.`},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			creds := testKafkaCreds()
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var request struct {
+					Variables struct{ EnvironmentName string }
+				}
+				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+					t.Error(err)
+				}
+				if request.Variables.EnvironmentName != tt.requested {
+					t.Errorf("requested environment = %q, want %q", request.Variables.EnvironmentName, tt.requested)
+				}
+				w.Header().Set("Content-Type", "application/json")
+				_ = json.NewEncoder(w).Encode(map[string]any{"data": map[string]any{"createKafkaCredentials": map[string]any{
+					"environmentName": tt.canonical,
+					"credentials":     creds,
+				}}})
+			}))
+			defer server.Close()
+			t.Setenv("NAIS_API_LOCAL_HOST", strings.TrimPrefix(server.URL, "http://"))
+			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+			if err != nil {
+				t.Fatal(err)
+			}
+			previous := os.Stderr
+			os.Stderr = stderr
+			t.Cleanup(func() { os.Stderr = previous; _ = stderr.Close() })
+			var output bytes.Buffer
+			app := newKafkaTestApplication(t, &output)
+			args := []string{"kafka", "credentials", "-t", "my-team", "-e", tt.requested, "--ttl", "1d"}
+			err = app.Run(naistrix.RunWithArgs(args))
+			if err != nil {
+				t.Fatal(err)
+			}
+			diagnostics, err := os.ReadFile(stderr.Name())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := strings.TrimSpace(string(diagnostics)); got != tt.warning {
+				t.Errorf("stderr = %q, want %q", got, tt.warning)
+			}
+			if strings.Contains(output.String(), "legacy alias") {
+				t.Error("alias warning contaminated credential output")
+			}
+			if !strings.Contains(output.String(), `KAFKA_BROKERS="`+creds.Brokers+`"`) {
+				t.Error("missing credential output")
+			}
+		})
+	}
+}
 
 func newTestOutputWriter(buf *bytes.Buffer) *naistrix.OutputWriter {
 	level := naistrix.OutputVerbosityLevelNormal

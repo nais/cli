@@ -39,7 +39,10 @@ func listGrants(parentFlags *flag.Kafka) *naistrix.Command {
 				},
 			},
 		},
-		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
+			validation.RequireTeamAndEnvironmentFlags(flags),
+			validateEnvironment(parentFlags),
+		),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			grants, err := kafka.GetKafkaTopicGrants(ctx, args.Get("topic"), flags.Team, flags.Environment)
 			if err != nil {

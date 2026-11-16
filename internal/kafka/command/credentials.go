@@ -21,7 +21,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 	return &naistrix.Command{
 		Name:        "credentials",
 		Title:       "Create temporary credentials for Kafka.",
-		Description: "Creates temporary credentials for accessing Kafka. Output format can be env (default), kcat, or java. The env format prints environment variables to stdout. The kcat and java formats write configuration files to a temporary directory.",
+		Description: "Creates temporary Kafka credentials in the selected Nais environment. Output format can be env (default), kcat, or java.",
 		Flags:       flags,
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(
 			validation.RequireEnvironmentFlag(flags),
@@ -51,7 +51,7 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 			},
 		},
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			creds, err := kafka.CreateCredentials(
+			result, err := kafka.CreateCredentials(
 				ctx,
 				flags.Team,
 				string(flags.Environment),
@@ -60,6 +60,12 @@ func credentials(parentFlags *flag.Kafka) *naistrix.Command {
 			if err != nil {
 				return fmt.Errorf("creating Kafka credentials: %w", err)
 			}
+
+			// TODO: Remove this legacy alias warning on 2027-02-11, after the 90-day transition.
+			if result.EnvironmentName != "" && result.EnvironmentName != string(flags.Environment) {
+				_, _ = fmt.Fprintf(os.Stderr, "Warning: environment %q is a legacy alias; use --environment %s instead.\n", flags.Environment, result.EnvironmentName)
+			}
+			creds := &result.Credentials
 
 			output := string(flags.Output)
 			if output == "" {
