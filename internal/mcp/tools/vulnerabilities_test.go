@@ -120,13 +120,13 @@ func TestWorkloadVulnerabilityReport(t *testing.T) {
 					priority, severity, pkg := "MONITOR", "LOW", "pkg:golang/stdlib@v1.26.8"
 					var fixVersion *string
 					var suppression any
-					if i == 0 {
+					switch i {
+					case 0:
 						severity = "CRITICAL"
 						fixVersion = new("v1.26.9")
-					} else if i == 1 {
+					case 1:
 						fixVersion = new("v1.26.11")
-					}
-					if i == 2 {
+					case 2:
 						priority, severity, pkg = "HIGH", "HIGH", "pkg:golang/golang.org/x/net@v0.59.0"
 					}
 					if i != 0 {
