@@ -17,12 +17,13 @@ type RateLimiter interface {
 
 // RegisterTools registers all MCP tools with the server.
 //
-// The tools are organized into two categories:
+// The tools are organized into three categories:
 // 1. Schema exploration tools - for discovering the GraphQL API structure
 // 2. GraphQL execution tools - for executing queries against the Nais API
+// 3. Workload vulnerability reports - for starting remediation without schema exploration
 //
-// This approach allows LLMs to dynamically explore the schema and construct
-// queries based on user needs, rather than relying on a fixed set of specialized tools.
+// Specialized reports cover common workflows; schema exploration and query
+// execution remain available for other needs.
 func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter, logger *slog.Logger) {
 	logger.Debug("Starting tool registration")
 
@@ -39,6 +40,8 @@ func RegisterTools(s *server.MCPServer, c client.Client, rateLimiter RateLimiter
 	// Register GraphQL execution tools (for dynamic query execution)
 	logger.Debug("Registering GraphQL tools")
 	registerGraphQLTools(s, ctx)
+
+	registerVulnerabilityTools(s, ctx)
 
 	logger.Debug("All tools registered successfully")
 }

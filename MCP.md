@@ -79,6 +79,38 @@ Local server configuration:
 - `execute_graphql` - Execute GraphQL queries against the Nais API
 - `validate_graphql` - Validate a GraphQL query without executing it
 
+### Vulnerability Remediation
+- `get_workload_vulnerability_report` - Start here when asked to fix or investigate vulnerabilities in an application or job. Resolves exact workload names, retrieves every page of Nais findings, and groups shared images across environments.
+
+```json
+{
+  "team": "nais",
+  "name": "oracleverk"
+}
+```
+
+Optionally set `kind` to `application` or `job`, or filter with
+`"environments": ["prod-gcp"]`. If both workload kinds match, the tool requires
+an explicit `kind` rather than choosing a target.
+
+The structured report contains image digests, SBOM status, summary freshness,
+latest deployment metadata, package PURLs with installed versions, severity,
+operational risk signals, fix/latest versions, advisory links and existing
+suppressions. Shared images are grouped by image name and digest, falling back
+to name and tag with a warning when the digest is unavailable. Finding fetches
+fail if the selected workload changes image during pagination.
+
+Compare deployed versions with the current source and build configuration before
+upgrading: source may already be fixed and only need a rebuild/deploy. Latest
+deployment metadata is not proof of the scanned image's source commit. A complete
+report means all pages were retrieved, not that scanning is current or the image
+is vulnerability-free. Missing SBOMs, unavailable summaries and stale summaries
+produce explicit warnings.
+
+This tool only reads data. It does not change source, build, deploy or suppress
+findings. Require evidence and explicit approval for suppression, and do not claim
+deployed remediation until the intended new image has current scan results.
+
 ### Schema Exploration
 - `schema_list_types` - List all types in the API schema
 - `schema_get_type` - Get details about a specific type
@@ -99,9 +131,10 @@ You have access to the Nais MCP server for interacting with the Nais platform.
 
 **Initial Setup:**
 1. Always start with `get_nais_context` to understand the user, their teams, and available console URLs
-2. Use schema exploration tools (`schema_list_queries`, `schema_get_type`) to discover available data
-3. Construct GraphQL queries based on the schema
-4. Execute queries with `execute_graphql`
+2. For vulnerability remediation or triage, call `get_workload_vulnerability_report` with the team/name from the Nais manifest; no schema exploration is needed
+3. Otherwise use schema exploration tools (`schema_list_queries`, `schema_get_type`) to discover available data
+4. Construct GraphQL queries based on the schema
+5. Execute queries with `execute_graphql`
 
 **Query Guidelines:**
 - Use pagination with reasonable page sizes (20-50 items, max 100)
