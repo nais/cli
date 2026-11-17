@@ -159,7 +159,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) / sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "expr": "(sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) or vector(0)) / sum(sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
             "refId": "A",
             "legendFormat": "__auto",
             "instant": true,
@@ -387,8 +387,8 @@
       },
       {
         "type": "table",
-        "title": "Commands",
-        "description": "Invocations and failure rate per command in the selected time range.",
+        "title": "Commands by version",
+        "description": "Invocations and failure rate per command and CLI version in the selected time range.",
         "datasource": {
           "type": "prometheus",
           "uid": "P91A6F0B3584B90E7"
@@ -406,7 +406,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "expr": "sum by (command, version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
             "refId": "A",
             "legendFormat": "__auto",
             "instant": true,
@@ -418,7 +418,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) / sum by (command) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "expr": "(sum by (command, version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\", success=\"false\"}[$__range])) or 0 * sum by (command, version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))) / sum by (command, version) (sum_over_time(nais_cli_command_usage_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
             "refId": "B",
             "legendFormat": "__auto",
             "instant": true,
@@ -497,7 +497,14 @@
               "renameByName": {
                 "command": "Command",
                 "Value #A": "Invocations",
-                "Value #B": "Failure rate"
+                "Value #B": "Failure rate",
+                "version": "Version"
+              },
+              "indexByName": {
+                "command": 0,
+                "version": 1,
+                "Value #A": 2,
+                "Value #B": 3
               }
             }
           }
@@ -575,8 +582,8 @@
       },
       {
         "type": "table",
-        "title": "Duration by command",
-        "description": "Median, 95th percentile and mean duration per command in the selected time range.",
+        "title": "Duration by command and version",
+        "description": "Median, 95th percentile and mean duration per command and CLI version in the selected time range.",
         "datasource": {
           "type": "prometheus",
           "uid": "P91A6F0B3584B90E7"
@@ -594,7 +601,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "histogram_quantile(0.5, sum by (command, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "expr": "histogram_quantile(0.5, sum by (command, version, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
             "refId": "A",
             "legendFormat": "__auto",
             "instant": true,
@@ -606,7 +613,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "histogram_quantile(0.95, sum by (command, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
+            "expr": "histogram_quantile(0.95, sum by (command, version, le) (sum_over_time(nais_cli_command_duration_seconds_bucket{command=~\"$command\", version=~\"$version\"}[$__range])))",
             "refId": "B",
             "legendFormat": "__auto",
             "instant": true,
@@ -618,7 +625,7 @@
               "type": "prometheus",
               "uid": "P91A6F0B3584B90E7"
             },
-            "expr": "sum by (command) (sum_over_time(nais_cli_command_duration_seconds_sum{command=~\"$command\", version=~\"$version\"}[$__range])) / sum by (command) (sum_over_time(nais_cli_command_duration_seconds_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
+            "expr": "sum by (command, version) (sum_over_time(nais_cli_command_duration_seconds_sum{command=~\"$command\", version=~\"$version\"}[$__range])) / sum by (command, version) (sum_over_time(nais_cli_command_duration_seconds_count{command=~\"$command\", version=~\"$version\"}[$__range]))",
             "refId": "C",
             "legendFormat": "__auto",
             "instant": true,
@@ -655,7 +662,15 @@
                 "command": "Command",
                 "Value #A": "p50",
                 "Value #B": "p95",
-                "Value #C": "Mean"
+                "Value #C": "Mean",
+                "version": "Version"
+              },
+              "indexByName": {
+                "command": 0,
+                "version": 1,
+                "Value #A": 2,
+                "Value #B": 3,
+                "Value #C": 4
               }
             }
           }
