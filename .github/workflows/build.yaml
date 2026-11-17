@@ -4,7 +4,7 @@ on:
     types: [opened, reopened, synchronize, labeled]
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
+    paths-ignore: ["**.md", "grafana/**"]
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
