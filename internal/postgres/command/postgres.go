@@ -22,6 +22,7 @@ func Postgres(parentFlags *flags.GlobalFlags) *naistrix.Command {
 			listCommand(flags),
 			instanceGetCommand(flags),
 			instanceCreateCommand(flags),
+			instanceCloneCommand(flags),
 			instanceUpdateCommand(flags),
 			instanceDeleteCommand(flags),
 			psqlCommand(flags),

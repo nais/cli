@@ -3044,6 +3044,10 @@ Input for creating a Postgres.
 Input for creating a Postgres.
 """
 	labels: [ResourceLabelInput!]
+"""
+Input for creating a Postgres.
+"""
+	recovery: PostgresRecoveryInput
 }
 
 """
@@ -4324,6 +4328,10 @@ Link to the vulnerability details.
 
 type ImageVulnerabilityConnection {
 """
+Facets over all matching findings, ignoring pagination and respecting the current filter.
+"""
+	facets: ImageVulnerabilityFacets
+"""
 Information to aid in pagination.
 """
 	pageInfo: PageInfo!
@@ -4346,6 +4354,16 @@ A cursor for use in pagination.
 The image vulnerability.
 """
 	node: ImageVulnerability!
+}
+
+"""
+Distribution counts over all matching image findings, ignoring pagination and respecting the current filter.
+"""
+type ImageVulnerabilityFacets {
+"""
+Distribution of matching findings by PURL type.
+"""
+	packageTypes: [StringFacetItem!]!
 }
 
 """
@@ -7640,6 +7658,10 @@ Earliest point in time covered by available backups, when known.
 """
 	earliestRestoreTime: Time
 """
+Where this database was restored from, if it was created by a recovery.
+"""
+	recovery: PostgresRecovery
+"""
 Issues reported for this database.
 """
 	issues(
@@ -7734,6 +7756,10 @@ Filter items.
 """
 		filter: ActivityLogFilter
 	): ActivityLogEntryConnection!
+"""
+The cost for this Postgres. Billing data is delayed by at least two days.
+"""
+	cost: PostgresCost!
 }
 
 """
@@ -7959,6 +7985,40 @@ type PostgresConnection {
 Labels across team Postgres databases, independent of pagination.
 """
 	facets: PostgresFacets!
+}
+
+"""
+The cost for a Postgres.
+"""
+type PostgresCost {
+"""
+Daily cost in ascending date order. Dates without cost data are omitted. Null when there is no cost data in the period.
+"""
+	daily(
+"""
+Start date of the period, inclusive.
+"""
+		from: Date!
+"""
+End date of the period, inclusive; must not be in the future.
+"""
+		to: Date!
+	): PostgresCostPeriod
+"""
+Monthly cost for the last 12 months, newest first. The date is the last day with cost data in the month. Null when there is no cost data.
+"""
+	monthly: PostgresCostPeriod
+}
+
+type PostgresCostPeriod {
+"""
+The total cost in euros for the period.
+"""
+	sum: Float!
+"""
+The cost series.
+"""
+	series: [ServiceCostSeries!]!
 }
 
 """
@@ -8253,6 +8313,42 @@ Server-controlled expiry of the access.
 Caller-provided audit reason.
 """
 	reason: String!
+}
+
+"""
+Origin and progress of a database created by recovery.
+"""
+type PostgresRecovery {
+"""
+Name of the source database. It may have been deleted since.
+"""
+	sourcePostgres: String!
+"""
+The point in time restored to.
+"""
+	targetTime: Time!
+"""
+True once the database is independent of the source and has its own backup.
+"""
+	completed: Boolean!
+"""
+Why recovery failed, if it did.
+"""
+	failureMessage: String
+}
+
+"""
+An explicit point-in-time recovery source for a new Postgres database.
+"""
+input PostgresRecoveryInput {
+"""
+An explicit point-in-time recovery source for a new Postgres database.
+"""
+	sourcePostgres: String!
+"""
+An explicit point-in-time recovery source for a new Postgres database.
+"""
+	targetTime: Time!
 }
 
 """
@@ -11251,7 +11347,7 @@ The sum of the cost across all services.
 """
 	sum: Float!
 """
-The cost for the services used by the workload.
+The cost for the services used by the resource.
 """
 	services: [ServiceCostSample!]!
 }

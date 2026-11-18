@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/nais/cli/internal/postgres"
 	"github.com/nais/cli/internal/postgres/command/flag"
@@ -21,6 +22,23 @@ type postgresDetails struct {
 	HighAvailability bool                     `json:"highAvailability"`
 	Resources        postgresResourceRequests `json:"resources"`
 	Labels           []postgresLabel          `json:"labels"`
+	Recovery         *postgresRecovery        `json:"recovery"`
+}
+
+// targetTimeLocal shows the recovery point in the user's time zone; JSON keeps the UTC instant.
+func (r postgresRecovery) targetTimeLocal() string {
+	parsed, err := time.Parse(time.RFC3339, r.TargetTime)
+	if err != nil {
+		return r.TargetTime
+	}
+	return formatLocalTime(parsed, time.Local)
+}
+
+type postgresRecovery struct {
+	Source         string  `json:"source"`
+	TargetTime     string  `json:"targetTime"`
+	Completed      bool    `json:"completed"`
+	FailureMessage *string `json:"failureMessage"`
 }
 
 type postgresResourceRequests struct {
@@ -67,6 +85,9 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 			for _, label := range p.Labels {
 				detail.Labels = append(detail.Labels, postgresLabel{Key: label.Key, Value: label.Value})
 			}
+			if r := p.Recovery; r != nil {
+				detail.Recovery = &postgresRecovery{Source: r.SourcePostgres, TargetTime: r.TargetTime.UTC().Format(time.RFC3339), Completed: r.Completed, FailureMessage: r.FailureMessage}
+			}
 			if f.Output == "json" {
 				return out.JSON(output.JSONWithPrettyOutput()).Render(detail)
 			}
@@ -99,6 +120,17 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 				{"Disk:", requested(detail.Resources.DiskSize)},
 			} {
 				out.Printf("  %-18s %s\n", setting.label, setting.value)
+			}
+			if r := detail.Recovery; r != nil {
+				status := "In progress"
+				if r.FailureMessage != nil {
+					status = "Failed: " + *r.FailureMessage
+				} else if r.Completed {
+					status = "Completed"
+				}
+				out.Printf("\n  %-18s %s\n", "Cloned from:", r.Source)
+				out.Printf("  %-18s %s\n", "Clone point:", r.targetTimeLocal())
+				out.Printf("  %-18s %s\n", "Clone status:", status)
 			}
 			if len(detail.Labels) > 0 {
 				labels := make([]string, 0, len(detail.Labels))
