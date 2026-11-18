@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -136,24 +137,37 @@ func resolveCloneTime(value string, now time.Time, loc *time.Location) (target t
 
 func parseLocalTime(value string, loc *time.Location) (time.Time, error) {
 	for _, layout := range localTimeLayouts {
-		parsed, err := time.ParseInLocation(layout, value, loc)
+		wall, err := time.Parse(layout, value)
 		if err != nil {
 			continue
 		}
-		// Go moves a time skipped by a DST change instead of failing; do not silently pick another instant.
-		if parsed.Format(layout) != value {
+		instants := localInstants(wall, layout, loc)
+		if len(instants) == 0 {
 			return time.Time{}, fmt.Errorf("--at %q does not exist in time zone %s (daylight saving change)", value, loc)
 		}
-		// The autumn change repeats an hour and Go does not say which instant it picks, so choose
-		// the earlier one deterministically (the same as Console).
-		for _, shifted := range []time.Time{parsed.Add(-time.Hour), parsed.Add(time.Hour)} {
-			if shifted.In(loc).Format(layout) == value && shifted.Before(parsed) {
-				parsed = shifted
-			}
-		}
-		return parsed, nil
+		// A repeated time occurs more than once; choose the earliest, the same as Console.
+		return slices.MinFunc(instants, func(a, b time.Time) int { return a.Compare(b) }), nil
 	}
 	return time.Time{}, fmt.Errorf("--at must be a local time like \"2026-11-16 12:00\" or RFC 3339 like 2026-11-16T12:00:00Z")
+}
+
+// localInstants returns every instant at which loc's wall clock shows wall: none when the time is
+// skipped by a clock change, two when it is repeated. It tries the zone's actual offsets around the
+// date rather than assuming a clock change is one hour.
+func localInstants(wall time.Time, layout string, loc *time.Location) []time.Time {
+	offsets := map[int]bool{}
+	for _, day := range []int{-1, 0, 1} {
+		_, offset := wall.AddDate(0, 0, day).In(loc).Zone()
+		offsets[offset] = true
+	}
+	var instants []time.Time
+	for offset := range offsets {
+		instant := wall.Add(-time.Duration(offset) * time.Second)
+		if instant.In(loc).Format(layout) == wall.Format(layout) {
+			instants = append(instants, instant)
+		}
+	}
+	return instants
 }
 
 // validateCloneWindow rejects targets outside the backup window. A default target that is

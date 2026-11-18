@@ -301,3 +301,40 @@ func TestGetShowsCloneProgress(t *testing.T) {
 		})
 	}
 }
+
+// Lord Howe Island shifts its clocks by 30 minutes, so a repeated or skipped local time cannot be
+// found by trying one-hour offsets.
+func TestParseLocalTimeWithHalfHourDaylightSaving(t *testing.T) {
+	lordHowe, err := time.LoadLocation("Australia/Lord_Howe")
+	if err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2027, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, tt := range []struct {
+		name, value, wantError string
+		want                   time.Time
+	}{
+		{name: "repeated half hour resolves to the earlier occurrence", value: "2026-04-05 01:45", want: time.Date(2026, 4, 4, 14, 45, 0, 0, time.UTC)},
+		{name: "end of the repeated half hour is still the earlier occurrence", value: "2026-04-05 01:59:59", want: time.Date(2026, 4, 4, 14, 59, 59, 0, time.UTC)},
+		{name: "first time after the repeat is unambiguous", value: "2026-04-05 02:00", want: time.Date(2026, 4, 4, 15, 30, 0, 0, time.UTC)},
+		{name: "before the repeat is unambiguous", value: "2026-04-05 01:15", want: time.Date(2026, 4, 4, 14, 15, 0, 0, time.UTC)},
+		{name: "half hour skipped in spring is rejected", value: "2026-10-04 02:15", wantError: "does not exist"},
+		{name: "first time after the skipped half hour", value: "2026-10-04 02:30", want: time.Date(2026, 10, 3, 15, 30, 0, 0, time.UTC)},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseLocalTime(tt.value, lordHowe)
+			if tt.wantError != "" {
+				if err == nil || !strings.Contains(err.Error(), tt.wantError) {
+					t.Fatalf("error = %v, want %q", err, tt.wantError)
+				}
+				return
+			}
+			if err != nil || !got.Equal(tt.want) {
+				t.Fatalf("got %v, %v; want %v", got.UTC(), err, tt.want)
+			}
+			if _, _, err := resolveCloneTime(tt.value, now, lordHowe); err != nil {
+				t.Errorf("resolveCloneTime: %v", err)
+			}
+		})
+	}
+}
