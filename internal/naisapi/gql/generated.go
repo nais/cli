@@ -1190,6 +1190,8 @@ type CreatePostgresInput struct {
 	DiskSize *string `json:"diskSize,omitempty"`
 	// Input for creating a Postgres.
 	Labels []ResourceLabelInput `json:"labels"`
+	// Input for creating a Postgres.
+	Recovery *PostgresRecoveryInput `json:"recovery,omitempty"`
 }
 
 // GetName returns CreatePostgresInput.Name, and is useful for accessing the field via an interface.
@@ -1221,6 +1223,9 @@ func (v *CreatePostgresInput) GetDiskSize() *string { return v.DiskSize }
 
 // GetLabels returns CreatePostgresInput.Labels, and is useful for accessing the field via an interface.
 func (v *CreatePostgresInput) GetLabels() []ResourceLabelInput { return v.Labels }
+
+// GetRecovery returns CreatePostgresInput.Recovery, and is useful for accessing the field via an interface.
+func (v *CreatePostgresInput) GetRecovery() *PostgresRecoveryInput { return v.Recovery }
 
 // CreatePostgresResponse is returned by CreatePostgres on success.
 type CreatePostgresResponse struct {
@@ -11344,6 +11349,105 @@ type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTe
 func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
 }
+
+// GetCloneSourceResponse is returned by GetCloneSource on success.
+type GetCloneSourceResponse struct {
+	// Get a team by its slug.
+	Team GetCloneSourceTeam `json:"team"`
+}
+
+// GetTeam returns GetCloneSourceResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceResponse) GetTeam() GetCloneSourceTeam { return v.Team }
+
+// GetCloneSourceTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type GetCloneSourceTeam struct {
+	// Get a specific environment for the team.
+	Environment GetCloneSourceTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetCloneSourceTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeam) GetEnvironment() GetCloneSourceTeamEnvironment { return v.Environment }
+
+// GetCloneSourceTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetCloneSourceTeamEnvironment struct {
+	// Postgres in the team environment.
+	Postgres GetCloneSourceTeamEnvironmentPostgres `json:"postgres"`
+}
+
+// GetPostgres returns GetCloneSourceTeamEnvironment.Postgres, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironment) GetPostgres() GetCloneSourceTeamEnvironmentPostgres {
+	return v.Postgres
+}
+
+// GetCloneSourceTeamEnvironmentPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A managed Postgres database.
+type GetCloneSourceTeamEnvironmentPostgres struct {
+	// Name of this Postgres.
+	Name string `json:"name"`
+	// Configured PostgreSQL major version.
+	MajorVersion string `json:"majorVersion"`
+	// Whether high availability is configured.
+	HighAvailability bool `json:"highAvailability"`
+	// Observed database state; availability does not guarantee successful client connections.
+	State PostgresState `json:"state"`
+	// Earliest point in time covered by available backups, when known.
+	EarliestRestoreTime *time.Time `json:"earliestRestoreTime"`
+	// Requested CPU, memory and disk size, when present on this Postgres.
+	Resources GetCloneSourceTeamEnvironmentPostgresResources `json:"resources"`
+}
+
+// GetName returns GetCloneSourceTeamEnvironmentPostgres.Name, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetName() string { return v.Name }
+
+// GetMajorVersion returns GetCloneSourceTeamEnvironmentPostgres.MajorVersion, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetMajorVersion() string { return v.MajorVersion }
+
+// GetHighAvailability returns GetCloneSourceTeamEnvironmentPostgres.HighAvailability, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetHighAvailability() bool { return v.HighAvailability }
+
+// GetState returns GetCloneSourceTeamEnvironmentPostgres.State, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetState() PostgresState { return v.State }
+
+// GetEarliestRestoreTime returns GetCloneSourceTeamEnvironmentPostgres.EarliestRestoreTime, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetEarliestRestoreTime() *time.Time {
+	return v.EarliestRestoreTime
+}
+
+// GetResources returns GetCloneSourceTeamEnvironmentPostgres.Resources, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgres) GetResources() GetCloneSourceTeamEnvironmentPostgresResources {
+	return v.Resources
+}
+
+// GetCloneSourceTeamEnvironmentPostgresResources includes the requested fields of the GraphQL type PostgresResources.
+// The GraphQL type's documentation follows.
+//
+// Resource requests configured on Postgres. Omitted requests are null.
+type GetCloneSourceTeamEnvironmentPostgresResources struct {
+	// Requested CPU.
+	Cpu *string `json:"cpu"`
+	// Requested memory.
+	Memory *string `json:"memory"`
+	// Requested disk size.
+	DiskSize *string `json:"diskSize"`
+}
+
+// GetCpu returns GetCloneSourceTeamEnvironmentPostgresResources.Cpu, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgresResources) GetCpu() *string { return v.Cpu }
+
+// GetMemory returns GetCloneSourceTeamEnvironmentPostgresResources.Memory, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgresResources) GetMemory() *string { return v.Memory }
+
+// GetDiskSize returns GetCloneSourceTeamEnvironmentPostgresResources.DiskSize, and is useful for accessing the field via an interface.
+func (v *GetCloneSourceTeamEnvironmentPostgresResources) GetDiskSize() *string { return v.DiskSize }
 
 // GetConfigActivityResponse is returned by GetConfigActivity on success.
 type GetConfigActivityResponse struct {
@@ -22243,6 +22347,8 @@ type GetPostgresTeamEnvironmentPostgres struct {
 	Resources GetPostgresTeamEnvironmentPostgresResources `json:"resources"`
 	// User-defined labels on this Postgres.
 	Labels []GetPostgresTeamEnvironmentPostgresLabelsResourceLabel `json:"labels"`
+	// Where this database was restored from, if it was created by a recovery.
+	Recovery *GetPostgresTeamEnvironmentPostgresRecovery `json:"recovery"`
 }
 
 // GetName returns GetPostgresTeamEnvironmentPostgres.Name, and is useful for accessing the field via an interface.
@@ -22267,6 +22373,11 @@ func (v *GetPostgresTeamEnvironmentPostgres) GetLabels() []GetPostgresTeamEnviro
 	return v.Labels
 }
 
+// GetRecovery returns GetPostgresTeamEnvironmentPostgres.Recovery, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgres) GetRecovery() *GetPostgresTeamEnvironmentPostgresRecovery {
+	return v.Recovery
+}
+
 // GetPostgresTeamEnvironmentPostgresLabelsResourceLabel includes the requested fields of the GraphQL type ResourceLabel.
 // The GraphQL type's documentation follows.
 //
@@ -22287,6 +22398,37 @@ func (v *GetPostgresTeamEnvironmentPostgresLabelsResourceLabel) GetKey() string 
 
 // GetValue returns GetPostgresTeamEnvironmentPostgresLabelsResourceLabel.Value, and is useful for accessing the field via an interface.
 func (v *GetPostgresTeamEnvironmentPostgresLabelsResourceLabel) GetValue() string { return v.Value }
+
+// GetPostgresTeamEnvironmentPostgresRecovery includes the requested fields of the GraphQL type PostgresRecovery.
+// The GraphQL type's documentation follows.
+//
+// Origin and progress of a database created by recovery.
+type GetPostgresTeamEnvironmentPostgresRecovery struct {
+	// Name of the source database. It may have been deleted since.
+	SourcePostgres string `json:"sourcePostgres"`
+	// The point in time restored to.
+	TargetTime time.Time `json:"targetTime"`
+	// True once the database is independent of the source and has its own backup.
+	Completed bool `json:"completed"`
+	// Why recovery failed, if it did.
+	FailureMessage *string `json:"failureMessage"`
+}
+
+// GetSourcePostgres returns GetPostgresTeamEnvironmentPostgresRecovery.SourcePostgres, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresRecovery) GetSourcePostgres() string {
+	return v.SourcePostgres
+}
+
+// GetTargetTime returns GetPostgresTeamEnvironmentPostgresRecovery.TargetTime, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresRecovery) GetTargetTime() time.Time { return v.TargetTime }
+
+// GetCompleted returns GetPostgresTeamEnvironmentPostgresRecovery.Completed, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresRecovery) GetCompleted() bool { return v.Completed }
+
+// GetFailureMessage returns GetPostgresTeamEnvironmentPostgresRecovery.FailureMessage, and is useful for accessing the field via an interface.
+func (v *GetPostgresTeamEnvironmentPostgresRecovery) GetFailureMessage() *string {
+	return v.FailureMessage
+}
 
 // GetPostgresTeamEnvironmentPostgresResources includes the requested fields of the GraphQL type PostgresResources.
 // The GraphQL type's documentation follows.
@@ -36838,6 +36980,20 @@ var AllPostgresAccessState = []PostgresAccessState{
 	PostgresAccessStateExpired,
 }
 
+// An explicit point-in-time recovery source for a new Postgres database.
+type PostgresRecoveryInput struct {
+	// An explicit point-in-time recovery source for a new Postgres database.
+	SourcePostgres string `json:"sourcePostgres"`
+	// An explicit point-in-time recovery source for a new Postgres database.
+	TargetTime time.Time `json:"targetTime"`
+}
+
+// GetSourcePostgres returns PostgresRecoveryInput.SourcePostgres, and is useful for accessing the field via an interface.
+func (v *PostgresRecoveryInput) GetSourcePostgres() string { return v.SourcePostgres }
+
+// GetTargetTime returns PostgresRecoveryInput.TargetTime, and is useful for accessing the field via an interface.
+func (v *PostgresRecoveryInput) GetTargetTime() time.Time { return v.TargetTime }
+
 // Observed state of a Postgres database.
 type PostgresState string
 
@@ -39395,6 +39551,22 @@ func (v *__GetApplicationStatusInput) GetName() string { return v.Name }
 
 // GetEnv returns __GetApplicationStatusInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetApplicationStatusInput) GetEnv() []string { return v.Env }
+
+// __GetCloneSourceInput is used internally by genqlient
+type __GetCloneSourceInput struct {
+	Team        string `json:"team"`
+	Environment string `json:"environment"`
+	Postgres    string `json:"postgres"`
+}
+
+// GetTeam returns __GetCloneSourceInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetCloneSourceInput) GetTeam() string { return v.Team }
+
+// GetEnvironment returns __GetCloneSourceInput.Environment, and is useful for accessing the field via an interface.
+func (v *__GetCloneSourceInput) GetEnvironment() string { return v.Environment }
+
+// GetPostgres returns __GetCloneSourceInput.Postgres, and is useful for accessing the field via an interface.
+func (v *__GetCloneSourceInput) GetPostgres() string { return v.Postgres }
 
 // __GetConfigActivityInput is used internally by genqlient
 type __GetConfigActivityInput struct {
@@ -41989,6 +42161,57 @@ func GetApplicationStatus(
 	return data_, err_
 }
 
+// The query executed by GetCloneSource.
+const GetCloneSource_Operation = `
+query GetCloneSource ($team: Slug!, $environment: String!, $postgres: String!) {
+	team(slug: $team) {
+		environment(name: $environment) {
+			postgres(name: $postgres) {
+				name
+				majorVersion
+				highAvailability
+				state
+				earliestRestoreTime
+				resources {
+					cpu
+					memory
+					diskSize
+				}
+			}
+		}
+	}
+}
+`
+
+func GetCloneSource(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	environment string,
+	postgres string,
+) (data_ *GetCloneSourceResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetCloneSource",
+		Query:  GetCloneSource_Operation,
+		Variables: &__GetCloneSourceInput{
+			Team:        team,
+			Environment: environment,
+			Postgres:    postgres,
+		},
+	}
+
+	data_ = &GetCloneSourceResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetConfig.
 const GetConfig_Operation = `
 query GetConfig ($name: String!, $environmentName: String!, $teamSlug: Slug!) {
@@ -42637,6 +42860,12 @@ query GetPostgres ($team: Slug!, $environment: String!, $postgres: String!) {
 				labels {
 					key
 					value
+				}
+				recovery {
+					sourcePostgres
+					targetTime
+					completed
+					failureMessage
 				}
 			}
 		}

@@ -16,6 +16,7 @@ func GetPostgres(ctx context.Context, team, environment, name string) (*gql.GetP
 			name majorVersion highAvailability state
 			resources { cpu memory diskSize }
 			labels { key value }
+			recovery { sourcePostgres targetTime completed failureMessage }
 		} } }
 	}
 	`

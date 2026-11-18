@@ -38,6 +38,15 @@ type (
 		Memory           string          `name:"memory" usage:"Requested memory, e.g. 512Mi."`
 		DiskSize         string          `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
 	}
+	InstanceClone struct {
+		*Postgres
+		Yes              bool             `name:"yes" short:"y" usage:"Confirm without a prompt."`
+		At               string           `name:"at" usage:"Point in time to clone from, in local time (e.g. \"2026-11-16 12:00\") or RFC 3339 with offset. Defaults to the latest available point, about 10 minutes ago."`
+		HighAvailability HighAvailability `name:"high-availability" usage:"Enable or disable high availability (true or false). Defaults to the source's setting."`
+		CPU              string           `name:"cpu" usage:"Requested CPU, e.g. 100m. Defaults to the source's request."`
+		Memory           string           `name:"memory" usage:"Requested memory, e.g. 512Mi. Defaults to the source's request."`
+		DiskSize         string           `name:"disk-size" usage:"Requested disk size, e.g. 10Gi. Defaults to the source's size and must not be smaller."`
+	}
 	InstanceDelete struct {
 		*Postgres
 		Yes bool `name:"yes" short:"y" usage:"Confirm irreversible deletion without a prompt."`
