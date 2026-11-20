@@ -53,6 +53,12 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 					__typename
 				}
 			}
+			... on ApplicationRolloutStuckIssue {
+				workload {
+					name
+					__typename
+				}
+			}
 			... on DeprecatedIngressIssue {
 			  application {
 				name
@@ -168,6 +174,8 @@ func GetAll(ctx context.Context, teamSlug string, issueFilter gql.IssueFilter) (
 			i.ResourceType = ptr.Deref(workload.GetTypename(), "")
 		}
 		switch c := issue.(type) {
+		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+			setWorkloadResource(c.GetWorkload())
 		case *gql.GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
 			i.ResourceName = c.Application.GetName()
 			i.ResourceType = ptr.Deref(c.Application.GetTypename(), "")
