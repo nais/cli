@@ -241,10 +241,10 @@ func TestApplicationNameChoices(t *testing.T) {
 							}
 							response = `{"data":{"team":{"applications":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"prod"}}},{"name":"orders","teamEnvironment":{"environment":{"name":"dev"}}}]}}}}`
 						case "GetApplicationStatus":
-							if action != "status" || v.Name != "orders" || string(v.Env) != `["dev"]` {
+							if action != "status" || v.Name != "orders" || string(v.Env) != `"dev"` {
 								t.Errorf("incorrect status target: %+v", v)
 							}
-							response = `{"data":{"team":{"applications":{"nodes":[{"name":"orders","teamEnvironment":{"environment":{"name":"dev"}},"instanceGroups":[]}]}}}}`
+							response = `{"data":{"team":{"environment":{"application":{"name":"orders","issues":{"nodes":[{"__typename":"ApplicationRolloutStuckIssue","severity":"WARNING","reason":"INSTANCE_CREATION_FAILED","message":"Quota prevented instance creation."}]},"resources":{"scaling":{"status":{"state":"DISABLED","message":"Scaled to zero.","currentInstances":0,"desiredInstances":0}}},"instanceGroups":[]}}}}}`
 						case "RestartApp":
 							if action != "restart" || v.Application != "orders" || string(v.Env) != `"dev"` {
 								t.Errorf("incorrect restart target: %+v", v)
@@ -347,6 +347,9 @@ func TestApplicationNameChoices(t *testing.T) {
 						}
 						if !strings.Contains(output.String(), "orders") || !strings.Contains(output.String(), "dev") {
 							t.Errorf("incorrect command output: %q", output.String())
+						}
+						if action == "status" && (!strings.Contains(output.String(), "Quota prevented instance creation.") || !strings.Contains(output.String(), "Disabled (0 current, 0 desired)")) {
+							t.Errorf("status omitted rollout or scaling without groups: %q", output.String())
 						}
 					}
 					var wantOperations []string

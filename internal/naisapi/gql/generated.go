@@ -520,7 +520,9 @@ func (v *ApplicationEnvironmentsTeamApplicationsApplicationConnectionNodesApplic
 type ApplicationInstanceState string
 
 const (
-	ApplicationInstanceStateRunning    ApplicationInstanceState = "RUNNING"
+	ApplicationInstanceStateRunning ApplicationInstanceState = "RUNNING"
+	// The instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+	ApplicationInstanceStatePending    ApplicationInstanceState = "PENDING"
 	ApplicationInstanceStateStarting   ApplicationInstanceState = "STARTING"
 	ApplicationInstanceStateFailing    ApplicationInstanceState = "FAILING"
 	ApplicationInstanceStateTerminated ApplicationInstanceState = "TERMINATED"
@@ -529,6 +531,7 @@ const (
 
 var AllApplicationInstanceState = []ApplicationInstanceState{
 	ApplicationInstanceStateRunning,
+	ApplicationInstanceStatePending,
 	ApplicationInstanceStateStarting,
 	ApplicationInstanceStateFailing,
 	ApplicationInstanceStateTerminated,
@@ -571,6 +574,45 @@ var AllApplicationOrderField = []ApplicationOrderField{
 	ApplicationOrderFieldState,
 	ApplicationOrderFieldDeploymentTime,
 	ApplicationOrderFieldIssues,
+}
+
+// Why a rollout of a new application version is stuck.
+type ApplicationRolloutStuckReason string
+
+const (
+	// The new version did not become ready within the allowed time.
+	ApplicationRolloutStuckReasonTimedOut ApplicationRolloutStuckReason = "TIMED_OUT"
+	// Instances of the new version could not be created, for example because of a quota or a platform policy.
+	ApplicationRolloutStuckReasonInstanceCreationFailed ApplicationRolloutStuckReason = "INSTANCE_CREATION_FAILED"
+)
+
+var AllApplicationRolloutStuckReason = []ApplicationRolloutStuckReason{
+	ApplicationRolloutStuckReasonTimedOut,
+	ApplicationRolloutStuckReasonInstanceCreationFailed,
+}
+
+// The state of automatic scaling for an application.
+type ApplicationScalingState string
+
+const (
+	// Automatic scaling is working as expected.
+	ApplicationScalingStateActive ApplicationScalingState = "ACTIVE"
+	// The application needs more instances than the configured maximum.
+	ApplicationScalingStateLimitedByMaximum ApplicationScalingState = "LIMITED_BY_MAXIMUM"
+	// The metrics used for automatic scaling cannot be read, so the number of instances is not adjusted.
+	ApplicationScalingStateMetricsUnavailable ApplicationScalingState = "METRICS_UNAVAILABLE"
+	// The platform is currently unable to change the number of instances.
+	ApplicationScalingStateUnableToScale ApplicationScalingState = "UNABLE_TO_SCALE"
+	// Automatic scaling is turned off because the application has been scaled down to zero instances.
+	ApplicationScalingStateDisabled ApplicationScalingState = "DISABLED"
+)
+
+var AllApplicationScalingState = []ApplicationScalingState{
+	ApplicationScalingStateActive,
+	ApplicationScalingStateLimitedByMaximum,
+	ApplicationScalingStateMetricsUnavailable,
+	ApplicationScalingStateUnableToScale,
+	ApplicationScalingStateDisabled,
 }
 
 type ApplicationState string
@@ -718,7 +760,8 @@ func (v *ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupI
 // ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus includes the requested fields of the GraphQL type ApplicationInstanceStatus.
 type ApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus struct {
 	State ApplicationInstanceState `json:"state"`
-	// Whether the container is passing its readiness check and can receive traffic.
+	// Whether the instance is passing its readiness check and can receive traffic.
+	// An instance does not receive traffic while a component added by the platform is failing.
 	Ready bool `json:"ready"`
 	// A user-friendly description of the current state.
 	Message string `json:"message"`
@@ -1653,6 +1696,108 @@ func (v *EnvironmentsResponse) GetEnvironments() EnvironmentsEnvironmentsEnviron
 	return v.Environments
 }
 
+// FindJobRunsResponse is returned by FindJobRuns on success.
+type FindJobRunsResponse struct {
+	// Get a team by its slug.
+	Team FindJobRunsTeam `json:"team"`
+}
+
+// GetTeam returns FindJobRunsResponse.Team, and is useful for accessing the field via an interface.
+func (v *FindJobRunsResponse) GetTeam() FindJobRunsTeam { return v.Team }
+
+// FindJobRunsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type FindJobRunsTeam struct {
+	// Get a specific environment for the team.
+	Environment FindJobRunsTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns FindJobRunsTeam.Environment, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeam) GetEnvironment() FindJobRunsTeamEnvironment { return v.Environment }
+
+// FindJobRunsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type FindJobRunsTeamEnvironment struct {
+	// Nais job in the team environment.
+	Job FindJobRunsTeamEnvironmentJob `json:"job"`
+}
+
+// GetJob returns FindJobRunsTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironment) GetJob() FindJobRunsTeamEnvironmentJob { return v.Job }
+
+// FindJobRunsTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type FindJobRunsTeamEnvironmentJob struct {
+	// The job runs.
+	Runs FindJobRunsTeamEnvironmentJobRunsJobRunConnection `json:"runs"`
+}
+
+// GetRuns returns FindJobRunsTeamEnvironmentJob.Runs, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJob) GetRuns() FindJobRunsTeamEnvironmentJobRunsJobRunConnection {
+	return v.Runs
+}
+
+// FindJobRunsTeamEnvironmentJobRunsJobRunConnection includes the requested fields of the GraphQL type JobRunConnection.
+type FindJobRunsTeamEnvironmentJobRunsJobRunConnection struct {
+	// List of nodes.
+	Nodes []FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun `json:"nodes"`
+	// Pagination information.
+	PageInfo FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns FindJobRunsTeamEnvironmentJobRunsJobRunConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnection) GetNodes() []FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun {
+	return v.Nodes
+}
+
+// GetPageInfo returns FindJobRunsTeamEnvironmentJobRunsJobRunConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnection) GetPageInfo() FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo {
+	return v.PageInfo
+}
+
+// FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun includes the requested fields of the GraphQL type JobRun.
+type FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun struct {
+	// The globally unique ID of the job run.
+	Id string `json:"id"`
+	// The name of the job run.
+	Name string `json:"name"`
+}
+
+// GetId returns FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun.Id, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun) GetId() string { return v.Id }
+
+// GetName returns FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun.Name, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnectionNodesJobRun) GetName() string {
+	return v.Name
+}
+
+// FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *FindJobRunsTeamEnvironmentJobRunsJobRunConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
 // FindWorkloadsForCveCveCVE includes the requested fields of the GraphQL type CVE.
 type FindWorkloadsForCveCveCVE struct {
 	// The globally unique ID of the CVE.
@@ -2543,6 +2688,248 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue) 
 	return v.Message
 }
 
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename        *string                                                        `json:"__typename"`
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+	Id              string                                                         `json:"id"`
+	Severity        Severity                                                       `json:"severity"`
+	Message         string                                                         `json:"message"`
+	// The workload whose rollout is stuck.
+	Workload GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload `json:"-"`
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetTeamEnvironment returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTeamEnvironment() GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// GetId returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Id, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetId() string {
+	return v.Id
+}
+
+// GetSeverity returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetWorkload returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Workload, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetWorkload() GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload {
+	return v.Workload
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue
+		Workload json.RawMessage `json:"workload"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Workload
+		src := firstPass.Workload
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Workload: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename *string `json:"__typename"`
+
+	TeamEnvironment GetAllIssuesTeamIssuesIssueConnectionNodesIssueTeamEnvironment `json:"teamEnvironment"`
+
+	Id string `json:"id"`
+
+	Severity Severity `json:"severity"`
+
+	Message string `json:"message"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) __premarshalJSON() (*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue, error) {
+	var retval __premarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue
+
+	retval.Typename = v.Typename
+	retval.TeamEnvironment = v.TeamEnvironment
+	retval.Id = v.Id
+	retval.Severity = v.Severity
+	retval.Message = v.Message
+	{
+
+		dst := &retval.Workload
+		src := v.Workload
+		var err error
+		*dst, err = __marshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload includes the requested fields of the GraphQL interface Workload.
+//
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload is implemented by the following types:
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload interface {
+	implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload()
+	// GetName returns the interface-field "name" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetName() string
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload() {
+}
+
+func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload(b []byte, v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload(v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkload: "%T"`, v)
+	}
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication struct {
+	// Interface for workloads.
+	Name     string  `json:"name"`
+	Typename *string `json:"__typename"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadApplication) GetTypename() *string {
+	return v.Typename
+}
+
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob includes the requested fields of the GraphQL type Job.
+type GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob struct {
+	// Interface for workloads.
+	Name     string  `json:"name"`
+	Typename *string `json:"__typename"`
+}
+
+// GetName returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob.Name, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob) GetName() string {
+	return v.Name
+}
+
+// GetTypename returns GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssueWorkloadJob) GetTypename() *string {
+	return v.Typename
+}
+
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
 type GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
 	Typename        *string                                                                     `json:"__typename"`
@@ -3161,6 +3548,7 @@ func (v *GetAllIssuesTeamIssuesIssueConnectionNodesInvalidSpecIssue) GetMessage(
 //
 // GetAllIssuesTeamIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue
+// GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetAllIssuesTeamIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
@@ -3192,6 +3580,8 @@ type GetAllIssuesTeamIssuesIssueConnectionNodesIssue interface {
 }
 
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetAllIssuesTeamIssuesIssueConnectionNodesIssue() {
 }
@@ -3242,6 +3632,9 @@ func __unmarshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(b []byte, v *Get
 	switch tn.TypeName {
 	case "ApplicationRestartLoopIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue)
 		return json.Unmarshal(b, *v)
 	case "DeprecatedIngressIssue":
 		*v = new(GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue)
@@ -3311,6 +3704,18 @@ func __marshalGetAllIssuesTeamIssuesIssueConnectionNodesIssue(v *GetAllIssuesTea
 			TypeName string `json:"__typename"`
 			*GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRestartLoopIssue
 		}{typename, v}
+		return json.Marshal(result)
+	case *GetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		premarshaled, err := v.__premarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		result := struct {
+			TypeName string `json:"__typename"`
+			*__premarshalGetAllIssuesTeamIssuesIssueConnectionNodesApplicationRolloutStuckIssue
+		}{typename, premarshaled}
 		return json.Marshal(result)
 	case *GetAllIssuesTeamIssuesIssueConnectionNodesDeprecatedIngressIssue:
 		typename = "DeprecatedIngressIssue"
@@ -9849,6 +10254,60 @@ func (v *GetApplicationEnvVarsTeamApplicationsApplicationConnectionNodesApplicat
 	return v.Name
 }
 
+// GetApplicationEventsResponse is returned by GetApplicationEvents on success.
+type GetApplicationEventsResponse struct {
+	// Get a team by its slug.
+	Team GetApplicationEventsTeam `json:"team"`
+}
+
+// GetTeam returns GetApplicationEventsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetApplicationEventsResponse) GetTeam() GetApplicationEventsTeam { return v.Team }
+
+// GetApplicationEventsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type GetApplicationEventsTeam struct {
+	// Get a specific environment for the team.
+	Environment GetApplicationEventsTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetApplicationEventsTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationEventsTeam) GetEnvironment() GetApplicationEventsTeamEnvironment {
+	return v.Environment
+}
+
+// GetApplicationEventsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationEventsTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application GetApplicationEventsTeamEnvironmentApplication `json:"application"`
+}
+
+// GetApplication returns GetApplicationEventsTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *GetApplicationEventsTeamEnvironment) GetApplication() GetApplicationEventsTeamEnvironmentApplication {
+	return v.Application
+}
+
+// GetApplicationEventsTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetApplicationEventsTeamEnvironmentApplication struct {
+	// Application events, newest first.
+	Events WorkloadEventsPage `json:"events"`
+}
+
+// GetEvents returns GetApplicationEventsTeamEnvironmentApplication.Events, and is useful for accessing the field via an interface.
+func (v *GetApplicationEventsTeamEnvironmentApplication) GetEvents() WorkloadEventsPage {
+	return v.Events
+}
+
 // GetApplicationFilesResponse is returned by GetApplicationFiles on success.
 type GetApplicationFilesResponse struct {
 	// Get a team by its slug.
@@ -10212,10 +10671,17 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnection) GetNodes() [
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
 type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication struct {
+	// The name of the application.
+	Name string `json:"name"`
 	// The team environment for the application.
 	TeamEnvironment GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
 	// Issues that affect the application.
 	Issues GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnection `json:"issues"`
+}
+
+// GetName returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
+	return v.Name
 }
 
 // GetTeamEnvironment returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
@@ -10336,6 +10802,31 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 
 // GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue.Message, and is useful for accessing the field via an interface.
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetMessage() string {
 	return v.Message
 }
 
@@ -10462,6 +10953,7 @@ func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicati
 //
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+// GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
@@ -10489,6 +10981,8 @@ type GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIs
 }
 
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -10539,6 +11033,9 @@ func __unmarshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAp
 	switch tn.TypeName {
 	case "ApplicationRestartLoopIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue)
 		return json.Unmarshal(b, *v)
 	case "DeprecatedIngressIssue":
 		*v = new(GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue)
@@ -10607,6 +11104,14 @@ func __marshalGetApplicationIssuesTeamApplicationsApplicationConnectionNodesAppl
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationIssuesTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue:
@@ -11129,70 +11634,72 @@ func (v *GetApplicationStatusResponse) GetTeam() GetApplicationStatusTeam { retu
 //
 // External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
 type GetApplicationStatusTeam struct {
-	// Nais applications owned by the team.
-	Applications GetApplicationStatusTeamApplicationsApplicationConnection `json:"applications"`
+	// Get a specific environment for the team.
+	Environment GetApplicationStatusTeamEnvironment `json:"environment"`
 }
 
-// GetApplications returns GetApplicationStatusTeam.Applications, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeam) GetApplications() GetApplicationStatusTeamApplicationsApplicationConnection {
-	return v.Applications
+// GetEnvironment returns GetApplicationStatusTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeam) GetEnvironment() GetApplicationStatusTeamEnvironment {
+	return v.Environment
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnection includes the requested fields of the GraphQL type ApplicationConnection.
-// The GraphQL type's documentation follows.
-//
-// Application connection.
-type GetApplicationStatusTeamApplicationsApplicationConnection struct {
-	// List of nodes.
-	Nodes []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication `json:"nodes"`
+// GetApplicationStatusTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetApplicationStatusTeamEnvironment struct {
+	// Nais application in the team environment.
+	Application GetApplicationStatusTeamEnvironmentApplication `json:"application"`
 }
 
-// GetNodes returns GetApplicationStatusTeamApplicationsApplicationConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnection) GetNodes() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication {
-	return v.Nodes
+// GetApplication returns GetApplicationStatusTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironment) GetApplication() GetApplicationStatusTeamEnvironmentApplication {
+	return v.Application
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// GetApplicationStatusTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
 // An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication struct {
+type GetApplicationStatusTeamEnvironmentApplication struct {
 	// The name of the application.
 	Name string `json:"name"`
-	// The team environment for the application.
-	TeamEnvironment GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
+	// Issues that affect the application.
+	Issues GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection `json:"issues"`
+	// Resources for the application.
+	Resources GetApplicationStatusTeamEnvironmentApplicationResources `json:"resources"`
 	// Instance groups for the application. An instance group represents a set of identical instances.
 	// All instances in a group share the same configuration.
-	InstanceGroups []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
+	InstanceGroups []GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup `json:"instanceGroups"`
 }
 
-// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetName() string {
-	return v.Name
+// GetName returns GetApplicationStatusTeamEnvironmentApplication.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplication) GetName() string { return v.Name }
+
+// GetIssues returns GetApplicationStatusTeamEnvironmentApplication.Issues, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplication) GetIssues() GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection {
+	return v.Issues
 }
 
-// GetTeamEnvironment returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetTeamEnvironment() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment {
-	return v.TeamEnvironment
+// GetResources returns GetApplicationStatusTeamEnvironmentApplication.Resources, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplication) GetResources() GetApplicationStatusTeamEnvironmentApplicationResources {
+	return v.Resources
 }
 
-// GetInstanceGroups returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication.InstanceGroups, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplication) GetInstanceGroups() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup {
+// GetInstanceGroups returns GetApplicationStatusTeamEnvironmentApplication.InstanceGroups, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplication) GetInstanceGroups() []GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup {
 	return v.InstanceGroups
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
 // The GraphQL type's documentation follows.
 //
 // An instance group represents a set of identical instances.
 // All instances in the group share the same configuration (environment variables, mounted files, image).
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup struct {
+type GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup struct {
 	// The name of the instance group.
 	Name string `json:"name"`
 	// The container image used by instances in this group.
-	Image GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage `json:"image"`
+	Image GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage `json:"image"`
 	// When the instance group was created.
 	Created time.Time `json:"created"`
 	// The number of instances that are ready.
@@ -11200,44 +11707,44 @@ type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationIn
 	// The desired number of instances.
 	DesiredInstances int `json:"desiredInstances"`
 	// The application instances belonging to this instance group.
-	Instances []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance `json:"instances"`
+	Instances []GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance `json:"instances"`
 }
 
-// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Name, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetName() string {
+// GetName returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetName() string {
 	return v.Name
 }
 
-// GetImage returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Image, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetImage() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage {
+// GetImage returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Image, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetImage() GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage {
 	return v.Image
 }
 
-// GetCreated returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Created, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetCreated() time.Time {
+// GetCreated returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Created, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetCreated() time.Time {
 	return v.Created
 }
 
-// GetReadyInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.ReadyInstances, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetReadyInstances() int {
+// GetReadyInstances returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.ReadyInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetReadyInstances() int {
 	return v.ReadyInstances
 }
 
-// GetDesiredInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.DesiredInstances, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetDesiredInstances() int {
+// GetDesiredInstances returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.DesiredInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetDesiredInstances() int {
 	return v.DesiredInstances
 }
 
-// GetInstances returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup.Instances, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroup) GetInstances() []GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance {
+// GetInstances returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup.Instances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroup) GetInstances() []GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance {
 	return v.Instances
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
 // The GraphQL type's documentation follows.
 //
 // Container image.
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage struct {
+type GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage struct {
 	// Name of the container image.
 	Name string `json:"name"`
 	// Tag of the container image. Empty when the image reference has no explicit tag,
@@ -11245,50 +11752,51 @@ type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationIn
 	Tag string `json:"tag"`
 }
 
-// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage.Name, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage) GetName() string {
+// GetName returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage) GetName() string {
 	return v.Name
 }
 
-// GetTag returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage.Tag, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupImageContainerImage) GetTag() string {
+// GetTag returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupImageContainerImage) GetTag() string {
 	return v.Tag
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance struct {
-	Name     string                                                                                                                                 `json:"name"`
-	Restarts int                                                                                                                                    `json:"restarts"`
-	Created  time.Time                                                                                                                              `json:"created"`
-	Status   GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus `json:"status"`
+// GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance struct {
+	Name     string                                                                                                      `json:"name"`
+	Restarts int                                                                                                         `json:"restarts"`
+	Created  time.Time                                                                                                   `json:"created"`
+	Status   GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus `json:"status"`
 }
 
-// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Name, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetName() string {
+// GetName returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetName() string {
 	return v.Name
 }
 
-// GetRestarts returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Restarts, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetRestarts() int {
+// GetRestarts returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Restarts, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetRestarts() int {
 	return v.Restarts
 }
 
-// GetCreated returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Created, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetCreated() time.Time {
+// GetCreated returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Created, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetCreated() time.Time {
 	return v.Created
 }
 
-// GetStatus returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Status, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetStatus() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus {
+// GetStatus returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance.Status, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstance) GetStatus() GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus {
 	return v.Status
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus includes the requested fields of the GraphQL type ApplicationInstanceStatus.
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus struct {
+// GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus includes the requested fields of the GraphQL type ApplicationInstanceStatus.
+type GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus struct {
 	State ApplicationInstanceState `json:"state"`
 	// A user-friendly description of the current state.
 	Message string `json:"message"`
-	// Whether the container is passing its readiness check and can receive traffic.
+	// Whether the instance is passing its readiness check and can receive traffic.
+	// An instance does not receive traffic while a component added by the platform is failing.
 	Ready bool `json:"ready"`
 	// The reason the container last terminated, if applicable.
 	// This is populated even when the instance is currently running, to help debug restart loops.
@@ -11296,58 +11804,705 @@ type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationIn
 	LastExitReason *string `json:"lastExitReason"`
 	// The exit code from the last container termination, if applicable.
 	LastExitCode *int `json:"lastExitCode"`
+	// The timestamp of the last container termination, if applicable.
+	// This is populated even when the instance is currently running, to help debug restart loops.
+	LastExitTimestamp *time.Time `json:"lastExitTimestamp"`
 }
 
-// GetState returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.State, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetState() ApplicationInstanceState {
+// GetState returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.State, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetState() ApplicationInstanceState {
 	return v.State
 }
 
-// GetMessage returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Message, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetMessage() string {
+// GetMessage returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetMessage() string {
 	return v.Message
 }
 
-// GetReady returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Ready, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetReady() bool {
+// GetReady returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.Ready, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetReady() bool {
 	return v.Ready
 }
 
-// GetLastExitReason returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitReason, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitReason() *string {
+// GetLastExitReason returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitReason, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitReason() *string {
 	return v.LastExitReason
 }
 
-// GetLastExitCode returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitCode() *int {
+// GetLastExitCode returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitCode() *int {
 	return v.LastExitCode
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment struct {
-	// Get the environment.
-	Environment GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+// GetLastExitTimestamp returns GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus.LastExitTimestamp, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationInstanceGroupsInstanceGroupInstancesApplicationInstanceStatus) GetLastExitTimestamp() *time.Time {
+	return v.LastExitTimestamp
 }
 
-// GetEnvironment returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironment) GetEnvironment() GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment {
-	return v.Environment
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection includes the requested fields of the GraphQL type IssueConnection.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection struct {
+	// List of nodes.
+	Nodes []GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue `json:"-"`
 }
 
-// GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// GetNodes returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection) GetNodes() []GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue {
+	return v.Nodes
+}
+
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection) __premarshalJSON() (*__premarshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection, error) {
+	var retval __premarshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue includes the requested fields of the GraphQL type ApplicationRestartLoopIssue.
 // The GraphQL type's documentation follows.
 //
-// An environment represents a runtime environment for workloads.
-//
-// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
-type GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment struct {
-	// Unique name of the environment.
-	Name string `json:"name"`
+// An issue raised when an application keeps restarting repeatedly.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue struct {
+	Typename *string `json:"__typename"`
 }
 
-// GetName returns GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
-func (v *GetApplicationStatusTeamApplicationsApplicationConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
-	return v.Name
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename *string `json:"__typename"`
+	// The severity of the issue.
+	Severity Severity `json:"severity"`
+	// Why the rollout is stuck.
+	Reason ApplicationRolloutStuckReason `json:"reason"`
+	// A human-readable description of the issue.
+	Message string `json:"message"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetReason returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Reason, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetReason() ApplicationRolloutStuckReason {
+	return v.Reason
+}
+
+// GetMessage returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetMessage() string {
+	return v.Message
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue includes the requested fields of the GraphQL interface Issue.
+//
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue is implemented by the following types:
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue interface {
+	implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue) implementsGraphQLInterfaceGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue() {
+}
+
+func __unmarshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue(b []byte, v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "ApplicationRestartLoopIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedIngressIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedRegistryIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedSynchronizationIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue)
+		return json.Unmarshal(b, *v)
+	case "InvalidSpecIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue)
+		return json.Unmarshal(b, *v)
+	case "MissingSbomIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue)
+		return json.Unmarshal(b, *v)
+	case "NoRunningInstancesIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceStateIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue)
+		return json.Unmarshal(b, *v)
+	case "WorkloadProblemIssue":
+		*v = new(GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Issue.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue(v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue:
+		typename = "ApplicationRestartLoopIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesFailedSynchronizationIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue:
+		typename = "MissingSbomIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue:
+		typename = "OpenSearchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue:
+		typename = "PostgresIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue:
+		typename = "WorkloadProblemIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesIssue: "%T"`, v)
+	}
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesLastRunFailedIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesMissingSbomIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesNoRunningInstancesIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesOpenSearchIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue includes the requested fields of the GraphQL type PostgresIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres database.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesPostgresIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceStateIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesSqlInstanceVersionIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesUnleashReleaseChannelIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesValkeyIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesVulnerableImageIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue includes the requested fields of the GraphQL type WorkloadProblemIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue surfacing a problem reported by the platform in a workload's status.
+type GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationIssuesIssueConnectionNodesWorkloadProblemIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationResources includes the requested fields of the GraphQL type ApplicationResources.
+type GetApplicationStatusTeamEnvironmentApplicationResources struct {
+	// Scaling strategies for the application.
+	Scaling GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling `json:"scaling"`
+}
+
+// GetScaling returns GetApplicationStatusTeamEnvironmentApplicationResources.Scaling, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResources) GetScaling() GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling {
+	return v.Scaling
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling includes the requested fields of the GraphQL type ApplicationScaling.
+// The GraphQL type's documentation follows.
+//
+// The scaling configuration of an application.
+type GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling struct {
+	// The current state of automatic scaling for the application.
+	// Null if automatic scaling is not set up for the application in the environment.
+	Status *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus `json:"status"`
+}
+
+// GetStatus returns GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling.Status, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScaling) GetStatus() *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus {
+	return v.Status
+}
+
+// GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus includes the requested fields of the GraphQL type ApplicationScalingStatus.
+// The GraphQL type's documentation follows.
+//
+// The current state of automatic scaling for an application.
+type GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus struct {
+	// The state of automatic scaling.
+	State ApplicationScalingState `json:"state"`
+	// A user-friendly description of the current state.
+	Message string `json:"message"`
+	// The number of instances currently running.
+	CurrentInstances int `json:"currentInstances"`
+	// The number of instances that automatic scaling wants to run.
+	DesiredInstances int `json:"desiredInstances"`
+}
+
+// GetState returns GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus.State, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus) GetState() ApplicationScalingState {
+	return v.State
+}
+
+// GetMessage returns GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus) GetMessage() string {
+	return v.Message
+}
+
+// GetCurrentInstances returns GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus.CurrentInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus) GetCurrentInstances() int {
+	return v.CurrentInstances
+}
+
+// GetDesiredInstances returns GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus.DesiredInstances, and is useful for accessing the field via an interface.
+func (v *GetApplicationStatusTeamEnvironmentApplicationResourcesScalingApplicationScalingStatus) GetDesiredInstances() int {
+	return v.DesiredInstances
 }
 
 // GetCloneSourceResponse is returned by GetCloneSource on success.
@@ -20414,6 +21569,49 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) 
 	return v.Name
 }
 
+// GetJobEventsResponse is returned by GetJobEvents on success.
+type GetJobEventsResponse struct {
+	// Get a team by its slug.
+	Team GetJobEventsTeam `json:"team"`
+}
+
+// GetTeam returns GetJobEventsResponse.Team, and is useful for accessing the field via an interface.
+func (v *GetJobEventsResponse) GetTeam() GetJobEventsTeam { return v.Team }
+
+// GetJobEventsTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type GetJobEventsTeam struct {
+	// Get a specific environment for the team.
+	Environment GetJobEventsTeamEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns GetJobEventsTeam.Environment, and is useful for accessing the field via an interface.
+func (v *GetJobEventsTeam) GetEnvironment() GetJobEventsTeamEnvironment { return v.Environment }
+
+// GetJobEventsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobEventsTeamEnvironment struct {
+	// Nais job in the team environment.
+	Job GetJobEventsTeamEnvironmentJob `json:"job"`
+}
+
+// GetJob returns GetJobEventsTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *GetJobEventsTeamEnvironment) GetJob() GetJobEventsTeamEnvironmentJob { return v.Job }
+
+// GetJobEventsTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type GetJobEventsTeamEnvironmentJob struct {
+	// Job events, newest first.
+	Events WorkloadEventsPage `json:"events"`
+}
+
+// GetEvents returns GetJobEventsTeamEnvironmentJob.Events, and is useful for accessing the field via an interface.
+func (v *GetJobEventsTeamEnvironmentJob) GetEvents() WorkloadEventsPage { return v.Events }
+
 // GetJobIssuesResponse is returned by GetJobIssues on success.
 type GetJobIssuesResponse struct {
 	// Get a team by its slug.
@@ -20579,6 +21777,31 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesAppl
 	return v.Message
 }
 
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+	Message  string   `json:"message"`
+}
+
+// GetTypename returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
+// GetMessage returns GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Message, and is useful for accessing the field via an interface.
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetMessage() string {
+	return v.Message
+}
+
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
 type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
 	Typename *string  `json:"__typename"`
@@ -20702,6 +21925,7 @@ func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesInva
 //
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRestartLoopIssue
+// GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
@@ -20729,6 +21953,8 @@ type GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue in
 }
 
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRestartLoopIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesIssue() {
 }
@@ -20779,6 +22005,9 @@ func __unmarshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNo
 	switch tn.TypeName {
 	case "ApplicationRestartLoopIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue)
 		return json.Unmarshal(b, *v)
 	case "DeprecatedIngressIssue":
 		*v = new(GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue)
@@ -20847,6 +22076,14 @@ func __marshalGetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNode
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobIssuesTeamJobsJobConnectionNodesJobIssuesIssueConnectionNodesDeprecatedIngressIssue:
@@ -21337,6 +22574,3981 @@ type GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment struct {
 // GetName returns GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
 func (v *GetJobNamesTeamJobsJobConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
 	return v.Name
+}
+
+// GetJobRunDetailsNode includes the requested fields of the GraphQL interface Node.
+//
+// GetJobRunDetailsNode is implemented by the following types:
+// GetJobRunDetailsNodeApplication
+// GetJobRunDetailsNodeApplicationCreatedActivityLogEntry
+// GetJobRunDetailsNodeApplicationDeletedActivityLogEntry
+// GetJobRunDetailsNodeApplicationInstance
+// GetJobRunDetailsNodeApplicationRestartLoopIssue
+// GetJobRunDetailsNodeApplicationRestartedActivityLogEntry
+// GetJobRunDetailsNodeApplicationRolloutStuckIssue
+// GetJobRunDetailsNodeApplicationScaledActivityLogEntry
+// GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry
+// GetJobRunDetailsNodeAvailableValueOptions
+// GetJobRunDetailsNodeAvailableValues
+// GetJobRunDetailsNodeBigQueryDataset
+// GetJobRunDetailsNodeBucket
+// GetJobRunDetailsNodeCVE
+// GetJobRunDetailsNodeClusterAuditActivityLogEntry
+// GetJobRunDetailsNodeConfig
+// GetJobRunDetailsNodeConfigCreatedActivityLogEntry
+// GetJobRunDetailsNodeConfigDeletedActivityLogEntry
+// GetJobRunDetailsNodeConfigUpdatedActivityLogEntry
+// GetJobRunDetailsNodeContainerImage
+// GetJobRunDetailsNodeContainerImageSBOM
+// GetJobRunDetailsNodeDeployment
+// GetJobRunDetailsNodeDeploymentActivityLogEntry
+// GetJobRunDetailsNodeDeploymentKey
+// GetJobRunDetailsNodeDeploymentResource
+// GetJobRunDetailsNodeDeploymentStatus
+// GetJobRunDetailsNodeDeprecatedIngressIssue
+// GetJobRunDetailsNodeDeprecatedRegistryIssue
+// GetJobRunDetailsNodeEnvironment
+// GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue
+// GetJobRunDetailsNodeFailedSynchronizationIssue
+// GetJobRunDetailsNodeFeatureKafka
+// GetJobRunDetailsNodeFeatureOpenSearch
+// GetJobRunDetailsNodeFeatureUnleash
+// GetJobRunDetailsNodeFeatureValkey
+// GetJobRunDetailsNodeFeatures
+// GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry
+// GetJobRunDetailsNodeImageVulnerability
+// GetJobRunDetailsNodeInstanceGroup
+// GetJobRunDetailsNodeInstanceGroupEnvironmentVariable
+// GetJobRunDetailsNodeInvalidSpecIssue
+// GetJobRunDetailsNodeJob
+// GetJobRunDetailsNodeJobCreatedActivityLogEntry
+// GetJobRunDetailsNodeJobDeletedActivityLogEntry
+// GetJobRunDetailsNodeJobRun
+// GetJobRunDetailsNodeJobRunDeletedActivityLogEntry
+// GetJobRunDetailsNodeJobRunInstance
+// GetJobRunDetailsNodeJobTriggeredActivityLogEntry
+// GetJobRunDetailsNodeJobUpdatedActivityLogEntry
+// GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry
+// GetJobRunDetailsNodeKafkaTopic
+// GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry
+// GetJobRunDetailsNodeLastRunFailedIssue
+// GetJobRunDetailsNodeLogDestinationGeneric
+// GetJobRunDetailsNodeLogDestinationLoki
+// GetJobRunDetailsNodeLogDestinationSecureLogs
+// GetJobRunDetailsNodeMissingSbomIssue
+// GetJobRunDetailsNodeNoRunningInstancesIssue
+// GetJobRunDetailsNodeOpenSearch
+// GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry
+// GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry
+// GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry
+// GetJobRunDetailsNodeOpenSearchIssue
+// GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry
+// GetJobRunDetailsNodePostgres
+// GetJobRunDetailsNodePostgresAccess
+// GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry
+// GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry
+// GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry
+// GetJobRunDetailsNodePostgresCreatedActivityLogEntry
+// GetJobRunDetailsNodePostgresDeletedActivityLogEntry
+// GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry
+// GetJobRunDetailsNodePostgresIssue
+// GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry
+// GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry
+// GetJobRunDetailsNodePostgresUpdatedActivityLogEntry
+// GetJobRunDetailsNodePrometheusAlert
+// GetJobRunDetailsNodeReconciler
+// GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry
+// GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry
+// GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry
+// GetJobRunDetailsNodeReconcilerError
+// GetJobRunDetailsNodeRepository
+// GetJobRunDetailsNodeRepositoryAddedActivityLogEntry
+// GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry
+// GetJobRunDetailsNodeRole
+// GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry
+// GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry
+// GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry
+// GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry
+// GetJobRunDetailsNodeSecret
+// GetJobRunDetailsNodeSecretCreatedActivityLogEntry
+// GetJobRunDetailsNodeSecretDeletedActivityLogEntry
+// GetJobRunDetailsNodeSecretUpdatedActivityLogEntry
+// GetJobRunDetailsNodeSecretValueAddedActivityLogEntry
+// GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry
+// GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry
+// GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccount
+// GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountToken
+// GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountWorkloadBinding
+// GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry
+// GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry
+// GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry
+// GetJobRunDetailsNodeSqlDatabase
+// GetJobRunDetailsNodeSqlInstance
+// GetJobRunDetailsNodeSqlInstanceStateIssue
+// GetJobRunDetailsNodeSqlInstanceVersionIssue
+// GetJobRunDetailsNodeTeam
+// GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry
+// GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry
+// GetJobRunDetailsNodeTeamCreatedActivityLogEntry
+// GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry
+// GetJobRunDetailsNodeTeamEnvironment
+// GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry
+// GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry
+// GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry
+// GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry
+// GetJobRunDetailsNodeTeamUpdatedActivityLogEntry
+// GetJobRunDetailsNodeTunnel
+// GetJobRunDetailsNodeTunnelCreatedActivityLogEntry
+// GetJobRunDetailsNodeTunnelDeletedActivityLogEntry
+// GetJobRunDetailsNodeUnleashInstance
+// GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry
+// GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry
+// GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry
+// GetJobRunDetailsNodeUnleashReleaseChannelIssue
+// GetJobRunDetailsNodeUser
+// GetJobRunDetailsNodeUserCreatedUserSyncLogEntry
+// GetJobRunDetailsNodeUserDeletedUserSyncLogEntry
+// GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry
+// GetJobRunDetailsNodeValkey
+// GetJobRunDetailsNodeValkeyCreatedActivityLogEntry
+// GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry
+// GetJobRunDetailsNodeValkeyDeletedActivityLogEntry
+// GetJobRunDetailsNodeValkeyIssue
+// GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry
+// GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry
+// GetJobRunDetailsNodeVulnerableImageIssue
+// GetJobRunDetailsNodeWebhookCreatedActivityLogEntry
+// GetJobRunDetailsNodeWebhookDeletedActivityLogEntry
+// GetJobRunDetailsNodeWebhookDelivery
+// GetJobRunDetailsNodeWebhookSubscription
+// GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry
+// GetJobRunDetailsNodeWorkloadKillingEvent
+// GetJobRunDetailsNodeWorkloadProblemIssue
+// GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent
+// GetJobRunDetailsNodeWorkloadVulnerabilitySummary
+// GetJobRunDetailsNodeWorkloadWarningEvent
+// GetJobRunDetailsNodeWorkloadWithVulnerability
+// The GraphQL type's documentation follows.
+//
+// This interface is implemented by types that supports the [Global Object Identification specification](https://graphql.org/learn/global-object-identification/).
+type GetJobRunDetailsNode interface {
+	implementsGraphQLInterfaceGetJobRunDetailsNode()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *GetJobRunDetailsNodeApplication) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeApplicationCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationInstance) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeApplicationRestartLoopIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationRestartedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationScaledActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeAvailableValueOptions) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeAvailableValues) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeBigQueryDataset) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeBucket) implementsGraphQLInterfaceGetJobRunDetailsNode()          {}
+func (v *GetJobRunDetailsNodeCVE) implementsGraphQLInterfaceGetJobRunDetailsNode()             {}
+func (v *GetJobRunDetailsNodeClusterAuditActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeConfig) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeConfigCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeConfigDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeConfigUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeContainerImage) implementsGraphQLInterfaceGetJobRunDetailsNode()     {}
+func (v *GetJobRunDetailsNodeContainerImageSBOM) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeDeployment) implementsGraphQLInterfaceGetJobRunDetailsNode()         {}
+func (v *GetJobRunDetailsNodeDeploymentActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeDeploymentKey) implementsGraphQLInterfaceGetJobRunDetailsNode()      {}
+func (v *GetJobRunDetailsNodeDeploymentResource) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeDeploymentStatus) implementsGraphQLInterfaceGetJobRunDetailsNode()   {}
+func (v *GetJobRunDetailsNodeDeprecatedIngressIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeDeprecatedRegistryIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeEnvironment) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeFailedSynchronizationIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeFeatureKafka) implementsGraphQLInterfaceGetJobRunDetailsNode()      {}
+func (v *GetJobRunDetailsNodeFeatureOpenSearch) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeFeatureUnleash) implementsGraphQLInterfaceGetJobRunDetailsNode()    {}
+func (v *GetJobRunDetailsNodeFeatureValkey) implementsGraphQLInterfaceGetJobRunDetailsNode()     {}
+func (v *GetJobRunDetailsNodeFeatures) implementsGraphQLInterfaceGetJobRunDetailsNode()          {}
+func (v *GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeImageVulnerability) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeInstanceGroup) implementsGraphQLInterfaceGetJobRunDetailsNode()      {}
+func (v *GetJobRunDetailsNodeInstanceGroupEnvironmentVariable) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeInvalidSpecIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeJob) implementsGraphQLInterfaceGetJobRunDetailsNode()              {}
+func (v *GetJobRunDetailsNodeJobCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeJobDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeJobRun) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeJobRunDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeJobRunInstance) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeJobTriggeredActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeJobUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeKafkaTopic) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeLastRunFailedIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeLogDestinationGeneric) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeLogDestinationLoki) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeLogDestinationSecureLogs) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeMissingSbomIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeNoRunningInstancesIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeOpenSearch) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeOpenSearchIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgres) implementsGraphQLInterfaceGetJobRunDetailsNode()       {}
+func (v *GetJobRunDetailsNodePostgresAccess) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePostgresUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodePrometheusAlert) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeReconciler) implementsGraphQLInterfaceGetJobRunDetailsNode()      {}
+func (v *GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeReconcilerError) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeRepository) implementsGraphQLInterfaceGetJobRunDetailsNode()      {}
+func (v *GetJobRunDetailsNodeRepositoryAddedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeRole) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecret) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeSecretCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretValueAddedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccount) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountToken) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBinding) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSqlDatabase) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeSqlInstance) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeSqlInstanceStateIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeSqlInstanceVersionIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeam) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamEnvironment) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTeamUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTunnel) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeTunnelCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeTunnelDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUnleashInstance) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUnleashReleaseChannelIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUser) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeUserCreatedUserSyncLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUserDeletedUserSyncLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeValkey) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeValkeyCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeValkeyIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeVulnerableImageIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeWebhookCreatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeWebhookDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeWebhookDelivery) implementsGraphQLInterfaceGetJobRunDetailsNode()     {}
+func (v *GetJobRunDetailsNodeWebhookSubscription) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeWorkloadKillingEvent) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeWorkloadProblemIssue) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeWorkloadVulnerabilitySummary) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+func (v *GetJobRunDetailsNodeWorkloadWarningEvent) implementsGraphQLInterfaceGetJobRunDetailsNode() {}
+func (v *GetJobRunDetailsNodeWorkloadWithVulnerability) implementsGraphQLInterfaceGetJobRunDetailsNode() {
+}
+
+func __unmarshalGetJobRunDetailsNode(b []byte, v *GetJobRunDetailsNode) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(GetJobRunDetailsNodeApplication)
+		return json.Unmarshal(b, *v)
+	case "ApplicationCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeApplicationCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeApplicationDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationInstance":
+		*v = new(GetJobRunDetailsNodeApplicationInstance)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRestartLoopIssue":
+		*v = new(GetJobRunDetailsNodeApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRestartedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeApplicationRestartedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetJobRunDetailsNodeApplicationRolloutStuckIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationScaledActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeApplicationScaledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ApplicationUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "AvailableValueOptions":
+		*v = new(GetJobRunDetailsNodeAvailableValueOptions)
+		return json.Unmarshal(b, *v)
+	case "AvailableValues":
+		*v = new(GetJobRunDetailsNodeAvailableValues)
+		return json.Unmarshal(b, *v)
+	case "BigQueryDataset":
+		*v = new(GetJobRunDetailsNodeBigQueryDataset)
+		return json.Unmarshal(b, *v)
+	case "Bucket":
+		*v = new(GetJobRunDetailsNodeBucket)
+		return json.Unmarshal(b, *v)
+	case "CVE":
+		*v = new(GetJobRunDetailsNodeCVE)
+		return json.Unmarshal(b, *v)
+	case "ClusterAuditActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeClusterAuditActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Config":
+		*v = new(GetJobRunDetailsNodeConfig)
+		return json.Unmarshal(b, *v)
+	case "ConfigCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeConfigCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeConfigDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ConfigUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeConfigUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ContainerImage":
+		*v = new(GetJobRunDetailsNodeContainerImage)
+		return json.Unmarshal(b, *v)
+	case "ContainerImageSBOM":
+		*v = new(GetJobRunDetailsNodeContainerImageSBOM)
+		return json.Unmarshal(b, *v)
+	case "Deployment":
+		*v = new(GetJobRunDetailsNodeDeployment)
+		return json.Unmarshal(b, *v)
+	case "DeploymentActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeDeploymentActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "DeploymentKey":
+		*v = new(GetJobRunDetailsNodeDeploymentKey)
+		return json.Unmarshal(b, *v)
+	case "DeploymentResource":
+		*v = new(GetJobRunDetailsNodeDeploymentResource)
+		return json.Unmarshal(b, *v)
+	case "DeploymentStatus":
+		*v = new(GetJobRunDetailsNodeDeploymentStatus)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedIngressIssue":
+		*v = new(GetJobRunDetailsNodeDeprecatedIngressIssue)
+		return json.Unmarshal(b, *v)
+	case "DeprecatedRegistryIssue":
+		*v = new(GetJobRunDetailsNodeDeprecatedRegistryIssue)
+		return json.Unmarshal(b, *v)
+	case "Environment":
+		*v = new(GetJobRunDetailsNodeEnvironment)
+		return json.Unmarshal(b, *v)
+	case "ExternalIngressUrgentVulnerabilityIssue":
+		*v = new(GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue)
+		return json.Unmarshal(b, *v)
+	case "FailedSynchronizationIssue":
+		*v = new(GetJobRunDetailsNodeFailedSynchronizationIssue)
+		return json.Unmarshal(b, *v)
+	case "FeatureKafka":
+		*v = new(GetJobRunDetailsNodeFeatureKafka)
+		return json.Unmarshal(b, *v)
+	case "FeatureOpenSearch":
+		*v = new(GetJobRunDetailsNodeFeatureOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "FeatureUnleash":
+		*v = new(GetJobRunDetailsNodeFeatureUnleash)
+		return json.Unmarshal(b, *v)
+	case "FeatureValkey":
+		*v = new(GetJobRunDetailsNodeFeatureValkey)
+		return json.Unmarshal(b, *v)
+	case "Features":
+		*v = new(GetJobRunDetailsNodeFeatures)
+		return json.Unmarshal(b, *v)
+	case "GenericKubernetesResourceActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ImageVulnerability":
+		*v = new(GetJobRunDetailsNodeImageVulnerability)
+		return json.Unmarshal(b, *v)
+	case "InstanceGroup":
+		*v = new(GetJobRunDetailsNodeInstanceGroup)
+		return json.Unmarshal(b, *v)
+	case "InstanceGroupEnvironmentVariable":
+		*v = new(GetJobRunDetailsNodeInstanceGroupEnvironmentVariable)
+		return json.Unmarshal(b, *v)
+	case "InvalidSpecIssue":
+		*v = new(GetJobRunDetailsNodeInvalidSpecIssue)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(GetJobRunDetailsNodeJob)
+		return json.Unmarshal(b, *v)
+	case "JobCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeJobCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeJobDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRun":
+		*v = new(GetJobRunDetailsNodeJobRun)
+		return json.Unmarshal(b, *v)
+	case "JobRunDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeJobRunDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobRunInstance":
+		*v = new(GetJobRunDetailsNodeJobRunInstance)
+		return json.Unmarshal(b, *v)
+	case "JobTriggeredActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeJobTriggeredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "JobUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeJobUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaCredentialsCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopic":
+		*v = new(GetJobRunDetailsNodeKafkaTopic)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopicUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "LastRunFailedIssue":
+		*v = new(GetJobRunDetailsNodeLastRunFailedIssue)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationGeneric":
+		*v = new(GetJobRunDetailsNodeLogDestinationGeneric)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationLoki":
+		*v = new(GetJobRunDetailsNodeLogDestinationLoki)
+		return json.Unmarshal(b, *v)
+	case "LogDestinationSecureLogs":
+		*v = new(GetJobRunDetailsNodeLogDestinationSecureLogs)
+		return json.Unmarshal(b, *v)
+	case "MissingSbomIssue":
+		*v = new(GetJobRunDetailsNodeMissingSbomIssue)
+		return json.Unmarshal(b, *v)
+	case "NoRunningInstancesIssue":
+		*v = new(GetJobRunDetailsNodeNoRunningInstancesIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearch":
+		*v = new(GetJobRunDetailsNodeOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchCredentialsCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchIssue":
+		*v = new(GetJobRunDetailsNodeOpenSearchIssue)
+		return json.Unmarshal(b, *v)
+	case "OpenSearchUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Postgres":
+		*v = new(GetJobRunDetailsNodePostgres)
+		return json.Unmarshal(b, *v)
+	case "PostgresAccess":
+		*v = new(GetJobRunDetailsNodePostgresAccess)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchActivatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresBranchDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresGrantAccessActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresIssue":
+		*v = new(GetJobRunDetailsNodePostgresIssue)
+		return json.Unmarshal(b, *v)
+	case "PostgresPersonalAccessConnectionActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresPersonalAccessCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PostgresUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodePostgresUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "PrometheusAlert":
+		*v = new(GetJobRunDetailsNodePrometheusAlert)
+		return json.Unmarshal(b, *v)
+	case "Reconciler":
+		*v = new(GetJobRunDetailsNodeReconciler)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerConfiguredActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerDisabledActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerEnabledActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ReconcilerError":
+		*v = new(GetJobRunDetailsNodeReconcilerError)
+		return json.Unmarshal(b, *v)
+	case "Repository":
+		*v = new(GetJobRunDetailsNodeRepository)
+		return json.Unmarshal(b, *v)
+	case "RepositoryAddedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeRepositoryAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RepositoryRemovedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Role":
+		*v = new(GetJobRunDetailsNodeRole)
+		return json.Unmarshal(b, *v)
+	case "RoleAssignedToServiceAccountActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleAssignedUserSyncLogEntry":
+		*v = new(GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleRevokedFromServiceAccountActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "RoleRevokedUserSyncLogEntry":
+		*v = new(GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Secret":
+		*v = new(GetJobRunDetailsNodeSecret)
+		return json.Unmarshal(b, *v)
+	case "SecretCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueAddedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretValueAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueRemovedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValueUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SecretValuesViewedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccount":
+		*v = new(GetJobRunDetailsNodeServiceAccount)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountToken":
+		*v = new(GetJobRunDetailsNodeServiceAccountToken)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountTokenUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBinding":
+		*v = new(GetJobRunDetailsNodeServiceAccountWorkloadBinding)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingAddedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceAccountWorkloadBindingRemovedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ServiceMaintenanceActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "SqlDatabase":
+		*v = new(GetJobRunDetailsNodeSqlDatabase)
+		return json.Unmarshal(b, *v)
+	case "SqlInstance":
+		*v = new(GetJobRunDetailsNodeSqlInstance)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceStateIssue":
+		*v = new(GetJobRunDetailsNodeSqlInstanceStateIssue)
+		return json.Unmarshal(b, *v)
+	case "SqlInstanceVersionIssue":
+		*v = new(GetJobRunDetailsNodeSqlInstanceVersionIssue)
+		return json.Unmarshal(b, *v)
+	case "Team":
+		*v = new(GetJobRunDetailsNodeTeam)
+		return json.Unmarshal(b, *v)
+	case "TeamConfirmDeleteKeyActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreateDeleteKeyActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamDeployKeyUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamEnvironment":
+		*v = new(GetJobRunDetailsNodeTeamEnvironment)
+		return json.Unmarshal(b, *v)
+	case "TeamEnvironmentUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberAddedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberRemovedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamMemberSetRoleActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TeamUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTeamUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Tunnel":
+		*v = new(GetJobRunDetailsNodeTunnel)
+		return json.Unmarshal(b, *v)
+	case "TunnelCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTunnelCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "TunnelDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeTunnelDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstance":
+		*v = new(GetJobRunDetailsNodeUnleashInstance)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashInstanceUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UnleashReleaseChannelIssue":
+		*v = new(GetJobRunDetailsNodeUnleashReleaseChannelIssue)
+		return json.Unmarshal(b, *v)
+	case "User":
+		*v = new(GetJobRunDetailsNodeUser)
+		return json.Unmarshal(b, *v)
+	case "UserCreatedUserSyncLogEntry":
+		*v = new(GetJobRunDetailsNodeUserCreatedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UserDeletedUserSyncLogEntry":
+		*v = new(GetJobRunDetailsNodeUserDeletedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "UserUpdatedUserSyncLogEntry":
+		*v = new(GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry)
+		return json.Unmarshal(b, *v)
+	case "Valkey":
+		*v = new(GetJobRunDetailsNodeValkey)
+		return json.Unmarshal(b, *v)
+	case "ValkeyCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeValkeyCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyCredentialsCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeValkeyDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "ValkeyIssue":
+		*v = new(GetJobRunDetailsNodeValkeyIssue)
+		return json.Unmarshal(b, *v)
+	case "ValkeyUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilityUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerableImageIssue":
+		*v = new(GetJobRunDetailsNodeVulnerableImageIssue)
+		return json.Unmarshal(b, *v)
+	case "WebhookCreatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeWebhookCreatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "WebhookDeletedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeWebhookDeletedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "WebhookDelivery":
+		*v = new(GetJobRunDetailsNodeWebhookDelivery)
+		return json.Unmarshal(b, *v)
+	case "WebhookSubscription":
+		*v = new(GetJobRunDetailsNodeWebhookSubscription)
+		return json.Unmarshal(b, *v)
+	case "WebhookUpdatedActivityLogEntry":
+		*v = new(GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "WorkloadKillingEvent":
+		*v = new(GetJobRunDetailsNodeWorkloadKillingEvent)
+		return json.Unmarshal(b, *v)
+	case "WorkloadProblemIssue":
+		*v = new(GetJobRunDetailsNodeWorkloadProblemIssue)
+		return json.Unmarshal(b, *v)
+	case "WorkloadSuccessfulRescaleEvent":
+		*v = new(GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent)
+		return json.Unmarshal(b, *v)
+	case "WorkloadVulnerabilitySummary":
+		*v = new(GetJobRunDetailsNodeWorkloadVulnerabilitySummary)
+		return json.Unmarshal(b, *v)
+	case "WorkloadWarningEvent":
+		*v = new(GetJobRunDetailsNodeWorkloadWarningEvent)
+		return json.Unmarshal(b, *v)
+	case "WorkloadWithVulnerability":
+		*v = new(GetJobRunDetailsNodeWorkloadWithVulnerability)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Node.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for GetJobRunDetailsNode: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalGetJobRunDetailsNode(v *GetJobRunDetailsNode) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *GetJobRunDetailsNodeApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationCreatedActivityLogEntry:
+		typename = "ApplicationCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationDeletedActivityLogEntry:
+		typename = "ApplicationDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationInstance:
+		typename = "ApplicationInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationRestartLoopIssue:
+		typename = "ApplicationRestartLoopIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationRestartedActivityLogEntry:
+		typename = "ApplicationRestartedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationRestartedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationRolloutStuckIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationScaledActivityLogEntry:
+		typename = "ApplicationScaledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationScaledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry:
+		typename = "ApplicationUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeAvailableValueOptions:
+		typename = "AvailableValueOptions"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeAvailableValueOptions
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeAvailableValues:
+		typename = "AvailableValues"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeAvailableValues
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeBigQueryDataset:
+		typename = "BigQueryDataset"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeBigQueryDataset
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeBucket:
+		typename = "Bucket"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeBucket
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeCVE:
+		typename = "CVE"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeCVE
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeClusterAuditActivityLogEntry:
+		typename = "ClusterAuditActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeClusterAuditActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeConfig:
+		typename = "Config"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeConfig
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeConfigCreatedActivityLogEntry:
+		typename = "ConfigCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeConfigCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeConfigDeletedActivityLogEntry:
+		typename = "ConfigDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeConfigDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeConfigUpdatedActivityLogEntry:
+		typename = "ConfigUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeConfigUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeContainerImage:
+		typename = "ContainerImage"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeContainerImage
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeContainerImageSBOM:
+		typename = "ContainerImageSBOM"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeContainerImageSBOM
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeployment:
+		typename = "Deployment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeployment
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeploymentActivityLogEntry:
+		typename = "DeploymentActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeploymentActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeploymentKey:
+		typename = "DeploymentKey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeploymentKey
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeploymentResource:
+		typename = "DeploymentResource"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeploymentResource
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeploymentStatus:
+		typename = "DeploymentStatus"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeploymentStatus
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeprecatedIngressIssue:
+		typename = "DeprecatedIngressIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeprecatedIngressIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeDeprecatedRegistryIssue:
+		typename = "DeprecatedRegistryIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeDeprecatedRegistryIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeEnvironment:
+		typename = "Environment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeEnvironment
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue:
+		typename = "ExternalIngressUrgentVulnerabilityIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFailedSynchronizationIssue:
+		typename = "FailedSynchronizationIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFailedSynchronizationIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFeatureKafka:
+		typename = "FeatureKafka"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFeatureKafka
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFeatureOpenSearch:
+		typename = "FeatureOpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFeatureOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFeatureUnleash:
+		typename = "FeatureUnleash"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFeatureUnleash
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFeatureValkey:
+		typename = "FeatureValkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFeatureValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeFeatures:
+		typename = "Features"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeFeatures
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry:
+		typename = "GenericKubernetesResourceActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeImageVulnerability:
+		typename = "ImageVulnerability"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeImageVulnerability
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeInstanceGroup:
+		typename = "InstanceGroup"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeInstanceGroup
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeInstanceGroupEnvironmentVariable:
+		typename = "InstanceGroupEnvironmentVariable"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeInstanceGroupEnvironmentVariable
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeInvalidSpecIssue:
+		typename = "InvalidSpecIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeInvalidSpecIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJob
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobCreatedActivityLogEntry:
+		typename = "JobCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobDeletedActivityLogEntry:
+		typename = "JobDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobRun:
+		typename = "JobRun"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobRun
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobRunDeletedActivityLogEntry:
+		typename = "JobRunDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobRunDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobRunInstance:
+		typename = "JobRunInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobRunInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobTriggeredActivityLogEntry:
+		typename = "JobTriggeredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobTriggeredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeJobUpdatedActivityLogEntry:
+		typename = "JobUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeJobUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry:
+		typename = "KafkaCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeKafkaTopic:
+		typename = "KafkaTopic"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeKafkaTopic
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry:
+		typename = "KafkaTopicUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeLastRunFailedIssue:
+		typename = "LastRunFailedIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeLastRunFailedIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeLogDestinationGeneric:
+		typename = "LogDestinationGeneric"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeLogDestinationGeneric
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeLogDestinationLoki:
+		typename = "LogDestinationLoki"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeLogDestinationLoki
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeLogDestinationSecureLogs:
+		typename = "LogDestinationSecureLogs"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeLogDestinationSecureLogs
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeMissingSbomIssue:
+		typename = "MissingSbomIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeMissingSbomIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeNoRunningInstancesIssue:
+		typename = "NoRunningInstancesIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeNoRunningInstancesIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearch:
+		typename = "OpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry:
+		typename = "OpenSearchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry:
+		typename = "OpenSearchCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry:
+		typename = "OpenSearchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearchIssue:
+		typename = "OpenSearchIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearchIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry:
+		typename = "OpenSearchUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgres:
+		typename = "Postgres"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgres
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresAccess:
+		typename = "PostgresAccess"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresAccess
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry:
+		typename = "PostgresBranchActivatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry:
+		typename = "PostgresBranchCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry:
+		typename = "PostgresBranchDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresCreatedActivityLogEntry:
+		typename = "PostgresCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresDeletedActivityLogEntry:
+		typename = "PostgresDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry:
+		typename = "PostgresGrantAccessActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresIssue:
+		typename = "PostgresIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry:
+		typename = "PostgresPersonalAccessConnectionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry:
+		typename = "PostgresPersonalAccessCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePostgresUpdatedActivityLogEntry:
+		typename = "PostgresUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePostgresUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodePrometheusAlert:
+		typename = "PrometheusAlert"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodePrometheusAlert
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeReconciler:
+		typename = "Reconciler"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeReconciler
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry:
+		typename = "ReconcilerConfiguredActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry:
+		typename = "ReconcilerDisabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry:
+		typename = "ReconcilerEnabledActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeReconcilerError:
+		typename = "ReconcilerError"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeReconcilerError
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRepository:
+		typename = "Repository"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRepository
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRepositoryAddedActivityLogEntry:
+		typename = "RepositoryAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRepositoryAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry:
+		typename = "RepositoryRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRole:
+		typename = "Role"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRole
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry:
+		typename = "RoleAssignedToServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry:
+		typename = "RoleAssignedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry:
+		typename = "RoleRevokedFromServiceAccountActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry:
+		typename = "RoleRevokedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecret:
+		typename = "Secret"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecret
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretCreatedActivityLogEntry:
+		typename = "SecretCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretDeletedActivityLogEntry:
+		typename = "SecretDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretUpdatedActivityLogEntry:
+		typename = "SecretUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretValueAddedActivityLogEntry:
+		typename = "SecretValueAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretValueAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry:
+		typename = "SecretValueRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry:
+		typename = "SecretValueUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry:
+		typename = "SecretValuesViewedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccount:
+		typename = "ServiceAccount"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccount
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry:
+		typename = "ServiceAccountCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry:
+		typename = "ServiceAccountDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountToken:
+		typename = "ServiceAccountToken"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountToken
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry:
+		typename = "ServiceAccountTokenCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry:
+		typename = "ServiceAccountTokenDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry:
+		typename = "ServiceAccountTokenUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry:
+		typename = "ServiceAccountUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountWorkloadBinding:
+		typename = "ServiceAccountWorkloadBinding"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountWorkloadBinding
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry:
+		typename = "ServiceAccountWorkloadBindingRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry:
+		typename = "ServiceMaintenanceActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSqlDatabase:
+		typename = "SqlDatabase"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSqlDatabase
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSqlInstance:
+		typename = "SqlInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSqlInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSqlInstanceStateIssue:
+		typename = "SqlInstanceStateIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSqlInstanceStateIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeSqlInstanceVersionIssue:
+		typename = "SqlInstanceVersionIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeSqlInstanceVersionIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeam:
+		typename = "Team"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeam
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry:
+		typename = "TeamConfirmDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry:
+		typename = "TeamCreateDeleteKeyActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamCreatedActivityLogEntry:
+		typename = "TeamCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry:
+		typename = "TeamDeployKeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamEnvironment:
+		typename = "TeamEnvironment"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamEnvironment
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry:
+		typename = "TeamEnvironmentUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry:
+		typename = "TeamMemberAddedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry:
+		typename = "TeamMemberRemovedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry:
+		typename = "TeamMemberSetRoleActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTeamUpdatedActivityLogEntry:
+		typename = "TeamUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTeamUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTunnel:
+		typename = "Tunnel"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTunnel
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTunnelCreatedActivityLogEntry:
+		typename = "TunnelCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTunnelCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeTunnelDeletedActivityLogEntry:
+		typename = "TunnelDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeTunnelDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUnleashInstance:
+		typename = "UnleashInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUnleashInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry:
+		typename = "UnleashInstanceCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry:
+		typename = "UnleashInstanceDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry:
+		typename = "UnleashInstanceUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUnleashReleaseChannelIssue:
+		typename = "UnleashReleaseChannelIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUnleashReleaseChannelIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUser:
+		typename = "User"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUser
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUserCreatedUserSyncLogEntry:
+		typename = "UserCreatedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUserCreatedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUserDeletedUserSyncLogEntry:
+		typename = "UserDeletedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUserDeletedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry:
+		typename = "UserUpdatedUserSyncLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkey:
+		typename = "Valkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkeyCreatedActivityLogEntry:
+		typename = "ValkeyCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkeyCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry:
+		typename = "ValkeyCredentialsCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkeyDeletedActivityLogEntry:
+		typename = "ValkeyDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkeyDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkeyIssue:
+		typename = "ValkeyIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkeyIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry:
+		typename = "ValkeyUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry:
+		typename = "VulnerabilityUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeVulnerableImageIssue:
+		typename = "VulnerableImageIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeVulnerableImageIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWebhookCreatedActivityLogEntry:
+		typename = "WebhookCreatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWebhookCreatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWebhookDeletedActivityLogEntry:
+		typename = "WebhookDeletedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWebhookDeletedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWebhookDelivery:
+		typename = "WebhookDelivery"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWebhookDelivery
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWebhookSubscription:
+		typename = "WebhookSubscription"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWebhookSubscription
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry:
+		typename = "WebhookUpdatedActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadKillingEvent:
+		typename = "WorkloadKillingEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadKillingEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadProblemIssue:
+		typename = "WorkloadProblemIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadProblemIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent:
+		typename = "WorkloadSuccessfulRescaleEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadVulnerabilitySummary:
+		typename = "WorkloadVulnerabilitySummary"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadVulnerabilitySummary
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadWarningEvent:
+		typename = "WorkloadWarningEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadWarningEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobRunDetailsNodeWorkloadWithVulnerability:
+		typename = "WorkloadWithVulnerability"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobRunDetailsNodeWorkloadWithVulnerability
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for GetJobRunDetailsNode: "%T"`, v)
+	}
+}
+
+// GetJobRunDetailsNodeApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type GetJobRunDetailsNodeApplication struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplication.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplication) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeApplicationCreatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationCreatedActivityLogEntry.
+type GetJobRunDetailsNodeApplicationCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeApplicationDeletedActivityLogEntry includes the requested fields of the GraphQL type ApplicationDeletedActivityLogEntry.
+type GetJobRunDetailsNodeApplicationDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeApplicationInstance includes the requested fields of the GraphQL type ApplicationInstance.
+type GetJobRunDetailsNodeApplicationInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationInstance.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationInstance) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeApplicationRestartLoopIssue includes the requested fields of the GraphQL type ApplicationRestartLoopIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when an application keeps restarting repeatedly.
+type GetJobRunDetailsNodeApplicationRestartLoopIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationRestartLoopIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationRestartLoopIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeApplicationRestartedActivityLogEntry includes the requested fields of the GraphQL type ApplicationRestartedActivityLogEntry.
+type GetJobRunDetailsNodeApplicationRestartedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationRestartedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationRestartedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetJobRunDetailsNodeApplicationRolloutStuckIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationRolloutStuckIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeApplicationScaledActivityLogEntry includes the requested fields of the GraphQL type ApplicationScaledActivityLogEntry.
+type GetJobRunDetailsNodeApplicationScaledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationScaledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationScaledActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry includes the requested fields of the GraphQL type ApplicationUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when an application is updated.
+type GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeApplicationUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeAvailableValueOptions includes the requested fields of the GraphQL type AvailableValueOptions.
+// The GraphQL type's documentation follows.
+//
+// Allowed string values and the default selection for a setting in an environment.
+type GetJobRunDetailsNodeAvailableValueOptions struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeAvailableValueOptions.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeAvailableValueOptions) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeAvailableValues includes the requested fields of the GraphQL type AvailableValues.
+// The GraphQL type's documentation follows.
+//
+// Available configuration values for an environment, updated as platform capabilities change.
+type GetJobRunDetailsNodeAvailableValues struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeAvailableValues.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeAvailableValues) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeBigQueryDataset includes the requested fields of the GraphQL type BigQueryDataset.
+type GetJobRunDetailsNodeBigQueryDataset struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeBigQueryDataset.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeBigQueryDataset) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeBucket includes the requested fields of the GraphQL type Bucket.
+type GetJobRunDetailsNodeBucket struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeBucket.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeBucket) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeCVE includes the requested fields of the GraphQL type CVE.
+type GetJobRunDetailsNodeCVE struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeCVE.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeCVE) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeClusterAuditActivityLogEntry includes the requested fields of the GraphQL type ClusterAuditActivityLogEntry.
+type GetJobRunDetailsNodeClusterAuditActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeClusterAuditActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeClusterAuditActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeConfig includes the requested fields of the GraphQL type Config.
+// The GraphQL type's documentation follows.
+//
+// A config is a collection of key-value pairs.
+type GetJobRunDetailsNodeConfig struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeConfig.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeConfig) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeConfigCreatedActivityLogEntry includes the requested fields of the GraphQL type ConfigCreatedActivityLogEntry.
+type GetJobRunDetailsNodeConfigCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeConfigCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeConfigCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeConfigDeletedActivityLogEntry includes the requested fields of the GraphQL type ConfigDeletedActivityLogEntry.
+type GetJobRunDetailsNodeConfigDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeConfigDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeConfigDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeConfigUpdatedActivityLogEntry includes the requested fields of the GraphQL type ConfigUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeConfigUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeConfigUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeConfigUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetJobRunDetailsNodeContainerImage struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeContainerImage.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeContainerImage) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeContainerImageSBOM includes the requested fields of the GraphQL type ContainerImageSBOM.
+// The GraphQL type's documentation follows.
+//
+// SBOM metadata for a container image, including pipeline status and processing
+// information. This type is accessed through ContainerImage.sbom.
+type GetJobRunDetailsNodeContainerImageSBOM struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeContainerImageSBOM.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeContainerImageSBOM) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeployment includes the requested fields of the GraphQL type Deployment.
+// The GraphQL type's documentation follows.
+//
+// Description of a deployment.
+type GetJobRunDetailsNodeDeployment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeployment.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeployment) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeploymentActivityLogEntry includes the requested fields of the GraphQL type DeploymentActivityLogEntry.
+type GetJobRunDetailsNodeDeploymentActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeploymentActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeploymentActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeploymentKey includes the requested fields of the GraphQL type DeploymentKey.
+// The GraphQL type's documentation follows.
+//
+// Deployment key type.
+type GetJobRunDetailsNodeDeploymentKey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeploymentKey.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeploymentKey) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeploymentResource includes the requested fields of the GraphQL type DeploymentResource.
+// The GraphQL type's documentation follows.
+//
+// Resource connected to a deployment.
+type GetJobRunDetailsNodeDeploymentResource struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeploymentResource.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeploymentResource) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeploymentStatus includes the requested fields of the GraphQL type DeploymentStatus.
+// The GraphQL type's documentation follows.
+//
+// Resource connected to a deployment.
+type GetJobRunDetailsNodeDeploymentStatus struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeploymentStatus.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeploymentStatus) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
+type GetJobRunDetailsNodeDeprecatedIngressIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeprecatedIngressIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeprecatedIngressIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeDeprecatedRegistryIssue includes the requested fields of the GraphQL type DeprecatedRegistryIssue.
+type GetJobRunDetailsNodeDeprecatedRegistryIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeDeprecatedRegistryIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeDeprecatedRegistryIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type GetJobRunDetailsNodeEnvironment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeEnvironment.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeEnvironment) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue includes the requested fields of the GraphQL type ExternalIngressUrgentVulnerabilityIssue.
+// The GraphQL type's documentation follows.
+//
+// Raised when a workload with external ingresses has one or more urgent vulnerability-priority findings.
+type GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeExternalIngressUrgentVulnerabilityIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeFailedSynchronizationIssue includes the requested fields of the GraphQL type FailedSynchronizationIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type GetJobRunDetailsNodeFailedSynchronizationIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFailedSynchronizationIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFailedSynchronizationIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeFeatureKafka includes the requested fields of the GraphQL type FeatureKafka.
+type GetJobRunDetailsNodeFeatureKafka struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFeatureKafka.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFeatureKafka) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeFeatureOpenSearch includes the requested fields of the GraphQL type FeatureOpenSearch.
+type GetJobRunDetailsNodeFeatureOpenSearch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFeatureOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFeatureOpenSearch) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeFeatureUnleash includes the requested fields of the GraphQL type FeatureUnleash.
+type GetJobRunDetailsNodeFeatureUnleash struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFeatureUnleash.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFeatureUnleash) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeFeatureValkey includes the requested fields of the GraphQL type FeatureValkey.
+type GetJobRunDetailsNodeFeatureValkey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFeatureValkey.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFeatureValkey) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeFeatures includes the requested fields of the GraphQL type Features.
+type GetJobRunDetailsNodeFeatures struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeFeatures.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeFeatures) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry includes the requested fields of the GraphQL type GenericKubernetesResourceActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a resource kind that is not modelled in the GraphQL API.
+// The resource type will be the uppercase Kubernetes kind, e.g. 'NAISJOB'.
+type GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeGenericKubernetesResourceActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeImageVulnerability includes the requested fields of the GraphQL type ImageVulnerability.
+type GetJobRunDetailsNodeImageVulnerability struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeImageVulnerability.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeImageVulnerability) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeInstanceGroup includes the requested fields of the GraphQL type InstanceGroup.
+// The GraphQL type's documentation follows.
+//
+// An instance group represents a set of identical instances.
+// All instances in the group share the same configuration (environment variables, mounted files, image).
+type GetJobRunDetailsNodeInstanceGroup struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeInstanceGroup.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeInstanceGroup) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeInstanceGroupEnvironmentVariable includes the requested fields of the GraphQL type InstanceGroupEnvironmentVariable.
+// The GraphQL type's documentation follows.
+//
+// An environment variable configured for an instance group.
+type GetJobRunDetailsNodeInstanceGroupEnvironmentVariable struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeInstanceGroupEnvironmentVariable.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeInstanceGroupEnvironmentVariable) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeInvalidSpecIssue includes the requested fields of the GraphQL type InvalidSpecIssue.
+// The GraphQL type's documentation follows.
+//
+// Deprecated: superseded by WorkloadProblemIssue. No longer produced; retained for backwards compatibility.
+type GetJobRunDetailsNodeInvalidSpecIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeInvalidSpecIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeInvalidSpecIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJob includes the requested fields of the GraphQL type Job.
+type GetJobRunDetailsNodeJob struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJob.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJob) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobCreatedActivityLogEntry includes the requested fields of the GraphQL type JobCreatedActivityLogEntry.
+type GetJobRunDetailsNodeJobCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobDeletedActivityLogEntry includes the requested fields of the GraphQL type JobDeletedActivityLogEntry.
+type GetJobRunDetailsNodeJobDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobRun includes the requested fields of the GraphQL type JobRun.
+type GetJobRunDetailsNodeJobRun struct {
+	Typename *string `json:"__typename"`
+	// The name of the job run.
+	Name string `json:"name"`
+	// The status of the job run.
+	Status GetJobRunDetailsNodeJobRunStatus `json:"status"`
+	// Job run instances.
+	Instances GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection `json:"instances"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobRun.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRun) GetTypename() *string { return v.Typename }
+
+// GetName returns GetJobRunDetailsNodeJobRun.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRun) GetName() string { return v.Name }
+
+// GetStatus returns GetJobRunDetailsNodeJobRun.Status, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRun) GetStatus() GetJobRunDetailsNodeJobRunStatus { return v.Status }
+
+// GetInstances returns GetJobRunDetailsNodeJobRun.Instances, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRun) GetInstances() GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection {
+	return v.Instances
+}
+
+// GetJobRunDetailsNodeJobRunDeletedActivityLogEntry includes the requested fields of the GraphQL type JobRunDeletedActivityLogEntry.
+type GetJobRunDetailsNodeJobRunDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobRunDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobRunInstance includes the requested fields of the GraphQL type JobRunInstance.
+type GetJobRunDetailsNodeJobRunInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobRunInstance.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstance) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection includes the requested fields of the GraphQL type JobRunInstanceConnection.
+type GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection struct {
+	// List of nodes.
+	Nodes []GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance `json:"nodes"`
+	// Pagination information.
+	PageInfo GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection) GetNodes() []GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance {
+	return v.Nodes
+}
+
+// GetPageInfo returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnection) GetPageInfo() GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo {
+	return v.PageInfo
+}
+
+// GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance includes the requested fields of the GraphQL type JobRunInstance.
+type GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance struct {
+	// The name of the job run instance.
+	Name string `json:"name"`
+	// The container image of the job run instance.
+	Image GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage `json:"image"`
+	// The number of times the job run instance has been restarted.
+	Restarts int `json:"restarts"`
+	// The time the job run instance was created.
+	Created time.Time `json:"created"`
+	// The current status of the job run instance.
+	Status GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus `json:"status"`
+}
+
+// GetName returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance) GetName() string {
+	return v.Name
+}
+
+// GetImage returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance.Image, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance) GetImage() GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage {
+	return v.Image
+}
+
+// GetRestarts returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance.Restarts, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance) GetRestarts() int {
+	return v.Restarts
+}
+
+// GetCreated returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance.Created, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance) GetCreated() time.Time {
+	return v.Created
+}
+
+// GetStatus returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance.Status, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstance) GetStatus() GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus {
+	return v.Status
+}
+
+// GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage includes the requested fields of the GraphQL type ContainerImage.
+// The GraphQL type's documentation follows.
+//
+// Container image.
+type GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage struct {
+	// Name of the container image.
+	Name string `json:"name"`
+	// Tag of the container image. Empty when the image reference has no explicit tag,
+	// for example when it is referenced by digest only.
+	Tag string `json:"tag"`
+	// Digest of the container image, if present.
+	Digest *string `json:"digest"`
+}
+
+// GetName returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage.Name, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage) GetName() string {
+	return v.Name
+}
+
+// GetTag returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage.Tag, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage) GetTag() string {
+	return v.Tag
+}
+
+// GetDigest returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage.Digest, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceImageContainerImage) GetDigest() *string {
+	return v.Digest
+}
+
+// GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus includes the requested fields of the GraphQL type JobRunInstanceStatus.
+// The GraphQL type's documentation follows.
+//
+// The status of a job run instance.
+type GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus struct {
+	// The current state of the job run instance.
+	State JobRunInstanceState `json:"state"`
+	// A user-friendly description of the current state.
+	Message string `json:"message"`
+	// The reason the job run instance last terminated, if applicable.
+	// This is populated even when the instance is currently running, to help debug restarts.
+	LastExitReason *string `json:"lastExitReason"`
+	// The exit code from the last termination of the job run instance, if applicable.
+	LastExitCode *int `json:"lastExitCode"`
+	// The timestamp of the last termination of the job run instance, if applicable.
+	// This is populated even when the instance is currently running, to help debug restarts.
+	LastExitTimestamp *time.Time `json:"lastExitTimestamp"`
+}
+
+// GetState returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus.State, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus) GetState() JobRunInstanceState {
+	return v.State
+}
+
+// GetMessage returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus.Message, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus) GetMessage() string {
+	return v.Message
+}
+
+// GetLastExitReason returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus.LastExitReason, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus) GetLastExitReason() *string {
+	return v.LastExitReason
+}
+
+// GetLastExitCode returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus.LastExitCode, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus) GetLastExitCode() *int {
+	return v.LastExitCode
+}
+
+// GetLastExitTimestamp returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus.LastExitTimestamp, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionNodesJobRunInstanceStatus) GetLastExitTimestamp() *time.Time {
+	return v.LastExitTimestamp
+}
+
+// GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo) GetHasNextPage() bool {
+	return v.HasNextPage
+}
+
+// GetEndCursor returns GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunInstancesJobRunInstanceConnectionPageInfo) GetEndCursor() *string {
+	return v.EndCursor
+}
+
+// GetJobRunDetailsNodeJobRunStatus includes the requested fields of the GraphQL type JobRunStatus.
+type GetJobRunDetailsNodeJobRunStatus struct {
+	// The state of the job run.
+	State JobRunState `json:"state"`
+	// Human readable job run status.
+	Message string `json:"message"`
+}
+
+// GetState returns GetJobRunDetailsNodeJobRunStatus.State, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunStatus) GetState() JobRunState { return v.State }
+
+// GetMessage returns GetJobRunDetailsNodeJobRunStatus.Message, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobRunStatus) GetMessage() string { return v.Message }
+
+// GetJobRunDetailsNodeJobTriggeredActivityLogEntry includes the requested fields of the GraphQL type JobTriggeredActivityLogEntry.
+type GetJobRunDetailsNodeJobTriggeredActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobTriggeredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobTriggeredActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeJobUpdatedActivityLogEntry includes the requested fields of the GraphQL type JobUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for when a job is updated.
+type GetJobRunDetailsNodeJobUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeJobUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeJobUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type KafkaCredentialsCreatedActivityLogEntry.
+type GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeKafkaCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type GetJobRunDetailsNodeKafkaTopic struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeKafkaTopic.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeKafkaTopic) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry includes the requested fields of the GraphQL type KafkaTopicUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeKafkaTopicUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeLastRunFailedIssue includes the requested fields of the GraphQL type LastRunFailedIssue.
+type GetJobRunDetailsNodeLastRunFailedIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeLastRunFailedIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeLastRunFailedIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeLogDestinationGeneric includes the requested fields of the GraphQL type LogDestinationGeneric.
+type GetJobRunDetailsNodeLogDestinationGeneric struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeLogDestinationGeneric.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeLogDestinationGeneric) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeLogDestinationLoki includes the requested fields of the GraphQL type LogDestinationLoki.
+type GetJobRunDetailsNodeLogDestinationLoki struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeLogDestinationLoki.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeLogDestinationLoki) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeLogDestinationSecureLogs includes the requested fields of the GraphQL type LogDestinationSecureLogs.
+type GetJobRunDetailsNodeLogDestinationSecureLogs struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeLogDestinationSecureLogs.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeLogDestinationSecureLogs) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeMissingSbomIssue includes the requested fields of the GraphQL type MissingSbomIssue.
+type GetJobRunDetailsNodeMissingSbomIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeMissingSbomIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeMissingSbomIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeNoRunningInstancesIssue includes the requested fields of the GraphQL type NoRunningInstancesIssue.
+type GetJobRunDetailsNodeNoRunningInstancesIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeNoRunningInstancesIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeNoRunningInstancesIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type GetJobRunDetailsNodeOpenSearch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearch) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCreatedActivityLogEntry.
+type GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchCredentialsCreatedActivityLogEntry.
+type GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearchCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchDeletedActivityLogEntry.
+type GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeOpenSearchIssue includes the requested fields of the GraphQL type OpenSearchIssue.
+type GetJobRunDetailsNodeOpenSearchIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearchIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearchIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry includes the requested fields of the GraphQL type OpenSearchUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeOpenSearchUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A managed Postgres database.
+type GetJobRunDetailsNodePostgres struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgres.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgres) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodePostgresAccess includes the requested fields of the GraphQL type PostgresAccess.
+// The GraphQL type's documentation follows.
+//
+// A time-limited personal access request for a Postgres database.
+type GetJobRunDetailsNodePostgresAccess struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresAccess.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresAccess) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchActivatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A request to activate a Postgres branch was accepted; the switchover may still be pending.
+type GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresBranchActivatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was created.
+type GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresBranchCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresBranchDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// A Postgres branch was deleted.
+type GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresBranchDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was created.
+type GetJobRunDetailsNodePostgresCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresDeletedActivityLogEntry includes the requested fields of the GraphQL type PostgresDeletedActivityLogEntry.
+type GetJobRunDetailsNodePostgresDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry includes the requested fields of the GraphQL type PostgresGrantAccessActivityLogEntry.
+type GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresGrantAccessActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresIssue includes the requested fields of the GraphQL type PostgresIssue.
+// The GraphQL type's documentation follows.
+//
+// A failure reported by a Postgres database.
+type GetJobRunDetailsNodePostgresIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessConnectionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An audit-log entry for retrieval of personal Postgres connection materials.
+type GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresPersonalAccessConnectionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry includes the requested fields of the GraphQL type PostgresPersonalAccessCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An audit-log entry for personal Postgres access creation.
+type GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresPersonalAccessCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePostgresUpdatedActivityLogEntry includes the requested fields of the GraphQL type PostgresUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for a Postgres that was updated.
+type GetJobRunDetailsNodePostgresUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePostgresUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePostgresUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodePrometheusAlert includes the requested fields of the GraphQL type PrometheusAlert.
+// The GraphQL type's documentation follows.
+//
+// PrometheusAlert type
+type GetJobRunDetailsNodePrometheusAlert struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodePrometheusAlert.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodePrometheusAlert) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeReconciler includes the requested fields of the GraphQL type Reconciler.
+// The GraphQL type's documentation follows.
+//
+// Reconciler type.
+type GetJobRunDetailsNodeReconciler struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeReconciler.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeReconciler) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry includes the requested fields of the GraphQL type ReconcilerConfiguredActivityLogEntry.
+type GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeReconcilerConfiguredActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerDisabledActivityLogEntry.
+type GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeReconcilerDisabledActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry includes the requested fields of the GraphQL type ReconcilerEnabledActivityLogEntry.
+type GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeReconcilerEnabledActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeReconcilerError includes the requested fields of the GraphQL type ReconcilerError.
+type GetJobRunDetailsNodeReconcilerError struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeReconcilerError.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeReconcilerError) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeRepository includes the requested fields of the GraphQL type Repository.
+type GetJobRunDetailsNodeRepository struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRepository.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRepository) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeRepositoryAddedActivityLogEntry includes the requested fields of the GraphQL type RepositoryAddedActivityLogEntry.
+type GetJobRunDetailsNodeRepositoryAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRepositoryAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRepositoryAddedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry includes the requested fields of the GraphQL type RepositoryRemovedActivityLogEntry.
+type GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRepositoryRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeRole includes the requested fields of the GraphQL type Role.
+type GetJobRunDetailsNodeRole struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRole.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRole) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleAssignedToServiceAccountActivityLogEntry.
+type GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRoleAssignedToServiceAccountActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry includes the requested fields of the GraphQL type RoleAssignedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Assigned role to user log entry.
+type GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRoleAssignedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry includes the requested fields of the GraphQL type RoleRevokedFromServiceAccountActivityLogEntry.
+type GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRoleRevokedFromServiceAccountActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry includes the requested fields of the GraphQL type RoleRevokedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Revoked role from user log entry.
+type GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeRoleRevokedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSecret includes the requested fields of the GraphQL type Secret.
+// The GraphQL type's documentation follows.
+//
+// A secret is a collection of secret values.
+type GetJobRunDetailsNodeSecret struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecret.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecret) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSecretCreatedActivityLogEntry includes the requested fields of the GraphQL type SecretCreatedActivityLogEntry.
+type GetJobRunDetailsNodeSecretCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSecretDeletedActivityLogEntry includes the requested fields of the GraphQL type SecretDeletedActivityLogEntry.
+type GetJobRunDetailsNodeSecretDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSecretUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeSecretUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSecretValueAddedActivityLogEntry includes the requested fields of the GraphQL type SecretValueAddedActivityLogEntry.
+type GetJobRunDetailsNodeSecretValueAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretValueAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretValueAddedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry includes the requested fields of the GraphQL type SecretValueRemovedActivityLogEntry.
+type GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretValueRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry includes the requested fields of the GraphQL type SecretValueUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretValueUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry includes the requested fields of the GraphQL type SecretValuesViewedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// Activity log entry for viewing secret values.
+type GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSecretValuesViewedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccount includes the requested fields of the GraphQL type ServiceAccount.
+// The GraphQL type's documentation follows.
+//
+// The service account type represents machine-users of the Nais API.
+//
+// These types of users can be used to automate certain parts of the API, for instance team creation and managing team members.
+//
+// Service accounts are created using the `createServiceAccount` mutation, and authenticate using tokens generated by the `createServiceAccountToken` mutation.
+type GetJobRunDetailsNodeServiceAccount struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccount.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccount) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountCreatedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountDeletedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountToken includes the requested fields of the GraphQL type ServiceAccountToken.
+type GetJobRunDetailsNodeServiceAccountToken struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountToken.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountToken) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenCreatedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountTokenCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenDeletedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountTokenDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountTokenUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountTokenUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountWorkloadBinding includes the requested fields of the GraphQL type ServiceAccountWorkloadBinding.
+// The GraphQL type's documentation follows.
+//
+// A binding between a Nais service account and a Nais workload (application or job). When the workload presents its
+// Workload Token to the API, the API will authenticate the request as the bound service account.
+type GetJobRunDetailsNodeServiceAccountWorkloadBinding struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountWorkloadBinding.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBinding) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingAddedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBindingAddedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry includes the requested fields of the GraphQL type ServiceAccountWorkloadBindingRemovedActivityLogEntry.
+type GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceAccountWorkloadBindingRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry includes the requested fields of the GraphQL type ServiceMaintenanceActivityLogEntry.
+type GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeServiceMaintenanceActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeSqlDatabase includes the requested fields of the GraphQL type SqlDatabase.
+type GetJobRunDetailsNodeSqlDatabase struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSqlDatabase.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSqlDatabase) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSqlInstance includes the requested fields of the GraphQL type SqlInstance.
+type GetJobRunDetailsNodeSqlInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSqlInstance.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSqlInstance) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSqlInstanceStateIssue includes the requested fields of the GraphQL type SqlInstanceStateIssue.
+type GetJobRunDetailsNodeSqlInstanceStateIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSqlInstanceStateIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSqlInstanceStateIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeSqlInstanceVersionIssue includes the requested fields of the GraphQL type SqlInstanceVersionIssue.
+type GetJobRunDetailsNodeSqlInstanceVersionIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeSqlInstanceVersionIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeSqlInstanceVersionIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type GetJobRunDetailsNodeTeam struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeam.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeam) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamConfirmDeleteKeyActivityLogEntry.
+type GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamConfirmDeleteKeyActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry includes the requested fields of the GraphQL type TeamCreateDeleteKeyActivityLogEntry.
+type GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamCreateDeleteKeyActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamCreatedActivityLogEntry includes the requested fields of the GraphQL type TeamCreatedActivityLogEntry.
+type GetJobRunDetailsNodeTeamCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamDeployKeyUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamDeployKeyUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type GetJobRunDetailsNodeTeamEnvironment struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamEnvironment.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamEnvironment) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamEnvironmentUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamEnvironmentUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberAddedActivityLogEntry.
+type GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamMemberAddedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry includes the requested fields of the GraphQL type TeamMemberRemovedActivityLogEntry.
+type GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamMemberRemovedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry includes the requested fields of the GraphQL type TeamMemberSetRoleActivityLogEntry.
+type GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamMemberSetRoleActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeTeamUpdatedActivityLogEntry includes the requested fields of the GraphQL type TeamUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeTeamUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTeamUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTeamUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTunnel includes the requested fields of the GraphQL type Tunnel.
+// The GraphQL type's documentation follows.
+//
+// A WireGuard tunnel between the CLI and an in-cluster gateway.
+type GetJobRunDetailsNodeTunnel struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTunnel.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTunnel) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTunnelCreatedActivityLogEntry includes the requested fields of the GraphQL type TunnelCreatedActivityLogEntry.
+type GetJobRunDetailsNodeTunnelCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTunnelCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTunnelCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeTunnelDeletedActivityLogEntry includes the requested fields of the GraphQL type TunnelDeletedActivityLogEntry.
+type GetJobRunDetailsNodeTunnelDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeTunnelDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeTunnelDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUnleashInstance includes the requested fields of the GraphQL type UnleashInstance.
+type GetJobRunDetailsNodeUnleashInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUnleashInstance.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUnleashInstance) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceCreatedActivityLogEntry.
+type GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUnleashInstanceCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceDeletedActivityLogEntry.
+type GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUnleashInstanceDeletedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry includes the requested fields of the GraphQL type UnleashInstanceUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUnleashInstanceUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeUnleashReleaseChannelIssue includes the requested fields of the GraphQL type UnleashReleaseChannelIssue.
+type GetJobRunDetailsNodeUnleashReleaseChannelIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUnleashReleaseChannelIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUnleashReleaseChannelIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type GetJobRunDetailsNodeUser struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUser.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUser) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUserCreatedUserSyncLogEntry includes the requested fields of the GraphQL type UserCreatedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User created log entry.
+type GetJobRunDetailsNodeUserCreatedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUserCreatedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUserCreatedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUserDeletedUserSyncLogEntry includes the requested fields of the GraphQL type UserDeletedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User deleted log entry.
+type GetJobRunDetailsNodeUserDeletedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUserDeletedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUserDeletedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry includes the requested fields of the GraphQL type UserUpdatedUserSyncLogEntry.
+// The GraphQL type's documentation follows.
+//
+// User updated log entry.
+type GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeUserUpdatedUserSyncLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeValkey includes the requested fields of the GraphQL type Valkey.
+type GetJobRunDetailsNodeValkey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkey.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkey) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeValkeyCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCreatedActivityLogEntry.
+type GetJobRunDetailsNodeValkeyCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkeyCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkeyCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyCredentialsCreatedActivityLogEntry.
+type GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkeyCredentialsCreatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeValkeyDeletedActivityLogEntry includes the requested fields of the GraphQL type ValkeyDeletedActivityLogEntry.
+type GetJobRunDetailsNodeValkeyDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkeyDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkeyDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeValkeyIssue includes the requested fields of the GraphQL type ValkeyIssue.
+type GetJobRunDetailsNodeValkeyIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkeyIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkeyIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry includes the requested fields of the GraphQL type ValkeyUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeValkeyUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
+type GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeVulnerabilityUpdatedActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetJobRunDetailsNodeVulnerableImageIssue includes the requested fields of the GraphQL type VulnerableImageIssue.
+type GetJobRunDetailsNodeVulnerableImageIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeVulnerableImageIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeVulnerableImageIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWebhookCreatedActivityLogEntry includes the requested fields of the GraphQL type WebhookCreatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An activity log entry for creating a webhook subscription.
+type GetJobRunDetailsNodeWebhookCreatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWebhookCreatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWebhookCreatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWebhookDeletedActivityLogEntry includes the requested fields of the GraphQL type WebhookDeletedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An activity log entry for deleting a webhook subscription.
+type GetJobRunDetailsNodeWebhookDeletedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWebhookDeletedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWebhookDeletedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWebhookDelivery includes the requested fields of the GraphQL type WebhookDelivery.
+// The GraphQL type's documentation follows.
+//
+// A record of a webhook delivery attempt, including the request sent and the response received.
+type GetJobRunDetailsNodeWebhookDelivery struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWebhookDelivery.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWebhookDelivery) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWebhookSubscription includes the requested fields of the GraphQL type WebhookSubscription.
+// The GraphQL type's documentation follows.
+//
+// A webhook subscription that receives HTTP callbacks when activity log events occur.
+// Team-owned webhooks receive events from selected teams or all teams. Global webhooks also receive global events.
+type GetJobRunDetailsNodeWebhookSubscription struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWebhookSubscription.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWebhookSubscription) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry includes the requested fields of the GraphQL type WebhookUpdatedActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An activity log entry for updating a webhook subscription.
+type GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWebhookUpdatedActivityLogEntry) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadKillingEvent includes the requested fields of the GraphQL type WorkloadKillingEvent.
+// The GraphQL type's documentation follows.
+//
+// A container restart.
+type GetJobRunDetailsNodeWorkloadKillingEvent struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadKillingEvent.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadKillingEvent) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadProblemIssue includes the requested fields of the GraphQL type WorkloadProblemIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue surfacing a problem reported by the platform in a workload's status.
+type GetJobRunDetailsNodeWorkloadProblemIssue struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadProblemIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadProblemIssue) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent includes the requested fields of the GraphQL type WorkloadSuccessfulRescaleEvent.
+// The GraphQL type's documentation follows.
+//
+// A successful replica count change.
+type GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadSuccessfulRescaleEvent) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadVulnerabilitySummary includes the requested fields of the GraphQL type WorkloadVulnerabilitySummary.
+type GetJobRunDetailsNodeWorkloadVulnerabilitySummary struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadVulnerabilitySummary.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadVulnerabilitySummary) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadWarningEvent includes the requested fields of the GraphQL type WorkloadWarningEvent.
+// The GraphQL type's documentation follows.
+//
+// A problem detected while running the workload.
+// Repeated occurrences of the same problem are combined into a single event.
+type GetJobRunDetailsNodeWorkloadWarningEvent struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadWarningEvent.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadWarningEvent) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsNodeWorkloadWithVulnerability includes the requested fields of the GraphQL type WorkloadWithVulnerability.
+// The GraphQL type's documentation follows.
+//
+// A workload affected by a specific vulnerability.
+type GetJobRunDetailsNodeWorkloadWithVulnerability struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns GetJobRunDetailsNodeWorkloadWithVulnerability.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsNodeWorkloadWithVulnerability) GetTypename() *string { return v.Typename }
+
+// GetJobRunDetailsResponse is returned by GetJobRunDetails on success.
+type GetJobRunDetailsResponse struct {
+	// Fetch an object using its globally unique ID.
+	Node *GetJobRunDetailsNode `json:"-"`
+}
+
+// GetNode returns GetJobRunDetailsResponse.Node, and is useful for accessing the field via an interface.
+func (v *GetJobRunDetailsResponse) GetNode() *GetJobRunDetailsNode { return v.Node }
+
+func (v *GetJobRunDetailsResponse) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetJobRunDetailsResponse
+		Node json.RawMessage `json:"node"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetJobRunDetailsResponse = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Node
+		src := firstPass.Node
+		if len(src) != 0 && string(src) != "null" {
+			*dst = new(GetJobRunDetailsNode)
+			err = __unmarshalGetJobRunDetailsNode(
+				src, *dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetJobRunDetailsResponse.Node: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetJobRunDetailsResponse struct {
+	Node json.RawMessage `json:"node"`
+}
+
+func (v *GetJobRunDetailsResponse) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetJobRunDetailsResponse) __premarshalJSON() (*__premarshalGetJobRunDetailsResponse, error) {
+	var retval __premarshalGetJobRunDetailsResponse
+
+	{
+
+		dst := &retval.Node
+		src := v.Node
+		if src != nil {
+			var err error
+			*dst, err = __marshalGetJobRunDetailsNode(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal GetJobRunDetailsResponse.Node: %w", err)
+			}
+		}
+	}
+	return &retval, nil
 }
 
 // GetJobRunNamesResponse is returned by GetJobRunNames on success.
@@ -32524,6 +37736,25 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 	return v.Severity
 }
 
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue includes the requested fields of the GraphQL type ApplicationRolloutStuckIssue.
+// The GraphQL type's documentation follows.
+//
+// An issue raised when a new version of an application is not being rolled out.
+type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue struct {
+	Typename *string  `json:"__typename"`
+	Severity Severity `json:"severity"`
+}
+
+// GetTypename returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetTypename() *string {
+	return v.Typename
+}
+
+// GetSeverity returns GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue.Severity, and is useful for accessing the field via an interface.
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) GetSeverity() Severity {
+	return v.Severity
+}
+
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue includes the requested fields of the GraphQL type DeprecatedIngressIssue.
 type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue struct {
 	Typename *string  `json:"__typename"`
@@ -32617,6 +37848,7 @@ func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicatio
 //
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue is implemented by the following types:
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+// GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedRegistryIssue
 // GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesExternalIngressUrgentVulnerabilityIssue
@@ -32642,6 +37874,8 @@ type GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIss
 }
 
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
+}
+func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
 func (v *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue) implementsGraphQLInterfaceGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesIssue() {
 }
@@ -32692,6 +37926,9 @@ func __unmarshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesApp
 	switch tn.TypeName {
 	case "ApplicationRestartLoopIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue)
+		return json.Unmarshal(b, *v)
+	case "ApplicationRolloutStuckIssue":
+		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue)
 		return json.Unmarshal(b, *v)
 	case "DeprecatedIngressIssue":
 		*v = new(GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue)
@@ -32760,6 +37997,14 @@ func __marshalGetTeamApplicationsTeamApplicationsApplicationConnectionNodesAppli
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRestartLoopIssue
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue:
+		typename = "ApplicationRolloutStuckIssue"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesApplicationRolloutStuckIssue
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamApplicationsTeamApplicationsApplicationConnectionNodesApplicationIssuesIssueConnectionNodesDeprecatedIngressIssue:
@@ -34463,6 +39708,8 @@ const (
 	IssueTypeUnleashReleaseChannel              IssueType = "UNLEASH_RELEASE_CHANNEL"
 	// Raised when an application is stuck in a restart loop.
 	IssueTypeApplicationRestartLoop IssueType = "APPLICATION_RESTART_LOOP"
+	// Raised when a new version of an application is not being rolled out.
+	IssueTypeApplicationRolloutStuck IssueType = "APPLICATION_ROLLOUT_STUCK"
 )
 
 var AllIssueType = []IssueType{
@@ -34483,6 +39730,7 @@ var AllIssueType = []IssueType{
 	IssueTypeExternalIngressUrgentVulnerability,
 	IssueTypeUnleashReleaseChannel,
 	IssueTypeApplicationRestartLoop,
+	IssueTypeApplicationRolloutStuck,
 }
 
 type JobOrder struct {
@@ -34520,6 +39768,33 @@ var AllJobOrderField = []JobOrderField{
 	JobOrderFieldNextRun,
 	JobOrderFieldDeploymentTime,
 	JobOrderFieldIssues,
+}
+
+// The state of a job run instance.
+type JobRunInstanceState string
+
+const (
+	// The job run instance is running.
+	JobRunInstanceStateRunning JobRunInstanceState = "RUNNING"
+	// The job run instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+	JobRunInstanceStatePending JobRunInstanceState = "PENDING"
+	// The job run instance is starting.
+	JobRunInstanceStateStarting JobRunInstanceState = "STARTING"
+	// The job run instance has a problem that prevents it from running or completing successfully.
+	JobRunInstanceStateFailing JobRunInstanceState = "FAILING"
+	// The job run instance completed successfully.
+	JobRunInstanceStateSucceeded JobRunInstanceState = "SUCCEEDED"
+	// The state of the job run instance is unknown.
+	JobRunInstanceStateUnknown JobRunInstanceState = "UNKNOWN"
+)
+
+var AllJobRunInstanceState = []JobRunInstanceState{
+	JobRunInstanceStateRunning,
+	JobRunInstanceStatePending,
+	JobRunInstanceStateStarting,
+	JobRunInstanceStateFailing,
+	JobRunInstanceStateSucceeded,
+	JobRunInstanceStateUnknown,
 }
 
 type JobRunState string
@@ -37138,6 +42413,17 @@ func (v *RemoveTeamMemberResponse) GetRemoveTeamMember() RemoveTeamMemberRemoveT
 	return v.RemoveTeamMember
 }
 
+type ResourceIssueFilter struct {
+	Severity  *Severity  `json:"severity"`
+	IssueType *IssueType `json:"issueType"`
+}
+
+// GetSeverity returns ResourceIssueFilter.Severity, and is useful for accessing the field via an interface.
+func (v *ResourceIssueFilter) GetSeverity() *Severity { return v.Severity }
+
+// GetIssueType returns ResourceIssueFilter.IssueType, and is useful for accessing the field via an interface.
+func (v *ResourceIssueFilter) GetIssueType() *IssueType { return v.IssueType }
+
 // A user-defined label to set on a resource.
 type ResourceLabelInput struct {
 	// A user-defined label to set on a resource.
@@ -39028,6 +44314,426 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 	return v.Encoding
 }
 
+// Event time bounds.
+type WorkloadEventFilter struct {
+	// Event time bounds.
+	From *time.Time `json:"from"`
+	// Event time bounds.
+	To *time.Time `json:"to"`
+}
+
+// GetFrom returns WorkloadEventFilter.From, and is useful for accessing the field via an interface.
+func (v *WorkloadEventFilter) GetFrom() *time.Time { return v.From }
+
+// GetTo returns WorkloadEventFilter.To, and is useful for accessing the field via an interface.
+func (v *WorkloadEventFilter) GetTo() *time.Time { return v.To }
+
+// WorkloadEventsPage includes the GraphQL fields of WorkloadEventConnection requested by the fragment WorkloadEventsPage.
+// The GraphQL type's documentation follows.
+//
+// A paginated collection of events.
+type WorkloadEventsPage struct {
+	// Pagination information.
+	PageInfo WorkloadEventsPagePageInfo `json:"pageInfo"`
+	// Events in this page.
+	Nodes []WorkloadEventsPageNodesWorkloadEvent `json:"-"`
+}
+
+// GetPageInfo returns WorkloadEventsPage.PageInfo, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPage) GetPageInfo() WorkloadEventsPagePageInfo { return v.PageInfo }
+
+// GetNodes returns WorkloadEventsPage.Nodes, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPage) GetNodes() []WorkloadEventsPageNodesWorkloadEvent { return v.Nodes }
+
+func (v *WorkloadEventsPage) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*WorkloadEventsPage
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.WorkloadEventsPage = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]WorkloadEventsPageNodesWorkloadEvent,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalWorkloadEventsPageNodesWorkloadEvent(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal WorkloadEventsPage.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalWorkloadEventsPage struct {
+	PageInfo WorkloadEventsPagePageInfo `json:"pageInfo"`
+
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *WorkloadEventsPage) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *WorkloadEventsPage) __premarshalJSON() (*__premarshalWorkloadEventsPage, error) {
+	var retval __premarshalWorkloadEventsPage
+
+	retval.PageInfo = v.PageInfo
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalWorkloadEventsPageNodesWorkloadEvent(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal WorkloadEventsPage.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// WorkloadEventsPageNodesWorkloadEvent includes the requested fields of the GraphQL interface WorkloadEvent.
+//
+// WorkloadEventsPageNodesWorkloadEvent is implemented by the following types:
+// WorkloadEventsPageNodesWorkloadKillingEvent
+// WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent
+// WorkloadEventsPageNodesWorkloadWarningEvent
+// The GraphQL type's documentation follows.
+//
+// A workload event.
+type WorkloadEventsPageNodesWorkloadEvent interface {
+	implementsGraphQLInterfaceWorkloadEventsPageNodesWorkloadEvent()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+	// GetId returns the interface-field "id" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// A workload event.
+	GetId() string
+	// GetMessage returns the interface-field "message" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// A workload event.
+	GetMessage() string
+	// GetTriggeredAt returns the interface-field "triggeredAt" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// A workload event.
+	GetTriggeredAt() time.Time
+}
+
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) implementsGraphQLInterfaceWorkloadEventsPageNodesWorkloadEvent() {
+}
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) implementsGraphQLInterfaceWorkloadEventsPageNodesWorkloadEvent() {
+}
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) implementsGraphQLInterfaceWorkloadEventsPageNodesWorkloadEvent() {
+}
+
+func __unmarshalWorkloadEventsPageNodesWorkloadEvent(b []byte, v *WorkloadEventsPageNodesWorkloadEvent) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "WorkloadKillingEvent":
+		*v = new(WorkloadEventsPageNodesWorkloadKillingEvent)
+		return json.Unmarshal(b, *v)
+	case "WorkloadSuccessfulRescaleEvent":
+		*v = new(WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent)
+		return json.Unmarshal(b, *v)
+	case "WorkloadWarningEvent":
+		*v = new(WorkloadEventsPageNodesWorkloadWarningEvent)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing WorkloadEvent.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for WorkloadEventsPageNodesWorkloadEvent: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalWorkloadEventsPageNodesWorkloadEvent(v *WorkloadEventsPageNodesWorkloadEvent) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *WorkloadEventsPageNodesWorkloadKillingEvent:
+		typename = "WorkloadKillingEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*WorkloadEventsPageNodesWorkloadKillingEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent:
+		typename = "WorkloadSuccessfulRescaleEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case *WorkloadEventsPageNodesWorkloadWarningEvent:
+		typename = "WorkloadWarningEvent"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*WorkloadEventsPageNodesWorkloadWarningEvent
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for WorkloadEventsPageNodesWorkloadEvent: "%T"`, v)
+	}
+}
+
+// WorkloadEventsPageNodesWorkloadKillingEvent includes the requested fields of the GraphQL type WorkloadKillingEvent.
+// The GraphQL type's documentation follows.
+//
+// A container restart.
+type WorkloadEventsPageNodesWorkloadKillingEvent struct {
+	Typename *string `json:"__typename"`
+	// A workload event.
+	Id string `json:"id"`
+	// A workload event.
+	Message string `json:"message"`
+	// A workload event.
+	TriggeredAt time.Time `json:"triggeredAt"`
+	// Restarted container.
+	Container string `json:"container"`
+	// Restart reason.
+	Reason string `json:"reason"`
+}
+
+// GetTypename returns WorkloadEventsPageNodesWorkloadKillingEvent.Typename, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetTypename() *string { return v.Typename }
+
+// GetId returns WorkloadEventsPageNodesWorkloadKillingEvent.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetId() string { return v.Id }
+
+// GetMessage returns WorkloadEventsPageNodesWorkloadKillingEvent.Message, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetMessage() string { return v.Message }
+
+// GetTriggeredAt returns WorkloadEventsPageNodesWorkloadKillingEvent.TriggeredAt, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetTriggeredAt() time.Time {
+	return v.TriggeredAt
+}
+
+// GetContainer returns WorkloadEventsPageNodesWorkloadKillingEvent.Container, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetContainer() string { return v.Container }
+
+// GetReason returns WorkloadEventsPageNodesWorkloadKillingEvent.Reason, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadKillingEvent) GetReason() string { return v.Reason }
+
+// WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent includes the requested fields of the GraphQL type WorkloadSuccessfulRescaleEvent.
+// The GraphQL type's documentation follows.
+//
+// A successful replica count change.
+type WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent struct {
+	Typename *string `json:"__typename"`
+	// A workload event.
+	Id string `json:"id"`
+	// A workload event.
+	Message string `json:"message"`
+	// A workload event.
+	TriggeredAt time.Time `json:"triggeredAt"`
+	// Replica count after an autoscaling event.
+	NewSize int `json:"newSize"`
+	// Autoscaling direction.
+	Direction WorkloadSuccessfulRescaleEventDirection `json:"direction"`
+}
+
+// GetTypename returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.Typename, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetTypename() *string {
+	return v.Typename
+}
+
+// GetId returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetId() string { return v.Id }
+
+// GetMessage returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.Message, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetMessage() string { return v.Message }
+
+// GetTriggeredAt returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.TriggeredAt, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetTriggeredAt() time.Time {
+	return v.TriggeredAt
+}
+
+// GetNewSize returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.NewSize, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetNewSize() int { return v.NewSize }
+
+// GetDirection returns WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent.Direction, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadSuccessfulRescaleEvent) GetDirection() WorkloadSuccessfulRescaleEventDirection {
+	return v.Direction
+}
+
+// WorkloadEventsPageNodesWorkloadWarningEvent includes the requested fields of the GraphQL type WorkloadWarningEvent.
+// The GraphQL type's documentation follows.
+//
+// A problem detected while running the workload.
+// Repeated occurrences of the same problem are combined into a single event.
+type WorkloadEventsPageNodesWorkloadWarningEvent struct {
+	Typename *string `json:"__typename"`
+	// A workload event.
+	Id string `json:"id"`
+	// A workload event.
+	Message string `json:"message"`
+	// A workload event.
+	TriggeredAt time.Time `json:"triggeredAt"`
+	// The kind of problem.
+	Kind WorkloadWarningEventKind `json:"kind"`
+	// Name of the affected instance, if the problem concerns a single instance.
+	Instance *string `json:"instance"`
+	// Number of times the problem has been observed.
+	Count int `json:"count"`
+	// When the problem was first observed.
+	FirstSeenAt time.Time `json:"firstSeenAt"`
+}
+
+// GetTypename returns WorkloadEventsPageNodesWorkloadWarningEvent.Typename, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetTypename() *string { return v.Typename }
+
+// GetId returns WorkloadEventsPageNodesWorkloadWarningEvent.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetId() string { return v.Id }
+
+// GetMessage returns WorkloadEventsPageNodesWorkloadWarningEvent.Message, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetMessage() string { return v.Message }
+
+// GetTriggeredAt returns WorkloadEventsPageNodesWorkloadWarningEvent.TriggeredAt, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetTriggeredAt() time.Time {
+	return v.TriggeredAt
+}
+
+// GetKind returns WorkloadEventsPageNodesWorkloadWarningEvent.Kind, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetKind() WorkloadWarningEventKind {
+	return v.Kind
+}
+
+// GetInstance returns WorkloadEventsPageNodesWorkloadWarningEvent.Instance, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetInstance() *string { return v.Instance }
+
+// GetCount returns WorkloadEventsPageNodesWorkloadWarningEvent.Count, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetCount() int { return v.Count }
+
+// GetFirstSeenAt returns WorkloadEventsPageNodesWorkloadWarningEvent.FirstSeenAt, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPageNodesWorkloadWarningEvent) GetFirstSeenAt() time.Time {
+	return v.FirstSeenAt
+}
+
+// WorkloadEventsPagePageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type WorkloadEventsPagePageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns WorkloadEventsPagePageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPagePageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns WorkloadEventsPagePageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *WorkloadEventsPagePageInfo) GetEndCursor() *string { return v.EndCursor }
+
+// Autoscaling direction.
+type WorkloadSuccessfulRescaleEventDirection string
+
+const (
+	// Replica count increased.
+	WorkloadSuccessfulRescaleEventDirectionUp WorkloadSuccessfulRescaleEventDirection = "UP"
+	// Replica count decreased.
+	WorkloadSuccessfulRescaleEventDirectionDown WorkloadSuccessfulRescaleEventDirection = "DOWN"
+)
+
+var AllWorkloadSuccessfulRescaleEventDirection = []WorkloadSuccessfulRescaleEventDirection{
+	WorkloadSuccessfulRescaleEventDirectionUp,
+	WorkloadSuccessfulRescaleEventDirectionDown,
+}
+
+// The kind of problem reported by a warning event.
+type WorkloadWarningEventKind string
+
+const (
+	// No server with enough available resources was found to run the instance.
+	WorkloadWarningEventKindPlacementFailed WorkloadWarningEventKind = "PLACEMENT_FAILED"
+	// Files or storage could not be mounted into the instance.
+	WorkloadWarningEventKindMountFailed WorkloadWarningEventKind = "MOUNT_FAILED"
+	// The container image could not be downloaded.
+	WorkloadWarningEventKindImagePullFailed WorkloadWarningEventKind = "IMAGE_PULL_FAILED"
+	// The instance could not be started, for example because of missing configuration.
+	WorkloadWarningEventKindStartFailed WorkloadWarningEventKind = "START_FAILED"
+	// The instance keeps crashing and is restarted with increasing delay.
+	WorkloadWarningEventKindCrashLoop WorkloadWarningEventKind = "CRASH_LOOP"
+	// A readiness, liveness or startup check failed.
+	WorkloadWarningEventKindHealthCheckFailed WorkloadWarningEventKind = "HEALTH_CHECK_FAILED"
+	// The instance was stopped by the platform, for example to free up resources.
+	WorkloadWarningEventKindInstanceStopped WorkloadWarningEventKind = "INSTANCE_STOPPED"
+	// New instances could not be created, for example because of a quota or a platform policy.
+	WorkloadWarningEventKindInstanceCreationFailed WorkloadWarningEventKind = "INSTANCE_CREATION_FAILED"
+	// Automatic scaling is unable to adjust the number of instances.
+	WorkloadWarningEventKindScalingFailed WorkloadWarningEventKind = "SCALING_FAILED"
+	// A job run failed permanently.
+	WorkloadWarningEventKindRunFailed WorkloadWarningEventKind = "RUN_FAILED"
+)
+
+var AllWorkloadWarningEventKind = []WorkloadWarningEventKind{
+	WorkloadWarningEventKindPlacementFailed,
+	WorkloadWarningEventKindMountFailed,
+	WorkloadWarningEventKindImagePullFailed,
+	WorkloadWarningEventKindStartFailed,
+	WorkloadWarningEventKindCrashLoop,
+	WorkloadWarningEventKindHealthCheckFailed,
+	WorkloadWarningEventKindInstanceStopped,
+	WorkloadWarningEventKindInstanceCreationFailed,
+	WorkloadWarningEventKindScalingFailed,
+	WorkloadWarningEventKindRunFailed,
+}
+
 // __AddConfigValueInput is used internally by genqlient
 type __AddConfigValueInput struct {
 	Name            string           `json:"name"`
@@ -39354,6 +45060,30 @@ type __EnvironmentOIDCIssuerInput struct {
 // GetName returns __EnvironmentOIDCIssuerInput.Name, and is useful for accessing the field via an interface.
 func (v *__EnvironmentOIDCIssuerInput) GetName() string { return v.Name }
 
+// __FindJobRunsInput is used internally by genqlient
+type __FindJobRunsInput struct {
+	Team  string  `json:"team"`
+	Env   string  `json:"env"`
+	Job   string  `json:"job"`
+	First int     `json:"first"`
+	After *string `json:"after"`
+}
+
+// GetTeam returns __FindJobRunsInput.Team, and is useful for accessing the field via an interface.
+func (v *__FindJobRunsInput) GetTeam() string { return v.Team }
+
+// GetEnv returns __FindJobRunsInput.Env, and is useful for accessing the field via an interface.
+func (v *__FindJobRunsInput) GetEnv() string { return v.Env }
+
+// GetJob returns __FindJobRunsInput.Job, and is useful for accessing the field via an interface.
+func (v *__FindJobRunsInput) GetJob() string { return v.Job }
+
+// GetFirst returns __FindJobRunsInput.First, and is useful for accessing the field via an interface.
+func (v *__FindJobRunsInput) GetFirst() int { return v.First }
+
+// GetAfter returns __FindJobRunsInput.After, and is useful for accessing the field via an interface.
+func (v *__FindJobRunsInput) GetAfter() *string { return v.After }
+
 // __FindWorkloadsForCveInput is used internally by genqlient
 type __FindWorkloadsForCveInput struct {
 	Identifier string `json:"identifier"`
@@ -39464,6 +45194,34 @@ func (v *__GetApplicationEnvVarsInput) GetName() string { return v.Name }
 // GetEnv returns __GetApplicationEnvVarsInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetApplicationEnvVarsInput) GetEnv() []string { return v.Env }
 
+// __GetApplicationEventsInput is used internally by genqlient
+type __GetApplicationEventsInput struct {
+	Team   string               `json:"team"`
+	Env    string               `json:"env"`
+	Name   string               `json:"name"`
+	Limit  int                  `json:"limit"`
+	After  *string              `json:"after"`
+	Filter *WorkloadEventFilter `json:"filter"`
+}
+
+// GetTeam returns __GetApplicationEventsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetTeam() string { return v.Team }
+
+// GetEnv returns __GetApplicationEventsInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetEnv() string { return v.Env }
+
+// GetName returns __GetApplicationEventsInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetName() string { return v.Name }
+
+// GetLimit returns __GetApplicationEventsInput.Limit, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetLimit() int { return v.Limit }
+
+// GetAfter returns __GetApplicationEventsInput.After, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetAfter() *string { return v.After }
+
+// GetFilter returns __GetApplicationEventsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetApplicationEventsInput) GetFilter() *WorkloadEventFilter { return v.Filter }
+
 // __GetApplicationFilesInput is used internally by genqlient
 type __GetApplicationFilesInput struct {
 	Slug string   `json:"slug"`
@@ -39514,9 +45272,10 @@ func (v *__GetApplicationInstancesInput) GetFilter() *TeamApplicationsFilter { r
 
 // __GetApplicationIssuesInput is used internally by genqlient
 type __GetApplicationIssuesInput struct {
-	Slug string   `json:"slug"`
-	Name string   `json:"name"`
-	Env  []string `json:"env"`
+	Slug   string               `json:"slug"`
+	Name   string               `json:"name"`
+	Env    []string             `json:"env"`
+	Filter *ResourceIssueFilter `json:"filter"`
 }
 
 // GetSlug returns __GetApplicationIssuesInput.Slug, and is useful for accessing the field via an interface.
@@ -39528,6 +45287,9 @@ func (v *__GetApplicationIssuesInput) GetName() string { return v.Name }
 // GetEnv returns __GetApplicationIssuesInput.Env, and is useful for accessing the field via an interface.
 func (v *__GetApplicationIssuesInput) GetEnv() []string { return v.Env }
 
+// GetFilter returns __GetApplicationIssuesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetApplicationIssuesInput) GetFilter() *ResourceIssueFilter { return v.Filter }
+
 // __GetApplicationNamesInput is used internally by genqlient
 type __GetApplicationNamesInput struct {
 	Team string `json:"team"`
@@ -39538,9 +45300,9 @@ func (v *__GetApplicationNamesInput) GetTeam() string { return v.Team }
 
 // __GetApplicationStatusInput is used internally by genqlient
 type __GetApplicationStatusInput struct {
-	Slug string   `json:"slug"`
-	Name string   `json:"name"`
-	Env  []string `json:"env"`
+	Slug string `json:"slug"`
+	Name string `json:"name"`
+	Env  string `json:"env"`
 }
 
 // GetSlug returns __GetApplicationStatusInput.Slug, and is useful for accessing the field via an interface.
@@ -39550,7 +45312,7 @@ func (v *__GetApplicationStatusInput) GetSlug() string { return v.Slug }
 func (v *__GetApplicationStatusInput) GetName() string { return v.Name }
 
 // GetEnv returns __GetApplicationStatusInput.Env, and is useful for accessing the field via an interface.
-func (v *__GetApplicationStatusInput) GetEnv() []string { return v.Env }
+func (v *__GetApplicationStatusInput) GetEnv() string { return v.Env }
 
 // __GetCloneSourceInput is used internally by genqlient
 type __GetCloneSourceInput struct {
@@ -39658,6 +45420,34 @@ func (v *__GetJobActivityInput) GetEnv() []string { return v.Env }
 // GetFirst returns __GetJobActivityInput.First, and is useful for accessing the field via an interface.
 func (v *__GetJobActivityInput) GetFirst() *int { return v.First }
 
+// __GetJobEventsInput is used internally by genqlient
+type __GetJobEventsInput struct {
+	Team   string               `json:"team"`
+	Env    string               `json:"env"`
+	Name   string               `json:"name"`
+	Limit  int                  `json:"limit"`
+	After  *string              `json:"after"`
+	Filter *WorkloadEventFilter `json:"filter"`
+}
+
+// GetTeam returns __GetJobEventsInput.Team, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetTeam() string { return v.Team }
+
+// GetEnv returns __GetJobEventsInput.Env, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetEnv() string { return v.Env }
+
+// GetName returns __GetJobEventsInput.Name, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetName() string { return v.Name }
+
+// GetLimit returns __GetJobEventsInput.Limit, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetLimit() int { return v.Limit }
+
+// GetAfter returns __GetJobEventsInput.After, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetAfter() *string { return v.After }
+
+// GetFilter returns __GetJobEventsInput.Filter, and is useful for accessing the field via an interface.
+func (v *__GetJobEventsInput) GetFilter() *WorkloadEventFilter { return v.Filter }
+
 // __GetJobIssuesInput is used internally by genqlient
 type __GetJobIssuesInput struct {
 	Team string   `json:"team"`
@@ -39681,6 +45471,18 @@ type __GetJobNamesInput struct {
 
 // GetTeam returns __GetJobNamesInput.Team, and is useful for accessing the field via an interface.
 func (v *__GetJobNamesInput) GetTeam() string { return v.Team }
+
+// __GetJobRunDetailsInput is used internally by genqlient
+type __GetJobRunDetailsInput struct {
+	Id    string  `json:"id"`
+	After *string `json:"after"`
+}
+
+// GetId returns __GetJobRunDetailsInput.Id, and is useful for accessing the field via an interface.
+func (v *__GetJobRunDetailsInput) GetId() string { return v.Id }
+
+// GetAfter returns __GetJobRunDetailsInput.After, and is useful for accessing the field via an interface.
+func (v *__GetJobRunDetailsInput) GetAfter() *string { return v.After }
 
 // __GetJobRunNamesInput is used internally by genqlient
 type __GetJobRunNamesInput struct {
@@ -41310,6 +47112,61 @@ func Environments(
 	return data_, err_
 }
 
+// The query executed by FindJobRuns.
+const FindJobRuns_Operation = `
+query FindJobRuns ($team: Slug!, $env: String!, $job: String!, $first: Int!, $after: Cursor) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $job) {
+				runs(first: $first, after: $after) {
+					nodes {
+						id
+						name
+					}
+					pageInfo {
+						hasNextPage
+						endCursor
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func FindJobRuns(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	env string,
+	job string,
+	first int,
+	after *string,
+) (data_ *FindJobRunsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "FindJobRuns",
+		Query:  FindJobRuns_Operation,
+		Variables: &__FindJobRunsInput{
+			Team:  team,
+			Env:   env,
+			Job:   job,
+			First: first,
+			After: after,
+		},
+	}
+
+	data_ = &FindJobRunsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by FindWorkloadsForCve.
 const FindWorkloadsForCve_Operation = `
 query FindWorkloadsForCve ($identifier: String!) {
@@ -41448,6 +47305,12 @@ query GetAllIssues ($teamSlug: Slug!, $filter: IssueFilter) {
 				severity
 				message
 				... on ExternalIngressUrgentVulnerabilityIssue {
+					workload {
+						name
+						__typename
+					}
+				}
+				... on ApplicationRolloutStuckIssue {
 					workload {
 						name
 						__typename
@@ -41848,6 +47711,82 @@ func GetApplicationEnvVars(
 	return data_, err_
 }
 
+// The query executed by GetApplicationEvents.
+const GetApplicationEvents_Operation = `
+query GetApplicationEvents ($team: Slug!, $env: String!, $name: String!, $limit: Int!, $after: Cursor, $filter: WorkloadEventFilter) {
+	team(slug: $team) {
+		environment(name: $env) {
+			application(name: $name) {
+				events(first: $limit, after: $after, filter: $filter) {
+					... WorkloadEventsPage
+				}
+			}
+		}
+	}
+}
+fragment WorkloadEventsPage on WorkloadEventConnection {
+	pageInfo {
+		hasNextPage
+		endCursor
+	}
+	nodes {
+		__typename
+		id
+		message
+		triggeredAt
+		... on WorkloadWarningEvent {
+			kind
+			instance
+			count
+			firstSeenAt
+		}
+		... on WorkloadKillingEvent {
+			container
+			reason
+		}
+		... on WorkloadSuccessfulRescaleEvent {
+			newSize
+			direction
+		}
+	}
+}
+`
+
+func GetApplicationEvents(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	env string,
+	name string,
+	limit int,
+	after *string,
+	filter *WorkloadEventFilter,
+) (data_ *GetApplicationEventsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetApplicationEvents",
+		Query:  GetApplicationEvents_Operation,
+		Variables: &__GetApplicationEventsInput{
+			Team:   team,
+			Env:    env,
+			Name:   name,
+			Limit:  limit,
+			After:  after,
+			Filter: filter,
+		},
+	}
+
+	data_ = &GetApplicationEventsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetApplicationFiles.
 const GetApplicationFiles_Operation = `
 query GetApplicationFiles ($slug: Slug!, $name: String!, $env: [String!]) {
@@ -41998,16 +47937,17 @@ func GetApplicationInstances(
 
 // The query executed by GetApplicationIssues.
 const GetApplicationIssues_Operation = `
-query GetApplicationIssues ($slug: Slug!, $name: String!, $env: [String!]) {
+query GetApplicationIssues ($slug: Slug!, $name: String!, $env: [String!], $filter: ResourceIssueFilter) {
 	team(slug: $slug) {
 		applications(filter: {name:$name,environments:$env}) {
 			nodes {
+				name
 				teamEnvironment {
 					environment {
 						name
 					}
 				}
-				issues(first: 500) {
+				issues(first: 500, filter: $filter) {
 					nodes {
 						__typename
 						severity
@@ -42026,14 +47966,16 @@ func GetApplicationIssues(
 	slug string,
 	name string,
 	env []string,
+	filter *ResourceIssueFilter,
 ) (data_ *GetApplicationIssuesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetApplicationIssues",
 		Query:  GetApplicationIssues_Operation,
 		Variables: &__GetApplicationIssuesInput{
-			Slug: slug,
-			Name: name,
-			Env:  env,
+			Slug:   slug,
+			Name:   name,
+			Env:    env,
+			Filter: filter,
 		},
 	}
 
@@ -42094,14 +48036,29 @@ func GetApplicationNames(
 
 // The query executed by GetApplicationStatus.
 const GetApplicationStatus_Operation = `
-query GetApplicationStatus ($slug: Slug!, $name: String!, $env: [String!]) {
+query GetApplicationStatus ($slug: Slug!, $name: String!, $env: String!) {
 	team(slug: $slug) {
-		applications(filter: {name:$name,environments:$env}) {
-			nodes {
+		environment(name: $env) {
+			application(name: $name) {
 				name
-				teamEnvironment {
-					environment {
-						name
+				issues(first: 1, filter: {issueType:APPLICATION_ROLLOUT_STUCK}) {
+					nodes {
+						__typename
+						... on ApplicationRolloutStuckIssue {
+							severity
+							reason
+							message
+						}
+					}
+				}
+				resources {
+					scaling {
+						status {
+							state
+							message
+							currentInstances
+							desiredInstances
+						}
 					}
 				}
 				instanceGroups {
@@ -42123,6 +48080,7 @@ query GetApplicationStatus ($slug: Slug!, $name: String!, $env: [String!]) {
 							ready
 							lastExitReason
 							lastExitCode
+							lastExitTimestamp
 						}
 					}
 				}
@@ -42137,7 +48095,7 @@ func GetApplicationStatus(
 	client_ graphql.Client,
 	slug string,
 	name string,
-	env []string,
+	env string,
 ) (data_ *GetApplicationStatusResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetApplicationStatus",
@@ -42479,6 +48437,82 @@ func GetJobActivity(
 	return data_, err_
 }
 
+// The query executed by GetJobEvents.
+const GetJobEvents_Operation = `
+query GetJobEvents ($team: Slug!, $env: String!, $name: String!, $limit: Int!, $after: Cursor, $filter: WorkloadEventFilter) {
+	team(slug: $team) {
+		environment(name: $env) {
+			job(name: $name) {
+				events(first: $limit, after: $after, filter: $filter) {
+					... WorkloadEventsPage
+				}
+			}
+		}
+	}
+}
+fragment WorkloadEventsPage on WorkloadEventConnection {
+	pageInfo {
+		hasNextPage
+		endCursor
+	}
+	nodes {
+		__typename
+		id
+		message
+		triggeredAt
+		... on WorkloadWarningEvent {
+			kind
+			instance
+			count
+			firstSeenAt
+		}
+		... on WorkloadKillingEvent {
+			container
+			reason
+		}
+		... on WorkloadSuccessfulRescaleEvent {
+			newSize
+			direction
+		}
+	}
+}
+`
+
+func GetJobEvents(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	team string,
+	env string,
+	name string,
+	limit int,
+	after *string,
+	filter *WorkloadEventFilter,
+) (data_ *GetJobEventsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobEvents",
+		Query:  GetJobEvents_Operation,
+		Variables: &__GetJobEventsInput{
+			Team:   team,
+			Env:    env,
+			Name:   name,
+			Limit:  limit,
+			After:  after,
+			Filter: filter,
+		},
+	}
+
+	data_ = &GetJobEventsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The query executed by GetJobIssues.
 const GetJobIssues_Operation = `
 query GetJobIssues ($team: Slug!, $name: String!, $env: [String!]) {
@@ -42564,6 +48598,72 @@ func GetJobNames(
 	}
 
 	data_ = &GetJobNamesResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetJobRunDetails.
+const GetJobRunDetails_Operation = `
+query GetJobRunDetails ($id: ID!, $after: Cursor) {
+	node(id: $id) {
+		__typename
+		... on JobRun {
+			name
+			status {
+				state
+				message
+			}
+			instances(first: 100, after: $after) {
+				nodes {
+					name
+					image {
+						name
+						tag
+						digest
+					}
+					restarts
+					created
+					status {
+						state
+						message
+						lastExitReason
+						lastExitCode
+						lastExitTimestamp
+					}
+				}
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+			}
+		}
+	}
+}
+`
+
+func GetJobRunDetails(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id string,
+	after *string,
+) (data_ *GetJobRunDetailsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetJobRunDetails",
+		Query:  GetJobRunDetails_Operation,
+		Variables: &__GetJobRunDetailsInput{
+			Id:    id,
+			After: after,
+		},
+	}
+
+	data_ = &GetJobRunDetailsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -34,6 +34,15 @@ type Issues struct {
 	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
 
+type Events struct {
+	*Job
+	Limit  int    `name:"limit" short:"l" usage:"Maximum events per page (1–100)."`
+	From   string `name:"from" usage:"Include events at or after this RFC3339 timestamp."`
+	To     string `name:"to" usage:"Include events before this RFC3339 timestamp. Defaults to now."`
+	After  string `name:"after" usage:"Continue after a cursor from the previous page. Reuse its --from and --to bounds."`
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+}
+
 type Activity struct {
 	*Job
 	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
@@ -50,6 +59,11 @@ type Delete struct {
 }
 
 type RunList struct {
+	*Job
+	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
+}
+
+type RunStatus struct {
 	*Job
 	Output Output `name:"output" short:"o" usage:"Format output (table or json)."`
 }
