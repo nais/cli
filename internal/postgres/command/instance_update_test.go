@@ -18,6 +18,7 @@ import (
 
 func TestPostgresUpdateComparison(t *testing.T) {
 	const configured = `{"name":"orders","majorVersion":"18","highAvailability":true,"resources":{"cpu":"100m","memory":"512Mi","diskSize":"10Gi"},"labels":[],"branches":{"nodes":[]}}`
+	const windowed = `{"name":"orders","majorVersion":"18","highAvailability":true,"backupRetentionDays":7,"resources":{"cpu":"100m","memory":"512Mi","diskSize":"10Gi"},"labels":[]}`
 	const unconfigured = `{"name":"orders","majorVersion":"18","highAvailability":false,"resources":{"cpu":null,"memory":null,"diskSize":null},"labels":[],"branches":{"nodes":[]}}`
 	for _, tt := range []struct {
 		name, metadata, config, lookupError, discoveryError, updateError, wantError string
@@ -65,6 +66,20 @@ func TestPostgresUpdateComparison(t *testing.T) {
 			name: "environment resolved from existing Postgres", resolveEnvironment: true, metadata: configured,
 			args: []string{"--cpu", "200m"}, wantRows: []string{"CPU 100m 200m"}, wantChanges: `{"cpu":"200m"}`, wantOperations: []string{"GetTeamPostgreses", "GetPostgres", "UpdatePostgres"},
 		},
+		{
+			name: "recovery window can be extended", metadata: windowed, args: []string{"--recovery-window-days", "14"},
+			wantRows: []string{"Recovery window 7 days 14 days"}, wantChanges: `{"backupRetentionDays":14}`, wantOperations: []string{"GetPostgres", "UpdatePostgres"},
+		},
+		{
+			name: "recovery window can be shortened with a warning", metadata: windowed, args: []string{"--recovery-window-days", "2"},
+			wantRows: []string{"Recovery window 7 days 2 days", "WARNING: Shortening the recovery window permanently removes backups older than the new window."}, wantChanges: `{"backupRetentionDays":2}`, wantOperations: []string{"GetPostgres", "UpdatePostgres"},
+		},
+		{
+			name: "recovery window can be combined with other changes", metadata: windowed, args: []string{"--cpu", "200m", "--recovery-window-days", "30"},
+			wantRows: []string{"CPU 100m 200m", "Recovery window 7 days 30 days"}, wantChanges: `{"cpu":"200m","backupRetentionDays":30}`, wantOperations: []string{"GetPostgres", "UpdatePostgres"},
+		},
+		{name: "recovery window too short rejected before environment resolution", resolveEnvironment: true, args: []string{"--recovery-window-days", "1"}, wantError: "--recovery-window-days must be between 2 and 30"},
+		{name: "recovery window too long rejected before environment resolution", resolveEnvironment: true, args: []string{"--recovery-window-days", "31"}, wantError: "--recovery-window-days must be between 2 and 30"},
 		{
 			name: "update failure has no success or hint", metadata: configured, args: []string{"--cpu", "200m"}, updateError: "access denied",
 			wantRows: []string{"CPU 100m 200m"}, wantError: "access denied", wantOperations: []string{"GetPostgres", "UpdatePostgres"},

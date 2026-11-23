@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,6 +24,12 @@ type postgresDetails struct {
 	Resources        postgresResourceRequests `json:"resources"`
 	Labels           []postgresLabel          `json:"labels"`
 	Recovery         *postgresRecovery        `json:"recovery"`
+	RecoveryWindow   postgresRecoveryWindow   `json:"recoveryWindow"`
+}
+
+type postgresRecoveryWindow struct {
+	Days                 int     `json:"days"`
+	EarliestRestorePoint *string `json:"earliestRestorePoint"`
 }
 
 // targetTimeLocal shows the recovery point in the user's time zone; JSON keeps the UTC instant.
@@ -82,6 +89,10 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 				Labels:    make([]postgresLabel, 0, len(p.Labels)),
 				Status:    postgres.State(p.State).String(),
 			}
+			detail.RecoveryWindow.Days = p.BackupRetentionDays
+			if p.EarliestRestoreTime != nil {
+				detail.RecoveryWindow.EarliestRestorePoint = new(p.EarliestRestoreTime.UTC().Format(time.RFC3339))
+			}
 			for _, label := range p.Labels {
 				detail.Labels = append(detail.Labels, postgresLabel{Key: label.Key, Value: label.Value})
 			}
@@ -112,12 +123,17 @@ func instanceGetCommand(parent *flag.Postgres) *naistrix.Command {
 			if detail.HighAvailability {
 				ha = "Yes"
 			}
+			recoveryWindow := fmt.Sprintf("%d days", detail.RecoveryWindow.Days)
+			if p.EarliestRestoreTime != nil {
+				recoveryWindow += " (earliest restore point " + formatLocalTime(*p.EarliestRestoreTime, time.Local) + ")"
+			}
 			for _, setting := range []struct{ label, value string }{
 				{"Version:", detail.Version},
 				{"High availability:", ha},
 				{"CPU:", requested(detail.Resources.CPU)},
 				{"Memory:", requested(detail.Resources.Memory)},
 				{"Disk:", requested(detail.Resources.DiskSize)},
+				{"Recovery window:", recoveryWindow},
 			} {
 				out.Printf("  %-18s %s\n", setting.label, setting.value)
 			}

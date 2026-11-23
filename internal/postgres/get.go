@@ -13,7 +13,7 @@ func GetPostgres(ctx context.Context, team, environment, name string) (*gql.GetP
 	_ = `# @genqlient
 	query GetPostgres($team: Slug!, $environment: String!, $postgres: String!) {
 		team(slug: $team) { environment(name: $environment) { postgres(name: $postgres) {
-			name majorVersion highAvailability state
+			name majorVersion highAvailability state backupRetentionDays earliestRestoreTime
 			resources { cpu memory diskSize }
 			labels { key value }
 			recovery { sourcePostgres targetTime completed failureMessage }

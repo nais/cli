@@ -33,6 +33,7 @@ func CreateInstance(ctx context.Context, input gql.CreatePostgresInput) (string,
 		# @genqlient(for: "CreatePostgresInput.memory", omitempty: true)
 		# @genqlient(for: "CreatePostgresInput.diskSize", omitempty: true)
 		# @genqlient(for: "CreatePostgresInput.recovery", omitempty: true)
+		# @genqlient(for: "CreatePostgresInput.backupRetentionDays", omitempty: true)
 		mutation CreatePostgres(
 			$input: CreatePostgresInput!
 		) {
@@ -59,6 +60,7 @@ func UpdateInstance(ctx context.Context, input gql.UpdatePostgresInput) (string,
 		# @genqlient(for: "UpdatePostgresInput.diskSize", omitempty: true)
 		# @genqlient(for: "UpdatePostgresInput.extensions", omitempty: true)
 		# @genqlient(for: "UpdatePostgresInput.labels", omitempty: true)
+		# @genqlient(for: "UpdatePostgresInput.backupRetentionDays", omitempty: true)
 		mutation UpdatePostgres(
 			$input: UpdatePostgresInput!
 		) {
