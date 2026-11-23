@@ -22,12 +22,17 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 		Examples: []naistrix.CommandExample{
 			{Description: "Select the destination environment interactively and create a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
 			{Description: "Create a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
+			{Description: "Create a Postgres that can be restored up to 14 days back in time.", Command: "my-postgres -t my-team -e dev-gcp --recovery-window-days 14"},
 			{Description: "Create a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
-		ValidateFlagsFunc: validation.RequireTeamFlag(f),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(validation.RequireTeamFlag(f), validateRecoveryWindow(&f.RecoveryWindow)),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if f.Version != "18" {
 				return fmt.Errorf("--version must be 18")
+			}
+			window, err := recoveryWindowDays(f.RecoveryWindow)
+			if err != nil {
+				return err
 			}
 			env, err := resolvePostgresCreateEnvironment(ctx, string(f.Environment))
 			if err != nil {
@@ -40,6 +45,9 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 				if setting.value != "" {
 					rows = append(rows, []string{setting.label, setting.value})
 				}
+			}
+			if f.RecoveryWindow != 0 {
+				rows = append(rows, []string{"Recovery window", fmt.Sprintf("%d days", f.RecoveryWindow)})
 			}
 			out.Infoln("Create Postgres with this configuration (omitted resources use platform defaults):")
 			if err := out.Table(output.TableWithMargins()).Render(rows); err != nil {
@@ -58,6 +66,7 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 				Name: name, TeamSlug: f.Team, EnvironmentName: env,
 				MajorVersion: string(f.Version), HighAvailability: enabledHA(f.HighAvailability),
 				Cpu: optional(f.CPU), Memory: optional(f.Memory), DiskSize: optional(f.DiskSize),
+				BackupRetentionDays: window,
 			})
 			if err != nil {
 				return err
@@ -79,8 +88,9 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 		Examples: []naistrix.CommandExample{
 			{Description: "Change requested CPU and memory.", Command: "my-postgres -t my-team -e dev-gcp --cpu 200m --memory 1Gi"},
 			{Description: "Disable high availability.", Command: "my-postgres -t my-team -e dev-gcp --high-availability false"},
+			{Description: "Change the point-in-time recovery window to 14 days.", Command: "my-postgres -t my-team -e dev-gcp --recovery-window-days 14"},
 		},
-		ValidateFlagsFunc: validation.RequireTeamFlag(f),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(validation.RequireTeamFlag(f), validateRecoveryWindow(&f.RecoveryWindow)),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			changes, err := updateFields(f)
 			if err != nil {
@@ -98,6 +108,12 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			rows := [][]string{{"Setting", "Current", "New"}}
 			if changes.HighAvailability != nil {
 				rows = append(rows, []string{"High availability", fmt.Sprint(current.HighAvailability), fmt.Sprint(*changes.HighAvailability)})
+			}
+			if changes.BackupRetentionDays != nil {
+				rows = append(rows, []string{"Recovery window", fmt.Sprintf("%d days", current.BackupRetentionDays), fmt.Sprintf("%d days", *changes.BackupRetentionDays)})
+				if *changes.BackupRetentionDays < current.BackupRetentionDays {
+					out.Warnln("Shortening the recovery window permanently removes backups older than the new window.")
+				}
 			}
 			for _, setting := range []struct {
 				label              string
@@ -215,6 +231,11 @@ func optional(value string) *string {
 
 func updateFields(f *flag.InstanceUpdate) (gql.UpdatePostgresInput, error) {
 	input := gql.UpdatePostgresInput{Cpu: optional(f.CPU), Memory: optional(f.Memory), DiskSize: optional(f.DiskSize)}
+	window, err := recoveryWindowDays(f.RecoveryWindow)
+	if err != nil {
+		return input, err
+	}
+	input.BackupRetentionDays = window
 	switch f.HighAvailability {
 	case "true":
 		value := true
@@ -226,8 +247,26 @@ func updateFields(f *flag.InstanceUpdate) (gql.UpdatePostgresInput, error) {
 	default:
 		return input, fmt.Errorf("--high-availability must be true or false")
 	}
-	if input.HighAvailability == nil && input.Cpu == nil && input.Memory == nil && input.DiskSize == nil {
-		return input, fmt.Errorf("specify at least one of --high-availability, --cpu, --memory, or --disk-size")
+	if input.HighAvailability == nil && input.Cpu == nil && input.Memory == nil && input.DiskSize == nil && input.BackupRetentionDays == nil {
+		return input, fmt.Errorf("specify at least one of --high-availability, --cpu, --memory, --disk-size, or --recovery-window-days")
 	}
 	return input, nil
+}
+
+// recoveryWindowDays returns nil when the flag is unset (zero).
+func recoveryWindowDays(days int) (*int, error) {
+	if days == 0 {
+		return nil, nil
+	}
+	if days < 2 || days > 30 {
+		return nil, fmt.Errorf("--recovery-window-days must be between 2 and 30")
+	}
+	return &days, nil
+}
+
+func validateRecoveryWindow(days *int) naistrix.ValidateFlagsFunc {
+	return func(context.Context) error {
+		_, err := recoveryWindowDays(*days)
+		return err
+	}
 }

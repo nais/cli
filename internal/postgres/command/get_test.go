@@ -12,6 +12,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/nais/cli/internal/flags"
 	"github.com/nais/cli/internal/naisapi/gql"
@@ -19,7 +20,7 @@ import (
 )
 
 func TestPostgresGetCommand(t *testing.T) {
-	const configured = `{"name":"orders","majorVersion":"18","state":"PROGRESSING","highAvailability":true,"resources":{"cpu":"200m","memory":"1Gi","diskSize":"20Gi"},"labels":[{"key":"domain","value":"payments"}],"activeBranch":{"name":"main"},"desiredActiveBranch":"restored","branches":{"nodes":[{"name":"main","state":"AVAILABLE"},{"name":"restored","state":"PROGRESSING"}]}}`
+	const configured = `{"name":"orders","majorVersion":"18","state":"PROGRESSING","highAvailability":true,"backupRetentionDays":14,"earliestRestoreTime":"2026-11-19T03:00:03Z","resources":{"cpu":"200m","memory":"1Gi","diskSize":"20Gi"},"labels":[{"key":"domain","value":"payments"}],"activeBranch":{"name":"main"},"desiredActiveBranch":"restored","branches":{"nodes":[{"name":"main","state":"AVAILABLE"},{"name":"restored","state":"PROGRESSING"}]}}`
 	const unconfigured = `{"name":"orders","majorVersion":"18","state":"PROGRESSING","highAvailability":false,"resources":{"cpu":null,"memory":null,"diskSize":null},"labels":[],"activeBranch":null,"desiredActiveBranch":null,"branches":{"nodes":[]}}`
 	const activated = `{"name":"orders","majorVersion":"18","state":"AVAILABLE","highAvailability":false,"resources":{},"labels":[],"activeBranch":{"name":"main"},"desiredActiveBranch":"main","branches":{"nodes":[{"name":"main","state":"AVAILABLE"}]}}`
 	readyWithFailedInactive := strings.Replace(activated, `{"name":"main","state":"AVAILABLE"}`, `{"name":"main","state":"AVAILABLE"},{"name":"failed-restore","state":"DEGRADED"}`, 1)
@@ -183,6 +184,8 @@ func TestPostgresGetCommand(t *testing.T) {
 					Name, MajorVersion  string
 					State               gql.PostgresState
 					HighAvailability    bool
+					BackupRetentionDays int
+					EarliestRestoreTime *time.Time
 					Resources           postgresResourceRequests
 					Labels              []postgresLabel
 					ActiveBranch        *struct{ Name string }
@@ -206,6 +209,12 @@ func TestPostgresGetCommand(t *testing.T) {
 					}
 					if detail.Name != expected.Name || detail.Team != "my-team" || detail.Environment != "dev-gcp" || detail.Version != expected.MajorVersion || detail.Status != tt.wantStatus || detail.HighAvailability != expected.HighAvailability || !reflect.DeepEqual(detail.Resources, expected.Resources) || !slices.Equal(detail.Labels, expected.Labels) {
 						t.Errorf("incorrect metadata/status: %+v", detail)
+					}
+					if detail.RecoveryWindow.Days != expected.BackupRetentionDays || (detail.RecoveryWindow.EarliestRestorePoint == nil) != (expected.EarliestRestoreTime == nil) {
+						t.Errorf("incorrect recovery window: %+v", detail.RecoveryWindow)
+					}
+					if expected.EarliestRestoreTime != nil && *detail.RecoveryWindow.EarliestRestorePoint != expected.EarliestRestoreTime.UTC().Format(time.RFC3339) {
+						t.Errorf("incorrect earliest restore point: %s", *detail.RecoveryWindow.EarliestRestorePoint)
 					}
 					var fields map[string]json.RawMessage
 					if err := json.Unmarshal(output.Bytes(), &fields); err != nil {
@@ -253,6 +262,13 @@ func TestPostgresGetCommand(t *testing.T) {
 						if !strings.Contains(output.String(), fmt.Sprintf("  %-18s %s\n", resource.label, value)) {
 							t.Errorf("incorrect resource display for %s: %s", resource.label, output.String())
 						}
+					}
+					windowText := fmt.Sprintf("%d days", expected.BackupRetentionDays)
+					if expected.EarliestRestoreTime != nil {
+						windowText += " (earliest restore point " + formatLocalTime(*expected.EarliestRestoreTime, time.Local) + ")"
+					}
+					if !strings.Contains(output.String(), fmt.Sprintf("  %-18s %s\n", "Recovery window:", windowText)) {
+						t.Errorf("incorrect recovery window display, want %q: %s", windowText, output.String())
 					}
 					if strings.Contains(output.String(), "Labels:") != (len(expected.Labels) > 0) {
 						t.Errorf("incorrect labels visibility: %s", output.String())

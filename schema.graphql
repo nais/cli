@@ -167,25 +167,13 @@ Personal Postgres connection materials were retrieved
 """
 	POSTGRES_PERSONAL_ACCESS_CONNECTION
 """
-A Postgres branch was deleted (historical entries without branch name)
+A Postgres was deleted
 """
 	POSTGRES_DELETED
 """
 A request to delete a whole Postgres was accepted; cleanup continues asynchronously.
 """
 	POSTGRES_DELETION_REQUESTED
-"""
-A Postgres branch was created.
-"""
-	POSTGRES_BRANCH_CREATED
-"""
-A Postgres branch was activated.
-"""
-	POSTGRES_BRANCH_ACTIVATED
-"""
-A Postgres branch was deleted.
-"""
-	POSTGRES_BRANCH_DELETED
 """
 Reconciler enabled activity log entry.
 """
@@ -1357,6 +1345,10 @@ The instance.
 
 enum ApplicationInstanceState {
 	RUNNING
+"""
+The instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+"""
+	PENDING
 	STARTING
 	FAILING
 	TERMINATED
@@ -1370,7 +1362,8 @@ A user-friendly description of the current state.
 """
 	message: String!
 """
-Whether the container is passing its readiness check and can receive traffic.
+Whether the instance is passing its readiness check and can receive traffic.
+An instance does not receive traffic while a component added by the platform is failing.
 """
 	ready: Boolean!
 """
@@ -1539,6 +1532,50 @@ The environment name that the entry belongs to.
 	environmentName: String
 }
 
+"""
+An issue raised when a new version of an application is not being rolled out.
+"""
+type ApplicationRolloutStuckIssue implements Issue & Node{
+"""
+Unique identifier for this issue.
+"""
+	id: ID!
+"""
+The team environment where the issue was detected.
+"""
+	teamEnvironment: TeamEnvironment!
+"""
+The severity of the issue.
+"""
+	severity: Severity!
+"""
+A human-readable description of the issue.
+"""
+	message: String!
+"""
+The workload whose rollout is stuck.
+"""
+	workload: Workload!
+"""
+Why the rollout is stuck.
+"""
+	reason: ApplicationRolloutStuckReason!
+}
+
+"""
+Why a rollout of a new application version is stuck.
+"""
+enum ApplicationRolloutStuckReason {
+"""
+The new version did not become ready within the allowed time.
+"""
+	TIMED_OUT
+"""
+Instances of the new version could not be created, for example because of a quota or a platform policy.
+"""
+	INSTANCE_CREATION_FAILED
+}
+
 type ApplicationScaledActivityLogEntry implements ActivityLogEntry & Node{
 """
 ID of the entry.
@@ -1603,6 +1640,59 @@ The maximum number of application instances.
 Scaling strategies for the application.
 """
 	strategies: [ScalingStrategy!]!
+"""
+The current state of automatic scaling for the application.
+Null if automatic scaling is not set up for the application in the environment.
+"""
+	status: ApplicationScalingStatus
+}
+
+"""
+The state of automatic scaling for an application.
+"""
+enum ApplicationScalingState {
+"""
+Automatic scaling is working as expected.
+"""
+	ACTIVE
+"""
+The application needs more instances than the configured maximum.
+"""
+	LIMITED_BY_MAXIMUM
+"""
+The metrics used for automatic scaling cannot be read, so the number of instances is not adjusted.
+"""
+	METRICS_UNAVAILABLE
+"""
+The platform is currently unable to change the number of instances.
+"""
+	UNABLE_TO_SCALE
+"""
+Automatic scaling is turned off because the application has been scaled down to zero instances.
+"""
+	DISABLED
+}
+
+"""
+The current state of automatic scaling for an application.
+"""
+type ApplicationScalingStatus {
+"""
+The number of instances currently running.
+"""
+	currentInstances: Int!
+"""
+The number of instances that automatic scaling wants to run.
+"""
+	desiredInstances: Int!
+"""
+The state of automatic scaling.
+"""
+	state: ApplicationScalingState!
+"""
+A user-friendly description of the current state.
+"""
+	message: String!
 }
 
 enum ApplicationState {
@@ -3044,6 +3134,10 @@ Input for creating a Postgres.
 Input for creating a Postgres.
 """
 	labels: [ResourceLabelInput!]
+"""
+Input for creating a Postgres.
+"""
+	backupRetentionDays: Int
 """
 Input for creating a Postgres.
 """
@@ -4954,6 +5048,10 @@ Raised when a workload has external ingress exposure and urgent vulnerabilities.
 Raised when an application is stuck in a restart loop.
 """
 	APPLICATION_RESTART_LOOP
+"""
+Raised when a new version of an application is not being rolled out.
+"""
+	APPLICATION_ROLLOUT_STUCK
 }
 
 """
@@ -5601,6 +5699,22 @@ The globally unique ID of the job run instance.
 The name of the job run instance.
 """
 	name: String!
+"""
+The container image of the job run instance.
+"""
+	image: ContainerImage!
+"""
+The number of times the job run instance has been restarted.
+"""
+	restarts: Int!
+"""
+The time the job run instance was created.
+"""
+	created: Time!
+"""
+The current status of the job run instance.
+"""
+	status: JobRunInstanceStatus!
 }
 
 type JobRunInstanceConnection {
@@ -5627,6 +5741,64 @@ Cursor for this edge that can be used for pagination.
 The instance.
 """
 	node: JobRunInstance!
+}
+
+"""
+The state of a job run instance.
+"""
+enum JobRunInstanceState {
+"""
+The job run instance is running.
+"""
+	RUNNING
+"""
+The job run instance is waiting to be placed on a server, for example because there is not enough CPU or memory available.
+"""
+	PENDING
+"""
+The job run instance is starting.
+"""
+	STARTING
+"""
+The job run instance has a problem that prevents it from running or completing successfully.
+"""
+	FAILING
+"""
+The job run instance completed successfully.
+"""
+	SUCCEEDED
+"""
+The state of the job run instance is unknown.
+"""
+	UNKNOWN
+}
+
+"""
+The status of a job run instance.
+"""
+type JobRunInstanceStatus {
+"""
+The current state of the job run instance.
+"""
+	state: JobRunInstanceState!
+"""
+A user-friendly description of the current state.
+"""
+	message: String!
+"""
+The reason the job run instance last terminated, if applicable.
+This is populated even when the instance is currently running, to help debug restarts.
+"""
+	lastExitReason: String
+"""
+The exit code from the last termination of the job run instance, if applicable.
+"""
+	lastExitCode: Int
+"""
+The timestamp of the last termination of the job run instance, if applicable.
+This is populated even when the instance is currently running, to help debug restarts.
+"""
+	lastExitTimestamp: Time
 }
 
 enum JobRunState {
@@ -7658,6 +7830,11 @@ Earliest point in time covered by available backups, when known.
 """
 	earliestRestoreTime: Time
 """
+How many days back in time the database can be recovered to. Backups older than this are removed periodically,
+and the backup preceding the window is kept, so data up to a day older may remain.
+"""
+	backupRetentionDays: Int!
+"""
 Where this database was restored from, if it was created by a recovery.
 """
 	recovery: PostgresRecovery
@@ -7893,75 +8070,6 @@ The requested access could not be prepared.
 The server-controlled expiry time has passed.
 """
 	EXPIRED
-}
-
-"""
-A request to activate a Postgres branch was accepted; the switchover may still be pending.
-"""
-type PostgresBranchActivatedActivityLogEntry implements ActivityLogEntry & Node{
-	id: ID!
-	actor: String!
-	gitHubActorClaims: GitHubActorClaims
-	createdAt: Time!
-	message: String!
-	resourceType: ActivityLogEntryResourceType!
-"""
-Name of the Postgres containing the branch.
-"""
-	resourceName: String!
-	teamSlug: Slug!
-	environmentName: String
-	data: PostgresBranchActivityLogEntryData!
-}
-
-type PostgresBranchActivityLogEntryData {
-	branch: String!
-"""
-Source branch, populated for branch creation.
-"""
-	sourceBranch: String
-"""
-Recovery instant, populated for branch creation.
-"""
-	targetTime: Time
-}
-
-"""
-A Postgres branch was created.
-"""
-type PostgresBranchCreatedActivityLogEntry implements ActivityLogEntry & Node{
-	id: ID!
-	actor: String!
-	gitHubActorClaims: GitHubActorClaims
-	createdAt: Time!
-	message: String!
-	resourceType: ActivityLogEntryResourceType!
-"""
-Name of the Postgres containing the branch.
-"""
-	resourceName: String!
-	teamSlug: Slug!
-	environmentName: String
-	data: PostgresBranchActivityLogEntryData!
-}
-
-"""
-A Postgres branch was deleted.
-"""
-type PostgresBranchDeletedActivityLogEntry implements ActivityLogEntry & Node{
-	id: ID!
-	actor: String!
-	gitHubActorClaims: GitHubActorClaims
-	createdAt: Time!
-	message: String!
-	resourceType: ActivityLogEntryResourceType!
-"""
-Name of the Postgres containing the branch.
-"""
-	resourceName: String!
-	teamSlug: Slug!
-	environmentName: String
-	data: PostgresBranchActivityLogEntryData!
 }
 
 """
@@ -8276,7 +8384,7 @@ Type of the affected resource.
 """
 	resourceType: ActivityLogEntryResourceType!
 """
-Name of the affected Postgres branch.
+Name of the affected Postgres.
 """
 	resourceName: String!
 """
@@ -14569,6 +14677,10 @@ Input for updating a Postgres. Omitted fields are left unchanged.
 Input for updating a Postgres. Omitted fields are left unchanged.
 """
 	labels: [ResourceLabelInput!]
+"""
+Input for updating a Postgres. Omitted fields are left unchanged.
+"""
+	backupRetentionDays: Int
 }
 
 """
@@ -17255,6 +17367,87 @@ A cursor for use in pagination.
 The workload vulnerability summary.
 """
 	node: WorkloadVulnerabilitySummary!
+}
+
+"""
+A problem detected while running the workload.
+Repeated occurrences of the same problem are combined into a single event.
+"""
+type WorkloadWarningEvent implements WorkloadEvent & Node{
+"""
+Unique event identifier.
+"""
+	id: ID!
+"""
+When the problem was last observed.
+"""
+	triggeredAt: Time!
+"""
+Description of the problem.
+"""
+	message: String!
+"""
+The kind of problem.
+"""
+	kind: WorkloadWarningEventKind!
+"""
+Name of the affected instance, if the problem concerns a single instance.
+"""
+	instance: String
+"""
+Number of times the problem has been observed.
+"""
+	count: Int!
+"""
+When the problem was first observed.
+"""
+	firstSeenAt: Time!
+}
+
+"""
+The kind of problem reported by a warning event.
+"""
+enum WorkloadWarningEventKind {
+"""
+No server with enough available resources was found to run the instance.
+"""
+	PLACEMENT_FAILED
+"""
+Files or storage could not be mounted into the instance.
+"""
+	MOUNT_FAILED
+"""
+The container image could not be downloaded.
+"""
+	IMAGE_PULL_FAILED
+"""
+The instance could not be started, for example because of missing configuration.
+"""
+	START_FAILED
+"""
+The instance keeps crashing and is restarted with increasing delay.
+"""
+	CRASH_LOOP
+"""
+A readiness, liveness or startup check failed.
+"""
+	HEALTH_CHECK_FAILED
+"""
+The instance was stopped by the platform, for example to free up resources.
+"""
+	INSTANCE_STOPPED
+"""
+New instances could not be created, for example because of a quota or a platform policy.
+"""
+	INSTANCE_CREATION_FAILED
+"""
+Automatic scaling is unable to adjust the number of instances.
+"""
+	SCALING_FAILED
+"""
+A job run failed permanently.
+"""
+	RUN_FAILED
 }
 
 """

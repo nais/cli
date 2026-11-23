@@ -37,6 +37,7 @@ type (
 		CPU              string          `name:"cpu" usage:"Requested CPU, e.g. 100m."`
 		Memory           string          `name:"memory" usage:"Requested memory, e.g. 512Mi."`
 		DiskSize         string          `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+		RecoveryWindow   int             `name:"recovery-window-days" usage:"Point-in-time recovery window in days (2-30). Defaults to the platform default."`
 	}
 	InstanceClone struct {
 		*Postgres
@@ -58,6 +59,7 @@ type (
 		CPU              string           `name:"cpu" usage:"Requested CPU, e.g. 100m."`
 		Memory           string           `name:"memory" usage:"Requested memory, e.g. 512Mi."`
 		DiskSize         string           `name:"disk-size" usage:"Requested disk size, e.g. 10Gi."`
+		RecoveryWindow   int              `name:"recovery-window-days" usage:"Point-in-time recovery window in days (2-30). Shortening permanently removes older backups."`
 	}
 	Get struct {
 		*Postgres
