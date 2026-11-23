@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"slices"
+	"strings"
 
 	"github.com/nais/cli/internal/job/command/flag"
 	"github.com/nais/cli/internal/validation"
@@ -17,9 +19,20 @@ func jobEvents(parentFlags *flag.Job) *naistrix.Command {
 		Title:       "Show recent events for a job.",
 		Description: "Shows workload warnings and restarts, newest first. Events are retained for 30 days and can span multiple job runs. Use job issues for active issues or job activity for the audit log.",
 		Args: []naistrix.Argument{
-			{Name: "name", Prompt: "Name of the job", ChoicesFunc: jobNameChoices(parentFlags)},
+			{Name: "name", Prompt: "Name of the job"},
 		},
-		Flags:             flags,
+		Flags: flags,
+		// The job list is limited to one page, so use it only for completion.
+		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, prefix string) ([]string, string) {
+			if args.Len() != 0 {
+				return nil, ""
+			}
+			names, err := jobNameChoices(parentFlags)(ctx, args)
+			if err != nil {
+				return nil, err.Error()
+			}
+			return slices.DeleteFunc(names, func(name string) bool { return !strings.HasPrefix(name, prefix) }), "Select a job."
+		},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			query, err := events.ParseEventQuery(flags.Limit, flags.From, flags.To, flags.After)
@@ -30,7 +43,7 @@ func jobEvents(parentFlags *flag.Job) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			return events.RenderEvents(out, page, query.Limit, flags.Output == "json")
+			return events.RenderEvents(out, page, query, flags.Output == "json")
 		},
 	}
 }

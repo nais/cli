@@ -43,12 +43,16 @@ func ParseEventQuery(limit int, fromFlag, toFlag, afterFlag string) (workload.Ev
 	return query, nil
 }
 
-func RenderEvents(out *naistrix.OutputWriter, page *workload.EventsPage, limit int, json bool) error {
+func RenderEvents(out *naistrix.OutputWriter, page *workload.EventsPage, query workload.EventQuery, json bool) error {
 	if json {
 		return out.JSON(output.JSONWithPrettyOutput()).Render(page)
 	}
 	if len(page.Events) == 0 {
-		out.Println("No retained events in this range. The API retains workload events for 30 days.")
+		if query.After != nil {
+			out.Println("No more events found after the cursor.")
+		} else {
+			out.Println("No retained events in this range. The API retains workload events for 30 days.")
+		}
 	}
 	type row struct {
 		LastSeen string `heading:"Last seen"`
@@ -82,7 +86,9 @@ func RenderEvents(out *naistrix.OutputWriter, page *workload.EventsPage, limit i
 	}
 	if page.NextAfter != nil {
 		var flags strings.Builder
-		fmt.Fprintf(&flags, "--after %q --to %s --limit %d", *page.NextAfter, page.To.Format(time.RFC3339Nano), limit)
+		// Single-quote the opaque cursor for POSIX shells, including embedded apostrophes.
+		cursor := strings.ReplaceAll(*page.NextAfter, "'", "'\"'\"'")
+		fmt.Fprintf(&flags, "--after '%s' --to %s --limit %d", cursor, page.To.Format(time.RFC3339Nano), query.Limit)
 		if page.From != nil {
 			fmt.Fprintf(&flags, " --from %s", page.From.Format(time.RFC3339Nano))
 		}

@@ -33,7 +33,7 @@ func appEvents(parentFlags *flag.App) *naistrix.Command {
 			if err != nil {
 				return err
 			}
-			return events.RenderEvents(out, page, query.Limit, flags.Output == "json")
+			return events.RenderEvents(out, page, query, flags.Output == "json")
 		},
 	}
 }

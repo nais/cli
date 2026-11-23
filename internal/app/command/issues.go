@@ -37,13 +37,15 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 			if err != nil {
 				return err
 			}
+			if flags.Output == "json" {
+				if ret == nil {
+					ret = []app.ApplicationIssue{}
+				}
+				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
+			}
 			if len(ret) == 0 {
 				out.Println("No issues found for application.")
 				return nil
-			}
-
-			if flags.Output == "json" {
-				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 
 			return out.Table().Render(ret)
