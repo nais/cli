@@ -25,7 +25,7 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Create a Postgres that can be restored up to 14 days back in time.", Command: "my-postgres -t my-team -e dev-gcp --recovery-window-days 14"},
 			{Description: "Create a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
-		ValidateFlagsFunc: validation.RequireTeamFlag(f),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(validation.RequireTeamFlag(f), validateRecoveryWindow(&f.RecoveryWindow)),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			if f.Version != "18" {
 				return fmt.Errorf("--version must be 18")
@@ -90,7 +90,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 			{Description: "Disable high availability.", Command: "my-postgres -t my-team -e dev-gcp --high-availability false"},
 			{Description: "Change the point-in-time recovery window to 14 days.", Command: "my-postgres -t my-team -e dev-gcp --recovery-window-days 14"},
 		},
-		ValidateFlagsFunc: validation.RequireTeamFlag(f),
+		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(validation.RequireTeamFlag(f), validateRecoveryWindow(&f.RecoveryWindow)),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			changes, err := updateFields(f)
 			if err != nil {
@@ -262,4 +262,11 @@ func recoveryWindowDays(days int) (*int, error) {
 		return nil, fmt.Errorf("--recovery-window-days must be between 2 and 30")
 	}
 	return &days, nil
+}
+
+func validateRecoveryWindow(days *int) naistrix.ValidateFlagsFunc {
+	return func(context.Context) error {
+		_, err := recoveryWindowDays(*days)
+		return err
+	}
 }
