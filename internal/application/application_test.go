@@ -33,9 +33,11 @@ func TestAllArgumentsHavePrompts(t *testing.T) {
 	checkCommands = func(commands []*naistrix.Command, parent string) {
 		for _, cmd := range commands {
 			path := parent + " " + cmd.Name
-			for _, arg := range cmd.Args {
-				if strings.TrimSpace(arg.Prompt) == "" && arg.PromptFunc == nil {
-					t.Errorf("command %q argument %q is missing a prompt", path, arg.Name)
+			if !cmd.DisableArgumentPrompts {
+				for _, arg := range cmd.Args {
+					if strings.TrimSpace(arg.Prompt) == "" && arg.PromptFunc == nil {
+						t.Errorf("command %q argument %q is missing a prompt", path, arg.Name)
+					}
 				}
 			}
 			checkCommands(cmd.SubCommands, path)
