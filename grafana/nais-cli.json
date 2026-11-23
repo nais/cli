@@ -63,7 +63,7 @@
           "multi": true,
           "allValue": ".*",
           "refresh": 2,
-          "sort": 1,
+          "sort": 8,
           "current": {
             "text": "All",
             "value": "$__all"
