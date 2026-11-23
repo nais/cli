@@ -22,7 +22,6 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 		Examples: []naistrix.CommandExample{
 			{Description: "Select the destination environment interactively and create a Postgres with platform defaults.", Command: "my-postgres -t my-team"},
 			{Description: "Create a Postgres in a specific environment.", Command: "my-postgres -t my-team -e dev-gcp"},
-			{Description: "Create a Postgres that can be restored up to 14 days back in time.", Command: "my-postgres -t my-team -e dev-gcp --recovery-window-days 14"},
 			{Description: "Create a highly available Postgres with custom resources.", Command: "my-postgres -t my-team -e dev-gcp --high-availability --cpu 100m --memory 512Mi --disk-size 10Gi"},
 		},
 		ValidateFlagsFunc: naistrix.ValidateFlagsFuncs(validation.RequireTeamFlag(f), validateRecoveryWindow(&f.RecoveryWindow)),
