@@ -2,10 +2,9 @@ package command
 
 import (
 	"context"
-	"slices"
-	"strings"
 
 	"github.com/nais/cli/internal/job/command/flag"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
 	"github.com/nais/cli/internal/workload"
 	events "github.com/nais/cli/internal/workload/command"
@@ -22,16 +21,8 @@ func jobEvents(parentFlags *flag.Job) *naistrix.Command {
 			{Name: "name", Prompt: "Name of the job"},
 		},
 		Flags: flags,
-		// The job list is limited to one page, so use it only for completion.
 		AutoCompleteFunc: func(ctx context.Context, args *naistrix.Arguments, prefix string) ([]string, string) {
-			if args.Len() != 0 {
-				return nil, ""
-			}
-			names, err := jobNameChoices(parentFlags)(ctx, args)
-			if err != nil {
-				return nil, err.Error()
-			}
-			return slices.DeleteFunc(names, func(name string) bool { return !strings.HasPrefix(name, prefix) }), "Select a job."
+			return events.CompleteWorkloadName(ctx, args, prefix, gql.SearchTypeJob, flags.Team, string(flags.Environment))
 		},
 		ValidateFlagsFunc: validation.RequireEnvironmentFlag(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {

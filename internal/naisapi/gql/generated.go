@@ -41618,6 +41618,545 @@ var AllSBOMStatus = []SBOMStatus{
 	SBOMStatusFailed,
 }
 
+// Search filter for filtering search results.
+type SearchFilter struct {
+	// Search filter for filtering search results.
+	Query string `json:"query"`
+	// Search filter for filtering search results.
+	Types []SearchType `json:"types"`
+	// Search filter for filtering search results.
+	TeamScope *TeamScopeInput `json:"teamScope"`
+	// Search filter for filtering search results.
+	Teams []string `json:"teams"`
+}
+
+// GetQuery returns SearchFilter.Query, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetQuery() string { return v.Query }
+
+// GetTypes returns SearchFilter.Types, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetTypes() []SearchType { return v.Types }
+
+// GetTeamScope returns SearchFilter.TeamScope, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetTeamScope() *TeamScopeInput { return v.TeamScope }
+
+// GetTeams returns SearchFilter.Teams, and is useful for accessing the field via an interface.
+func (v *SearchFilter) GetTeams() []string { return v.Teams }
+
+// A list of possible search types.
+type SearchType string
+
+const (
+	// Search for teams.
+	SearchTypeTeam SearchType = "TEAM"
+	// Search for applications.
+	SearchTypeApplication     SearchType = "APPLICATION"
+	SearchTypeBigqueryDataset SearchType = "BIGQUERY_DATASET"
+	SearchTypeBucket          SearchType = "BUCKET"
+	SearchTypeJob             SearchType = "JOB"
+	SearchTypeKafkaTopic      SearchType = "KAFKA_TOPIC"
+	SearchTypeOpensearch      SearchType = "OPENSEARCH"
+	// Search for Postgres databases by name.
+	SearchTypePostgres    SearchType = "POSTGRES"
+	SearchTypeSqlInstance SearchType = "SQL_INSTANCE"
+	SearchTypeValkey      SearchType = "VALKEY"
+)
+
+var AllSearchType = []SearchType{
+	SearchTypeTeam,
+	SearchTypeApplication,
+	SearchTypeBigqueryDataset,
+	SearchTypeBucket,
+	SearchTypeJob,
+	SearchTypeKafkaTopic,
+	SearchTypeOpensearch,
+	SearchTypePostgres,
+	SearchTypeSqlInstance,
+	SearchTypeValkey,
+}
+
+// SearchWorkloadNamesResponse is returned by SearchWorkloadNames on success.
+type SearchWorkloadNamesResponse struct {
+	// Search for entities.
+	Search SearchWorkloadNamesSearchSearchNodeConnection `json:"search"`
+}
+
+// GetSearch returns SearchWorkloadNamesResponse.Search, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesResponse) GetSearch() SearchWorkloadNamesSearchSearchNodeConnection {
+	return v.Search
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnection includes the requested fields of the GraphQL type SearchNodeConnection.
+// The GraphQL type's documentation follows.
+//
+// Search node connection.
+type SearchWorkloadNamesSearchSearchNodeConnection struct {
+	// List of nodes.
+	Nodes []SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode `json:"-"`
+}
+
+// GetNodes returns SearchWorkloadNamesSearchSearchNodeConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnection) GetNodes() []SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode {
+	return v.Nodes
+}
+
+func (v *SearchWorkloadNamesSearchSearchNodeConnection) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*SearchWorkloadNamesSearchSearchNodeConnection
+		Nodes []json.RawMessage `json:"nodes"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.SearchWorkloadNamesSearchSearchNodeConnection = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Nodes
+		src := firstPass.Nodes
+		*dst = make(
+			[]SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			if len(src) != 0 && string(src) != "null" {
+				err = __unmarshalSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode(
+					src, dst)
+				if err != nil {
+					return fmt.Errorf(
+						"unable to unmarshal SearchWorkloadNamesSearchSearchNodeConnection.Nodes: %w", err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalSearchWorkloadNamesSearchSearchNodeConnection struct {
+	Nodes []json.RawMessage `json:"nodes"`
+}
+
+func (v *SearchWorkloadNamesSearchSearchNodeConnection) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *SearchWorkloadNamesSearchSearchNodeConnection) __premarshalJSON() (*__premarshalSearchWorkloadNamesSearchSearchNodeConnection, error) {
+	var retval __premarshalSearchWorkloadNamesSearchSearchNodeConnection
+
+	{
+
+		dst := &retval.Nodes
+		src := v.Nodes
+		*dst = make(
+			[]json.RawMessage,
+			len(src))
+		for i, src := range src {
+			dst := &(*dst)[i]
+			var err error
+			*dst, err = __marshalSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode(
+				&src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal SearchWorkloadNamesSearchSearchNodeConnection.Nodes: %w", err)
+			}
+		}
+	}
+	return &retval, nil
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication includes the requested fields of the GraphQL type Application.
+// The GraphQL type's documentation follows.
+//
+// An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
+//
+// Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication struct {
+	Typename *string `json:"__typename"`
+	// The name of the application.
+	Name string `json:"name"`
+	// The team environment for the application.
+	TeamEnvironment SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication.Name, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication) GetName() string {
+	return v.Name
+}
+
+// GetTeamEnvironment returns SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication) GetTeamEnvironment() SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment struct {
+	// Get the environment.
+	Environment SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironment) GetEnvironment() SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplicationTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset includes the requested fields of the GraphQL type BigQueryDataset.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket includes the requested fields of the GraphQL type Bucket.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesJob includes the requested fields of the GraphQL type Job.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesJob struct {
+	Typename *string `json:"__typename"`
+	// The name of the job.
+	Name string `json:"name"`
+	// The team environment for the job.
+	TeamEnvironment SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment `json:"teamEnvironment"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesJob.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJob) GetTypename() *string {
+	return v.Typename
+}
+
+// GetName returns SearchWorkloadNamesSearchSearchNodeConnectionNodesJob.Name, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJob) GetName() string { return v.Name }
+
+// GetTeamEnvironment returns SearchWorkloadNamesSearchSearchNodeConnectionNodesJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJob) GetTeamEnvironment() SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment {
+	return v.TeamEnvironment
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment struct {
+	// Get the environment.
+	Environment SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment `json:"environment"`
+}
+
+// GetEnvironment returns SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment.Environment, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironment) GetEnvironment() SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment {
+	return v.Environment
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment includes the requested fields of the GraphQL type Environment.
+// The GraphQL type's documentation follows.
+//
+// An environment represents a runtime environment for workloads.
+//
+// Learn more in the [official Nais documentation](https://docs.nais.io/workloads/explanations/environment/).
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment struct {
+	// Unique name of the environment.
+	Name string `json:"name"`
+}
+
+// GetName returns SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment.Name, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJobTeamEnvironmentEnvironment) GetName() string {
+	return v.Name
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic includes the requested fields of the GraphQL type KafkaTopic.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch includes the requested fields of the GraphQL type OpenSearch.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres includes the requested fields of the GraphQL type Postgres.
+// The GraphQL type's documentation follows.
+//
+// A managed Postgres database.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode includes the requested fields of the GraphQL interface SearchNode.
+//
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode is implemented by the following types:
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesJob
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey
+// The GraphQL type's documentation follows.
+//
+// Types that can be searched for.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode interface {
+	implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() *string
+}
+
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesJob) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey) implementsGraphQLInterfaceSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode() {
+}
+
+func __unmarshalSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode(b []byte, v *SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication)
+		return json.Unmarshal(b, *v)
+	case "BigQueryDataset":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset)
+		return json.Unmarshal(b, *v)
+	case "Bucket":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesJob)
+		return json.Unmarshal(b, *v)
+	case "KafkaTopic":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic)
+		return json.Unmarshal(b, *v)
+	case "OpenSearch":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch)
+		return json.Unmarshal(b, *v)
+	case "Postgres":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres)
+		return json.Unmarshal(b, *v)
+	case "SqlInstance":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance)
+		return json.Unmarshal(b, *v)
+	case "Team":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam)
+		return json.Unmarshal(b, *v)
+	case "Valkey":
+		*v = new(SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing SearchNode.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalSearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode(v *SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset:
+		typename = "BigQueryDataset"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesBigQueryDataset
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket:
+		typename = "Bucket"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesBucket
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesJob
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic:
+		typename = "KafkaTopic"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesKafkaTopic
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch:
+		typename = "OpenSearch"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesOpenSearch
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres:
+		typename = "Postgres"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesPostgres
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance:
+		typename = "SqlInstance"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam:
+		typename = "Team"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam
+		}{typename, v}
+		return json.Marshal(result)
+	case *SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey:
+		typename = "Valkey"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for SearchWorkloadNamesSearchSearchNodeConnectionNodesSearchNode: "%T"`, v)
+	}
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance includes the requested fields of the GraphQL type SqlInstance.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesSqlInstance) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam includes the requested fields of the GraphQL type Team.
+// The GraphQL type's documentation follows.
+//
+// The team type represents a team on the [Nais platform](https://nais.io/).
+//
+// Learn more about what Nais teams are and what they can be used for in the [official Nais documentation](https://docs.nais.io/explanations/team/).
+//
+// External resources (e.g. entraIDGroupID, gitHubTeamSlug) are managed by the platform.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesTeam) GetTypename() *string {
+	return v.Typename
+}
+
+// SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey includes the requested fields of the GraphQL type Valkey.
+type SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey struct {
+	Typename *string `json:"__typename"`
+}
+
+// GetTypename returns SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey.Typename, and is useful for accessing the field via an interface.
+func (v *SearchWorkloadNamesSearchSearchNodeConnectionNodesValkey) GetTypename() *string {
+	return v.Typename
+}
+
 // Input for filtering the secrets of a team.
 type SecretFilter struct {
 	// Input for filtering the secrets of a team.
@@ -42107,6 +42646,20 @@ func (v *TeamPostgresFilter) GetEnvironments() []string { return v.Environments 
 
 // GetLabels returns TeamPostgresFilter.Labels, and is useful for accessing the field via an interface.
 func (v *TeamPostgresFilter) GetLabels() []LabelFilter { return v.Labels }
+
+// Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+type TeamScopeInput struct {
+	// Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+	TeamSlugs []string `json:"teamSlugs"`
+	// Combine explicit teams and viewer memberships without changing access permissions. Omit both to select any team.
+	MemberOfViewer *bool `json:"memberOfViewer"`
+}
+
+// GetTeamSlugs returns TeamScopeInput.TeamSlugs, and is useful for accessing the field via an interface.
+func (v *TeamScopeInput) GetTeamSlugs() []string { return v.TeamSlugs }
+
+// GetMemberOfViewer returns TeamScopeInput.MemberOfViewer, and is useful for accessing the field via an interface.
+func (v *TeamScopeInput) GetMemberOfViewer() *bool { return v.MemberOfViewer }
 
 // TeamStatusMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
@@ -45029,6 +45582,14 @@ func (v *__RevokeAccessFromKafkaTopicInput) GetEnvironmentName() string { return
 
 // GetGrant returns __RevokeAccessFromKafkaTopicInput.Grant, and is useful for accessing the field via an interface.
 func (v *__RevokeAccessFromKafkaTopicInput) GetGrant() KafkaTopicGrantInput { return v.Grant }
+
+// __SearchWorkloadNamesInput is used internally by genqlient
+type __SearchWorkloadNamesInput struct {
+	Filter SearchFilter `json:"filter"`
+}
+
+// GetFilter returns __SearchWorkloadNamesInput.Filter, and is useful for accessing the field via an interface.
+func (v *__SearchWorkloadNamesInput) GetFilter() SearchFilter { return v.Filter }
 
 // __SetApplicationEnvInput is used internally by genqlient
 type __SetApplicationEnvInput struct {
@@ -49357,6 +49918,58 @@ func RevokeAccessFromKafkaTopic(
 	}
 
 	data_ = &RevokeAccessFromKafkaTopicResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by SearchWorkloadNames.
+const SearchWorkloadNames_Operation = `
+query SearchWorkloadNames ($filter: SearchFilter!) {
+	search(first: 30, filter: $filter) {
+		nodes {
+			__typename
+			... on Application {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+			... on Job {
+				name
+				teamEnvironment {
+					environment {
+						name
+					}
+				}
+			}
+		}
+	}
+}
+`
+
+func SearchWorkloadNames(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	filter SearchFilter,
+) (data_ *SearchWorkloadNamesResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "SearchWorkloadNames",
+		Query:  SearchWorkloadNames_Operation,
+		Variables: &__SearchWorkloadNamesInput{
+			Filter: filter,
+		},
+	}
+
+	data_ = &SearchWorkloadNamesResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/nais/cli/internal/flags"
+	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/naistrix"
 )
 
@@ -33,7 +34,11 @@ func TestJobEventsNameLookup(t *testing.T) {
 		},
 		{
 			name: "job name completion", args: []string{"__complete", "job", "events", "ba"},
-			wantOperation: "GetJobNames", wantOutput: "batch\n_activeHelp_ Select a job.\n:4\n",
+			wantOperation: "SearchWorkloadNames", wantOutput: "batch\n:4\n",
+		},
+		{
+			name: "no search without a prefix", args: []string{"__complete", "job", "events", ""},
+			wantOutput: "_activeHelp_ Type part of a workload name to search.\n:4\n",
 		},
 		{
 			name: "no completion after name", args: []string{"__complete", "job", "events", "older-job", ""},
@@ -45,7 +50,11 @@ func TestJobEventsNameLookup(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				var request struct {
 					OperationName string
-					Variables     struct{ Team, Env, Name string }
+					Query         string
+					Variables     struct {
+						Team, Env, Name string
+						Filter          gql.SearchFilter
+					}
 				}
 				if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 					t.Errorf("decoding request: %v", err)
@@ -53,16 +62,21 @@ func TestJobEventsNameLookup(t *testing.T) {
 					return
 				}
 				operations = append(operations, request.OperationName)
-				if request.Variables.Team != "my-team" {
-					t.Errorf("team = %q, want my-team", request.Variables.Team)
-				}
 				var response string
 				switch request.OperationName {
-				case "GetJobNames":
-					response = `{"data":{"team":{"jobs":{"nodes":[{"name":"batch","teamEnvironment":{"environment":{"name":"dev"}}},{"name":"backup","teamEnvironment":{"environment":{"name":"prod"}}},{"name":"cleanup","teamEnvironment":{"environment":{"name":"dev"}}}]}}}}`
+				case "SearchWorkloadNames":
+					f := request.Variables.Filter
+					if !strings.Contains(request.Query, "search(first: 30, filter: $filter)") || f.Query != "ba" || !slices.Equal(f.Types, []gql.SearchType{gql.SearchTypeJob}) || f.TeamScope == nil || !slices.Equal(f.TeamScope.TeamSlugs, []string{"my-team"}) {
+						t.Errorf("unexpected completion query: %s (%+v)", request.Query, f)
+					}
+					response = `{"data":{"search":{"nodes":[
+						{"__typename":"Job","name":"batch","teamEnvironment":{"environment":{"name":"dev"}}},
+						{"__typename":"Job","name":"backup","teamEnvironment":{"environment":{"name":"prod"}}},
+						{"__typename":"Job","name":"cleanup","teamEnvironment":{"environment":{"name":"dev"}}}
+					]}}}`
 				case "GetJobEvents":
-					if got := request.Variables; got.Env != "dev" || got.Name != tt.args[2] {
-						t.Errorf("events query target = %+v, want dev/%s", got, tt.args[2])
+					if got := request.Variables; got.Team != "my-team" || got.Env != "dev" || got.Name != tt.args[2] {
+						t.Errorf("events query target = %+v, want my-team/dev/%s", got, tt.args[2])
 					}
 					if tt.wantError != "" {
 						response = `{"errors":[{"message":"job not found"}]}`
