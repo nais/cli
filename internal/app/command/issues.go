@@ -38,9 +38,6 @@ func issues(parentFlags *flag.App) *naistrix.Command {
 				return err
 			}
 			if flags.Output == "json" {
-				if ret == nil {
-					ret = []app.ApplicationIssue{}
-				}
 				return out.JSON(output.JSONWithPrettyOutput()).Render(ret)
 			}
 			if len(ret) == 0 {

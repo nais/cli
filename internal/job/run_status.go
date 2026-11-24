@@ -119,7 +119,7 @@ func GetRunStatus(ctx context.Context, team, env, job, runName string) (*RunStat
 		}
 		after, err = workload.NextCursor(runs.PageInfo.HasNextPage, runs.PageInfo.EndCursor, seen)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("paging runs for job %q in %q: %w", job, env, err)
 		}
 		if after == nil {
 			return nil, fmt.Errorf("run %q not found for job %q in %q", runName, job, env)
@@ -160,7 +160,7 @@ func GetRunStatus(ctx context.Context, team, env, job, runName string) (*RunStat
 		}
 		after, err = workload.NextCursor(run.Instances.PageInfo.HasNextPage, run.Instances.PageInfo.EndCursor, seen)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("paging instances for run %q: %w", runName, err)
 		}
 		if after == nil {
 			return ret, nil

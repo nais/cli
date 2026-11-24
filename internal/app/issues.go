@@ -50,9 +50,6 @@ func GetApplicationIssues(ctx context.Context, slug, name string, environment st
 	if err != nil {
 		return nil, err
 	}
-	if len(resp.Team.Applications.Nodes) == 0 {
-		return nil, nil
-	}
 	ret := make([]ApplicationIssue, 0)
 	for _, app := range resp.Team.Applications.Nodes {
 		if app.Name != name {
