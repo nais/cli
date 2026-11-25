@@ -34343,6 +34343,82 @@ func (v *ListCVEsTeamWorkloadsWorkloadConnectionNodesWorkloadTeamEnvironmentEnvi
 	return v.Name
 }
 
+// ListUsersResponse is returned by ListUsers on success.
+type ListUsersResponse struct {
+	// Get a list of users.
+	Users ListUsersUsersUserConnection `json:"users"`
+}
+
+// GetUsers returns ListUsersResponse.Users, and is useful for accessing the field via an interface.
+func (v *ListUsersResponse) GetUsers() ListUsersUsersUserConnection { return v.Users }
+
+// ListUsersUsersUserConnection includes the requested fields of the GraphQL type UserConnection.
+// The GraphQL type's documentation follows.
+//
+// User connection.
+type ListUsersUsersUserConnection struct {
+	// List of nodes.
+	Nodes []ListUsersUsersUserConnectionNodesUser `json:"nodes"`
+	// Pagination information.
+	PageInfo ListUsersUsersUserConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns ListUsersUsersUserConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnection) GetNodes() []ListUsersUsersUserConnectionNodesUser {
+	return v.Nodes
+}
+
+// GetPageInfo returns ListUsersUsersUserConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnection) GetPageInfo() ListUsersUsersUserConnectionPageInfo {
+	return v.PageInfo
+}
+
+// ListUsersUsersUserConnectionNodesUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// The user type represents a user of the Nais platform and the Nais GraphQL API.
+type ListUsersUsersUserConnectionNodesUser struct {
+	// The full name of the user.
+	Name string `json:"name"`
+	// The email address of the user.
+	Email string `json:"email"`
+	// Whether this is a tenant user or a Nais user. Null if the source has not been recorded yet.
+	Source *UserSource `json:"source"`
+	// True if the user is global admin.
+	IsAdmin bool `json:"isAdmin"`
+}
+
+// GetName returns ListUsersUsersUserConnectionNodesUser.Name, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionNodesUser) GetName() string { return v.Name }
+
+// GetEmail returns ListUsersUsersUserConnectionNodesUser.Email, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionNodesUser) GetEmail() string { return v.Email }
+
+// GetSource returns ListUsersUsersUserConnectionNodesUser.Source, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionNodesUser) GetSource() *UserSource { return v.Source }
+
+// GetIsAdmin returns ListUsersUsersUserConnectionNodesUser.IsAdmin, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionNodesUser) GetIsAdmin() bool { return v.IsAdmin }
+
+// ListUsersUsersUserConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type ListUsersUsersUserConnectionPageInfo struct {
+	// Whether or not there exists a next page in the connection.
+	HasNextPage bool `json:"hasNextPage"`
+	// The cursor for the last item in the edges. This cursor is used when paginating forwards.
+	EndCursor *string `json:"endCursor"`
+}
+
+// GetHasNextPage returns ListUsersUsersUserConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionPageInfo) GetHasNextPage() bool { return v.HasNextPage }
+
+// GetEndCursor returns ListUsersUsersUserConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *ListUsersUsersUserConnectionPageInfo) GetEndCursor() *string { return v.EndCursor }
+
 // ListWorkloadVulnerabilitySummariesResponse is returned by ListWorkloadVulnerabilitySummaries on success.
 type ListWorkloadVulnerabilitySummariesResponse struct {
 	// Get a team by its slug.
@@ -37845,6 +37921,35 @@ func (v *UpdateWorkloadEnvironmentVariableInput) GetName() string { return v.Nam
 // GetValue returns UpdateWorkloadEnvironmentVariableInput.Value, and is useful for accessing the field via an interface.
 func (v *UpdateWorkloadEnvironmentVariableInput) GetValue() *string { return v.Value }
 
+// Filters for the list of users.
+type UserFilter struct {
+	// Include users from any of these categories. Omit this field to allow any source, including users without a recorded source. An empty list matches no users.
+	Sources []UserSource `json:"sources"`
+	// True to include only global admins, false to include only non-admins. Omit this field to include both.
+	IsAdmin *bool `json:"isAdmin,omitempty"`
+}
+
+// GetSources returns UserFilter.Sources, and is useful for accessing the field via an interface.
+func (v *UserFilter) GetSources() []UserSource { return v.Sources }
+
+// GetIsAdmin returns UserFilter.IsAdmin, and is useful for accessing the field via an interface.
+func (v *UserFilter) GetIsAdmin() *bool { return v.IsAdmin }
+
+// The category of a user.
+type UserSource string
+
+const (
+	// A user belonging to the tenant.
+	UserSourceTenant UserSource = "TENANT"
+	// A user belonging to Nais.
+	UserSourceNais UserSource = "NAIS"
+)
+
+var AllUserSource = []UserSource{
+	UserSourceTenant,
+	UserSourceNais,
+}
+
 // UserTeamsMeAuthenticatedUser includes the requested fields of the GraphQL interface AuthenticatedUser.
 //
 // UserTeamsMeAuthenticatedUser is implemented by the following types:
@@ -39320,6 +39425,18 @@ func (v *__ListCVEsInput) GetTeam() string { return v.Team }
 
 // GetFilter returns __ListCVEsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__ListCVEsInput) GetFilter() *TeamWorkloadsFilter { return v.Filter }
+
+// __ListUsersInput is used internally by genqlient
+type __ListUsersInput struct {
+	After  *string     `json:"after"`
+	Filter *UserFilter `json:"filter"`
+}
+
+// GetAfter returns __ListUsersInput.After, and is useful for accessing the field via an interface.
+func (v *__ListUsersInput) GetAfter() *string { return v.After }
+
+// GetFilter returns __ListUsersInput.Filter, and is useful for accessing the field via an interface.
+func (v *__ListUsersInput) GetFilter() *UserFilter { return v.Filter }
 
 // __ListWorkloadVulnerabilitySummariesInput is used internally by genqlient
 type __ListWorkloadVulnerabilitySummariesInput struct {
@@ -43039,6 +43156,51 @@ func ListCVEs(
 	}
 
 	data_ = &ListCVEsResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by ListUsers.
+const ListUsers_Operation = `
+query ListUsers ($after: Cursor, $filter: UserFilter) {
+	users(first: 1000, after: $after, orderBy: {field:NAME,direction:ASC}, filter: $filter) {
+		nodes {
+			name
+			email
+			source
+			isAdmin
+		}
+		pageInfo {
+			hasNextPage
+			endCursor
+		}
+	}
+}
+`
+
+func ListUsers(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	after *string,
+	filter *UserFilter,
+) (data_ *ListUsersResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "ListUsers",
+		Query:  ListUsers_Operation,
+		Variables: &__ListUsersInput{
+			After:  after,
+			Filter: filter,
+		},
+	}
+
+	data_ = &ListUsersResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

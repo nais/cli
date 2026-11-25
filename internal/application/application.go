@@ -30,6 +30,7 @@ import (
 	postgresCommand "github.com/nais/cli/internal/postgres/command"
 	secretCommand "github.com/nais/cli/internal/secret/command"
 	statusCommand "github.com/nais/cli/internal/status/command"
+	userCommand "github.com/nais/cli/internal/user/command"
 	validateCommand "github.com/nais/cli/internal/validate/command"
 	valkeyCommand "github.com/nais/cli/internal/valkey/command"
 	"github.com/nais/cli/internal/version"
@@ -136,6 +137,7 @@ func newApplication(w io.Writer, hookFactories ...func(*flags.GlobalFlags) naist
 		cloudsqlCommand.CloudSQL(globalFlags),
 		secretCommand.Secrets(globalFlags),
 		statusCommand.Status(globalFlags),
+		userCommand.Users(globalFlags),
 		validateCommand.Validate(globalFlags),
 		valkeyCommand.Valkey(globalFlags),
 		vulnerabilityCommand.Vulnerabilities(globalFlags),
