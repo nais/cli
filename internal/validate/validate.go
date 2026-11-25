@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/nais/cli/internal/apply/resource"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/naistrix"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -67,9 +68,9 @@ func (v Validate) Validate(out *naistrix.OutputWriter) error {
 		}
 
 		if len(errors) == 0 {
-			out.Printf("[✅] %q is valid\n", file)
+			out.Printf("[%s] %q is valid\n", output.Success, file)
 		} else {
-			out.Printf("[❌] %q is invalid\n", file)
+			out.Printf("[<error>%s</error>] %q is invalid\n", output.Failure, file)
 			printErrors(errors, out)
 			invalid = append(invalid, file)
 		}

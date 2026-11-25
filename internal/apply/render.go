@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/naistrix"
 	"gopkg.in/yaml.v3"
 )
@@ -40,7 +41,7 @@ func render(basePath string, mixinPaths []string, environment string, sets, appe
 		if auto := autoMixinPath(basePath, environment); auto != "" {
 			if _, err := os.Stat(auto); err == nil {
 				mixinPaths = []string{auto}
-				out.Printf("✓ auto-loaded mixin from %s\n", auto)
+				out.Printf("%s auto-loaded mixin from %s\n", output.Checkmark, auto)
 			}
 		}
 	}

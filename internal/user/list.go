@@ -6,6 +6,7 @@ import (
 
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/output"
 )
 
 type User struct {
@@ -19,7 +20,7 @@ type adminStatus bool
 
 func (a adminStatus) String() string {
 	if a {
-		return "✓"
+		return output.Checkmark
 	}
 	return ""
 }

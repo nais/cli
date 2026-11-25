@@ -7,6 +7,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/nais/cli/internal/cloudsql/command/flag"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/naistrix"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,7 +58,7 @@ func enableAuditAsAppUser(ctx context.Context, appName, team, environment string
 	}
 
 	if isConfigured {
-		out.Println("✅ Audit is already properly configured. No changes needed.")
+		out.Println(output.Success + " Audit is already properly configured. No changes needed.")
 		return nil
 	}
 
@@ -86,7 +87,7 @@ func enableAuditAsAppUser(ctx context.Context, appName, team, environment string
 		return fmt.Errorf("enableAuditAsAppUser: error configuring pgaudit.log: %w", err)
 	}
 
-	out.Println("✅ Successfully enabled audit extension and configured pgaudit.log for application user")
+	out.Println(output.Success + " Successfully enabled audit extension and configured pgaudit.log for application user")
 	return nil
 }
 
@@ -223,43 +224,43 @@ func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string
 
 	enablePgaudit, enableExists := dbFlags["cloudsql.enable_pgaudit"]
 	if !enableExists {
-		out.Println("  ❌ Flag <info>cloudsql.enable_pgaudit</info> is missing")
+		out.Println("  <error>" + output.Failure + "</error> Flag <info>cloudsql.enable_pgaudit</info> is missing")
 		return false, fmt.Errorf("cloudsql.enable_pgaudit flag is not set")
 	}
 	if enablePgaudit != "on" && enablePgaudit != "true" {
-		out.Printf("  ❌ Flag <info>cloudsql.enable_pgaudit</info>: expected <info>on</info> or <info>true</info>, got <info>%s</info>\n", enablePgaudit)
+		out.Printf("  <error>%s</error> Flag <info>cloudsql.enable_pgaudit</info>: expected <info>on</info> or <info>true</info>, got <info>%s</info>\n", output.Failure, enablePgaudit)
 		return false, fmt.Errorf("cloudsql.enable_pgaudit must be set to 'on' or 'true'")
 	}
-	out.Printf("  ✅ Flag <info>cloudsql.enable_pgaudit</info> = <info>%s</info>\n", enablePgaudit)
+	out.Printf("  %s Flag <info>cloudsql.enable_pgaudit</info> = <info>%s</info>\n", output.Success, enablePgaudit)
 
 	pgauditLog, logExists := dbFlags["pgaudit.log"]
 	if !logExists {
-		out.Println("  ❌ Flag <info>pgaudit.log</info> is missing")
+		out.Println("  <error>" + output.Failure + "</error> Flag <info>pgaudit.log</info> is missing")
 		return false, fmt.Errorf("pgaudit.log flag is not set")
 	}
-	out.Printf("  ✅ Flag <info>pgaudit.log</info> = <info>%s</info>\n", pgauditLog)
+	out.Printf("  %s Flag <info>pgaudit.log</info> = <info>%s</info>\n", output.Success, pgauditLog)
 
 	logParameter, paramExists := dbFlags["pgaudit.log_parameter"]
 	if !paramExists {
-		out.Println("  ❌ Flag <info>pgaudit.log_parameter</info> is missing")
+		out.Println("  <error>" + output.Failure + "</error> Flag <info>pgaudit.log_parameter</info> is missing")
 		return false, fmt.Errorf("pgaudit.log_parameter flag is not set")
 	}
 	if logParameter != "on" && logParameter != "true" {
-		out.Printf("  ❌ Flag <info>pgaudit.log_parameter</info>: expected <info>on</info> or <info>true</info>, got <info>%s</info>\n", logParameter)
+		out.Printf("  <error>%s</error> Flag <info>pgaudit.log_parameter</info>: expected <info>on</info> or <info>true</info>, got <info>%s</info>\n", output.Failure, logParameter)
 		return false, fmt.Errorf("pgaudit.log_parameter must be set to 'on' or 'true'")
 	}
-	out.Printf("  ✅ Flag <info>pgaudit.log_parameter</info> = <info>%s</info>\n", logParameter)
+	out.Printf("  %s Flag <info>pgaudit.log_parameter</info> = <info>%s</info>\n", output.Success, logParameter)
 
 	logRelation, relationExists := dbFlags["pgaudit.log_relation"]
 	if !relationExists {
-		out.Println("  ❌ Flag <info>pgaudit.log_relation</info> is missing")
+		out.Println("  <error>" + output.Failure + "</error> Flag <info>pgaudit.log_relation</info> is missing")
 		return false, fmt.Errorf("pgaudit.log_relation flag is not set")
 	}
 	if logRelation != "on" && logRelation != "true" {
-		out.Printf("  ❌ Flag <info>pgaudit.log_relation</info>: expected <info>on</info>, got <info>%s</info>\n", logRelation)
+		out.Printf("  <error>%s</error> Flag <info>pgaudit.log_relation</info>: expected <info>on</info>, got <info>%s</info>\n", output.Failure, logRelation)
 		return false, fmt.Errorf("pgaudit.log_relation must be set to 'on'")
 	}
-	out.Printf("  ✅ Flag <info>pgaudit.log_relation</info> = <info>%s</info>\n", logRelation)
+	out.Printf("  %s Flag <info>pgaudit.log_relation</info> = <info>%s</info>\n", output.Success, logRelation)
 
 	db, err := sql.Open("cloudsqlpostgres", connectionInfo.ProxyConnectionString())
 	if err != nil {
@@ -280,10 +281,10 @@ func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string
 	}
 
 	if !extensionExists {
-		out.Println("\n  ❌ pgaudit extension is not installed")
+		out.Println("\n  <error>" + output.Failure + "</error> pgaudit extension is not installed")
 		return false, nil
 	}
-	out.Println("\n  ✅ pgaudit extension is installed")
+	out.Println("\n  " + output.Success + " pgaudit extension is installed")
 
 	var pgauditLogValue string
 	checkSettingQuery := "SELECT setting FROM pg_settings WHERE name = 'pgaudit.log'"
@@ -294,12 +295,12 @@ func verifyAuditAsAppUser(ctx context.Context, appName, team, environment string
 
 	expectedValue := "none"
 	if pgauditLogValue != expectedValue {
-		out.Printf("  ❌ pgaudit.log setting for application user: expected <info>%s</info>, got <info>%s</info>\n", expectedValue, pgauditLogValue)
+		out.Printf("  <error>%s</error> pgaudit.log setting for application user: expected <info>%s</info>, got <info>%s</info>\n", output.Failure, expectedValue, pgauditLogValue)
 		return false, nil
 	}
 
-	out.Printf("  ✅ pgaudit.log setting for application user: <info>%s</info>\n", pgauditLogValue)
-	out.Println("\n✅ All audit configurations are correct!")
+	out.Printf("  %s pgaudit.log setting for application user: <info>%s</info>\n", output.Success, pgauditLogValue)
+	out.Println("\n" + output.Success + " All audit configurations are correct!")
 
 	return true, nil
 }

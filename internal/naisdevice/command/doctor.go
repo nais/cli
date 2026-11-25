@@ -5,6 +5,7 @@ import (
 
 	"github.com/mitchellh/go-ps"
 	doc "github.com/nais/cli/internal/doctor"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/naistrix"
 )
 
@@ -18,9 +19,9 @@ func doctorcmd() *naistrix.Command {
 			for key, value := range results {
 				out.Printf("%s ", key)
 				if value.Result == doc.OK {
-					out.Println("✅")
+					out.Println(output.Success)
 				} else {
-					out.Printf("❌ (%s)\n", value.ErrMsg)
+					out.Printf("<error>%s</error> (%s)\n", output.Failure, value.ErrMsg)
 				}
 			}
 			out.Println()
