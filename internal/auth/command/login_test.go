@@ -40,7 +40,7 @@ func TestOfferNaisLogin(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var output bytes.Buffer
 			level := naistrix.OutputVerbosityLevelNormal
-			out := naistrix.NewOutputWriter(&output, &level)
+			out := naistrix.NewOutputWriter(&output, &output, &level)
 			ctx := t.Context()
 			checks, prompts, logins := 0, 0, 0
 			err := offerNaisLogin(ctx, out, tt.autoAccept, !tt.skipConfirmation, func(got context.Context) (naisapi.AuthenticatedUser, error) {
@@ -58,10 +58,10 @@ func TestOfferNaisLogin(t *testing.T) {
 					t.Error("login ran before confirmation")
 				}
 				return tt.loginErr
-			}, func(prompt string, opts ...input.ConfirmOptionFunc) (bool, error) {
+			}, func(got context.Context, prompt string, opts ...input.ConfirmOptionFunc) (bool, error) {
 				prompts++
-				if checks != 1 {
-					t.Error("confirmation ran before the session check")
+				if checks != 1 || got != ctx {
+					t.Error("confirmation ran before the session check or received the wrong context")
 				}
 				if prompt != "Would you like to also log in to Nais?" || len(opts) != 1 {
 					t.Errorf("unexpected confirmation prompt or options: %q, %d options", prompt, len(opts))

@@ -112,7 +112,7 @@ func TestWait_AppliedMinimum(t *testing.T) {
 			defer cancel()
 			ctx = context.WithValue(ctx, oauth2.HTTPClient, client)
 			var output bytes.Buffer
-			err = (applicationResource{}).Wait(ctx, "team", "dev", "testapp", docs[0], since, naistrix.NewOutputWriter(&output, new(naistrix.Count)))
+			err = (applicationResource{}).Wait(ctx, "team", "dev", "testapp", docs[0], since, naistrix.NewOutputWriter(&output, &output, new(naistrix.Count)))
 
 			if tc.wantWait {
 				if !errors.Is(err, context.DeadlineExceeded) {

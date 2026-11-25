@@ -119,7 +119,7 @@ func runGetCommand(ctx context.Context, args *naistrix.Arguments, out *naistrix.
 		reason := opts.reason
 		if reason == "" {
 			out.Warnln("Viewing secret values is logged for auditing purposes.")
-			result, err := input.Input("Reason for accessing secret values (min 10 chars)")
+			result, err := input.Input(ctx, "Reason for accessing secret values (min 10 chars)")
 			if err != nil {
 				return fmt.Errorf("prompting for reason: %w", err)
 			}

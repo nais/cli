@@ -295,7 +295,7 @@ func renderToMap(t *testing.T, data []byte) map[string]any {
 }
 
 func discardWriter() *naistrix.OutputWriter {
-	return naistrix.NewOutputWriter(io.Discard, new(naistrix.Count))
+	return naistrix.NewOutputWriter(io.Discard, io.Discard, new(naistrix.Count))
 }
 
 func TestRender_NoOverridesReturnsBaseUnchanged(t *testing.T) {

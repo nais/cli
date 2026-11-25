@@ -175,7 +175,7 @@ func TestAuthStatusOutputCompletion(t *testing.T) {
 func TestRenderAuthStatusJSONNullAccounts(t *testing.T) {
 	var output bytes.Buffer
 	level := naistrix.OutputVerbosityLevelNormal
-	err := renderLoginStatuses(naistrix.NewOutputWriter(&output, &level), auth.LoginStatusReport{
+	err := renderLoginStatuses(naistrix.NewOutputWriter(&output, &output, &level), auth.LoginStatusReport{
 		Nais:   auth.LoginStatus{Provider: "Nais", Status: auth.LoginStateNotLoggedIn, Details: "Run `nais login -n`."},
 		Gcloud: auth.LoginStatus{Provider: "Google Cloud", Status: auth.LoginStateAuthenticated},
 	}, "json")

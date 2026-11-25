@@ -53,7 +53,7 @@ func delete(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return err
 			}
 
-			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+			if result, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 				return err
 			} else if !result {
 				return fmt.Errorf("cancelled by user")

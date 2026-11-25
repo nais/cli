@@ -43,7 +43,7 @@ func resolveAppEnvironment(ctx context.Context, team, name, provided string) (st
 	}
 
 	sort.Strings(envs)
-	selected, err := input.Select(fmt.Sprintf("Select environment for %s", name), envs)
+	selected, err := input.Select(ctx, fmt.Sprintf("Select environment for %s", name), envs)
 	if errors.Is(err, input.ErrNotInteractive) {
 		return "", fmt.Errorf("application %q: specify environment with -e, --environment (available: %s)", name, strings.Join(envs, ", "))
 	}

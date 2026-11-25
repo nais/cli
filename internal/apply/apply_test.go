@@ -37,7 +37,7 @@ spec:
 	}
 	targets := appendWaitTarget(nil, r, "testapp", docs[0])
 	var output bytes.Buffer
-	err = waitForReady(context.Background(), "team", "dev", targets, time.Now(), time.Second, naistrix.NewOutputWriter(&output, new(naistrix.Count)))
+	err = waitForReady(context.Background(), "team", "dev", targets, time.Now(), time.Second, naistrix.NewOutputWriter(&output, &output, new(naistrix.Count)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -182,7 +182,7 @@ spec:
 		DryRun: true,
 	}
 
-	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(&out, new(naistrix.Count)))
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(&out, &out, new(naistrix.Count)))
 	if err != nil {
 		t.Fatalf("Run: %v", err)
 	}
@@ -224,7 +224,7 @@ spec:
 		DryRun: true,
 	}
 
-	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, io.Discard, new(naistrix.Count)))
 	mustErrorContains(t, err, "contains fields not used by nais apply")
 }
 
@@ -317,7 +317,7 @@ func TestRun_DirectoryWithSetFails(t *testing.T) {
 		Set: []string{"spec.image=override"},
 	}
 
-	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, io.Discard, new(naistrix.Count)))
 	mustErrorContains(t, err, "--set cannot be used when applying a directory")
 }
 
@@ -331,7 +331,7 @@ func TestRun_DirectoryWithAppendFails(t *testing.T) {
 		},
 		Append: []string{"spec.env={name: LOG_LEVEL, value: debug}"},
 	}
-	err := Run(context.Background(), t.TempDir(), flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	err := Run(context.Background(), t.TempDir(), flags, naistrix.NewOutputWriter(io.Discard, io.Discard, new(naistrix.Count)))
 	mustErrorContains(t, err, "--append cannot be used when applying a directory")
 }
 
@@ -355,6 +355,6 @@ func TestRun_DirectoryWithMixinFlagFails(t *testing.T) {
 		Mixin: []string{"some-mixin.yaml"},
 	}
 
-	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, new(naistrix.Count)))
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(io.Discard, io.Discard, new(naistrix.Count)))
 	mustErrorContains(t, err, "--mixin cannot be used when applying a directory")
 }

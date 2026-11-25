@@ -35,7 +35,7 @@ func del(parentFlags *flag.App) *naistrix.Command {
 
 			if !flags.Yes {
 				expected := environment + "/" + name
-				answer, err := input.Input(fmt.Sprintf("Confirm deletion by typing %q", expected))
+				answer, err := input.Input(ctx, fmt.Sprintf("Confirm deletion by typing %q", expected))
 				if err != nil {
 					return err
 				}

@@ -9,7 +9,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-var out = naistrix.NewOutputWriter(os.Stdout, ptr.To(naistrix.OutputVerbosityLevelNormal))
+var out = naistrix.NewOutputWriter(os.Stdout, os.Stderr, ptr.To(naistrix.OutputVerbosityLevelNormal))
 
 func TestAllChecksAreRun(t *testing.T) {
 	examination := okExaminationWith2SecondWorkers()

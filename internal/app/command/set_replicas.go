@@ -49,7 +49,7 @@ func setReplicas(parentFlags *flag.App) *naistrix.Command {
 			name := args.Get("name")
 
 			if flags.Min == 0 && flags.Max == 0 {
-				if result, err := input.Confirm(fmt.Sprintf("Are you sure you want to stop %v in %v?", name, flags.Environment)); err != nil {
+				if result, err := input.Confirm(ctx, fmt.Sprintf("Are you sure you want to stop %v in %v?", name, flags.Environment)); err != nil {
 					return err
 				} else if !result {
 					return fmt.Errorf("cancelled by user")

@@ -84,7 +84,7 @@ func instanceCloneCommand(parent *flag.Postgres) *naistrix.Command {
 				return err
 			}
 			if !f.Yes {
-				ok, err := input.Confirm("Clone to a new Postgres?", input.ConfirmWithDefaultTrue())
+				ok, err := input.Confirm(ctx, "Clone to a new Postgres?", input.ConfirmWithDefaultTrue())
 				if err != nil {
 					return err
 				}

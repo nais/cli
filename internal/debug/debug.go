@@ -203,7 +203,7 @@ func (d *Debug) createDebugPod(podName string) error {
 	return nil
 }
 
-func (d *Debug) Debug() error {
+func (d *Debug) Debug(ctx context.Context) error {
 	pods, err := d.getPodsForWorkload()
 	if err != nil {
 		return err
@@ -221,7 +221,7 @@ func (d *Debug) Debug() error {
 
 	podName := podNames[0]
 	if d.byPod {
-		result, err := input.Select("Select a pod to debug", podNames)
+		result, err := input.Select(ctx, "Select a pod to debug", podNames)
 		if err != nil {
 			d.out.Errorf("Prompt failed: %v\n", err)
 			return err
