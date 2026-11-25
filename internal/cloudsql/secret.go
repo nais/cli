@@ -7,6 +7,7 @@ import (
 
 	"github.com/nais/cli/internal/cloudsql/command/flag"
 	"github.com/nais/cli/internal/naisapi"
+	"github.com/nais/cli/internal/output"
 	"github.com/nais/naistrix"
 )
 
@@ -50,7 +51,7 @@ func GetSecretValues(ctx context.Context, appName, team, environment string, fl 
 		}
 		return nil, err
 	}
-	out.Debugf("✅ Access granted.\n")
+	out.Debugf("%s Access granted.\n", output.Success)
 	result := &SecretValues{values: make(map[string]string, len(values))}
 	for _, v := range values {
 		result.values[v.Name] = v.Value
