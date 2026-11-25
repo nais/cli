@@ -9003,6 +9003,10 @@ Get items before this cursor.
 Ordering options for items returned from the connection.
 """
 		orderBy: UserOrder
+"""
+Filter the list of users.
+"""
+		filter: UserFilter
 	): UserConnection!
 """
 Get a user by an identifier.
@@ -14889,6 +14893,10 @@ The external ID of the user. This value is managed by the platform.
 """
 	externalID: String!
 """
+Whether this is a tenant user or a Nais user. Null if the source has not been recorded yet.
+"""
+	source: UserSource
+"""
 List of teams the user is connected to.
 """
 	teams(
@@ -15012,6 +15020,20 @@ The user.
 }
 
 """
+Filters for the list of users.
+"""
+input UserFilter {
+"""
+Include users from any of these categories. Omit this field to allow any source, including users without a recorded source. An empty list matches no users.
+"""
+	sources: [UserSource!]
+"""
+True to include only global admins, false to include only non-admins. Omit this field to include both.
+"""
+	isAdmin: Boolean
+}
+
+"""
 Ordering options when fetching users.
 """
 input UserOrder {
@@ -15037,6 +15059,20 @@ The name of the user.
 The email address of the user.
 """
 	EMAIL
+}
+
+"""
+The category of a user.
+"""
+enum UserSource {
+"""
+A user belonging to the tenant.
+"""
+	TENANT
+"""
+A user belonging to Nais.
+"""
+	NAIS
 }
 
 """
@@ -17497,5 +17533,3 @@ The vulnerability.
 """
 	node: WorkloadWithVulnerability!
 }
-
-
