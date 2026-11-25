@@ -54,7 +54,7 @@ func instanceCreateCommand(parent *flag.Postgres) *naistrix.Command {
 				return err
 			}
 			if !f.Yes {
-				ok, err := input.Confirm("Create Postgres?", input.ConfirmWithDefaultTrue())
+				ok, err := input.Confirm(ctx, "Create Postgres?", input.ConfirmWithDefaultTrue())
 				if err != nil {
 					return err
 				}
@@ -141,7 +141,7 @@ func instanceUpdateCommand(parent *flag.Postgres) *naistrix.Command {
 				return err
 			}
 			if !f.Yes {
-				ok, err := input.Confirm("Request Postgres update?")
+				ok, err := input.Confirm(ctx, "Request Postgres update?")
 				if err != nil {
 					return err
 				}
@@ -185,7 +185,7 @@ func instanceDeleteCommand(parent *flag.Postgres) *naistrix.Command {
 			}
 			requested, err := confirmAndDeleteInstance(ctx, gql.DeletePostgresInput{
 				Name: name, TeamSlug: parent.Team, EnvironmentName: env,
-			}, f.Yes, func(prompt string) (bool, error) { return input.Confirm(prompt) }, postgres.DeleteInstance)
+			}, f.Yes, func(prompt string) (bool, error) { return input.Confirm(ctx, prompt) }, postgres.DeleteInstance)
 			if err != nil {
 				return err
 			}

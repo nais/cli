@@ -41,7 +41,7 @@ func unset(parentFlags *flag.Config) *naistrix.Command {
 			out.Warnf("You are about to unset key %q from config %q in %q.\n", f.Key, metadata.Name, metadata.EnvironmentName)
 
 			if !f.Yes {
-				if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				if result, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 					return err
 				} else if !result {
 					return fmt.Errorf("cancelled by user")

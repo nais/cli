@@ -197,7 +197,7 @@ func update(parentFlags *flag.OpenSearch) *naistrix.Command {
 			}
 
 			out.Warnln("Changing settings may cause a restart of the OpenSearch instance.")
-			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+			if result, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 				return err
 			} else if !result {
 				return fmt.Errorf("cancelled by user")

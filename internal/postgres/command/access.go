@@ -40,7 +40,7 @@ func psqlCommand(parent *flag.Postgres) *naistrix.Command {
 		ValidateFlagsFunc: validation.RequireTeamFlag(f),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
 			report := func(message string) { out.Println(message) }
-			request, err := prepareAccessRequest(args.Get("postgres"), f, func(message string) { out.Warnln(message) })
+			request, err := prepareAccessRequest(ctx, args.Get("postgres"), f, func(message string) { out.Warnln(message) })
 			if err != nil {
 				return err
 			}
@@ -151,7 +151,7 @@ func proxyCommand(parent *flag.Postgres) *naistrix.Command {
 			if f.Port < 0 || f.Port > 65535 {
 				return fmt.Errorf("--port must be between 0 and 65535")
 			}
-			request, err := prepareAccessRequest(args.Get("postgres"), &flag.Access{
+			request, err := prepareAccessRequest(ctx, args.Get("postgres"), &flag.Access{
 				Postgres: f.Postgres, AccessLevel: f.AccessLevel, Reason: f.Reason, TTL: f.TTL,
 			}, warn)
 			if err != nil {
@@ -241,11 +241,11 @@ func withoutPostgresEnv(env []string) []string {
 	return ret
 }
 
-func resolveAccessReason(provided string, report func(string)) (string, error) {
+func resolveAccessReason(ctx context.Context, provided string, report func(string)) (string, error) {
 	reason := strings.TrimSpace(provided)
 	if reason == "" {
 		report("Requesting personal Postgres access is logged for auditing purposes.")
-		entered, err := input.Input("Reason for personal Postgres access (min 10 chars)")
+		entered, err := input.Input(ctx, "Reason for personal Postgres access (min 10 chars)")
 		if errors.Is(err, input.ErrNotInteractive) {
 			return "", fmt.Errorf("missing required reason; specify --reason with at least 10 characters when running noninteractively")
 		}
@@ -261,7 +261,7 @@ func resolveAccessReason(provided string, report func(string)) (string, error) {
 }
 
 // Prepare the audit reason before installing signal handlers: input.Input cannot observe context cancellation.
-func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql.CreatePostgresAccessInput, error) {
+func prepareAccessRequest(ctx context.Context, name string, f *flag.Access, report func(string)) (gql.CreatePostgresAccessInput, error) {
 	if f.TTL < time.Second || f.TTL > time.Hour {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--ttl must be between 1s and 1h")
 	}
@@ -275,7 +275,7 @@ func prepareAccessRequest(name string, f *flag.Access, report func(string)) (gql
 	if !ok {
 		return gql.CreatePostgresAccessInput{}, fmt.Errorf("--access-level must be read, write, admin, or maintain")
 	}
-	reason, err := resolveAccessReason(f.Reason, report)
+	reason, err := resolveAccessReason(ctx, f.Reason, report)
 	if err != nil {
 		return gql.CreatePostgresAccessInput{}, err
 	}

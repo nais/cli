@@ -33,7 +33,7 @@ func resolveEnvironment(ctx context.Context, provided string, out *naistrix.Outp
 	}
 	sort.Strings(envs)
 
-	selected, err := input.Select("Select environment to apply to", envs)
+	selected, err := input.Select(ctx, "Select environment to apply to", envs)
 	if errors.Is(err, input.ErrNotInteractive) {
 		return "", validation.ErrMissingEnvironment
 	}

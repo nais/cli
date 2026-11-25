@@ -1,6 +1,7 @@
 package debug
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/nais/cli/internal/debug/command/flag"
@@ -11,14 +12,14 @@ import (
 
 const debugImageDefault = "europe-north1-docker.pkg.dev/nais-io/nais/images/debug:latest"
 
-func Run(workloadName, team, environment string, flags *flag.Debug, out *naistrix.OutputWriter) error {
+func Run(ctx context.Context, workloadName, team, environment string, flags *flag.Debug, out *naistrix.OutputWriter) error {
 	clientSet, err := SetupClient(team, environment)
 	if err != nil {
 		return err
 	}
 
 	dg := Setup(clientSet, flags, workloadName, debugImageDefault, flags.ByPod, out)
-	if err := dg.Debug(); err != nil {
+	if err := dg.Debug(ctx); err != nil {
 		return fmt.Errorf("debugging instance: %w", err)
 	}
 

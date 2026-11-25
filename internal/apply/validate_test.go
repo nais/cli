@@ -114,7 +114,7 @@ func writeManifestAndRun(t *testing.T, manifest string, dryRun, allowIgnoredFiel
 		AllowIgnoredFields: allowIgnoredFields,
 	}
 
-	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(&out, new(naistrix.Count)))
+	err := Run(context.Background(), manifestPath, flags, naistrix.NewOutputWriter(&out, &out, new(naistrix.Count)))
 	return out.String(), err
 }
 

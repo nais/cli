@@ -99,7 +99,7 @@ func selectImage(ctx context.Context, team, name, env string) (string, error) {
 		})
 	}
 
-	selected, err := input.Select(fmt.Sprintf("Select an image for %v in %v", name, env), options)
+	selected, err := input.Select(ctx, fmt.Sprintf("Select an image for %v in %v", name, env), options)
 	if errors.Is(err, input.ErrNotInteractive) {
 		return "", fmt.Errorf("this command requires an interactive terminal to select an image")
 	}

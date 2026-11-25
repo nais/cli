@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"errors"
-	"os"
 
 	"github.com/nais/cli/internal/auth"
 	"github.com/nais/cli/internal/auth/command/flag"
@@ -11,7 +10,6 @@ import (
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/naistrix"
 	"github.com/nais/naistrix/input"
-	"golang.org/x/term"
 )
 
 func login(parentFlags *flag.Auth) *naistrix.Command {
@@ -45,7 +43,7 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 				return err
 			}
 
-			if term.IsTerminal(int(os.Stdin.Fd())) { // #nosec G115
+			if input.IsInteractive(ctx) {
 				return offerNaisLogin(ctx, out, flags.Yes, flags.ConfirmLogin, naisapi.GetAuthenticatedUser, naisapi.Login, input.Confirm)
 			}
 
@@ -54,7 +52,7 @@ func login(parentFlags *flag.Auth) *naistrix.Command {
 	}
 }
 
-func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept, confirmLogin bool, getUser func(context.Context) (naisapi.AuthenticatedUser, error), login naistrix.PreRunHookFunc, confirm func(string, ...input.ConfirmOptionFunc) (bool, error)) error {
+func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept, confirmLogin bool, getUser func(context.Context) (naisapi.AuthenticatedUser, error), login naistrix.PreRunHookFunc, confirm func(context.Context, string, ...input.ConfirmOptionFunc) (bool, error)) error {
 	if _, err := getUser(ctx); !errors.Is(err, naisapi.ErrNeedsLogin) {
 		return err
 	}
@@ -65,7 +63,7 @@ func offerNaisLogin(ctx context.Context, out *naistrix.OutputWriter, autoAccept,
 		return login(ctx, out)
 	}
 
-	result, err := confirm("Would you like to also log in to Nais?", input.ConfirmWithDefaultTrue())
+	result, err := confirm(ctx, "Would you like to also log in to Nais?", input.ConfirmWithDefaultTrue())
 	if err != nil {
 		return err
 	}

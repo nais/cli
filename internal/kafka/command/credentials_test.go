@@ -76,7 +76,7 @@ func TestCredentialsEnvironment(t *testing.T) {
 
 func newTestOutputWriter(buf *bytes.Buffer) *naistrix.OutputWriter {
 	level := naistrix.OutputVerbosityLevelNormal
-	return naistrix.NewOutputWriter(buf, &level)
+	return naistrix.NewOutputWriter(buf, buf, &level)
 }
 
 func testKafkaCreds() *gql.CreateKafkaCredentialsCreateKafkaCredentialsCreateKafkaCredentialsPayloadCredentialsKafkaCredentials {

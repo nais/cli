@@ -86,7 +86,7 @@ func create(parentFlags *flag.Valkey) *naistrix.Command {
 			}
 
 			if !flags.Yes {
-				if ok, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+				if ok, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 					return err
 				} else if !ok {
 					return fmt.Errorf("cancelled by user")

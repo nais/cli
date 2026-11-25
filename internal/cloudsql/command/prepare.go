@@ -34,7 +34,7 @@ func prepareCommand(parentFlags *flag.CloudSQL) *naistrix.Command {
 		Flags:             flags,
 		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(flags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			if result, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+			if result, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 				return err
 			} else if !result {
 				return fmt.Errorf("cancelled by user")

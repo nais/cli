@@ -31,7 +31,7 @@ func Debug(parentFlags *flags.GlobalFlags) *naistrix.Command {
 		Flags:             debugFlags,
 		ValidateFlagsFunc: validation.RequireTeamAndEnvironmentFlags(debugFlags),
 		RunFunc: func(ctx context.Context, args *naistrix.Arguments, out *naistrix.OutputWriter) error {
-			return debug.Run(args.Get("app_name"), debugFlags.Team, string(debugFlags.Environment), debugFlags, out)
+			return debug.Run(ctx, args.Get("app_name"), debugFlags.Team, string(debugFlags.Environment), debugFlags, out)
 		},
 	}
 }

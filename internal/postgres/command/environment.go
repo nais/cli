@@ -84,7 +84,7 @@ func resolvePostgresCreateEnvironment(ctx context.Context, provided string) (str
 		return "", validation.ErrMissingEnvironment
 	}
 	sort.Strings(envs)
-	selected, err := input.Select("Select environment to create Postgres in", envs)
+	selected, err := input.Select(ctx, "Select environment to create Postgres in", envs)
 	if errors.Is(err, input.ErrNotInteractive) {
 		return "", validation.ErrMissingEnvironment
 	}
@@ -106,7 +106,7 @@ func resolvePostgresEnvironment(ctx context.Context, team, name, provided string
 	if len(envs) == 0 {
 		return "", fmt.Errorf("Postgres %q not found in team %q", name, team)
 	}
-	selected, err := input.Select(fmt.Sprintf("Select environment for %s", name), envs, input.SelectWithAutoSelectSingleOption())
+	selected, err := input.Select(ctx, fmt.Sprintf("Select environment for %s", name), envs, input.SelectWithAutoSelectSingleOption())
 	if errors.Is(err, input.ErrNotInteractive) {
 		return "", fmt.Errorf("Postgres %q: specify environment with -e, --environment (available: %s)", name, strings.Join(envs, ", "))
 	}

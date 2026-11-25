@@ -72,7 +72,7 @@ func TestPostgresUpdateComparison(t *testing.T) {
 		},
 		{
 			name: "recovery window can be shortened with a warning", metadata: windowed, args: []string{"--recovery-window-days", "2"},
-			wantRows: []string{"Recovery window 7 days 2 days", "WARNING: Shortening the recovery window permanently removes backups older than the new window."}, wantChanges: `{"backupRetentionDays":2}`, wantOperations: []string{"GetPostgres", "UpdatePostgres"},
+			wantRows: []string{"Recovery window 7 days 2 days"}, wantChanges: `{"backupRetentionDays":2}`, wantOperations: []string{"GetPostgres", "UpdatePostgres"},
 		},
 		{
 			name: "recovery window can be combined with other changes", metadata: windowed, args: []string{"--cpu", "200m", "--recovery-window-days", "30"},
@@ -173,8 +173,8 @@ func TestPostgresUpdateComparison(t *testing.T) {
 			if err := os.WriteFile(config, []byte(contents), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			var output bytes.Buffer
-			app, global, err := naistrix.NewApplication("postgres-update-test", "Test Postgres update", "test", naistrix.ApplicationWithWriter(&output))
+			var output, diagnostics bytes.Buffer
+			app, global, err := naistrix.NewApplication("postgres-update-test", "Test Postgres update", "test", naistrix.ApplicationWithWriter(&output), naistrix.ApplicationWithDiagnosticWriter(&diagnostics))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -252,11 +252,17 @@ func TestPostgresUpdateComparison(t *testing.T) {
 						}
 					}
 				}
-				if !strings.Contains(output.String(), "A subsequent nais apply can overwrite changes to manifest-managed Postgres.") || !strings.Contains(output.String(), "configured settings") || !strings.Contains(output.String(), "effective runtime resources or SQL readiness") {
-					t.Errorf("missing manifest/configuration scope warning: %s", output.String())
+				if !strings.Contains(diagnostics.String(), "A subsequent nais apply can overwrite changes to manifest-managed Postgres.") {
+					t.Errorf("missing manifest warning: %s", diagnostics.String())
 				}
-			} else if strings.Contains(output.String(), "Setting") || strings.Contains(output.String(), "subsequent nais apply") {
-				t.Errorf("summary appeared before successful metadata lookup: %s", output.String())
+				if !strings.Contains(output.String(), "configured settings") || !strings.Contains(output.String(), "effective runtime resources or SQL readiness") {
+					t.Errorf("missing configuration scope note: %s", output.String())
+				}
+			} else if strings.Contains(output.String(), "Setting") || strings.Contains(diagnostics.String(), "subsequent nais apply") {
+				t.Errorf("summary appeared before successful metadata lookup: %s\n%s", output.String(), diagnostics.String())
+			}
+			if got := strings.Contains(diagnostics.String(), "WARNING: Shortening the recovery window permanently removes backups older than the new window."); got != (tt.name == "recovery window can be shortened with a warning") {
+				t.Errorf("unexpected recovery window warning state: %s", diagnostics.String())
 			}
 			wantOperations := tt.wantOperations
 			if !tt.omitTeam && !tt.omitName && tt.discoveryError == "" && !tt.noAPICalls {

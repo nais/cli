@@ -36,7 +36,7 @@ func TestValidateSuggestsDryRunForNativeResources(t *testing.T) {
 			v := New([]string{path})
 			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 			level := naistrix.OutputVerbosityLevelNormal
-			err := v.Validate(naistrix.NewOutputWriter(io.Discard, &level))
+			err := v.Validate(naistrix.NewOutputWriter(io.Discard, io.Discard, &level))
 			require.ErrorContains(t, err, tc.kind+" manifests cannot be validated with nais validate")
 			assert.ErrorContains(t, err, "use nais apply --dry-run instead")
 		})
@@ -125,7 +125,7 @@ func TestValidate(t *testing.T) {
 			v.Variables = test.vars
 
 			l := naistrix.OutputVerbosityLevelNormal
-			err := v.Validate(naistrix.NewOutputWriter(os.Stdout, &l))
+			err := v.Validate(naistrix.NewOutputWriter(os.Stdout, os.Stderr, &l))
 			if test.wantErr {
 				assert.Error(t, err)
 			} else {

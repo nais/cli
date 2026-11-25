@@ -62,7 +62,10 @@ func TestLoginHook(t *testing.T) {
 					t.Error("login did not receive execution context")
 				}
 				return tt.loginError
-			}, func() bool { return false }, func() bool { return tt.interactive }, func() bool { return tt.confirmLogin }, func(prompt string) (bool, error) {
+			}, func() bool { return false }, func(context.Context) bool { return tt.interactive }, func() bool { return tt.confirmLogin }, func(got context.Context, prompt string) (bool, error) {
+				if got != ctx {
+					t.Error("confirmation did not receive execution context")
+				}
 				if prompt != "Log in to Nais to continue?" {
 					t.Errorf("unexpected prompt: %q", prompt)
 				}
@@ -131,8 +134,8 @@ func TestLoginHookVerboseReason(t *testing.T) {
 			level := naistrix.OutputVerbosityLevelNormal
 			hook := loginHook("auth", "Nais", naisapi.ErrNeedsLogin, func(context.Context) error {
 				return &naisapiauth.NeedsLoginError{Cause: errors.New("refresh token rejected")}
-			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return verbose }, func() bool { return true }, func() bool { return true }, func(string) (bool, error) { return true, nil })
-			if err := hook.RunFunc(t.Context(), naistrix.NewOutputWriter(&output, &level)); err != nil {
+			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return verbose }, func(context.Context) bool { return true }, func() bool { return true }, func(context.Context, string) (bool, error) { return true, nil })
+			if err := hook.RunFunc(t.Context(), naistrix.NewOutputWriter(&output, &output, &level)); err != nil {
 				t.Fatal(err)
 			}
 			if got := strings.Contains(output.String(), "refresh token rejected"); got != verbose {
@@ -162,11 +165,11 @@ func TestLoginHookProviderMessages(t *testing.T) {
 			var prompt string
 			hook := loginHook(tt.name, tt.provider, tt.needsLogin, func(context.Context) error {
 				return tt.needsLogin
-			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return false }, func() bool { return true }, func() bool { return true }, func(text string) (bool, error) {
+			}, func(context.Context, *naistrix.OutputWriter) error { return nil }, func() bool { return false }, func(context.Context) bool { return true }, func() bool { return true }, func(_ context.Context, text string) (bool, error) {
 				prompt = text
 				return true, nil
 			})
-			if err := hook.RunFunc(t.Context(), naistrix.NewOutputWriter(&output, &level)); err != nil {
+			if err := hook.RunFunc(t.Context(), naistrix.NewOutputWriter(&output, &output, &level)); err != nil {
 				t.Fatal(err)
 			}
 			if prompt != tt.prompt {

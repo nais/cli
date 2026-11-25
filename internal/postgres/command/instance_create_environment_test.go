@@ -121,8 +121,8 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 			if err := os.WriteFile(config, []byte(contents), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			var output bytes.Buffer
-			app, global, err := naistrix.NewApplication("nais", "Test Postgres creation", "test", naistrix.ApplicationWithWriter(&output))
+			var output, diagnostics bytes.Buffer
+			app, global, err := naistrix.NewApplication("nais", "Test Postgres creation", "test", naistrix.ApplicationWithWriter(&output), naistrix.ApplicationWithDiagnosticWriter(&diagnostics))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -153,7 +153,10 @@ func TestPostgresCreateEnvironment(t *testing.T) {
 				if created.Name != "orders" || created.TeamSlug != "my-team" || created.EnvironmentName != "dev-gcp" || created.MajorVersion != "18" {
 					t.Errorf("unexpected create input: %+v", created)
 				}
-				if !strings.Contains(output.String(), "Create Postgres with this configuration (omitted resources use platform defaults):") || !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") {
+				if !strings.Contains(diagnostics.String(), "Create Postgres with this configuration (omitted resources use platform defaults):") {
+					t.Errorf("missing creation diagnostic: %s", diagnostics.String())
+				}
+				if !strings.Contains(output.String(), "Environment") || !strings.Contains(output.String(), "dev-gcp") || strings.Contains(output.String(), "prod-gcp") {
 					t.Errorf("missing or incorrect destination in confirmation/result: %s", output.String())
 				}
 			}

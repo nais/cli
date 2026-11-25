@@ -127,7 +127,7 @@ func create(parentFlags *flag.OpenSearch) *naistrix.Command {
 				return err
 			}
 
-			if ok, err := input.Confirm("Are you sure you want to continue?"); err != nil {
+			if ok, err := input.Confirm(ctx, "Are you sure you want to continue?"); err != nil {
 				return err
 			} else if !ok {
 				return fmt.Errorf("cancelled by user")
