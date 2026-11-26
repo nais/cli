@@ -143,6 +143,10 @@ const (
 	ActivityLogActivityTypeUnleashInstanceUpdated ActivityLogActivityType = "UNLEASH_INSTANCE_UPDATED"
 	// Unleash instance was deleted.
 	ActivityLogActivityTypeUnleashInstanceDeleted ActivityLogActivityType = "UNLEASH_INSTANCE_DELETED"
+	// A workload vulnerability assessment was set.
+	ActivityLogActivityTypeVulnerabilitySuppressionUpdated ActivityLogActivityType = "VULNERABILITY_SUPPRESSION_UPDATED"
+	// A workload vulnerability assessment was deleted.
+	ActivityLogActivityTypeVulnerabilitySuppressionDeleted ActivityLogActivityType = "VULNERABILITY_SUPPRESSION_DELETED"
 	// Valkey was created.
 	ActivityLogActivityTypeValkeyCreated ActivityLogActivityType = "VALKEY_CREATED"
 	// Valkey was updated.
@@ -228,6 +232,8 @@ var AllActivityLogActivityType = []ActivityLogActivityType{
 	ActivityLogActivityTypeUnleashInstanceCreated,
 	ActivityLogActivityTypeUnleashInstanceUpdated,
 	ActivityLogActivityTypeUnleashInstanceDeleted,
+	ActivityLogActivityTypeVulnerabilitySuppressionUpdated,
+	ActivityLogActivityTypeVulnerabilitySuppressionDeleted,
 	ActivityLogActivityTypeValkeyCreated,
 	ActivityLogActivityTypeValkeyUpdated,
 	ActivityLogActivityTypeValkeyDeleted,
@@ -274,6 +280,8 @@ const (
 	ActivityLogEntryResourceTypeTunnel ActivityLogEntryResourceType = "TUNNEL"
 	// All activity log entries related to unleash will use this resource type.
 	ActivityLogEntryResourceTypeUnleash ActivityLogEntryResourceType = "UNLEASH"
+	// A workload vulnerability assessment.
+	ActivityLogEntryResourceTypeVulnerabilitySuppression ActivityLogEntryResourceType = "VULNERABILITY_SUPPRESSION"
 	// All activity log entries related to Valkeys will use this resource type.
 	ActivityLogEntryResourceTypeValkey ActivityLogEntryResourceType = "VALKEY"
 	// All activity log entries related to vulnerabilities will use this resource type.
@@ -299,6 +307,7 @@ var AllActivityLogEntryResourceType = []ActivityLogEntryResourceType{
 	ActivityLogEntryResourceTypeTeam,
 	ActivityLogEntryResourceTypeTunnel,
 	ActivityLogEntryResourceTypeUnleash,
+	ActivityLogEntryResourceTypeVulnerabilitySuppression,
 	ActivityLogEntryResourceTypeValkey,
 	ActivityLogEntryResourceTypeVulnerability,
 	ActivityLogEntryResourceTypeWebhook,
@@ -5752,6 +5761,7 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyCredentialsCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesWebhookCreatedActivityLogEntry
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesWebhookDeletedActivityLogEntry
@@ -5922,6 +5932,8 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -6152,6 +6164,9 @@ func __unmarshalGetApplicationActivityTeamApplicationsApplicationConnectionNodes
 		return json.Unmarshal(b, *v)
 	case "ValkeyUpdatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilitySuppressionActivityLogEntry":
+		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "VulnerabilityUpdatedActivityLogEntry":
 		*v = new(GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
@@ -6728,6 +6743,14 @@ func __marshalGetApplicationActivityTeamApplicationsApplicationConnectionNodesAp
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry:
+		typename = "VulnerabilitySuppressionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
@@ -9417,6 +9440,47 @@ func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplica
 	return v.EnvironmentName
 }
 
+// GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry includes the requested fields of the GraphQL type VulnerabilitySuppressionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An assessment change recorded in the activity log.
+type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetApplicationActivityTeamApplicationsApplicationConnectionNodesApplicationActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -11600,6 +11664,7 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyCredentialsCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesWebhookCreatedActivityLogEntry
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesWebhookDeletedActivityLogEntry
@@ -11770,6 +11835,8 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -12000,6 +12067,9 @@ func __unmarshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityL
 		return json.Unmarshal(b, *v)
 	case "ValkeyUpdatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilitySuppressionActivityLogEntry":
+		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "VulnerabilityUpdatedActivityLogEntry":
 		*v = new(GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
@@ -12576,6 +12646,14 @@ func __marshalGetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry:
+		typename = "VulnerabilitySuppressionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
@@ -15265,6 +15343,47 @@ func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActiv
 	return v.EnvironmentName
 }
 
+// GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry includes the requested fields of the GraphQL type VulnerabilitySuppressionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An assessment change recorded in the activity log.
+type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetConfigActivityTeamConfigsConfigConnectionNodesConfigActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -16157,6 +16276,7 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyCredentialsCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesWebhookCreatedActivityLogEntry
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesWebhookDeletedActivityLogEntry
@@ -16327,6 +16447,8 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -16557,6 +16679,9 @@ func __unmarshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLo
 		return json.Unmarshal(b, *v)
 	case "ValkeyUpdatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilitySuppressionActivityLogEntry":
+		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "VulnerabilityUpdatedActivityLogEntry":
 		*v = new(GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
@@ -17133,6 +17258,14 @@ func __marshalGetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogE
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry:
+		typename = "VulnerabilitySuppressionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
@@ -19822,6 +19955,47 @@ func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryC
 	return v.EnvironmentName
 }
 
+// GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry includes the requested fields of the GraphQL type VulnerabilitySuppressionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An assessment change recorded in the activity log.
+type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetJobActivityTeamJobsJobConnectionNodesJobActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -22327,6 +22501,7 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyCredentialsCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesWebhookCreatedActivityLogEntry
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesWebhookDeletedActivityLogEntry
@@ -22497,6 +22672,8 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -22727,6 +22904,9 @@ func __unmarshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityL
 		return json.Unmarshal(b, *v)
 	case "ValkeyUpdatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilitySuppressionActivityLogEntry":
+		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "VulnerabilityUpdatedActivityLogEntry":
 		*v = new(GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
@@ -23303,6 +23483,14 @@ func __marshalGetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLog
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry:
+		typename = "VulnerabilitySuppressionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
@@ -25992,6 +26180,47 @@ func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActiv
 	return v.EnvironmentName
 }
 
+// GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry includes the requested fields of the GraphQL type VulnerabilitySuppressionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An assessment change recorded in the activity log.
+type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+}
+
+// GetTypename returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
 // GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry includes the requested fields of the GraphQL type VulnerabilityUpdatedActivityLogEntry.
 type GetSecretActivityTeamSecretsSecretConnectionNodesSecretActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry struct {
 	Typename *string `json:"__typename"`
@@ -26691,6 +26920,7 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnection) __premarshalJ
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCredentialsCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesWebhookCreatedActivityLogEntry
 // GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesWebhookDeletedActivityLogEntry
@@ -26871,6 +27101,8 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyCred
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyDeletedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
+}
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry) implementsGraphQLInterfaceGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActivityLogEntry() {
 }
@@ -27101,6 +27333,9 @@ func __unmarshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesAct
 		return json.Unmarshal(b, *v)
 	case "ValkeyUpdatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry)
+		return json.Unmarshal(b, *v)
+	case "VulnerabilitySuppressionActivityLogEntry":
+		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry)
 		return json.Unmarshal(b, *v)
 	case "VulnerabilityUpdatedActivityLogEntry":
 		*v = new(GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry)
@@ -27677,6 +27912,14 @@ func __marshalGetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesActiv
 		result := struct {
 			TypeName string `json:"__typename"`
 			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry
+		}{typename, v}
+		return json.Marshal(result)
+	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry:
+		typename = "VulnerabilitySuppressionActivityLogEntry"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry
 		}{typename, v}
 		return json.Marshal(result)
 	case *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilityUpdatedActivityLogEntry:
@@ -31329,6 +31572,61 @@ func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpda
 
 // GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
 func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesValkeyUpdatedActivityLogEntry) GetResourceName() string {
+	return v.ResourceName
+}
+
+// GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry includes the requested fields of the GraphQL type VulnerabilitySuppressionActivityLogEntry.
+// The GraphQL type's documentation follows.
+//
+// An assessment change recorded in the activity log.
+type GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry struct {
+	Typename *string `json:"__typename"`
+	// Interface for activity log entries.
+	Actor string `json:"actor"`
+	// Interface for activity log entries.
+	CreatedAt time.Time `json:"createdAt"`
+	// Interface for activity log entries.
+	Message string `json:"message"`
+	// Interface for activity log entries.
+	EnvironmentName *string `json:"environmentName"`
+	// Interface for activity log entries.
+	ResourceType ActivityLogEntryResourceType `json:"resourceType"`
+	// Interface for activity log entries.
+	ResourceName string `json:"resourceName"`
+}
+
+// GetTypename returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Typename, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetTypename() *string {
+	return v.Typename
+}
+
+// GetActor returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Actor, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetActor() string {
+	return v.Actor
+}
+
+// GetCreatedAt returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.CreatedAt, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetCreatedAt() time.Time {
+	return v.CreatedAt
+}
+
+// GetMessage returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.Message, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetMessage() string {
+	return v.Message
+}
+
+// GetEnvironmentName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.EnvironmentName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetEnvironmentName() *string {
+	return v.EnvironmentName
+}
+
+// GetResourceType returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.ResourceType, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetResourceType() ActivityLogEntryResourceType {
+	return v.ResourceType
+}
+
+// GetResourceName returns GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry.ResourceName, and is useful for accessing the field via an interface.
+func (v *GetTeamActivityTeamActivityLogActivityLogEntryConnectionNodesVulnerabilitySuppressionActivityLogEntry) GetResourceName() string {
 	return v.ResourceName
 }
 
@@ -36958,6 +37256,24 @@ var AllSqlInstanceState = []SqlInstanceState{
 	SqlInstanceStateFailed,
 }
 
+// How workload assessments affect the finding selection.
+type SuppressedFilter string
+
+const (
+	// Exclude findings with an assessment.
+	SuppressedFilterExclude SuppressedFilter = "EXCLUDE"
+	// Include both assessed and unassessed findings.
+	SuppressedFilterInclude SuppressedFilter = "INCLUDE"
+	// Include only findings with an assessment.
+	SuppressedFilterOnly SuppressedFilter = "ONLY"
+)
+
+var AllSuppressedFilter = []SuppressedFilter{
+	SuppressedFilterExclude,
+	SuppressedFilterInclude,
+	SuppressedFilterOnly,
+}
+
 // TailLogLogLogLine includes the requested fields of the GraphQL type LogLine.
 type TailLogLogLogLine struct {
 	// Timestamp of the log line.
@@ -37452,11 +37768,20 @@ func (v *TeamVulnerabilitySummaryFilter) GetHasKevEntry() *bool { return v.HasKe
 // Input for filtering team workloads.
 type TeamWorkloadsFilter struct {
 	// Input for filtering team workloads.
+	VulnerabilityFilter *VulnerabilityFindingFilter `json:"vulnerabilityFilter"`
+	// Input for filtering team workloads.
 	Environments []string `json:"environments"`
 	// Input for filtering team workloads.
 	Labels []LabelFilter `json:"labels"`
 	// Input for filtering team workloads.
 	SbomStatus *SBOMStatus `json:"sbomStatus"`
+	// Input for filtering team workloads.
+	VulnerabilityCoverageStatuses []VulnerabilityCoverageStatus `json:"vulnerabilityCoverageStatuses"`
+}
+
+// GetVulnerabilityFilter returns TeamWorkloadsFilter.VulnerabilityFilter, and is useful for accessing the field via an interface.
+func (v *TeamWorkloadsFilter) GetVulnerabilityFilter() *VulnerabilityFindingFilter {
+	return v.VulnerabilityFilter
 }
 
 // GetEnvironments returns TeamWorkloadsFilter.Environments, and is useful for accessing the field via an interface.
@@ -37467,6 +37792,11 @@ func (v *TeamWorkloadsFilter) GetLabels() []LabelFilter { return v.Labels }
 
 // GetSbomStatus returns TeamWorkloadsFilter.SbomStatus, and is useful for accessing the field via an interface.
 func (v *TeamWorkloadsFilter) GetSbomStatus() *SBOMStatus { return v.SbomStatus }
+
+// GetVulnerabilityCoverageStatuses returns TeamWorkloadsFilter.VulnerabilityCoverageStatuses, and is useful for accessing the field via an interface.
+func (v *TeamWorkloadsFilter) GetVulnerabilityCoverageStatuses() []VulnerabilityCoverageStatus {
+	return v.VulnerabilityCoverageStatuses
+}
 
 // TeamsResponse is returned by Teams on success.
 type TeamsResponse struct {
@@ -38450,6 +38780,95 @@ func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValu
 // GetEncoding returns ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue.Encoding, and is useful for accessing the field via an interface.
 func (v *ViewSecretValuesViewSecretValuesViewSecretValuesPayloadValuesSecretValue) GetEncoding() ValueEncoding {
 	return v.Encoding
+}
+
+// How far a deployed image has progressed towards vulnerability findings.
+type VulnerabilityCoverageStatus string
+
+const (
+	// Waiting for inventory, a package inventory or a scan.
+	VulnerabilityCoverageStatusPending VulnerabilityCoverageStatus = "PENDING"
+	// A scan completed. Findings from the last successful scan survive a failed rescan.
+	VulnerabilityCoverageStatusScanned VulnerabilityCoverageStatus = "SCANNED"
+	// No package inventory was found for the image.
+	VulnerabilityCoverageStatusNoSbom VulnerabilityCoverageStatus = "NO_SBOM"
+	// An error prevented the image's first successful scan.
+	VulnerabilityCoverageStatusFailed VulnerabilityCoverageStatus = "FAILED"
+	// The deployed image could not be resolved.
+	VulnerabilityCoverageStatusUnresolvedImage VulnerabilityCoverageStatus = "UNRESOLVED_IMAGE"
+)
+
+var AllVulnerabilityCoverageStatus = []VulnerabilityCoverageStatus{
+	VulnerabilityCoverageStatusPending,
+	VulnerabilityCoverageStatusScanned,
+	VulnerabilityCoverageStatusNoSbom,
+	VulnerabilityCoverageStatusFailed,
+	VulnerabilityCoverageStatusUnresolvedImage,
+}
+
+// Filters applied before finding pagination and aggregation.
+type VulnerabilityFindingFilter struct {
+	// Filters applied before finding pagination and aggregation.
+	VulnerabilityIdentifiers []string `json:"vulnerabilityIdentifiers"`
+	// Filters applied before finding pagination and aggregation.
+	Package *string `json:"package"`
+	// Filters applied before finding pagination and aggregation.
+	PackageType *string `json:"packageType"`
+	// Filters applied before finding pagination and aggregation.
+	Severities []VulnerabilitySeverity `json:"severities"`
+	// Filters applied before finding pagination and aggregation.
+	OnlyWithFix *bool `json:"onlyWithFix"`
+	// Filters applied before finding pagination and aggregation.
+	OnlyKnownExploited *bool `json:"onlyKnownExploited"`
+	// Filters applied before finding pagination and aggregation.
+	Suppressed *SuppressedFilter `json:"suppressed"`
+}
+
+// GetVulnerabilityIdentifiers returns VulnerabilityFindingFilter.VulnerabilityIdentifiers, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetVulnerabilityIdentifiers() []string {
+	return v.VulnerabilityIdentifiers
+}
+
+// GetPackage returns VulnerabilityFindingFilter.Package, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetPackage() *string { return v.Package }
+
+// GetPackageType returns VulnerabilityFindingFilter.PackageType, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetPackageType() *string { return v.PackageType }
+
+// GetSeverities returns VulnerabilityFindingFilter.Severities, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetSeverities() []VulnerabilitySeverity { return v.Severities }
+
+// GetOnlyWithFix returns VulnerabilityFindingFilter.OnlyWithFix, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetOnlyWithFix() *bool { return v.OnlyWithFix }
+
+// GetOnlyKnownExploited returns VulnerabilityFindingFilter.OnlyKnownExploited, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetOnlyKnownExploited() *bool { return v.OnlyKnownExploited }
+
+// GetSuppressed returns VulnerabilityFindingFilter.Suppressed, and is useful for accessing the field via an interface.
+func (v *VulnerabilityFindingFilter) GetSuppressed() *SuppressedFilter { return v.Suppressed }
+
+// Severity selected by the scanner for the finding, not calculated by Nais.
+type VulnerabilitySeverity string
+
+const (
+	// The source did not provide a recognized severity.
+	VulnerabilitySeverityUnknown VulnerabilitySeverity = "UNKNOWN"
+	// Low severity.
+	VulnerabilitySeverityLow VulnerabilitySeverity = "LOW"
+	// Medium severity.
+	VulnerabilitySeverityMedium VulnerabilitySeverity = "MEDIUM"
+	// High severity.
+	VulnerabilitySeverityHigh VulnerabilitySeverity = "HIGH"
+	// Critical severity.
+	VulnerabilitySeverityCritical VulnerabilitySeverity = "CRITICAL"
+)
+
+var AllVulnerabilitySeverity = []VulnerabilitySeverity{
+	VulnerabilitySeverityUnknown,
+	VulnerabilitySeverityLow,
+	VulnerabilitySeverityMedium,
+	VulnerabilitySeverityHigh,
+	VulnerabilitySeverityCritical,
 }
 
 // __AddConfigValueInput is used internally by genqlient
