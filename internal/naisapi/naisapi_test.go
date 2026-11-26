@@ -10,15 +10,15 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 )
 
 func newTestProxy(t *testing.T, upstream *httptest.Server) *httptest.Server {
 	t.Helper()
 	target, err := url.Parse(upstream.URL)
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("parse upstream URL: %v", err)
+	}
 	transport := &oauth2.Transport{
 		Base:   upstream.Client().Transport,
 		Source: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: "test-token"}),
@@ -71,32 +71,56 @@ func TestProxyRequests(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			responseBody := `{"status":"success","data":[]}`
 			upstream := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.path, r.URL.RequestURI())
-				assert.Equal(t, test.method, r.Method)
-				assert.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
-				assert.Equal(t, "proxy-test (nais-cli)", r.UserAgent())
+				if got := r.URL.RequestURI(); got != test.path {
+					t.Errorf("upstream request URI = %q, want %q", got, test.path)
+				}
+				if r.Method != test.method {
+					t.Errorf("upstream request method = %q, want %q", r.Method, test.method)
+				}
+				if got, want := r.Header.Get("Authorization"), "Bearer test-token"; got != want {
+					t.Errorf("upstream Authorization = %q, want %q", got, want)
+				}
+				if got, want := r.UserAgent(), "proxy-test (nais-cli)"; got != want {
+					t.Errorf("upstream User-Agent = %q, want %q", got, want)
+				}
 				body, err := io.ReadAll(r.Body)
-				assert.NoError(t, err)
-				assert.Equal(t, test.body, string(body))
+				if err != nil {
+					t.Errorf("read upstream request body: %v", err)
+				}
+				if got := string(body); got != test.body {
+					t.Errorf("upstream request body = %q, want %q", got, test.body)
+				}
 				w.Header().Set("Content-Type", "application/json")
 				_, _ = io.WriteString(w, responseBody)
 			}))
 			defer upstream.Close()
 			proxy := newTestProxy(t, upstream)
 			req, err := http.NewRequestWithContext(t.Context(), test.method, proxy.URL+test.path, strings.NewReader(test.body))
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("create proxy request: %v", err)
+			}
 			req.Header.Set("User-Agent", "proxy-test")
 			req.Header.Set("Authorization", "Bearer client-token")
 			client := proxy.Client()
 			client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 			resp, err := client.Do(req)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("send proxy request: %v", err)
+			}
 			defer func() { _ = resp.Body.Close() }()
 			body, err := io.ReadAll(resp.Body)
-			require.NoError(t, err)
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
-			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			assert.Equal(t, responseBody, string(body))
+			if err != nil {
+				t.Fatalf("read proxy response body: %v", err)
+			}
+			if resp.StatusCode != http.StatusOK {
+				t.Errorf("proxy response status = %d, want %d", resp.StatusCode, http.StatusOK)
+			}
+			if got, want := resp.Header.Get("Content-Type"), "application/json"; got != want {
+				t.Errorf("proxy response Content-Type = %q, want %q", got, want)
+			}
+			if got := string(body); got != responseBody {
+				t.Errorf("proxy response body = %q, want %q", got, responseBody)
+			}
 		})
 	}
 }
@@ -114,14 +138,26 @@ func TestProxyUpstreamErrors(t *testing.T) {
 			defer upstream.Close()
 			proxy := newTestProxy(t, upstream)
 			resp, err := proxy.Client().Get(proxy.URL + "/api/loki/api/v1/query_range")
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("send proxy request: %v", err)
+			}
 			defer func() { _ = resp.Body.Close() }()
 			body, err := io.ReadAll(resp.Body)
-			require.NoError(t, err)
-			assert.Equal(t, statusCode, resp.StatusCode)
-			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			assert.Equal(t, "30", resp.Header.Get("Retry-After"))
-			assert.Equal(t, responseBody, string(body))
+			if err != nil {
+				t.Fatalf("read proxy response body: %v", err)
+			}
+			if resp.StatusCode != statusCode {
+				t.Errorf("proxy response status = %d, want %d", resp.StatusCode, statusCode)
+			}
+			if got, want := resp.Header.Get("Content-Type"), "application/json"; got != want {
+				t.Errorf("proxy response Content-Type = %q, want %q", got, want)
+			}
+			if got, want := resp.Header.Get("Retry-After"), "30"; got != want {
+				t.Errorf("proxy response Retry-After = %q, want %q", got, want)
+			}
+			if got := string(body); got != responseBody {
+				t.Errorf("proxy response body = %q, want %q", got, responseBody)
+			}
 		})
 	}
 }
@@ -131,9 +167,13 @@ func TestProxyUnavailableUpstream(t *testing.T) {
 	upstream.Close()
 	proxy := newTestProxy(t, upstream)
 	resp, err := proxy.Client().Get(proxy.URL + "/api/loki/api/v1/labels")
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("send proxy request: %v", err)
+	}
 	defer func() { _ = resp.Body.Close() }()
-	assert.Equal(t, http.StatusBadGateway, resp.StatusCode)
+	if resp.StatusCode != http.StatusBadGateway {
+		t.Errorf("proxy response status = %d, want %d", resp.StatusCode, http.StatusBadGateway)
+	}
 }
 
 func TestProxyPlayground(t *testing.T) {
@@ -145,14 +185,26 @@ func TestProxyPlayground(t *testing.T) {
 	for _, path := range []string{"/", "/other", "/api/loki-other"} {
 		t.Run(path, func(t *testing.T) {
 			resp, err := proxy.Client().Get(proxy.URL + path)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("send playground request: %v", err)
+			}
 			defer func() { _ = resp.Body.Close() }()
 			body, err := io.ReadAll(resp.Body)
-			require.NoError(t, err)
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
-			assert.Contains(t, resp.Header.Get("Content-Type"), "text/html")
-			assert.Contains(t, string(body), "Nais API playground")
-			assert.Contains(t, string(body), "/graphql")
+			if err != nil {
+				t.Fatalf("read playground response body: %v", err)
+			}
+			if resp.StatusCode != http.StatusOK {
+				t.Errorf("playground response status = %d, want %d", resp.StatusCode, http.StatusOK)
+			}
+			if got, want := resp.Header.Get("Content-Type"), "text/html"; !strings.Contains(got, want) {
+				t.Errorf("playground response Content-Type = %q, want it to contain %q", got, want)
+			}
+			html := string(body)
+			for _, want := range []string{"Nais API playground", "/graphql"} {
+				if !strings.Contains(html, want) {
+					t.Errorf("playground response body does not contain %q: %q", want, html)
+				}
+			}
 		})
 	}
 }
@@ -160,23 +212,36 @@ func TestProxyPlayground(t *testing.T) {
 func TestProxyLokiTailWebSocket(t *testing.T) {
 	path := "/api/loki/api/v1/tail?query=%7Bapp%3D%22test%22%7D&limit=10"
 	upstream := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, path, r.URL.RequestURI())
-		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
+		if got := r.URL.RequestURI(); got != path {
+			t.Errorf("upstream WebSocket request URI = %q, want %q", got, path)
+		}
+		if r.Method != http.MethodGet {
+			t.Errorf("upstream WebSocket request method = %q, want %q", r.Method, http.MethodGet)
+		}
+		if got, want := r.Header.Get("Authorization"), "Bearer test-token"; got != want {
+			t.Errorf("upstream WebSocket Authorization = %q, want %q", got, want)
+		}
 		upgrader := websocket.Upgrader{}
 		conn, err := upgrader.Upgrade(w, r, nil)
-		if !assert.NoError(t, err) {
+		if err != nil {
+			t.Errorf("upgrade upstream WebSocket: %v", err)
 			return
 		}
 		defer func() { _ = conn.Close() }()
-		assert.NoError(t, conn.SetReadDeadline(time.Now().Add(5*time.Second)))
-		assert.NoError(t, conn.SetWriteDeadline(time.Now().Add(5*time.Second)))
+		if err := conn.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
+			t.Errorf("set upstream WebSocket read deadline: %v", err)
+		}
+		if err := conn.SetWriteDeadline(time.Now().Add(5 * time.Second)); err != nil {
+			t.Errorf("set upstream WebSocket write deadline: %v", err)
+		}
 		for range 2 {
 			messageType, message, err := conn.ReadMessage()
-			if !assert.NoError(t, err) {
+			if err != nil {
+				t.Errorf("read upstream WebSocket message: %v", err)
 				return
 			}
-			if !assert.NoError(t, conn.WriteMessage(messageType, message)) {
+			if err := conn.WriteMessage(messageType, message); err != nil {
+				t.Errorf("write upstream WebSocket message: %v", err)
 				return
 			}
 		}
@@ -188,16 +253,32 @@ func TestProxyLokiTailWebSocket(t *testing.T) {
 	if resp != nil {
 		defer func() { _ = resp.Body.Close() }()
 	}
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatalf("dial proxy WebSocket: %v", err)
+	}
 	defer func() { _ = conn.Close() }()
-	assert.Equal(t, http.StatusSwitchingProtocols, resp.StatusCode)
-	require.NoError(t, conn.SetReadDeadline(time.Now().Add(5*time.Second)))
-	require.NoError(t, conn.SetWriteDeadline(time.Now().Add(5*time.Second)))
+	if resp.StatusCode != http.StatusSwitchingProtocols {
+		t.Errorf("proxy WebSocket response status = %d, want %d", resp.StatusCode, http.StatusSwitchingProtocols)
+	}
+	if err := conn.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
+		t.Fatalf("set proxy WebSocket read deadline: %v", err)
+	}
+	if err := conn.SetWriteDeadline(time.Now().Add(5 * time.Second)); err != nil {
+		t.Fatalf("set proxy WebSocket write deadline: %v", err)
+	}
 	for _, message := range []string{`{"streams":[{"stream":{"app":"test"},"values":[["123","first"]]}]}`, `{"streams":[]}`} {
-		require.NoError(t, conn.WriteMessage(websocket.TextMessage, []byte(message)))
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+			t.Fatalf("write proxy WebSocket message: %v", err)
+		}
 		messageType, received, err := conn.ReadMessage()
-		require.NoError(t, err)
-		assert.Equal(t, websocket.TextMessage, messageType)
-		assert.Equal(t, message, string(received))
+		if err != nil {
+			t.Fatalf("read proxy WebSocket message: %v", err)
+		}
+		if messageType != websocket.TextMessage {
+			t.Errorf("proxy WebSocket message type = %d, want %d", messageType, websocket.TextMessage)
+		}
+		if got := string(received); got != message {
+			t.Errorf("proxy WebSocket message = %q, want %q", got, message)
+		}
 	}
 }

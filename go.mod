@@ -37,7 +37,6 @@ require (
 	github.com/pterm/pterm v0.12.84
 	github.com/quic-go/quic-go v0.59.1
 	github.com/spf13/cobra v1.10.2
-	github.com/stretchr/testify v1.12.1
 	github.com/suessflorian/gqlfetch v0.7.0
 	github.com/vektah/gqlparser/v2 v2.5.33
 	github.com/xeipuuv/gojsonschema v1.2.0
@@ -215,6 +214,7 @@ require (
 	github.com/spf13/viper v1.21.0 // indirect
 	github.com/standard-webhooks/standard-webhooks/libraries v0.0.1 // indirect
 	github.com/stretchr/objx v0.8.0 // indirect
+	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tidwall/gjson v1.20.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
