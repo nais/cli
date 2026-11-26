@@ -6,11 +6,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/nais/naistrix"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -31,14 +30,20 @@ func TestValidateSuggestsDryRunForNativeResources(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "manifest.yaml")
 			manifest := fmt.Sprintf("%sversion: v1\ntype: %s\nname: example\n", tc.prefix, tc.kind)
-			require.NoError(t, os.WriteFile(path, []byte(manifest), 0o600))
+			if err := os.WriteFile(path, []byte(manifest), 0o600); err != nil {
+				t.Fatalf("write manifest: %v", err)
+			}
 
 			v := New([]string{path})
 			v.SchemaLoader = gojsonschema.NewBytesLoader(schema)
 			level := naistrix.OutputVerbosityLevelNormal
 			err := v.Validate(naistrix.NewOutputWriter(io.Discard, io.Discard, &level))
-			require.ErrorContains(t, err, tc.kind+" manifests cannot be validated with nais validate")
-			assert.ErrorContains(t, err, "use nais apply --dry-run instead")
+			if want := tc.kind + " manifests cannot be validated with nais validate"; err == nil || !strings.Contains(err.Error(), want) {
+				t.Fatalf("validation error = %v, want it to contain %q", err, want)
+			}
+			if want := "use nais apply --dry-run instead"; !strings.Contains(err.Error(), want) {
+				t.Errorf("validation error = %v, want it to contain %q", err, want)
+			}
 		})
 	}
 }
@@ -47,12 +52,20 @@ func TestValidate(t *testing.T) {
 	schemaLoader := gojsonschema.NewBytesLoader(schema)
 
 	jsonVars, err := TemplateVariablesFromFile("testdata/vars.json")
-	require.NoError(t, err)
-	require.NotEmpty(t, jsonVars)
+	if err != nil {
+		t.Fatalf("load JSON variables: %v", err)
+	}
+	if len(jsonVars) == 0 {
+		t.Fatal("expected JSON variables")
+	}
 
 	yamlVars, err := TemplateVariablesFromFile("testdata/vars.yaml")
-	require.NoError(t, err)
-	require.NotEmpty(t, yamlVars)
+	if err != nil {
+		t.Fatalf("load YAML variables: %v", err)
+	}
+	if len(yamlVars) == 0 {
+		t.Fatal("expected YAML variables")
+	}
 
 	sliceVars := TemplateVariablesFromSlice([]string{
 		"app=some-app",
@@ -60,10 +73,11 @@ func TestValidate(t *testing.T) {
 		"image=some-image",
 		"team=some-team",
 	})
-	require.Contains(t, sliceVars, "app")
-	require.Contains(t, sliceVars, "namespace")
-	require.Contains(t, sliceVars, "image")
-	require.Contains(t, sliceVars, "team")
+	for _, key := range []string{"app", "namespace", "image", "team"} {
+		if _, ok := sliceVars[key]; !ok {
+			t.Fatalf("missing template variable %q", key)
+		}
+	}
 
 	for name, test := range map[string]struct {
 		path    string
@@ -126,10 +140,11 @@ func TestValidate(t *testing.T) {
 
 			l := naistrix.OutputVerbosityLevelNormal
 			err := v.Validate(naistrix.NewOutputWriter(os.Stdout, os.Stderr, &l))
-			if test.wantErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
+			if test.wantErr && err == nil {
+				t.Error("expected a validation error")
+			}
+			if !test.wantErr && err != nil {
+				t.Errorf("unexpected validation error: %v", err)
 			}
 		})
 	}

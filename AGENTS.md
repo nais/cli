@@ -56,6 +56,7 @@ mise run build
 
 - **Command structure**: Commands are generally grouped by domain under `internal/<domain>/command/`, with individual commands in separate files
 - **Formatting**: `gofumpt`
+- **Test assertions**: Use plain Go checks and the standard `testing` package (`t.Errorf` or `t.Fatalf`). Avoid assertion libraries such as Testify's `assert` and `require`.
 - **Commit messages**: Conventional Commits (see `script/semantic-commit-hook.sh`)
 
 ## Documentation

@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGraphqlClientInvocationAuth(t *testing.T) {
@@ -22,7 +21,9 @@ func TestGraphqlClientInvocationAuth(t *testing.T) {
 	t.Setenv("NAIS_API_LOCAL_EMAIL", "checked@example.com")
 
 	ctx := WithInvocationAuth(t.Context())
-	require.NoError(t, CheckAuthentication(ctx))
+	if err := CheckAuthentication(ctx); err != nil {
+		t.Fatalf("check authentication: %v", err)
+	}
 	// A fresh lookup would now produce a different user.
 	t.Setenv("NAIS_API_LOCAL_EMAIL", "fallback@example.com")
 
@@ -37,11 +38,16 @@ func TestGraphqlClientInvocationAuth(t *testing.T) {
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			client, err := GraphqlClient(tt.ctx)
-			require.NoError(t, err)
+			if err != nil {
+				t.Fatalf("create GraphQL client: %v", err)
+			}
 			var data struct{ Email string }
-			err = client.MakeRequest(tt.ctx, &graphql.Request{Query: "{ email }"}, &graphql.Response{Data: &data})
-			require.NoError(t, err)
-			require.Equal(t, tt.want, data.Email)
+			if err := client.MakeRequest(tt.ctx, &graphql.Request{Query: "{ email }"}, &graphql.Response{Data: &data}); err != nil {
+				t.Fatalf("make GraphQL request: %v", err)
+			}
+			if data.Email != tt.want {
+				t.Fatalf("email = %q, want %q", data.Email, tt.want)
+			}
 		})
 	}
 }
