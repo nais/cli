@@ -95,29 +95,39 @@ Optionally set `kind` to `application` or `job`, or filter with
 an explicit `kind` rather than choosing a target.
 
 The report retrieves every finding page, but by default returns only an overview
-per installed package PURL: finding counts by severity and operational priority,
-distinct reported fix/latest versions, counts without known fixes and counts with
-suppressions. Finding counts are not unique CVE counts. Reported fix versions may
+per installed package PURL: finding counts by severity, distinct vulnerability
+counts, reported fix versions, counts without known fixes and counts with
+suppressions. Shared-image package counts deduplicate image/PURL/vulnerability
+occurrences across workloads. A package's suppression count means suppression in
+at least one selected workload, not all. Reported fix versions may
 span release branches; the tool does not pick an upgrade by string ordering.
 
-Set `"include_details": true` when individual advisories, risk signals or suppression
+Set `"include_details": true` when individual advisories, EPSS/known-exploited signals or suppression
 reasons are needed. This adds full findings alongside the same package overview.
 
-Image digests, SBOM status, summary freshness and latest deployment metadata are
-included in either mode. Shared images are grouped by image name and digest,
+Image digests, per-workload coverage and overview counts, and latest deployment
+metadata are included in either mode. Both overview and finding reads explicitly
+include suppressions (`include_suppressed: true`). Detailed findings retain
+team/environment/workload/image/package identity and each workload's assessment.
+Shared images are grouped by image name and digest,
 falling back to name and tag with a warning when the digest is unavailable.
-Finding fetches fail if the selected workload changes image during pagination.
+If scanned coverage describes a different image, that workload gets a warning
+and no findings.
+Finding fetches check workload and image identity on every page, including empty
+pages. The selected workloads and images are checked again before returning.
+Detected changes fail the report; these checks are not an atomic snapshot.
 
 Compare deployed versions with the current source and build configuration before
 upgrading: source may already be fixed and only need a rebuild/deploy. Latest
 deployment metadata is not proof of the scanned image's source commit. A complete
 report means all pages were retrieved, not that scanning is current or the image
-is vulnerability-free. Missing SBOMs, unavailable summaries and stale summaries
-produce explicit warnings.
+is vulnerability-free. Non-SCANNED coverage and scan errors produce warnings.
+SCANNED can retain previous findings after a failed rescan; inspect `coverage.error`
+and `coverage.scanned_at`, not just the status.
 
 After source changes, run project tests and relevant security analysis (for Go,
 consider `govulncheck`). Check advisory preconditions and reachable vulnerable
-code before claiming irrelevance. No known fix, MONITOR priority, passing tests
+code before claiming irrelevance. No known fix, low severity, passing tests
 or no detected call path alone justifies suppression.
 
 For post-deploy verification, call `get_workload_vulnerability_status`:
@@ -133,23 +143,38 @@ For post-deploy verification, call `get_workload_vulnerability_status`:
 
 Use the digest of the intended **new** image from the build/deploy output, not the
 pre-fix report. The tool returns `digest_unavailable`, `not_deployed`, `scan_pending`,
-`scan_unavailable` or `scan_ready` per group. It verifies all explicitly requested
-environments exist, and checks each workload's scan metadata even when images are
-shared. Use separate calls when environments should have different digests.
+`scan_unavailable`, `scan_error` or `scan_ready` per group. It verifies all
+explicitly requested environments exist and preserves every workload's coverage,
+even when images are shared. Use separate calls when environments should have
+different digests.
 
-`verified: true` means every selected workload uses the expected digest, its SBOM
-is READY and its summary has an update timestamp and no older-image fallback.
-It does **not** mean zero vulnerabilities, no suppressions or verified source
-provenance. Inspect the returned summary counts separately. The API's summary
-update timestamp is not an authoritative scan timestamp. This call does not wait
-or poll; repeat it with a reasonable delay if the rollout or scan is pending.
+`verified: true` means every selected workload uses the expected digest, has
+matching SCANNED coverage, a nonzero successful scan timestamp and no current
+scan error. SCANNED after a failed rescan returns `scan_error`, preserving the
+last successful timestamp and latest error, not `verified: true`.
+Coverage for a different image never verifies the expected image.
+
+The status tool fetches neither findings nor counts. Use the report for those.
+Verification does **not** mean zero vulnerabilities, no suppressions, freshness
+against the latest advisory database or verified source provenance.
+Two discovery passes check that selected workloads and deployed images have
+not changed; the status uses the latest pass's coverage. Detected changes fail
+without partial results. These checks are not an atomic snapshot.
+The tool does not rescan, wait or poll. Repeat it after a reasonable delay if
+the rollout or scan is pending.
+
+For mixed states within a shared image, the group shows the first applicable
+state in this order: `digest_unavailable`, `not_deployed`, `scan_error`,
+`scan_unavailable`, `scan_pending`, `scan_ready`. Workload coverage and warnings
+retain the other conditions; no ready workload can hide an unready one.
 
 Both tools only read Nais data. They do not change source, build, deploy or suppress
 findings. Require evidence and explicit approval for suppression.
 
 #### Current API gaps
 
-The API does not expose advisory aliases/withdrawal or a verified image-to-source
+The report exposes advisory aliases when available, but not withdrawal metadata
+or a verified image-to-source
 build relationship. The MCP does not guess these values or fetch external
 advisories automatically. In particular, an unknown fix version is not evidence
 that a finding is unfixable or should be suppressed. Latest deployment metadata
