@@ -7,11 +7,18 @@ import (
 )
 
 func GraphqlClient(ctx context.Context) (graphql.Client, error) {
-	user, err := GetAuthenticatedUser(ctx)
-	if err != nil {
-		return nil, err
+	var user AuthenticatedUser
+	if auth, ok := ctx.Value(invocationAuthKey{}).(*invocationAuth); ok {
+		user = auth.user
 	}
 
-	gqlClient := graphql.NewClient(user.APIURL(), user.HTTPClient(ctx))
-	return gqlClient, nil
+	if user == nil {
+		var err error
+		user, err = GetAuthenticatedUser(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return graphql.NewClient(user.APIURL(), user.HTTPClient(ctx)), nil
 }

@@ -23,6 +23,7 @@ import (
 	logCommand "github.com/nais/cli/internal/log/command"
 	memberCommand "github.com/nais/cli/internal/member/command"
 	"github.com/nais/cli/internal/metric"
+	"github.com/nais/cli/internal/naisapi"
 	naisapiauth "github.com/nais/cli/internal/naisapi/auth"
 	naisapiCommand "github.com/nais/cli/internal/naisapi/command"
 	naisdeviceCommand "github.com/nais/cli/internal/naisdevice/command"
@@ -158,7 +159,7 @@ func Run(ctx context.Context, w io.Writer) error {
 
 	// Includes interactive prompts and login flows, but not telemetry upload.
 	start := time.Now()
-	err = app.Run(naistrix.RunWithContext(ctx))
+	err = app.Run(naistrix.RunWithContext(naisapi.WithInvocationAuth(ctx)))
 	duration := time.Since(start)
 	autoComplete := isCompletionCommand(app.ExecutedCommand())
 

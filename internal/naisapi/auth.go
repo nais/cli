@@ -29,6 +29,30 @@ type AuthenticatedUser interface {
 	SetAuthorizationHeader(headers http.Header) error
 }
 
+type invocationAuthKey struct{}
+
+type invocationAuth struct {
+	user AuthenticatedUser
+}
+
+// WithInvocationAuth allows the pre-run authentication check and GraphQL clients to share a user.
+func WithInvocationAuth(ctx context.Context) context.Context {
+	return context.WithValue(ctx, invocationAuthKey{}, &invocationAuth{})
+}
+
+// CheckAuthentication validates login and saves the user for later GraphQL calls in the invocation. The pre-run hook
+// calls this before any command handlers use the saved user.
+func CheckAuthentication(ctx context.Context) error {
+	user, err := GetAuthenticatedUser(ctx)
+	if auth, ok := ctx.Value(invocationAuthKey{}).(*invocationAuth); ok {
+		auth.user = nil
+		if err == nil {
+			auth.user = user
+		}
+	}
+	return err
+}
+
 // GetAuthenticatedUser may return an [ErrNeedsLogin] if the user has invalid or
 // expired credentials, in which case the user must reauthenticate through [Login].
 func GetAuthenticatedUser(ctx context.Context) (AuthenticatedUser, error) {
