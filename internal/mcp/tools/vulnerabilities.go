@@ -10,6 +10,7 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/nais/cli/internal/naisapi"
 	"github.com/nais/cli/internal/naisapi/gql"
+	"github.com/nais/cli/internal/vulnerability"
 )
 
 type VulnerabilityWorkloadTarget struct {
@@ -279,7 +280,7 @@ func getVulnerabilityImages(ctx context.Context, client graphql.Client, args Vul
 				}
 				hasNext, endCursor = connection.PageInfo.HasNextPage, connection.PageInfo.EndCursor
 			}
-			after, err = nextVulnerabilityReportPage(hasNext, endCursor, seen)
+			after, err = vulnerability.NextPageCursor(hasNext, endCursor, seen)
 			if err != nil {
 				return nil, fmt.Errorf("paginating workloads: %w", err)
 			}
@@ -357,7 +358,7 @@ func getVulnerabilityReportFindings(ctx context.Context, client graphql.Client, 
 		for _, node := range page.Vulnerabilities.Nodes {
 			findings = append(findings, node.MCPVulnerabilityFinding)
 		}
-		after, err = nextVulnerabilityReportPage(page.Vulnerabilities.PageInfo.HasNextPage, page.Vulnerabilities.PageInfo.EndCursor, seen)
+		after, err = vulnerability.NextPageCursor(page.Vulnerabilities.PageInfo.HasNextPage, page.Vulnerabilities.PageInfo.EndCursor, seen)
 		if err != nil {
 			return nil, fmt.Errorf("paginating vulnerabilities: %w", err)
 		}
@@ -394,15 +395,4 @@ func vulnerabilityImageWarnings(image gql.MCPVulnerabilityImage) []string {
 		}
 	}
 	return warnings
-}
-
-func nextVulnerabilityReportPage(hasNext bool, endCursor *string, seen map[string]bool) (*string, error) {
-	if !hasNext {
-		return nil, nil
-	}
-	if endCursor == nil || *endCursor == "" || seen[*endCursor] {
-		return nil, fmt.Errorf("API returned a missing or repeated pagination cursor")
-	}
-	seen[*endCursor] = true
-	return endCursor, nil
 }
