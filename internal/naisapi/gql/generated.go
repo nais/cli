@@ -42116,6 +42116,381 @@ func (v *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityW
 	return &retval, nil
 }
 
+// WorkloadVulnerabilityFindingPage includes the GraphQL fields of Workload requested by the fragment WorkloadVulnerabilityFindingPage.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+//
+// WorkloadVulnerabilityFindingPage is implemented by the following types:
+// WorkloadVulnerabilityFindingPageApplication
+// WorkloadVulnerabilityFindingPageJob
+type WorkloadVulnerabilityFindingPage interface {
+	implementsGraphQLInterfaceWorkloadVulnerabilityFindingPage()
+	// GetVulnerabilityFindings returns the interface-field "vulnerabilityFindings" from its implementation.
+	// The GraphQL interface field's documentation follows.
+	//
+	// Interface for workloads.
+	GetVulnerabilityFindings() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection
+}
+
+func (v *WorkloadVulnerabilityFindingPageApplication) implementsGraphQLInterfaceWorkloadVulnerabilityFindingPage() {
+}
+func (v *WorkloadVulnerabilityFindingPageJob) implementsGraphQLInterfaceWorkloadVulnerabilityFindingPage() {
+}
+
+func __unmarshalWorkloadVulnerabilityFindingPage(b []byte, v *WorkloadVulnerabilityFindingPage) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "Application":
+		*v = new(WorkloadVulnerabilityFindingPageApplication)
+		return json.Unmarshal(b, *v)
+	case "Job":
+		*v = new(WorkloadVulnerabilityFindingPageJob)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing Workload.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for WorkloadVulnerabilityFindingPage: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalWorkloadVulnerabilityFindingPage(v *WorkloadVulnerabilityFindingPage) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *WorkloadVulnerabilityFindingPageApplication:
+		typename = "Application"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*WorkloadVulnerabilityFindingPageApplication
+		}{typename, v}
+		return json.Marshal(result)
+	case *WorkloadVulnerabilityFindingPageJob:
+		typename = "Job"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*WorkloadVulnerabilityFindingPageJob
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for WorkloadVulnerabilityFindingPage: "%T"`, v)
+	}
+}
+
+// WorkloadVulnerabilityFindingPage includes the GraphQL fields of Application requested by the fragment WorkloadVulnerabilityFindingPage.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type WorkloadVulnerabilityFindingPageApplication struct {
+	// Interface for workloads.
+	VulnerabilityFindings *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
+}
+
+// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingPageApplication.VulnerabilityFindings, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageApplication) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection {
+	return v.VulnerabilityFindings
+}
+
+// WorkloadVulnerabilityFindingPage includes the GraphQL fields of Job requested by the fragment WorkloadVulnerabilityFindingPage.
+// The GraphQL type's documentation follows.
+//
+// Interface for workloads.
+type WorkloadVulnerabilityFindingPageJob struct {
+	// Interface for workloads.
+	VulnerabilityFindings *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
+}
+
+// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingPageJob.VulnerabilityFindings, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageJob) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection {
+	return v.VulnerabilityFindings
+}
+
+// WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection includes the requested fields of the GraphQL type VulnerabilityFindingConnection.
+// The GraphQL type's documentation follows.
+//
+// A forward-paginated selection of vulnerability findings.
+type WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection struct {
+	// The findings in the same order as edges.
+	Nodes []*WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding `json:"nodes"`
+	// Pagination information and the full filtered total.
+	PageInfo *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo `json:"pageInfo"`
+}
+
+// GetNodes returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection.Nodes, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection) GetNodes() []*WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding {
+	return v.Nodes
+}
+
+// GetPageInfo returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection.PageInfo, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection) GetPageInfo() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo {
+	return v.PageInfo
+}
+
+// WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding includes the requested fields of the GraphQL type VulnerabilityFinding.
+// The GraphQL type's documentation follows.
+//
+// A vulnerability affecting one package in a workload's deployed image.
+type WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding struct {
+	VulnerabilityReportFinding `json:"-"`
+}
+
+// GetSuppression returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Suppression, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSuppression() *VulnerabilityReportFindingSuppressionVulnerabilitySuppression {
+	return v.VulnerabilityReportFinding.Suppression
+}
+
+// GetId returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetId() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Id
+}
+
+// GetVulnerabilityIdentifier returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.VulnerabilityIdentifier, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetVulnerabilityIdentifier() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.VulnerabilityIdentifier
+}
+
+// GetPurl returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Purl, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetPurl() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Purl
+}
+
+// GetPackageKey returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.PackageKey, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetPackageKey() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.PackageKey
+}
+
+// GetInstalledVersion returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.InstalledVersion, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetInstalledVersion() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.InstalledVersion
+}
+
+// GetFixedVersion returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.FixedVersion, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetFixedVersion() *string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.FixedVersion
+}
+
+// GetSeverity returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Severity, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSeverity() VulnerabilitySeverity {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Severity
+}
+
+// GetSeveritySource returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.SeveritySource, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSeveritySource() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.SeveritySource
+}
+
+// GetDataSource returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.DataSource, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetDataSource() string {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.DataSource
+}
+
+// GetKnownExploited returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.KnownExploited, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetKnownExploited() bool {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.KnownExploited
+}
+
+// GetEpss returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Epss, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetEpss() *VulnerabilityFindingDetailsEpssVulnerabilityEpss {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Epss
+}
+
+// GetVulnerability returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Vulnerability, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetVulnerability() *VulnerabilityFindingDetailsVulnerability {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Vulnerability
+}
+
+// GetImage returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Image, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetImage() *VulnerabilityFindingDetailsImageVulnerabilityImage {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Image
+}
+
+// GetWorkload returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Workload, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetWorkload() VulnerabilityFindingDetailsWorkload {
+	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.VulnerabilityReportFinding)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding struct {
+	Suppression *VulnerabilityReportFindingSuppressionVulnerabilitySuppression `json:"suppression"`
+
+	Id string `json:"id"`
+
+	VulnerabilityIdentifier string `json:"vulnerabilityIdentifier"`
+
+	Purl string `json:"purl"`
+
+	PackageKey string `json:"packageKey"`
+
+	InstalledVersion string `json:"installedVersion"`
+
+	FixedVersion *string `json:"fixedVersion"`
+
+	Severity VulnerabilitySeverity `json:"severity"`
+
+	SeveritySource string `json:"severitySource"`
+
+	DataSource string `json:"dataSource"`
+
+	KnownExploited bool `json:"knownExploited"`
+
+	Epss *VulnerabilityFindingDetailsEpssVulnerabilityEpss `json:"epss"`
+
+	Vulnerability *VulnerabilityFindingDetailsVulnerability `json:"vulnerability"`
+
+	Image *VulnerabilityFindingDetailsImageVulnerabilityImage `json:"image"`
+
+	Workload json.RawMessage `json:"workload"`
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding, error) {
+	var retval __premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding
+
+	retval.Suppression = v.VulnerabilityReportFinding.Suppression
+	retval.Id = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Id
+	retval.VulnerabilityIdentifier = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.VulnerabilityIdentifier
+	retval.Purl = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Purl
+	retval.PackageKey = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.PackageKey
+	retval.InstalledVersion = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.InstalledVersion
+	retval.FixedVersion = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.FixedVersion
+	retval.Severity = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Severity
+	retval.SeveritySource = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.SeveritySource
+	retval.DataSource = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.DataSource
+	retval.KnownExploited = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.KnownExploited
+	retval.Epss = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Epss
+	retval.Vulnerability = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Vulnerability
+	retval.Image = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Image
+	{
+
+		dst := &retval.Workload
+		src := v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload
+		var err error
+		*dst, err = __marshalVulnerabilityFindingDetailsWorkload(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
+// The GraphQL type's documentation follows.
+//
+// # This type is used for paginating the connection
+//
+// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
+type WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo struct {
+	VulnerabilityPage `json:"-"`
+}
+
+// GetHasNextPage returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) GetHasNextPage() *bool {
+	return v.VulnerabilityPage.HasNextPage
+}
+
+// GetEndCursor returns WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) GetEndCursor() *string {
+	return v.VulnerabilityPage.EndCursor
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.VulnerabilityPage)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo struct {
+	HasNextPage *bool `json:"hasNextPage"`
+
+	EndCursor *string `json:"endCursor"`
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo, error) {
+	var retval __premarshalWorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo
+
+	retval.HasNextPage = v.VulnerabilityPage.HasNextPage
+	retval.EndCursor = v.VulnerabilityPage.EndCursor
+	return &retval, nil
+}
+
 // Filter findings in a workload's currently deployed image before pagination and aggregation.
 type WorkloadVulnerabilityFindingsFilter struct {
 	// Filter findings in a workload's currently deployed image before pagination and aggregation.
@@ -42192,313 +42567,48 @@ func (v *WorkloadVulnerabilityFindingsTeam) GetEnvironment() *WorkloadVulnerabil
 
 // WorkloadVulnerabilityFindingsTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
 type WorkloadVulnerabilityFindingsTeamEnvironment struct {
-	// Workload in the team environment.
-	Workload WorkloadVulnerabilityFindingsTeamEnvironmentWorkload `json:"-"`
+	// Nais application in the team environment.
+	Application *WorkloadVulnerabilityFindingsTeamEnvironmentApplication `json:"application"`
+	// Nais job in the team environment.
+	Job *WorkloadVulnerabilityFindingsTeamEnvironmentJob `json:"job"`
 }
 
-// GetWorkload returns WorkloadVulnerabilityFindingsTeamEnvironment.Workload, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironment) GetWorkload() WorkloadVulnerabilityFindingsTeamEnvironmentWorkload {
-	return v.Workload
+// GetApplication returns WorkloadVulnerabilityFindingsTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingsTeamEnvironment) GetApplication() *WorkloadVulnerabilityFindingsTeamEnvironmentApplication {
+	return v.Application
 }
 
-func (v *WorkloadVulnerabilityFindingsTeamEnvironment) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*WorkloadVulnerabilityFindingsTeamEnvironment
-		Workload json.RawMessage `json:"workload"`
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.WorkloadVulnerabilityFindingsTeamEnvironment = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	{
-		dst := &v.Workload
-		src := firstPass.Workload
-		if len(src) != 0 && string(src) != "null" {
-			err = __unmarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkload(
-				src, dst)
-			if err != nil {
-				return fmt.Errorf(
-					"unable to unmarshal WorkloadVulnerabilityFindingsTeamEnvironment.Workload: %w", err)
-			}
-		}
-	}
-	return nil
+// GetJob returns WorkloadVulnerabilityFindingsTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingsTeamEnvironment) GetJob() *WorkloadVulnerabilityFindingsTeamEnvironmentJob {
+	return v.Job
 }
 
-type __premarshalWorkloadVulnerabilityFindingsTeamEnvironment struct {
-	Workload json.RawMessage `json:"workload"`
-}
-
-func (v *WorkloadVulnerabilityFindingsTeamEnvironment) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *WorkloadVulnerabilityFindingsTeamEnvironment) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingsTeamEnvironment, error) {
-	var retval __premarshalWorkloadVulnerabilityFindingsTeamEnvironment
-
-	{
-
-		dst := &retval.Workload
-		src := v.Workload
-		var err error
-		*dst, err = __marshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkload(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal WorkloadVulnerabilityFindingsTeamEnvironment.Workload: %w", err)
-		}
-	}
-	return &retval, nil
-}
-
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkload includes the requested fields of the GraphQL interface Workload.
-//
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkload is implemented by the following types:
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob
-// The GraphQL type's documentation follows.
-//
-// Interface for workloads.
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkload interface {
-	implementsGraphQLInterfaceWorkloadVulnerabilityFindingsTeamEnvironmentWorkload()
-	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() *string
-	// GetVulnerabilityFindings returns the interface-field "vulnerabilityFindings" from its implementation.
-	// The GraphQL interface field's documentation follows.
-	//
-	// Interface for workloads.
-	GetVulnerabilityFindings() *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection
-}
-
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication) implementsGraphQLInterfaceWorkloadVulnerabilityFindingsTeamEnvironmentWorkload() {
-}
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob) implementsGraphQLInterfaceWorkloadVulnerabilityFindingsTeamEnvironmentWorkload() {
-}
-
-func __unmarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkload(b []byte, v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkload) error {
-	if string(b) == "null" {
-		return nil
-	}
-
-	var tn struct {
-		TypeName string `json:"__typename"`
-	}
-	err := json.Unmarshal(b, &tn)
-	if err != nil {
-		return err
-	}
-
-	switch tn.TypeName {
-	case "Application":
-		*v = new(WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication)
-		return json.Unmarshal(b, *v)
-	case "Job":
-		*v = new(WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob)
-		return json.Unmarshal(b, *v)
-	case "":
-		return fmt.Errorf(
-			"response was missing Workload.__typename")
-	default:
-		return fmt.Errorf(
-			`unexpected concrete type for WorkloadVulnerabilityFindingsTeamEnvironmentWorkload: "%v"`, tn.TypeName)
-	}
-}
-
-func __marshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkload(v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkload) ([]byte, error) {
-
-	var typename string
-	switch v := (*v).(type) {
-	case *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication:
-		typename = "Application"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication
-		}{typename, v}
-		return json.Marshal(result)
-	case *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob:
-		typename = "Job"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob
-		}{typename, v}
-		return json.Marshal(result)
-	case nil:
-		return []byte("null"), nil
-	default:
-		return nil, fmt.Errorf(
-			`unexpected concrete type for WorkloadVulnerabilityFindingsTeamEnvironmentWorkload: "%T"`, v)
-	}
-}
-
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication includes the requested fields of the GraphQL type Application.
+// WorkloadVulnerabilityFindingsTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
 // An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication struct {
-	Typename *string `json:"__typename"`
-	// Interface for workloads.
-	VulnerabilityFindings *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
+type WorkloadVulnerabilityFindingsTeamEnvironmentApplication struct {
+	WorkloadVulnerabilityFindingPageApplication `json:"-"`
 }
 
-// GetTypename returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication.Typename, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication) GetTypename() *string {
-	return v.Typename
+// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingsTeamEnvironmentApplication.VulnerabilityFindings, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentApplication) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection {
+	return v.WorkloadVulnerabilityFindingPageApplication.VulnerabilityFindings
 }
 
-// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication.VulnerabilityFindings, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadApplication) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection {
-	return v.VulnerabilityFindings
-}
-
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob includes the requested fields of the GraphQL type Job.
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob struct {
-	Typename *string `json:"__typename"`
-	// Interface for workloads.
-	VulnerabilityFindings *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
-}
-
-// GetTypename returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob.Typename, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob) GetTypename() *string {
-	return v.Typename
-}
-
-// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob.VulnerabilityFindings, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadJob) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection {
-	return v.VulnerabilityFindings
-}
-
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection includes the requested fields of the GraphQL type VulnerabilityFindingConnection.
-// The GraphQL type's documentation follows.
-//
-// A forward-paginated selection of vulnerability findings.
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection struct {
-	// The findings in the same order as edges.
-	Nodes []*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding `json:"nodes"`
-	// Pagination information and the full filtered total.
-	PageInfo *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo `json:"pageInfo"`
-}
-
-// GetNodes returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection.Nodes, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection) GetNodes() []*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding {
-	return v.Nodes
-}
-
-// GetPageInfo returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection.PageInfo, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnection) GetPageInfo() *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo {
-	return v.PageInfo
-}
-
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding includes the requested fields of the GraphQL type VulnerabilityFinding.
-// The GraphQL type's documentation follows.
-//
-// A vulnerability affecting one package in a workload's deployed image.
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding struct {
-	VulnerabilityReportFinding `json:"-"`
-}
-
-// GetSuppression returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Suppression, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSuppression() *VulnerabilityReportFindingSuppressionVulnerabilitySuppression {
-	return v.VulnerabilityReportFinding.Suppression
-}
-
-// GetId returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Id, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetId() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Id
-}
-
-// GetVulnerabilityIdentifier returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.VulnerabilityIdentifier, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetVulnerabilityIdentifier() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.VulnerabilityIdentifier
-}
-
-// GetPurl returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Purl, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetPurl() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Purl
-}
-
-// GetPackageKey returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.PackageKey, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetPackageKey() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.PackageKey
-}
-
-// GetInstalledVersion returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.InstalledVersion, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetInstalledVersion() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.InstalledVersion
-}
-
-// GetFixedVersion returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.FixedVersion, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetFixedVersion() *string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.FixedVersion
-}
-
-// GetSeverity returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Severity, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSeverity() VulnerabilitySeverity {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Severity
-}
-
-// GetSeveritySource returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.SeveritySource, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetSeveritySource() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.SeveritySource
-}
-
-// GetDataSource returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.DataSource, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetDataSource() string {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.DataSource
-}
-
-// GetKnownExploited returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.KnownExploited, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetKnownExploited() bool {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.KnownExploited
-}
-
-// GetEpss returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Epss, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetEpss() *VulnerabilityFindingDetailsEpssVulnerabilityEpss {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Epss
-}
-
-// GetVulnerability returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Vulnerability, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetVulnerability() *VulnerabilityFindingDetailsVulnerability {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Vulnerability
-}
-
-// GetImage returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Image, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetImage() *VulnerabilityFindingDetailsImageVulnerabilityImage {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Image
-}
-
-// GetWorkload returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.Workload, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) GetWorkload() VulnerabilityFindingDetailsWorkload {
-	return v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload
-}
-
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) UnmarshalJSON(b []byte) error {
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentApplication) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding
+		*WorkloadVulnerabilityFindingsTeamEnvironmentApplication
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding = v
+	firstPass.WorkloadVulnerabilityFindingsTeamEnvironmentApplication = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -42506,46 +42616,18 @@ func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindin
 	}
 
 	err = json.Unmarshal(
-		b, &v.VulnerabilityReportFinding)
+		b, &v.WorkloadVulnerabilityFindingPageApplication)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-type __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding struct {
-	Suppression *VulnerabilityReportFindingSuppressionVulnerabilitySuppression `json:"suppression"`
-
-	Id string `json:"id"`
-
-	VulnerabilityIdentifier string `json:"vulnerabilityIdentifier"`
-
-	Purl string `json:"purl"`
-
-	PackageKey string `json:"packageKey"`
-
-	InstalledVersion string `json:"installedVersion"`
-
-	FixedVersion *string `json:"fixedVersion"`
-
-	Severity VulnerabilitySeverity `json:"severity"`
-
-	SeveritySource string `json:"severitySource"`
-
-	DataSource string `json:"dataSource"`
-
-	KnownExploited bool `json:"knownExploited"`
-
-	Epss *VulnerabilityFindingDetailsEpssVulnerabilityEpss `json:"epss"`
-
-	Vulnerability *VulnerabilityFindingDetailsVulnerability `json:"vulnerability"`
-
-	Image *VulnerabilityFindingDetailsImageVulnerabilityImage `json:"image"`
-
-	Workload json.RawMessage `json:"workload"`
+type __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentApplication struct {
+	VulnerabilityFindings *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
 }
 
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) MarshalJSON() ([]byte, error) {
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentApplication) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -42553,69 +42635,34 @@ func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindin
 	return json.Marshal(premarshaled)
 }
 
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding, error) {
-	var retval __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentApplication) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingsTeamEnvironmentApplication, error) {
+	var retval __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentApplication
 
-	retval.Suppression = v.VulnerabilityReportFinding.Suppression
-	retval.Id = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Id
-	retval.VulnerabilityIdentifier = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.VulnerabilityIdentifier
-	retval.Purl = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Purl
-	retval.PackageKey = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.PackageKey
-	retval.InstalledVersion = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.InstalledVersion
-	retval.FixedVersion = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.FixedVersion
-	retval.Severity = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Severity
-	retval.SeveritySource = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.SeveritySource
-	retval.DataSource = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.DataSource
-	retval.KnownExploited = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.KnownExploited
-	retval.Epss = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Epss
-	retval.Vulnerability = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Vulnerability
-	retval.Image = v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Image
-	{
-
-		dst := &retval.Workload
-		src := v.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload
-		var err error
-		*dst, err = __marshalVulnerabilityFindingDetailsWorkload(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionNodesVulnerabilityFinding.VulnerabilityReportFinding.VulnerabilityFindingDetails.Workload: %w", err)
-		}
-	}
+	retval.VulnerabilityFindings = v.WorkloadVulnerabilityFindingPageApplication.VulnerabilityFindings
 	return &retval, nil
 }
 
-// WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo includes the requested fields of the GraphQL type PageInfo.
-// The GraphQL type's documentation follows.
-//
-// # This type is used for paginating the connection
-//
-// Learn more about how we have implemented pagination in the [GraphQL Best Practices documentation](https://graphql.org/learn/pagination/).
-type WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo struct {
-	VulnerabilityPage `json:"-"`
+// WorkloadVulnerabilityFindingsTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type WorkloadVulnerabilityFindingsTeamEnvironmentJob struct {
+	WorkloadVulnerabilityFindingPageJob `json:"-"`
 }
 
-// GetHasNextPage returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo.HasNextPage, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) GetHasNextPage() *bool {
-	return v.VulnerabilityPage.HasNextPage
+// GetVulnerabilityFindings returns WorkloadVulnerabilityFindingsTeamEnvironmentJob.VulnerabilityFindings, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentJob) GetVulnerabilityFindings() *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection {
+	return v.WorkloadVulnerabilityFindingPageJob.VulnerabilityFindings
 }
 
-// GetEndCursor returns WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo.EndCursor, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) GetEndCursor() *string {
-	return v.VulnerabilityPage.EndCursor
-}
-
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) UnmarshalJSON(b []byte) error {
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentJob) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo
+		*WorkloadVulnerabilityFindingsTeamEnvironmentJob
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo = v
+	firstPass.WorkloadVulnerabilityFindingsTeamEnvironmentJob = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -42623,20 +42670,18 @@ func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindin
 	}
 
 	err = json.Unmarshal(
-		b, &v.VulnerabilityPage)
+		b, &v.WorkloadVulnerabilityFindingPageJob)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-type __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo struct {
-	HasNextPage *bool `json:"hasNextPage"`
-
-	EndCursor *string `json:"endCursor"`
+type __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentJob struct {
+	VulnerabilityFindings *WorkloadVulnerabilityFindingPageVulnerabilityFindingsVulnerabilityFindingConnection `json:"vulnerabilityFindings"`
 }
 
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) MarshalJSON() ([]byte, error) {
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentJob) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -42644,11 +42689,10 @@ func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindin
 	return json.Marshal(premarshaled)
 }
 
-func (v *WorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo, error) {
-	var retval __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentWorkloadVulnerabilityFindingsVulnerabilityFindingConnectionPageInfo
+func (v *WorkloadVulnerabilityFindingsTeamEnvironmentJob) __premarshalJSON() (*__premarshalWorkloadVulnerabilityFindingsTeamEnvironmentJob, error) {
+	var retval __premarshalWorkloadVulnerabilityFindingsTeamEnvironmentJob
 
-	retval.HasNextPage = v.VulnerabilityPage.HasNextPage
-	retval.EndCursor = v.VulnerabilityPage.EndCursor
+	retval.VulnerabilityFindings = v.WorkloadVulnerabilityFindingPageJob.VulnerabilityFindings
 	return &retval, nil
 }
 
@@ -42728,215 +42772,73 @@ func (v *WorkloadVulnerabilityOverviewTeam) GetEnvironment() *WorkloadVulnerabil
 
 // WorkloadVulnerabilityOverviewTeamEnvironment includes the requested fields of the GraphQL type TeamEnvironment.
 type WorkloadVulnerabilityOverviewTeamEnvironment struct {
-	// Workload in the team environment.
-	Workload WorkloadVulnerabilityOverviewTeamEnvironmentWorkload `json:"-"`
+	// Nais application in the team environment.
+	Application *WorkloadVulnerabilityOverviewTeamEnvironmentApplication `json:"application"`
+	// Nais job in the team environment.
+	Job *WorkloadVulnerabilityOverviewTeamEnvironmentJob `json:"job"`
 }
 
-// GetWorkload returns WorkloadVulnerabilityOverviewTeamEnvironment.Workload, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironment) GetWorkload() WorkloadVulnerabilityOverviewTeamEnvironmentWorkload {
-	return v.Workload
+// GetApplication returns WorkloadVulnerabilityOverviewTeamEnvironment.Application, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironment) GetApplication() *WorkloadVulnerabilityOverviewTeamEnvironmentApplication {
+	return v.Application
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironment) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*WorkloadVulnerabilityOverviewTeamEnvironment
-		Workload json.RawMessage `json:"workload"`
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.WorkloadVulnerabilityOverviewTeamEnvironment = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	{
-		dst := &v.Workload
-		src := firstPass.Workload
-		if len(src) != 0 && string(src) != "null" {
-			err = __unmarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkload(
-				src, dst)
-			if err != nil {
-				return fmt.Errorf(
-					"unable to unmarshal WorkloadVulnerabilityOverviewTeamEnvironment.Workload: %w", err)
-			}
-		}
-	}
-	return nil
+// GetJob returns WorkloadVulnerabilityOverviewTeamEnvironment.Job, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironment) GetJob() *WorkloadVulnerabilityOverviewTeamEnvironmentJob {
+	return v.Job
 }
 
-type __premarshalWorkloadVulnerabilityOverviewTeamEnvironment struct {
-	Workload json.RawMessage `json:"workload"`
-}
-
-func (v *WorkloadVulnerabilityOverviewTeamEnvironment) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *WorkloadVulnerabilityOverviewTeamEnvironment) __premarshalJSON() (*__premarshalWorkloadVulnerabilityOverviewTeamEnvironment, error) {
-	var retval __premarshalWorkloadVulnerabilityOverviewTeamEnvironment
-
-	{
-
-		dst := &retval.Workload
-		src := v.Workload
-		var err error
-		*dst, err = __marshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkload(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal WorkloadVulnerabilityOverviewTeamEnvironment.Workload: %w", err)
-		}
-	}
-	return &retval, nil
-}
-
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkload includes the requested fields of the GraphQL interface Workload.
-//
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkload is implemented by the following types:
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob
-// The GraphQL type's documentation follows.
-//
-// Interface for workloads.
-type WorkloadVulnerabilityOverviewTeamEnvironmentWorkload interface {
-	implementsGraphQLInterfaceWorkloadVulnerabilityOverviewTeamEnvironmentWorkload()
-	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() *string
-	VulnerabilityWorkloadOverviewDetails
-}
-
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) implementsGraphQLInterfaceWorkloadVulnerabilityOverviewTeamEnvironmentWorkload() {
-}
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) implementsGraphQLInterfaceWorkloadVulnerabilityOverviewTeamEnvironmentWorkload() {
-}
-
-func __unmarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkload(b []byte, v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkload) error {
-	if string(b) == "null" {
-		return nil
-	}
-
-	var tn struct {
-		TypeName string `json:"__typename"`
-	}
-	err := json.Unmarshal(b, &tn)
-	if err != nil {
-		return err
-	}
-
-	switch tn.TypeName {
-	case "Application":
-		*v = new(WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication)
-		return json.Unmarshal(b, *v)
-	case "Job":
-		*v = new(WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob)
-		return json.Unmarshal(b, *v)
-	case "":
-		return fmt.Errorf(
-			"response was missing Workload.__typename")
-	default:
-		return fmt.Errorf(
-			`unexpected concrete type for WorkloadVulnerabilityOverviewTeamEnvironmentWorkload: "%v"`, tn.TypeName)
-	}
-}
-
-func __marshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkload(v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkload) ([]byte, error) {
-
-	var typename string
-	switch v := (*v).(type) {
-	case *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication:
-		typename = "Application"
-
-		premarshaled, err := v.__premarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-		result := struct {
-			TypeName string `json:"__typename"`
-			*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication
-		}{typename, premarshaled}
-		return json.Marshal(result)
-	case *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob:
-		typename = "Job"
-
-		premarshaled, err := v.__premarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-		result := struct {
-			TypeName string `json:"__typename"`
-			*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob
-		}{typename, premarshaled}
-		return json.Marshal(result)
-	case nil:
-		return []byte("null"), nil
-	default:
-		return nil, fmt.Errorf(
-			`unexpected concrete type for WorkloadVulnerabilityOverviewTeamEnvironmentWorkload: "%T"`, v)
-	}
-}
-
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication includes the requested fields of the GraphQL type Application.
+// WorkloadVulnerabilityOverviewTeamEnvironmentApplication includes the requested fields of the GraphQL type Application.
 // The GraphQL type's documentation follows.
 //
 // An application lets you run one or more instances of a container image on the [Nais platform](https://nais.io/).
 //
 // Learn more about how to create and configure your applications in the [Nais documentation](https://docs.nais.io/workloads/application/).
-type WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication struct {
-	Typename                                        *string `json:"__typename"`
+type WorkloadVulnerabilityOverviewTeamEnvironmentApplication struct {
 	VulnerabilityWorkloadOverviewDetailsApplication `json:"-"`
 }
 
-// GetTypename returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.Typename, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetTypename() *string {
-	return v.Typename
-}
-
-// GetVulnerabilityOverview returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.VulnerabilityOverview, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetVulnerabilityOverview() *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview {
+// GetVulnerabilityOverview returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.VulnerabilityOverview, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetVulnerabilityOverview() *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview {
 	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityOverview
 }
 
-// GetId returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.Id, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetId() string {
+// GetId returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetId() string {
 	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Id
 }
 
-// GetName returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.Name, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetName() string {
+// GetTypename returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.Typename, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetTypename() *string {
+	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Typename
+}
+
+// GetName returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.Name, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetName() string {
 	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Name
 }
 
-// GetTeam returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.Team, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetTeam() *VulnerabilityWorkloadIdentityTeam {
+// GetTeam returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.Team, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetTeam() *VulnerabilityWorkloadIdentityTeam {
 	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Team
 }
 
-// GetTeamEnvironment returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) GetTeamEnvironment() *VulnerabilityWorkloadIdentityTeamEnvironment {
+// GetTeamEnvironment returns WorkloadVulnerabilityOverviewTeamEnvironmentApplication.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) GetTeamEnvironment() *VulnerabilityWorkloadIdentityTeamEnvironment {
 	return v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.TeamEnvironment
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) UnmarshalJSON(b []byte) error {
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication
+		*WorkloadVulnerabilityOverviewTeamEnvironmentApplication
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication = v
+	firstPass.WorkloadVulnerabilityOverviewTeamEnvironmentApplication = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -42951,12 +42853,12 @@ func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) Unmars
 	return nil
 }
 
-type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication struct {
-	Typename *string `json:"__typename"`
-
+type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentApplication struct {
 	VulnerabilityOverview *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview `json:"vulnerabilityOverview"`
 
 	Id string `json:"id"`
+
+	Typename *string `json:"__typename"`
 
 	Name string `json:"name"`
 
@@ -42965,7 +42867,7 @@ type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication
 	TeamEnvironment *VulnerabilityWorkloadIdentityTeamEnvironment `json:"teamEnvironment"`
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) MarshalJSON() ([]byte, error) {
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -42973,65 +42875,64 @@ func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) Marsha
 	return json.Marshal(premarshaled)
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication) __premarshalJSON() (*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication, error) {
-	var retval __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadApplication
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentApplication) __premarshalJSON() (*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentApplication, error) {
+	var retval __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentApplication
 
-	retval.Typename = v.Typename
 	retval.VulnerabilityOverview = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityOverview
 	retval.Id = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Id
+	retval.Typename = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Typename
 	retval.Name = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Name
 	retval.Team = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.Team
 	retval.TeamEnvironment = v.VulnerabilityWorkloadOverviewDetailsApplication.VulnerabilityWorkloadIdentityApplication.TeamEnvironment
 	return &retval, nil
 }
 
-// WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob includes the requested fields of the GraphQL type Job.
-type WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob struct {
-	Typename                                *string `json:"__typename"`
+// WorkloadVulnerabilityOverviewTeamEnvironmentJob includes the requested fields of the GraphQL type Job.
+type WorkloadVulnerabilityOverviewTeamEnvironmentJob struct {
 	VulnerabilityWorkloadOverviewDetailsJob `json:"-"`
 }
 
-// GetTypename returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.Typename, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetTypename() *string {
-	return v.Typename
-}
-
-// GetVulnerabilityOverview returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.VulnerabilityOverview, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetVulnerabilityOverview() *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview {
+// GetVulnerabilityOverview returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.VulnerabilityOverview, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetVulnerabilityOverview() *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview {
 	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityOverview
 }
 
-// GetId returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.Id, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetId() string {
+// GetId returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.Id, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetId() string {
 	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Id
 }
 
-// GetName returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.Name, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetName() string {
+// GetTypename returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.Typename, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetTypename() *string {
+	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Typename
+}
+
+// GetName returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.Name, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetName() string {
 	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Name
 }
 
-// GetTeam returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.Team, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetTeam() *VulnerabilityWorkloadIdentityTeam {
+// GetTeam returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.Team, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetTeam() *VulnerabilityWorkloadIdentityTeam {
 	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Team
 }
 
-// GetTeamEnvironment returns WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob.TeamEnvironment, and is useful for accessing the field via an interface.
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) GetTeamEnvironment() *VulnerabilityWorkloadIdentityTeamEnvironment {
+// GetTeamEnvironment returns WorkloadVulnerabilityOverviewTeamEnvironmentJob.TeamEnvironment, and is useful for accessing the field via an interface.
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) GetTeamEnvironment() *VulnerabilityWorkloadIdentityTeamEnvironment {
 	return v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.TeamEnvironment
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) UnmarshalJSON(b []byte) error {
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob
+		*WorkloadVulnerabilityOverviewTeamEnvironmentJob
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob = v
+	firstPass.WorkloadVulnerabilityOverviewTeamEnvironmentJob = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -43046,12 +42947,12 @@ func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) UnmarshalJSON(
 	return nil
 }
 
-type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob struct {
-	Typename *string `json:"__typename"`
-
+type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentJob struct {
 	VulnerabilityOverview *VulnerabilityWorkloadOverviewDetailsVulnerabilityOverviewVulnerabilityWorkloadOverview `json:"vulnerabilityOverview"`
 
 	Id string `json:"id"`
+
+	Typename *string `json:"__typename"`
 
 	Name string `json:"name"`
 
@@ -43060,7 +42961,7 @@ type __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob struct 
 	TeamEnvironment *VulnerabilityWorkloadIdentityTeamEnvironment `json:"teamEnvironment"`
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) MarshalJSON() ([]byte, error) {
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -43068,12 +42969,12 @@ func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) MarshalJSON() 
 	return json.Marshal(premarshaled)
 }
 
-func (v *WorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob) __premarshalJSON() (*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob, error) {
-	var retval __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentWorkloadJob
+func (v *WorkloadVulnerabilityOverviewTeamEnvironmentJob) __premarshalJSON() (*__premarshalWorkloadVulnerabilityOverviewTeamEnvironmentJob, error) {
+	var retval __premarshalWorkloadVulnerabilityOverviewTeamEnvironmentJob
 
-	retval.Typename = v.Typename
 	retval.VulnerabilityOverview = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityOverview
 	retval.Id = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Id
+	retval.Typename = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Typename
 	retval.Name = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Name
 	retval.Team = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.Team
 	retval.TeamEnvironment = v.VulnerabilityWorkloadOverviewDetailsJob.VulnerabilityWorkloadIdentityJob.TeamEnvironment
@@ -44981,6 +44882,8 @@ type __WorkloadVulnerabilityFindingsInput struct {
 	Team        string                              `json:"team"`
 	Environment string                              `json:"environment"`
 	Name        string                              `json:"name"`
+	Application bool                                `json:"application"`
+	Job         bool                                `json:"job"`
 	Filter      WorkloadVulnerabilityFindingsFilter `json:"filter"`
 	Order       *VulnerabilityFindingOrder          `json:"order"`
 	After       *string                             `json:"after"`
@@ -44994,6 +44897,12 @@ func (v *__WorkloadVulnerabilityFindingsInput) GetEnvironment() string { return 
 
 // GetName returns __WorkloadVulnerabilityFindingsInput.Name, and is useful for accessing the field via an interface.
 func (v *__WorkloadVulnerabilityFindingsInput) GetName() string { return v.Name }
+
+// GetApplication returns __WorkloadVulnerabilityFindingsInput.Application, and is useful for accessing the field via an interface.
+func (v *__WorkloadVulnerabilityFindingsInput) GetApplication() bool { return v.Application }
+
+// GetJob returns __WorkloadVulnerabilityFindingsInput.Job, and is useful for accessing the field via an interface.
+func (v *__WorkloadVulnerabilityFindingsInput) GetJob() bool { return v.Job }
 
 // GetFilter returns __WorkloadVulnerabilityFindingsInput.Filter, and is useful for accessing the field via an interface.
 func (v *__WorkloadVulnerabilityFindingsInput) GetFilter() WorkloadVulnerabilityFindingsFilter {
@@ -45011,6 +44920,8 @@ type __WorkloadVulnerabilityOverviewInput struct {
 	Team        string                               `json:"team"`
 	Environment string                               `json:"environment"`
 	Name        string                               `json:"name"`
+	Application bool                                 `json:"application"`
+	Job         bool                                 `json:"job"`
 	Filter      *WorkloadVulnerabilityOverviewFilter `json:"filter"`
 }
 
@@ -45022,6 +44933,12 @@ func (v *__WorkloadVulnerabilityOverviewInput) GetEnvironment() string { return 
 
 // GetName returns __WorkloadVulnerabilityOverviewInput.Name, and is useful for accessing the field via an interface.
 func (v *__WorkloadVulnerabilityOverviewInput) GetName() string { return v.Name }
+
+// GetApplication returns __WorkloadVulnerabilityOverviewInput.Application, and is useful for accessing the field via an interface.
+func (v *__WorkloadVulnerabilityOverviewInput) GetApplication() bool { return v.Application }
+
+// GetJob returns __WorkloadVulnerabilityOverviewInput.Job, and is useful for accessing the field via an interface.
+func (v *__WorkloadVulnerabilityOverviewInput) GetJob() bool { return v.Job }
 
 // GetFilter returns __WorkloadVulnerabilityOverviewInput.Filter, and is useful for accessing the field via an interface.
 func (v *__WorkloadVulnerabilityOverviewInput) GetFilter() *WorkloadVulnerabilityOverviewFilter {
@@ -49924,20 +49841,25 @@ func VulnerabilityAdvisoryWorkloads(
 
 // The query executed by WorkloadVulnerabilityFindings.
 const WorkloadVulnerabilityFindings_Operation = `
-query WorkloadVulnerabilityFindings ($team: Slug!, $environment: String!, $name: String!, $filter: WorkloadVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder, $after: Cursor) {
+query WorkloadVulnerabilityFindings ($team: Slug!, $environment: String!, $name: String!, $application: Boolean!, $job: Boolean!, $filter: WorkloadVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder, $after: Cursor) {
 	team(slug: $team) {
 		environment(name: $environment) {
-			workload(name: $name) {
-				__typename
-				vulnerabilityFindings(first: 200, after: $after, filter: $filter, orderBy: $order) {
-					nodes {
-						... VulnerabilityReportFinding
-					}
-					pageInfo {
-						... VulnerabilityPage
-					}
-				}
+			application(name: $name) @include(if: $application) {
+				... WorkloadVulnerabilityFindingPage
 			}
+			job(name: $name) @include(if: $job) {
+				... WorkloadVulnerabilityFindingPage
+			}
+		}
+	}
+}
+fragment WorkloadVulnerabilityFindingPage on Workload {
+	vulnerabilityFindings(first: 200, after: $after, filter: $filter, orderBy: $order) {
+		nodes {
+			... VulnerabilityReportFinding
+		}
+		pageInfo {
+			... VulnerabilityPage
 		}
 	}
 }
@@ -50017,6 +49939,8 @@ func WorkloadVulnerabilityFindings(
 	team string,
 	environment string,
 	name string,
+	application bool,
+	job bool,
 	filter WorkloadVulnerabilityFindingsFilter,
 	order *VulnerabilityFindingOrder,
 	after *string,
@@ -50028,6 +49952,8 @@ func WorkloadVulnerabilityFindings(
 			Team:        team,
 			Environment: environment,
 			Name:        name,
+			Application: application,
+			Job:         job,
 			Filter:      filter,
 			Order:       order,
 			After:       after,
@@ -50048,11 +49974,13 @@ func WorkloadVulnerabilityFindings(
 
 // The query executed by WorkloadVulnerabilityOverview.
 const WorkloadVulnerabilityOverview_Operation = `
-query WorkloadVulnerabilityOverview ($team: Slug!, $environment: String!, $name: String!, $filter: WorkloadVulnerabilityOverviewFilter) {
+query WorkloadVulnerabilityOverview ($team: Slug!, $environment: String!, $name: String!, $application: Boolean!, $job: Boolean!, $filter: WorkloadVulnerabilityOverviewFilter) {
 	team(slug: $team) {
 		environment(name: $environment) {
-			workload(name: $name) {
-				__typename
+			application(name: $name) @include(if: $application) {
+				... VulnerabilityWorkloadOverviewDetails
+			}
+			job(name: $name) @include(if: $job) {
 				... VulnerabilityWorkloadOverviewDetails
 			}
 		}
@@ -50107,6 +50035,8 @@ func WorkloadVulnerabilityOverview(
 	team string,
 	environment string,
 	name string,
+	application bool,
+	job bool,
 	filter *WorkloadVulnerabilityOverviewFilter,
 ) (data_ *WorkloadVulnerabilityOverviewResponse, err_ error) {
 	req_ := &graphql.Request{
@@ -50116,6 +50046,8 @@ func WorkloadVulnerabilityOverview(
 			Team:        team,
 			Environment: environment,
 			Name:        name,
+			Application: application,
+			Job:         job,
 			Filter:      filter,
 		},
 	}
