@@ -20,43 +20,41 @@ func (s Severity) String() string {
 	return formatting.ColoredSeverityString(string(s), gql.Severity(s))
 }
 
-func GetApplicationIssues(ctx context.Context, slug, name string, environment string) ([]ApplicationIssue, error) {
+func GetApplicationIssues(ctx context.Context, slug, name string, environment string, filter *gql.ResourceIssueFilter) ([]ApplicationIssue, error) {
 	_ = `# @genqlient
-		query GetApplicationIssues($slug: Slug!, $name: String!, $env: [String!]) {
-		  team(slug: $slug) {
-		    applications(filter: { name: $name, environments: $env }) {
-		      nodes {
-				teamEnvironment{
-          		  environment {
-              	    name
-		 	      }
-		 	    }
-			    issues(first: 500) {
-			      nodes {
-		            severity
-		            message
-		          }
-		        }
-		      }
-		    }
-		  }
+		query GetApplicationIssues($slug: Slug!, $name: String!, $env: [String!], $filter: ResourceIssueFilter) {
+			team(slug: $slug) {
+				applications(filter: { name: $name, environments: $env }) {
+					nodes {
+						name
+						teamEnvironment { environment { name } }
+						issues(first: 500, filter: $filter) {
+							nodes { severity message }
+						}
+					}
+				}
+			}
 		}
-		`
+	`
 
 	client, err := naisapi.GraphqlClient(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := gql.GetApplicationIssues(ctx, client, slug, name, []string{environment})
+	var environments []string
+	if environment != "" {
+		environments = []string{environment}
+	}
+	resp, err := gql.GetApplicationIssues(ctx, client, slug, name, environments, filter)
 	if err != nil {
 		return nil, err
 	}
-	if len(resp.Team.Applications.Nodes) == 0 {
-		return nil, nil
-	}
 	ret := make([]ApplicationIssue, 0)
 	for _, app := range resp.Team.Applications.Nodes {
+		if app.Name != name {
+			continue
+		}
 		for _, issue := range app.Issues.Nodes {
 			ret = append(ret, ApplicationIssue{
 				Severity:    Severity(issue.GetSeverity()),

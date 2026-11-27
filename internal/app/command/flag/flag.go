@@ -8,6 +8,7 @@ import (
 	activityutil "github.com/nais/cli/internal/activity"
 	"github.com/nais/cli/internal/app"
 	"github.com/nais/cli/internal/flags"
+	issueflag "github.com/nais/cli/internal/issues/command/flag"
 	"github.com/nais/cli/internal/labels"
 	"github.com/nais/cli/internal/naisapi/gql"
 	"github.com/nais/cli/internal/validation"
@@ -64,6 +65,7 @@ type Delete struct {
 
 type Issues struct {
 	*App
+	IssueType issueflag.IssueType `name:"issuetype" usage:"Filter issues by issue type"`
 }
 type List struct {
 	*App
@@ -71,6 +73,14 @@ type List struct {
 }
 
 func (*List) LabelFacetResource() string { return "applications" }
+
+type Events struct {
+	*App
+	Limit int    `name:"limit" short:"l" usage:"Maximum events per page (1–100)."`
+	From  string `name:"from" usage:"Include events at or after this RFC3339 timestamp."`
+	To    string `name:"to" usage:"Include events before this RFC3339 timestamp. Defaults to now."`
+	After string `name:"after" usage:"Continue after a cursor from the previous page. Reuse its --from and --to bounds."`
+}
 
 type Activity struct {
 	*App

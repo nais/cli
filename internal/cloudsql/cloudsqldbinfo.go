@@ -16,7 +16,6 @@ import (
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/logging"
 	"github.com/nais/naistrix"
-	core_v1 "k8s.io/api/core/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -98,50 +97,6 @@ func createConnectionInfoFromSecretValues(ctx context.Context, sv *SecretValues,
 		jdbcUrl:  jdbcUrl,
 		instance: instance,
 	}, nil
-}
-
-func createConnectionInfo(ctx context.Context, secret core_v1.Secret, instance string) (*ConnectionInfo, error) {
-	var pgUrl *url.URL
-	var jdbcUrl *url.URL
-	var err error
-	for name, val := range secret.Data {
-		if strings.HasSuffix(name, "_URL") {
-			value := string(val)
-			if strings.HasSuffix(name, "_JDBC_URL") {
-				jdbcUrl, err = url.Parse(value)
-			} else {
-				pgUrl, err = url.Parse(value)
-			}
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
-
-	email, err := currentEmail(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ConnectionInfo{
-		username: getSecretDataValue(secret, "_USERNAME"),
-		email:    email,
-		password: getSecretDataValue(secret, "_PASSWORD"),
-		dbName:   getSecretDataValue(secret, "_DATABASE"),
-		port:     getSecretDataValue(secret, "_PORT"),
-		url:      pgUrl,
-		jdbcUrl:  jdbcUrl,
-		instance: instance,
-	}, nil
-}
-
-func getSecretDataValue(secret core_v1.Secret, suffix string) string {
-	for name, val := range secret.Data {
-		if strings.HasSuffix(name, suffix) {
-			return string(val)
-		}
-	}
-	return ""
 }
 
 func (i *CloudSQLDBInfo) fetchDBInstance(ctx context.Context) error {

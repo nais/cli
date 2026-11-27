@@ -7,9 +7,7 @@ import (
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -69,12 +67,7 @@ func TestPassword(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			k8sClient := fake.NewClientset()
 			secret := &corev1.Secret{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "Secret",
-					APIVersion: "v1",
-				},
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      secretName,
 					Namespace: namespace,
@@ -91,52 +84,34 @@ func TestPassword(t *testing.T) {
 				prep(secret)
 			}
 
-			err := k8sClient.Tracker().Add(secret)
-			if err != nil {
-				t.Fatalf("failed to add secret to tracker: %v", err)
+			k8sClient := fake.NewClientset(secret)
+			dbInfo := &CloudSQLDBInfo{DBInfo: &DBInfo{
+				k8sClient: k8sClient,
+				namespace: namespace,
+				appName:   appName,
+			}}
+			dbConnectionInfo := &ConnectionInfo{
+				username: string(secret.Data["DB_USERNAME"]),
+				dbName:   string(secret.Data["DB_DATABASE"]),
+				password: string(secret.Data["DB_PASSWORD"]),
+				url:      parseTestURL(t, secret.Data["DB_URL"]),
+				jdbcUrl:  parseTestURL(t, secret.Data["DB_JDBC_URL"]),
 			}
-
-			dbInfo := createDbInfo(k8sClient)
-			dbConnectionInfo, err := createConnectionInfo(t.Context(), *secret, dbInfo.connectionName)
-			if err != nil {
-				t.Fatalf("failed to create connectionInfo: %v", err)
-			}
-
 			dbConnectionInfo.SetPassword(newPassword)
 
 			if err := updateKubernetesSecret(t.Context(), dbInfo, dbConnectionInfo); err != nil {
 				t.Fatalf("failed to update Kubernetes secret: %v", err)
 			}
 
-			gvr, _ := meta.UnsafeGuessKindToResource(secret.GroupVersionKind())
-			actual, err := k8sClient.Tracker().Get(gvr, secret.Namespace, secret.Name)
+			actual, err := k8sClient.CoreV1().Secrets(secret.Namespace).Get(t.Context(), secret.Name, metav1.GetOptions{})
 			if err != nil {
 				t.Fatalf("failed to get secret: %v", err)
 			}
 
-			actualSecret, ok := actual.(*corev1.Secret)
-			if !ok {
-				t.Fatalf("expected *corev1.Secret, got %T", actual)
-			}
-
 			for _, assert := range tc.assertSecret {
-				assert(t, actualSecret)
+				assert(t, actual)
 			}
 		})
-	}
-}
-
-func createDbInfo(k8sClient kubernetes.Interface) *CloudSQLDBInfo {
-	return &CloudSQLDBInfo{
-		DBInfo: &DBInfo{
-			k8sClient:     k8sClient,
-			dynamicClient: nil,
-			config:        nil,
-			namespace:     namespace,
-			appName:       appName,
-		},
-		projectID:      "project-id",
-		connectionName: "connection:name",
 	}
 }
 
@@ -156,26 +131,33 @@ func AddJdbcUrl(secret *corev1.Secret) {
 
 type AssertSecret func(t *testing.T, actual *corev1.Secret)
 
-func EqualUrlNoQuery(t *testing.T, expected *url.URL) {
+func parseTestURL(t *testing.T, value []byte) *url.URL {
 	t.Helper()
 
-	expectedNoQuery, _, _ := strings.Cut(expected.String(), "?")
-	actualNoQuery, _, _ := strings.Cut(expected.String(), "?")
-	if expectedNoQuery != actualNoQuery {
-		t.Fatalf("expected URL without query to be '%s', but got '%s'", expectedNoQuery, actualNoQuery)
+	if len(value) == 0 {
+		return nil
 	}
-	if actualNoQuery != expectedNoQuery {
-		t.Fatalf("expected URL without query to be '%s', but got '%s'", expectedNoQuery, actualNoQuery)
+	u, err := url.Parse(string(value))
+	if err != nil {
+		t.Fatalf("failed to parse test URL: %v", err)
 	}
+	return u
 }
 
-func EqualQuery(t *testing.T, expected *url.URL) {
+func assertSecretURL(t *testing.T, secret *corev1.Secret, key string, want *url.URL) {
 	t.Helper()
 
-	expectedQuery := expected.Query()
-	actualQuery := expected.Query()
-	if actualQuery.Encode() != expectedQuery.Encode() {
-		t.Fatalf("expected URL query to be '%s', but got '%s'", expectedQuery.Encode(), actualQuery.Encode())
+	got := parseTestURL(t, secret.Data[key])
+	if got == nil {
+		t.Fatalf("expected %s to be set", key)
+	}
+	gotBase, _, _ := strings.Cut(got.String(), "?")
+	wantBase, _, _ := strings.Cut(want.String(), "?")
+	if gotBase != wantBase {
+		t.Errorf("%s URL without query: got %q, want %q", key, gotBase, wantBase)
+	}
+	if gotQuery, wantQuery := got.Query().Encode(), want.Query().Encode(); gotQuery != wantQuery {
+		t.Errorf("%s query: got %q, want %q", key, gotQuery, wantQuery)
 	}
 }
 
@@ -193,15 +175,7 @@ func HasPassword(t *testing.T, actual *corev1.Secret) {
 
 func HasUrl(t *testing.T, actual *corev1.Secret) {
 	t.Helper()
-	u, err := url.Parse(string(actual.Data["DB_URL"]))
-	if err != nil {
-		t.Fatalf("failed to parse DB_URL: %v", err)
-	}
-	if u == nil {
-		t.Fatalf("DB_URL is nil")
-	}
-	EqualUrlNoQuery(t, newPgUrl)
-	EqualQuery(t, newPgUrl)
+	assertSecretURL(t, actual, "DB_URL", newPgUrl)
 }
 
 func HasNoUrl(t *testing.T, actual *corev1.Secret) {
@@ -214,15 +188,7 @@ func HasNoUrl(t *testing.T, actual *corev1.Secret) {
 
 func HasJdbcUrl(t *testing.T, actual *corev1.Secret) {
 	t.Helper()
-	u, err := url.Parse(string(actual.Data["DB_JDBC_URL"]))
-	if err != nil {
-		t.Fatalf("failed to parse DB_JDBC_URL: %v", err)
-	}
-	if u == nil {
-		t.Fatalf("DB_JDBC_URL is nil")
-	}
-	EqualUrlNoQuery(t, newJdbcUrl)
-	EqualQuery(t, newJdbcUrl)
+	assertSecretURL(t, actual, "DB_JDBC_URL", newJdbcUrl)
 }
 
 func HasNoJdbcUrl(t *testing.T, actual *corev1.Secret) {
