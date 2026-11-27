@@ -44834,7 +44834,7 @@ func (v *__TeamMembersInput) GetSlug() string { return v.Slug }
 type __TeamVulnerabilityFindingsInput struct {
 	Team   string                          `json:"team"`
 	Filter TeamVulnerabilityFindingsFilter `json:"filter"`
-	Order  VulnerabilityFindingOrder       `json:"order"`
+	Order  *VulnerabilityFindingOrder      `json:"order"`
 	After  *string                         `json:"after"`
 }
 
@@ -44847,7 +44847,7 @@ func (v *__TeamVulnerabilityFindingsInput) GetFilter() TeamVulnerabilityFindings
 }
 
 // GetOrder returns __TeamVulnerabilityFindingsInput.Order, and is useful for accessing the field via an interface.
-func (v *__TeamVulnerabilityFindingsInput) GetOrder() VulnerabilityFindingOrder { return v.Order }
+func (v *__TeamVulnerabilityFindingsInput) GetOrder() *VulnerabilityFindingOrder { return v.Order }
 
 // GetAfter returns __TeamVulnerabilityFindingsInput.After, and is useful for accessing the field via an interface.
 func (v *__TeamVulnerabilityFindingsInput) GetAfter() *string { return v.After }
@@ -44982,7 +44982,7 @@ type __WorkloadVulnerabilityFindingsInput struct {
 	Environment string                              `json:"environment"`
 	Name        string                              `json:"name"`
 	Filter      WorkloadVulnerabilityFindingsFilter `json:"filter"`
-	Order       VulnerabilityFindingOrder           `json:"order"`
+	Order       *VulnerabilityFindingOrder          `json:"order"`
 	After       *string                             `json:"after"`
 }
 
@@ -45001,7 +45001,7 @@ func (v *__WorkloadVulnerabilityFindingsInput) GetFilter() WorkloadVulnerability
 }
 
 // GetOrder returns __WorkloadVulnerabilityFindingsInput.Order, and is useful for accessing the field via an interface.
-func (v *__WorkloadVulnerabilityFindingsInput) GetOrder() VulnerabilityFindingOrder { return v.Order }
+func (v *__WorkloadVulnerabilityFindingsInput) GetOrder() *VulnerabilityFindingOrder { return v.Order }
 
 // GetAfter returns __WorkloadVulnerabilityFindingsInput.After, and is useful for accessing the field via an interface.
 func (v *__WorkloadVulnerabilityFindingsInput) GetAfter() *string { return v.After }
@@ -49277,7 +49277,7 @@ func TeamStatus(
 
 // The query executed by TeamVulnerabilityFindings.
 const TeamVulnerabilityFindings_Operation = `
-query TeamVulnerabilityFindings ($team: Slug!, $filter: TeamVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder!, $after: Cursor) {
+query TeamVulnerabilityFindings ($team: Slug!, $filter: TeamVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder, $after: Cursor) {
 	team(slug: $team) {
 		vulnerabilityFindings(first: 200, after: $after, filter: $filter, orderBy: $order) {
 			nodes {
@@ -49358,7 +49358,7 @@ func TeamVulnerabilityFindings(
 	client_ graphql.Client,
 	team string,
 	filter TeamVulnerabilityFindingsFilter,
-	order VulnerabilityFindingOrder,
+	order *VulnerabilityFindingOrder,
 	after *string,
 ) (data_ *TeamVulnerabilityFindingsResponse, err_ error) {
 	req_ := &graphql.Request{
@@ -49924,7 +49924,7 @@ func VulnerabilityAdvisoryWorkloads(
 
 // The query executed by WorkloadVulnerabilityFindings.
 const WorkloadVulnerabilityFindings_Operation = `
-query WorkloadVulnerabilityFindings ($team: Slug!, $environment: String!, $name: String!, $filter: WorkloadVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder!, $after: Cursor) {
+query WorkloadVulnerabilityFindings ($team: Slug!, $environment: String!, $name: String!, $filter: WorkloadVulnerabilityFindingsFilter!, $order: VulnerabilityFindingOrder, $after: Cursor) {
 	team(slug: $team) {
 		environment(name: $environment) {
 			workload(name: $name) {
@@ -50018,7 +50018,7 @@ func WorkloadVulnerabilityFindings(
 	environment string,
 	name string,
 	filter WorkloadVulnerabilityFindingsFilter,
-	order VulnerabilityFindingOrder,
+	order *VulnerabilityFindingOrder,
 	after *string,
 ) (data_ *WorkloadVulnerabilityFindingsResponse, err_ error) {
 	req_ := &graphql.Request{
